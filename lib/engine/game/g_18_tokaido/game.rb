@@ -49,7 +49,7 @@ module Engine
           '15' => 3,
           '23' => 3,
           '24' => 3,
-          '25' => 1,
+          '25' => 2,
           '26' => 1,
           '27' => 1,
           '28' => 1,
@@ -82,48 +82,41 @@ module Engine
           '915' => 1,
           'X1' =>
           {
-            'count' => 1,
-            'color' => 'green',
-            'code' =>
-              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=OO',
-          },
-          'X2' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' =>
-              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=OO',
-          },
-          'X3' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' =>
-              'city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:_0,b:5;path=a:0,b:_1;path=a:_1,b:4;label=OO',
-          },
-          'X4' =>
-          {
-            'count' => 2,
-            'color' => 'brown',
-            'code' =>
-              'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=OO',
-          },
-          'X5' =>
-          {
             'count' => 3,
             'color' => 'brown',
             'code' =>
               'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
               'path=a:4,b:_0;label=Y',
           },
-          'X6' =>
+          'X2' =>
           {
             'count' => 2,
             'color' => 'gray',
             'code' =>
             'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
           },
-          'X7' =>
+          'X10' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' =>
+              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=O',
+          },
+          'X11' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' =>
+              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:3;path=a:2,b:_1;path=a:_1,b:5;label=O',
+          },
+          'X13' =>
+          {
+            'count' => 2,
+            'color' => 'brown',
+            'code' =>
+              'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=O',
+          },
+          'X14' =>
           {
             'count' => 1,
             'color' => 'gray',
@@ -131,7 +124,35 @@ module Engine
               'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
               'path=a:4,b:_0;path=a:5,b:_0;label=O',
           },
-          'X8' =>
+          'X20' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' =>
+              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=T',
+          },
+          'X21' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' =>
+              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=T',
+          },
+          'X22' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' =>
+              'city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:_0,b:5;path=a:0,b:_1;path=a:_1,b:4;label=T',
+          },
+          'X23' =>
+          {
+            'count' => 2,
+            'color' => 'brown',
+            'code' =>
+              'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=T',
+          },
+          'X24' =>
           {
             'count' => 1,
             'color' => 'gray',
@@ -154,7 +175,6 @@ module Engine
           'D14' => 'Sakai',
           'E5' => 'Nihon-kai',
           'E9' => 'Biwa-ko',
-          'E13' => 'Tsu',
           'F6' => 'Kanazawa',
           'F10' => 'Nagoya',
           'F12' => 'Ise-wan',
@@ -180,18 +200,18 @@ module Engine
 
         HEXES = {
           white: {
-            %w[D10 E11 F4 G9 K7 L4] => '',
+            %w[D10 E7 E11 E13 F4 G9 K7 L4] => '',
             %w[B10 B12 C9 F8 H4 H6 H8 H10 I3 I7 J2 J6 K3 K5] => 'upgrade=cost:40,terrain:mountain',
-            %w[B8 D12 D8 D14 E13 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
+            %w[B8 D12 D8 D14 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
             %w[G7] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
             %w[B14 F6 G5 I11 M5] => 'city=revenue:0',
             %w[C11 F10] => 'city=revenue:0;label=Y',
           },
           yellow: {
             ['C13'] =>
-              'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO;label=O',
+              'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_1;label=O',
             ['J10'] =>
-              'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO;label=T',
+              'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=T',
             ['J4'] =>
               'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=Y',
             ['L8'] =>
@@ -234,21 +254,21 @@ module Engine
         LAYOUT = :flat
 
         # O and T labelled tile upgrade to OOs until Grey
-        HEX_WITH_O_LABEL = %w[C13].freeze
-        HEX_UPGRADES_FOR_O = %w[X1 X2 X3 X4 X7].freeze
-        HEX_WITH_T_LABEL = %w[J10].freeze
-        HEX_UPGRADES_FOR_T = %w[X1 X2 X3 X4 X8].freeze
+        # HEX_WITH_O_LABEL = %w[C13].freeze
+        # HEX_UPGRADES_FOR_O = %w[X1 X2 X3 X4 X7].freeze
+        # HEX_WITH_T_LABEL = %w[J10].freeze
+        # HEX_UPGRADES_FOR_T = %w[X1 X2 X3 X4 X8].freeze
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
-          if self.class::HEX_WITH_O_LABEL.include?(from.hex.name)
-            return false unless self.class::HEX_UPGRADES_FOR_O.include?(to.name)
-          elsif self.class::HEX_WITH_T_LABEL.include?(from.hex.name)
-            return false unless self.class::HEX_UPGRADES_FOR_T.include?(to.name)
-          else
-            return super
-          end
-          super(from, to, true)
-        end
+        # def upgrades_to?(from, to, _special = false, selected_company: nil)
+        #   if self.class::HEX_WITH_O_LABEL.include?(from.hex.name)
+        #     return false unless self.class::HEX_UPGRADES_FOR_O.include?(to.name)
+        #   elsif self.class::HEX_WITH_T_LABEL.include?(from.hex.name)
+        #     return false unless self.class::HEX_UPGRADES_FOR_T.include?(to.name)
+        #   else
+        #     return super
+        #   end
+        #   super(from, to, true)
+        # end
 
         PHASES = [
           {
