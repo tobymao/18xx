@@ -254,23 +254,6 @@ module Engine
 
         LAYOUT = :flat
 
-        # O and T labelled tile upgrade to OOs until Grey
-        # HEX_WITH_O_LABEL = %w[C13].freeze
-        # HEX_UPGRADES_FOR_O = %w[X1 X2 X3 X4 X7].freeze
-        # HEX_WITH_T_LABEL = %w[J10].freeze
-        # HEX_UPGRADES_FOR_T = %w[X1 X2 X3 X4 X8].freeze
-
-        # def upgrades_to?(from, to, _special = false, selected_company: nil)
-        #   if self.class::HEX_WITH_O_LABEL.include?(from.hex.name)
-        #     return false unless self.class::HEX_UPGRADES_FOR_O.include?(to.name)
-        #   elsif self.class::HEX_WITH_T_LABEL.include?(from.hex.name)
-        #     return false unless self.class::HEX_UPGRADES_FOR_T.include?(to.name)
-        #   else
-        #     return super
-        #   end
-        #   super(from, to, true)
-        # end
-
         PHASES = [
           {
             name: '2',
