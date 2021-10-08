@@ -220,7 +220,8 @@ module Engine
               'path=a:1,b:3',
           },
           gray: {
-            ['A13'] => 'path=a:5,b:4',
+            ['A13'] => 'path=a:4,b:5',
+            ['E15'] => 'path=a:2,b:3',
             ['G11'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:5',
             ['H12'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:4',
           },
@@ -504,7 +505,7 @@ module Engine
             name: 'Nippon-tetsudō',
             logo: '18_tokaido/NRC',
             simple_logo: '18_tokaido/NRC.alt',
-            tokens: [0, 40],
+            tokens: [0, 40, 60],
             coordinates: 'J10',
             city: 1,
             color: 'black',
