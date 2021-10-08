@@ -798,6 +798,7 @@ module Engine
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return false if to.name == '171K' && from.hex.name != 'B11'
           return false if to.name == '172L' && from.hex.name != 'C18'
+          return false if to.name == '63' && (from.hex.name == 'B11' || from.hex.name == 'C18')
           return true if (from.color == :green && to.name == '170') && (from.hex.name == 'B11' || from.hex.name == 'C18')
 
           super
