@@ -483,7 +483,7 @@ module Engine
             name: 'Aichi-tetsudo',
             logo: '18_tokaido/ARC',
             simple_logo: '18_tokaido/ARC.alt',
-            tokens: [0, 40, 60],
+            tokens: [0, 40],
             coordinates: 'F10',
             color: '#2f2f9f',
             text_color: 'white',
@@ -536,7 +536,7 @@ module Engine
         def init_round
           Engine::Round::Draft.new(
             self,
-            [Engine::Step::CompanyPendingPar, G18Tokaido::Step::DraftDistribution],
+            [G18Tokaido::Step::DraftDistribution],
             snake_order: true
           )
         end
