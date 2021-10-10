@@ -18,12 +18,9 @@ module Engine
           end
 
           def process_buy_company(action)
+            super
             entity = action.entity
             company = action.company
-            price = action.price
-            owner = company.owner
-
-            buy_company(entity, company, price, owner)
             # Single quote style is objectively inferior, rubocop, and whoever agreed to that should
             # feel bad about themselves and their life choices, but I'm not going to fight you on this
             process_token(entity, company) if company.id == 'SMT'

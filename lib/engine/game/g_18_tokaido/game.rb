@@ -2,9 +2,8 @@
 
 require_relative '../base'
 require_relative 'meta'
-require_relative 'step/draft_distribution'
 require_relative 'step/buy_company'
-require_relative '../../step/company_pending_par'
+require_relative 'step/draft_distribution'
 
 module Engine
   module Game
@@ -198,6 +197,8 @@ module Engine
           'M5' => 'Sendai',
         }.freeze
 
+        LAYOUT = :flat
+
         HEXES = {
           white: {
             %w[D10 E7 E11 E13 F4 G9 K7 L4] => '',
@@ -251,8 +252,6 @@ module Engine
               'offboard=revenue:yellow_40|brown_50|gray_80;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
-
-        LAYOUT = :flat
 
         PHASES = [
           {
@@ -549,8 +548,6 @@ module Engine
           @draft_finished = true
         end
 
-        SELL_BUY_ORDER = :sell_buy
-
         def reorder_players_by_cash
           current_order = @players.dup
           if @reverse
@@ -572,6 +569,8 @@ module Engine
           reorder_players_by_cash
           stock_round
         end
+
+        SELL_BUY_ORDER = :sell_buy
 
         def stock_round
           Engine::Round::Stock.new(self, [

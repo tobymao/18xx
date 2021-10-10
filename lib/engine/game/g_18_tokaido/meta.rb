@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :prealpha
         PROTOTYPE = true
+        DEPENDS_ON = '18 Los Angeles'
 
         GAME_TITLE = '18 Tokaido'
         GAME_DESIGNER = 'Douglas Triggs'
