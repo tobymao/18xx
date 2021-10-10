@@ -298,7 +298,7 @@ module Engine
         end
 
         def fish_market
-          @@fish_market ||= company_by_id('FM')
+          @fish_market ||= company_by_id('FM')
         end
 
         def sleeper_train
