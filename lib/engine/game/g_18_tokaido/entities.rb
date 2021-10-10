@@ -6,7 +6,7 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Kyoto-tetsudo',
+            name: 'Kyoto Railway Co.',
             value: 20,
             revenue: 5,
             desc: 'No special ability. Blocks hex D10 while owned by a player.',
@@ -15,11 +15,11 @@ module Engine
             color: nil,
           },
           {
-            name: 'Osakayama Tunnel',
+            name: 'Sasago Railway Tunnel',
             value: 40,
             revenue: 10,
             desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles by ¥20.',
-            sym: 'OT',
+            sym: 'SRT',
             abilities: [
               {
                 type: 'tile_discount',
@@ -86,10 +86,10 @@ module Engine
             name: 'Inoue Masaru',
             value: 100,
             revenue: 0,
-            desc: 'Purchasing player immediately takes a 10% share of the JGR. This does not close the private ' \
+            desc: 'Purchasing player immediately takes a 10% share of the TYR. This does not close the private ' \
                   'company. This private company has no other special ability.',
             sym: 'IM',
-            abilities: [{ type: 'shares', shares: 'JGR_1' }],
+            abilities: [{ type: 'shares', shares: 'TYR_1' }],
             color: nil,
           },
         ].freeze
@@ -98,7 +98,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'SRC',
-            name: "San'yo-tetsudo",
+            name: "San'yo Railway Co.",
             logo: '18_tokaido/SRC',
             simple_logo: '18_tokaido/SRC.alt',
             tokens: [0, 40, 60],
@@ -110,7 +110,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'KRC',
-            name: 'Kansai-tetsudo',
+            name: 'Kansai Railway Co.',
             logo: '18_tokaido/KRC',
             simple_logo: '18_tokaido/KRC.alt',
             tokens: [0, 40, 60],
@@ -123,7 +123,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'ARC',
-            name: 'Aichi-tetsudo',
+            name: 'Aichi Railway Co.',
             logo: '18_tokaido/ARC',
             simple_logo: '18_tokaido/ARC.alt',
             tokens: [0, 40],
@@ -134,10 +134,10 @@ module Engine
           },
           {
             float_percent: 60,
-            sym: 'JGR',
-            name: 'Tetsudo-sho',
-            logo: '18_tokaido/JGR',
-            simple_logo: '18_tokaido/JGR.alt',
+            sym: 'TYR',
+            name: 'Tokyo-Yokohama Railway',
+            logo: '18_tokaido/TYR',
+            simple_logo: '18_tokaido/TYR.alt',
             tokens: [0, 40],
             coordinates: 'I11',
             color: '#ef2f2f',
@@ -147,7 +147,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'NRC',
-            name: 'Nippon-tetsudo',
+            name: 'Nippon Railway Co.',
             logo: '18_tokaido/NRC',
             simple_logo: '18_tokaido/NRC.alt',
             tokens: [0, 40, 60],
@@ -159,10 +159,10 @@ module Engine
           },
           {
             float_percent: 60,
-            sym: 'SR',
-            name: 'Shinano-tetsudo',
-            logo: '18_tokaido/SR',
-            simple_logo: '18_tokaido/SR.alt',
+            sym: 'SHI',
+            name: 'Shinano Railway Co.',
+            logo: '18_tokaido/SHI',
+            simple_logo: '18_tokaido/SHI.alt',
             tokens: [0, 40, 60],
             coordinates: 'J4',
             color: '#efef4f',
