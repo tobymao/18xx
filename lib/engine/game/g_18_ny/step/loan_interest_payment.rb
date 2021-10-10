@@ -18,16 +18,16 @@ module Engine
 
             owed = @game.pay_interest!(entity)
 
-            # This case only occurs if the corporation can't pay all the interest
-            if owed.positive?
-              owed -= entity.cash
-              @log << "#{entity.name} pays #{format_currency(entity.cash)} interest for #{loans}"
-              entity.spend(entity.cash, @game.bank)
+            return unless owed.positive?
 
-              owner = entity.owner
-              owner.spend(owed, @game.bank, check_cash: false)
-              @round.cash_crisis_player = owner if owner.cash.negative?
-            end
+            # This case only occurs if the corporation can't pay all the interest
+            owed -= entity.cash
+            @log << "#{entity.name} pays #{format_currency(entity.cash)} interest for #{loans}"
+            entity.spend(entity.cash, @game.bank)
+
+            owner = entity.owner
+            owner.spend(owed, @game.bank, check_cash: false)
+            @round.cash_crisis_player = owner if owner.cash.negative?
           end
         end
       end

@@ -21,16 +21,14 @@ module Engine
             pass!
             entity = current_entity
 
-            while can_payoff?(entity) || (entity.loans > entity.num_player_shares)
-              @game.repay_loan(entity, entity.loans.first)
-            end
-          
+            @game.repay_loan(entity, entity.loans.first) while can_payoff?(entity) || (entity.loans > entity.num_player_shares)
+
             if entity.cash.negative?
               owner = entity.owner
               owner.spend(entity.cash.abs, @game.bank, check_cash: false)
               @round.cash_crisis_player = owner if owner.cash.negative?
             end
-            
+
             @game.calculate_corporation_interest(entity)
           end
         end
