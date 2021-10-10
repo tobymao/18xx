@@ -25,7 +25,7 @@ module Engine
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%d'
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
-        STARTING_CASH = { 2 => 720, 3 => 550, 4 => 480 }.freeze
+        STARTING_CASH = { 2 => 720, 3 => 540, 4 => 480 }.freeze
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
 
