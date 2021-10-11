@@ -130,93 +130,87 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
-          'A11' => 'Chugoku',
-          'A15' => 'Shikoku',
-          'B8' => 'Maizuru',
-          'B14' => 'Kobe',
-          'C11' => 'Kyoto',
-          'C13' => 'Osaka',
-          'C15' => 'Osaka-wan',
-          'D8' => 'Tsuruga',
-          'D12' => 'Nara',
-          'D14' => 'Sakai',
-          'E5' => 'Nihon-kai',
-          'E9' => 'Biwa-ko',
-          'F6' => 'Kanazawa',
-          'F10' => 'Nagoya',
-          'F12' => 'Ise-wan',
-          'G3' => 'Toyama-wan',
-          'G5' => 'Toyama',
-          'G7' => 'Takayama',
-          'G11' => 'Hamamatsu',
-          'H12' => 'Shizuoka',
-          'I5' => 'Matsumoto',
-          'I9' => 'Saitama',
-          'I11' => 'Yokohama',
-          'J4' => 'Nagano',
-          'J8' => 'Takasaki',
-          'J10' => 'Tokyo',
-          'J12' => 'Tokyo-wan',
+          'A9' => 'Chugoku',
+          'A13' => 'Shikoku',
+          'B6' => 'Maizuru',
+          'B12' => 'Kobe',
+          'C9' => 'Kyoto',
+          'C11' => 'Osaka',
+          'C13' => 'Osaka-wan',
+          'D6' => 'Tsuruga',
+          'D10' => 'Nara',
+          'D12' => 'Sakai',
+          'E3' => 'Nihon-kai',
+          'E7' => 'Biwa-ko',
+          'F4' => 'Kanazawa',
+          'F8' => 'Nagoya',
+          'F10' => 'Ise-wan',
+          'G1' => 'Toyama-wan',
+          'G3' => 'Toyama',
+          'G5' => 'Takayama',
+          'G9' => 'Hamamatsu',
+          'H10' => 'Shizuoka',
+          'I3' => 'Matsumoto',
+          'I7' => 'Saitama',
+          'I9' => 'Yokohama',
+          'J2' => 'Nagano',
+          'J6' => 'Takasaki',
+          'J8' => 'Tokyo',
+          'J10' => 'Tokyo-wan',
           'K1' => 'Niigata',
-          'K9' => 'Tsukuba',
-          'K11' => 'Chiba',
-          'L6' => 'Fukushima',
-          'M3' => 'Aomori',
-          'M5' => 'Sendai',
+          'K7' => 'Tsukuba',
+          'K9' => 'Chiba',
+          'L6' => 'Sendai',
         }.freeze
 
         LAYOUT = :flat
 
         HEXES = {
           white: {
-            %w[D10 E7 E11 E13 F4 G9 K7 L4] => '',
-            %w[B10 B12 C9 F8 H4 H6 H8 H10 I3 I7 J2 J6 K3 K5] => 'upgrade=cost:40,terrain:mountain',
-            %w[B8 D12 D8 D14 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
-            %w[G7] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
-            %w[B14 F6 G5 I11 M5] => 'city=revenue:0',
-            %w[C11 F10] => 'city=revenue:0;label=Y',
+            %w[D8 E5 E9 E11 F2 G7 K5] => '',
+            %w[B8 B10 C7 F6 H2 H4 H6 H8 I1 I5 J4 K3] => 'upgrade=cost:40,terrain:mountain',
+            %w[B6 D10 D6 D12 I3 I7 J6 K7 K9] => 'town=revenue:0',
+            %w[G5] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
+            %w[B12 F4 G3 I9] => 'city=revenue:0',
+            %w[C9 F8] => 'city=revenue:0;label=Y',
           },
           yellow: {
-            ['C13'] =>
+            ['C11'] =>
               'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_1;label=O',
-            ['J10'] =>
+            ['J8'] =>
               'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=T',
-            ['J4'] =>
+            ['J2'] =>
               'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=Y',
-            ['L8'] =>
-              'path=a:1,b:4',
-            ['M7'] =>
-              'path=a:1,b:3',
           },
           gray: {
-            ['A13'] => 'path=a:4,b:5',
-            ['E15'] => 'path=a:2,b:3',
-            ['G11'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:5',
-            ['H12'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:4',
+            ['A11'] => 'path=a:4,b:5',
+            ['E13'] => 'path=a:2,b:3',
+            ['G9'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:5',
+            ['H10'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:4',
           },
           red: {
-            ['A9'] =>
+            ['A7'] =>
               'offboard=revenue:yellow_30|brown_40|gray_50,hide:1,groups:Chuugoku;path=a:4,b:_0;' \
               'path=a:5,b:_0;border=edge:0',
-            ['A11'] =>
+            ['A9'] =>
               'offboard=revenue:yellow_30|brown_40|gray_50,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3',
-            ['A15'] =>
+            ['A13'] =>
               'offboard=revenue:yellow_20|brown_30|gray_40;path=a:4,b:_0',
             ['K1'] =>
               'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0;path=a:1,b:_0',
-            ['M3'] =>
-              'offboard=revenue:yellow_30|brown_40|gray_50;path=a:0,b:_0;path=a:1,b:_0',
+            ['L6'] =>
+              'offboard=revenue:yellow_30|brown_40|gray_50;path=a:1,b:_0;path=a:2,b:_0',
           },
           blue: {
-            ['E9'] => '',
-            ['C15'] => 'offboard=revenue:yellow_30|brown_40|gray_50;path=a:2,b:_0;path=a:3,b:_0',
-            ['E5'] =>
+            ['E7'] => '',
+            ['C13'] => 'offboard=revenue:yellow_30|brown_40|gray_50;path=a:2,b:_0;path=a:3,b:_0',
+            ['E3'] =>
               'offboard=revenue:yellow_20|brown_30|gray_40;path=a:5,b:_0',
-            ['F12'] =>
+            ['F10'] =>
               'offboard=revenue:yellow_20|brown_30|gray_40;path=a:3,b:_0',
-            ['G3'] =>
+            ['G1'] =>
               'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0',
-            ['J12'] =>
+            ['J10'] =>
               'offboard=revenue:yellow_40|brown_50|gray_80;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
