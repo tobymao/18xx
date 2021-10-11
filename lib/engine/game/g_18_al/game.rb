@@ -256,7 +256,6 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4, 'multiplier' => 2 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
-            num: 5,
           },
         ].freeze
 
@@ -514,7 +513,6 @@ module Engine
           setup_company_price_50_to_150_percent
 
           move_ln_corporation if @optional_rules&.include?(:LN_home_city_moved)
-          add_extra_4d if @optional_rules&.include?(:unlimited_4d)
           change_4t_to_hardrust if @optional_rules&.include?(:hard_rust_t4)
 
           @corporations.each do |corporation|
@@ -528,6 +526,12 @@ module Engine
           end
 
           @green_m_tile ||= @tiles.find { |t| t.name == '443a' }
+        end
+
+        def num_trains(train)
+          return train[:num] unless train[:name] == '4D'
+
+          @optional_rules&.include?(:unlimited_4d) ? 8 : 5
         end
 
         def south_and_north_alabama_railroad
@@ -708,16 +712,6 @@ module Engine
           new_hex.tile.add_reservation!(ln, 0, 0)
 
           ln.coordinates = 'C4'
-        end
-
-        def add_extra_4d
-          diesel_trains = @depot.trains.select { |t| t.name == '4D' }
-          diesel = diesel_trains.first
-          (diesel_trains.length + 1).upto(8) do |i|
-            new_4d = diesel.clone
-            new_4d.index = i
-            @depot.add_train(new_4d)
-          end
         end
 
         def change_4t_to_hardrust
