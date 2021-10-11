@@ -1,0 +1,32 @@
+/.env*
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+/build/
+/vendor/
+/public/assets/*
+/public/pinned/*
+
+.tags
+.DS_STORE
+*.swp
+/Gemfile.lock
+
+# rspec failure tracking
+.rspec_status
+
+/log/
+/db/data/
+
+docker-compose.override.yml
+
+db.backup*
+validate*.json
+.pgpass
+
+# RubyMine configfiles
+.idea
