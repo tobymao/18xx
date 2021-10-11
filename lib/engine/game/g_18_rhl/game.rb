@@ -1308,6 +1308,11 @@ module Engine
           super(shares - [twenty_percent], num_shares)
         end
 
+        def player_value(player)
+          # Do not include companies in valuation, as they cannot be sold
+          super - player.companies.sum(&:value)
+        end
+
         private
 
         def base_map
