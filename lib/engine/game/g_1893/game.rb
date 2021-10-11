@@ -496,7 +496,6 @@ module Engine
               type: 'minor',
               tokens: [0],
               logo: '1893/EKB',
-              simple_logo: '1893/EKB.alt',
               coordinates: 'T3',
               city: 0,
               color: :green,
@@ -516,7 +515,6 @@ module Engine
               type: 'minor',
               tokens: [0],
               logo: '1893/KFBE',
-              simple_logo: '1893/KFBE.alt',
               coordinates: 'L3',
               city: 0,
               color: :red,
@@ -527,7 +525,6 @@ module Engine
               type: 'minor',
               tokens: [0],
               logo: '1893/KSZ',
-              simple_logo: '1893/KSZ.alt',
               coordinates: 'P7',
               city: 0,
               color: :green,
@@ -538,7 +535,6 @@ module Engine
               type: 'minor',
               tokens: [0],
               logo: '1893/KBE',
-              simple_logo: '1893/KBE.alt',
               coordinates: 'O4',
               city: 0,
               color: :red,
@@ -549,7 +545,6 @@ module Engine
               type: 'minor',
               tokens: [0],
               logo: '1893/BKB',
-              simple_logo: '1893/BKB.alt',
               coordinates: 'I2',
               city: 0,
               color: :green,
@@ -868,11 +863,18 @@ module Engine
 
         def new_merger_round(count)
           @merger_count = count
-          @log << "-- Merge Round #{@turn}.#{@merger_count} (of 3) --"
+          @log << "-- #{round_description('Merger')} --"
           G1893::Round::Merger.new(self, [
             G1893::Step::PotentialDiscardTrainsAfterMerge,
             G1893::Step::Merger,
           ])
+        end
+
+        def round_description(name, _round_num = nil)
+          return super unless name == 'Merger'
+          return "Merger Round before Stock Round #{@turn + 1}" if @merger_count > 2
+
+          "Merger Round before Operating Round #{@turn}.#{@merger_count}"
         end
 
         def float_str(entity)
@@ -1405,7 +1407,7 @@ module Engine
             gray: {
               ['F1'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0',
               ['F5'] => 'path=a:1,b:2;path=a:3,b:5',
-              ['T7'] => 'path=a:1,b:2;path=a:3,b:5;upgrade=cost:0,terrain:water',
+              ['T7'] => 'path=a:1,b:2;path=a:3,b:5',
               ['F9'] => 'path=a:2,b:0',
               ['H5'] => 'city=revenue:20;path=a:0,b:_0',
               ['H9'] => 'path=a:3,b:1',
@@ -1427,9 +1429,9 @@ module Engine
               ['L5'] => 'city=revenue:0;border=edge:5,type:impassable;upgrade=cost:40,terrain:water;label=K;'\
                         'border=edge:4,type:water,cost:0',
               ['M6'] => 'upgrade=cost:40,terrain:water;border=edge:2,type:impassable',
-              ['O6'] => 'city=revenue:0;upgrade=cost:0,terrain:water;border=edge:1,type:impassable;'\
+              ['O6'] => 'city=revenue:0;border=edge:1,type:impassable;'\
                         'border=edge:2,type:impassable',
-              ['Q6'] => 'upgrade=cost:0,terrain:water;border=edge:0,type:impassable;border=edge:1,type:impassable;'\
+              ['Q6'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;'\
                         'border=edge:2,type:impassable',
               ['S6'] => 'city=revenue:0;upgrade=cost:40,terrain:water;border=edge:3,type:impassable;'\
                         'border=edge:4,type:water,cost:0;label=BX',
