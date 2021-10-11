@@ -206,7 +206,7 @@ module Engine
             @game.after_par(corporation)
             track_action(action, action.corporation, true)
 
-            @log << "Remaining 80% of #{corporation.name} are moved to market"
+            @log << "Remaining 80% of #{corporation.name} is moved to market"
             @game.move_buyable_shares_to_market(corporation)
             @par_rag = nil
           end
