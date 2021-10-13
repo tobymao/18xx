@@ -46,7 +46,8 @@ module Engine
         discount: @discount,
       }
 
-      variants << @variant
+      # Primary variant should be at the head of the list.
+      variants.unshift(@variant)
       @variants = variants.group_by { |h| h[:name] }.transform_values(&:first)
     end
 
