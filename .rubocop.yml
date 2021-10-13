@@ -1,0 +1,171 @@
+require: rubocop-performance
+
+AllCops:
+  TargetRubyVersion: 3.0.2
+  NewCops: enable
+  SuggestExtensions: false
+
+Layout/EndOfLine:
+  EnforcedStyle: lf
+
+Layout/FirstArgumentIndentation:
+  Enabled: false
+
+Layout/FirstArrayElementIndentation:
+  Enabled: false
+
+Layout/FirstHashElementLineBreak:
+  Enabled: true
+
+Layout/LineLength:
+  Max: 130
+  Exclude:
+    - 'assets/js/view/svg_tokens/**/*'
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
+
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: true
+
+Layout/MultilineOperationIndentation:
+  Enabled: false
+
+Layout/SpaceBeforeBrackets:
+  Enabled: false
+
+Lint/MissingSuper: # TODO enable & check offenses
+  Enabled: false
+
+Lint/UnexpectedBlockArity:
+  Enabled: false
+
+Lint/UnusedMethodArgument:
+  Enabled: true
+  AllowUnusedKeywordArguments: true
+
+Lint/UselessMethodDefinition: # TODO enable & check offenses
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/BlockNesting:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+Naming/VariableNumber: # TODO enable & check offenses, default or snake_case?
+  Enabled: false
+  # EnforcedStyle: snake_case
+
+Naming/MethodParameterName:
+  Enabled: false
+
+Performance/AncestorsInclude:
+  Enabled: false
+
+# https://github.com/rubocop/rubocop-performance/issues/99#issuecomment-582560228
+Performance/Caller:
+  Enabled: false
+
+# code readibility trumps performance improvement
+Performance/Casecmp:
+  Enabled: false
+
+# would add many lines, but does not improve performance significantly
+Performance/ChainArrayAllocation:
+  Enabled: false
+
+# code readibility trumps performance improvement
+Performance/CollectionLiteralInLoop:
+  Enabled: false
+
+
+Performance/MapCompact:
+  Enabled: false
+
+# works fine for numbers, might be problematic for strings
+# http://www.albertoalmagro.com/ruby-rangeinclude-vs-rangecover/
+Performance/RangeInclude:
+  Enabled: true
+
+# not safe, performance improvement negligible
+Performance/RedundantEqualityComparisonBlock:
+  Enabled: false
+
+Style/ClassVars:
+  Enabled: false
+
+Style/CollectionCompact:
+  Enabled: false
+
+# all (6) duplicated loops are used on purpose and for good reason
+Style/CombinableLoops:
+  Enabled: false
+
+Style/CommandLiteral:
+  Enabled: true
+  EnforcedStyle: mixed
+
+Style/Documentation:
+  Enabled: false
+
+# unsafe, problems with 1860
+Style/HashEachMethods:
+  Enabled: false
+
+# code readibility: case trumps hash-lookup
+Style/HashLikeCase:
+  Enabled: false
+
+Style/NegatedIfElseCondition:
+  Enabled: false
+
+Style/OptionalBooleanParameter: # TODO enable & check offenses
+  Enabled: false
+
+# conflicts with Style/MutableConstant
+Style/RedundantFreeze:
+  Enabled: false
+
+# enabling would break compiling deps!
+Style/SlicingWithRange:
+  Enabled: false
+
+Style/StringConcatenation:
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  Enabled: false
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/DoubleNegation:
+  Enabled: false

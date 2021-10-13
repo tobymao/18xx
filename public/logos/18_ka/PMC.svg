@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<svg version="1.1" viewBox="-30 -30 60 60" xmlns="http://www.w3.org/2000/svg" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<g><clipPath id="4fa7aa06-4d0f-46a4-9fac-c6b344bafec2"><circle cx="0" cy="0" r="30"></circle></clipPath><g clip-path="url(#4fa7aa06-4d0f-46a4-9fac-c6b344bafec2)"><g transform="rotate(0)"><circle cx="0" cy="0" r="30" fill="#b0e1eb" stroke="none"></circle></g><circle cx="0" cy="0" r="20" fill="#ffffff" stroke="#110a0c" clip-path="url(#4fa7aa06-4d0f-46a4-9fac-c6b344bafec2)"></circle><text font-family="Arial" font-weight="bolder" font-size="16" text-anchor="middle" stroke-width="0.5" stroke="none" fill="rgb(17, 10, 12)" x="0" y="5.5">PMC</text></g><circle cx="0" cy="0" r="30" fill="none" stroke="#5fc2d6" stroke-width="1"></circle></g>
+</svg>
