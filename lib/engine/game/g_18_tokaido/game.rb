@@ -92,35 +92,34 @@ module Engine
             distance: 2,
             price: 80,
             rusts_on: '4',
-            num: 7,
           },
           {
             name: '3',
             distance: 3,
             price: 180,
             rusts_on: '6',
-            num: 5,
           },
           {
             name: '4',
             distance: 4,
             price: 300,
             rusts_on: 'D',
-            num: 4,
           },
           {
             name: '5',
             distance: 5,
             price: 500,
-            num: 3,
             events: [{ 'type' => 'close_companies' }],
           },
-          { name: '6', distance: 6, price: 630, num: 2 },
+          {
+            name: '6',
+            distance: 6,
+            price: 630,
+          },
           {
             name: 'D',
             distance: 999,
             price: 900,
-            num: 20,
             available_on: '6',
             events: [{ 'type' => 'signal_end_game' }],
             discount: { '4' => 200, '5' => 200, '6' => 200 },
@@ -146,6 +145,25 @@ module Engine
         def setup
           @reverse = true
           @d_train_exported = false
+        end
+
+        def num_trains(train)
+          four_players = players.size == 4
+
+          case train[:name]
+          when '2'
+            four_players ? 8 : 7
+          when '3'
+            5
+          when '4'
+            four_players ? 5 : 4
+          when '5'
+            3
+          when '6'
+            2
+          when 'D'
+            20
+          end
         end
 
         def init_round
@@ -176,8 +194,9 @@ module Engine
         end
 
         def priority_deal_player
-          # Don't move around priority deal marker; only changes when players are reordered at beginning of stock round
-          players.first
+          players.first if @reverse
+
+          players.min_by { |p| p.cash }
         end
 
         def new_stock_round

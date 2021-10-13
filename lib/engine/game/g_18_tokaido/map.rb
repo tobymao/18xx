@@ -88,7 +88,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' =>
-              'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
+              'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
               'path=a:4,b:_0;path=a:5,b:_0;label=O',
           },
           'X20' =>
@@ -124,7 +124,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' =>
-              'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
+              'city=revenue:100,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
               'path=a:4,b:_0;path=a:5,b:_0;label=T',
           },
         }.freeze
@@ -139,7 +139,7 @@ module Engine
           'C13' => 'Osaka-wan',
           'D6' => 'Tsuruga',
           'D10' => 'Nara',
-          'D12' => 'Sakai',
+          'D12' => 'Wakayama',
           'E3' => 'Nihon-kai',
           'E7' => 'Biwa-ko',
           'F4' => 'Kanazawa',
@@ -151,7 +151,7 @@ module Engine
           'G9' => 'Hamamatsu',
           'H10' => 'Shizuoka',
           'I3' => 'Matsumoto',
-          'I7' => 'Saitama',
+          'I7' => 'Hachioji',
           'I9' => 'Yokohama',
           'J2' => 'Nagano',
           'J6' => 'Takasaki',
@@ -190,28 +190,28 @@ module Engine
           },
           red: {
             ['A7'] =>
-              'offboard=revenue:yellow_30|brown_40|gray_50,hide:1,groups:Chuugoku;path=a:4,b:_0;' \
+              'offboard=revenue:yellow_30|green_40|brown_60|gray_80,hide:1,groups:Chuugoku;path=a:4,b:_0;' \
               'path=a:5,b:_0;border=edge:0',
             ['A9'] =>
-              'offboard=revenue:yellow_30|brown_40|gray_50,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3',
+              'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3',
             ['A13'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:4,b:_0',
+              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:4,b:_0',
             ['K1'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0;path=a:1,b:_0',
+              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:1,b:_0',
             ['L6'] =>
-              'offboard=revenue:yellow_30|brown_40|gray_50;path=a:1,b:_0;path=a:2,b:_0',
+              'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:1,b:_0;path=a:2,b:_0',
           },
           blue: {
             ['E7'] => '',
-            ['C13'] => 'offboard=revenue:yellow_30|brown_40|gray_50;path=a:2,b:_0;path=a:3,b:_0',
+            ['C13'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:2,b:_0;path=a:3,b:_0',
             ['E3'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:5,b:_0',
+              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:5,b:_0',
             ['F10'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:3,b:_0',
+              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:3,b:_0',
             ['G1'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0',
+              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0',
             ['J10'] =>
-              'offboard=revenue:yellow_40|brown_50|gray_80;path=a:2,b:_0;path=a:3,b:_0',
+              'offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
       end

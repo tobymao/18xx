@@ -15,7 +15,7 @@ module Engine
         GAME_TITLE = '18 Tokaido'
         GAME_DESIGNER = 'Douglas Triggs'
         GAME_LOCATION = 'Central Japan'
-        # GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Tokaido'
         # GAME_RULES_URL = ''
 
         PLAYER_RANGE = [2, 4].freeze
