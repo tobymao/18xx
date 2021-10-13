@@ -287,7 +287,7 @@ module Engine
             sym: 'P16',
             value: 0,
             revenue: 0,
-            desc: 'CAN NOT BE AQUIRED. Tax Haven. As a stock round action, under the direction and funded by the '\
+            desc: 'CAN NOT BE ACQUIRED. Tax Haven. As a stock round action, under the direction and funded by the '\
                   'owning player, the off-shore Tax Haven may purchase an available share certificate and place it '\
                   'onto P16’s charter. The certificate is not counted for determining directorship of a company. '\
                   'The share held in the tax haven does NOT count against the 60% share limit for purchasing '\
