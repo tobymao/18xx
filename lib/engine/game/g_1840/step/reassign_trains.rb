@@ -44,7 +44,7 @@ module Engine
           end
 
           def help_text
-            'Select new corporations for each train'
+            'Select a line for each tram'
           end
 
           def process_reassign_trains(action)
