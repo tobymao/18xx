@@ -122,6 +122,7 @@ module Engine
             price: 40,
             rusts_on: '8H',
             reserved: true,
+            no_local: true,
           },
           {
             name: '4H',
