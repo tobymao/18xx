@@ -169,6 +169,18 @@ module Engine
             text_color: 'black',
             reservation_color: nil,
           },
+          {
+            float_percent: 60,
+            sym: 'NAN',
+            name: 'Nanao Railway Co.',
+            logo: '18_tokaido/NAN',
+            simple_logo: '18_tokaido/NAN.alt',
+            tokens: [0, 40, 60],
+            coordinates: 'F4',
+            color: '#7f9f9f',
+            text_color: 'white',
+            reservation_color: nil,
+          },
         ].freeze
       end
     end

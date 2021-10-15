@@ -147,6 +147,10 @@ module Engine
           @d_train_exported = false
         end
 
+        def cert_limit
+          (8 * corporations.size / players.size).to_i
+        end
+
         def num_trains(train)
           four_players = players.size == 4
 
@@ -164,6 +168,17 @@ module Engine
           when 'D'
             20
           end
+        end
+
+        def init_corporations(stock_market)
+          corporations = super(stock_market)
+
+          unless @optional_rules&.include?(:advanced_game) || players.size > 3
+            removed = corporations.delete_at(rand % 6 + 1)
+            @log << "Removed #{removed.full_name}"
+          end
+
+          corporations
         end
 
         def init_round
@@ -196,7 +211,7 @@ module Engine
         def priority_deal_player
           players.first if @reverse
 
-          players.min_by { |p| p.cash }
+          players.min_by(&:cash)
         end
 
         def new_stock_round

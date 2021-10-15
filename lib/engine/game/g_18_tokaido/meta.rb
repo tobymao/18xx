@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         PROTOTYPE = true
         DEPENDS_ON = '18 Los Angeles'
 
@@ -19,6 +19,14 @@ module Engine
         # GAME_RULES_URL = ''
 
         PLAYER_RANGE = [2, 4].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :advanced_game,
+            short_name: 'Advanced game',
+            players: [2, 3],
+            desc: 'Skips removing a random corporation',
+          },
+        ].freeze
       end
     end
   end
