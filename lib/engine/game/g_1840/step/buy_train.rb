@@ -58,8 +58,8 @@ module Engine
 
           def cheapest_train_price(corporation)
             cheapest_train = buyable_trains(corporation).min_by(&:price)
-            cheapeast_variant = buyable_train_variants(cheapest_train, corporation).first
-            cheapeast_variant[:price]
+            cheapest_variant = buyable_train_variants(cheapest_train, corporation).first
+            cheapest_variant[:price]
           end
 
           def try_take_player_loan(player, cost)
@@ -77,7 +77,7 @@ module Engine
           end
 
           def help
-            'You can only assign one train to a line corporation'
+            'You can only assign one tram to a line'
           end
 
           def check_for_cheapest_train(entity, train); end
