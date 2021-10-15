@@ -25,14 +25,14 @@ module Engine
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%d'
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
-        STARTING_CASH = { 2 => 720, 3 => 550, 4 => 480 }.freeze
+        STARTING_CASH = { 2 => 720, 3 => 540, 4 => 480 }.freeze
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[75 80 85 90 100 110 125 140 160 180 200 225 250 275 300 325 360 400],
-          %w[70 75 80 85 95p 105 115 130 145 160 180 200 225 250 275 300 325 360],
-          %w[65 70 75 80p 85 95 105 115 130 145 160 180],
+          %w[75 80 85 90 100 110 125 140 160 180 200 225 250 275 300],
+          %w[70 75 80 85 95p 105 115 130 145 160 180 200 225 250 275],
+          %w[65 70 75 80p 85 95 105 115 130 145 160],
           %w[60 65 70p 75 80 85 95 105],
           %w[55 60 65 70 75 80],
           %w[50 55 60 65],
@@ -92,35 +92,34 @@ module Engine
             distance: 2,
             price: 80,
             rusts_on: '4',
-            num: 7,
           },
           {
             name: '3',
             distance: 3,
             price: 180,
             rusts_on: '6',
-            num: 5,
           },
           {
             name: '4',
             distance: 4,
             price: 300,
             rusts_on: 'D',
-            num: 4,
           },
           {
             name: '5',
             distance: 5,
             price: 500,
-            num: 3,
             events: [{ 'type' => 'close_companies' }],
           },
-          { name: '6', distance: 6, price: 630, num: 2 },
+          {
+            name: '6',
+            distance: 6,
+            price: 630,
+          },
           {
             name: 'D',
             distance: 999,
             price: 900,
-            num: 20,
             available_on: '6',
             events: [{ 'type' => 'signal_end_game' }],
             discount: { '4' => 200, '5' => 200, '6' => 200 },
@@ -146,6 +145,40 @@ module Engine
         def setup
           @reverse = true
           @d_train_exported = false
+        end
+
+        def cert_limit
+          (8 * corporations.size / players.size).to_i
+        end
+
+        def num_trains(train)
+          four_players = players.size == 4
+
+          case train[:name]
+          when '2'
+            four_players ? 8 : 7
+          when '3'
+            5
+          when '4'
+            four_players ? 5 : 4
+          when '5'
+            3
+          when '6'
+            2
+          when 'D'
+            20
+          end
+        end
+
+        def init_corporations(stock_market)
+          corporations = super(stock_market)
+
+          unless @optional_rules&.include?(:advanced_game) || players.size > 3
+            removed = corporations.delete_at(rand % 6 + 1)
+            @log << "Removed #{removed.full_name}"
+          end
+
+          corporations
         end
 
         def init_round
@@ -176,8 +209,9 @@ module Engine
         end
 
         def priority_deal_player
-          # Don't move around priority deal marker; only changes when players are reordered at beginning of stock round
-          players.first
+          players.first if @reverse
+
+          players.min_by(&:cash)
         end
 
         def new_stock_round
