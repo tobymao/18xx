@@ -209,7 +209,7 @@ module Engine
         end
 
         def priority_deal_player
-          players.first if @reverse
+          return players.first if @reverse
 
           players.min_by(&:cash)
         end
