@@ -371,7 +371,7 @@ module Engine
           {
             'count' => 2,
             'color' => 'gray',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=OO',
+            'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=OO',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
