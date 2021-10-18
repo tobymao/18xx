@@ -201,7 +201,7 @@ module Engine
             price: 410,
             available_on: '3',
           },
-          '6' => { distance: 7, price: 650 },
+          '6' => { distance: 6, price: 650 },
           '4T' => { distance: 4, price: 480, available_on: '4' },
           '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '4' },
           '7' => { distance: 7, price: 720 },
