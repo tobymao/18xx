@@ -500,7 +500,7 @@ module Engine
         '469' => 'path=a:0,b:1,track:narrow',
       }.freeze
 
-      COLORS = %i[white yellow green brown gray blue greenbrown browngray brownsepia none red purple orange].freeze
+      COLORS = %i[white yellow green brown gray blue sepia greenbrown browngray brownsepia none red purple orange].freeze
     end
   end
 end
