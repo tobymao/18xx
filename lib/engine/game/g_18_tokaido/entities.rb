@@ -9,7 +9,7 @@ module Engine
             name: 'Kyoto Railway Co.',
             value: 20,
             revenue: 5,
-            desc: 'No special ability. Blocks hex D10 while owned by a player.',
+            desc: 'No special ability. Blocks hex D8 while owned by a player.',
             sym: 'KT',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D8'] }],
             color: nil,
