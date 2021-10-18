@@ -9,7 +9,7 @@ module Engine
             name: 'Kyoto Railway Co.',
             value: 20,
             revenue: 5,
-            desc: 'No special ability. Blocks hex D10 while owned by a player.',
+            desc: 'No special ability. Blocks hex D8 while owned by a player.',
             sym: 'KT',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D8'] }],
             color: nil,
@@ -86,10 +86,10 @@ module Engine
             name: 'Inoue Masaru',
             value: 100,
             revenue: 0,
-            desc: 'Purchasing player immediately takes a 10% share of the TYR. This does not close the private ' \
+            desc: 'Purchasing player immediately takes a 10% share of the YSL. This does not close the private ' \
                   'company. This private company has no other special ability.',
             sym: 'IM',
-            abilities: [{ type: 'shares', shares: 'TYR_1' }],
+            abilities: [{ type: 'shares', shares: 'YSL_1' }],
             color: nil,
           },
         ].freeze
@@ -97,10 +97,10 @@ module Engine
         CORPORATIONS = [
           {
             float_percent: 60,
-            sym: 'TYR',
-            name: 'Tokyo-Yokohama Railway',
-            logo: '18_tokaido/TYR',
-            simple_logo: '18_tokaido/TYR.alt',
+            sym: 'YSL',
+            name: 'Yokohama-Shinbashi Line',
+            logo: '18_tokaido/YSL',
+            simple_logo: '18_tokaido/YSL.alt',
             tokens: [0, 40],
             coordinates: 'I9',
             color: '#ef2f2f',
