@@ -131,7 +131,7 @@ module Engine
 
         LOCATION_NAMES = {
           'A9' => 'Chugoku',
-          'A13' => 'Shikoku',
+          'A13' => 'Awaji and Shikoku',
           'B6' => 'Maizuru',
           'B12' => 'Kobe',
           'C9' => 'Kyoto',
@@ -157,10 +157,10 @@ module Engine
           'J6' => 'Takasaki',
           'J8' => 'Tokyo',
           'J10' => 'Tokyo-wan',
-          'K1' => 'Niigata',
+          'K1' => 'Niigata and Tohoku',
           'K7' => 'Tsukuba',
           'K9' => 'Chiba',
-          'L6' => 'Sendai',
+          'L6' => 'Mito and Tohoku',
         }.freeze
 
         LAYOUT = :flat

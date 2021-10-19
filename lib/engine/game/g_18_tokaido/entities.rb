@@ -75,9 +75,9 @@ module Engine
           {
             name: 'Sleeper Train',
             value: 80,
-            revenue: 0,
+            revenue: 15,
             desc: 'Adds ¥10 per city (not town, port, or connection) visited by any one train of the owning ' \
-                  'corporation. Never closes once purchased by a corporation.',
+                  'corporation. Pays no other revenue to a corporation. Never closes once purchased by a corporation.',
             sym: 'ST',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
             color: nil,

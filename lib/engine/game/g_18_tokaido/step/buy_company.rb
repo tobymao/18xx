@@ -18,7 +18,7 @@ module Engine
             end
           end
 
-          def process_fish_market(company)
+          def zero_out_revenue(company)
             company.revenue = 0
           end
 
@@ -27,7 +27,7 @@ module Engine
             entity = action.entity
             company = action.company
             process_token(entity, company) if company.id == 'SMT'
-            process_fish_market(company) if company.id == 'FM'
+            zero_out_revenue(company) if company.id == 'FM' || company.id == 'ST'
           end
         end
       end

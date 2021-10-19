@@ -23,14 +23,18 @@ module Engine
           {
             sym: :pass_priority,
             short_name: 'Pass Priority',
-            players: [2, 3],
             desc: 'player order in stock round determined by order of passing in previous stock round',
           },
           {
             sym: :no_corporation_discard,
             short_name: 'No Discard',
             players: [2, 3],
-            desc: 'skips removing a random corporation (for advanced players)',
+            desc: 'skips removing a random railroad corporation from the game',
+          },
+          {
+            sym: :limited_express,
+            short_name: 'Limited Express',
+            desc: 'removes one of the 6 trains from the game',
           },
         ].freeze
       end

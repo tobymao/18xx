@@ -163,11 +163,11 @@ module Engine
           when '3'
             5
           when '4'
-            four_players ? 5 : 4
+            4
           when '5'
             3
           when '6'
-            2
+            @optional_rules&.include?(:limited_express) ? 2 : 3
           when 'E'
             20
           end
