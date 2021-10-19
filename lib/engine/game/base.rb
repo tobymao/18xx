@@ -769,7 +769,7 @@ module Engine
 
       def previous_action_id_from(action_id)
         # Skips messages and undone actions
-        @raw_all_actions.reverse.find { |a| a['id'] < action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id')
+        @raw_all_actions.reverse.find { |a| a['id'] < action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id') || 0
       end
 
       def next_action_id_from(action_id)
@@ -779,7 +779,7 @@ module Engine
 
       def process_to_action(id)
         @raw_all_actions.each.with_index do |action, index|
-          next if index < last_game_action_id
+          next if index < (@last_processed_action || 0)
           break if index >= id
 
           if action['skip']
