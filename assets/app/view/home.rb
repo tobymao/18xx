@@ -16,16 +16,15 @@ module View
     needs :refreshing, default: nil, store: true
 
     def render
-      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) || user_owns_game?(@user, game) }
+      your_games, other_games = @games.partition do |game|
+        user_in_game?(@user, game) && %w[new active].include?(game['status'])
+      end
 
       children = [
         render_header,
         h(Welcome, show_intro: your_games.size < 2),
         h(Chat, user: @user, connection: @connection),
       ]
-
-      # these will show up in the profile page
-      your_games.reject! { |game| %w[finished archived].include?(game['status']) }
 
       grouped = other_games.group_by { |game| game['status'] }
 
