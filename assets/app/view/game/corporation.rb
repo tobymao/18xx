@@ -362,17 +362,17 @@ module View
         if @game.respond_to?(:reissued?) && @game.reissued?(@corporation) && !num_ipo_shares.empty?
           num_ipo_shares = '* ' + num_ipo_shares
         end
-        dc = @corporation.shares_of(@corporation).count(&:double_cert)
-        dc_reserved = @corporation.reserved_shares.count(&:double_cert)
-        double_certs = dc - dc_reserved
+        num_dc_all = @corporation.shares_of(@corporation).count(&:double_cert)
+        num_dc_reserved = @corporation.reserved_shares.count(&:double_cert)
+        num_dc_avail = num_dc_all - num_dc_reserved
 
         num_treasury_shares = share_number_str(@corporation.num_treasury_shares)
 
         pool_rows = []
-        if !num_ipo_shares.empty? || double_certs.positive? || @corporation.capitalization != :full
+        if !num_ipo_shares.empty? || num_dc_avail.positive? || @corporation.capitalization != :full
           pool_rows << h('tr.ipo', [
             h('td.left', @game.ipo_name(@corporation)),
-            h('td.right', shares_props, ('d' * double_certs) + num_ipo_shares),
+            h('td.right', shares_props, ('d' * num_dc_avail) + num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ])
         end
@@ -386,7 +386,7 @@ module View
         end
 
         if @corporation.reserved_shares.any?
-          flags = (dc_reserved ? 'd ' : '') + 'R'
+          flags = ('d' * num_dc_reserved) + 'R'
           pool_rows << h('tr.reserved', [
             h('td.left', @game.ipo_reserved_name),
             h('td.right', shares_props, flags + ' ' + share_number_str(@corporation.num_ipo_reserved_shares)),
