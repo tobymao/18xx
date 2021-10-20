@@ -285,11 +285,11 @@ module Engine
 
         EVENTS_TEXT = {
           'close_concessions' =>
-            ['Concessions close', 'All concessions close without compensation, major companies now float at 50%'],
+            ['Concessions close', 'All concessions close without compensation, major companies float at 50%'],
           'full_capitalisation' =>
-            ['Full capitalisation', 'Major companies now receives full capitalisation when floated'],
+            ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
           'phase_revenue' =>
-            ['Phase revenue', 'P15-HR and P20-C&WR closes if not acquired by a major company'],
+            ['Phase revenue companies close', 'P15-HR and P20-C&WR close if not owned by a major company'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -734,14 +734,14 @@ module Engine
         end
 
         def event_full_capitalisation!
-          @log << '-- Event: Major companies now receives full capitalisation when floated --'
+          @log << '-- Event: Major companies receive full capitalisation when floated --'
           @corporations.select { |c| !c.floated? && c.type == :major }.each do |corporation|
             corporation.capitalization = :full
           end
         end
 
         def event_phase_revenue!
-          @log << '-- Event: Phase revenue companies now close with money returned to the bank --'
+          @log << '-- Event: Phase revenue companies close with money returned to the bank --'
           self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
             company = @companies.find { |c| c.id == company_id }
             next if !company || company&.closed? || !@phase_revenue[company_id]
