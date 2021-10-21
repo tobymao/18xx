@@ -812,7 +812,12 @@ module Engine
         def place_home_token(corporation)
           return if corporation.tokens.first&.used
           return unless can_place_home_token?(corporation)
-          return super unless corporation.coordinates.is_a?(Array)
+
+          unless corporation.coordinates.is_a?(Array)
+            super
+            @graph.clear
+            return
+          end
 
           corporation.coordinates.each do |coord|
             hex = hex_by_id(coord)
