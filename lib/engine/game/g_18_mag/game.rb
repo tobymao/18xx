@@ -28,7 +28,7 @@ module Engine
           6 => 0,
         }.freeze
         CAPITALIZATION = :full
-        MUST_SELL_IN_BLOCKS = false
+        MUST_SELL_IN_BLOCKS = true
         LAYOUT = :pointy
         COMPANIES = [].freeze
 
