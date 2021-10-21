@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../base'
+require_relative '../company_price_up_to_face'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
@@ -14,6 +15,7 @@ module Engine
         include_meta(G18Tokaido::Meta)
         include Entities
         include Map
+        include CompanyPriceUpToFace
 
         register_colors(green: '#237333',
                         red: '#d81e3e',
@@ -25,12 +27,12 @@ module Engine
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%d'
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
-        STARTING_CASH = { 2 => 720, 3 => 540, 4 => 480 }.freeze
+        STARTING_CASH = { 2 => 820, 3 => 550, 4 => 480 }.freeze
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[75 80 85 90 100 110 125 140 160 180 200 225 250 275 300],
+          %w[75 80 85 95 105 115 130 145 160 180 200 225 250 275 300],
           %w[70 75 80 85 95p 105 115 130 145 160 180 200 225 250 275],
           %w[65 70 75 80p 85 95 105 115 130 145 160],
           %w[60 65 70p 75 80 85 95 105],
@@ -78,8 +80,8 @@ module Engine
             operating_rounds: 3,
           },
           {
-            name: 'D',
-            on: 'D',
+            name: 'E',
+            on: 'E',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
@@ -103,7 +105,7 @@ module Engine
             name: '4',
             distance: 4,
             price: 300,
-            rusts_on: 'D',
+            rusts_on: 'E',
           },
           {
             name: '5',
@@ -117,7 +119,7 @@ module Engine
             price: 630,
           },
           {
-            name: 'D',
+            name: 'E',
             distance: 999,
             price: 900,
             available_on: '6',
@@ -129,8 +131,8 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'signal_end_game' => [
             'Triggers End Game',
-            'Game ends after next set of ORs when D train purchased or exported, ' \
-            'purchasing a D train triggers a stock round immediately after current OR',
+            'Game ends after next set of ORs when E train purchased or exported, ' \
+            'purchasing a E train triggers a stock round immediately after current OR',
           ]
         )
 
@@ -144,7 +146,8 @@ module Engine
 
         def setup
           @reverse = true
-          @d_train_exported = false
+          @e_train_exported = false
+          setup_company_price_up_to_face
         end
 
         def cert_limit
@@ -160,12 +163,12 @@ module Engine
           when '3'
             5
           when '4'
-            four_players ? 5 : 4
+            4
           when '5'
             3
           when '6'
-            2
-          when 'D'
+            @optional_rules&.include?(:limited_express) ? 2 : 3
+          when 'E'
             20
           end
         end
@@ -173,7 +176,7 @@ module Engine
         def init_corporations(stock_market)
           corporations = super(stock_market)
 
-          unless @optional_rules&.include?(:advanced_game) || players.size > 3
+          unless @optional_rules&.include?(:no_corporation_discard) || players.size > 3
             removed = corporations.delete_at(rand % 6 + 1)
             @log << "Removed #{removed.full_name}"
           end
@@ -197,26 +200,29 @@ module Engine
           @draft_finished = true
         end
 
-        def reorder_players_by_cash
-          current_order = @players.dup
+        def reorder_players
           if @reverse
             @reverse = false
             @players.reverse!
           else
-            @players.sort_by! { |p| [p.cash, current_order.index(p)] }
+            super
           end
-          @log << "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+        end
+
+        def next_sr_player_order
+          return :first_to_pass if @optional_rules&.include?(:pass_priority)
+
+          super
         end
 
         def priority_deal_player
-          return players.first if @reverse
+          return nil if @reverse
 
-          players.min_by(&:cash)
+          super
         end
 
         def new_stock_round
           @log << "-- #{round_description('Stock')} --"
-          reorder_players_by_cash
           stock_round
         end
 
@@ -247,21 +253,20 @@ module Engine
             case @round
             when Engine::Round::Draft
               init_round_finished
+              reorder_players
               new_stock_round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               @need_last_stock_round = false
+              reorder_players
               new_operating_round
             when Engine::Round::Operating
-              if @need_last_stock_round
-                @turn += 1
-                new_stock_round
-              elsif @round.round_num < @operating_rounds
-                new_operating_round(@round.round_num + 1)
-              else
+              if @need_last_stock_round || @round.round_num >= @operating_rounds
                 @turn += 1
                 or_set_finished
                 new_stock_round
+              else
+                new_operating_round(@round.round_num + 1)
               end
             end
         end
@@ -269,7 +274,8 @@ module Engine
         def event_signal_end_game!
           @need_last_stock_round = true
           game_end_check
-          @log << 'First D train bought/exported, end game triggered'
+          @operating_rounds = @round.round_num if round.class.short_name != 'SR'
+          @log << 'First E train bought/exported, end game triggered'
         end
 
         def game_ending_description
@@ -277,7 +283,7 @@ module Engine
           return unless after
 
           ending_or = @need_last_stock_round && round.class.short_name != 'SR' ? turn + 1 : turn
-          "Game ends at conclusion of OR #{ending_or}.#{operating_rounds}"
+          "Game ends at conclusion of OR #{ending_or}.3"
         end
 
         def end_now?(after)
@@ -287,9 +293,9 @@ module Engine
         end
 
         def or_set_finished
-          return if @d_train_exported
+          return if @e_train_exported
 
-          @d_train_exported = true if depot.upcoming.first.name == 'D'
+          @e_train_exported = true if depot.upcoming.first.name == 'E'
           depot.export!
         end
 

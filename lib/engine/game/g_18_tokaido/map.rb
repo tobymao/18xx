@@ -78,7 +78,7 @@ module Engine
           },
           'X13' =>
           {
-            'count' => 2,
+            'count' => 1,
             'color' => 'brown',
             'code' =>
               'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=O',
@@ -114,7 +114,7 @@ module Engine
           },
           'X23' =>
           {
-            'count' => 2,
+            'count' => 1,
             'color' => 'brown',
             'code' =>
               'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=T',
@@ -131,7 +131,7 @@ module Engine
 
         LOCATION_NAMES = {
           'A9' => 'Chugoku',
-          'A13' => 'Shikoku',
+          'A13' => 'Awaji and Shikoku',
           'B6' => 'Maizuru',
           'B12' => 'Kobe',
           'C9' => 'Kyoto',
@@ -157,10 +157,10 @@ module Engine
           'J6' => 'Takasaki',
           'J8' => 'Tokyo',
           'J10' => 'Tokyo-wan',
-          'K1' => 'Niigata',
+          'K1' => 'Niigata and Tohoku',
           'K7' => 'Tsukuba',
           'K9' => 'Chiba',
-          'L6' => 'Sendai',
+          'L6' => 'Mito and Tohoku',
         }.freeze
 
         LAYOUT = :flat

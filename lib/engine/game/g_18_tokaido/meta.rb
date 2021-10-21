@@ -21,10 +21,20 @@ module Engine
         PLAYER_RANGE = [2, 4].freeze
         OPTIONAL_RULES = [
           {
-            sym: :advanced_game,
-            short_name: 'Advanced game',
+            sym: :pass_priority,
+            short_name: 'Pass Priority',
+            desc: 'player order in stock round determined by order of passing in previous stock round',
+          },
+          {
+            sym: :no_corporation_discard,
+            short_name: 'No Discard',
             players: [2, 3],
-            desc: 'Skips removing a random corporation',
+            desc: 'skips removing a random railroad corporation from the game',
+          },
+          {
+            sym: :limited_express,
+            short_name: 'Limited Express',
+            desc: 'removes one of the 6 trains from the game',
           },
         ].freeze
       end

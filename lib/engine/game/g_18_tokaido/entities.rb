@@ -75,9 +75,9 @@ module Engine
           {
             name: 'Sleeper Train',
             value: 80,
-            revenue: 0,
+            revenue: 15,
             desc: 'Adds ¥10 per city (not town, port, or connection) visited by any one train of the owning ' \
-                  'corporation. Never closes once purchased by a corporation.',
+                  'corporation. Pays no other revenue to a corporation. Never closes once purchased by a corporation.',
             sym: 'ST',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
             color: nil,
@@ -86,10 +86,10 @@ module Engine
             name: 'Inoue Masaru',
             value: 100,
             revenue: 0,
-            desc: 'Purchasing player immediately takes a 10% share of the TYR. This does not close the private ' \
+            desc: 'Purchasing player immediately takes a 10% share of the YSL. This does not close the private ' \
                   'company. This private company has no other special ability.',
             sym: 'IM',
-            abilities: [{ type: 'shares', shares: 'TYR_1' }],
+            abilities: [{ type: 'shares', shares: 'YSL_1' }],
             color: nil,
           },
         ].freeze
@@ -97,10 +97,10 @@ module Engine
         CORPORATIONS = [
           {
             float_percent: 60,
-            sym: 'TYR',
-            name: 'Tokyo-Yokohama Railway',
-            logo: '18_tokaido/TYR',
-            simple_logo: '18_tokaido/TYR.alt',
+            sym: 'YSL',
+            name: 'Yokohama-Shinbashi Line',
+            logo: '18_tokaido/YSL',
+            simple_logo: '18_tokaido/YSL.alt',
             tokens: [0, 40],
             coordinates: 'I9',
             color: '#ef2f2f',
