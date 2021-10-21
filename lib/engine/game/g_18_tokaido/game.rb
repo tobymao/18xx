@@ -261,16 +261,12 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
-              if @need_last_stock_round
+              if @need_last_stock_round || @round.round_num >= @operating_rounds
                 @turn += 1
                 or_set_finished
                 new_stock_round
-              elsif @round.round_num < @operating_rounds
-                new_operating_round(@round.round_num + 1)
               else
-                @turn += 1
-                or_set_finished
-                new_stock_round
+                new_operating_round(@round.round_num + 1)
               end
             end
         end
