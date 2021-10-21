@@ -860,7 +860,7 @@ module Engine
             name: 'Pyramid Scheme',
             value: 60,
             revenue: 0,
-            desc: 'Does nothing',
+            desc: 'Does nothing. Min bid of $5',
             sym: 'P14',
             abilities: [],
             color: 'green',
@@ -1922,6 +1922,13 @@ module Engine
             G18USA::Step::DenverTrack,
             G18USA::Step::HomeToken,
             G18USA::Step::BuySellParShares,
+          ])
+        end
+
+        def new_auction_round
+          log << "Seed Money for initial auction is #{format_currency(self.class::SEED_MONEY)}" unless @round
+          Engine::Round::Auction.new(self, [
+            G18USA::Step::SelectionAuction,
           ])
         end
 
