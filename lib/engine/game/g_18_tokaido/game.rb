@@ -263,6 +263,7 @@ module Engine
             when Engine::Round::Operating
               if @need_last_stock_round
                 @turn += 1
+                or_set_finished
                 new_stock_round
               elsif @round.round_num < @operating_rounds
                 new_operating_round(@round.round_num + 1)
