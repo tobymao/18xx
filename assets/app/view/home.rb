@@ -5,6 +5,7 @@ require 'lib/settings'
 require 'lib/storage'
 require 'view/chat'
 require 'view/game_row'
+require 'view/game_row_filters'
 require 'view/welcome'
 
 module View
@@ -51,6 +52,7 @@ module View
       render_row(children, 'New Games', grouped['new'], :new) if @user
       render_row(children, 'Active Games', grouped['active'], :active)
       render_row(children, 'Finished Games', grouped['finished'], :finished)
+      children << h(GameRowFilters)
 
       game_refresh
 
