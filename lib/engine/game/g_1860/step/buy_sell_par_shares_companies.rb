@@ -32,6 +32,8 @@ module Engine
             return false if company_buy_action && company_buy_action.company.sym == 'FFC'
             return true if company_buy_action && @game.phase.available?('6')
 
+            return false unless par_action
+
             corp = par_action.corporation
             xchange_company = player.companies.find do |company|
               company.abilities.any? do |ability|
