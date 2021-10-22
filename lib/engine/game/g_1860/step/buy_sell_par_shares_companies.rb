@@ -28,9 +28,11 @@ module Engine
           def last_chance_to_exchange?(player)
             par_action = @round.current_actions.find { |x| x.is_a?(Action::Par) }
             company_buy_action = @round.current_actions.find { |x| x.is_a?(Action::BuyCompany) }
-            return false if !par_action || !company_buy_action
+            return false if !par_action && !company_buy_action
             return false if company_buy_action && company_buy_action.company.sym == 'FFC'
             return true if company_buy_action && @game.phase.available?('6')
+
+            return false unless par_action
 
             corp = par_action.corporation
             xchange_company = player.companies.find do |company|
