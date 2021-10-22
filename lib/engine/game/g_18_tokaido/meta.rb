@@ -23,6 +23,7 @@ module Engine
           {
             sym: :pass_priority,
             short_name: 'Pass Priority',
+            players: [3, 4],
             desc: 'player order in stock round determined by order of passing in previous stock round',
           },
           {
