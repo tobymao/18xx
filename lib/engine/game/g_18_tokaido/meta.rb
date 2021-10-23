@@ -16,7 +16,8 @@ module Engine
         GAME_DESIGNER = 'Douglas Triggs'
         GAME_LOCATION = 'Central Japan'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Tokaido'
-        # GAME_RULES_URL = ''
+        # For now
+        GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/18Tokaido'
 
         PLAYER_RANGE = [2, 4].freeze
         OPTIONAL_RULES = [
