@@ -332,6 +332,7 @@ module Engine
 
         def timeline
           @timeline = [
+            'First stock round is in reverse order of draft order',
             'At the end of each set of ORs the next available train will be exported (removed, triggering ' \
             'phase change as if purchased)',
           ]
