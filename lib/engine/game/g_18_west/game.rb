@@ -13,10 +13,10 @@ module Engine
         include Entities
         include Map
 
-        CURRENCY_FORMAT_STR = '$%d'
-        CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
-        STARTING_CASH = { 2 => 750, 3 => 500, 4 => 375, 5 => 300, 6 => 250 }.freeze
         BANK_CASH = 12_000
+        CURRENCY_FORMAT_STR = '$%d'
+        STARTING_CASH = { 2 => 750, 3 => 500, 4 => 375, 5 => 300, 6 => 250 }.freeze
+        CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
         MARKET = [
           %w[0c 50 60 70p 80p 90p 100p 110 125 140 160 180 200 225 250 275 300 330 360 400],
@@ -87,7 +87,7 @@ module Engine
             name: '4',
             distance: 4,
             price: 300,
-            rusts_on: 'D',
+            rusts_on: '4D',
             num: 5,
           },
           {
@@ -107,12 +107,17 @@ module Engine
             name: '4D',
             distance: 999,
             price: 1100,
-            available_on: '6',
-            events: [{ 'type' => 'signal_end_game' }],
-            discount: { '4' => 200, '5' => 200, '6' => 200 },
             num: 20,
           },
         ].freeze
+
+        def setup
+          super
+        end
+
+        def stock_round; end
+
+        def operating_round(round_num); end
       end
     end
   end

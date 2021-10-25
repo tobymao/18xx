@@ -4,17 +4,7 @@ module Engine
   module Game
     module G18West
       module Entities
-        COMPANIES = [
-          {
-            name: 'DELETE',
-            value: 20,
-            revenue: 5,
-            desc: 'Delete this later when removing the auction',
-            sym: 'DELETE',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D8'] }],
-            color: nil,
-          },
-        ].freeze
+        COMPANIES = [].freeze
 
         CORPORATIONS = [
           {
