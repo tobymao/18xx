@@ -156,7 +156,7 @@ module Engine
         HEXES = {
           white: {
             %w[
-              B7 B13 B15 B17 B19 B21 C14 C16 C18 C20 C22 D1 D5 D17 D19 D21 D25 E16 E18 E20 E22 E24 E26 F1 G16 G18 G24 H17 H19 I6
+              B7 B13 B15 B17 B19 B21 C14 C16 C18 C20 D1 D5 D17 D19 D21 D25 E16 E18 E20 E22 E24 F1 G16 G18 G24 H17 H19 I6
               I10 I16 I18 I20 I22 J15 J17 J19 J21 J23 K14 K16 K22 L13 L15 L17
             ] => '',
             %w[F5 F7 F11 F13 F17 F19] => 'path=a:1,b:4;',
