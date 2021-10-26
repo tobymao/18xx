@@ -14,5 +14,27 @@ module Lib
 
       "#{route}?#{k}=#{v}"
     end
+
+    class URLSearchParams
+      attr_reader :unsupported
+
+      def initialize
+        @unsupported = `typeof URLSearchParams === 'undefined'`
+        @native = Native(`new URLSearchParams(window.location.search)`) unless @unsupported
+      end
+
+      def [](key)
+        @native&.get(key)
+      end
+
+      def []=(key, value)
+        @native&.set(key, value) if value
+        @native&.delete(key) unless value
+      end
+
+      def to_query_string
+        @native&.toString() || ''
+      end
+    end
   end
 end
