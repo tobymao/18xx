@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'lib/params'
 require 'view/game_card'
 
 module View
@@ -22,12 +23,20 @@ module View
       ])
     end
 
+    private
+
     def render_header(header)
       children = [h(:h2, header)]
-      p = page.to_i
+      p = url_search_params[@type].to_i
       @offset = @type == :hotseat ? (p * @limit) : 0
-      children << render_more('Prev', "?#{@type}=#{p - 1}") if p.positive?
-      children << render_more('Next', "?#{@type}=#{p + 1}") if @game_row_games.size > @offset + @limit
+      if p.positive?
+        url_search_params[@type] = p - 1
+        children << render_more('Prev', "?#{url_search_params.to_query_string}")
+      end
+      if @game_row_games.size > @offset + @limit
+        url_search_params[@type] = p + 1
+        children << render_more('Next', "?#{url_search_params.to_query_string}")
+      end
 
       props = {
         style: {
@@ -44,7 +53,7 @@ module View
     def render_more(text, params)
       click = lambda do
         get_games(params)
-        store(:app_route, "#{@app_route.split('?').first}#{params}")
+        store(:app_route, "#{@app_route.split('?').first}#{params}", skip: true)
       end
       props = {
         attrs: {
@@ -67,12 +76,8 @@ module View
       @game_row_games.slice(@offset, @limit).map { |game| h(GameCard, gdata: game, user: @user) }
     end
 
-    private
-
-    def page
-      return 0 if `typeof URLSearchParams === 'undefined'` # rubocop:disable Lint/LiteralAsCondition
-
-      `(new URLSearchParams(window.location.search)).get(#{@type})` || 0
+    def url_search_params
+      @url_search_params ||= Lib::Params::URLSearchParams.new
     end
   end
 end

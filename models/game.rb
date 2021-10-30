@@ -16,6 +16,7 @@ class Game < Base
       SELECT *
       FROM games
       WHERE status = '%<status>s'
+        AND (:title IS NULL OR :title = title)
       ORDER BY created_at DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
@@ -30,6 +31,7 @@ class Game < Base
       LEFT JOIN user_games ug
         ON g.id = ug.id
       WHERE g.status = '%<status>s'
+        AND (:title IS NULL OR :title = g.title)
         AND ug.id IS NULL
         AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY g.created_at DESC
@@ -79,14 +81,15 @@ class Game < Base
   # rubocop:enable Style/FormatString
 
   def self.home_games(user, **opts)
-    opts = {
+    kwargs = {
       new_offset: opts['new'],
       active_offset: opts['active'],
       finished_offset: opts['finished'],
     }.transform_values { |v| v&.to_i || 0 }
 
-    opts[:user_id] = user.id if user
-    fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **opts,).all.sort_by(&:id).reverse
+    kwargs[:user_id] = user.id if user
+    kwargs[:title] = opts['title'] != '' ? opts['title'] : nil
+    fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs,).all.sort_by(&:id).reverse
   end
 
   SETTINGS = %w[
