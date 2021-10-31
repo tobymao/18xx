@@ -1950,6 +1950,14 @@ module Engine
         0
       end
 
+      def loan_value(prepay_interest: false)
+        0
+      end
+
+      def num_emergency_loans(entity, debt)
+        0
+      end
+
       def corporation_opts
         {}
       end

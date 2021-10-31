@@ -165,23 +165,23 @@ module Engine
         end
 
         def new_auction_round
-          Round::Auction.new(self, [
+          Engine::Round::Auction.new(self, [
             G18NY::Step::CompanyPendingPar,
             Engine::Step::WaterfallAuction,
           ])
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             G18NY::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
-          calculate_interest
-          Round::Operating.new(self, [
+          G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
             Engine::Step::BuyCompany,
+            G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
             G18NY::Step::Track,
@@ -398,6 +398,21 @@ module Engine
           @corporations.each { |c| calculate_corporation_interest(c) }
         end
 
+        def emergency_issuable_bundles(corp)
+          bundles = bundles_for_corporation(corp, corp)
+
+          num_issuable_shares = [5 - corp.num_market_shares, corp.num_player_shares].min
+          bundles.reject! { |bundle| bundle.num_shares > num_issuable_shares }
+
+          bundles.each do |bundle|
+            directions = [:left] * (1 + bundle.num_shares)
+            bundle.share_price = stock_market.find_share_price(corp, directions).price
+          end
+          
+          bundles.sort_by!(&:price)
+          return bundles
+        end
+
         def interest_owed_for_loans(loans)
           interest_rate * loans
         end
@@ -412,6 +427,14 @@ module Engine
 
         def maximum_loans(entity)
           entity.num_player_shares
+        end
+
+        def loan_value(prepay_interest: false)
+          @loan_value - (prepay_interest ? interest_rate : 0)
+        end
+
+        def take_loan(entity, prepay_interest: false)
+          take_loan(entity, loans.first, prepay_interest)
         end
 
         def take_loan(entity, loan, prepay_interest: false)
@@ -439,6 +462,10 @@ module Engine
           @stock_market.move_right(entity)
           @log << "#{entity.name}'s share price changes from" \
                   " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
+        end
+
+        def num_emergency_loans(entity, debt)
+          [maximum_loans(entity) - entity.loans.size, (debt / loan_value(prepay_interest: true).to_f).ceil].min
         end
 
         def can_take_loan?(entity)

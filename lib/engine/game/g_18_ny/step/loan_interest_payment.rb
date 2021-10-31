@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative '../../../step/base'
 
 module Engine
   module Game
@@ -17,17 +17,14 @@ module Engine
             entity = current_entity
 
             owed = @game.pay_interest!(entity)
-
             return unless owed.positive?
 
-            # This case only occurs if the corporation can't pay all the interest
-            owed -= entity.cash
-            @log << "#{entity.name} pays #{format_currency(entity.cash)} interest for #{loans}"
-            entity.spend(entity.cash, @game.bank)
-
-            owner = entity.owner
-            owner.spend(owed, @game.bank, check_cash: false)
-            @round.cash_crisis_player = owner if owner.cash.negative?
+            # This case only occurs if the corporation can't pay all the interest.
+            # A negative cash value will trigger emergency money raising.
+            num_loans = @game.loans_due_interest(entity)
+            loans_str = "#{num_loans} loan#{'s' if num_loans > 1}"
+            @log << "#{entity.name} pays #{@game.format_currency(owed)} interest for #{loans_str}"
+            entity.spend(owed, @game.bank, check_cash: false)
           end
         end
       end

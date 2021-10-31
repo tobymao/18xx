@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative '../../../step/base'
 
 module Engine
   module Game
@@ -21,14 +21,7 @@ module Engine
             pass!
             entity = current_entity
 
-            @game.repay_loan(entity, entity.loans.first) while can_payoff?(entity) || (entity.loans > entity.num_player_shares)
-
-            if entity.cash.negative?
-              owner = entity.owner
-              owner.spend(entity.cash.abs, @game.bank, check_cash: false)
-              @round.cash_crisis_player = owner if owner.cash.negative?
-            end
-
+            @game.repay_loan(entity, entity.loans.first) while can_payoff?(entity) || (entity.loans.size > entity.num_player_shares)
             @game.calculate_corporation_interest(entity)
           end
         end

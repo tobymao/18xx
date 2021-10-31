@@ -26,6 +26,10 @@ module Engine
             'Cash Crisis'
           end
 
+          def cash_crisis?
+            true
+          end
+
           def active?
             active_entities.any?
           end

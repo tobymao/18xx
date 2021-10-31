@@ -51,7 +51,7 @@ module View
             left << h(BuyPower)
           elsif @current_actions.include?('borrow_train')
             left << h(BorrowTrain)
-          elsif @current_actions.include?('sell_shares') && entity.player?
+          elsif @current_actions.include?('sell_shares') && @step.respond_to?(:cash_crisis?) && @step.cash_crisis?
             left << h(CashCrisis)
           elsif @current_actions.include?('buy_shares') || @current_actions.include?('sell_shares')
             if @step.respond_to?(:price_protection) && (price_protection = @step.price_protection)

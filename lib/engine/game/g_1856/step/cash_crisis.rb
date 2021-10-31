@@ -28,6 +28,10 @@ module Engine
             'Emergency Fundraising'
           end
 
+          def cash_crisis?
+            true
+          end
+
           def active?
             active_entities.any?
           end

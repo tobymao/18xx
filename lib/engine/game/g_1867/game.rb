@@ -1424,7 +1424,7 @@ module Engine
         end
 
         def next_round!
-          @interest_paid = {}
+          clear_interest_paid()
           @round =
             case @round
             when Engine::Round::Stock
