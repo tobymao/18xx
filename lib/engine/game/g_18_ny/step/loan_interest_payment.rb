@@ -16,8 +16,7 @@ module Engine
             pass!
             entity = current_entity
 
-            owed = @game.pay_interest!(entity)
-            return unless owed.positive?
+            return unless (owed = @game.pay_interest!(entity))
 
             # This case only occurs if the corporation can't pay all the interest.
             # A negative cash value will trigger emergency money raising.

@@ -934,7 +934,7 @@ module Engine
         LOAN_INTEREST_INCREMENTS = 5
 
         include InterestOnLoans
-        attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
+        attr_reader :owner_when_liquidated, :stock_prices_start_merger
 
         def timeline
           @timeline = [
@@ -987,6 +987,10 @@ module Engine
           loan_increments = ((self.class::MAX_LOAN - self.class::MIN_LOAN) / self.class::LOAN_INTEREST_INCREMENTS + 1)
           total_loans = loan_increments * self.class::LOANS_PER_INCREMENT
           Array.new(total_loans) { |id| Loan.new(id, @loan_value) }
+        end
+
+        def loan_value(_entity = nil)
+          @loan_value
         end
 
         def cannot_pay_interest_str
@@ -1498,7 +1502,7 @@ module Engine
         end
 
         def next_round!
-          clear_interest_paid()
+          clear_interest_paid
           @round =
             case @round
             when Engine::Round::Stock

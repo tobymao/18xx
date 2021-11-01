@@ -17,7 +17,7 @@ module Engine
         include G18NY::Map
         include InterestOnLoans
 
-        attr_reader :privates_closed, :loan_value
+        attr_reader :privates_closed
         attr_accessor :stagecoach_token
 
         CAPITALIZATION = :incremental
@@ -195,6 +195,11 @@ module Engine
             G18NY::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def next_round!
+          clear_interest_paid
+          super
         end
 
         #
@@ -402,15 +407,7 @@ module Engine
           bundles = bundles_for_corporation(corp, corp)
 
           num_issuable_shares = [5 - corp.num_market_shares, corp.num_player_shares].min
-          bundles.reject! { |bundle| bundle.num_shares > num_issuable_shares }
-
-          bundles.each do |bundle|
-            directions = [:left] * (1 + bundle.num_shares)
-            bundle.share_price = stock_market.find_share_price(corp, directions).price
-          end
-          
-          bundles.sort_by!(&:price)
-          return bundles
+          bundles.reject { |bundle| bundle.num_shares > num_issuable_shares }.sort_by(&:price)
         end
 
         def interest_owed_for_loans(loans)
@@ -429,18 +426,14 @@ module Engine
           entity.num_player_shares
         end
 
-        def loan_value(prepay_interest: false)
-          @loan_value - (prepay_interest ? interest_rate : 0)
+        def loan_value(entity = nil)
+          @loan_value - (entity && interest_paid?(entity) ? interest_rate : 0)
         end
 
-        def take_loan(entity, prepay_interest: false)
-          take_loan(entity, loans.first, prepay_interest)
-        end
-
-        def take_loan(entity, loan, prepay_interest: false)
+        def take_loan(entity, loan = loans.first)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
 
-          amount = loan.amount - (prepay_interest ? interest_rate : 0)
+          amount = loan_value(entity)
           @log << "#{entity.name} takes a loan and receives #{format_currency(amount)}"
           @bank.spend(amount, entity)
           entity.loans << loan
@@ -465,19 +458,19 @@ module Engine
         end
 
         def num_emergency_loans(entity, debt)
-          [maximum_loans(entity) - entity.loans.size, (debt / loan_value(prepay_interest: true).to_f).ceil].min
+          [maximum_loans(entity) - entity.loans.size, (debt / loan_value(entity).to_f).ceil].min
         end
 
         def can_take_loan?(entity)
           entity.corporation? && entity.loans.size < maximum_loans(entity)
         end
 
-        def buying_power(entity, full: false, prepay_interest: false)
+        def buying_power(entity, full: false)
           return entity.cash unless full
           return entity.cash unless entity.corporation?
 
           num_loans = maximum_loans(entity) - entity.loans.size
-          entity.cash + (num_loans * @loan_value) - (prepay_interest ? num_loans * interest_rate : 0)
+          entity.cash + (num_loans * loan_value(entity))
         end
       end
     end

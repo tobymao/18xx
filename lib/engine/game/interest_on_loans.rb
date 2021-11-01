@@ -6,7 +6,7 @@
 # returns interest owed if it cannot pay
 module InterestOnLoans
   def interest_paid
-    @interest_paid ||= {} 
+    @interest_paid ||= {}
   end
 
   def clear_interest_paid
@@ -41,7 +41,7 @@ module InterestOnLoans
         @log << "#{entity.name} pays #{owed_fmt} interest for #{loans}"
         entity.spend(owed, bank)
       end
-      return 0
+      return
     end
     owed
   end

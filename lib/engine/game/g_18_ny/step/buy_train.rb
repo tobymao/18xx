@@ -12,14 +12,14 @@ module Engine
 
           def buying_power(entity)
             if must_buy_train?(entity)
-              @game.buying_power(entity, full: true, prepay_interest: true)
+              @game.buying_power(entity, full: true)
             else
               @game.buying_power(entity)
             end
           end
 
           def try_take_loan(entity, cost)
-            super(entity, cost, prepay_interest: true) if must_buy_train?(entity)
+            super(entity, cost) if must_buy_train?(entity)
           end
 
           def president_may_contribute?(entity, _shell = nil)

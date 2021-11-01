@@ -153,7 +153,7 @@ TEST_CASES = [
       'Corporations that can merge with J']]]],
   ['1817',
    16_852,
-   [[889, 'cash_crisis', ['Player owes the bank $294 and must sell shares if possible.']]]],
+   [[889, 'cash_crisis', ['Random Guy owes the bank $294 and must raise cash if possible.']]]],
   ['1817',
    16_281,
    [[809,

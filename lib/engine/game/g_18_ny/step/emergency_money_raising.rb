@@ -16,11 +16,11 @@ module Engine
               @game.log << "#{@active_entity.name} enters #{description} and owes"\
                            " the bank #{@game.format_currency(needed_cash(@active_entity))}"
             end
-   
+
             actions = []
             if entity == @active_entity
               actions << 'sell_shares' if can_sell_shares?(entity)
-              actions << 'take_loan' if true # @game.can_take_loan?(entity)
+              actions << 'take_loan' if @game.can_take_loan?(entity)
             elsif entity == @active_entity.owner
               if owner_can_payoff_debt?
                 actions << 'payoff_debt'
@@ -30,12 +30,12 @@ module Engine
             end
 
             actions
-          end 
-         
+          end
+
           def description
             'Emergency Money Raising'
           end
-          
+
           def cash_crisis?
             true
           end
@@ -49,23 +49,23 @@ module Engine
 
             [@round.cash_crisis_entity]
           end
-          
+
           def issuable_shares(entity)
-            super.select {|bundle| selling_minimum_shares?(bundle)}
+            super.select { |bundle| selling_minimum_shares?(bundle) }
           end
 
           def needed_cash(entity)
             return needed_cash(@active_entity) if entity == @active_entity.owner
-            
+
             -entity.cash
           end
 
           def can_sell_shares?(entity)
             return issuable_shares(entity).any? if entity.corporation?
 
-            entity.liquidity - entity.cash > 0
+            (entity.liquidity - entity.cash).positive?
           end
-          
+
           def available_cash(entity)
             entity.cash.positive? ? entity.cash : 0
           end
@@ -75,7 +75,7 @@ module Engine
           end
 
           def process_take_loan(action)
-            @game.take_loan(action.entity, prepay_interest: true)
+            @game.take_loan(action.entity)
             return if @active_entity.cash.negative?
 
             @active_entity = nil

@@ -1950,11 +1950,11 @@ module Engine
         0
       end
 
-      def loan_value(prepay_interest: false)
+      def loan_value(_entity = nil)
         0
       end
 
-      def num_emergency_loans(entity, debt)
+      def num_emergency_loans(_entity, _debt)
         0
       end
 
