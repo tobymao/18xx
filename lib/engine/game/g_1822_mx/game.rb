@@ -117,7 +117,7 @@ module Engine
         HEXES = {
           white: {
             %w[B5 C4 C6 D7 D11 E4 E10 E14 E16 F19 G4 G20 H21 H23 H25 I8 I24 K14 L25 M16 M38 N15 N35 N37
-            O18 O28 P29 P33 Q32] =>
+               O18 O28 P29 P33 Q32] =>
               '',
 
             %w[J25 L23 M18 N19 O26 O30 O34 P25] =>
@@ -141,18 +141,18 @@ module Engine
 
             %w[C2 D3 D13 F5 F9 G10 H7 I12 M14 M36 N17 N39 O20 P31] =>
               'town=revenue:0',
-            %w[J23 L15 N33 O22] =>
+            %w[J23 L15 N33] =>
               'town=revenue:0;upgrade=cost:20,terrain:river',
             ['O22'] =>
-              'town=revenue:0;upgrade=cost:20,terrain:river;stub=edge:3',           
+              'town=revenue:0;upgrade=cost:20,terrain:river;stub=edge:3',
             ['M24'] =>
-              'town=revenue:0;upgrade=cost:40,terrain:hill;stub=edge:0',           
+              'town=revenue:0;upgrade=cost:40,terrain:hill;stub=edge:0',
             ['G16'] =>
               'town=revenue:0;upgrade=cost:40,terrain:hill;upgrade=cost:20,terrain:river',
             ['K18'] =>
               'town=revenue:0;upgrade=cost:80,terrain:mountain',
 
-            %w[B3 D9 D15 E8 F13 F15 G6 G22 J13 J15 K20 N27 O32 P27] =>
+            %w[B3 D9 D15 E8 F13 G6 G22 J13 J15 K20 N27 O32 P27] =>
               'city=revenue:0',
             %w[B1 J9 L37 L39 P23] =>
               'city=revenue:0;label=T',
@@ -177,7 +177,8 @@ module Engine
             ['I22'] =>
               'city=revenue:30,slots:1;path=a:2,b:_0;path=a:5,b:_0;label=Y',
             ['L17'] =>
-              'city=revenue:30,slots:1;path=a:2,b:_0;path=a:5,b:_0;upgrade=cost:40,terrain:hill;upgrade=cost:20,terrain:river;label=Y',
+              'city=revenue:30,slots:1;path=a:2,b:_0;path=a:5,b:_0;upgrade=cost:40,terrain:hill;'\
+              'upgrade=cost:20,terrain:river;label=Y',
             ['L19'] =>
               'city=revenue:30,slots:1;city=revenue:30,slots:1;'\
               'path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_1;path=a:4,b:_1;'\
