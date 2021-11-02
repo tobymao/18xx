@@ -403,6 +403,21 @@ module Engine
           terrain_cost - discounts
         end
 
+        def route_distance(route)
+          # Count hex edges
+          route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+        end
+
+        def route_distance_str(route)
+          "#{route_distance(route)}H"
+        end
+
+        def check_distance(route, _visits)
+          limit = route.train.distance
+          distance = route_distance(route)
+          raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
+        end
+
         def revenue_for(route, stops)
           super + (stops.count { |stop| stop.hex.assigned?('connection_bonus') } * 10)
         end
