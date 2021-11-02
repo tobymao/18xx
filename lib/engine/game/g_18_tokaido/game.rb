@@ -312,7 +312,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           if route.train.owner.companies.include?(fish_market) && stops.find { |s| s.hex.assigned?(fish_market&.id) }
-            revenue += 20
+            revenue += 10
           end
           if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
             revenue += sleeper_bonus(best_sleeper_route(route))

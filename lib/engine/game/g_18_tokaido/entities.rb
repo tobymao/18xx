@@ -35,7 +35,7 @@ module Engine
             value: 60,
             revenue: 10,
             desc: 'The owning corporation may assign the Fish Market to any port location (C13, E3, F10, G1, or J10) ' \
-                  'to add ¥20 to all routes it runs to this location until the end of the game. Pays no other revenue to ' \
+                  'to add ¥10 to all routes it runs to this location until the end of the game. Pays no other revenue to ' \
                   'a corporation.',
             sym: 'FM',
             abilities: [
@@ -60,7 +60,7 @@ module Engine
             name: 'Stationmaster Tama',
             value: 60,
             revenue: 10,
-            desc: 'Provides an additional free station marker (that costs ¥0 to place) to corporation that buys this private ' \
+            desc: 'Provides an additional station marker (that costs ¥40 to place) to corporation that buys this private ' \
                   'from a player, awarded at time of purchase.  Closes when purchased by a corporation.',
             sym: 'SMT',
             abilities: [
