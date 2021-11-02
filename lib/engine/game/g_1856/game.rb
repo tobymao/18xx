@@ -859,7 +859,7 @@ module Engine
           entity.num_player_shares
         end
 
-        def loan_value
+        def loan_value(_entity = nil)
           100
         end
 

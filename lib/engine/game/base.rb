@@ -1950,6 +1950,14 @@ module Engine
         0
       end
 
+      def loan_value(_entity = nil)
+        0
+      end
+
+      def num_emergency_loans(_entity, _debt)
+        0
+      end
+
       def corporation_opts
         {}
       end

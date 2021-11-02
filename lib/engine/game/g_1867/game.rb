@@ -1013,7 +1013,7 @@ module Engine
 
         # Minors are done as corporations with a size of 2
 
-        attr_reader :loan_value, :trainless_major
+        attr_reader :trainless_major
 
         def ipo_name(_entity = nil)
           'Treasury'
@@ -1424,7 +1424,7 @@ module Engine
         end
 
         def next_round!
-          @interest_paid = {}
+          clear_interest_paid
           @round =
             case @round
             when Engine::Round::Stock
@@ -1457,6 +1457,10 @@ module Engine
           @loan_value = 50
           # 16 minors * 2, 8 majors * 5
           Array.new(72) { |id| Loan.new(id, @loan_value) }
+        end
+
+        def loan_value(_entity = nil)
+          @loan_value
         end
 
         def round_end

@@ -5,13 +5,21 @@
 # loans and taking out extra loans to cover the interest
 # returns interest owed if it cannot pay
 module InterestOnLoans
+  def interest_paid
+    @interest_paid ||= {}
+  end
+
+  def clear_interest_paid
+    interest_paid.clear
+  end
+
   def interest_paid?(entity)
-    @interest_paid[entity]
+    interest_paid[entity]
   end
 
   def pay_interest!(entity)
     owed = interest_owed(entity)
-    @interest_paid[entity] = true
+    interest_paid[entity] = true
 
     while owed > entity.cash &&
         (loan = loans[0]) &&
@@ -20,10 +28,9 @@ module InterestOnLoans
       owed = interest_owed(entity)
     end
 
-    owed_fmt = format_currency(owed)
-
     if owed <= entity.cash
       if owed.positive?
+        owed_fmt = format_currency(owed)
         loans_due = loans_due_interest(entity)
         loans =
           if loans_due != 1

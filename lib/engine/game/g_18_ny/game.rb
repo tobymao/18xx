@@ -5,6 +5,8 @@ require_relative '../base'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'stock_market'
+require_relative '../../loan'
+require_relative '../interest_on_loans'
 
 module Engine
   module Game
@@ -13,6 +15,7 @@ module Engine
         include_meta(G18NY::Meta)
         include G18NY::Entities
         include G18NY::Map
+        include InterestOnLoans
 
         attr_reader :privates_closed
         attr_accessor :stagecoach_token
@@ -147,9 +150,13 @@ module Engine
         ERIE_CANAL_ICON = 'canal'
 
         def setup
-          @erie_canal_private = @companies.find { |c| c.id == 'EC' }
+          @interest = {}
           @stagecoach_token =
             Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
+        end
+
+        def erie_canal_private
+          @erie_canal_private ||= @companies.find { |c| c.id == 'EC' }
         end
 
         def init_stock_market
@@ -158,36 +165,46 @@ module Engine
         end
 
         def new_auction_round
-          Round::Auction.new(self, [
+          Engine::Round::Auction.new(self, [
             G18NY::Step::CompanyPendingPar,
             Engine::Step::WaterfallAuction,
           ])
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             G18NY::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
             Engine::Step::BuyCompany,
+            G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
             G18NY::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
+            G18NY::Step::LoanInterestPayment,
+            G18NY::Step::LoanRepayment,
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
-            Engine::Step::BuyTrain,
+            G18NY::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
+        def next_round!
+          clear_interest_paid
+          super
+        end
+
+        #
         # Events
+        #
 
         def event_close_companies!
           super
@@ -230,7 +247,13 @@ module Engine
           @corporations.each { |c| yield c unless c.floated? }
         end
 
+        #
         # Stock round logic
+        #
+
+        def ipo_name(_entity = nil)
+          'Treasury'
+        end
 
         def issuable_shares(entity)
           return [] if !entity.corporation? || entity.type != :major
@@ -272,7 +295,9 @@ module Engine
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
         end
 
+        #
         # Operating round logic
+        #
 
         def operating_order
           minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
@@ -282,13 +307,13 @@ module Engine
         def tile_lay(_hex, old_tile, _new_tile)
           return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
 
-          @log << "#{@erie_canal_private.name}'s revenue reduced from #{format_currency(@erie_canal_private.revenue)}" \
-                  " to #{format_currency(@erie_canal_private.revenue - 10)}"
-          @erie_canal_private.revenue -= 10
-          return if @erie_canal_private.revenue.positive?
+          @log << "#{erie_canal_private.name}'s revenue reduced from #{format_currency(erie_canal_private.revenue)}" \
+                  " to #{format_currency(erie_canal_private.revenue - 10)}"
+          erie_canal_private.revenue -= 10
+          return if erie_canal_private.revenue.positive?
 
-          @log << "#{@erie_canal_private.name} closes"
-          @erie_canal_private.close!
+          @log << "#{erie_canal_private.name} closes"
+          erie_canal_private.close!
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
@@ -356,6 +381,96 @@ module Engine
 
           terrain_cost -= TILE_COST if terrain_cost.positive?
           terrain_cost - discounts
+        end
+
+        def init_loans
+          @loan_value = 50
+          # 11 minors * 2, 8 majors * 10
+          Array.new(102) { |id| Loan.new(id, @loan_value) }
+        end
+
+        def interest_rate
+          5
+        end
+
+        def calculate_corporation_interest(corporation)
+          @interest[corporation] = corporation.loans.size
+        end
+
+        def calculate_interest
+          # Number of loans interest is due on is set before taking loans in that OR
+          @interest.clear
+          @corporations.each { |c| calculate_corporation_interest(c) }
+        end
+
+        def emergency_issuable_bundles(corp)
+          bundles = bundles_for_corporation(corp, corp)
+
+          num_issuable_shares = [5 - corp.num_market_shares, corp.num_player_shares].min
+          bundles.reject { |bundle| bundle.num_shares > num_issuable_shares }.sort_by(&:price)
+        end
+
+        def interest_owed_for_loans(loans)
+          interest_rate * loans
+        end
+
+        def loans_due_interest(entity)
+          @interest[entity] || 0
+        end
+
+        def interest_owed(entity)
+          interest_rate * loans_due_interest(entity)
+        end
+
+        def maximum_loans(entity)
+          entity.num_player_shares
+        end
+
+        def loan_value(entity = nil)
+          @loan_value - (entity && interest_paid?(entity) ? interest_rate : 0)
+        end
+
+        def take_loan(entity, loan = loans.first)
+          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+
+          amount = loan_value(entity)
+          @log << "#{entity.name} takes a loan and receives #{format_currency(amount)}"
+          @bank.spend(amount, entity)
+          entity.loans << loan
+          @loans.delete(loan)
+
+          initial_sp = entity.share_price.price
+          @stock_market.move_left(entity)
+          @log << "#{entity.name}'s share price changes from" \
+                  " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
+        end
+
+        def repay_loan(entity, loan)
+          @log << "#{entity.name} pays off a loan for #{format_currency(loan.amount)}"
+          entity.spend(loan.amount, @bank, check_cash: false)
+          entity.loans.delete(loan)
+          @loans << loan
+
+          initial_sp = entity.share_price.price
+          @stock_market.move_right(entity)
+          @log << "#{entity.name}'s share price changes from" \
+                  " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
+        end
+
+        def num_emergency_loans(entity, debt)
+          [maximum_loans(entity) - entity.loans.size, (debt / loan_value(entity).to_f).ceil].min
+        end
+
+        def can_take_loan?(entity)
+          entity.corporation? && entity.loans.size < maximum_loans(entity)
+        end
+
+        def buying_power(entity, full: false)
+          return entity.cash unless full
+          return entity.cash unless entity.corporation?
+
+          num_loans = maximum_loans(entity) - entity.loans.size
+          entity.cash + (num_loans * loan_value(entity))
         end
       end
     end
