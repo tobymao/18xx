@@ -434,7 +434,7 @@ module Engine
 
         def routes_revenue(routes)
           revenue = super
-          revenue += connection_bonus(routes.first.corporation) if routes.any?
+          revenue += connection_bonus(routes.first.corporation) unless routes.empty?
 
           revenue
         end
