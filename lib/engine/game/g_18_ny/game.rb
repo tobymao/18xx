@@ -207,7 +207,7 @@ module Engine
             G18NY::Step::Track,
             G18NY::Step::Token,
             G18NY::Step::Route,
-            Engine::Step::Dividend,
+            G18NY::Step::Dividend,
             G18NY::Step::LoanInterestPayment,
             G18NY::Step::LoanRepayment,
             Engine::Step::DiscardTrain,
