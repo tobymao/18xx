@@ -147,12 +147,32 @@ module Engine
             ['Capitalization Round', 'Special Capitalization Round before next Stock Round'],
         ).freeze
 
+        ASSIGNMENT_TOKENS = {
+          'connection_bonus' => '/icons/18_ny/connection_bonus.svg',
+          'coal' => '/icons/18_ny/coal.svg',
+        }.freeze
+
+        CONNECTION_BONUS_HEXES =
+          %w[A13 A19 A23 B12 C11 C23 C25 D0 D18 D20 E9 F10 F12 G9 G13 G19 G21 G25 I19 I23 J18 J22 J26 K19].freeze
+
+        COAL_TOKEN_HEXES = %w[G1 H4 H10 H12 J14 K17].freeze
+
         ERIE_CANAL_ICON = 'canal'
 
         def setup
           @interest = {}
           @stagecoach_token =
             Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
+          init_connection_bonuses
+          init_coal_tokens
+        end
+
+        def init_connection_bonuses
+          CONNECTION_BONUS_HEXES.each { |hex_id| hex_by_id(hex_id).assign!('connection_bonus') }
+        end
+
+        def init_coal_tokens
+          COAL_TOKEN_HEXES.each { |hex_id| hex_by_id(hex_id).assign!('coal') }
         end
 
         def erie_canal_private
@@ -185,8 +205,8 @@ module Engine
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
             G18NY::Step::Track,
-            Engine::Step::Token,
-            Engine::Step::Route,
+            G18NY::Step::Token,
+            G18NY::Step::Route,
             Engine::Step::Dividend,
             G18NY::Step::LoanInterestPayment,
             G18NY::Step::LoanRepayment,
@@ -381,6 +401,72 @@ module Engine
 
           terrain_cost -= TILE_COST if terrain_cost.positive?
           terrain_cost - discounts
+        end
+
+        def route_distance(route)
+          # Count hex edges
+          route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+        end
+
+        def route_distance_str(route)
+          "#{route_distance(route)}H"
+        end
+
+        def check_distance(route, _visits)
+          limit = route.train.distance
+          distance = route_distance(route)
+          raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
+        end
+
+        def revenue_for(route, stops)
+          super + (stops.count { |stop| stop.hex.assigned?('connection_bonus') } * 10)
+        end
+
+        def revenue_str(route)
+          str = super
+
+          if (num_bonuses = route.stops.count { |stop| stop.hex.assigned?('connection_bonus') }).positive?
+            str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}"
+          end
+
+          str
+        end
+
+        def routes_revenue(routes)
+          revenue = super
+          revenue += connection_bonus(routes.first.corporation) unless routes.empty?
+
+          revenue
+        end
+
+        def connection_bonus(entity)
+          abilities(entity, :connection_bonus)&.bonus_revenue || 0
+        end
+
+        def claim_connection_bonus(entity)
+          if (ability = abilities(entity, :connection_bonus))
+            ability.bonus_revenue += 10
+          else
+            add_connection_bonus_ability(entity)
+          end
+        end
+
+        def add_connection_bonus_ability(entity)
+          entity.add_ability(G18NY::Ability::ConnectionBonus.new(type: :connection_bonus, bonus_revenue: 10))
+        end
+
+        def remove_connection_bonus_ability(entity)
+          return unless (ability = @game.abilities(entity, :connection_bonus))
+
+          entity.remove_ability(ability)
+        end
+
+        def remove_train(train)
+          owner = train.owner
+          super
+          return unless owner&.corporation?
+
+          remove_connection_bonus_ability(owner) if owner.trains.size.zero? && current_entity != owner
         end
 
         def init_loans
