@@ -19,7 +19,7 @@ module Engine
         CURRENCY_FORMAT_STR = '£%d'
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 42, 4 => 32, 5 => 25, 6 => 21, 7 => 18 }.freeze
+        CERT_LIMIT = { 3 => 40, 4 => 30, 5 => 24, 6 => 20, 7 => 17 }.freeze
         STARTING_CASH = { 3 => 800, 4 => 600, 5 => 480, 6 => 400, 7 => 340 }.freeze
 
         CAPITALIZATION = :incremental
@@ -60,60 +60,53 @@ module Engine
 
         PHASES = [
           {
-            name: '1',
+            name: 'L/2',
             on: '',
-            train_limit: 5,
+            train_limit: { public_5: 3 },
             tiles: [:yellow],
-            operating_rounds: 1,
-          },
-          {
-            name: '2',
-            on: %w[2 3],
-            train_limit: 5,
-            tiles: [:yellow],
-            operating_rounds: 2,
+            operating_rounds: 99,
           },
           {
             name: '3',
             on: '3',
-            train_limit: 4,
+            train_limit: { public_5: 3, public_10: 4 },
             tiles: %i[yellow green],
-            operating_rounds: 2,
+            operating_rounds: 99,
           },
           {
             name: '4',
             on: '4',
-            train_limit: 4,
+            train_limit: { public_5: 3, public_10: 4 },
             tiles: %i[yellow green],
-            operating_rounds: 2,
+            operating_rounds: 99,
           },
           {
             name: '5',
             on: '5',
-            train_limit: 3,
+            train_limit: { public_5: 2, public_10: 3 },
             tiles: %i[yellow green brown],
-            operating_rounds: 2,
+            operating_rounds: 99,
           },
           {
             name: '6',
             on: '6',
-            train_limit: 3,
+            train_limit: { public_5: 2, public_10: 3 },
             tiles: %i[yellow green brown],
-            operating_rounds: 2,
+            operating_rounds: 99,
           },
           {
             name: '8',
             on: '8',
-            train_limit: 2,
+            train_limit: { public_5: 1, public_10: 2 },
             tiles: %i[yellow green brown gray],
-            operating_rounds: 2,
+            operating_rounds: 99,
           },
           {
             name: '10',
             on: '10',
-            train_limit: 2,
+            train_limit: { public_5: 1, public_10: 2 },
             tiles: %i[yellow green brown gray],
-            operating_rounds: 2,
+            operating_rounds: 99,
           },
         ].freeze
 
@@ -132,51 +125,52 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 12,
+            num: 8,
             price: 50,
-            rusts_on: '3',
+            obsolete_on: '3',
             variants: [
               {
                 name: '2',
                 distance: 2,
                 price: 100,
-                rusts_on: '4',
-                available_on: '1',
+                obsolete_on: '4',
               },
             ],
           },
           {
             name: '3',
             distance: 3,
-            num: 6,
+            num: 4,
             price: 200,
-            rusts_on: '6',
+            obsolete_on: '6',
           },
           {
             name: '4',
             distance: 4,
-            num: 6,
+            num: 4,
             price: 300,
-            rusts_on: '8',
+            obsolete_on: '8',
           },
           {
             name: '5',
             distance: 5,
-            num: 6,
+            num: 4,
             price: 450,
+            obsolete_on: '10',
             variants: [
               {
                 name: '3E',
                 distance: 3,
                 multiplier: 2,
                 price: 450,
+                obsolete_on: '10',
               },
             ],
           },
           {
             name: '6',
             distance: 6,
-            num: 6,
+            num: 4,
             price: 600,
             variants: [
               {
@@ -190,7 +184,7 @@ module Engine
           {
             name: '8',
             distance: 8,
-            num: 6,
+            num: 4,
             price: 800,
             variants: [
               {
@@ -218,6 +212,8 @@ module Engine
         ].freeze
 
         # *********** 1866 Specific constants ***********
+        MAX_PAR_VALUE = 200
+
         NATIONAL_REGION_HEXES = {
           'G1' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
           'G2' => %w[D18 E15 E17 E19 E21 F16 F18],
@@ -231,21 +227,16 @@ module Engine
           'I5' => %w[P16 Q17],
           'AHN' => %w[J22 J24 J26 K23 K25 L18 L20 L22 L24 L26 M19 M21 M23 M25 N22 N24 N26 O21 O23 O25
                       P22 P24 P26 Q23 Q25 R24],
-          'BMN' => %w[G9 G11 H10 H12],
+          'BN' => %w[E13 F10 F12 F14 G9 G11 G13 H10 H12 I11],
           'FN' => %w[H6 H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
                      M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13],
           'GBN' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
-          'NMN' => %w[E13 F10 F12 F14 G13],
-          'SPMN' => %w[O1 P0 P2 P4 Q1 Q3 Q5 R0 R2 S1],
-          'SWMN' => %w[L12 L14 L16 M13 M15],
-          'LUXEMBOURG' => %w[I11],
-          'AFRICA' => %w[W9],
-          'AMERICA' => %w[C0],
+          'SPN' => %w[O1 P2 P4 Q1 Q3 Q5 R2 R4 S1 S3 T2 U1],
+          'SWN' => %w[L12 L14 L16 M13 M15],
         }.freeze
 
         PHASE_PAR_TYPES = {
-          '1' => :par,
-          '2' => :par,
+          'L/2' => :par,
           '3' => :par_1,
           '4' => :par_1,
           '5' => :par_2,
@@ -273,8 +264,8 @@ module Engine
 
         # Corporations which will be able to float on which turn
         TURN_CORPORATIONS = {
-          'ISR' => %w[ASC MSC GBN FN AHN LNWR GWR NBR PLM MIDI OU],
-          'OR1' => %w[ASC MSC GBN FN AHN BMN NMN G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU KPS BY KHS
+          'ISR' => %w[GBN FN AHN BN SPN SWN G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU],
+          'OR1' => %w[GBN FN AHN BN SPN SWN G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU KPS BY KHS
                       B GL NRS],
         }.freeze
 
@@ -310,18 +301,10 @@ module Engine
             case @round
             when Round::Stock
               @operating_rounds = @phase.operating_rounds
-              reorder_players
               new_operating_round
             when Round::Operating
-              if @round.round_num < @operating_rounds
-                or_round_finished
-                new_operating_round(@round.round_num + 1)
-              else
-                @turn += 1
-                or_round_finished
-                or_set_finished
-                new_stock_round
-              end
+              or_round_finished
+              new_operating_round(@round.round_num + 1)
             when init_round.class
               reorder_players_isr!
               stock_round_isr
@@ -334,6 +317,34 @@ module Engine
           ])
         end
 
+        def num_certs(entity)
+          # All players have a Stock Turn Company, this shouldnt count towards the cert limit.
+          super - 1
+        end
+
+        def operating_order
+          corporations = @corporations.select(&:floated?) + @stock_turn_token_in_play.values.flatten
+          corporations.sort
+        end
+
+        # TODO: This is just a basic operating round.
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            G1866::Step::StockTurnToken,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
+        def round_description(name, round_number = nil)
+          round_number ||= @round.round_num
+          "#{name} Round #{round_number}"
+        end
+
         def setup
           @stock_turn_token_per_player = self.class::STOCK_TURN_TOKENS[@players.size.to_s]
           @stock_turn_token_in_play = {}
@@ -342,6 +353,9 @@ module Engine
             @log << "#{player.name} have stock turn tokens with number #{index + 1}"
             @stock_turn_token_in_play[player] = []
           end
+
+          @red_reservation_entity = corporation_by_id('R')
+          @corporations.delete(@red_reservation_entity)
 
           @current_turn = 'ISR'
 
@@ -402,6 +416,7 @@ module Engine
             reservation_color: nil,
             capitalization: self.class::CAPITALIZATION,
           )
+          corporation.owner = player
 
           @stock_market.set_par(corporation, share_price)
           player.spend(share_price.price, @bank)
@@ -428,7 +443,7 @@ module Engine
 
         def setup_corporations
           # Randomize from preset seed to get same order
-          corps = @corporations.select { |c| c.type == :major }.sort_by { rand }
+          corps = @corporations.select { |c| c.type == :public_5 }.sort_by { rand }
           @removed_corporations = []
 
           # Select one of the three public companies based in each of GB, France, A-H, Germany & Italy
