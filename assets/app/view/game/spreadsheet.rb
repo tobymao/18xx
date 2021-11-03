@@ -476,7 +476,7 @@ module View
           h('td.padded_number', @game.format_currency(corporation.cash)),
           *treasury,
           h('td.padded_number', order_props, operating_order),
-          h(:td, corporation.trains.map(&:name).join(', ')),
+          h(:td, corporation.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(', ')),
           h(:td, @game.token_string(corporation)),
           *extra,
           render_companies(corporation),
