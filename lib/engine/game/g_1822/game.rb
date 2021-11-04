@@ -902,8 +902,8 @@ module Engine
         def init_hexes(_companies, _corporations)
           hexes = super
           @corporations.each do |c|
-            unless c.dest_coordinates.nil?
-              hexes.find { |h| h.id == c.dest_coordinates }.tile.icons <<
+            unless c.destination_x.nil?
+              hexes.find { |h| h.id == c.destination_x }.tile.icons <<
                 Part::Icon.new("../#{c.dest_icon}", "#{c.id}_destination")
             end
           end
@@ -987,7 +987,7 @@ module Engine
           # and destination is connected
           return unless corporation.id == 'LNWR'
 
-          hex = hex_by_id(corporation.dest_coordinates)
+          hex = hex_by_id(corporation.destination_x)
           token = corporation.find_token_by_type(:destination)
           place_destination_token(corporation, hex, token)
         end
@@ -1932,12 +1932,12 @@ module Engine
 
         def setup_destinations
           @corporations.each do |c|
-            next if c.dest_coordinates.nil?
+            next if c.destination_x.nil?
 
             description = if c.id == 'LNWR'
-                            "Gets destination token at #{c.dest_coordinates} when floated"
+                            "Gets destination token at #{c.destination_x} when floated"
                           else
-                            "Connect to #{c.dest_coordinates} for your destination token"
+                            "Connect to #{c.destination_x} for your destination token"
                           end
             ability = Ability::Base.new(
               type: 'destination',

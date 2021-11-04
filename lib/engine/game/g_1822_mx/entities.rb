@@ -1152,7 +1152,7 @@ module Engine
             city: 4,
             color: '#e51c00',
             reservation_color: nil,
-            dest_coordinates: 'N27',
+            destination_x: 'N27',
             dest_icon: '1822_xx/FCM_DEST',
           },
           {
@@ -1167,7 +1167,7 @@ module Engine
             city: 2,
             color: '#000000',
             reservation_color: nil,
-            dest_coordinates: 'F21',
+            destination_x: 'F21',
             dest_icon: '1822_xx/MC_DEST',
           },
           {
@@ -1182,7 +1182,7 @@ module Engine
             color: '#792e3c',
             text_color: 'black',
             reservation_color: nil,
-            dest_coordinates: 'H11',
+            destination_x: 'H11',
             dest_icon: '1822_xx/CHP_DEST',
           },
           {
@@ -1197,7 +1197,7 @@ module Engine
             city: 3,
             color: '#850040',
             reservation_color: nil,
-            dest_coordinates: 'G22',
+            destination_x: 'G22',
             dest_icon: '1822_xx/FNM_DEST',
           },
           {
@@ -1211,7 +1211,7 @@ module Engine
             coordinates: 'F21',
             color: '#ff3600',
             reservation_color: nil,
-            dest_coordinates: 'J15',
+            destination_x: 'J15',
             dest_icon: '1822_xx/MIR_DEST',
           },
           {
@@ -1225,7 +1225,7 @@ module Engine
             coordinates: 'D9',
             color: '#fab506',
             reservation_color: nil,
-            dest_coordinates: 'L17',
+            destination_x: 'L17',
             dest_icon: '1822_xx/FCP_DEST',
           },
           {
@@ -1240,7 +1240,7 @@ module Engine
             city: 5,
             color: '#004c6c',
             reservation_color: nil,
-            dest_coordinates: 'N27',
+            destination_x: 'N27',
             dest_icon: '1822_xx/IRM_DEST',
           },
         ].freeze
