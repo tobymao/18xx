@@ -50,7 +50,7 @@ module Engine
           end
 
           def destination(entity)
-            @game.class::DESTINATIONS[entity.id]
+            entity.dest_coordinates
           end
 
           def destination_node_check?(entity)
@@ -79,7 +79,7 @@ module Engine
             entity = action.entity
             if !@game.loading && destination_node_check?(entity)
               raise GameError, "You can't skip placing your destination token when you have a connection "\
-                               "to #{@game.class::DESTINATIONS[entity.id]}"
+                               "to #{entity.dest_coordinates}"
             end
 
             super

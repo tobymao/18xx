@@ -7,16 +7,6 @@ module Engine
   module Game
     module G1822MX
       module Map
-        DESTINATIONS = {
-          'FCM' => 'N27',
-          'MC' => 'F21',
-          'CHP' => 'H11',
-          'FNM' => 'G22',
-          'MIR' => 'J15',
-          'FCP' => 'L17',
-          'IRM' => 'N27',
-        }.freeze
-
         LOCATION_NAMES = {
           'A2' => 'San Diego',
           'B1' => 'Tijuana',

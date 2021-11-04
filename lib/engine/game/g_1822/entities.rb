@@ -1354,6 +1354,8 @@ module Engine
             city: 3,
             color: '#000',
             reservation_color: nil,
+            dest_coordinates: 'I22',
+            dest_icon: '1822/LNWR_DEST',
           },
           {
             sym: 'GWR',
@@ -1367,6 +1369,8 @@ module Engine
             city: 1,
             color: '#165016',
             reservation_color: nil,
+            dest_coordinates: 'G36',
+            dest_icon: '1822/GWR_DEST',
           },
           {
             sym: 'LBSCR',
@@ -1381,6 +1385,8 @@ module Engine
             color: '#cccc00',
             text_color: 'black',
             reservation_color: nil,
+            dest_coordinates: 'M42',
+            dest_icon: '1822/LBSCR_DEST',
           },
           {
             sym: 'SECR',
@@ -1403,6 +1409,8 @@ module Engine
             ],
             color: '#ff7f2a',
             reservation_color: nil,
+            dest_coordinates: 'P41',
+            dest_icon: '1822/SECR_DEST',
           },
           {
             sym: 'CR',
@@ -1415,6 +1423,8 @@ module Engine
             coordinates: 'E6',
             color: '#5555ff',
             reservation_color: nil,
+            dest_coordinates: 'G12',
+            dest_icon: '1822/CR_DEST',
           },
           {
             sym: 'MR',
@@ -1427,6 +1437,8 @@ module Engine
             coordinates: 'J29',
             color: '#ff2a2a',
             reservation_color: nil,
+            dest_coordinates: 'L19',
+            dest_icon: '1822/MR_DEST',
           },
           {
             sym: 'LYR',
@@ -1439,6 +1451,8 @@ module Engine
             coordinates: 'G22',
             color: '#5a2ca0',
             reservation_color: nil,
+            dest_coordinates: 'I22',
+            dest_icon: '1822/LYR_DEST',
           },
           {
             sym: 'NBR',
@@ -1451,6 +1465,8 @@ module Engine
             coordinates: 'H5',
             color: '#a05a2c',
             reservation_color: nil,
+            dest_coordinates: 'H1',
+            dest_icon: '1822/NBR_DEST',
           },
           {
             sym: 'SWR',
@@ -1464,6 +1480,8 @@ module Engine
             color: '#999999',
             text_color: 'black',
             reservation_color: nil,
+            dest_coordinates: 'C34',
+            dest_icon: '1822/SWR_DEST',
           },
           {
             sym: 'NER',
@@ -1476,6 +1494,8 @@ module Engine
             coordinates: 'L19',
             color: '#aade87',
             reservation_color: nil,
+            dest_coordinates: 'H5',
+            dest_icon: '1822/NER_DEST',
           },
         ].freeze
       end

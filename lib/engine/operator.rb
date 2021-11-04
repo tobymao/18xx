@@ -8,7 +8,8 @@ module Engine
 
     attr_accessor :coordinates
     attr_reader :color, :city, :loans, :logo, :logo_filename, :simple_logo,
-                :operating_history, :text_color, :tokens, :trains
+                :operating_history, :text_color, :tokens, :trains, :dest_icon,
+                :dest_coordinates
 
     def init_operator(opts)
       @cash = 0
@@ -23,6 +24,8 @@ module Engine
       @loans = []
       @color = opts[:color]
       @text_color = opts[:text_color] || '#ffffff'
+      @dest_coordinates = opts[:dest_coordinates]
+      @dest_icon = opts[:dest_icon] ? "/icons/#{opts[:dest_icon]}" : ''
     end
 
     def operator?
