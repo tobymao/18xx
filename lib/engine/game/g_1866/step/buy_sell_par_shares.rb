@@ -14,9 +14,10 @@ module Engine
           end
 
           def can_par_share_price?(share_price, corp)
-            return (share_price.corporations.empty? || share_price.price == 200) unless corp
+            return (share_price.corporations.empty? || share_price.price == @game.class::MAX_PAR_VALUE) unless corp
 
-            share_price.corporations.none? { |c| c.type != :stock_turn_corporation } || share_price.price == 200
+            share_price.corporations.none? { |c| c.type != :stock_turn_corporation } ||
+              share_price.price == @game.class::MAX_PAR_VALUE
           end
 
           def choices_ability(entity)
@@ -36,14 +37,12 @@ module Engine
 
           def get_par_prices(entity, corp)
             par_type = @game.phase_par_type
-            @game.stock_market.par_prices.select do |p|
-              multiplier = if !corp || corp.type == :shipping
-                             1
-                           else
-                             2
-                           end
+            par_prices = @game.stock_market.par_prices.select do |p|
+              multiplier = !corp ? 1 : 2
               p.types.include?(par_type) && p.price * multiplier <= entity.cash && can_par_share_price?(p, corp)
             end
+            par_prices.reject! { |p| p.price == @game.class::MAX_PAR_VALUE } if par_prices.size > 1
+            par_prices
           end
 
           def process_choose_ability(action)
