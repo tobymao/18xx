@@ -336,19 +336,6 @@ module Engine
         COMPANY_MINOR_PREFIX = 'M'
         COMPANY_PRIVATE_PREFIX = 'P'
 
-        DESTINATIONS = {
-          'LNWR' => 'I22',
-          'GWR' => 'G36',
-          'LBSCR' => 'M42',
-          'SECR' => 'P41',
-          'CR' => 'G12',
-          'MR' => 'L19',
-          'LYR' => 'I22',
-          'NBR' => 'H1',
-          'SWR' => 'C34',
-          'NER' => 'H5',
-        }.freeze
-
         EXCHANGE_TOKENS = {
           'LNWR' => 4,
           'GWR' => 3,
@@ -914,12 +901,12 @@ module Engine
 
         def init_hexes(_companies, _corporations)
           hexes = super
-
-          self.class::DESTINATIONS.each do |corp, destination|
-            hexes.find { |h| h.id == destination }.tile.icons << Part::Icon.new("../icons/1822/#{corp}_DEST",
-                                                                                "#{corp}_destination")
+          @corporations.each do |c|
+            if c.destination_coordinates
+              hexes.find { |h| h.id == c.destination_coordinates }.tile.icons <<
+                Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
+            end
           end
-
           hexes
         end
 
@@ -1000,7 +987,7 @@ module Engine
           # and destination is connected
           return unless corporation.id == 'LNWR'
 
-          hex = hex_by_id(self.class::DESTINATIONS[corporation.id])
+          hex = hex_by_id(corporation.destination_coordinates)
           token = corporation.find_token_by_type(:destination)
           place_destination_token(corporation, hex, token)
         end
@@ -1944,21 +1931,22 @@ module Engine
         end
 
         def setup_destinations
-          self.class::DESTINATIONS.each do |corp, destination|
-            description = if corp == 'LNWR'
-                            "Gets destination token at #{destination} when floated"
+          @corporations.each do |c|
+            next unless c.destination_coordinates
+
+            description = if c.id == 'LNWR'
+                            "Gets destination token at #{c.destination_coordinates} when floated"
                           else
-                            "Connect to #{destination} for your destination token"
+                            "Connect to #{c.destination_coordinates} for your destination token"
                           end
             ability = Ability::Base.new(
               type: 'destination',
               description: description
             )
-            corporation = corporation_by_id(corp)
-            corporation.add_ability(ability)
-            corporation.tokens << Engine::Token.new(corporation, logo: "/logos/1822/#{corp}_DEST.svg",
-                                                                 simple_logo: "/logos/1822/#{corp}_DEST.svg",
-                                                                 type: :destination)
+            c.add_ability(ability)
+            c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
+                                             simple_logo: "../#{c.destination_icon}.svg",
+                                             type: :destination)
           end
         end
 

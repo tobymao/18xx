@@ -14,16 +14,6 @@ module Engine
 
         CERT_LIMIT = { 2 => 27, 3 => 18, 4 => 14, 5 => 11, 6 => 9, 7 => 8 }.freeze
 
-        DESTINATIONS = {
-          'LNWR' => 'I22',
-          'GWR' => 'G36',
-          'LBSCR' => 'M42',
-          'SECR' => 'P41',
-          'MR' => 'L19',
-          'LYR' => 'I22',
-          'SWR' => 'C34',
-        }.freeze
-
         EXCHANGE_TOKENS = {
           'LNWR' => 4,
           'GWR' => 3,
