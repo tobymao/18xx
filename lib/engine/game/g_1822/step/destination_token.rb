@@ -49,12 +49,8 @@ module Engine
             destination(entity) == hex.name
           end
 
-          def destination(entity)
-            entity.destination_x
-          end
-
           def destination_node_check?(entity)
-            destination_hex = destination(entity)
+            destination_hex = entity.destination_coordinates
             node_keys = @game.graph.connected_nodes(entity).keys
             node_keys.select(&:city?).any? { |c| c.hex.id == destination_hex }
           end
@@ -79,7 +75,7 @@ module Engine
             entity = action.entity
             if !@game.loading && destination_node_check?(entity)
               raise GameError, "You can't skip placing your destination token when you have a connection "\
-                               "to #{entity.destination_x}"
+                               "to #{entity.destination_coordinates}"
             end
 
             super

@@ -902,9 +902,9 @@ module Engine
         def init_hexes(_companies, _corporations)
           hexes = super
           @corporations.each do |c|
-            unless c.destination_x.nil?
-              hexes.find { |h| h.id == c.destination_x }.tile.icons <<
-                Part::Icon.new("../#{c.dest_icon}", "#{c.id}_destination")
+            if c.destination_coordinates
+              hexes.find { |h| h.id == c.destination_coordinates }.tile.icons <<
+                Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
             end
           end
           hexes
@@ -987,7 +987,7 @@ module Engine
           # and destination is connected
           return unless corporation.id == 'LNWR'
 
-          hex = hex_by_id(corporation.destination_x)
+          hex = hex_by_id(corporation.destination_coordinates)
           token = corporation.find_token_by_type(:destination)
           place_destination_token(corporation, hex, token)
         end
@@ -1932,20 +1932,20 @@ module Engine
 
         def setup_destinations
           @corporations.each do |c|
-            next if c.destination_x.nil?
+            next unless c.destination_coordinates
 
             description = if c.id == 'LNWR'
-                            "Gets destination token at #{c.destination_x} when floated"
+                            "Gets destination token at #{c.destination_coordinates} when floated"
                           else
-                            "Connect to #{c.destination_x} for your destination token"
+                            "Connect to #{c.destination_coordinates} for your destination token"
                           end
             ability = Ability::Base.new(
               type: 'destination',
               description: description
             )
             c.add_ability(ability)
-            c.tokens << Engine::Token.new(c, logo: "../#{c.dest_icon}.svg",
-                                             simple_logo: "../#{c.dest_icon}.svg",
+            c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
+                                             simple_logo: "../#{c.destination_icon}.svg",
                                              type: :destination)
           end
         end

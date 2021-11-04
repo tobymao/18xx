@@ -1152,8 +1152,8 @@ module Engine
             city: 4,
             color: '#e51c00',
             reservation_color: nil,
-            destination_x: 'N27',
-            dest_icon: '1822_xx/FCM_DEST',
+            destination_coordinates: 'N27',
+            destination_icon: '1822_xx/FCM_DEST',
           },
           {
             sym: 'MC',
@@ -1167,8 +1167,8 @@ module Engine
             city: 2,
             color: '#000000',
             reservation_color: nil,
-            destination_x: 'F21',
-            dest_icon: '1822_xx/MC_DEST',
+            destination_coordinates: 'F21',
+            destination_icon: '1822_xx/MC_DEST',
           },
           {
             sym: 'CHP',
@@ -1182,8 +1182,8 @@ module Engine
             color: '#792e3c',
             text_color: 'black',
             reservation_color: nil,
-            destination_x: 'H11',
-            dest_icon: '1822_xx/CHP_DEST',
+            destination_coordinates: 'H11',
+            destination_icon: '1822_xx/CHP_DEST',
           },
           {
             sym: 'FNM',
@@ -1197,8 +1197,8 @@ module Engine
             city: 3,
             color: '#850040',
             reservation_color: nil,
-            destination_x: 'G22',
-            dest_icon: '1822_xx/FNM_DEST',
+            destination_coordinates: 'G22',
+            destination_icon: '1822_xx/FNM_DEST',
           },
           {
             sym: 'MIR',
@@ -1211,8 +1211,8 @@ module Engine
             coordinates: 'F21',
             color: '#ff3600',
             reservation_color: nil,
-            destination_x: 'J15',
-            dest_icon: '1822_xx/MIR_DEST',
+            destination_coordinates: 'J15',
+            destination_icon: '1822_xx/MIR_DEST',
           },
           {
             sym: 'FCP',
@@ -1225,8 +1225,8 @@ module Engine
             coordinates: 'D9',
             color: '#fab506',
             reservation_color: nil,
-            destination_x: 'L17',
-            dest_icon: '1822_xx/FCP_DEST',
+            destination_coordinates: 'L17',
+            destination_icon: '1822_xx/FCP_DEST',
           },
           {
             sym: 'IRM',
@@ -1240,8 +1240,8 @@ module Engine
             city: 5,
             color: '#004c6c',
             reservation_color: nil,
-            destination_x: 'N27',
-            dest_icon: '1822_xx/IRM_DEST',
+            destination_coordinates: 'N27',
+            destination_icon: '1822_xx/IRM_DEST',
           },
         ].freeze
       end
