@@ -11,60 +11,59 @@ module Engine
           'A2' => 'San Diego',
           'B1' => 'Tijuana',
           'B3' => 'Mexicali',
-          'C2' => 'C2',
-          'C8' => 'C8',
-          'C14' => 'C14',
-          'D3' => 'D3',
-          'D9' => 'D9',
-          'D13' => 'D13',
-          'D15' => 'D15',
-          'E8' => 'E8',
-          'F5' => 'F5',
-          'F9' => 'F9',
-          'F13' => 'F13',
-          'F15' => 'F15',
-          'F21' => 'F21',
-          'F23' => 'F23',
-          'G6' => 'G6',
-          'G10' => 'G10',
-          'G16' => 'G16',
-          'G22' => 'G22',
-          'G24' => 'G24',
-          'H7' => 'H7',
-          'H11' => 'H11',
-          'I12' => 'I12',
-          'I18' => 'I18',
-          'I22' => 'I22',
-          'J9' => 'J9',
-          'J13' => 'J13',
-          'J15' => 'J15',
-          'J23' => 'J23',
-          'K18' => 'K18',
-          'K20' => 'K20',
-          'K24' => 'K24',
-          'L15' => 'L15',
-          'L17' => 'L17',
-          'L19' => 'L19',
-          'L37' => 'L37',
-          'L39' => 'L39',
-          'M14' => 'M14',
-          'M22' => 'M22',
-          'M24' => 'M24',
-          'M26' => 'M26',
-          'M36' => 'M36',
-          'N17' => 'N17',
-          'N23' => 'N23',
-          'N25' => 'N25',
-          'N27' => 'N27',
-          'N33' => 'N33',
-          'N39' => 'N39',
-          'O20' => 'O20',
-          'O22' => 'O22',
-          'O32' => 'O32',
-          'P23' => 'P23',
-          'P27' => 'P27',
-          'P31' => 'P31',
-          'Q34' => 'Q34',
+          'C2' => 'Ensenada',
+          'C8' => 'Tucson',
+          'C14' => 'El Paso',
+          'D3' => 'San Quintin',
+          'D9' => 'Nogales',
+          'D13' => 'Casas Grandes',
+          'D15' => 'Ciudad Juarez',
+          'E8' => 'Hermosillo',
+          'F5' => 'Guerrero Negro',
+          'F9' => 'Guaymas',
+          'F13' => 'Cuauhtemoc',
+          'F15' => 'Chihuahua',
+          'F21' => 'Piedras Negras',
+          'F23' => 'San Antonio',
+          'G6' => 'Santa Rosalia',
+          'G10' => 'Ciudad Obregon',
+          'G16' => 'Jimenez',
+          'G22' => 'Nuevo Laredo',
+          'G24' => 'Houston',
+          'H7' => 'Lorento',
+          'H11' => 'Los Mochis',
+          'I12' => 'Culiacan',
+          'I18' => 'Torreon',
+          'I22' => 'Monterrey',
+          'J9' => 'La Paz',
+          'J13' => 'Mazatlan',
+          'J15' => 'Durango',
+          'J23' => 'Ciudad Victoria',
+          'K18' => 'Zacatecas',
+          'K20' => 'San Luis Potosi',
+          'K24' => 'Tampico',
+          'L15' => 'Tepic',
+          'L17' => 'Guadalajara',
+          'L19' => 'Guanajuanto Leon',
+          'L37' => 'Merida',
+          'L39' => 'Cancun',
+          'M14' => 'Puerto Vallarta',
+          'M22' => 'Queretaro Toluca',
+          'M24' => 'Pachuca',
+          'M26' => 'Poza Rica Jalapa',
+          'M36' => 'Campeche',
+          'N17' => 'Manzanillo',
+          'N25' => 'Tlaxcala Puebla',
+          'N27' => 'Veracruz',
+          'N33' => 'Ciudad del Carmen',
+          'N39' => 'Chetumal',
+          'O20' => 'Lazaro Cardenas',
+          'O22' => 'Chilpancingo',
+          'O32' => 'Villahermosa',
+          'P23' => 'Acapulco',
+          'P27' => 'Oaxaca',
+          'P31' => 'Tuxtla Gutierrez',
+          'Q34' => 'Guatemala',
         }.freeze
 
         LAYOUT = :pointy
@@ -176,37 +175,39 @@ module Engine
         TILES = {
           '1' => 1,
           '2' => 1,
-          '3' => 5,
-          '4' => 5,
-          '5' => 5,
-          '6' => 6,
-          '7' => 'unlimited',
-          '8' => 'unlimited',
-          '9' => 'unlimited',
+          '3' => 6,
+          '4' => 11,
+          '5' => 6,
+          '6' => 8,
+          '7' => 6,
+          '8' => 24,
+          '9' => 24,
           '55' => 1,
           '56' => 1,
-          '57' => 5,
-          '58' => 5,
+          '57' => 6,
+          '58' => 6,
           '69' => 1,
-          '14' => 5,
-          '15' => 5,
-          '80' => 5,
-          '81' => 5,
-          '82' => 6,
-          '83' => 6,
+          '14' => 4,
+          '15' => 6,
+          '80' => 4,
+          '81' => 6,
+          '82' => 7,
+          '83' => 7,
           '141' => 3,
           '142' => 3,
-          '143' => 3,
+          '143' => 2,
           '144' => 3,
-          '207' => 1,
-          '208' => 1,
+          '207' => 3,
+          '208' => 2,
           '619' => 5,
-          '63' => 6,
-          '544' => 6,
-          '545' => 6,
-          '546' => 8,
-          '611' => 3,
+          '622' => 2,
+          '63' => 3,
+          '544' => 4,
+          '545' => 4,
+          '546' => 4,
+          '611' => 7,
           '60' => 2,
+          '455' => 2,
           'X20' =>
             {
               'count' => 1,
@@ -214,42 +215,13 @@ module Engine
               'code' =>
                 'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;'\
                 'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;'\
-                'upgrade=cost:20;label=L',
+                'upgrade=cost:20;label=MC',
             },
           '405' =>
             {
-              'count' => 2,
+              'count' => 3,
               'color' => 'green',
               'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
-            },
-          'X1' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:30,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
-            },
-          'X2' =>
-            {
-              'count' => 2,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                'path=a:4,b:_0;label=BM',
-            },
-          'X3' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:30,slots:2;path=a:1,b:_0;path=a:4,b:_0;label=S',
-            },
-          'X4' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;upgrade=cost:100;label=EC',
             },
           'X21' =>
             {
@@ -258,18 +230,18 @@ module Engine
               'code' =>
                 'city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;'\
                 'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;'\
-                'upgrade=cost:20;label=L',
+                'upgrade=cost:20;label=MC',
             },
           '768' =>
             {
-              'count' => 3,
+              'count' => 4,
               'color' => 'brown',
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
             },
           '767' =>
             {
-              'count' => 3,
+              'count' => 4,
               'color' => 'brown',
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
@@ -283,47 +255,11 @@ module Engine
             },
           'X5' =>
             {
-              'count' => 2,
+              'count' => 3,
               'color' => 'brown',
               'code' =>
                 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                 'path=a:4,b:_0;label=Y',
-            },
-          'X6' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:40,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
-            },
-          'X7' =>
-            {
-              'count' => 2,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                'path=a:5,b:_0;label=BM',
-            },
-          'X8' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:40,slots:2;path=a:1,b:_0;path=a:4,b:_0;label=S',
-            },
-          'X9' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:0,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:100;label=EC',
-            },
-          'X10' =>
-            {
-              'count' => 2,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
             },
           'X22' =>
             {
@@ -332,7 +268,7 @@ module Engine
               'code' =>
                 'city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;'\
                 'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;'\
-                'upgrade=cost:20;label=L',
+                'upgrade=cost:20;label=MC',
             },
           '169' =>
             {
@@ -341,41 +277,19 @@ module Engine
               'code' =>
                 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             },
+          'X10' =>
+            {
+              'count' => 3,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
+            },
           'X11' =>
             {
-              'count' => 2,
+              'count' => 3,
               'color' => 'gray',
               'code' =>
                 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
-            },
-          'X12' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:60,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
-            },
-          'X13' =>
-            {
-              'count' => 2,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                'path=a:5,b:_0;label=BM',
-            },
-          'X14' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:60,slots:3;path=a:1,b:_0;path=a:4,b:_0;label=S',
-            },
-          'X15' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:0,slots:3;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0,lanes:2;label=EC',
             },
           'X16' =>
             {
@@ -398,14 +312,6 @@ module Engine
               'code' =>
                 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             },
-          'X19' =>
-            {
-              'count' => 4,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                'path=a:5,b:_0',
-            },
           'X23' =>
             {
               'count' => 1,
@@ -413,7 +319,7 @@ module Engine
               'code' =>
                 'city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;'\
                 'city=revenue:100;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;'\
-                'path=a:5,b:_5;label=L',
+                'path=a:5,b:_5;label=MC',
             },
         }.freeze
       end

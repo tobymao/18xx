@@ -15,7 +15,15 @@ module Engine
         BIDDING_BOX_START_MINOR = 'M24'
         BIDDING_BOX_START_MINOR_ADV = 'M14'
 
-        CERT_LIMIT = { 2 => 27, 3 => 18, 4 => 14, 5 => 11, 6 => 9, 7 => 8 }.freeze
+        CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
+
+        STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
+
+        BIDDING_TOKENS = {
+          '3': 6,
+          '4': 5,
+          '5': 4,
+        }.freeze
 
         EXCHANGE_TOKENS = {
           'FCM' => 3,
@@ -33,34 +41,12 @@ module Engine
                                 C1 C2 C3 C4 C5 C6 C7 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15
                                 M16 M17 M18 M19 M20 M21 M22 M23 M24].freeze
 
-        STARTING_COMPANIES_ADVANCED = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12
-                                         C1 C2 C3 C4 C5 C6 C7 M7 M8 M9 M10 M11 M12 M13 M14 M15
-                                         M16 M17 M18 M19 M20 M21 M24].freeze
-
-        STARTING_COMPANIES_TWOPLAYER = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12
-                                          C1 C2 C3 C4 C5 C6 C7 M7 M8 M9 M10 M11 M12 M13 M14 M15
-                                          M16 M17 M18 M19 M20 M21 M24].freeze
-
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
                                    FCM MC CHP FNM MIR FCP IRM].freeze
 
         MARKET = [
-          ['', '', '', '', '', '', '', '', '', '', '', '', '',
-           '330', '360', '400', '450', '500e', '550e', '600e'],
-          ['', '', '', '', '', '', '', '', '',
-           '200', '220', '245', '270', '300', '330', '360', '400', '450', '500e', '550e'],
-          %w[70 80 90 100 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450 500e],
-          %w[60 70 80 90 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450],
-          %w[50 60 70 80 90px 100 110 120 135 150 165 180 200 220 245 270 300 330],
-          %w[45y 50 60 70 80px 90 100 110 120 135 150 165 180 200 220 245],
-          %w[40y 45y 50 60 70px 80 90 100 110 120 135 150 165 180],
-          %w[35y 40y 45y 50 60px 70 80 90 100 110 120 135],
-          %w[30y 35y 40y 45y 50p 60 70 80 90 100],
-          %w[25y 30y 35y 40y 45y 50 60 70 80],
-          %w[20y 25y 30y 35y 40y 45y 50y 60y],
-          %w[15y 20y 25y 30y 35y 40y 45y],
-          %w[10y 15y 20y 25y 30y 35y],
-          %w[5y 10y 15y 20y 25y],
+          %w[5 10 15 20 25 30 35 40 45 50px 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450
+             500 550 600e],
         ].freeze
 
         TRAINS = [
@@ -78,8 +64,8 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 14,
-            price: 50,
+            num: 22,
+            price: 60,
             rusts_on: '3',
             variants: [
               {
@@ -194,7 +180,7 @@ module Engine
           },
         ].freeze
 
-        UPGRADE_COST_L_TO_2_PHASE_2 = 70
+        UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
         def bidbox_start_minor
           return self.class::BIDDING_BOX_START_MINOR_ADV if optional_advanced?

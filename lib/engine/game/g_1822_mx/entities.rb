@@ -384,12 +384,11 @@ module Engine
             color: nil,
           },
           {
-            name: 'CONCESSION: LNWR',
+            name: 'CONCESSION: FCM',
             sym: 'C1',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and converts into the LNWR’s 10% director certificate. LNWR may also put '\
-                  'its destination token into Manchester when converted.',
+            desc: 'Have a face value £100 and contribute £100 to the conversion into the FCM director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -398,15 +397,15 @@ module Engine
                 from: 'par',
               },
             ],
-            color: '#000',
+            color: '#e51c00',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: GWR',
+            name: 'CONCESSION: MC',
             sym: 'C2',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the GWR director’s certificate.',
+            desc: 'Have a face value £100 and contribute £100 to the conversion into the MC director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -415,15 +414,15 @@ module Engine
                 from: 'par',
               },
             ],
-            color: '#165016',
+            color: '#000000',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: LBSCR',
+            name: 'CONCESSION: CHP',
             sym: 'C3',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the LBSCR director’s '\
+            desc: 'Have a face value £100 and contribute £100 to the conversion into the CHP director’s '\
                   'certificate.',
             abilities: [
               {
@@ -433,15 +432,15 @@ module Engine
                 from: 'par',
               },
             ],
-            color: '#cccc00',
+            color: '#ff7b93',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: SECR',
+            name: 'CONCESSION: FNM',
             sym: 'C4',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the SECR director’s '\
+            desc: 'Have a face value £100 and contribute £100 to the conversion into the FNM director’s '\
                   'certificate.',
             abilities: [
               {
@@ -451,15 +450,15 @@ module Engine
                 from: 'par',
               },
             ],
-            color: '#ff7f2a',
+            color: '#850040',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: CR',
+            name: 'CONCESSION: MIR',
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the CR director’s certificate.',
+            desc: 'Have a face value £100 and contribute £100 to the conversion into the MIR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -468,15 +467,15 @@ module Engine
                 from: 'par',
               },
             ],
-            color: '#5555ff',
+            color: '#ff3600',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: MR',
+            name: 'CONCESSION: FCP',
             sym: 'C6',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the MR director’s certificate.',
+            desc: 'Have a face value £100 and contribute £100 to the conversion into the FCP director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -485,15 +484,15 @@ module Engine
                 from: 'par',
               },
             ],
-            color: '#ff2a2a',
+            color: '#fab506',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: LYR',
+            name: 'CONCESSION: IRM',
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the LYR director’s certificate.',
+            desc: 'Have a face value £100 and contribute £100 to the conversion into the IRM director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -502,7 +501,7 @@ module Engine
                 from: 'par',
               },
             ],
-            color: '#5a2ca0',
+            color: '#004c6c',
             text_color: 'white',
           },
           {
@@ -751,7 +750,7 @@ module Engine
           {
             sym: '1',
             name: 'Ferrocarril Sonora-Baja California',
-            logo: '1822_mx/1',
+            logo: '1822/1',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -767,7 +766,7 @@ module Engine
           {
             sym: '2',
             name: 'Rio Grande, Sierra Madre & Pacific Railway',
-            logo: '1822_mx/2',
+            logo: '1822/2',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -783,7 +782,7 @@ module Engine
           {
             sym: '3',
             name: 'Ferrocarril Nacozari',
-            logo: '1822_mx/3',
+            logo: '1822/3',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -799,7 +798,7 @@ module Engine
           {
             sym: '4',
             name: 'Ferrocarril Parral y Durango',
-            logo: '1822_mx/4',
+            logo: '1822/4',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -815,7 +814,7 @@ module Engine
           {
             sym: '5',
             name: 'Ferrocarril Coahuila y Zacatecas',
-            logo: '1822_mx/5',
+            logo: '1822/5',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -831,7 +830,7 @@ module Engine
           {
             sym: '6',
             name: 'Sinaloa and Durango Railroad',
-            logo: '1822_mx/6',
+            logo: '1822/6',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -847,7 +846,7 @@ module Engine
           {
             sym: '7',
             name: 'Monterrey Mineral and Terminal Railway',
-            logo: '1822_mx/7',
+            logo: '1822/7',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -863,7 +862,7 @@ module Engine
           {
             sym: '8',
             name: 'Ferrocarril Nacional de la Baja California',
-            logo: '1822_mx/8',
+            logo: '1822/8',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -879,7 +878,7 @@ module Engine
           {
             sym: '9',
             name: 'Southern Pacific Railroad of Mexico',
-            logo: '1822_mx/9',
+            logo: '1822/9',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -895,7 +894,7 @@ module Engine
           {
             sym: '10',
             name: 'Grand Junction Railway',
-            logo: '1822_mx/10',
+            logo: '1822/10',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -911,7 +910,7 @@ module Engine
           {
             sym: '11',
             name: 'Guadalajara to Tepic and Mazatlan',
-            logo: '1822_mx/11',
+            logo: '1822/11',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -927,7 +926,7 @@ module Engine
           {
             sym: '12',
             name: 'Ferrocarril Guanajuato a San Luis de la Paz y Pozos',
-            logo: '1822_mx/12',
+            logo: '1822/12',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -944,7 +943,7 @@ module Engine
           {
             sym: '13',
             name: 'Ferrocarril San Marcos a Huajapan de Leon',
-            logo: '1822_mx/13',
+            logo: '1822/13',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -961,7 +960,7 @@ module Engine
           {
             sym: '14',
             name: 'Ferrocarril Cazadero y Solis',
-            logo: '1822_mx/14',
+            logo: '1822/14',
             tokens: [20],
             type: 'minor',
             always_market_price: true,
@@ -978,7 +977,7 @@ module Engine
           {
             sym: '15',
             name: 'Ferrocarril San Gregorio',
-            logo: '1822_mx/15',
+            logo: '1822/15',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -995,7 +994,7 @@ module Engine
           {
             sym: '16',
             name: 'Ferrocarril Atlamaxac',
-            logo: '1822_mx/16',
+            logo: '1822/16',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1012,7 +1011,7 @@ module Engine
           {
             sym: '17',
             name: 'Campania del ferrocarril de Mexico a Puebla',
-            logo: '1822_mx/17',
+            logo: '1822/17',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1029,7 +1028,7 @@ module Engine
           {
             sym: '18',
             name: 'Ferrocarril Mexicano',
-            logo: '1822_mx/18',
+            logo: '1822/18',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1046,7 +1045,7 @@ module Engine
           {
             sym: '19',
             name: 'Cordoba and Huatusco Railroad',
-            logo: '1822_mx/19',
+            logo: '1822/19',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1062,7 +1061,7 @@ module Engine
           {
             sym: '20',
             name: 'Ferrocarril Interoceanico de Acapulco',
-            logo: '1822_mx/20',
+            logo: '1822/20',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1078,7 +1077,7 @@ module Engine
           {
             sym: '21',
             name: 'Ferrocarril Oaxaca a Ejutla',
-            logo: '1822_mx/21',
+            logo: '1822/21',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1094,7 +1093,7 @@ module Engine
           {
             sym: '22',
             name: 'Ferrocarriles Unidos de Yucatan',
-            logo: '1822_mx/22',
+            logo: '1822/22',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1110,7 +1109,7 @@ module Engine
           {
             sym: '23',
             name: 'Ferrocarril Merida a Valladolid',
-            logo: '1822_mx/23',
+            logo: '1822/23',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1126,7 +1125,7 @@ module Engine
           {
             sym: '24',
             name: 'Northern Railroad of Guatemala',
-            logo: '1822_mx/24',
+            logo: '1822/24',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1153,7 +1152,7 @@ module Engine
             color: '#e51c00',
             reservation_color: nil,
             destination_coordinates: 'N27',
-            destination_icon: '1822_xx/FCM_DEST',
+            destination_icon: '1822_mx/FCM_DEST',
           },
           {
             sym: 'MC',
@@ -1168,7 +1167,7 @@ module Engine
             color: '#000000',
             reservation_color: nil,
             destination_coordinates: 'F21',
-            destination_icon: '1822_xx/MC_DEST',
+            destination_icon: '1822_mx/MC_DEST',
           },
           {
             sym: 'CHP',
@@ -1179,11 +1178,11 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             coordinates: 'F15',
-            color: '#792e3c',
+            color: '#ff7b93',
             text_color: 'black',
             reservation_color: nil,
             destination_coordinates: 'H11',
-            destination_icon: '1822_xx/CHP_DEST',
+            destination_icon: '1822_mx/CHP_DEST',
           },
           {
             sym: 'FNM',
@@ -1198,7 +1197,7 @@ module Engine
             color: '#850040',
             reservation_color: nil,
             destination_coordinates: 'G22',
-            destination_icon: '1822_xx/FNM_DEST',
+            destination_icon: '1822_mx/FNM_DEST',
           },
           {
             sym: 'MIR',
@@ -1212,7 +1211,7 @@ module Engine
             color: '#ff3600',
             reservation_color: nil,
             destination_coordinates: 'J15',
-            destination_icon: '1822_xx/MIR_DEST',
+            destination_icon: '1822_mx/MIR_DEST',
           },
           {
             sym: 'FCP',
@@ -1226,7 +1225,7 @@ module Engine
             color: '#fab506',
             reservation_color: nil,
             destination_coordinates: 'L17',
-            destination_icon: '1822_xx/FCP_DEST',
+            destination_icon: '1822_mx/FCP_DEST',
           },
           {
             sym: 'IRM',
@@ -1241,7 +1240,7 @@ module Engine
             color: '#004c6c',
             reservation_color: nil,
             destination_coordinates: 'N27',
-            destination_icon: '1822_xx/IRM_DEST',
+            destination_icon: '1822_mx/IRM_DEST',
           },
         ].freeze
       end
