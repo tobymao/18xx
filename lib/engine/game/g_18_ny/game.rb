@@ -43,11 +43,17 @@ module Engine
         TRACK_RESTRICTION = :permissive
 
         # Two lays with one being an upgrade. Tile lays cost 20
-        TILE_LAYS = [
-          { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
-          { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
-        ].freeze
         TILE_COST = 20
+        TILE_LAYS = [
+          { lay: true, upgrade: true, cost: TILE_COST, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded, cost: TILE_COST, cannot_reuse_same_hex: true },
+        ].freeze
+
+        def tile_lays(entity)
+          return [self.class::TILE_LAYS.first] if entity.type == :minor
+
+          self.class::TILE_LAYS
+        end
 
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 230 260 300 350 400
