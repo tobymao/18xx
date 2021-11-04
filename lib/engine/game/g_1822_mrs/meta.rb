@@ -9,7 +9,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
         DEPENDS_ON = '1822'
 
         GAME_SUBTITLE = 'Medium Regional Scenario'
