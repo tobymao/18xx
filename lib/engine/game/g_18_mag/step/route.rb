@@ -63,7 +63,7 @@ module Engine
           end
 
           def item_cost
-            RAILCAR_BASE[@game.phase.current[:tiles].size - 1] + 10 * @round.rail_cars.size
+            RAILCAR_BASE[@game.phase.current[:tiles].size - 1] + (10 * @round.rail_cars.size)
           end
 
           def round_state

@@ -41,7 +41,7 @@ module JaroWinkler
         max_4 = len1 > 4 ? 4 : len1
         prefix = 0
         prefix += 1 while prefix < max_4 && codes1[prefix] == codes2[prefix]
-        jaro_distance + prefix * options[:weight] * (1 - jaro_distance)
+        jaro_distance + (prefix * options[:weight] * (1 - jaro_distance))
       end
     end
 
@@ -58,7 +58,7 @@ module JaroWinkler
         codes2.map! { |c| c >= 97 && c <= 122 ? c - 32 : c }
       end
 
-      window = len2 / 2 - 1
+      window = (len2 / 2) - 1
       window = 0 if window.negative?
       flags1 = 0
       flags2 = 0
@@ -124,8 +124,8 @@ module JaroWinkler
 
       m = match_count.to_f
       t = transposition_count / 2
-      m = similar_count / 10.0 + m if options[:adj_table]
-      (m / len1 + m / len2 + (m - t) / m) / 3
+      m = (similar_count / 10.0) + m if options[:adj_table]
+      ((m / len1) + (m / len2) + ((m - t) / m)) / 3
     end
 
     def validate!(str1, str2)

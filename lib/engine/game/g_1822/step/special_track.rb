@@ -168,8 +168,8 @@ module Engine
               # upgrade can make a slot available. this is green to brown, and brown to grey
               return if city.available_slots.positive? ||
                 @game.exchange_tokens(entity.owner).zero? ||
-                tile.color == :green && !%i[brown gray].include?(phase_color) ||
-                tile.color == :brown && phase_color != :gray
+                (tile.color == :green && !%i[brown gray].include?(phase_color)) ||
+                (tile.color == :brown && phase_color != :gray)
             end
 
             if entity.id == @game.class::COMPANY_HSBC && entity.owner&.corporation?

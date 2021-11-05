@@ -119,7 +119,7 @@ module View
             radius = LARGE_RADIUS
             adjust = 0
 
-            dx = (((index - (@icons.size - 1) / 2.0) * -DELTA_X) + LARGE_RADIUS).round(2)
+            dx = (((index - ((@icons.size - 1) / 2.0)) * -DELTA_X) + LARGE_RADIUS).round(2)
             dy = LARGE_RADIUS.round(2)
             decor = h(:circle, attrs: { r: LARGE_RADIUS, fill: 'white', cx: dx, cy: dy })
 
@@ -148,7 +148,7 @@ module View
               decor = h(:circle, attrs: { r: LARGE_RADIUS, fill: color, cx: dx, cy: dy })
             end
 
-            icon_x_pos = ((index - (@icons.size - 1) / 2.0) * -DELTA_X + adjust).round(2)
+            icon_x_pos = (((index - ((@icons.size - 1) / 2.0)) * -DELTA_X) + adjust).round(2)
             icon_y_pos = adjust.round(2)
 
             h(:g, [
@@ -182,11 +182,11 @@ module View
           f60 = Math.sin(60 / 180 * Math::PI)
           f30 = Math.sin(30 / 180 * Math::PI)
           "#{(cx - s).round(2)},#{cy.round(2)} "\
-            "#{(cx - s * f30).round(2)},#{(cy - s * f60).round(2)} "\
-            "#{(cx + s * f30).round(2)},#{(cy - s * f60).round(2)} "\
+            "#{(cx - (s * f30)).round(2)},#{(cy - (s * f60)).round(2)} "\
+            "#{(cx + (s * f30)).round(2)},#{(cy - (s * f60)).round(2)} "\
             "#{(cx + s).round(2)},#{cy.round(2)} "\
-            "#{(cx + s * f30).round(2)},#{(cy + s * f60).round(2)} "\
-            "#{(cx - s * f30).round(2)},#{(cy + s * f60).round(2)}"
+            "#{(cx + (s * f30)).round(2)},#{(cy + (s * f60)).round(2)} "\
+            "#{(cx - (s * f30)).round(2)},#{(cy + (s * f60)).round(2)}"
         end
       end
     end

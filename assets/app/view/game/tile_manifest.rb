@@ -42,8 +42,8 @@ module View
         props = {
           style: {
             position: 'absolute',
-            left: "#{WIDTH * shift + WIDTH / 2}px",
-            top: "#{WIDTH / 2 - 1}px",
+            left: "#{(WIDTH * shift) + (WIDTH / 2)}px",
+            top: "#{(WIDTH / 2) - 1}px",
           },
         }
 

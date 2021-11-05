@@ -225,7 +225,7 @@ module View
 
           elm = h(:span, [
             h(acting?(player) ? :em : :span, player_props, short_name),
-            index == (players.size - 1) || owner? && new? ? '' : ', ',
+            index == (players.size - 1) || (owner? && new?) ? '' : ', ',
           ])
         end
         elm

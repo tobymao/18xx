@@ -44,7 +44,7 @@ module View
       # 2D markets
       HEIGHT_TOTAL = 50
       TOKEN_PAD = 3                               # left/right padding of tokens within box
-      BOX_WIDTH = WIDTH_TOTAL - 2 * BORDER
+      BOX_WIDTH = WIDTH_TOTAL - (2 * BORDER)
       LEFT_MARGIN = TOKEN_PAD                     # left edge of leftmost token
       RIGHT_MARGIN = BOX_WIDTH - TOKEN_PAD        # right edge of rightmost token
       LEFT_TOKEN_POS = LEFT_MARGIN
@@ -69,7 +69,7 @@ module View
           padding: "#{PAD}px",
           margin: '0',
           verticalAlign: 'top',
-          width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
+          width: "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER)}px",
           border: "solid #{BORDER}px rgba(0,0,0,0.2)",
           color: color_for(:font2),
         }
@@ -80,7 +80,7 @@ module View
                            p.corporations.sum { |c| TOKEN_SIZES[@game.corporation_size(c)] + VERTICAL_TOKEN_PAD }
                          end,
                          MIN_TOKENS_HEIGHT].max
-        "#{tokens_height + VERTICAL_TOKEN_PAD + PRICE_HEIGHT - 2 * BORDER}px"
+        "#{tokens_height + VERTICAL_TOKEN_PAD + PRICE_HEIGHT - (2 * BORDER)}px"
       end
 
       CROSSHATCH_TYPES = %i[par_overlap convert_range].freeze
@@ -103,7 +103,7 @@ module View
         unless (types & BORDER_TYPES).empty?
           style[:borderRightWidth] = "#{BORDER * 4}px"
           style[:borderRightColor] = COLOR_MAP[:purple]
-          style[:width] = "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER - 3}px"
+          style[:width] = "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER) - 3}px"
         end
         if color == :black
           style[:color] = 'gainsboro'
@@ -190,7 +190,7 @@ module View
         box_style = box_style_1d
 
         half_box_style = box_style_1d
-        half_box_style[:width] = "#{WIDTH_TOTAL / 2 - 2 * PAD - 2 * BORDER}px"
+        half_box_style[:width] = "#{(WIDTH_TOTAL / 2) - (2 * PAD) - (2 * BORDER)}px"
 
         box_height = box_height_1d
         box_style[:height] = box_height
@@ -253,8 +253,8 @@ module View
           position: 'relative',
           display: 'inline-block',
           padding: "#{PAD}px",
-          width: "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER}px",
-          height: "#{HEIGHT_TOTAL - 2 * PAD - 2 * BORDER}px",
+          width: "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER)}px",
+          height: "#{HEIGHT_TOTAL - (2 * PAD) - (2 * BORDER)}px",
           border: "solid #{BORDER}px rgba(0,0,0,0)",
           margin: '0',
           verticalAlign: 'top',

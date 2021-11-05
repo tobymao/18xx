@@ -46,7 +46,7 @@ module View
         end
 
         def convex_combination(x, y)
-          [x, y].transpose.map { |xi, yi| COEFFICIENT * xi + (1 - COEFFICIENT) * yi }
+          [x, y].transpose.map { |xi, yi| (COEFFICIENT * xi) + ((1 - COEFFICIENT) * yi) }
         end
 
         def render_part
@@ -63,13 +63,13 @@ module View
             vertex_b = convex_combination(VERTICES[partition.b], b_control)
 
             da = if partition.a_sign.nonzero?
-                   VERTICES[partition.a].map { |x| x * (1 - (1 - COEFFICIENT) * 2) } # cos(30) = 1/2
+                   VERTICES[partition.a].map { |x| x * (1 - ((1 - COEFFICIENT) * 2)) } # cos(30) = 1/2
                  else
                    convex_combination(vertex_a, vertex_b)
                  end.join(' ')
 
             db = if partition.b_sign.nonzero?
-                   VERTICES[partition.b].map { |x| x * (1 - (1 - COEFFICIENT) * 2) } # cos(30) = 1/2
+                   VERTICES[partition.b].map { |x| x * (1 - ((1 - COEFFICIENT) * 2)) } # cos(30) = 1/2
                  else
                    convex_combination(vertex_b, vertex_a)
                  end.join(' ')
@@ -80,7 +80,7 @@ module View
               magnet = (magnet + 3) % 6 if partition.restrict == 'inner'
               magnet = VERTICES[magnet].map { |x| x * 0.5 }
 
-              magnet_control = [vertex_a, vertex_b, magnet].transpose.map { |a, b, m| m - (b - a) * 2 / 7 }
+              magnet_control = [vertex_a, vertex_b, magnet].transpose.map { |a, b, m| m - ((b - a) * 2 / 7) }
               magnet_str = ", #{magnet_control.join(' ')}, #{magnet.join(' ')} S"
             end
 

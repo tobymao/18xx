@@ -65,7 +65,7 @@ module Engine
             @game.bankrupt?(train.owner) ||
               entity.receivership? ||
               train.owner.receivership? ||
-              !entity.trains.empty? && train.owner.trains.size < 2
+              (!entity.trains.empty? && train.owner.trains.size < 2)
           end
 
           def spend_minmax(entity, _train)

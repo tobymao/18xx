@@ -20,7 +20,7 @@ module View
         def render
           bundle = @share.to_bundle
           show_percentage = @percentages_available > 1 ||
-                            bundle.percent != bundle.corporation.share_percent && !bundle.presidents_share
+                            (bundle.percent != bundle.corporation.share_percent && !bundle.presidents_share)
           reduced_price = @game.format_currency(bundle.price - @swap_share.price) if @swap_share
 
           text = @prefix.to_s

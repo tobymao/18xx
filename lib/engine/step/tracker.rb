@@ -97,7 +97,7 @@ module Engine
 
         tile.rotate!(rotation)
 
-        unless @game.upgrades_to?(old_tile, tile, entity.company?, selected_company: entity.company? && entity || nil)
+        unless @game.upgrades_to?(old_tile, tile, entity.company?, selected_company: (entity.company? && entity) || nil)
           raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"
         end
         if !@game.loading && !legal_tile_rotation?(entity, hex, tile)

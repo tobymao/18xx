@@ -199,7 +199,7 @@ module Engine
             size = entities.size
             # initialize bids to preserve player order starting with current player
             entities.each_index do |idx|
-              @bids[entities[idx]] = -size + (idx - start_idx) % size
+              @bids[entities[idx]] = -size + ((idx - start_idx) % size)
             end
           end
 

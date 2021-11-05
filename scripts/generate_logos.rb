@@ -53,7 +53,7 @@ def generate_logos(game_title, simple = false, overwrite = false, minors = false
           end
       end
 
-      y = 3.8 + font_size * 0.4
+      y = 3.8 + (font_size * 0.4)
       y = y.to_int if (y % 1).zero?
 
       svg = <<~SVG.chomp

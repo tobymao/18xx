@@ -148,7 +148,7 @@ module Engine
             # can't ever buy machines across
             @game.train_is_machine?(train) ||
               # only RRs can have a diesel - but only one
-              @game.diesel?(train) && (@game.entity_has_diesel?(entity) || !@game.railway?(entity)) ||
+              (@game.diesel?(train) && (@game.entity_has_diesel?(entity) || !@game.railway?(entity))) ||
               # can't ever buy from MHE
               train.owner == @game.mhe ||
               # Indie or Public mines can't buy actual trains

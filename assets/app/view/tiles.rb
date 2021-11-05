@@ -107,7 +107,7 @@ module View
     )
       block_props = {
         style: {
-          width: "#{2 * (WIDTH * scale + 2)}px",
+          width: "#{2 * ((WIDTH * scale) + 2)}px",
           height: "#{HEIGHT * scale}px",
         },
       }

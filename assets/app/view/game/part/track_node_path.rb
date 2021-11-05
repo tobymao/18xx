@@ -183,7 +183,7 @@ module View
 
         # calculate radius and sweep
         def calculate_arc_parameters(begin_x, begin_y, end_x, end_y)
-          distance = Math.sqrt((begin_x - end_x)**2 + (begin_y - end_y)**2)
+          distance = Math.sqrt(((begin_x - end_x)**2) + ((begin_y - end_y)**2))
           angle_b_o = Math.atan2(begin_y, -begin_x)
           angle_b_e = Math.atan2(begin_y - end_y, end_x - begin_x)
           angle_e_b_o = angle_b_o - angle_b_e
@@ -193,7 +193,7 @@ module View
             angle_e_b_o -= 2 * Math::PI
           end
 
-          radius = (distance / (2.0 * Math.cos(Math::PI / 2.0 - angle_e_b_o.abs))).round(2)
+          radius = (distance / (2.0 * Math.cos((Math::PI / 2.0) - angle_e_b_o.abs))).round(2)
           sweep = angle_e_b_o.negative? ? 0 : 1
           {
             radius: radius,
@@ -202,7 +202,7 @@ module View
         end
 
         def calculate_shift(lane)
-          (lane[1] * 2 - lane[0] + 1) * (@width.to_i + PARALLEL_SPACING[lane[0] - 2]) / 2.0
+          ((lane[1] * 2) - lane[0] + 1) * (@width.to_i + PARALLEL_SPACING[lane[0] - 2]) / 2.0
         end
 
         def calculate_stop_x(ct_edge, tile)
@@ -371,7 +371,7 @@ module View
             )
           end
 
-          return if @path.single? || !@begin_edge && !@end_edge
+          return if @path.single? || (!@begin_edge && !@end_edge)
 
           begin_shift_edge = @begin_edge || @end_edge
           end_shift_edge = @end_edge || @begin_edge

@@ -1458,7 +1458,7 @@ module Engine
           if trains.select { |t| t.owner == @depot }.any? && !option_original_insolvency?
             help << 'Leased trains ignore town/halt allowance.'
             help << "Revenue = #{format_currency(40)} + number_of_stops * #{format_currency(20)}"
-            help << "Max revenue possible: #{format_currency(40 + @depot.min_depot_train.distance[0]['pay'] * 20)}"
+            help << "Max revenue possible: #{format_currency(40 + (@depot.min_depot_train.distance[0]['pay'] * 20))}"
           end
           if trains.select { |t| t.owner == @depot }.any? && option_original_insolvency?
             help << 'Leased trains run for half revenue (but full subsidies).'
@@ -1755,7 +1755,7 @@ module Engine
 
         def revenue_for(route, stops)
           if loaner_new_rules?(route)
-            40 + 20 * stops.size
+            40 + (20 * stops.size)
           elsif loaner_orig_rules?(route)
             (stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) } / 2).ceil
           else

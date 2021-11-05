@@ -75,8 +75,8 @@ module Engine
       @type = opts[:type]&.to_sym
       @hide_shares = opts[:hide_shares] || false
       @reservation_color = opts[:reservation_color]
-      @price_percent = opts[:price_percent] || @second_share&.percent || @presidents_share.percent / 2
-      @price_multiplier = (@second_share&.percent || @presidents_share.percent / 2) / @price_percent
+      @price_percent = opts[:price_percent] || @second_share&.percent || (@presidents_share.percent / 2)
+      @price_multiplier = (@second_share&.percent || (@presidents_share.percent / 2)) / @price_percent
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -254,7 +254,7 @@ module Engine
     end
 
     def share_percent
-      @second_share&.percent || presidents_percent / 2
+      @second_share&.percent || (presidents_percent / 2)
     end
 
     def closed?

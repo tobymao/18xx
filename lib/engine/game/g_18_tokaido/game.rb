@@ -177,7 +177,7 @@ module Engine
           corporations = super(stock_market)
 
           unless @optional_rules&.include?(:no_corporation_discard) || players.size > 3
-            removed = corporations.delete_at(rand % 6 + 1)
+            removed = corporations.delete_at((rand % 6) + 1)
             @log << "Removed #{removed.full_name}"
           end
 

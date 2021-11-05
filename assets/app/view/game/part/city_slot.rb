@@ -46,7 +46,7 @@ module View
         }.freeze
 
         def render_part
-          color = @reservation&.corporation? && @reservation&.reservation_color || 'white'
+          color = (@reservation&.corporation? && @reservation&.reservation_color) || 'white'
           radius = @radius
           show_player_colors = setting_for(:show_player_colors, @game)
           if show_player_colors && (owner = @token&.corporation&.owner) && @game.players.include?(owner)
@@ -126,8 +126,8 @@ module View
           event.JS.stopPropagation
 
           # if remove_token and place_token is possible, remove should only be called when a token is available
-          if actions.include?('remove_token') && !actions.include?('place_token') ||
-            actions.include?('remove_token') && @token
+          if (actions.include?('remove_token') && !actions.include?('place_token')) ||
+            (actions.include?('remove_token') && @token)
             return unless @token
 
             action = Engine::Action::RemoveToken.new(
@@ -171,7 +171,7 @@ module View
           h(:circle, attrs: {
               transform: translate.to_s,
               stroke: @color,
-              r: @boom_radius ||= 10 * (0.8 + route_prop(0, :width).to_i / 40),
+              r: @boom_radius ||= 10 * (0.8 + (route_prop(0, :width).to_i / 40)),
               'stroke-width': 2,
               'stroke-dasharray': 6,
             })

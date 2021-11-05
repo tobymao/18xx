@@ -984,7 +984,7 @@ module Engine
 
         def init_loans
           @loan_value = 100
-          loan_increments = ((self.class::MAX_LOAN - self.class::MIN_LOAN) / self.class::LOAN_INTEREST_INCREMENTS + 1)
+          loan_increments = (((self.class::MAX_LOAN - self.class::MIN_LOAN) / self.class::LOAN_INTEREST_INCREMENTS) + 1)
           total_loans = loan_increments * self.class::LOANS_PER_INCREMENT
           Array.new(total_loans) { |id| Loan.new(id, @loan_value) }
         end

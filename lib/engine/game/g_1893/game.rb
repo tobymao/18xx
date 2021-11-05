@@ -1272,7 +1272,7 @@ module Engine
           value = super
           return value unless sellable_turn?
 
-          value + 100 * player.companies.count { |c| bond?(c) }
+          value + (100 * player.companies.count { |c| bond?(c) })
         end
 
         def buyable?(entity)

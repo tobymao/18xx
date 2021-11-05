@@ -68,7 +68,7 @@ module Engine
             share_price = get_all_par_prices(corporation).find { |par| par.price <= max_share_price }
             process_par(Action::Par.new(entity, corporation: corporation, share_price: share_price))
 
-            additional_cash = bid - share_price.price * 2
+            additional_cash = bid - (share_price.price * 2)
             entity.spend(additional_cash, corporation) if additional_cash.positive?
 
             @auctioning = nil

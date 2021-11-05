@@ -11,7 +11,7 @@ module Engine
             actions = []
             abilities = abilities(entity)
             actions << 'lay_tile' if abilities
-            actions << 'sell_company' if entity.company? && entity.owner == current_entity || entity == current_entity
+            actions << 'sell_company' if (entity.company? && entity.owner == current_entity) || entity == current_entity
 
             actions
           end

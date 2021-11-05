@@ -48,7 +48,7 @@ module View
                   height: "#{ICON_RADIUS * 2}px",
                 },
               }
-              props[:attrs][axis] = ((index - (@assignments.size - 1) / 2) * multiplyer * DELTA).round(2)
+              props[:attrs][axis] = ((index - ((@assignments.size - 1) / 2)) * multiplyer * DELTA).round(2)
 
               h(:image, props)
             end

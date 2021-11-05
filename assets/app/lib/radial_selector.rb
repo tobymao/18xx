@@ -13,8 +13,8 @@ module Lib
       list.map.with_index do |item, index|
         [
           item,
-          distance * Math.cos(index * theta + rotation / 180 * Math::PI) - offset,
-          distance * Math.sin(index * theta + rotation / 180 * Math::PI) - offset,
+          (distance * Math.cos((index * theta) + (rotation / 180 * Math::PI))) - offset,
+          (distance * Math.sin((index * theta) + (rotation / 180 * Math::PI))) - offset,
         ]
       end
     end

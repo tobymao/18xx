@@ -346,7 +346,7 @@ module View
               [edge, (edge - 1) % 6]
             end
             revenue_edge = edges[0] || 0
-            rotation = 60 * revenue_edge + 120
+            rotation = (60 * revenue_edge) + 120
             regions = CENTER_REVENUE_REGIONS[revenue_edge]
           end
 

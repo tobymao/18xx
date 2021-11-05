@@ -19,10 +19,10 @@ module View
       SIZE = 100
 
       FRAME_COLOR_STROKE_WIDTH = 10
-      FRAME_COLOR_POINTS = Lib::Hex.points(scale: 1 - ((FRAME_COLOR_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
+      FRAME_COLOR_POINTS = Lib::Hex.points(scale: 1 - (((FRAME_COLOR_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B)).freeze
 
       HIGHLIGHT_STROKE_WIDTH = 6
-      HIGHLIGHT_POINTS = Lib::Hex.points(scale: 1 - ((HIGHLIGHT_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
+      HIGHLIGHT_POINTS = Lib::Hex.points(scale: 1 - (((HIGHLIGHT_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B)).freeze
 
       LAYOUT = {
         flat: [SIZE * 3 / 2, SIZE * Math.sqrt(3) / 2],
@@ -161,7 +161,7 @@ module View
 
       def self.coordinates(hex, start_pos = [1, 1])
         t_x, t_y = LAYOUT[hex.layout]
-        [(t_x * (hex.x - start_pos[0] + 1) + SIZE).round(2), (t_y * (hex.y - start_pos[1] + 1) + SIZE).round(2)]
+        [((t_x * (hex.x - start_pos[0] + 1)) + SIZE).round(2), ((t_y * (hex.y - start_pos[1] + 1)) + SIZE).round(2)]
       end
 
       def coordinates

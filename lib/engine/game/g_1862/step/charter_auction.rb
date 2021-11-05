@@ -209,7 +209,7 @@ module Engine
           end
 
           def min_required(_entity)
-            highest_bid(@auctioning).price + min_increment + min_par * 3
+            highest_bid(@auctioning).price + min_increment + (min_par * 3)
           end
 
           def min_bid(corporation)

@@ -12,7 +12,7 @@ module Engine
           def actions(entity)
             check_insolvency!(entity)
             return [] if !entity.operator? ||
-                         entity.trains.empty? && !@game.insolvent?(entity) ||
+                         (entity.trains.empty? && !@game.insolvent?(entity)) ||
                          !@game.legal_route?(entity)
 
             ACTIONS
