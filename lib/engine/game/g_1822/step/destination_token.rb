@@ -20,7 +20,7 @@ module Engine
             return [Engine::Action::Pass.new(entity)] unless destination_node_check?(entity)
 
             [Engine::Action::HexToken.new(entity,
-                                          hex: @game.hex_by_id(destination(entity)),
+                                          hex: @game.hex_by_id(entity.destination_coordinates),
                                           token_type: available_tokens(entity).first.type)]
           end
 
@@ -46,7 +46,7 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            destination(entity) == hex.name
+            entity.destination_coordinates == hex.name
           end
 
           def destination_node_check?(entity)
