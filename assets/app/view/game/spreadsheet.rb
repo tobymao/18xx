@@ -337,7 +337,11 @@ module View
           else
             case @spreadsheet_sort_by
             when :id
-              corporation.id
+              if /^\d+$/.match?(corporation.id)
+                [2, corporation.id.to_i]
+              else
+                [1, corporation.id]
+              end
             when :ipo_shares
               num_shares_of(@game.separate_treasury? ? @game.bank : corporation, corporation)
             when :market_shares
