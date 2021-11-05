@@ -12,7 +12,9 @@ module Engine
             entity.companies.delete(company)
             index = entity.tokens.index { |t| !t.hex }
             if index
-              entity.tokens.insert(index, Engine::Token.new(entity))
+              token = Engine::Token.new(entity)
+              token.price = 40
+              entity.tokens.insert(index, token)
             else
               entity.tokens << Engine::Token.new(entity)
             end

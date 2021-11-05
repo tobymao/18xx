@@ -171,16 +171,14 @@ module Engine
             %w[B8 B10 C7 F6 H2 H4 H6 H8 I1 I5 J4 K3] => 'upgrade=cost:40,terrain:mountain',
             %w[B6 D10 D6 D12 I3 I7 J6 K7 K9] => 'town=revenue:0',
             %w[G5] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
-            %w[B12 F4 G3 I9] => 'city=revenue:0',
+            %w[B12 G3 I9] => 'city=revenue:0',
             %w[C9 F8] => 'city=revenue:0;label=Y',
           },
           yellow: {
-            ['C11'] =>
-              'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_1;label=O',
-            ['J8'] =>
-              'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=T',
-            ['J2'] =>
-              'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=Y',
+            ['C11'] => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_1;label=O',
+            ['F4'] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0',
+            ['J8'] => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=T',
+            ['J2'] => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=Y',
           },
           gray: {
             ['A11'] => 'path=a:4,b:5',
@@ -194,24 +192,17 @@ module Engine
               'path=a:5,b:_0;border=edge:0',
             ['A9'] =>
               'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3',
-            ['A13'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:4,b:_0',
-            ['K1'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:1,b:_0',
-            ['L6'] =>
-              'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:1,b:_0;path=a:2,b:_0',
+            ['A13'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:4,b:_0',
+            ['K1'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:1,b:_0',
+            ['L6'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:1,b:_0;path=a:2,b:_0',
           },
           blue: {
             ['E7'] => '',
             ['C13'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:2,b:_0;path=a:3,b:_0',
-            ['E3'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:5,b:_0',
-            ['F10'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:3,b:_0',
-            ['G1'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0',
-            ['J10'] =>
-              'offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:2,b:_0;path=a:3,b:_0',
+            ['E3'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:5,b:_0',
+            ['F10'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:3,b:_0',
+            ['G1'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0',
+            ['J10'] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
       end

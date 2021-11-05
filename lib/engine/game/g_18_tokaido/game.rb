@@ -312,7 +312,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           if route.train.owner.companies.include?(fish_market) && stops.find { |s| s.hex.assigned?(fish_market&.id) }
-            revenue += 20
+            revenue += 10
           end
           if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
             revenue += sleeper_bonus(best_sleeper_route(route))
@@ -332,6 +332,7 @@ module Engine
 
         def timeline
           @timeline = [
+            'First stock round is in reverse order of draft order',
             'At the end of each set of ORs the next available train will be exported (removed, triggering ' \
             'phase change as if purchased)',
           ]
