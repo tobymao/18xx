@@ -12,7 +12,7 @@ module Engine
         include G1822MX::Entities
         include G1822MX::Map
 
-        BIDDING_BOX_START_MINOR = 'M24'
+        BIDDING_BOX_START_MINOR = 'M1'
         BIDDING_BOX_START_MINOR_ADV = 'M14'
 
         CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
@@ -35,9 +35,7 @@ module Engine
           'IRM' => 3,
         }.freeze
 
-        STARTING_CASH = { 2 => 750, 3 => 500, 4 => 375, 5 => 300, 6 => 250, 7 => 215 }.freeze
-
-        STARTING_COMPANIES = %w[P1 P2 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P18
+        STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P18
                                 C1 C2 C3 C4 C5 C6 C7 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15
                                 M16 M17 M18 M19 M20 M21 M22 M23 M24].freeze
 
@@ -182,6 +180,28 @@ module Engine
 
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
+        def operating_round(round_num)
+          G1822::Round::Operating.new(self, [
+            G1822::Step::PendingToken,
+            G1822::Step::FirstTurnHousekeeping,
+            Engine::Step::AcquireCompany,
+            G1822::Step::DiscardTrain,
+            G1822::Step::SpecialChoose,
+            G1822::Step::SpecialTrack,
+            G1822::Step::SpecialToken,
+            G1822MX::Step::Track,
+            G1822::Step::DestinationToken,
+            G1822::Step::Token,
+            G1822::Step::Route,
+            G1822::Step::Dividend,
+            G1822::Step::BuyTrain,
+            G1822::Step::MinorAcquisition,
+            G1822::Step::PendingToken,
+            G1822::Step::DiscardTrain,
+            G1822::Step::IssueShares,
+          ], round_num: round_num)
+        end
+
         def bidbox_start_minor
           return self.class::BIDDING_BOX_START_MINOR_ADV if optional_advanced?
 
@@ -211,6 +231,15 @@ module Engine
 
         def optional_advanced?
           @optional_rules&.include?(:advanced)
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          # If the previous hex is white with a 'T', allow upgrades to 5 or 6
+          if from.hex.tile.label.to_s == 'T' && from.hex.tile.color == :white
+            return true if to.name == '5'
+            return true if to.name == '6'
+          end
+          super
         end
       end
     end
