@@ -234,7 +234,6 @@ module Engine
             G1822::Step::BuySellParShares,
           ])
         end
-
       end
     end
   end
