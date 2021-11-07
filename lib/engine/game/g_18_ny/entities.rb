@@ -92,7 +92,6 @@ module Engine
             revenue: 20,
             desc: 'Owning corporation has exclusive rights to claim coal tokens.',
             color: nil,
-            # TODO: Claim coal tokens if corporation has route to them
           },
           {
             name: 'Erie Canal',
