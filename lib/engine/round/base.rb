@@ -125,13 +125,15 @@ module Engine
       end
 
       def active_step(entity = nil)
-        return @steps.find { |step| step.active? && step.actions(entity).any? } if entity
+        # Steps for companies are non-blocking
+        return @steps.find { |step| step.active? && step.actions(entity).any? } if entity&.company?
+        return @steps.find { |step| step.active? && step.actions(entity).any? && step.blocking? } if entity
 
         @active_step ||= @steps.find { |step| step.active? && step.blocking? }
       end
 
       def auto_actions
-        active_step&.auto_actions(current_entity)
+        active_step(current_entity)&.auto_actions(current_entity)
       end
 
       def finished?
