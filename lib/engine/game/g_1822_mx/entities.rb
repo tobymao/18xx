@@ -286,8 +286,10 @@ module Engine
             name: 'CONCESSION: FCM',
             sym: 'C1',
             value: 100,
+            discount: -100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the FCM director’s certificate.',
+            desc: 'Have a face value $100 and contribute $100 to the conversion into the FCM director’s certificate.'\
+                  'M18 is purchased along with the FCM concession for a minimum bid of $200.',
             abilities: [
               {
                 type: 'exchange',
@@ -304,7 +306,7 @@ module Engine
             sym: 'C2',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the MC director’s certificate.',
+            desc: 'Have a face value $100 and contribute $100 to the conversion into the MC director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -321,7 +323,7 @@ module Engine
             sym: 'C3',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the CHP director’s '\
+            desc: 'Have a face value $100 and contribute $100 to the conversion into the CHP director’s '\
                   'certificate.',
             abilities: [
               {
@@ -339,7 +341,7 @@ module Engine
             sym: 'C4',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the FNM director’s '\
+            desc: 'Have a face value $100 and contribute $100 to the conversion into the FNM director’s '\
                   'certificate.',
             abilities: [
               {
@@ -357,7 +359,7 @@ module Engine
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the MIR director’s certificate.',
+            desc: 'Have a face value $100 and contribute $100 to the conversion into the MIR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -374,7 +376,7 @@ module Engine
             sym: 'C6',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the FCP director’s certificate.',
+            desc: 'Have a face value $100 and contribute $100 to the conversion into the FCP director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -391,7 +393,7 @@ module Engine
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the IRM director’s certificate.',
+            desc: 'Have a face value $100 and contribute £100 to the conversion into the IRM director’s certificate.',
             abilities: [
               {
                 type: 'exchange',

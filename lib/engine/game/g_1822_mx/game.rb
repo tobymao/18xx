@@ -12,9 +12,6 @@ module Engine
         include G1822MX::Entities
         include G1822MX::Map
 
-        BIDDING_BOX_START_MINOR = 'M1'
-        BIDDING_BOX_START_MINOR_ADV = 'M14'
-
         CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
 
         BIDDING_TOKENS = {
@@ -39,6 +36,8 @@ module Engine
 
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
                                    FCM MC CHP FNM MIR FCP IRM].freeze
+
+        CURRENCY_FORMAT_STR = '$%d'
 
         MARKET = [
           %w[5 10 15 20 25 30 35 40 45 50px 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450
@@ -200,12 +199,6 @@ module Engine
           ], round_num: round_num)
         end
 
-        def bidbox_start_minor
-          return self.class::BIDDING_BOX_START_MINOR_ADV if optional_advanced?
-
-          self.class::BIDDING_BOX_START_MINOR
-        end
-
         def discountable_trains_for(corporation)
           discount_info = []
 
@@ -221,14 +214,7 @@ module Engine
         end
 
         def starting_companies
-          return self.class::STARTING_COMPANIES_ADVANCED if optional_advanced?
-          return self.class::STARTING_COMPANIES_TWOPLAYER if @players.size == 2
-
           self.class::STARTING_COMPANIES
-        end
-
-        def optional_advanced?
-          @optional_rules&.include?(:advanced)
         end
 
         def upgrades_to_correct_label?(from, to)
@@ -238,6 +224,13 @@ module Engine
             return true if to.name == '6'
           end
           super
+        end
+
+        def stock_round
+          G1822MX::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1822::Step::BuySellParShares,
+          ])
         end
       end
     end
