@@ -45,7 +45,7 @@ module Engine
           end
 
           def coal_to_claim?(entity)
-            allowed_to_claim_coal?(entity) && @game.connected_coal_hexes(entity).any?
+            allowed_to_claim_coal?(entity) && !@game.connected_coal_hexes(entity).empty?
           end
 
           def process_claim_hex_token(action)
