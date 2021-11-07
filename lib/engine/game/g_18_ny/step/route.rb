@@ -10,8 +10,7 @@ module Engine
           def process_run_routes(action)
             super
             action.routes.flat_map(&:stops).select { |stop| stop.hex.assigned?('connection_bonus') }.each do |stop|
-              stop.hex.remove_assignment!('connection_bonus')
-              @game.claim_connection_bonus(action.entity)
+              @game.claim_connection_bonus(action.entity, stop.hex)
             end
           end
         end
