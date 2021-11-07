@@ -153,6 +153,10 @@ module Engine
             ['Capitalization Round', 'Special Capitalization Round before next Stock Round'],
         ).freeze
 
+        ERIE_CANAL_ICON = 'canal'
+        CONNECTION_BONUS_ICON = 'connection_bonus'
+        COAL_ICON = 'coal'
+
         ASSIGNMENT_TOKENS = {
           'connection_bonus' => '/icons/18_ny/connection_bonus.svg',
           'coal' => '/icons/18_ny/coal.svg',
@@ -160,10 +164,7 @@ module Engine
 
         CONNECTION_BONUS_HEXES =
           %w[A13 A19 A23 B12 C11 C23 C25 D0 D18 D20 E9 F10 F12 G9 G13 G19 G21 G25 I19 I23 J18 J22 J26 K19].freeze
-
-        COAL_TOKEN_HEXES = %w[G1 H4 H10 H12 J14 K17].freeze
-
-        ERIE_CANAL_ICON = 'canal'
+        COAL_LOCATIONS = [%w[F0 G1], %w[H2 H4], %w[H6 H8 H10], ['H12'], %w[I13 J14], %w[K15 K17]].freeze
 
         def setup
           @interest = {}
@@ -174,15 +175,20 @@ module Engine
         end
 
         def init_connection_bonuses
-          CONNECTION_BONUS_HEXES.each { |hex_id| hex_by_id(hex_id).assign!('connection_bonus') }
+          CONNECTION_BONUS_HEXES.each { |hex_id| hex_by_id(hex_id).assign!(CONNECTION_BONUS_ICON) }
         end
 
         def init_coal_tokens
-          COAL_TOKEN_HEXES.each { |hex_id| hex_by_id(hex_id).assign!('coal') }
+          @coal_locations = COAL_LOCATIONS.map { |loc| loc.map { |hex_id| hex_by_id(hex_id) } }
+          @coal_locations.flat_map(&:last).each { |hex| hex.assign!(COAL_ICON) }
         end
 
         def erie_canal_private
           @erie_canal_private ||= @companies.find { |c| c.id == 'EC' }
+        end
+
+        def coal_fields_private
+          @coal_fields_private ||= @companies.find { |c| c.id == 'PCF' }
         end
 
         def init_stock_market
@@ -207,6 +213,7 @@ module Engine
           G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
             Engine::Step::BuyCompany,
+            G18NY::Step::CheckCoalConnection,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
@@ -425,13 +432,13 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super + (stops.count { |stop| stop.hex.assigned?('connection_bonus') } * 10)
+          super + (stops.count { |stop| stop.hex.assigned?(CONNECTION_BONUS_ICON) } * 10)
         end
 
         def revenue_str(route)
           str = super
 
-          if (num_bonuses = route.stops.count { |stop| stop.hex.assigned?('connection_bonus') }).positive?
+          if (num_bonuses = route.stops.count { |stop| stop.hex.assigned?(CONNECTION_BONUS_ICON) }).positive?
             str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}"
           end
 
@@ -440,16 +447,19 @@ module Engine
 
         def routes_revenue(routes)
           revenue = super
-          revenue += connection_bonus(routes.first.corporation) unless routes.empty?
+          revenue += connection_bonus_revenue(current_entity)
+          revenue += coal_revenue(current_entity)
 
           revenue
         end
 
-        def connection_bonus(entity)
+        def connection_bonus_revenue(entity)
           abilities(entity, :connection_bonus)&.bonus_revenue || 0
         end
 
-        def claim_connection_bonus(entity)
+        def claim_connection_bonus(entity, hex)
+          @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{hex.location_name})"
+          hex.remove_assignment!('connection_bonus')
           if (ability = abilities(entity, :connection_bonus))
             ability.bonus_revenue += 10
           else
@@ -465,6 +475,37 @@ module Engine
           return unless (ability = @game.abilities(entity, :connection_bonus))
 
           entity.remove_ability(ability)
+        end
+
+        def coal_revenue(entity)
+          abilities(entity, :coal_revenue)&.bonus_revenue || 0
+        end
+
+        def connected_coal_hexes(entity)
+          return if @coal_locations.empty?
+
+          graph.connected_hexes(entity).keys & @coal_locations.flatten
+        end
+
+        def claim_coal_token(entity, hex)
+          claimed_location = @coal_locations.find { |loc| loc.include?(hex) }
+          @log << "#{entity.name} claims the coal token at #{hex.name} (#{coal_location_name(claimed_location)})"
+          claimed_location.each { |h| h.remove_assignment!(COAL_ICON) }
+          @coal_locations.delete(claimed_location)
+
+          if (ability = abilities(entity, :coal_revenue))
+            ability.bonus_revenue += 10
+          else
+            add_coal_token_ability(entity)
+          end
+        end
+
+        def add_coal_token_ability(entity, _num_tokens)
+          entity.add_ability(G18NY::Ability::CoalRevenue.new(type: :coal_revenue, bonus_revenue: 10))
+        end
+
+        def coal_location_name(location)
+          location.find(&:location_name)&.location_name
         end
 
         def remove_train(train)

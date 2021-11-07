@@ -6,7 +6,7 @@ module Engine
   module Game
     module G18NY
       module Ability
-        class ConnectionBonus < Engine::Ability::Base
+        class CoalRevenue < Engine::Ability::Base
           attr_accessor :bonus_revenue
 
           def setup(bonus_revenue:)
@@ -14,7 +14,7 @@ module Engine
           end
 
           def description
-            "Connection Bonus Revenue: $#{bonus_revenue}"
+            "Coal Revenue: $#{bonus_revenue}"
           end
         end
       end

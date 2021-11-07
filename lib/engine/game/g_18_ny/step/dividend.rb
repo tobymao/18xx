@@ -13,6 +13,16 @@ module Engine
           include Engine::Step::HalfPay
           include Engine::Step::MinorHalfPay
 
+          def actions(entity)
+            return self.class::ACTIONS if entity.corporation? && bonus_revenue(entity).positive?
+
+            super
+          end
+
+          def bonus_revenue(entity)
+            @game.connection_bonus_revenue(entity) + @game.coal_revenue(entity)
+          end
+
           def share_price_change(entity, revenue = 0)
             price = entity.share_price.price
             return { share_direction: :right, share_times: 1 } if entity.type == :minor
