@@ -42,6 +42,8 @@ module Engine
 
         ALL_COMPANIES_ASSIGNABLE = true
 
+        CLOSED_CORP_TRAINS_REMOVED = false
+
         TRACK_RESTRICTION = :permissive
 
         # Two lays with one being an upgrade. Tile lays cost 20
