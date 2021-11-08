@@ -34,9 +34,11 @@ module Engine
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
 
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+
         SELL_BUY_ORDER = :sell_buy
 
-        GAME_END_CHECK = { bank: :full_or, custom: :immediate }.freeze
+        GAME_END_CHECK = { banrkupt: :immediate, bank: :full_or, custom: :immediate }.freeze
 
         ALL_COMPANIES_ASSIGNABLE = true
 
@@ -506,6 +508,22 @@ module Engine
 
         def coal_location_name(location)
           location.find(&:location_name)&.location_name
+        end
+
+        def salvage_value(train)
+          train.price / 4
+        end
+
+        def salvage_train(train)
+          owner = train.owner
+          @log << "#{owner.name} salvages a #{train.name} train for #{format_currency(salvage_value(train))}"
+          @bank.spend(salvage_value(train), owner)
+          @depot.reclaim_train(train)
+        end
+
+        def rust(train)
+          salvage_train(train)
+          super
         end
 
         def remove_train(train)
