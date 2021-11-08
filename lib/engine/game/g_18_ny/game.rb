@@ -216,7 +216,7 @@ module Engine
         def operating_round(round_num)
           G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
-            Engine::Step::BuyCompany,
+            G18NY::Step::BuyCompany,
             G18NY::Step::CheckCoalConnection,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::SpecialTrack,
@@ -230,7 +230,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             G18NY::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G18NY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
