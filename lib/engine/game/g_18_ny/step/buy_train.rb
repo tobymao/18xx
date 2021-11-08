@@ -51,12 +51,10 @@ module Engine
           end
 
           def spend_minmax(entity, train)
-            # Must buy/sell at list price if either corporation has loans
-            if !entity.loans.empty? || (train.owner&.corporation? && !train.owner.loans.empty?)
-              [train.price, train.price]
-            else
-              super
-            end
+            minmax = super
+            minmax.first = train.price if train.owner&.corporation? && !train.owner.loans.empty?
+            minmax.last = train.price unless entity.loans.empty?
+            minmax
           end
 
           def process_take_loan(action)
