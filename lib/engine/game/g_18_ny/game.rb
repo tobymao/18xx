@@ -38,7 +38,7 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
 
-        GAME_END_CHECK = { banrkupt: :immediate, bank: :full_or, custom: :immediate }.freeze
+        GAME_END_CHECK = { banrkupt: :immediate, bank: :full_or, custom: :full_or }.freeze
 
         ALL_COMPANIES_ASSIGNABLE = true
 
@@ -237,6 +237,10 @@ module Engine
         def next_round!
           clear_interest_paid
           super
+        end
+
+        def custom_end_game_reached?
+          @corporations.count { |c| !c.closed? } <= 1
         end
 
         #
