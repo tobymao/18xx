@@ -545,6 +545,12 @@ module Engine
           remove_connection_bonus_ability(owner) if owner.trains.size.zero? && current_entity != owner
         end
 
+        def must_buy_train?(entity)
+          return false if entity.type == :minor
+
+          super
+        end
+
         def init_loans
           @loan_value = 50
           # 11 minors * 2, 8 majors * 10
