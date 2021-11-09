@@ -20,15 +20,15 @@ module Engine
               bundle = ShareBundle.new(shares)
               @game.share_pool.transfer_shares(bundle, @game.share_pool, allow_president_change: true)
 
-              if corporation.owner == player && corporation.share_price.price.positive?
-                @log << "-- #{corporation.name} enters receivership (it has no president) --"
-                corporation.owner = @game.share_pool
-                @game.round.force_next_entity!
-              end
+              next unless corporation.owner == player && corporation.share_price.price.positive?
+
+              @log << "-- #{corporation.name} enters receivership (it has no president) --"
+              corporation.owner = @game.share_pool
+              @game.round.force_next_entity!
             end
 
             if player.companies.any?
-              # TODO companies should be buyable
+              # TODO: companies should be buyable
               @log << "#{player.name}'s companies close: #{player.companies.map(&:sym).join(', ')}"
               player.companies.dup.each(&:close!)
             end
