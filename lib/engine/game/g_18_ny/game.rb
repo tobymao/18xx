@@ -480,7 +480,7 @@ module Engine
         end
 
         def remove_connection_bonus_ability(entity)
-          return unless (ability = @game.abilities(entity, :connection_bonus))
+          return unless (ability = abilities(entity, :connection_bonus))
 
           entity.remove_ability(ability)
         end
