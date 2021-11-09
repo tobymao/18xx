@@ -216,6 +216,7 @@ module Engine
         def operating_round(round_num)
           G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
+            G18NY::Step::Bankrupt,
             G18NY::Step::BuyCompany,
             G18NY::Step::CheckCoalConnection,
             G18NY::Step::EmergencyMoneyRaising,
@@ -324,6 +325,10 @@ module Engine
         end
 
         def can_hold_above_corp_limit?(_entity)
+          true
+        end
+
+        def can_buy_presidents_share_directly_from_market?
           true
         end
 
