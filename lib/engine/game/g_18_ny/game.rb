@@ -36,7 +36,7 @@ module Engine
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
-        SELL_BUY_ORDER = :sell_buy
+        SELL_BUY_ORDER = :sell_buy_or_buy_sell
 
         GAME_END_CHECK = { banrkupt: :immediate, bank: :full_or, custom: :full_or }.freeze
 
