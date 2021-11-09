@@ -24,7 +24,7 @@ module Engine
           end
 
           def ebuy_president_can_contribute?(corporation)
-            president_may_contribute?(corporation)
+            super && president_may_contribute?(corporation)
           end
 
           def president_may_contribute?(entity, _shell = nil)
