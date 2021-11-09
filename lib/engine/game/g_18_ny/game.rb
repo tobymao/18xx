@@ -36,11 +36,13 @@ module Engine
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
-        SELL_BUY_ORDER = :sell_buy
+        SELL_BUY_ORDER = :sell_buy_or_buy_sell
 
-        GAME_END_CHECK = { banrkupt: :immediate, bank: :full_or, custom: :immediate }.freeze
+        GAME_END_CHECK = { banrkupt: :immediate, bank: :full_or, custom: :full_or }.freeze
 
         ALL_COMPANIES_ASSIGNABLE = true
+
+        CLOSED_CORP_TRAINS_REMOVED = false
 
         TRACK_RESTRICTION = :permissive
 
@@ -214,7 +216,8 @@ module Engine
         def operating_round(round_num)
           G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
-            Engine::Step::BuyCompany,
+            G18NY::Step::Bankrupt,
+            G18NY::Step::BuyCompany,
             G18NY::Step::CheckCoalConnection,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::SpecialTrack,
@@ -228,13 +231,17 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             G18NY::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G18NY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
         def next_round!
           clear_interest_paid
           super
+        end
+
+        def custom_end_game_reached?
+          @corporations.count { |c| !c.closed? } <= 1
         end
 
         #
@@ -317,7 +324,11 @@ module Engine
           super
         end
 
-        def can_hold_above_limit?(_entity)
+        def can_hold_above_corp_limit?(_entity)
+          true
+        end
+
+        def can_buy_presidents_share_directly_from_market?
           true
         end
 
@@ -474,7 +485,7 @@ module Engine
         end
 
         def remove_connection_bonus_ability(entity)
-          return unless (ability = @game.abilities(entity, :connection_bonus))
+          return unless (ability = abilities(entity, :connection_bonus))
 
           entity.remove_ability(ability)
         end
@@ -532,6 +543,12 @@ module Engine
           return unless owner&.corporation?
 
           remove_connection_bonus_ability(owner) if owner.trains.size.zero? && current_entity != owner
+        end
+
+        def must_buy_train?(entity)
+          return false if entity.type == :minor
+
+          super
         end
 
         def init_loans

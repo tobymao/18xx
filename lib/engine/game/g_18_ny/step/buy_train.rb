@@ -11,6 +11,7 @@ module Engine
           def actions(entity)
             actions = super
             return actions unless entity.corporation?
+            return [] if entity.receivership?
 
             actions << 'buy_train' if !actions.include?('buy_train') && must_buy_train?(entity)
             actions << 'scrap_train' unless scrappable_trains(entity).empty?
@@ -24,7 +25,7 @@ module Engine
           end
 
           def ebuy_president_can_contribute?(corporation)
-            president_may_contribute?(corporation)
+            super && president_may_contribute?(corporation)
           end
 
           def president_may_contribute?(entity, _shell = nil)
@@ -43,6 +44,11 @@ module Engine
             'Salvage'
           end
 
+          def setup
+            super
+            @train_salvaged = false
+          end
+
           def issuable_shares(entity)
             # Issue is part of emergency buy
             return [] unless ebuy_president_can_contribute?(entity)
@@ -51,12 +57,14 @@ module Engine
           end
 
           def spend_minmax(entity, train)
-            # Must buy/sell at list price if either corporation has loans
-            if !entity.loans.empty? || (train.owner&.corporation? && !train.owner.loans.empty?)
-              [train.price, train.price]
-            else
-              super
-            end
+            minmax = super
+            minmax.first = train.price if train.owner&.corporation? && !train.owner.loans.empty?
+            minmax.last = train.price unless entity.loans.empty?
+            minmax
+          end
+
+          def pass_if_cannot_buy_train?(entity)
+            scrappable_trains(entity).empty?
           end
 
           def process_take_loan(action)

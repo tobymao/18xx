@@ -980,6 +980,10 @@ module Engine
         end
       end
 
+      def can_buy_presidents_share_directly_from_market?
+        false
+      end
+
       def shares_for_presidency_swap(shares, num_shares)
         shares.take(num_shares)
       end
