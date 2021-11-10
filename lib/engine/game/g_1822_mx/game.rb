@@ -236,7 +236,7 @@ module Engine
             G1822::Step::BuySellParShares,
           ])
         end
-        
+
         def must_buy_train?(entity)
           entity.trains.empty? && entity.id != 'NDEM'
         end
@@ -245,6 +245,7 @@ module Engine
           phase = @phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par')
           ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
           return ipoed.sort unless phase
+
           ipoed.sort + others
         end
 
@@ -261,7 +262,7 @@ module Engine
           ndem = corporation_by_id('NDEM')
 
           # Replace token
-          city = hex_by_id(corporation.coordinates)&.tile.cities[corporation.city]
+          city = hex_by_id(corporation.coordinates).tile.cities[corporation.city]
           city.remove_reservation!(corporation)
           city.place_token(ndem, ndem.find_token_by_type)
 
@@ -290,18 +291,16 @@ module Engine
         end
 
         def send_train_to_ndem(train)
-          ndem = corporation_by_id('NDEM')
-
           depot.remove_train(train)
+          ndem = corporation_by_id('NDEM')
           ndem.trains.shift if ndem.trains.length == phase.train_limit(ndem)
           ndem.trains << train
         end
-  
+
         def setup
           super
           setup_ndem
         end
-
       end
     end
   end

@@ -9,7 +9,8 @@ module Engine
         class Track < Engine::Game::G1822::Step::Track
           def actions(entity)
             return super(entity) unless entity.id == 'NDEM'
-            return []
+
+            []
           end
 
           def process_lay_tile(action)
