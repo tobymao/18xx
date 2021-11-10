@@ -25,3 +25,6 @@ hotseat002: (needs replacement)
 
  hotseat007:
  * based off of #45471 - dit downgrade
+
+ 51745
+ * Based off of #51745 - confirm that the nationalization of the Kitchener token is free
