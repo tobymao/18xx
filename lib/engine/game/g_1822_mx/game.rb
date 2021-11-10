@@ -256,7 +256,7 @@ module Engine
         def replace_minor_with_ndem(company)
           # Remove minor
           @companies.delete(company)
-          @log << "-- #{company.id} is removed from the game and replaced with NdeM"
+          @log << "-- #{company.sym} is removed from the game and replaced with NdeM"
 
           corporation = corporation_from_company(company)
           ndem = corporation_by_id('NDEM')
