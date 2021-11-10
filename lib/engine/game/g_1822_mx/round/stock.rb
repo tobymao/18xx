@@ -26,6 +26,38 @@ module Engine
             @game.share_pool.transfer_shares(ShareBundle.new(minor.shares.first), player)
             @game.after_par(minor)
           end
+
+          def remove_l_trains(count)
+            print ("1822MX:remove_l_trains")
+            total_count = count
+            removed_trains = 0
+            while (train = @game.depot.upcoming.first).name == 'L' && count.positive?
+              @game.send_train_to_ndem(train)
+              count -= 1
+              removed_trains += 1
+            end
+            @game.log << if total_count != removed_trains
+                           "#{total_count} minors with no bids. The last #{removed_trains} L trains have been removed and given to the NdeM"
+                         else
+                           "#{total_count} minors with no bids. #{removed_trains} L trains have been removed and given to the NdeM"
+                         end
+          end
+
+          def remove_minor_and_first_train(company)
+            print ("1822MX:remove_minor_and_first_train")
+
+            train = @game.depot.upcoming.first
+            @game.log << "No bids on minor #{company.id}, it will close and a #{train.name} train is given to the NdeM"
+            @game.send_train_to_ndem(train)
+
+            ## Find the correct minor in the corporations and close it
+            minor = @game.find_corporation(company)
+            @game.close_corporation(minor)
+
+            # Remove the proxy company for the minor
+            @game.companies.delete(company)
+          end
+
         end
       end
     end

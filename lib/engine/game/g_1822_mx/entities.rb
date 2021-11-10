@@ -1143,6 +1143,18 @@ module Engine
             destination_coordinates: 'N27',
             destination_icon: '1822_mx/IRM_DEST',
           },
+          {
+            sym: 'NDEM',
+            name: 'Ferrocarriles Nacionales de Mexico',
+            logo: '1822_mx/NDEM',
+            tokens: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            shares: [10, 10, 10],
+            type: 'major',
+            always_market_price: true,
+            city: 5,
+            color: '#525600',
+            reservation_color: nil,
+          },
         ].freeze
       end
     end

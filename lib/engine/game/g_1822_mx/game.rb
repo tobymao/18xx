@@ -37,9 +37,11 @@ module Engine
                                 M16 M17 M18 M19 M20 M21 M22 M23 M24].freeze
 
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                                   FCM MC CHP FNM MIR FCP IRM].freeze
+                                   FCM MC CHP FNM MIR FCP IRM NDEM].freeze
 
         CURRENCY_FORMAT_STR = '$%d'
+
+        attr_accessor :number_ndem_shares
 
         MARKET = [
           %w[5 10 15 20 25 30 35 40 45 50px 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450
@@ -180,7 +182,7 @@ module Engine
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
         def operating_round(round_num)
-          G1822::Round::Operating.new(self, [
+          G1822MX::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
@@ -234,6 +236,72 @@ module Engine
             G1822::Step::BuySellParShares,
           ])
         end
+        
+        def must_buy_train?(entity)
+          entity.trains.empty? && entity.id != 'NDEM'
+        end
+
+        def sorted_corporations
+          phase = @phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par')
+          ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
+          return ipoed.sort unless phase
+          ipoed.sort + others
+        end
+
+        def corporation_from_company(company)
+          corporation_by_id(company.id[1..-1])
+        end
+
+        def replace_minor_with_ndem(company)
+          # Remove minor
+          @companies.delete(company)
+          @log << "-- #{company.id} is removed from the game and replaced with NdeM"
+
+          corporation = corporation_from_company(company)
+          ndem = corporation_by_id('NDEM')
+
+          # Replace token
+          city = hex_by_id(corporation.coordinates)&.tile.cities[corporation.city]
+          city.remove_reservation!(corporation)
+          city.place_token(ndem, ndem.find_token_by_type)
+
+          # Add a stock certificate
+          new_share = Share.new(ndem, percent: 10, index: @number_ndem_shares)
+          ndem.shares_by_corporation[ndem] << new_share
+          @number_ndem_shares += 1
+        end
+
+        def setup_ndem
+          # Find the first of (M14, M15, and M17) to remove for the NdeM.  The rules say to randomize
+          # the entire stack, and then find the earliest one of the three.  This will result in a
+          # slightly different order than just pulling one out to start...
+          @number_ndem_shares = 3
+
+          ndem_minor_index = [@companies.index { |c| c.id == 'M14' },
+                              @companies.index { |c| c.id == 'M15' },
+                              @companies.index { |c| c.id == 'M17' }].min
+          replace_minor_with_ndem(@companies[ndem_minor_index])
+
+          ndem = corporation_by_id('NDEM')
+          stock_market.set_par(ndem, stock_market.par_prices.find { |pp| pp.price == 100 })
+          ndem.ipoed = true
+          ndem.owner = @share_pool # Not clear this is needed
+          after_par(ndem) # Not clear this is needed
+        end
+
+        def send_train_to_ndem(train)
+          ndem = corporation_by_id('NDEM')
+
+          depot.remove_train(train)
+          ndem.trains.shift if ndem.trains.length == phase.train_limit(ndem)
+          ndem.trains << train
+        end
+  
+        def setup
+          super
+          setup_ndem
+        end
+
       end
     end
   end
