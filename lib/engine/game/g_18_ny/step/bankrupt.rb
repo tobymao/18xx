@@ -28,9 +28,8 @@ module Engine
             end
 
             if player.companies.any?
-              # TODO: companies should be buyable
-              @log << "#{player.name}'s companies close: #{player.companies.map(&:sym).join(', ')}"
-              player.companies.dup.each(&:close!)
+              @log << "#{player.name}'s companies go to the bank: #{player.companies.map(&:sym).join(', ')}"
+              player.companies.each { |c| c.owner = @game.bank }
             end
 
             @log << "#{@game.format_currency(player.cash)} is transferred from "\

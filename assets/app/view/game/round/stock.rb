@@ -369,7 +369,7 @@ module View
         end
 
         def render_bid_input(company)
-          return [] unless @step.can_bid?(@current_entity, company)
+          return [] unless @step.respond_to?(:can_bid_company?) && @step.can_bid_company?(@current_entity, company)
 
           [h(Bid, entity: @current_entity, corporation: company)]
         end
