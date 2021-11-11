@@ -55,7 +55,12 @@ module Engine
           def can_acquire?(entity, corporation)
             return false if entity == corporation
             return false if corporation.closed? || !corporation.floated?
-            return false if entity.cash < @game.acquisition_cost(entity, corporation)
+            
+            acquisition_cost = @game.acquisition_cost(entity, corporation)
+            if (num_loans_over_the_limit = entity.loans.size + corporation.loans.size - @game.maximum_loans(entity)).positive?
+              acquistion_cost += num_loans_over_the_limit * @game.initial_loan_value
+            end
+            return false if acquisition_cost > entity.cash
 
             corporation_tokened_cities = corporation.tokens.select(&:used).map(&:city)
             !(@game.graph.connected_nodes(entity).keys & corporation_tokened_cities).empty?

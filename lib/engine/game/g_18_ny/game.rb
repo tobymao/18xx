@@ -595,6 +595,10 @@ module Engine
           entity.num_player_shares
         end
 
+        def loan_face_value
+          @loan_value
+        end
+
         def loan_value(entity = nil)
           @loan_value - (entity && interest_paid?(entity) ? interest_rate : 0)
         end
