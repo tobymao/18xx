@@ -58,8 +58,8 @@ module Engine
 
           def spend_minmax(entity, train)
             minmax = super
-            minmax.first = train.price if train.owner&.corporation? && !train.owner.loans.empty?
-            minmax.last = train.price unless entity.loans.empty?
+            minmax[0] = train.price if train.owner&.corporation? && !train.owner.loans.empty?
+            minmax[-1] = train.price unless entity.loans.empty?
             minmax
           end
 
