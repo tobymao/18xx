@@ -231,6 +231,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             G18NY::Step::BuyTrain,
+            G18NY::Step::AcquireCorporation,
             [G18NY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -640,6 +641,18 @@ module Engine
           num_loans = maximum_loans(entity) - entity.loans.size
           entity.cash + (num_loans * loan_value(entity))
         end
+
+        def acquisition_cost(entity, corporation)
+          if corporation.type == :minor
+            multiplier = entity.owner == corporation.owner ? 2 : 5
+            return corporation.share_price.price * multiplier
+          end
+
+          multiplier = entity.owner == corporation.owner ? 1 : 3
+          corporation.share_price.price * multiplier * 10
+        end
+
+        def acquire_corporation(entity, corporation); end
       end
     end
   end
