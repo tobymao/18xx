@@ -667,8 +667,8 @@ module Engine
 
         MARKET_TEXT = {
           par: 'Par values for non-merged corporations',
-          par_1: 'Par value for AGV',
-          par_2: 'Par value for HGK',
+          par_1: 'Par value for HGK',
+          par_2: 'Par value for AGV',
         }.freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
