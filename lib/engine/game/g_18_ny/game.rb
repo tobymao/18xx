@@ -649,7 +649,7 @@ module Engine
           end
 
           multiplier = entity.owner == corporation.owner ? 1 : 3
-          corporation.share_price.price * multiplier * 10
+          corporation.share_price.price * multiplier * corporation.num_player_shares
         end
 
         def acquire_corporation(entity, corporation); end
