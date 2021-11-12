@@ -55,7 +55,7 @@ module Engine
           def can_acquire?(entity, corporation)
             return false if entity == corporation
             return false if corporation.closed? || !corporation.floated?
-            
+
             acquisition_cost = @game.acquisition_cost(entity, corporation)
             if (num_loans_over_the_limit = entity.loans.size + corporation.loans.size - @game.maximum_loans(entity)).positive?
               acquistion_cost += num_loans_over_the_limit * @game.loan_face_value
