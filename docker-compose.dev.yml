@@ -5,7 +5,7 @@ x-rack: &rack
   environment:
     DATABASE_URL: postgres://root:password@db:5432/18xx_development
     RACK_ENV: development
-    RUBYOPTS: --jit
+    RUBYOPTS: --yjit
   build:
     args:
       RACK_ENV: development

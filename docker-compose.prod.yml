@@ -9,7 +9,7 @@ x-rack: &rack
     ELASTIC_KEY: $ELASTIC_KEY
     NEW_RELIC_LICENSE_KEY: $NEW_RELIC_LICENSE_KEY
     SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
-    RUBYOPTS: --jit
+    RUBYOPTS: --yjit
     PORT: 9292
   restart: always
   build:
