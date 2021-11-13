@@ -661,6 +661,7 @@ module Engine
         end
 
         def acquire_corporation(entity, corporation)
+          @round.acquisition_corporations = [entity, corporation]
           acquisition_verb = entity.owner == corporation.owner ? 'merges with' : 'takes over'
           @log << "-- #{entity.name} #{acquisition_verb} #{corporation.name} --"
 
@@ -683,7 +684,7 @@ module Engine
 
           # Combine assets
           if corporation.cash.positive?
-            @log << "#{entity.name} acquires #{format_currency(corporation.cash)} from #{corporation.name}"
+            @log << "#{entity.name} acquires #{format_currency(corporation.cash)}"
             corporation.spend(corporation.cash, entity)
           end
 
@@ -710,14 +711,21 @@ module Engine
             end
           end
 
+          corporation.companies.each do |company|
+            @log << "#{entity.name} acquires #{company.name}"
+            company.owner = entity
+            entity.companies << company
+          end
+          corporation.companies.clear
+
           unless corporation.trains.empty?
             trains_str = corporation.trains.map(&:name).join(', ')
-            @log << "#{entity.name} acquires a #{trains_str} from #{corporation.name}"
+            @log << "#{entity.name} acquires a #{trains_str}"
             corporation.trains.dup.each { |t| buy_train(entity, t, :free) }
           end
 
           if (revenue = coal_revenue(corporation)).positive?
-            @log << "#{entity.name} acquires #{format_currency(revenue)} in coal revenue from #{corporation.name}"
+            @log << "#{entity.name} acquires #{format_currency(revenue)} in coal revenue"
 
             if (ability = abilities(entity, :coal_revenue))
               ability.bonus_revenue += revenue
@@ -734,7 +742,6 @@ module Engine
           max_tokens = [entity.tokens.count { |t| !t.used }, corporation.tokens.count(&:used)].min
           if max_tokens.positive?
             @log << "#{entity.name} can replace up to #{max_tokens} of #{corporation.name}'s tokens"
-            @round.acquisition_corporations = [entity, corporation]
           else
             complete_acquisition(entity, corporation)
           end
