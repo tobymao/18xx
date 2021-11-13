@@ -217,6 +217,7 @@ module Engine
           G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
             G18NY::Step::Bankrupt,
+            G18NY::Step::ReplaceTokens,
             G18NY::Step::BuyCompany,
             G18NY::Step::CheckCoalConnection,
             G18NY::Step::EmergencyMoneyRaising,
@@ -725,8 +726,22 @@ module Engine
             end
           end
 
-          # TODO: Tokens have to be chosen
+          tokened_cities = entity.tokens.select(&:used).map(&:city)
+          corporation.tokens.select(&:used).dup.each do |t|
+            t.destroy! if tokened_cities.include?(t.city)
+          end
 
+          max_tokens = [entity.tokens.count { |t| !t.used }, corporation.tokens.count(&:used)].min
+          if max_tokens.positive?
+            @log << "#{entity.name} can replace up to #{max_tokens} of #{corporation.name}'s tokens"
+            @round.acquisition_corporations = [entity, corporation]
+          else
+            complete_acquisition(entity, corporation)
+          end
+        end
+
+        def complete_acquisition(_entity, corporation)
+          @round.acquisition_corporations = []
           close_corporation(corporation, quiet: true)
         end
       end
