@@ -28,7 +28,7 @@ module Engine
             super
           end
 
-          def merge_name
+          def merge_name(_entity = nil)
             'Merge'
           end
 

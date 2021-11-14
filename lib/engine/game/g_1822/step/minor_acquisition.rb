@@ -56,7 +56,7 @@ module Engine
             'Acquire a minor'
           end
 
-          def merge_name
+          def merge_name(_entity = nil)
             'Acquire a minor'
           end
 

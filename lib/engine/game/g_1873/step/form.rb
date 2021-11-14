@@ -15,7 +15,7 @@ module Engine
             MERGE_ACTION
           end
 
-          def merge_name
+          def merge_name(_entity = nil)
             'Merge'
           end
 

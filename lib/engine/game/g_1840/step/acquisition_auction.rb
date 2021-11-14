@@ -126,7 +126,7 @@ module Engine
             @auctioning
           end
 
-          def merge_name
+          def merge_name(_entity = nil)
             'Select Tram for auction'
           end
 

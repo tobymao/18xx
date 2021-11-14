@@ -191,8 +191,9 @@ module View
               store(:flash_opts, 'Select a corporation to merge with')
             end
           end
-
-          h(:button, { on: { click: merge } }, @step.merge_name)
+          puts @selected_corporation
+          h(:button, { attrs: { disabled: !@selected_corporation }, on: { click: merge } },
+            @step.merge_name(@selected_corporation))
         end
       end
     end

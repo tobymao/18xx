@@ -18,8 +18,14 @@ module Engine
             return [Engine::Action::Pass.new(entity)] if acquisition_candidates(entity).empty?
           end
 
-          def merge_name
-            'Merge/Takeover'
+          def merge_name(entity = nil)
+            return 'Merge/Takeover' unless entity
+
+            "#{merge_type(entity)} (#{@game.format_currency(@game.acquisition_cost(current_entity, entity))})"
+          end
+
+          def merge_type(entity)
+            current_entity.owner == entity.owner ? 'Merge' : 'Takeover'
           end
 
           def merger_auto_pass_entity
