@@ -244,7 +244,40 @@ module Engine
 
         def next_round!
           clear_interest_paid
-          super
+
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                if [:pending, :round_one_complete].include?(nyc_formation)
+                  new_nyc_formation_round
+                else
+                  new_stock_round
+                end
+              end
+            when G18NY::Round::NYCFormation
+              if nyc_formation == :pending
+                nyc_formation(:round_one_complete)
+              else
+                # Handle non-connected minors
+                nyc_formation(:complete)
+              end
+              new_stock_round
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
         end
 
         def custom_end_game_reached?
