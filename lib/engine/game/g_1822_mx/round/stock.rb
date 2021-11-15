@@ -50,11 +50,7 @@ module Engine
             @game.send_train_to_ndem(train)
 
             ## Find the correct minor in the corporations and close it
-            minor = @game.find_corporation(company)
-            @game.close_corporation(minor)
-
-            # Remove the proxy company for the minor
-            @game.companies.delete(company)
+            @game.replace_minor_with_ndem(company)
           end
         end
       end

@@ -182,7 +182,7 @@ module Engine
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
         def operating_round(round_num)
-          G1822MX::Round::Operating.new(self, [
+          G1822::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
@@ -233,7 +233,7 @@ module Engine
         def stock_round
           G1822MX::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1822::Step::BuySellParShares,
+            G1822MX::Step::BuySellParShares,
           ])
         end
 
@@ -268,22 +268,31 @@ module Engine
 
           # Add a stock certificate
           new_share = Share.new(ndem, percent: 10, index: @number_ndem_shares)
-          ndem.shares_by_corporation[ndem] << new_share
+          new_share.counts_for_limit = false
+          @share_pool.transfer_shares(new_share.to_bundle, @share_pool, allow_president_change: false)
           @number_ndem_shares += 1
         end
 
         def setup_ndem
+          @number_ndem_shares = 3
+          ndem = corporation_by_id('NDEM')
+
+          # Make the NDEM shares not count against the cert limit and move them to the bank pool
+          ndem.shares_by_corporation[ndem].each { |share| share.counts_for_limit = false }
+          @share_pool.transfer_shares(Engine::ShareBundle.new(ndem.shares_by_corporation[ndem]), @share_pool)
+
           # Find the first of (M14, M15, and M17) to remove for the NdeM.  The rules say to randomize
           # the entire stack, and then find the earliest one of the three.  This will result in a
           # slightly different order than just pulling one out to start...
-          @number_ndem_shares = 3
 
           ndem_minor_index = [@companies.index { |c| c.id == 'M14' },
                               @companies.index { |c| c.id == 'M15' },
                               @companies.index { |c| c.id == 'M17' }].min
           replace_minor_with_ndem(@companies[ndem_minor_index])
 
-          ndem = corporation_by_id('NDEM')
+          # bidboxes need to be re-setup if this minor was in the top 4
+          setup_bidboxes
+
           stock_market.set_par(ndem, stock_market.par_prices.find { |pp| pp.price == 100 })
           ndem.ipoed = true
           ndem.owner = @share_pool # Not clear this is needed
@@ -293,13 +302,20 @@ module Engine
         def send_train_to_ndem(train)
           depot.remove_train(train)
           ndem = corporation_by_id('NDEM')
-          ndem.trains.shift if ndem.trains.length == phase.train_limit(ndem)
+          ndem.trains.shift while ndem.trains.length >= phase.train_limit(ndem)
+          train.owner = ndem
           ndem.trains << train
         end
 
         def setup
           super
           setup_ndem
+        end
+
+        def active_players
+          return [@ndem_acting_player] if @ndem_acting_player
+
+          super
         end
       end
     end
