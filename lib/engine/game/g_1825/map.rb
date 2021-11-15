@@ -498,6 +498,7 @@ module Engine
           '55' => %w[14],
           '56' => %w[15],
           '69' => %w[119],
+          '114' => %w[15],
           '198' => %w[119],
           '199' => %w[119],
           # yellow single-dit to green city (also brown/green city)
