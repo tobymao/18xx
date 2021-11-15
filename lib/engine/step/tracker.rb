@@ -326,7 +326,8 @@ module Engine
           .reject(&:blocks_lay)
       end
 
-      def upgradeable_tiles(entity, hex)
+      def upgradeable_tiles(entity, ui_hex)
+        hex = @game.hex_by_id(ui_hex.id) # hex instance from UI can go stale
         potential_tiles(entity, hex).map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute
           tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
