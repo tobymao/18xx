@@ -64,11 +64,11 @@ module Engine
              450 500],
           %w[65 70 75 80x 90p 100 110 125 150 175 200 230 260 300 350
              400 450],
-          %w[60 65 70 75x 80p 90 100 110 125 150 175 200 230 260 300 350
+          %w[60 65 70 75x 80p 90 100 110 125 150 175 200z 230 260 300 350
              400],
-          %w[55 60 65 70x 75p 80 90 100 110 125 150 175],
-          %w[50 55 60 65x 70p 75 80 90 100 110 125],
-          %w[40 50 55 60x 65p 70 75 80 90 100],
+          %w[55 60 65 70x 75p 80 90 100 110 125 150z 175z],
+          %w[50 55 60 65x 70p 75 80 90 100 110z 125z],
+          %w[40 50 55 60x 65p 70 75 80 90 100z],
           %w[30 40 50 55x 60 65 70 75 80],
           %w[20 30 40 50x 55 60 65 70],
           %w[10 20 30 40 50 55 60],
@@ -76,9 +76,11 @@ module Engine
           %w[0c 0c 10 20 30],
         ].freeze
 
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Minor Corporation Par',
-                                              par: 'Major Corporation Par')
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :gray, par: :red).freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Major Corporation Par',
+                                              par_1: 'Minor Corporation Par',
+                                              par_2: 'NYC Par')
+
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :gray, par_2: :blue, par: :red).freeze
 
         PHASES = [
           {
@@ -171,6 +173,7 @@ module Engine
         COAL_LOCATIONS = [%w[F0 G1], %w[H2 H4], %w[H6 H8 H10], ['H12'], %w[I13 J14], %w[K15 K17]].freeze
 
         def setup
+          @float_percent = 20
           @interest = {}
           @stagecoach_token =
             Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
@@ -197,6 +200,14 @@ module Engine
 
         def nyc_corporation
           @nyc_corporation ||= corporation_by_id('NYC')
+        end
+
+        def albany_hex
+          @albany_hex ||= hex_by_id('F20')
+        end
+
+        def active_minors
+          operating_order.select { |c| c.type == :minor && c.floated? }
         end
 
         def init_stock_market
@@ -242,6 +253,12 @@ module Engine
           ], round_num: round_num)
         end
 
+        def new_nyc_formation_round
+          G18NY::Round::NYCFormation.new(self, [
+            G18NY::Step::MergeChoice,
+          ])
+        end
+
         def next_round!
           clear_interest_paid
 
@@ -259,17 +276,18 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                if [:pending, :round_one_complete].include?(nyc_formation)
+                if %i[round_one round_two].include?(nyc_formation)
                   new_nyc_formation_round
                 else
                   new_stock_round
                 end
               end
             when G18NY::Round::NYCFormation
-              if nyc_formation == :pending
-                nyc_formation(:round_one_complete)
+              nyc_formation_take_loans
+              if nyc_formation == :round_one
+                nyc_formation(:round_two)
               else
-                # Handle non-connected minors
+                liquidate_remaining_minors
                 nyc_formation(:complete)
               end
               new_stock_round
@@ -295,23 +313,27 @@ module Engine
 
         def event_float_30!
           @log << "-- Event: #{EVENTS_TEXT['float_30'][1]} --"
-          non_floated_companies { |c| c.float_percent = 30 }
+          @float_percent = 30
+          non_floated_corporations { |c| c.float_percent = @float_percent }
         end
 
         def event_float_40!
           @log << "-- Event: #{EVENTS_TEXT['float_40'][1]} --"
-          non_floated_companies { |c| c.float_percent = 40 }
+          @float_percent = 40
+          non_floated_corporations { |c| c.float_percent = @float_percent }
         end
 
         def event_float_50!
           @log << "-- Event: #{EVENTS_TEXT['float_50'][1]} --"
-          non_floated_companies { |c| c.float_percent = 50 }
+          @float_percent = 50
+          non_floated_corporations { |c| c.float_percent = @float_percent }
         end
 
         def event_float_60!
           @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
-          non_floated_companies do |c|
-            c.float_percent = 60
+          @float_percent = 50
+          non_floated_corporations do |c|
+            c.float_percent = @float_percent
             c.capitalization = :full
             c.spend(c.cash, @bank) if c.cash.positive?
           end
@@ -321,14 +343,14 @@ module Engine
           return if nyc_formation_round || nyc_corporation.ipoed || nyc_corporation.closed?
 
           @log << "-- Event: #{EVENTS_TEXT['nyc_formation'][1]} --"
-          nyc_formation(:pending)
+          nyc_formation(:round_one)
         end
 
         def event_capitalization_round!
           @log << "-- Event: #{EVENTS_TEXT['capitalization_round'][1]} --"
         end
 
-        def non_floated_companies
+        def non_floated_corporations
           @corporations.each { |c| yield c unless c.floated? }
         end
 
@@ -394,15 +416,15 @@ module Engine
         end
 
         def non_blocking_graph
-          @non_block_graph ||= Graph.new(@game, no_blocking: true)
+          @non_block_graph ||= Graph.new(self, no_blocking: true)
         end
 
-        def albany_to_buffalo_connected?
+        def albany_and_buffalo_connected?
           @buffalo_corp ||=
             Engine::Corporation.new(name: 'Buffalo', sym: 'BUF', tokens: [], coordinates: 'E3')
 
           non_blocking_graph.clear_graph_for(@buffalo_corp)
-          non_blocking_graph.connected_nodes(@buffalo_corp).key?(hex_by_id('F20'))
+          non_blocking_graph.connected_nodes(@buffalo_corp).key?(albany_hex)
         end
 
         def tile_lay(_hex, old_tile, _new_tile)
@@ -689,6 +711,8 @@ module Engine
         end
 
         def can_take_loan?(entity)
+          return true if nyc_corporation == entity && nyc_formation != :complete
+
           entity.corporation? && entity.loans.size < maximum_loans(entity)
         end
 
@@ -735,57 +759,7 @@ module Engine
             end
           end
 
-          # Combine assets
-          if corporation.cash.positive?
-            @log << "#{entity.name} acquires #{format_currency(corporation.cash)}"
-            corporation.spend(corporation.cash, entity)
-          end
-
-          unless corporation.loans.empty?
-            num_to_payoff = [entity.cash / loan_face_value, corporation.loans.size].min
-            @log << "#{entity.name} pays off #{num_to_payoff} of #{corporation.name}'s loans"
-            entity.spend(num_to_payoff * loan_face_value, @bank)
-
-            if (remaining_loans = corporation.loans.size - num_to_payoff).positive?
-
-              @log << "#{entity.name} takes on #{remaining_loans} loan#{remaining_loans == 1 ? '' : 's'}" \
-                      " from #{corporation.name}"
-              @loans.concat(corporation.loans)
-              corporation.loans.clear
-
-              initial_sp = entity.share_price.price
-              remaining_loans.times do
-                loan = @loans.pop
-                entity.loans << loan
-                @stock_market.move_left(entity)
-              end
-              @log << "#{entity.name}'s share price changes from" \
-                      " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
-            end
-          end
-
-          corporation.companies.each do |company|
-            @log << "#{entity.name} acquires #{company.name}"
-            company.owner = entity
-            entity.companies << company
-          end
-          corporation.companies.clear
-
-          unless corporation.trains.empty?
-            trains_str = corporation.trains.map(&:name).join(', ')
-            @log << "#{entity.name} acquires a #{trains_str}"
-            corporation.trains.dup.each { |t| buy_train(entity, t, :free) }
-          end
-
-          if (revenue = coal_revenue(corporation)).positive?
-            @log << "#{entity.name} acquires #{format_currency(revenue)} in coal revenue"
-
-            if (ability = abilities(entity, :coal_revenue))
-              ability.bonus_revenue += revenue
-            else
-              add_coal_token_ability(entity, revenue: revenue)
-            end
-          end
+          transfer_assets(corporation, entity)
 
           tokened_cities = entity.tokens.select(&:used).map(&:city)
           corporation.tokens.select(&:used).dup.each do |t|
@@ -803,6 +777,155 @@ module Engine
         def complete_acquisition(_entity, corporation)
           @round.acquisition_corporations = []
           close_corporation(corporation, quiet: true)
+        end
+
+        def transfer_assets(from, to)
+          if from.cash.positive?
+            @log << "#{to.name} acquires #{format_currency(from.cash)}"
+            from.spend(from.cash, to)
+          end
+
+          unless from.loans.empty?
+            num_to_payoff = [to.cash / loan_face_value, from.loans.size].min
+            @log << "#{to.name} pays off #{num_to_payoff} of #{from.name}'s loans"
+            to.spend(num_to_payoff * loan_face_value, @bank)
+
+            if (remaining_loans = from.loans.size - num_to_payoff).positive?
+              @log << "#{to.name} takes on #{remaining_loans} loan#{remaining_loans == 1 ? '' : 's'}" \
+                      " from #{from.name}"
+              @loans.concat(from.loans)
+              from.loans.clear
+
+              initial_sp = to.share_price.price
+              remaining_loans.times do
+                loan = @loans.pop
+                to.loans << loan
+                @stock_market.move_left(to)
+              end
+              @log << "#{to.name}'s share price changes from" \
+                      " #{format_currency(initial_sp)} to #{format_currency(to.share_price.price)}"
+            end
+          end
+
+          from.companies.each do |company|
+            @log << "#{to.name} acquires #{company.name}"
+            company.owner = to
+            to.companies << company
+          end
+          from.companies.clear
+
+          unless from.trains.empty?
+            trains_str = from.trains.map(&:name).join(', ')
+            @log << "#{to.name} acquires a #{trains_str}"
+            from.trains.dup.each { |t| buy_train(to, t, :free) }
+          end
+
+          return unless (revenue = coal_revenue(from)).positive?
+
+          @log << "#{to.name} acquires #{format_currency(revenue)} in coal revenue"
+
+          if (ability = abilities(to, :coal_revenue))
+            ability.bonus_revenue += revenue
+          else
+            add_coal_token_ability(to, revenue: revenue)
+          end
+        end
+
+        #
+        # NYC Formation Round Logic
+        #
+
+        def form_nyc
+          # Calculate NYC par price
+          minors = minors_connected_to_albany
+          nyc_calculated_value = (minors.sum { |minor| minor.share_price.price } * 2 / minors.size.to_f)
+          par_prices = @stock_market.share_prices_with_types(%w[par_2]).to_h do |sp|
+            [sp, (sp.price - nyc_calculated_value).abs]
+          end
+          closest_par = par_prices.values.min
+          nyc_par_price = par_prices.select { |_sp, delta| delta == closest_par }.keys.max_by(&:price)
+
+          # Form the NYC
+          @log << "#{nyc_corporation.name} forms with a share price of #{format_currency(nyc_par_price.price)}"
+          nyc_corporation.floatable = true
+          nyc_corporation.float_percent = @float_percent
+          @stock_market.set_par(nyc_corporation, nyc_par_price)
+          after_par(nyc_corporation)
+        end
+
+        def minors_connected_to_albany
+          # Minor 1 and 2 are always considered connected
+          active_minors.select do |minor|
+            if %w[1 2].include?(minor.id)
+              true
+            else
+              non_blocking_graph.connected_hexes(minor).key?(albany_hex)
+            end
+          end
+        end
+
+        def nyc_merger_cost(entity)
+          (entity.share_price.price * 2) - nyc_corporation.share_price.price
+        end
+
+        def merge_into_nyc(entity)
+          @first_nyc_owner ||= entity.owner
+
+          @log << "#{entity.name} merges into #{nyc_corporation.name}"
+          nyc_corporation.num_treasury_shares.zero? ? exchange_for_bank_share(entity) : exchange_for_nyc_share(entity)
+          minor.close!
+        end
+
+        def exchange_for_nyc_share(entity)
+          owner = entity.owner
+          cost = nyc_merger_cost(entity)
+          if cost.negative?
+            owner.spend(cost, nyc_corporation, check_cash: false)
+          elsif cost.positive?
+            nyc_corporation.spend(cost.abs, owner, check_cash: false)
+          end
+          @share_pool.transfer_shares(ShareBundle.new(@nyc_corporation.available_share), owner)
+
+          transfer_assets(entity, nyc_corporation)
+
+          # Transfer token
+          token = Token.new(nyc_corporation, price: 20)
+          nyc_corporation << token
+
+          home_hex = hex_by_id(entity.coordinates)
+          if nyc_corporation.tokens.map(&:hex).include?(home_hex)
+            @log << "#{nyc_corporation.name} already has token at #{home_hex.name} (#{home_hex.location_name}) and " \
+                    ' instead gains an extra token on charter'
+          else
+            home_token = entity.tokens.find { |t| t.hex == home_hex }
+            home_token.swap!(token)
+            @log << "#{nyc_corporation.name} gains a token at #{home_hex.name} (#{home_hex.location_name})"
+          end
+        end
+
+        def nyc_formation_take_loans
+          take_loan(nyc_corporation) while nyc_corporation.cash.negative?
+        end
+
+        def exchange_for_bank_share(entity)
+          owner = entity.owner
+          cost = nyc_merger_cost(entity)
+          if cost.negative?
+            owner.spend(cost, @bank, check_cash: false)
+          elsif cost.positive?
+            @bank.spend(cost.abs, owner)
+          end
+          @share_pool.transfer_shares(ShareBundle.new(@share_pool.shares_of(nyc_corporation).first), owner)
+          @log << "#{entity.name} assets go to the bank"
+        end
+
+        def liquidate_remaining_minors
+          active_minors.each do |minor|
+            @stock_market.move_left(minor)
+            liquidation_price = minor.share_price.price * 2
+            @log << "#{minor.name} is liquidated for #{format_currency(liquidation_price)}"
+            minor.close!
+          end
         end
       end
     end

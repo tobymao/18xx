@@ -21,7 +21,7 @@ module Engine
           def merge_name(entity = nil)
             return 'Merge/Takeover' unless entity
 
-            "#{merge_type(entity)} (#{@game.format_currency(@game.acquisition_cost(current_entity, entity))})"
+            "#{merge_type(entity)} (#{@game.format_currency(@game.acquisition_cost(current_entity, entity) * -1)})"
           end
 
           def merge_type(entity)
