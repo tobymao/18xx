@@ -18,7 +18,7 @@ module Engine
         include InterestOnLoans
 
         attr_reader :privates_closed
-        attr_accessor :stagecoach_token
+        attr_accessor :stagecoach_token, :nyc_formation
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
@@ -195,6 +195,10 @@ module Engine
           @coal_fields_private ||= @companies.find { |c| c.id == 'PCF' }
         end
 
+        def nyc_corporation
+          @nyc_corporation ||= corporation_by_id('NYC')
+        end
+
         def init_stock_market
           G18NY::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
@@ -220,6 +224,7 @@ module Engine
             G18NY::Step::ReplaceTokens,
             G18NY::Step::BuyCompany,
             G18NY::Step::CheckCoalConnection,
+            G18NY::Step::CheckNYCFormation,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
@@ -280,7 +285,10 @@ module Engine
         end
 
         def event_nyc_formation!
+          return if nyc_formation_round || nyc_corporation.ipoed || nyc_corporation.closed?
+
           @log << "-- Event: #{EVENTS_TEXT['nyc_formation'][1]} --"
+          nyc_formation(:pending)
         end
 
         def event_capitalization_round!
@@ -350,6 +358,18 @@ module Engine
         def operating_order
           minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
           minors + majors
+        end
+
+        def non_blocking_graph
+          @non_block_graph ||= Graph.new(@game, no_blocking: true)
+        end
+
+        def albany_to_buffalo_connected?
+          @buffalo_corp ||=
+            Engine::Corporation.new(name: 'Buffalo', sym: 'BUF', tokens: [], coordinates: 'E3')
+
+          non_blocking_graph.clear_graph_for(@buffalo_corp)
+          non_blocking_graph.connected_nodes(@buffalo_corp).key?(hex_by_id('F20'))
         end
 
         def tile_lay(_hex, old_tile, _new_tile)
