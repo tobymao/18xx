@@ -814,6 +814,22 @@ module Engine
             ],
             color: 'cyan',
           },
+          # P10
+          {
+            name: 'Carnegie Steel Company',
+            value: 40,
+            revenue: 0,
+            desc: 'If this company starts in an unselected and unimproved metropolis, that city becomes a metropolis. '\
+            'All potential metropolises for this private are: '\
+            'Atlanta, Chicago, Denver, Dallas-Fort Worth, Los Angeles, and New Orleans. ' \
+            'Implementation limitation: Cannot be combined with Boomtown subsidy',
+
+            sym: 'P10',
+            abilities: [
+              # Owning the private is the ability
+            ],
+            color: 'cyan',
+          },
           # P11
           {
             name: 'Pettibone & Mulliken',
