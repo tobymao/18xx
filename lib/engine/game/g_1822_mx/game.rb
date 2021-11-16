@@ -12,6 +12,8 @@ module Engine
         include G1822MX::Entities
         include G1822MX::Map
 
+        attr_accessor :ndem_acting_player, :number_ndem_shares
+
         CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
@@ -40,8 +42,6 @@ module Engine
                                    FCM MC CHP FNM MIR FCP IRM NDEM].freeze
 
         CURRENCY_FORMAT_STR = '$%d'
-
-        attr_accessor :number_ndem_shares
 
         MARKET = [
           %w[5 10 15 20 25 30 35 40 45 50px 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450
@@ -194,7 +194,7 @@ module Engine
             G1822::Step::DestinationToken,
             G1822::Step::Token,
             G1822::Step::Route,
-            G1822::Step::Dividend,
+            G1822MX::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822::Step::MinorAcquisition,
             G1822::Step::PendingToken,
