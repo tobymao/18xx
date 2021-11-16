@@ -5,6 +5,7 @@ module Engine
     module MinorHalfPay
       def actions(entity)
         return [] if entity.minor?
+        return [] if entity.corporation? && entity.type == :minor
 
         super
       end

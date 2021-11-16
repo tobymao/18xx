@@ -10,7 +10,7 @@ module Engine
       ACTIONS = %w[dividend].freeze
 
       def actions(entity)
-        return [] if entity.company? || routes.empty?
+        return [] if entity.company? || @game.routes_revenue(routes).zero?
 
         ACTIONS
       end

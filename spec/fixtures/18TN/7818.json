@@ -1928,14 +1928,6 @@
       "original_id": 193
     },
     {
-      "type": "dividend",
-      "entity": "GMO",
-      "entity_type": "corporation",
-      "id": 203,
-      "kind": "withhold",
-      "original_id": 194
-    },
-    {
       "type": "buy_train",
       "entity": "GMO",
       "entity_type": "corporation",
@@ -2811,14 +2803,6 @@
         }
       ],
       "original_id": 293
-    },
-    {
-      "type": "dividend",
-      "entity": "SR",
-      "entity_type": "corporation",
-      "id": 301,
-      "kind": "withhold",
-      "original_id": 294
     },
     {
       "type": "pass",
