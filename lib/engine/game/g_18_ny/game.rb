@@ -217,6 +217,7 @@ module Engine
           G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
             G18NY::Step::Bankrupt,
+            G18NY::Step::ReplaceTokens,
             G18NY::Step::BuyCompany,
             G18NY::Step::CheckCoalConnection,
             G18NY::Step::EmergencyMoneyRaising,
@@ -231,6 +232,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             G18NY::Step::BuyTrain,
+            G18NY::Step::AcquireCorporation,
             [G18NY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -513,8 +515,8 @@ module Engine
           end
         end
 
-        def add_coal_token_ability(entity, _num_tokens)
-          entity.add_ability(G18NY::Ability::CoalRevenue.new(type: :coal_revenue, bonus_revenue: 10))
+        def add_coal_token_ability(entity, revenue: 10)
+          entity.add_ability(G18NY::Ability::CoalRevenue.new(type: :coal_revenue, bonus_revenue: revenue))
         end
 
         def coal_location_name(location)
@@ -594,6 +596,10 @@ module Engine
           entity.num_player_shares
         end
 
+        def loan_face_value
+          @loan_value
+        end
+
         def loan_value(entity = nil)
           @loan_value - (entity && interest_paid?(entity) ? interest_rate : 0)
         end
@@ -639,6 +645,111 @@ module Engine
 
           num_loans = maximum_loans(entity) - entity.loans.size
           entity.cash + (num_loans * loan_value(entity))
+        end
+
+        def acquisition_cost(entity, corporation)
+          multiplier = acquisition_cost_multiplier(entity, corporation)
+          return corporation.share_price.price * multiplier if corporation.type == :minor
+
+          corporation.share_price.price * multiplier * (corporation.num_player_shares + corporation.num_market_shares)
+        end
+
+        def acquisition_cost_multiplier(entity, corporation)
+          return entity.owner == corporation.owner ? 2 : 5 if corporation.type == :minor
+
+          entity.owner == corporation.owner ? 1 : 3
+        end
+
+        def acquire_corporation(entity, corporation)
+          @round.acquisition_corporations = [entity, corporation]
+          acquisition_verb = entity.owner == corporation.owner ? 'merges with' : 'takes over'
+          @log << "-- #{entity.name} #{acquisition_verb} #{corporation.name} --"
+
+          # Pay for the acquisition
+          share_price = corporation.share_price.price
+          multiplier = acquisition_cost_multiplier(entity, corporation)
+          if corporation.type == :minor
+            cost = share_price * multiplier
+            @log << "#{entity.name} pays #{corporation.owner.name} #{format_currency(cost)}"
+            entity.spend(cost, corporation.owner)
+          else
+            corporation.share_holders.keys.each do |sh|
+              next if sh == corporation
+
+              cost = share_price * sh.num_shares_of(corporation) * multiplier
+              @log << "#{entity.name} pays #{sh.name} #{format_currency(cost)}"
+              entity.spend(share_price * sh.num_shares_of(corporation), sh)
+            end
+          end
+
+          # Combine assets
+          if corporation.cash.positive?
+            @log << "#{entity.name} acquires #{format_currency(corporation.cash)}"
+            corporation.spend(corporation.cash, entity)
+          end
+
+          unless corporation.loans.empty?
+            num_to_payoff = [entity.cash / loan_face_value, corporation.loans.size].min
+            @log << "#{entity.name} pays off #{num_to_payoff} of #{corporation.name}'s loans"
+            entity.spend(num_to_payoff * loan_face_value, @bank)
+
+            if (remaining_loans = corporation.loans.size - num_to_payoff).positive?
+
+              @log << "#{entity.name} takes on #{remaining_loans} loan#{remaining_loans == 1 ? '' : 's'}" \
+                      " from #{corporation.name}"
+              @loans.concat(corporation.loans)
+              corporation.loans.clear
+
+              initial_sp = entity.share_price.price
+              remaining_loans.times do
+                loan = @loans.pop
+                entity.loans << loan
+                @stock_market.move_left(entity)
+              end
+              @log << "#{entity.name}'s share price changes from" \
+                      " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
+            end
+          end
+
+          corporation.companies.each do |company|
+            @log << "#{entity.name} acquires #{company.name}"
+            company.owner = entity
+            entity.companies << company
+          end
+          corporation.companies.clear
+
+          unless corporation.trains.empty?
+            trains_str = corporation.trains.map(&:name).join(', ')
+            @log << "#{entity.name} acquires a #{trains_str}"
+            corporation.trains.dup.each { |t| buy_train(entity, t, :free) }
+          end
+
+          if (revenue = coal_revenue(corporation)).positive?
+            @log << "#{entity.name} acquires #{format_currency(revenue)} in coal revenue"
+
+            if (ability = abilities(entity, :coal_revenue))
+              ability.bonus_revenue += revenue
+            else
+              add_coal_token_ability(entity, revenue: revenue)
+            end
+          end
+
+          tokened_cities = entity.tokens.select(&:used).map(&:city)
+          corporation.tokens.select(&:used).dup.each do |t|
+            t.destroy! if tokened_cities.include?(t.city)
+          end
+
+          max_tokens = [entity.tokens.count { |t| !t.used }, corporation.tokens.count(&:used)].min
+          if max_tokens.positive?
+            @log << "#{entity.name} can replace up to #{max_tokens} of #{corporation.name}'s tokens"
+          else
+            complete_acquisition(entity, corporation)
+          end
+        end
+
+        def complete_acquisition(_entity, corporation)
+          @round.acquisition_corporations = []
+          close_corporation(corporation, quiet: true)
         end
       end
     end

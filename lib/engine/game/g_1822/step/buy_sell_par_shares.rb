@@ -222,7 +222,7 @@ module Engine
             @game.bidding_token_per_player - (bids_for_player(player)&.size || 0)
           end
 
-          def can_bid?(entity, company)
+          def can_bid_company?(entity, company)
             return false unless num_certs_with_bids(entity) < @game.cert_limit
             return false if max_bid(entity, company) < min_bid(company) || highest_player_bid?(entity, company)
 

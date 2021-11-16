@@ -30,7 +30,7 @@ module Engine
             actions
           end
 
-          def merge_name
+          def merge_name(_entity = nil)
             'Acquire'
           end
 

@@ -61,6 +61,10 @@ module Engine
             @log << "#{entity.name} declines to buy shares"
           end
 
+          def buyable_bank_owned_companies(_entity)
+            available_companies
+          end
+
           def available_companies
             return [] if bought?
 

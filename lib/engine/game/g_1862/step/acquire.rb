@@ -7,7 +7,7 @@ module Engine
     module G1862
       module Step
         class Acquire < G1862::Step::Merge
-          def merge_name
+          def merge_name(_entity = nil)
             'Acquire'
           end
 

@@ -37,7 +37,7 @@ module Engine
             super
           end
 
-          def merge_name
+          def merge_name(_entity = nil)
             return 'Convert' if @converting
             return 'Finish Merge' if @merge_major
 

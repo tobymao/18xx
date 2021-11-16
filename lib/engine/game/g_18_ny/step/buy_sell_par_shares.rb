@@ -11,7 +11,7 @@ module Engine
           MAX_MINOR_PAR = 80
 
           def actions(entity)
-            return corporate_actions(entity) if !entity.player? && entity.owned_by?(current_entity)
+            return corporate_actions(entity) if entity.corporation? && entity.owned_by?(current_entity)
 
             super
           end

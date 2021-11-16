@@ -37,7 +37,7 @@ module Engine
             @round.vote_outcome == :for
           end
 
-          def merge_name
+          def merge_name(_entity = nil)
             return 'Choose new corporation' if finalize_merger?
             return 'Add to proposed merge' if @round.merging
 
