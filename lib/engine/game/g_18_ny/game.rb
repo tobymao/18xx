@@ -129,33 +129,33 @@ module Engine
         ].freeze
 
         TRAINS = [{ name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
-                  { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', events: [{ type: 'float_30' }] },
-                  { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ type: 'float_40' }] },
+                  { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', events: [{ 'type' => 'float_30' }] },
+                  { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
                   {
                     name: '12H',
                     num: 2,
                     distance: 12,
                     price: 600,
-                    events: [{ type: 'float_50' }, { type: 'close_companies' }, { type: 'nyc_formation' }],
+                    events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' }],
                   },
-                  { name: '12H', num: 1, distance: 12, price: 600, events: [{ type: 'capitalization_round' }] },
+                  { name: '12H', num: 1, distance: 12, price: 600, events: [{ 'type' => 'capitalization_round' }] },
                   {
                     name: '5DE',
                     num: 2,
                     distance: [{ nodes: %w[city offboard town], pay: 5, visit: 99, multiplier: 2 }],
                     price: 800,
-                    events: [{ type: 'float_60' }],
+                    events: [{ 'type' => 'float_60' }],
                   },
                   { name: 'D', num: 20, distance: 99, price: 1000 }].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          float_30: ['30% to Float', 'Companies must have 30% of their shares sold to float'],
-          float_40: ['40% to Float', 'Companies must have 40% of their shares sold to float'],
-          float_50: ['50% to Float', 'Companies must have 50% of their shares sold to float'],
-          float_60:
-            ['60% to Float', 'Companies must have 60% of their shares sold to float and receive full capitalization'],
-          nyc_formation: ['NYC Formation', 'Triggers the formation of the NYC'],
-          capitalization_round:
+          'float_30' => ['30% to Float', 'Corporations must have 30% of their shares sold to float'],
+          'float_40' => ['40% to Float', 'Corporations must have 40% of their shares sold to float'],
+          'float_50' => ['50% to Float', 'Corporations must have 50% of their shares sold to float'],
+          'float_60' =>
+            ['60% to Float', 'Corporations must have 60% of their shares sold to float and receive full capitalization'],
+          'nyc_formation' => ['NYC Formation', 'Triggers the formation of the NYC'],
+          'capitalization_round' =>
             ['Capitalization Round', 'Special Capitalization Round before next Stock Round'],
         ).freeze
 
@@ -537,7 +537,7 @@ module Engine
 
         def routes_revenue(routes)
           revenue = super
-          
+
           revenue += connection_bonus_revenue(@round.current_operator)
           revenue += coal_revenue(@round.current_operator)
 
