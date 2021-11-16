@@ -537,8 +537,9 @@ module Engine
 
         def routes_revenue(routes)
           revenue = super
-          revenue += connection_bonus_revenue(current_entity)
-          revenue += coal_revenue(current_entity)
+          
+          revenue += connection_bonus_revenue(@round.current_operator)
+          revenue += coal_revenue(@round.current_operator)
 
           revenue
         end
