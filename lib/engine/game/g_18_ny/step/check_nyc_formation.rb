@@ -11,7 +11,9 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
-            return [] if @game.nyc_formation
+           
+            @connected = false
+            return [] if @game.nyc_formation_triggered?
             return ACTIONS if @game.loading
             return [] unless @game.albany_and_buffalo_connected?
 
@@ -19,22 +21,23 @@ module Engine
             ACTIONS
           end
 
+          def description
+            'NYC Formation Check'
+          end
+
           def blocks?
             @connected
           end
 
-          def auto_actions(_entity)
+          def auto_actions(entity)
             return [] unless @connected
 
-            [Engine::Action::DestinationConnection(@game.nyc_corporation)]
+            [Engine::Action::DestinationConnection.new(entity)]
           end
 
           def process_destination_connection(_action)
-            raise GameError, 'Buffalo and Albany not connected' unless @game.albany_and_buffalo_connected?
-
             @game.log << 'Albany and Buffalo connected by track'
             @game.event_nyc_formation!
-            @connected = nil
           end
         end
       end

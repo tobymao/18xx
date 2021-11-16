@@ -18,7 +18,7 @@ module Engine
         include InterestOnLoans
 
         attr_reader :privates_closed
-        attr_accessor :stagecoach_token, :nyc_formation
+        attr_accessor :stagecoach_token
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
@@ -232,10 +232,10 @@ module Engine
           G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
             G18NY::Step::Bankrupt,
-            G18NY::Step::ReplaceTokens,
-            G18NY::Step::BuyCompany,
             G18NY::Step::CheckCoalConnection,
             G18NY::Step::CheckNYCFormation,
+            G18NY::Step::BuyCompany,
+            G18NY::Step::ReplaceTokens,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
@@ -276,7 +276,7 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                if %i[round_one round_two].include?(nyc_formation)
+                if %i[round_one round_two].include?(@nyc_formation_state)
                   new_nyc_formation_round
                 else
                   new_stock_round
@@ -284,11 +284,11 @@ module Engine
               end
             when G18NY::Round::NYCFormation
               nyc_formation_take_loans
-              if nyc_formation == :round_one
-                nyc_formation(:round_two)
+              if @nyc_formation_state == :round_one
+                @nyc_formation_state = :round_two
               else
                 liquidate_remaining_minors
-                nyc_formation(:complete)
+                @nyc_formation_state = :complete
               end
               new_stock_round
             when init_round.class
@@ -340,10 +340,10 @@ module Engine
         end
 
         def event_nyc_formation!
-          return if nyc_formation_round || nyc_corporation.ipoed || nyc_corporation.closed?
+          #return if @nyc_formation_state
 
           @log << "-- Event: #{EVENTS_TEXT['nyc_formation'][1]} --"
-          nyc_formation(:round_one)
+          @nyc_formation_state = :round_one
         end
 
         def event_capitalization_round!
@@ -416,7 +416,7 @@ module Engine
         end
 
         def non_blocking_graph
-          @non_block_graph ||= Graph.new(self, no_blocking: true)
+          @non_block_graph ||= Graph.new(self, no_blocking: true, home_as_token: true)
         end
 
         def albany_and_buffalo_connected?
@@ -424,7 +424,7 @@ module Engine
             Engine::Corporation.new(name: 'Buffalo', sym: 'BUF', tokens: [], coordinates: 'E3')
 
           non_blocking_graph.clear_graph_for(@buffalo_corp)
-          non_blocking_graph.connected_nodes(@buffalo_corp).key?(albany_hex)
+          non_blocking_graph.connected_hexes(@buffalo_corp).key?(albany_hex)
         end
 
         def tile_lay(_hex, old_tile, _new_tile)
@@ -712,7 +712,7 @@ module Engine
         end
 
         def can_take_loan?(entity)
-          return true if nyc_corporation == entity && nyc_formation != :complete
+          return true if nyc_corporation == entity && @nyc_formation_state != :complete
 
           entity.corporation? && entity.loans.size < maximum_loans(entity)
         end
@@ -836,6 +836,10 @@ module Engine
         # NYC Formation Round Logic
         #
 
+        def nyc_formation_triggered?
+          @nyc_formation_state
+        end
+
         def form_nyc
           # Calculate NYC par price
           minors = minors_connected_to_albany
@@ -855,13 +859,13 @@ module Engine
         end
 
         def minors_connected_to_albany
-          # Minor 1 and 2 are always considered connected
+          non_blocking_graph.clear
+
           active_minors.select do |minor|
-            if %w[1 2].include?(minor.id)
-              true
-            else
-              non_blocking_graph.connected_hexes(minor).key?(albany_hex)
-            end
+            # Minor 1 and 2 are always considered connected
+            next true if %w[1 2].include?(minor.id)
+      
+            non_blocking_graph.connected_hexes(minor).key?(albany_hex)
           end
         end
 
