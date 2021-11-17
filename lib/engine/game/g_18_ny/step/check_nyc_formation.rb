@@ -11,7 +11,7 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
-           
+
             @connected = false
             return [] if @game.nyc_formation_triggered?
             return ACTIONS if @game.loading

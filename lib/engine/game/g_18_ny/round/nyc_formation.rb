@@ -8,7 +8,7 @@ module Engine
       module Round
         class NYCFormation < Engine::Round::Merger
           def self.round_name
-            'NYC Formation'
+            'NYC Formation Round'
           end
 
           def self.short_name
@@ -16,11 +16,7 @@ module Engine
           end
 
           def select_entities
-            @game.active_minors
-          end
-
-          def connected_minors
-            @connected_minors ||= @game.minors_connected_to_albany
+            [@game.nyc_corporation]
           end
 
           def setup
