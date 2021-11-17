@@ -18,28 +18,6 @@ module Engine
           def select_entities
             [@game.nyc_corporation]
           end
-
-          def setup
-            super
-            start
-          end
-
-          def next_entity!
-            next_entity_index! unless @entities.empty?
-            return if @entity_index.zero?
-
-            @steps.each(&:unpass!)
-            @steps.each(&:setup)
-            start
-          end
-
-          def start
-            entity = @entities[@entity_index]
-            @current_operator = entity
-            @current_operator_acted = false
-            skip_steps
-            next_entity! if finished?
-          end
         end
       end
     end
