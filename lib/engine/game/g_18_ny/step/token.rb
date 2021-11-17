@@ -28,9 +28,11 @@ module Engine
               action.cost = token.price
             end
 
-            raise GameError, "#{entity.name} has #{@game.format_currency(entity.cash)} and cannot spend " \
-                             "#{@game.format_currency(token.price)} to lay token" if token.price > entity.cash
-            
+            if token.price > entity.cash
+              raise GameError, "#{entity.name} has #{@game.format_currency(entity.cash)} and cannot spend " \
+                               "#{@game.format_currency(token.price)} to lay token"
+            end
+
             super(action)
           end
 
