@@ -232,6 +232,7 @@ module Engine
 
       # skip the president's share swap if the initiator is already the president
       # or there was no previous president. this is because there is no one to swap with
+      previous_president ||= corporation if @game.can_gain_presidents_share_directly_from_corporation?(corporation)
       return if owner == president || !previous_president
 
       presidents_share = bundle.presidents_share || previous_president.shares_of(corporation).find(&:president)

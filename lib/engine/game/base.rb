@@ -984,6 +984,10 @@ module Engine
         false
       end
 
+      def can_gain_presidents_share_directly_from_corporation?(_corporation)
+        false
+      end
+
       def shares_for_presidency_swap(shares, num_shares)
         shares.take(num_shares)
       end
@@ -1305,6 +1309,8 @@ module Engine
             else
               home_token_locations(corporation)
             end
+
+          return unless hexes
 
           @round.pending_tokens << {
             entity: corporation,

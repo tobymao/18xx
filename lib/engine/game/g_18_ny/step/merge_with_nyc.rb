@@ -16,6 +16,8 @@ module Engine
           end
 
           def auto_actions(entity)
+            return [] unless entity
+
             actions = []
 
             if mandatory_merge?(entity)
@@ -40,7 +42,7 @@ module Engine
           end
 
           def blocking?
-            !@minors.empty?
+            mergee
           end
 
           def override_entities
@@ -69,12 +71,12 @@ module Engine
           end
 
           def mergee
-            @minors&.first
+            @minors[@minor_index]
           end
 
           def mandatory_merge?(entity)
-            return true if @round.round_num == 2
             return true if %w[1 2].include?(entity.id)
+            return true if @round.round_num == 2 && connected?(entity) && owner_can_afford?(entity) && share_available?
 
             false
           end
@@ -93,30 +95,40 @@ module Engine
 
           def process_merge(action)
             entity = action.entity
-            raise GameError, "Not #{entity.name}'s turn" if entity != @minors.first
+            raise GameError, "Not #{entity.name}'s turn" if entity != mergee
 
-            @game.log << "#{entity.name} is required to merge into #{merge_target.name}" if mandatory_merge?(entity)
-            @game.merge_into_nyc(entity)
-            
-            @minors.shift
+            msg = if mandatory_merge?(entity)
+                    "#{entity.name} is required to merge into #{merge_target.name}"
+                  else
+                    "#{entity.name} elects to merge into #{merge_target.name}"
+                  end
+            @game.log << msg
+
+            @game.minors_merging_into_nyc << entity
+            @minor_index += 1
           end
 
           def process_pass(action)
             entity = action.entity
-            if !connected?(entity)
-              @game.log << "#{entity.name} is not connected to Albany and is not allowed to merge into #{merge_target.name}"
-            elsif !owner_can_afford?(entity)
-              @game.log << "#{entity.owner.name} cannot spend #{@game.format_currency(@game.nyc_merger_cost(entity) * -1)} " \
-                           "required to merge #{entity.name} into #{merge_target.name}"
-            elsif !share_available?
-              @game.log << "No #{merge_target.name} shares are available for #{entity.name} to merge into #{merge_target.name}"
-            end
 
-            @minors.shift
+            msg = if !connected?(entity)
+                    "#{entity.name} is not connected to Albany and is not allowed to merge into #{merge_target.name}"
+                  elsif !owner_can_afford?(entity)
+                    "#{entity.owner.name} cannot spend #{@game.format_currency(@game.nyc_merger_cost(entity) * -1)} " \
+                      "required to merge #{entity.name} into #{merge_target.name}"
+                  elsif !share_available?
+                    "No #{merge_target.name} shares are available for #{entity.name} to merge into #{merge_target.name}"
+                  else
+                    "#{entity.name} declines to merge into #{merge_target.name}"
+                  end
+            @game.log << msg
+
+            @minor_index += 1
           end
 
           def setup
-            @minors = @game.active_minors
+            @minor_index = 0
+            @minors = @game.nyc_forming? ? @game.active_minors : []
             @connected_minors = @game.minors_connected_to_albany
           end
         end
