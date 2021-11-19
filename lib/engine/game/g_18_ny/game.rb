@@ -17,7 +17,7 @@ module Engine
         include G18NY::Map
         include InterestOnLoans
 
-        attr_reader :privates_closed
+        attr_reader :privates_closed, :pending_nyc_owner
         attr_accessor :stagecoach_token
 
         CAPITALIZATION = :incremental
@@ -898,6 +898,11 @@ module Engine
           minors_merging_into_nyc.clear
           nyc_formation_take_loans
           liquidate_remaining_minors if @nyc_formation_state == :round_two
+          if @nyc_formation_state == :round_one && !nyc_corporation.owner
+            @pending_nyc_owner = @first_nyc_owner
+            @log << "#{@pending_nyc_owner.name} is the pending president of NYC and is required to buy a second share " \
+                    "of NYC during their first turn in the next Stock Round to gain the president's certificate"
+          end
 
           @nyc_formation_state = @nyc_formation_state == :round_one ? :round_two : :complete
         end

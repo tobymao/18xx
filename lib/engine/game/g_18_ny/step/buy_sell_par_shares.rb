@@ -12,6 +12,7 @@ module Engine
 
           def actions(entity)
             return corporate_actions(entity) if entity.corporation? && entity.owned_by?(current_entity)
+            return %w[buy_shares sell_shares] if entity.player? && mandatory_nyc_buy?(entity)
 
             super
           end
@@ -49,6 +50,24 @@ module Engine
           def process_sell_shares(action)
             super
             pass! if action.entity.corporation?
+          end
+
+          def mandatory_nyc_buy?(entity)
+            @game.nyc_corporation.presidents_share.owner == @game.nyc_corporation &&
+              @game.pending_nyc_owner == entity
+          end
+
+          def can_buy?(entity, bundle)
+            return false if mandatory_nyc_buy?(entity) && bundle.corporation != @game.nyc_corporation
+            return false if bundle.presidents_share&.owner == @game.nyc_corporation
+
+            super
+          end
+
+          def can_sell?(entity, bundle)
+            return false if mandatory_nyc_buy?(entity) && bundle.corporation == @game.nyc_corporation
+
+            super
           end
 
           def can_bid?(entity)
