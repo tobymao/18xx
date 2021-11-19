@@ -571,7 +571,7 @@ module Engine
         end
 
         def payout_companies
-          if @intern_cr_phase_counter == 1 && @round.is_a?(G1840::Round::Company) ||
+          if (@intern_cr_phase_counter == 1 && @round.is_a?(G1840::Round::Company)) ||
              @round.is_a?(Engine::Round::Auction)
             super
           end

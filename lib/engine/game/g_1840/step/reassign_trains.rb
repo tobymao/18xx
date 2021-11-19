@@ -12,7 +12,7 @@ module Engine
           def actions(entity)
             minor_corps = @game.corporate_card_minors(entity)
             if minor_corps.size.zero? ||
-              minor_corps.size == 1 && !minor_corps.first.trains.empty? && entity.trains.empty?
+              (minor_corps.size == 1 && !minor_corps.first.trains.empty? && entity.trains.empty?)
               return []
             end
 

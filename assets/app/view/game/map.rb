@@ -145,11 +145,11 @@ module View
 
       def map_size
         if @layout == :flat
-          [((@cols.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * map_zoom,
-           ((@rows.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) * map_zoom]
+          [((((@cols.size * 1.5) + 0.5) * EDGE_LENGTH) + (2 * GAP)) * map_zoom,
+           ((((@rows.size / 2) + 0.5) * SIDE_TO_SIDE) + (2 * GAP)) * map_zoom]
         else
-          [(((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1) * map_zoom,
-           ((@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * map_zoom]
+          [(((((@cols.size / 2) + 0.5) * SIDE_TO_SIDE) + (2 * GAP)) + 1) * map_zoom,
+           ((((@rows.size * 1.5) + 0.5) * EDGE_LENGTH) + (2 * GAP)) * map_zoom]
         end
       end
 

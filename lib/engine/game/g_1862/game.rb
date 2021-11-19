@@ -1856,7 +1856,7 @@ module Engine
 
         def compute_merger_share_price(corp_a, corp_b)
           prices = [effective_price(corp_a), effective_price(corp_b)].sort
-          find_valid_share_price(prices.first + prices.last / 2.0)
+          find_valid_share_price(prices.first + (prices.last / 2.0))
         end
 
         # just a basic share move without payment or president change

@@ -70,12 +70,12 @@ module View
             # pointy map: if many cities or there is a single town at the bottom, allow name at very
             # top or bottom
             if layout == :pointy && (@tile.cities.size > 2 ||
-                @tile.towns.one? && edge_at_bottom?(@tile.preferred_city_town_edges[@tile.towns[0]]))
+                (@tile.towns.one? && edge_at_bottom?(@tile.preferred_city_town_edges[@tile.towns[0]])))
               return [center, l_up40, l_down40, l_bottom, l_top]
             end
 
             # if pointy map, or no exits and no cities, avoid very top or bottom
-            return [center, l_up40, l_down40] if layout == :pointy || @tile.exits.empty? && @tile.cities.empty?
+            return [center, l_up40, l_down40] if layout == :pointy || (@tile.exits.empty? && @tile.cities.empty?)
 
             return [center, l_up40, l_down40, l_bottom, l_top]
           end
@@ -96,7 +96,7 @@ module View
 
           rendered_name = @name_segments.map.with_index do |segment, index|
             x = 0
-            y = index * LINE_HEIGHT + 1
+            y = (index * LINE_HEIGHT) + 1
             h(:text, { attrs: { transform: "translate(#{x} #{y})" } }, segment)
           end
 

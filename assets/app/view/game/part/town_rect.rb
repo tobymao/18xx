@@ -58,7 +58,7 @@ module View
         end
 
         def render_part
-          height = @width.to_i / 2 + 4
+          height = (@width.to_i / 2) + 4
           width = height * 4
           children = [h(:rect, attrs: {
                           transform: "#{translate} #{rotation}",

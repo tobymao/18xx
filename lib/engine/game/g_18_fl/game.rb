@@ -637,7 +637,7 @@ module Engine
           hotels = stops.count { |h| h.tile.icons.any? { |i| i.name == route.corporation.id } }
 
           # 3E doesn't count hotels.
-          route.train.variant['name'] == '3E' ? revenue : revenue + hotels * hotel_value
+          route.train.variant['name'] == '3E' ? revenue : revenue + (hotels * hotel_value)
         end
 
         def init_hexes(_companies, corporations)

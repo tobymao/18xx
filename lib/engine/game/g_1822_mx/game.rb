@@ -16,8 +16,6 @@ module Engine
 
         CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
 
-        STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
-
         BIDDING_TOKENS = {
           '3': 6,
           '4': 5,

@@ -93,8 +93,8 @@ module View
           cutoff = [@angle / MIN_ANGLE, (n_hexes + 1) / 3].max
           hexes1 = hexes[0..cutoff]
           hexes2 = hexes[cutoff + 1..-1]
-          angle = [(hexes2.size * MIN_ANGLE) / 2 + ADDITIONAL_ANGLE / DISTANCE_SCALE_OUTER_FAN, 105].min
-          rotation = @rotation + (@angle - angle) / 2
+          angle = [((hexes2.size * MIN_ANGLE) / 2) + (ADDITIONAL_ANGLE / DISTANCE_SCALE_OUTER_FAN), 105].min
+          rotation = @rotation + ((@angle - angle) / 2)
 
           list_coordinates(hexes1, @distance, SIZE, @angle, @rotation).concat(
             list_coordinates(hexes2, @distance * DISTANCE_SCALE_OUTER_FAN, SIZE, angle, rotation)

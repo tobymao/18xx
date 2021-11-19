@@ -34,7 +34,7 @@ module View
             h(:image,
               attrs: {
                 href: icon.image,
-                x: ((index - (@icons.size - 1) / 2.0) * -DELTA_X).round(2),
+                x: ((index - ((@icons.size - 1) / 2.0)) * -DELTA_X).round(2),
                 width: "#{ICON_RADIUS * 2}px",
                 height: "#{ICON_RADIUS * 2}px",
               })

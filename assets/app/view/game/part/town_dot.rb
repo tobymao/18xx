@@ -108,7 +108,7 @@ module View
         end
 
         def render_part
-          radius = 10 * (0.8 + @width.to_i / 40)
+          radius = 10 * (0.8 + (@width.to_i / 40))
 
           dot_attrs = {
             transform: translate.to_s,

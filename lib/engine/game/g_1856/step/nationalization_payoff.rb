@@ -27,7 +27,7 @@ module Engine
             @game.national
           end
 
-          def merge_name
+          def merge_name(_entity = nil)
             "Merge into #{@game.national.name}"
           end
 

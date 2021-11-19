@@ -101,8 +101,8 @@ module Engine
             return false if entity.type == :small || !corporation.floated? ||
                             corporation.closed? || @game.corporation_of_vaclav?(corporation)
 
-            if entity.type == :medium && corporation.type == :small ||
-               entity.type == :large && (corporation.type == :small || corporation.type == :medium)
+            if (entity.type == :medium && corporation.type == :small) ||
+               (entity.type == :large && (corporation.type == :small || corporation.type == :medium))
               return true
             end
 

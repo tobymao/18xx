@@ -4,7 +4,6 @@ require_relative 'dividend'
 require_relative 'connection'
 require_relative 'connection_token'
 require_relative 'connection_route'
-require_relative 'connection_dividend'
 
 module Engine
   module Game

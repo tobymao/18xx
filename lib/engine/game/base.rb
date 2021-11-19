@@ -532,7 +532,7 @@ module Engine
           if RUBY_ENGINE == 'opal'
             `parseInt(Big(#{RAND_A}).times(#{@seed}).plus(#{RAND_C}).mod(#{RAND_M}).toString())`
           else
-            (RAND_A * @seed + RAND_C) % RAND_M
+            ((RAND_A * @seed) + RAND_C) % RAND_M
           end
       end
 
@@ -978,6 +978,10 @@ module Engine
         (1..num_partial_bundles).map do |n|
           Engine::ShareBundle.new(bundle, percent - (normal_percent * n))
         end
+      end
+
+      def can_buy_presidents_share_directly_from_market?
+        false
       end
 
       def shares_for_presidency_swap(shares, num_shares)

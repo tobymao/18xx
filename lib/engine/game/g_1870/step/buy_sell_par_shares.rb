@@ -63,7 +63,7 @@ module Engine
           def issue_par(corporation)
             # We're adding 1 to force it to round up. We can do this, because
             # we know all the possible values and it is smaller than all gaps.
-            [@game.stock_market.market[0].min_by { |v| (0.75 * corporation.share_price.price + 1 - v.price).abs },
+            [@game.stock_market.market[0].min_by { |v| ((0.75 * corporation.share_price.price) + 1 - v.price).abs },
              corporation.par_price].max_by(&:price)
           end
 

@@ -388,7 +388,7 @@ module Engine
               end
 
               entity.shares_of(@merger).first.transfer(@used)
-              @log << "#{entity.name} exchanges 1 #{share.corporation.name} share " + payment_msg + 'for 1 system share'
+              @log << ("#{entity.name} exchanges 1 #{share.corporation.name} share " + payment_msg + 'for 1 system share')
               @game.share_pool.transfer_shares(@system.shares_of(@system).first.to_bundle, entity) unless entity == @ipo
 
               @exchange_selection = nil

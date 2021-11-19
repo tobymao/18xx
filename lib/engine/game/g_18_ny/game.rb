@@ -34,20 +34,30 @@ module Engine
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
 
-        SELL_BUY_ORDER = :sell_buy
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
-        GAME_END_CHECK = { bank: :full_or, custom: :immediate }.freeze
+        SELL_BUY_ORDER = :sell_buy_or_buy_sell
+
+        GAME_END_CHECK = { banrkupt: :immediate, bank: :full_or, custom: :full_or }.freeze
 
         ALL_COMPANIES_ASSIGNABLE = true
+
+        CLOSED_CORP_TRAINS_REMOVED = false
 
         TRACK_RESTRICTION = :permissive
 
         # Two lays with one being an upgrade. Tile lays cost 20
-        TILE_LAYS = [
-          { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
-          { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
-        ].freeze
         TILE_COST = 20
+        TILE_LAYS = [
+          { lay: true, upgrade: true, cost: TILE_COST, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded, cost: TILE_COST, cannot_reuse_same_hex: true },
+        ].freeze
+
+        def tile_lays(entity)
+          return [self.class::TILE_LAYS.first] if entity.type == :minor
+
+          self.class::TILE_LAYS
+        end
 
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 230 260 300 350 400
@@ -147,6 +157,10 @@ module Engine
             ['Capitalization Round', 'Special Capitalization Round before next Stock Round'],
         ).freeze
 
+        ERIE_CANAL_ICON = 'canal'
+        CONNECTION_BONUS_ICON = 'connection_bonus'
+        COAL_ICON = 'coal'
+
         ASSIGNMENT_TOKENS = {
           'connection_bonus' => '/icons/18_ny/connection_bonus.svg',
           'coal' => '/icons/18_ny/coal.svg',
@@ -154,10 +168,7 @@ module Engine
 
         CONNECTION_BONUS_HEXES =
           %w[A13 A19 A23 B12 C11 C23 C25 D0 D18 D20 E9 F10 F12 G9 G13 G19 G21 G25 I19 I23 J18 J22 J26 K19].freeze
-
-        COAL_TOKEN_HEXES = %w[G1 H4 H10 H12 J14 K17].freeze
-
-        ERIE_CANAL_ICON = 'canal'
+        COAL_LOCATIONS = [%w[F0 G1], %w[H2 H4], %w[H6 H8 H10], ['H12'], %w[I13 J14], %w[K15 K17]].freeze
 
         def setup
           @interest = {}
@@ -168,15 +179,20 @@ module Engine
         end
 
         def init_connection_bonuses
-          CONNECTION_BONUS_HEXES.each { |hex_id| hex_by_id(hex_id).assign!('connection_bonus') }
+          CONNECTION_BONUS_HEXES.each { |hex_id| hex_by_id(hex_id).assign!(CONNECTION_BONUS_ICON) }
         end
 
         def init_coal_tokens
-          COAL_TOKEN_HEXES.each { |hex_id| hex_by_id(hex_id).assign!('coal') }
+          @coal_locations = COAL_LOCATIONS.map { |loc| loc.map { |hex_id| hex_by_id(hex_id) } }
+          @coal_locations.flat_map(&:last).each { |hex| hex.assign!(COAL_ICON) }
         end
 
         def erie_canal_private
           @erie_canal_private ||= @companies.find { |c| c.id == 'EC' }
+        end
+
+        def coal_fields_private
+          @coal_fields_private ||= @companies.find { |c| c.id == 'PCF' }
         end
 
         def init_stock_market
@@ -200,26 +216,34 @@ module Engine
         def operating_round(round_num)
           G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
-            Engine::Step::BuyCompany,
+            G18NY::Step::Bankrupt,
+            G18NY::Step::ReplaceTokens,
+            G18NY::Step::BuyCompany,
+            G18NY::Step::CheckCoalConnection,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
             G18NY::Step::Track,
             G18NY::Step::Token,
             G18NY::Step::Route,
-            Engine::Step::Dividend,
+            G18NY::Step::Dividend,
             G18NY::Step::LoanInterestPayment,
             G18NY::Step::LoanRepayment,
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             G18NY::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            G18NY::Step::AcquireCorporation,
+            [G18NY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
         def next_round!
           clear_interest_paid
           super
+        end
+
+        def custom_end_game_reached?
+          @corporations.count { |c| !c.closed? } <= 1
         end
 
         #
@@ -302,7 +326,11 @@ module Engine
           super
         end
 
-        def can_hold_above_limit?(_entity)
+        def can_hold_above_corp_limit?(_entity)
+          true
+        end
+
+        def can_buy_presidents_share_directly_from_market?
           true
         end
 
@@ -419,13 +447,13 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super + (stops.count { |stop| stop.hex.assigned?('connection_bonus') } * 10)
+          super + (stops.count { |stop| stop.hex.assigned?(CONNECTION_BONUS_ICON) } * 10)
         end
 
         def revenue_str(route)
           str = super
 
-          if (num_bonuses = route.stops.count { |stop| stop.hex.assigned?('connection_bonus') }).positive?
+          if (num_bonuses = route.stops.count { |stop| stop.hex.assigned?(CONNECTION_BONUS_ICON) }).positive?
             str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}"
           end
 
@@ -434,16 +462,19 @@ module Engine
 
         def routes_revenue(routes)
           revenue = super
-          revenue += connection_bonus(routes.first.corporation) unless routes.empty?
+          revenue += connection_bonus_revenue(current_entity)
+          revenue += coal_revenue(current_entity)
 
           revenue
         end
 
-        def connection_bonus(entity)
+        def connection_bonus_revenue(entity)
           abilities(entity, :connection_bonus)&.bonus_revenue || 0
         end
 
-        def claim_connection_bonus(entity)
+        def claim_connection_bonus(entity, hex)
+          @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{hex.location_name})"
+          hex.remove_assignment!('connection_bonus')
           if (ability = abilities(entity, :connection_bonus))
             ability.bonus_revenue += 10
           else
@@ -456,9 +487,56 @@ module Engine
         end
 
         def remove_connection_bonus_ability(entity)
-          return unless (ability = @game.abilities(entity, :connection_bonus))
+          return unless (ability = abilities(entity, :connection_bonus))
 
           entity.remove_ability(ability)
+        end
+
+        def coal_revenue(entity)
+          abilities(entity, :coal_revenue)&.bonus_revenue || 0
+        end
+
+        def connected_coal_hexes(entity)
+          return if @coal_locations.empty?
+
+          graph.connected_hexes(entity).keys & @coal_locations.flatten
+        end
+
+        def claim_coal_token(entity, hex)
+          claimed_location = @coal_locations.find { |loc| loc.include?(hex) }
+          @log << "#{entity.name} claims the coal token at #{hex.name} (#{coal_location_name(claimed_location)})"
+          claimed_location.each { |h| h.remove_assignment!(COAL_ICON) }
+          @coal_locations.delete(claimed_location)
+
+          if (ability = abilities(entity, :coal_revenue))
+            ability.bonus_revenue += 10
+          else
+            add_coal_token_ability(entity)
+          end
+        end
+
+        def add_coal_token_ability(entity, revenue: 10)
+          entity.add_ability(G18NY::Ability::CoalRevenue.new(type: :coal_revenue, bonus_revenue: revenue))
+        end
+
+        def coal_location_name(location)
+          location.find(&:location_name)&.location_name
+        end
+
+        def salvage_value(train)
+          train.price / 4
+        end
+
+        def salvage_train(train)
+          owner = train.owner
+          @log << "#{owner.name} salvages a #{train.name} train for #{format_currency(salvage_value(train))}"
+          @bank.spend(salvage_value(train), owner)
+          @depot.reclaim_train(train)
+        end
+
+        def rust(train)
+          salvage_train(train)
+          super
         end
 
         def remove_train(train)
@@ -467,6 +545,12 @@ module Engine
           return unless owner&.corporation?
 
           remove_connection_bonus_ability(owner) if owner.trains.size.zero? && current_entity != owner
+        end
+
+        def must_buy_train?(entity)
+          return false if entity.type == :minor
+
+          super
         end
 
         def init_loans
@@ -510,6 +594,10 @@ module Engine
 
         def maximum_loans(entity)
           entity.num_player_shares
+        end
+
+        def loan_face_value
+          @loan_value
         end
 
         def loan_value(entity = nil)
@@ -557,6 +645,111 @@ module Engine
 
           num_loans = maximum_loans(entity) - entity.loans.size
           entity.cash + (num_loans * loan_value(entity))
+        end
+
+        def acquisition_cost(entity, corporation)
+          multiplier = acquisition_cost_multiplier(entity, corporation)
+          return corporation.share_price.price * multiplier if corporation.type == :minor
+
+          corporation.share_price.price * multiplier * (corporation.num_player_shares + corporation.num_market_shares)
+        end
+
+        def acquisition_cost_multiplier(entity, corporation)
+          return entity.owner == corporation.owner ? 2 : 5 if corporation.type == :minor
+
+          entity.owner == corporation.owner ? 1 : 3
+        end
+
+        def acquire_corporation(entity, corporation)
+          @round.acquisition_corporations = [entity, corporation]
+          acquisition_verb = entity.owner == corporation.owner ? 'merges with' : 'takes over'
+          @log << "-- #{entity.name} #{acquisition_verb} #{corporation.name} --"
+
+          # Pay for the acquisition
+          share_price = corporation.share_price.price
+          multiplier = acquisition_cost_multiplier(entity, corporation)
+          if corporation.type == :minor
+            cost = share_price * multiplier
+            @log << "#{entity.name} pays #{corporation.owner.name} #{format_currency(cost)}"
+            entity.spend(cost, corporation.owner)
+          else
+            corporation.share_holders.keys.each do |sh|
+              next if sh == corporation
+
+              cost = share_price * sh.num_shares_of(corporation) * multiplier
+              @log << "#{entity.name} pays #{sh.name} #{format_currency(cost)}"
+              entity.spend(share_price * sh.num_shares_of(corporation), sh)
+            end
+          end
+
+          # Combine assets
+          if corporation.cash.positive?
+            @log << "#{entity.name} acquires #{format_currency(corporation.cash)}"
+            corporation.spend(corporation.cash, entity)
+          end
+
+          unless corporation.loans.empty?
+            num_to_payoff = [entity.cash / loan_face_value, corporation.loans.size].min
+            @log << "#{entity.name} pays off #{num_to_payoff} of #{corporation.name}'s loans"
+            entity.spend(num_to_payoff * loan_face_value, @bank)
+
+            if (remaining_loans = corporation.loans.size - num_to_payoff).positive?
+
+              @log << "#{entity.name} takes on #{remaining_loans} loan#{remaining_loans == 1 ? '' : 's'}" \
+                      " from #{corporation.name}"
+              @loans.concat(corporation.loans)
+              corporation.loans.clear
+
+              initial_sp = entity.share_price.price
+              remaining_loans.times do
+                loan = @loans.pop
+                entity.loans << loan
+                @stock_market.move_left(entity)
+              end
+              @log << "#{entity.name}'s share price changes from" \
+                      " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
+            end
+          end
+
+          corporation.companies.each do |company|
+            @log << "#{entity.name} acquires #{company.name}"
+            company.owner = entity
+            entity.companies << company
+          end
+          corporation.companies.clear
+
+          unless corporation.trains.empty?
+            trains_str = corporation.trains.map(&:name).join(', ')
+            @log << "#{entity.name} acquires a #{trains_str}"
+            corporation.trains.dup.each { |t| buy_train(entity, t, :free) }
+          end
+
+          if (revenue = coal_revenue(corporation)).positive?
+            @log << "#{entity.name} acquires #{format_currency(revenue)} in coal revenue"
+
+            if (ability = abilities(entity, :coal_revenue))
+              ability.bonus_revenue += revenue
+            else
+              add_coal_token_ability(entity, revenue: revenue)
+            end
+          end
+
+          tokened_cities = entity.tokens.select(&:used).map(&:city)
+          corporation.tokens.select(&:used).dup.each do |t|
+            t.destroy! if tokened_cities.include?(t.city)
+          end
+
+          max_tokens = [entity.tokens.count { |t| !t.used }, corporation.tokens.count(&:used)].min
+          if max_tokens.positive?
+            @log << "#{entity.name} can replace up to #{max_tokens} of #{corporation.name}'s tokens"
+          else
+            complete_acquisition(entity, corporation)
+          end
+        end
+
+        def complete_acquisition(_entity, corporation)
+          @round.acquisition_corporations = []
+          close_corporation(corporation, quiet: true)
         end
       end
     end

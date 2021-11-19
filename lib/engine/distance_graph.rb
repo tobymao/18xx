@@ -80,8 +80,6 @@ module Engine
       end
 
       node.paths.each do |node_path|
-        next if smaller_or_equal_distance?(path_distances[node_path], distance)
-
         node_path.walk(counter: counter) do |path, _vp, ct|
           merge_distance(path_distances, path, distance)
 

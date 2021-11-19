@@ -10,7 +10,7 @@ class Game < Base
 
   QUERY_LIMIT = 13
 
-  STATUS_QUERY = <<~SQL
+  STATUS_QUERY = <<~SQL.freeze
     SELECT %<status>s_games.*
     FROM (
       SELECT *
@@ -23,7 +23,7 @@ class Game < Base
     ) %<status>s_games
   SQL
 
-  USER_STATUS_QUERY = <<~SQL
+  USER_STATUS_QUERY = <<~SQL.freeze
     SELECT %<status>s_games.*
     FROM (
       SELECT g.*
@@ -61,7 +61,7 @@ class Game < Base
   SQL
 
   # rubocop:disable Style/FormatString
-  LOGGED_IN_QUERY = <<~SQL
+  LOGGED_IN_QUERY = <<~SQL.freeze
     #{USER_QUERY}
     UNION
     #{USER_STATUS_QUERY % { status: 'new' }}
@@ -71,7 +71,7 @@ class Game < Base
     #{USER_STATUS_QUERY % { status: 'finished' }}
   SQL
 
-  LOGGED_OUT_QUERY = <<~SQL
+  LOGGED_OUT_QUERY = <<~SQL.freeze
     #{STATUS_QUERY % { status: 'new' }}
     UNION
     #{STATUS_QUERY % { status: 'active' }}

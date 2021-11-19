@@ -14,7 +14,7 @@ module Engine
           end
 
           def description
-            "Connection Bonus: #{bonus_revenue}"
+            "Connection Bonus Revenue: $#{bonus_revenue}"
           end
         end
       end

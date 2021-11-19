@@ -8,12 +8,8 @@ module View
       include Actionable
 
       needs :corporation
-      needs :rendered_corporations, default: []
 
       def render
-        return h(:div, []) if @rendered_corporations.include?(@corporation)
-
-        @rendered_corporations << @corporation
         actions = @game.round.actions_for(@corporation)
         children = []
 

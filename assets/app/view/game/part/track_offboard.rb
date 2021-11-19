@@ -25,7 +25,7 @@ module View
         }.freeze
 
         def calculate_shift(lane)
-          (lane[1] * 2 - lane[0] + 1) * (@width.to_i + PARALLEL_SPACING[lane[0] - 2]) / 2.0
+          ((lane[1] * 2) - lane[0] + 1) * (@width.to_i + PARALLEL_SPACING[lane[0] - 2]) / 2.0
         end
 
         def edge

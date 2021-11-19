@@ -16,7 +16,7 @@ module Lib
     # 10 < STRIPE_WIDTH < 16.67
     STRIPE_WIDTH = 16
 
-    POINTS = "#{X_R},#{Y_M} #{X_M_R},#{Y_B} #{X_M_L},#{Y_B} #{X_L},#{Y_M} #{X_M_L},#{Y_T} #{X_M_R},#{Y_T}"
+    POINTS = "#{X_R},#{Y_M} #{X_M_R},#{Y_B} #{X_M_L},#{Y_B} #{X_L},#{Y_M} #{X_M_L},#{Y_T} #{X_M_R},#{Y_T}".freeze
 
     EDGE_PATHS = [
       "M #{X_M_R},#{Y_B} H #{X_M_L}",
@@ -27,7 +27,7 @@ module Lib
       "M #{X_R},#{Y_M} L #{X_M_R}, #{Y_B}",
     ].freeze
 
-    INTERSECT = Y_T + ((5 * STRIPE_WIDTH - X_M_R).to_f * Y_T.to_f / (X_M_R - X_R).to_f).to_i
+    INTERSECT = Y_T + (((5 * STRIPE_WIDTH) - X_M_R).to_f * Y_T.to_f / (X_M_R - X_R).to_f).to_i
     # 3 lists of points
     STRIPE_POINTS = [
       [[-1 * STRIPE_WIDTH, Y_T], [STRIPE_WIDTH, Y_T], [STRIPE_WIDTH, -1 * Y_T], [-1 * STRIPE_WIDTH, -1 * Y_T]],

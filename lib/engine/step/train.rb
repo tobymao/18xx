@@ -89,7 +89,11 @@ module Engine
 
         @game.buy_train(entity, train, price)
         @game.phase.buying_train!(entity, train)
-        pass! unless can_buy_train?(entity)
+        pass! if !can_buy_train?(entity) && pass_if_cannot_buy_train?(entity)
+      end
+
+      def pass_if_cannot_buy_train?(_entity)
+        true
       end
 
       def can_ebuy_sell_shares?(_entity)

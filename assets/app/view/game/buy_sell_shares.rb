@@ -73,7 +73,9 @@ module View
       def render_market_shares
         @pool_shares.map do |share|
           next unless @step.can_buy?(@current_entity, share.to_bundle)
-          next if share.to_bundle.presidents_share && @pool_shares.size > 1
+          if share.to_bundle.presidents_share && @pool_shares.size > 1 && !@game.can_buy_presidents_share_directly_from_market?
+            next
+          end
 
           h(Button::BuyShare,
             share: share,

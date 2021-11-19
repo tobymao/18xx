@@ -620,7 +620,7 @@ module Engine
           corp_tokens = stops.select(&:city?).sum { |c| c.tokens.count { |t| t&.corporation&.corporation? } }
 
           stops.select { |s| s.visit_cost.positive? }.sum { |stop| stop.route_revenue(route.phase, route.train) } +
-            raba_add + corp_tokens * CORP_TOKEN_REVENUE
+            raba_add + (corp_tokens * CORP_TOKEN_REVENUE)
         end
 
         def raba_delta(phase)

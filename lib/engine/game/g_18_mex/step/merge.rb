@@ -23,7 +23,7 @@ module Engine
             @game.ndm
           end
 
-          def merge_name
+          def merge_name(_entity = nil)
             "Merge #{mergee.name} into #{merge_target.name}"
           end
 

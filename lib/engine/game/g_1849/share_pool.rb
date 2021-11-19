@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'share_pool'
-
 module Engine
   module Game
     module G1849

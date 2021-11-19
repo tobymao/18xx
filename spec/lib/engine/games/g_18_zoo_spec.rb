@@ -313,7 +313,7 @@ module Engine
           it "should gain #{data[:gain] || 'nothing'} when par #{data[:price]}" do
             game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
 
-            expect(corporation.cash).to eq(data[:price] * 2 + data[:gain])
+            expect(corporation.cash).to eq((data[:price] * 2) + data[:gain])
           end
         end
       end

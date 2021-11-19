@@ -54,7 +54,7 @@ module Engine
       def process_buy_train(action)
         check_spend(action)
         buy_train_action(action)
-        pass! unless can_buy_train?(action.entity)
+        pass! if !can_buy_train?(action.entity) && pass_if_cannot_buy_train?(action.entity)
       end
 
       def swap_sell(_player, _corporation, _bundle, _pool_share); end

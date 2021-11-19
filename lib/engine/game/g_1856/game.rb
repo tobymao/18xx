@@ -1705,7 +1705,9 @@ module Engine
               next if !token.used || !token.city || home_bases.any? { |base| base.hex == token.city.hex }
 
               remove_duplicate_tokens(corp, home_bases)
-              replace_token(corp, token, create_national_token)
+              national_token = create_national_token
+              national_token.price = 0
+              replace_token(corp, token, national_token)
             end
           end
 

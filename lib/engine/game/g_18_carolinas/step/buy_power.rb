@@ -301,7 +301,7 @@ module Engine
               next unless p + 1 >= min_possible
 
               if (p + 1) == min_possible && must_buy_power?(entity) &&
-                lines << [(p + 1).to_s, @game.format_currency(ebuy_cash_needed(entity))]
+                (lines << [(p + 1).to_s, @game.format_currency(ebuy_cash_needed(entity))])
                 break
               end
 
