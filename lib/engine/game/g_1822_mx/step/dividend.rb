@@ -22,6 +22,20 @@ module Engine
               kind: revenue.positive? ? 'payout' : 'withhold',
             ))
           end
+
+          def share_price_change(entity, revenue = 0)
+            change = super
+            return change unless entity.id == 'NDEM'
+            return { share_direction: :left, share_times: 1 } unless revenue.positive?
+
+            price = entity.share_price.price
+            times = (revenue / price).to_i
+            if times.positive?
+              { share_direction: :right, share_times: times }
+            else
+              {}
+            end
+          end
         end
       end
     end

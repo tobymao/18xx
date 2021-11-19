@@ -12,19 +12,26 @@ module Engine
               @ndem = @game.corporation_by_id('NDEM')
               @ndem_tiles_laid = []
               @ndem_tile_layers = @game.players.select { |p| @ndem.player_share_holders.include?(p) }
-              @ndem_route_runner = @ndem_tile_layers.length.positive? ? @ndem_tile_layers[0] : @game.players[0]
-              @game.ndem_acting_player = @ndem_tile_layers[0] if @ndem_tile_layers.length.positive?
+              if @ndem_tile_layers.length.positive?
+                @ndem_route_runner = @ndem_tile_layers[0]
+                @game.ndem_acting_player = @ndem_tile_layers[0]
+              else
+                @ndem_route_runner = @game.players[0]
+              end
             end
             super
           end
 
-          def active?
-            !(@ndem && @ndem_tile_layers.length.zero?)
+          def actions(entity)
+            return [] if @ndem && @ndem_tile_layers.empty?
+
+            super
           end
 
-          def skip!
-            log_skip(current_entity)
-            pass!
+          def active?
+            return super unless @ndem
+
+            !@ndem_tile_layers.empty? || !acted
           end
 
           def pass!
@@ -47,6 +54,7 @@ module Engine
           end
 
           def process_lay_tile(action)
+            @log << "Tile placed for NDEM by #{@game.ndem_acting_player.name}" if @ndem
             action.tile.label = 'T' if action.hex.tile.label.to_s == 'T'
             super
           end

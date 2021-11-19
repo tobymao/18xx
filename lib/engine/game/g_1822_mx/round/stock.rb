@@ -37,10 +37,10 @@ module Engine
             end
             @game.log << if total_count != removed_trains
                            "#{total_count} minors with no bids. The last #{removed_trains} L trains have "\
-                             'been removed and given to the NdeM'
+                             'been removed and given to the NDEM'
                          else
                            "#{total_count} minors with no bids. #{removed_trains} L trains have been removed "\
-                             'and given to the NdeM'
+                             'and given to the NDEM'
                          end
           end
 

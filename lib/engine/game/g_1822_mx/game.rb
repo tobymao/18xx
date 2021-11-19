@@ -193,7 +193,7 @@ module Engine
             G1822MX::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
-            G1822::Step::Route,
+            G1822MX::Step::Route,
             G1822MX::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822::Step::MinorAcquisition,
@@ -221,6 +221,10 @@ module Engine
           self.class::STARTING_COMPANIES
         end
 
+        def init_share_pool
+          G1822MX::SharePool.new(self)
+        end
+
         def upgrades_to_correct_label?(from, to)
           # If the previous hex is white with a 'T', allow upgrades to 5 or 6
           if from.hex.tile.label.to_s == 'T' && from.hex.tile.color == :white
@@ -242,11 +246,10 @@ module Engine
         end
 
         def sorted_corporations
-          phase = @phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par')
-          ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
-          return ipoed.sort unless phase
-
-          ipoed.sort + others
+          available_corporations = super
+          ndem = corporation_by_id('NDEM')
+          available_corporations << ndem
+          available_corporations
         end
 
         def corporation_from_company(company)
@@ -265,6 +268,7 @@ module Engine
           city = hex_by_id(corporation.coordinates).tile.cities[corporation.city]
           city.remove_reservation!(corporation)
           city.place_token(ndem, ndem.find_token_by_type)
+          graph.clear
 
           # Add a stock certificate
           new_share = Share.new(ndem, percent: 10, index: @number_ndem_shares)
@@ -302,6 +306,15 @@ module Engine
         def send_train_to_ndem(train)
           depot.remove_train(train)
           ndem = corporation_by_id('NDEM')
+          phase.next! while phase.next_on.include?(train.sym) # Also trigger events
+          train.events.each do |event|
+            send("event_#{event['type']}!")
+          end
+          train.events.clear
+          if train.name == 'L' && phase.name == '2'
+            train.variant = '2'
+            @log << 'L Train given to NDEM is flipped to a 2 Train'
+          end
           ndem.trains.shift while ndem.trains.length >= phase.train_limit(ndem)
           train.owner = ndem
           ndem.trains << train
@@ -310,6 +323,18 @@ module Engine
         def setup
           super
           setup_ndem
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          return super unless bundle.corporation == corporation_by_id('NDEM')
+
+          @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
+        end
+
+        def operating_order
+          ndem, others = @corporations.select(&:floated?).sort.partition { |c| c.id == 'NDEM' }
+          minors, majors = others.sort.partition { |c| c.type == :minor }
+          minors + majors + ndem
         end
 
         def active_players
