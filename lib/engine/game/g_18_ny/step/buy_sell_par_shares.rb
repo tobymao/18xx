@@ -26,6 +26,10 @@ module Engine
             actions
           end
 
+          def visible_corporations
+            @game.sorted_corporations.reject { |c| c.closed? || (c.type == :minor && c.ipoed) }
+          end
+
           def issuable_shares(entity)
             return [] unless @round.current_actions.empty?
             return [] unless @game.check_sale_timing(entity, entity)
