@@ -232,13 +232,13 @@ module Engine
         def operating_round(round_num)
           G18NY::Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
-            G18NY::Step::Bankrupt,
             G18NY::Step::CheckCoalConnection,
             G18NY::Step::CheckNYCFormation,
-            Engine::Step::HomeToken,
             G18NY::Step::BuyCompany,
-            G18NY::Step::ReplaceTokens,
+            G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
+            Engine::Step::HomeToken,
+            G18NY::Step::ReplaceTokens,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
             G18NY::Step::Track,
@@ -259,6 +259,8 @@ module Engine
           @log << "-- NYC Formation Round #{round_num} --"
           @log << "NYC formation share price is #{format_currency(nyc_formation_share_price.price)}" if round_num == 1
           G18NY::Round::NYCFormation.new(self, [
+            G18NY::Step::Bankrupt,
+            G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::MergeWithNYC,
           ], round_num: round_num)
         end
@@ -287,7 +289,6 @@ module Engine
               end
             when G18NY::Round::NYCFormation
               @turn += 1
-              nyc_formation_round_complete
               new_stock_round
             when init_round.class
               init_round_finished
@@ -881,7 +882,7 @@ module Engine
           nyc_corporation.ipoed = true
         end
 
-        def nyc_formation_round_complete
+        def process_nyc_formation
           # At least two minors required to form NYC
           if @nyc_formation_state == :round_one && @merging_minors.size < 2
             @log << '-- Event: NYC formation fails --'

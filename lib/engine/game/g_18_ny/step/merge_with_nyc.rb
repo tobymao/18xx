@@ -106,6 +106,8 @@ module Engine
 
             @game.minors_merging_into_nyc << entity
             @minor_index += 1
+
+            @game.process_nyc_formation unless mergee
           end
 
           def process_pass(action)
@@ -124,6 +126,7 @@ module Engine
             @game.log << msg
 
             @minor_index += 1
+            @game.process_nyc_formation unless mergee
           end
 
           def setup

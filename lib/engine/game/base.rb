@@ -1543,9 +1543,9 @@ module Engine
       end
 
       def total_emr_buying_power(player, corporation)
-        corporation.cash +
-          emergency_issuable_cash(corporation) +
-          liquidity(player, emergency: true)
+        buying_power = liquidity(player, emergency: true)
+        buying_power += corporation.cash + emergency_issuable_cash(corporation) if corporation
+        buying_power
       end
 
       def buying_power(entity, **)
