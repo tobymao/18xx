@@ -16,7 +16,9 @@ module Engine
             corporation = winner.corporation
             price = winner.price
 
-            @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
+            @log << "#{entity.name} wins bid on #{corporation.name}
+              and buys its director's share for #{@game.format_currency(price)}"
+            @log << "#{corporation.name} receives bid amount of #{@game.format_currency(price)}"
             par_price = [price / 2, MAX_MINOR_PAR].min
 
             share_price = get_par_prices(entity, corporation).find { |sp| sp.price <= par_price }
