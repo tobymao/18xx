@@ -15,13 +15,7 @@ module Engine
               @game.claim_connection_bonus(action.entity, stop.hex)
               connection_bonus = true
             end
-            return unless connection_bonus
-
-            # Recalculate revenue if a connection_bonus was claimed
-            action.routes.each do |route|
-              route.clear_cache!
-              route.revenue
-            end
+            action.routes.each(&:clear_cache!) if connection_bonus
           end
         end
       end
