@@ -12,6 +12,8 @@ module Engine
         include G1822MX::Entities
         include G1822MX::Map
 
+        attr_accessor :ndem_acting_player, :number_ndem_shares
+
         CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
 
         BIDDING_TOKENS = {
@@ -35,7 +37,7 @@ module Engine
                                 M16 M17 M18 M19 M20 M21 M22 M23 M24].freeze
 
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                                   FCM MC CHP FNM MIR FCP IRM].freeze
+                                   FCM MC CHP FNM MIR FCP IRM NDEM].freeze
 
         CURRENCY_FORMAT_STR = '$%d'
 
@@ -189,8 +191,8 @@ module Engine
             G1822MX::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
-            G1822::Step::Route,
-            G1822::Step::Dividend,
+            G1822MX::Step::Route,
+            G1822MX::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822::Step::MinorAcquisition,
             G1822::Step::PendingToken,
@@ -217,6 +219,10 @@ module Engine
           self.class::STARTING_COMPANIES
         end
 
+        def init_share_pool
+          G1822MX::SharePool.new(self)
+        end
+
         def upgrades_to_correct_label?(from, to)
           # If the previous hex is white with a 'T', allow upgrades to 5 or 6
           if from.hex.tile.label.to_s == 'T' && from.hex.tile.color == :white
@@ -229,8 +235,110 @@ module Engine
         def stock_round
           G1822MX::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1822::Step::BuySellParShares,
+            G1822MX::Step::BuySellParShares,
           ])
+        end
+
+        def must_buy_train?(entity)
+          entity.trains.empty? && entity.id != 'NDEM'
+        end
+
+        def sorted_corporations
+          available_corporations = super
+          ndem = corporation_by_id('NDEM')
+          available_corporations << ndem
+          available_corporations
+        end
+
+        def corporation_from_company(company)
+          corporation_by_id(company.id[1..-1])
+        end
+
+        def replace_minor_with_ndem(company)
+          # Remove minor
+          @companies.delete(company)
+          @log << "-- #{company.sym} is removed from the game and replaced with NdeM"
+
+          corporation = corporation_from_company(company)
+          ndem = corporation_by_id('NDEM')
+
+          # Replace token
+          city = hex_by_id(corporation.coordinates).tile.cities[corporation.city]
+          city.remove_reservation!(corporation)
+          city.place_token(ndem, ndem.find_token_by_type)
+          graph.clear
+
+          # Add a stock certificate
+          new_share = Share.new(ndem, percent: 10, index: @number_ndem_shares)
+          new_share.counts_for_limit = false
+          @share_pool.transfer_shares(new_share.to_bundle, @share_pool, allow_president_change: false)
+          @number_ndem_shares += 1
+        end
+
+        def setup_ndem
+          @number_ndem_shares = 3
+          ndem = corporation_by_id('NDEM')
+
+          # Make the NDEM shares not count against the cert limit and move them to the bank pool
+          ndem.shares_by_corporation[ndem].each { |share| share.counts_for_limit = false }
+          @share_pool.transfer_shares(Engine::ShareBundle.new(ndem.shares_by_corporation[ndem]), @share_pool)
+
+          # Find the first of (M14, M15, and M17) to remove for the NdeM.  The rules say to randomize
+          # the entire stack, and then find the earliest one of the three.  This will result in a
+          # slightly different order than just pulling one out to start...
+
+          ndem_minor_index = [@companies.index { |c| c.id == 'M14' },
+                              @companies.index { |c| c.id == 'M15' },
+                              @companies.index { |c| c.id == 'M17' }].min
+          replace_minor_with_ndem(@companies[ndem_minor_index])
+
+          # bidboxes need to be re-setup if this minor was in the top 4
+          setup_bidboxes
+
+          stock_market.set_par(ndem, stock_market.par_prices.find { |pp| pp.price == 100 })
+          ndem.ipoed = true
+          ndem.owner = @share_pool # Not clear this is needed
+          after_par(ndem) # Not clear this is needed
+        end
+
+        def send_train_to_ndem(train)
+          depot.remove_train(train)
+          ndem = corporation_by_id('NDEM')
+          phase.next! while phase.next_on.include?(train.sym) # Also trigger events
+          train.events.each do |event|
+            send("event_#{event['type']}!")
+          end
+          train.events.clear
+          if train.name == 'L' && phase.name == '2'
+            train.variant = '2'
+            @log << 'L Train given to NDEM is flipped to a 2 Train'
+          end
+          ndem.trains.shift while ndem.trains.length >= phase.train_limit(ndem)
+          train.owner = ndem
+          ndem.trains << train
+        end
+
+        def setup
+          super
+          setup_ndem
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          return super unless bundle.corporation == corporation_by_id('NDEM')
+
+          @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
+        end
+
+        def operating_order
+          ndem, others = @corporations.select(&:floated?).sort.partition { |c| c.id == 'NDEM' }
+          minors, majors = others.sort.partition { |c| c.type == :minor }
+          minors + majors + ndem
+        end
+
+        def active_players
+          return [@ndem_acting_player] if @ndem_acting_player
+
+          super
         end
       end
     end
