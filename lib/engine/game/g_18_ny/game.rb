@@ -216,6 +216,10 @@ module Engine
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
+        def init_share_pool
+          G18NY::SharePool.new(self)
+        end
+
         def new_auction_round
           Engine::Round::Auction.new(self, [
             G18NY::Step::CompanyPendingPar,
