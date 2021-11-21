@@ -269,11 +269,29 @@ module Engine
           ], round_num: round_num)
         end
 
+        def new_capitalization_round
+          @log << '-- Capitalization Round --'
+          G18NY::Round::Capitalization.new(self, [
+            G18NY::Step::IssueShares,
+          ])
+        end
+
         def next_round!
           clear_interest_paid
 
           @round =
             case @round
+            when G18NY::Round::NYCFormation
+              if @capitalization_round
+                new_capitalization_round
+              else
+                @turn += 1
+                new_stock_round
+              end
+            when G18NY::Round::Capitalization
+              @capitalization_round = nil
+              @turn += 1
+              new_stock_round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
@@ -286,14 +304,13 @@ module Engine
                 or_set_finished
                 if %i[round_one round_two].include?(@nyc_formation_state)
                   new_nyc_formation_round(@nyc_formation_state == :round_one ? 1 : 2)
+                elsif @capitalization_round
+                  new_capitalization_round
                 else
                   @turn += 1
                   new_stock_round
                 end
               end
-            when G18NY::Round::NYCFormation
-              @turn += 1
-              new_stock_round
             when init_round.class
               init_round_finished
               reorder_players
@@ -359,6 +376,7 @@ module Engine
 
         def event_capitalization_round!
           @log << "-- Event: #{EVENTS_TEXT['capitalization_round'][1]} --"
+          @capitalization_round = true
         end
 
         def non_floated_corporations
@@ -961,7 +979,9 @@ module Engine
 
           # Transfer token
           token = Token.new(nyc_corporation, price: 20)
-          nyc_corporation.tokens << token
+          # Workaround so the game thinks the home token has been laid
+          used, unused = nyc_corporation.tokens.partition(&:used)
+          nyc_corporation.tokens.replace(used + [token] + unused)
 
           home_hex = hex_by_id(entity.coordinates)
           if nyc_corporation.tokens.map(&:hex).include?(home_hex)
