@@ -15,7 +15,7 @@ module Engine
               @game.claim_connection_bonus(action.entity, stop.hex)
               connection_bonus = true
             end
-            action.routes.each(&:clear_cache!) if connection_bonus
+            action.routes.each { |route| route.clear_cache!(only_routes: true) } if connection_bonus
           end
         end
       end
