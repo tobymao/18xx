@@ -402,10 +402,6 @@ module Engine
           true
         end
 
-        def can_gain_presidents_share_directly_from_corporation?(corporation)
-          corporation == nyc_corporation
-        end
-
         def float_corporation(corporation)
           super
           return unless corporation.capitalization == :full
