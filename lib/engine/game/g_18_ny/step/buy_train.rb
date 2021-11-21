@@ -45,7 +45,11 @@ module Engine
           end
 
           def can_take_loan?(entity)
-            entity.trains.empty? && !@train_salvaged && @game.can_take_loan?(entity)
+            !can_afford_train?(entity) && entity.trains.empty? && !@train_salvaged && @game.can_take_loan?(entity)
+          end
+
+          def can_afford_train?(entity)
+            entity.cash >= @game.depot.min_depot_price
           end
 
           def setup
