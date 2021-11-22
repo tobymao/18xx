@@ -984,6 +984,10 @@ module Engine
         false
       end
 
+      def can_swap_for_presidents_share_directly_from_corporation?
+        true
+      end
+
       def shares_for_presidency_swap(shares, num_shares)
         shares.take(num_shares)
       end
