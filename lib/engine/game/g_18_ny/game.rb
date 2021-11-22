@@ -377,6 +377,7 @@ module Engine
         def event_capitalization_round!
           @log << "-- Event: #{EVENTS_TEXT['capitalization_round'][1]} --"
           @capitalization_round = true
+          @full_capitalization = true
         end
 
         def non_floated_corporations
@@ -424,6 +425,20 @@ module Engine
 
         def can_buy_presidents_share_directly_from_market?
           true
+        end
+
+        def can_fully_capitalize?(entity)
+          @full_capitalization && entity.type != :minor
+        end
+
+        def fully_capitalize_corporation(entity)
+          entity.capitalization = :full
+          entity.spend(entity.cash, @bank)
+          @bank.spend(entity.par_price.price * entity.total_shares, entity)
+          @share_pool.transfer_shares(ShareBundle.new(entity.shares_of(entity)), @share_pool)
+          @log << "#{entity.name} receives full capitalization"
+          @log << "Treasury discard and instead receives #{format_currency(entity.cash)}"
+          @log << 'Remaining shares placed in the market'
         end
 
         def float_corporation(corporation)
