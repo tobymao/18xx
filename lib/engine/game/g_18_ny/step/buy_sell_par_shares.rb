@@ -47,7 +47,9 @@ module Engine
           end
 
           def process_buy_shares(action)
+            share_corp = action.bundle.corporation
             super
+            @game.fully_capitalize_corporation(share_corp) if @game.can_fully_capitalize?(share_corp)
             pass! if action.entity.corporation?
           end
 
@@ -58,7 +60,7 @@ module Engine
 
           def mandatory_nyc_buy?(entity)
             @game.nyc_corporation.presidents_share.owner == @game.nyc_corporation &&
-              @game.pending_nyc_owner == entity
+              @game.first_nyc_owner == entity
           end
 
           def can_buy?(entity, bundle)
@@ -91,6 +93,7 @@ module Engine
             share_price = get_all_par_prices(corporation).find { |par| par.price <= max_share_price }
             process_par(Action::Par.new(entity, corporation: corporation, share_price: share_price))
 
+            @log << "#{corporation.name} receives #{@game.format_currency(bid)} in its Treasury"
             additional_cash = bid - (share_price.price * 2)
             entity.spend(additional_cash, corporation) if additional_cash.positive?
 

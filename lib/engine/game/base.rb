@@ -984,6 +984,10 @@ module Engine
         false
       end
 
+      def can_swap_for_presidents_share_directly_from_corporation?
+        true
+      end
+
       def shares_for_presidency_swap(shares, num_shares)
         shares.take(num_shares)
       end
@@ -1295,10 +1299,9 @@ module Engine
             @round.clear_cache!
             return
           end
+
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.
-          @log << "#{corporation.name} must choose city for home token"
-
           hexes =
             if hex
               [hex]
@@ -1308,6 +1311,7 @@ module Engine
 
           return unless hexes
 
+          @log << "#{corporation.name} must choose city for home token"
           @round.pending_tokens << {
             entity: corporation,
             hexes: hexes,

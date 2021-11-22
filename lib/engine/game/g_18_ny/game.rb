@@ -17,7 +17,7 @@ module Engine
         include G18NY::Map
         include InterestOnLoans
 
-        attr_reader :privates_closed, :pending_nyc_owner
+        attr_reader :privates_closed, :first_nyc_owner
         attr_accessor :stagecoach_token
 
         CAPITALIZATION = :incremental
@@ -37,8 +37,12 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         SELL_BUY_ORDER = :sell_buy_or_buy_sell
+        SELL_AFTER = :operate
 
-        GAME_END_CHECK = { banrkupt: :immediate, bank: :full_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, custom: :full_or }.freeze
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'All but one corporation is closed',
+        )
 
         ALL_COMPANIES_ASSIGNABLE = true
 
@@ -235,12 +239,13 @@ module Engine
 
         def operating_round(round_num)
           G18NY::Round::Operating.new(self, [
-            G18NY::Step::StagecoachExchange,
             G18NY::Step::CheckCoalConnection,
             G18NY::Step::CheckNYCFormation,
             G18NY::Step::BuyCompany,
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
+            G18NY::Step::StagecoachExchange,
+            Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
             G18NY::Step::SpecialTrack,
@@ -249,7 +254,6 @@ module Engine
             G18NY::Step::Token,
             G18NY::Step::Route,
             G18NY::Step::Dividend,
-            Engine::Step::DiscardTrain,
             G18NY::Step::LoanInterestPayment,
             G18NY::Step::LoanRepayment,
             Engine::Step::SpecialBuyTrain,
@@ -265,8 +269,16 @@ module Engine
           G18NY::Round::NYCFormation.new(self, [
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
+            Engine::Step::DiscardTrain,
             G18NY::Step::MergeWithNYC,
           ], round_num: round_num)
+        end
+
+        def new_capitalization_round
+          @log << '-- Capitalization Round --'
+          G18NY::Round::Capitalization.new(self, [
+            G18NY::Step::IssueShares,
+          ])
         end
 
         def next_round!
@@ -274,6 +286,18 @@ module Engine
 
           @round =
             case @round
+            when G18NY::Round::NYCFormation
+              nyc_formation_round_finished
+              if @capitalization_round
+                new_capitalization_round
+              else
+                @turn += 1
+                new_stock_round
+              end
+            when G18NY::Round::Capitalization
+              @capitalization_round = nil
+              @turn += 1
+              new_stock_round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
@@ -286,14 +310,13 @@ module Engine
                 or_set_finished
                 if %i[round_one round_two].include?(@nyc_formation_state)
                   new_nyc_formation_round(@nyc_formation_state == :round_one ? 1 : 2)
+                elsif @capitalization_round
+                  new_capitalization_round
                 else
                   @turn += 1
                   new_stock_round
                 end
               end
-            when G18NY::Round::NYCFormation
-              @turn += 1
-              new_stock_round
             when init_round.class
               init_round_finished
               reorder_players
@@ -349,7 +372,7 @@ module Engine
           @nyc_formation_state = :round_one
 
           @log << 'No further minor corporations may be started'
-          @corporations.each do |c|
+          @corporations.dup.each do |c|
             next if c.type != :minor || c.floated? || c.closed?
 
             @log << "#{c.name} is removed from the game"
@@ -359,6 +382,8 @@ module Engine
 
         def event_capitalization_round!
           @log << "-- Event: #{EVENTS_TEXT['capitalization_round'][1]} --"
+          @capitalization_round = true
+          @full_capitalization = true
         end
 
         def non_floated_corporations
@@ -389,7 +414,7 @@ module Engine
         end
 
         def check_sale_timing(_entity, corporation)
-          return true if corporation.name == 'NYC'
+          return true if corporation == nyc_corporation && @nyc_formed
 
           super
         end
@@ -406,6 +431,26 @@ module Engine
 
         def can_buy_presidents_share_directly_from_market?
           true
+        end
+
+        def can_fully_capitalize?(entity)
+          return false if @nyc_formed && entity == nyc_corporation
+
+          @full_capitalization &&
+            entity.type != :minor &&
+            !entity.operated? &&
+            entity.capitalization == :incremental &&
+            entity.percent_of(entity) == 40
+        end
+
+        def fully_capitalize_corporation(entity)
+          entity.capitalization = :full
+          entity.spend(entity.cash, @bank)
+          @bank.spend(entity.par_price.price * entity.total_shares, entity)
+          @share_pool.transfer_shares(ShareBundle.new(entity.shares_of(entity)), @share_pool)
+          @log << "#{entity.name} receives full capitalization"
+          @log << "Treasury discard and instead receives #{format_currency(entity.cash)}"
+          @log << 'Remaining shares placed in the market'
         end
 
         def float_corporation(corporation)
@@ -629,7 +674,7 @@ module Engine
         end
 
         def rust(train)
-          salvage_train(train)
+          salvage_train(train) unless train.from_depot?
           super
         end
 
@@ -873,7 +918,7 @@ module Engine
         end
 
         def nyc_forming?
-          %i[round_one round_two].include?(@nyc_formation_state) && !@nyc_formation_failed
+          @nyc_formation_state == :round_one || (@nyc_formation_state == :round_two && @nyc_formed)
         end
 
         def form_nyc
@@ -882,28 +927,23 @@ module Engine
           nyc_corporation.floatable = true
           @stock_market.set_par(nyc_corporation, nyc_formation_share_price)
           nyc_corporation.ipoed = true
+          @nyc_formed = true
         end
 
-        def process_nyc_formation
+        def nyc_formation_round_finished
           # At least two minors required to form NYC
-          if @nyc_formation_state == :round_one && @merging_minors.size < 2
+          if @nyc_formation_state == :round_one && !@nyc_formed
             @log << '-- Event: NYC formation fails --'
             @log << 'Any minors remaining after the next set of Operating Rounds will be liquidated'
             convert_nyc_into_regular_corporation
-            minors_merging_into_nyc.clear
-            @nyc_formation_failed = true
             @nyc_formation_state = :round_two
             return
           end
 
-          form_nyc if @nyc_formation_state == :round_one
-          minors_merging_into_nyc.each { |minor| merge_into_nyc(minor) }
-          minors_merging_into_nyc.clear
           nyc_formation_take_loans
           liquidate_remaining_minors if @nyc_formation_state == :round_two
           if @nyc_formation_state == :round_one && !nyc_corporation.owner
-            @pending_nyc_owner = @first_nyc_owner
-            @log << "#{@pending_nyc_owner.name} is the pending president of NYC and is required to buy a second share " \
+            @log << "#{@first_nyc_owner.name} is the pending president of NYC and is required to buy a second share " \
                     "of NYC during their first turn in the next Stock Round to gain the president's certificate"
           end
 
@@ -927,17 +967,16 @@ module Engine
           end
         end
 
-        def minors_merging_into_nyc
-          @merging_minors ||= []
-        end
-
         def nyc_merger_cost(entity)
           share_price = nyc_corporation.share_price&.price || nyc_formation_share_price.price
           (entity.share_price.price * 2) - share_price
         end
 
         def merge_into_nyc(entity)
-          @first_nyc_owner ||= entity.owner
+          unless @first_nyc_owner
+            form_nyc
+            @first_nyc_owner = entity.owner
+          end
 
           @log << "#{entity.name} merges into #{nyc_corporation.name}"
           nyc_corporation.num_treasury_shares.zero? ? exchange_for_bank_share(entity) : exchange_for_nyc_share(entity)
@@ -961,7 +1000,9 @@ module Engine
 
           # Transfer token
           token = Token.new(nyc_corporation, price: 20)
-          nyc_corporation.tokens << token
+          # Workaround so the game thinks the home token has been laid
+          used, unused = nyc_corporation.tokens.partition(&:used)
+          nyc_corporation.tokens.replace(used + [token] + unused)
 
           home_hex = hex_by_id(entity.coordinates)
           if nyc_corporation.tokens.map(&:hex).include?(home_hex)
