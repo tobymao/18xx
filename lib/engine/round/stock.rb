@@ -83,7 +83,7 @@ module Engine
       end
 
       def corporations_to_move_price
-        @game.corporations.select(&:floated?)
+        @game.corporations.select { |c| c.floated? && c.type != :minor }
       end
 
       def sold_out_stock_movement(corp)

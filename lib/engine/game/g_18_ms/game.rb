@@ -365,8 +365,10 @@ module Engine
         end
 
         def routes_revenue(routes)
+          return 0 if routes.empty?
+
           if @round.round_num == 2
-            active_step.current_entity.trains.each do |t|
+            routes.first.corporation.trains.each do |t|
               next unless t.name == "#{@turn}+"
 
               # Trains that are going to be salvaged at the end of this OR

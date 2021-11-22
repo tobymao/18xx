@@ -17,6 +17,10 @@ module Engine
             end
             super
           end
+
+          def corporations_to_move_price
+            @game.corporations.select(&:floated?)
+          end
         end
       end
     end
