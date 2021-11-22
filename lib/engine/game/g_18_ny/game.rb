@@ -433,7 +433,13 @@ module Engine
         end
 
         def can_fully_capitalize?(entity)
-          @full_capitalization && entity.type != :minor
+          return false if !@nyc_formation_failed && entity == nyc_corporation
+
+          @full_capitalization &&
+            entity.type != :minor &&
+            !entity.operated? &&
+            entity.capitalization == :incremental &&
+            entity.percent_of(entity) == 40
         end
 
         def fully_capitalize_corporation(entity)

@@ -49,15 +49,8 @@ module Engine
           def process_buy_shares(action)
             share_corp = action.bundle.corporation
             super
-            @game.fully_capitalize_corporation(share_corp) if fully_capitalize?(share_corp)
+            @game.fully_capitalize_corporation(share_corp) if @game.can_fully_capitalize?(share_corp)
             pass! if action.entity.corporation?
-          end
-
-          def fully_capitalize?(entity)
-            @game.can_fully_capitalize?(entity) &&
-              !entity.operated? &&
-              entity.capitalization == :incremental &&
-              entity.percent_of(entity) == 40
           end
 
           def process_sell_shares(action)
