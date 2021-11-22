@@ -37,8 +37,12 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         SELL_BUY_ORDER = :sell_buy_or_buy_sell
+        SELL_AFTER = :operate
 
-        GAME_END_CHECK = { banrkupt: :immediate, bank: :full_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, custom: :full_or }.freeze
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'All but one corporation is closed',
+        )
 
         ALL_COMPANIES_ASSIGNABLE = true
 
@@ -235,12 +239,13 @@ module Engine
 
         def operating_round(round_num)
           G18NY::Round::Operating.new(self, [
-            G18NY::Step::StagecoachExchange,
             G18NY::Step::CheckCoalConnection,
             G18NY::Step::CheckNYCFormation,
             G18NY::Step::BuyCompany,
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
+            G18NY::Step::StagecoachExchange,
+            Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
             G18NY::Step::SpecialTrack,
@@ -249,7 +254,6 @@ module Engine
             G18NY::Step::Token,
             G18NY::Step::Route,
             G18NY::Step::Dividend,
-            Engine::Step::DiscardTrain,
             G18NY::Step::LoanInterestPayment,
             G18NY::Step::LoanRepayment,
             Engine::Step::SpecialBuyTrain,
@@ -265,6 +269,7 @@ module Engine
           G18NY::Round::NYCFormation.new(self, [
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
+            Engine::Step::DiscardTrain,
             G18NY::Step::MergeWithNYC,
           ], round_num: round_num)
         end
@@ -408,7 +413,7 @@ module Engine
         end
 
         def check_sale_timing(_entity, corporation)
-          return true if corporation.name == 'NYC'
+          return true if corporation == nyc_corporation && !@nyc_formation_failed
 
           super
         end
@@ -662,7 +667,7 @@ module Engine
         end
 
         def rust(train)
-          salvage_train(train)
+          salvage_train(train) unless train.from_depot?
           super
         end
 
