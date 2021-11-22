@@ -349,7 +349,9 @@ module Engine
           @nyc_formation_state = :round_one
 
           @log << 'No further minor corporations may be started'
-          @corporations.select { |c| c.type == :minor && !c.floated? && !c.closed? }.each do |c|
+          @corporations.each do |c|
+            next if c.type != :minor || c.floated? || c.closed?
+
             @log << "#{c.name} is removed from the game"
             close_corporation(c, quiet: true)
           end
@@ -432,12 +434,12 @@ module Engine
             Engine::Corporation.new(name: 'Buffalo', sym: 'BUF', tokens: [], coordinates: 'E3')
 
           non_blocking_graph.clear_graph_for(@buffalo_corp)
-          non_blocking_graph.connected_hexes(@buffalo_corp).key?(albany_hex)
+          non_blocking_graph.connected_hexes(@buffalo_corp)[albany_hex]
         end
 
         def home_token_locations(corporation)
           return super unless corporation == nyc_corporation
-          return nil unless corporation.tokens.select(&:used).empty?
+          return nil if corporation.tokens.any?(&:used)
           return [albany_hex] unless albany_hex.tile.cities[0].available_slots.zero?
 
           @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }
@@ -921,7 +923,7 @@ module Engine
             # Minor 1 and 2 are always considered connected
             next true if %w[1 2].include?(minor.id)
 
-            non_blocking_graph.connected_hexes(minor).key?(albany_hex)
+            non_blocking_graph.connected_hexes(minor)[albany_hex]
           end
         end
 
