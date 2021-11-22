@@ -371,7 +371,7 @@ module Engine
           @nyc_formation_state = :round_one
 
           @log << 'No further minor corporations may be started'
-          @corporations.each do |c|
+          @corporations.dup.each do |c|
             next if c.type != :minor || c.floated? || c.closed?
 
             @log << "#{c.name} is removed from the game"
