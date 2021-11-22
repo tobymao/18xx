@@ -100,6 +100,7 @@ module Engine
             share_price = get_all_par_prices(corporation).find { |par| par.price <= max_share_price }
             process_par(Action::Par.new(entity, corporation: corporation, share_price: share_price))
 
+            @log << "#{corporation.name} receives #{@game.format_currency(bid)} in its Treasury"
             additional_cash = bid - (share_price.price * 2)
             entity.spend(additional_cash, corporation) if additional_cash.positive?
 
