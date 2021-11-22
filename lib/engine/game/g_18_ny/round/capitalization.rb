@@ -19,6 +19,14 @@ module Engine
             @current_operator = nil
             after_setup
           end
+
+          def start_operating
+            entity = @entities[@entity_index]
+            @current_operator = entity
+            @current_operator_acted = false
+            skip_steps
+            next_entity! if finished?
+          end
         end
       end
     end
