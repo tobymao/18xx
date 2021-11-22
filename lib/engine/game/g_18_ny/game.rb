@@ -17,7 +17,7 @@ module Engine
         include G18NY::Map
         include InterestOnLoans
 
-        attr_reader :privates_closed, :pending_nyc_owner
+        attr_reader :privates_closed, :first_nyc_owner
         attr_accessor :stagecoach_token
 
         CAPITALIZATION = :incremental
@@ -287,6 +287,7 @@ module Engine
           @round =
             case @round
             when G18NY::Round::NYCFormation
+              nyc_formation_round_finished
               if @capitalization_round
                 new_capitalization_round
               else
@@ -413,7 +414,7 @@ module Engine
         end
 
         def check_sale_timing(_entity, corporation)
-          return true if corporation == nyc_corporation && !@nyc_formation_failed
+          return true if corporation == nyc_corporation && @nyc_formed
 
           super
         end
@@ -433,7 +434,7 @@ module Engine
         end
 
         def can_fully_capitalize?(entity)
-          return false if !@nyc_formation_failed && entity == nyc_corporation
+          return false if @nyc_formed && entity == nyc_corporation
 
           @full_capitalization &&
             entity.type != :minor &&
@@ -917,7 +918,7 @@ module Engine
         end
 
         def nyc_forming?
-          %i[round_one round_two].include?(@nyc_formation_state) && !@nyc_formation_failed
+          @nyc_formation_state == :round_one || (@nyc_formation_state == :round_two && @nyc_formed)
         end
 
         def form_nyc
@@ -926,28 +927,23 @@ module Engine
           nyc_corporation.floatable = true
           @stock_market.set_par(nyc_corporation, nyc_formation_share_price)
           nyc_corporation.ipoed = true
+          @nyc_formed = true
         end
 
-        def process_nyc_formation
+        def nyc_formation_round_finished
           # At least two minors required to form NYC
-          if @nyc_formation_state == :round_one && @merging_minors.size < 2
+          if @nyc_formation_state == :round_one && !@nyc_formed
             @log << '-- Event: NYC formation fails --'
             @log << 'Any minors remaining after the next set of Operating Rounds will be liquidated'
             convert_nyc_into_regular_corporation
-            minors_merging_into_nyc.clear
-            @nyc_formation_failed = true
             @nyc_formation_state = :round_two
             return
           end
 
-          form_nyc if @nyc_formation_state == :round_one
-          minors_merging_into_nyc.each { |minor| merge_into_nyc(minor) }
-          minors_merging_into_nyc.clear
           nyc_formation_take_loans
           liquidate_remaining_minors if @nyc_formation_state == :round_two
           if @nyc_formation_state == :round_one && !nyc_corporation.owner
-            @pending_nyc_owner = @first_nyc_owner
-            @log << "#{@pending_nyc_owner.name} is the pending president of NYC and is required to buy a second share " \
+            @log << "#{@first_nyc_owner.name} is the pending president of NYC and is required to buy a second share " \
                     "of NYC during their first turn in the next Stock Round to gain the president's certificate"
           end
 
@@ -971,17 +967,16 @@ module Engine
           end
         end
 
-        def minors_merging_into_nyc
-          @merging_minors ||= []
-        end
-
         def nyc_merger_cost(entity)
           share_price = nyc_corporation.share_price&.price || nyc_formation_share_price.price
           (entity.share_price.price * 2) - share_price
         end
 
         def merge_into_nyc(entity)
-          @first_nyc_owner ||= entity.owner
+          unless @first_nyc_owner
+            form_nyc
+            @first_nyc_owner = entity.owner
+          end
 
           @log << "#{entity.name} merges into #{nyc_corporation.name}"
           nyc_corporation.num_treasury_shares.zero? ? exchange_for_bank_share(entity) : exchange_for_nyc_share(entity)

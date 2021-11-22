@@ -60,7 +60,7 @@ module Engine
 
           def mandatory_nyc_buy?(entity)
             @game.nyc_corporation.presidents_share.owner == @game.nyc_corporation &&
-              @game.pending_nyc_owner == entity
+              @game.first_nyc_owner == entity
           end
 
           def can_buy?(entity, bundle)
