@@ -51,7 +51,6 @@ module Engine
                 hexes: ['F20'],
                 price: 0,
                 teleport_price: 0,
-                count: 1,
                 extra_action: true,
               },
               { type: 'reservation', remove: 'close', hex: 'F20', slot: 1 },
