@@ -78,14 +78,31 @@ module Engine
       def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type, cheater: false,
                      extra_slot: false, spender: nil)
         tokens = Array(tokens)
-        return false if !extra_slot && tokens.empty?
+        @error = :generic
+        if !extra_slot && tokens.empty?
+          @error = :no_tokens
+          return false
+        end
 
         tokens.any? do |t|
-          next false unless extra_slot || get_slot(t.corporation, cheater: cheater)
-          next false if !free && t.price > (spender || corporation).cash
-          next false if @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
+          if !extra_slot && !get_slot(t.corporation, cheater: cheater)
+            @error = :no_slots
+            next false
+          end
+          if !free && t.price > (spender || corporation).cash
+            @error = :no_money
+            next false
+          end
+          if @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
+            @error = :existing_token
+            next false
+          end
           next true if reserved_by?(corporation)
-          next false if @tile.token_blocked_by_reservation?(corporation)
+
+          if @tile.token_blocked_by_reservation?(corporation)
+            @error = :blocked_reservation
+            next false
+          end
 
           true
         end
@@ -110,24 +127,21 @@ module Engine
         if check_tokenable && !tokenable?(
             corporation, free: free, tokens: token, cheater: cheater, extra_slot: extra_slot, spender: spender
           )
-          if tile.cities.any? do |c|
-               c.tokened_by?(token.corporation)
-             end
+          raise GameError, "#{corporation.name} cannot lay token - has no tokens left" if @error == :no_tokens
+
+          if @error == :existing_token
             raise GameError,
                   "#{corporation.name} cannot lay token - already has a token on #{tile.hex&.id}"
           end
-
-          if tile.token_blocked_by_reservation?(corporation)
+          if @error == :blocked_reservation
             raise GameError,
                   "#{corporation.name} cannot lay token - remaining token slots are reserved on #{tile.hex&.id}"
           end
-          if !free && token.price > (spender || corporation).cash
+          if @error == :no_money
             raise GameError,
                   "#{corporation.name} cannot lay token - cannot afford token on #{tile.hex&.id}"
           end
-          unless extra_slot || get_slot(
-token.corporation, cheater: cheater
-)
+          if @error == :no_slots
             raise GameError,
                   "#{corporation.name} cannot lay token - no token slots available on #{tile.hex&.id}"
           end
