@@ -245,7 +245,7 @@ module Engine
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::StagecoachExchange,
-            Engine::Step::DiscardTrain,
+            G18NY::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
             G18NY::Step::SpecialTrack,
@@ -269,8 +269,8 @@ module Engine
           G18NY::Round::NYCFormation.new(self, [
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
-            Engine::Step::DiscardTrain,
             G18NY::Step::MergeWithNYC,
+            G18NY::Step::DiscardTrain,
           ], round_num: round_num)
         end
 
