@@ -110,6 +110,28 @@ module Engine
         if check_tokenable && !tokenable?(
             corporation, free: free, tokens: token, cheater: cheater, extra_slot: extra_slot, spender: spender
           )
+          if tile.cities.any? do |c|
+               c.tokened_by?(token.corporation)
+             end
+            raise GameError,
+                  "#{corporation.name} cannot lay token - already has a token on #{tile.hex&.id}"
+          end
+
+          if tile.token_blocked_by_reservation?(corporation)
+            raise GameError,
+                  "#{corporation.name} cannot lay token - remaining token slots are reserved on #{tile.hex&.id}"
+          end
+          if !free && token.price > (spender || corporation).cash
+            raise GameError,
+                  "#{corporation.name} cannot lay token - cannot afford token on #{tile.hex&.id}"
+          end
+          unless extra_slot || get_slot(
+token.corporation, cheater: cheater
+)
+            raise GameError,
+                  "#{corporation.name} cannot lay token - no token slots available on #{tile.hex&.id}"
+          end
+
           raise GameError, "#{corporation.name} cannot lay token on #{id} #{tile.hex&.id}"
         end
 
