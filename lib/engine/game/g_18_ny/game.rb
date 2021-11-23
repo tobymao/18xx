@@ -372,11 +372,12 @@ module Engine
           @nyc_formation_state = :round_one
 
           @log << 'No further minor corporations may be started'
-          @corporations.dup.each do |c|
-            next if c.type != :minor || c.floated? || c.closed?
+          @corporations.dup.each do |corp|
+            next if corp.type != :minor || corp.floated? || corp.closed?
 
-            @log << "#{c.name} is removed from the game"
-            close_corporation(c, quiet: true)
+            @log << "#{corp.name} is removed from the game"
+            close_corporation(corp, quiet: true)
+            corp.close!
           end
         end
 
@@ -865,6 +866,7 @@ module Engine
         def complete_acquisition(_entity, corporation)
           @round.acquisition_corporations = []
           close_corporation(corporation, quiet: true)
+          corporation.close!
         end
 
         def transfer_assets(from, to)
@@ -981,6 +983,7 @@ module Engine
           @log << "#{entity.name} merges into #{nyc_corporation.name}"
           nyc_corporation.num_treasury_shares.zero? ? exchange_for_bank_share(entity) : exchange_for_nyc_share(entity)
           close_corporation(entity, quiet: true)
+          entity.close!
         end
 
         def exchange_for_nyc_share(entity)
@@ -1041,6 +1044,7 @@ module Engine
             liquidation_price = minor.share_price.price * 2
             @log << "#{minor.name} is liquidated for #{format_currency(liquidation_price)}"
             close_corporation(minor, quiet: true)
+            minor.close!
           end
         end
       end
