@@ -953,6 +953,12 @@ module Engine
         end
 
         def payout_companies
+          # Functionality extracted so it can be over-ridden by subclasses
+          set_private_revenues
+          super
+        end
+
+        def set_private_revenues
           # Set the correct revenue of P15-HR, P20-C&WR and P9-M&GNR
           @companies.each do |c|
             next unless c.owner
@@ -974,8 +980,6 @@ module Engine
               c.revenue = self.class::COMPANY_MGNR_REVENUE[@phase.name.to_i]
             end
           end
-
-          super
         end
 
         def place_home_token(corporation)
