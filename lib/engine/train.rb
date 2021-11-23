@@ -28,7 +28,7 @@ module Engine
       @rusted = false
       @obsolete = false
       @operated = false
-      @events = (opts[:events] || []).select { |e| @index == (e[:when] || 0) }
+      @events = (opts[:events] || []).select { |e| @index == (e[:when] || 1) - 1 }
       @reserved = opts[:reserved] || false
       init_variants(opts[:variants])
     end

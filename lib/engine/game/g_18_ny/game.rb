@@ -137,12 +137,12 @@ module Engine
                   { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
                   {
                     name: '12H',
-                    num: 2,
+                    num: 3,
                     distance: 12,
                     price: 600,
-                    events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' }],
+                    events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' },
+                             { 'type' => 'capitalization_round', 'when' => 3 }],
                   },
-                  { name: '12H', num: 1, distance: 12, price: 600, events: [{ 'type' => 'capitalization_round' }] },
                   {
                     name: '5DE',
                     num: 2,
