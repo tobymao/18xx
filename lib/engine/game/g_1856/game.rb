@@ -1122,6 +1122,10 @@ module Engine
           super
         end
 
+        def can_swap_for_presidents_share_directly_from_corporation?
+          false
+        end
+
         #
         # Get all possible upgrades for a tile
         # tile: The tile to be upgraded

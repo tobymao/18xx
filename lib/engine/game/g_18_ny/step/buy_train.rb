@@ -15,7 +15,7 @@ module Engine
 
             actions << 'buy_train' if !actions.include?('buy_train') && must_buy_train?(entity)
             actions << 'scrap_train' unless scrappable_trains(entity).empty?
-            actions << 'take_loan' if ebuy_president_can_contribute?(entity) && @game.can_take_loan?(entity)
+            actions << 'take_loan' if can_take_loan?(entity)
             actions << 'pass' if !actions.empty? && !actions.include?('pass') && !must_buy_train?(entity)
             actions
           end
@@ -42,6 +42,14 @@ module Engine
 
           def scrap_button_text(_train)
             'Salvage'
+          end
+
+          def can_take_loan?(entity)
+            !can_afford_train?(entity) && entity.trains.empty? && !@train_salvaged && @game.can_take_loan?(entity)
+          end
+
+          def can_afford_train?(entity)
+            entity.cash >= @game.depot.min_depot_price
           end
 
           def setup

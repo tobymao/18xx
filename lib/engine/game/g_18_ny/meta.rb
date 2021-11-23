@@ -9,7 +9,6 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :prealpha
-        DEPENDS_ON = '1849' # probably only while in development
 
         GAME_DESIGNER = 'Pierre LeBoeuf'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18NY'

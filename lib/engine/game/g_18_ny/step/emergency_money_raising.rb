@@ -11,22 +11,22 @@ module Engine
           include Engine::Step::EmergencyMoney
 
           def actions(entity)
-            unless @active_entity
+            current = current_entity
+            return [] unless entity == current || entity == current.owner
+
+            @active_entity = nil if @active_entity != @round.cash_crisis_entity
+            if !@active_entity && current == entity
               @active_entity = entity
               @game.log << "#{@active_entity.name} enters #{description} and owes"\
                            " the bank #{@game.format_currency(needed_cash(@active_entity))}"
             end
 
             actions = []
+            actions << 'sell_shares' if can_sell_shares?(entity)
             if entity == @active_entity
-              actions << 'sell_shares' if can_sell_shares?(entity)
               actions << 'take_loan' if @game.can_take_loan?(entity)
-            elsif entity == @active_entity.owner
-              if owner_can_payoff_debt?
-                actions << 'payoff_debt'
-              elsif can_sell_shares?(entity)
-                actions << 'sell_shares'
-              end
+            elsif @active_entity&.corporation? && entity == @active_entity.owner
+              actions << 'payoff_debt' if owner_can_payoff_debt?
             end
 
             actions
@@ -55,7 +55,7 @@ module Engine
           end
 
           def needed_cash(entity)
-            return needed_cash(@active_entity) if entity == @active_entity.owner
+            return needed_cash(@active_entity) if @active_entity.corporation? && @active_entity.owner == entity
 
             -entity.cash
           end
@@ -63,7 +63,7 @@ module Engine
           def can_sell_shares?(entity)
             return issuable_shares(entity).any? if entity.corporation?
 
-            (entity.liquidity - entity.cash).positive?
+            entity.cash < needed_cash(entity)
           end
 
           def available_cash(entity)
@@ -88,6 +88,13 @@ module Engine
 
             payee.spend(amount, debtor)
             @game.log << "#{payee.name} pays off #{debtor.name}'s debt of #{@game.format_currency(amount)}"
+            @active_entity = nil
+          end
+
+          def process_sell_shares(action)
+            super
+            return if @active_entity.cash.negative?
+
             @active_entity = nil
           end
         end
