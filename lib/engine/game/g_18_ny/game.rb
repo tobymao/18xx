@@ -239,7 +239,6 @@ module Engine
 
         def operating_round(round_num)
           G18NY::Round::Operating.new(self, [
-            G18NY::Step::CheckCoalConnection,
             G18NY::Step::CheckNYCFormation,
             G18NY::Step::BuyCompany,
             G18NY::Step::Bankrupt,
@@ -252,6 +251,7 @@ module Engine
             G18NY::Step::SpecialToken,
             G18NY::Step::Track,
             G18NY::Step::Token,
+            G18NY::Step::ClaimCoalToken,
             G18NY::Step::Route,
             G18NY::Step::Dividend,
             G18NY::Step::LoanInterestPayment,
@@ -639,7 +639,7 @@ module Engine
         def connected_coal_hexes(entity)
           return if @coal_locations.empty?
 
-          graph.connected_hexes(entity).keys & @coal_locations.flatten
+          @coal_locations.map { |cl| (graph.connected_hexes(entity).keys & cl)&.first }.compact
         end
 
         def claim_coal_token(entity, hex)
