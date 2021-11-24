@@ -76,7 +76,7 @@ module Engine
 
           def remove_stagecoach_token
             stagecoach_token.destroy!
-            stagecoach_token = nil
+            @game.stagecoach_token = nil
           end
         end
       end
