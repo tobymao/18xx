@@ -130,7 +130,18 @@ module Engine
                   'pays its revenue to the owning company until the power is exercised and '\
                   'the company closes. A minor company may not use this power to upgrade '\
                   'beyond green.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[80 81 82 83 544 545 546 60 169 141 142 143 144 767 768 769 X17],
+              },
+            ],
             color: nil,
           },
           {

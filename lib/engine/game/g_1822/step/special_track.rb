@@ -91,7 +91,7 @@ module Engine
             return nil if entity.id == @game.class::COMPANY_MTONR && (hex.tile.towns.empty? || hex.tile.towns.size > 1)
 
             # Bristol & Exeter Railway can only lay track on plain hexes or with one town
-            if entity.id == @game.class::COMPANY_BER && @game.class::TRACK_PLAIN.none?(hex.tile.name) &&
+            if @game.can_only_lay_plain_or_towns(entity) && @game.class::TRACK_PLAIN.none?(hex.tile.name) &&
               @game.class::TRACK_TOWN.none?(hex.tile.name)
               return nil
             end
@@ -148,7 +148,7 @@ module Engine
 
             tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
             special = tile_ability.special if tile_ability.type == :tile_lay
-            if entity.id == @game.class::COMPANY_BER
+            if @game.can_upgrade_one_phase_ahead(entity)
               return tiles.compact
                 .select { |t| @game.upgrades_to?(hex.tile, t, special) }
             end

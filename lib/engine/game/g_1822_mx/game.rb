@@ -522,6 +522,14 @@ module Engine
 
           @p7_choice = nil
         end
+
+        def can_only_lay_plain_or_towns(entity)
+          entity.id == 'P8'
+        end
+
+        def can_upgrade_one_phase_ahead(entity)
+          entity.id == 'P8'
+        end
       end
     end
   end

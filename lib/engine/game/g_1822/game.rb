@@ -1966,6 +1966,14 @@ module Engine
             corporation.add_ability(ability)
           end
         end
+
+        def can_only_lay_plain_or_towns(entity)
+          entity.id == self.class::COMPANY_BER
+        end
+
+        def can_upgrade_one_phase_ahead(entity)
+          entity.id == self.class::COMPANY_BER
+        end
       end
     end
   end
