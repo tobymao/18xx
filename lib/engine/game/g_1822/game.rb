@@ -779,6 +779,10 @@ module Engine
             .map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
         end
 
+        def choose_step
+          [G1822::Step::Choose]
+        end
+
         def next_round!
           @round =
             case @round
@@ -787,9 +791,7 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Stock
-              G1822::Round::Choices.new(self, [
-                G1822::Step::Choose,
-              ], round_num: @round.round_num)
+              G1822::Round::Choices.new(self, choose_step, round_num: @round.round_num)
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished

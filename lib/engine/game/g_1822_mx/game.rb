@@ -46,6 +46,36 @@ module Engine
              500 550 600e],
         ].freeze
 
+        BIDDING_BOX_START_MINOR = nil
+
+        PRIVATE_TRAINS = %w[P1 P2 P4 P5 P6].freeze
+
+        PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
+        P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
+
+        PRIVATE_COMPANIES_ACQUISITION = {
+          'P1' => { acquire: %i[major], phase: 5 },
+          'P2' => { acquire: %i[major], phase: 2 },
+          'P3' => { acquire: %i[major minor], phase: 1 },
+          'P4' => { acquire: %i[major minor], phase: 1 },
+          'P5' => { acquire: %i[major minor], phase: 3 },
+          'P6' => { acquire: %i[major minor], phase: 3 },
+          'P7' => { acquire: %i[major], phase: 3 },
+          'P8' => { acquire: %i[major minor], phase: 1 },
+          'P9' => { acquire: %i[major minor], phase: 3 },
+          'P10' => { acquire: %i[major minor], phase: 1 },
+          'P11' => { acquire: %i[major minor], phase: 1 },
+          'P12' => { acquire: %i[major minor], phase: 1 },
+          'P13' => { acquire: %i[major minor], phase: 1 },
+          'P14' => { acquire: %i[major], phase: 3 },
+          'P15' => { acquire: %i[major], phase: 3 },
+          'P16' => { acquire: %i[major], phase: 2 },
+          'P17' => { acquire: %i[major minor], phase: 2 },
+          'P18' => { acquire: %i[major], phase: 3 },
+        }.freeze
+
+        BIDDING_BOX_START_PRIVATE = 'P1'
+
         TRAINS = [
           {
             name: 'L',
@@ -132,7 +162,7 @@ module Engine
           {
             name: '2P',
             distance: 2,
-            num: 2,
+            num: 1,
             price: 0,
           },
           {
@@ -199,6 +229,10 @@ module Engine
             G1822::Step::DiscardTrain,
             G1822::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        def choose_step
+          [G1822MX::Step::Choose]
         end
 
         def discountable_trains_for(corporation)
@@ -318,10 +352,85 @@ module Engine
           ndem.trains << train
         end
 
+        # setup from 1822 has too much 1822-specific stuff that doesn't apply to this game
         def setup
-          super
+          # Setup the bidding token per player
+          @bidding_token_per_player = init_bidding_token
+
+          # Initialize the player depts, if player have to take an emergency loan
+          @player_debts = Hash.new { |h, k| h[k] = 0 }
+
+          # Randomize and setup the companies
+          setup_companies
+
+          # Initialize the stock round choice for P7
+          @p7_choice = nil
+
+          # Setup the fist bidboxes
+          @bidbox_minors_cache = []
+          setup_bidboxes
+
+          # Setup exchange token abilities for all corporations
+          setup_exchange_tokens
+
+          # Setup all the destination tokens, icons and abilities
+          setup_destinations
+
+          # Setup the NdeM
           setup_ndem
         end
+
+        # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
+        def setup_companies
+          # Randomize from preset seed to get same order
+          @companies.sort_by! { rand }
+
+          minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
+          concessions = @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
+          privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
+
+          c1 = concessions.find { |c| c.id == bidbox_start_concession }
+          concessions.delete(c1)
+          concessions.unshift(c1)
+
+          p1 = privates.find { |c| c.id == bidbox_start_private }
+          privates.delete(p1)
+          privates.unshift(p1)
+
+          # Clear and add the companies in the correct randomize order sorted by type
+          @companies.clear
+          @companies.concat(minors)
+          @companies.concat(concessions)
+          @companies.concat(privates)
+
+          # Set the min bid on the Concessions and Minors
+          @companies.each do |c|
+            c.min_price = case c.id[0]
+                          when self.class::COMPANY_CONCESSION_PREFIX, self.class::COMPANY_MINOR_PREFIX
+                            c.value
+                          else
+                            0
+                          end
+            c.max_price = 10_000
+          end
+
+          # Setup company abilities
+          @company_trains = {}
+          @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
+          @company_trains['P2'] = find_and_remove_train_by_id('2P-0', buyable: false)
+          @company_trains['P4'] = find_and_remove_train_by_id('LP-0', buyable: false)
+          @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
+          @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
+
+          # Setup the minor 14 ability
+          # corporation_by_id(self.class::MINOR_14_ID).add_ability(london_extra_token_ability) if self.class::MINOR_14_ID
+        end
+
+        # Stubbed out because this game doesn't it, but base 22 does
+        def company_tax_haven_bundle(choice); end
+
+        # Stubbed out because this game doesn't it, but base 22 does
+        def company_tax_haven_payout(entity, per_share); end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           return super unless bundle.corporation == corporation_by_id('NDEM')
@@ -339,6 +448,79 @@ module Engine
           return [@ndem_acting_player] if @ndem_acting_player
 
           super
+        end
+
+        def set_private_revenues
+          @companies.each do |c|
+            next unless c.owner
+
+            adjust_p7_revenue(c) if c.id == 'P7' && c.owner.corporation?
+          end
+        end
+
+        def adjust_p7_revenue(company)
+          company.revenue = self.class::P7_REVENUE[@phase.name.to_i]
+        end
+
+        def choices_entities
+          company = company_by_id('P7')
+          return [] unless company&.owner&.player?
+
+          [company.owner]
+        end
+
+        def company_choices_p7(company, time)
+          return {} if @p7_choice || !company.owner&.player? || time != :choose
+
+          choices = {}
+          choices['double'] = 'Double your actual cash holding when determining player turn order.'
+          choices
+        end
+
+        def company_made_choice_p7(company)
+          @p7_choice = company.owner
+          @log << "#{company.owner.name} chooses to double actual cash holding when determining player turn order."
+        end
+
+        def company_choices(company, time)
+          case company.id
+          when 'P7'
+            company_choices_p7(company, time)
+          else
+            {}
+          end
+        end
+
+        def company_made_choice(company, _choice, _time)
+          case company.id
+          when 'P7'
+            company_made_choice_p7(company)
+          end
+        end
+
+        def company_bought(company, entity)
+          on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
+          on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
+          on_acquired_phase_revenue(company) if self.class::PRIVATE_PHASE_REVENUE.include?(company.id)
+          adjust_p7_revenue(company) if company.id == 'P7'
+        end
+
+        def reorder_players(_order = nil)
+          current_order = @players.dup.reverse
+          @players.sort_by! do |p|
+            cash = p.cash
+            cash *= 2 if @p7_choice == p
+            [cash, current_order.index(p)]
+          end.reverse!
+
+          player_order = @players.map do |p|
+            double = ' doubled' if @p7_choice == p
+            "#{p.name} (#{format_currency(p.cash)}#{double})"
+          end.join(', ')
+
+          @log << "-- New player order: #{player_order}"
+
+          @p7_choice = nil
         end
       end
     end
