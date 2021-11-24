@@ -137,12 +137,12 @@ module Engine
                   { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
                   {
                     name: '12H',
-                    num: 2,
+                    num: 3,
                     distance: 12,
                     price: 600,
-                    events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' }],
+                    events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' },
+                             { 'type' => 'capitalization_round', 'when' => 3 }],
                   },
-                  { name: '12H', num: 1, distance: 12, price: 600, events: [{ 'type' => 'capitalization_round' }] },
                   {
                     name: '5DE',
                     num: 2,
@@ -239,19 +239,19 @@ module Engine
 
         def operating_round(round_num)
           G18NY::Round::Operating.new(self, [
-            G18NY::Step::CheckCoalConnection,
             G18NY::Step::CheckNYCFormation,
             G18NY::Step::BuyCompany,
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::StagecoachExchange,
-            Engine::Step::DiscardTrain,
+            G18NY::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
             G18NY::Step::Track,
             G18NY::Step::Token,
+            G18NY::Step::ClaimCoalToken,
             G18NY::Step::Route,
             G18NY::Step::Dividend,
             G18NY::Step::LoanInterestPayment,
@@ -269,8 +269,8 @@ module Engine
           G18NY::Round::NYCFormation.new(self, [
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
-            Engine::Step::DiscardTrain,
             G18NY::Step::MergeWithNYC,
+            G18NY::Step::DiscardTrain,
           ], round_num: round_num)
         end
 
@@ -372,11 +372,12 @@ module Engine
           @nyc_formation_state = :round_one
 
           @log << 'No further minor corporations may be started'
-          @corporations.dup.each do |c|
-            next if c.type != :minor || c.floated? || c.closed?
+          @corporations.dup.each do |corp|
+            next if corp.type != :minor || corp.floated? || corp.closed?
 
-            @log << "#{c.name} is removed from the game"
-            close_corporation(c, quiet: true)
+            @log << "#{corp.name} is removed from the game"
+            close_corporation(corp, quiet: true)
+            corp.close!
           end
         end
 
@@ -638,7 +639,7 @@ module Engine
         def connected_coal_hexes(entity)
           return if @coal_locations.empty?
 
-          graph.connected_hexes(entity).keys & @coal_locations.flatten
+          @coal_locations.map { |cl| (graph.connected_hexes(entity).keys & cl)&.first }.compact
         end
 
         def claim_coal_token(entity, hex)
@@ -865,6 +866,7 @@ module Engine
         def complete_acquisition(_entity, corporation)
           @round.acquisition_corporations = []
           close_corporation(corporation, quiet: true)
+          corporation.close!
         end
 
         def transfer_assets(from, to)
@@ -981,6 +983,7 @@ module Engine
           @log << "#{entity.name} merges into #{nyc_corporation.name}"
           nyc_corporation.num_treasury_shares.zero? ? exchange_for_bank_share(entity) : exchange_for_nyc_share(entity)
           close_corporation(entity, quiet: true)
+          entity.close!
         end
 
         def exchange_for_nyc_share(entity)
@@ -1041,6 +1044,7 @@ module Engine
             liquidation_price = minor.share_price.price * 2
             @log << "#{minor.name} is liquidated for #{format_currency(liquidation_price)}"
             close_corporation(minor, quiet: true)
+            minor.close!
           end
         end
       end

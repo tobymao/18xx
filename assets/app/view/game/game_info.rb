@@ -225,7 +225,7 @@ module View
               event_text << if index.zero?
                               event_name
                             else
-                              "#{event_name}(on #{ordinal(index + 1)} train)"
+                              "#{event_name}(on #{ordinal(train2.index + 1)} train)"
                             end
             end
           end

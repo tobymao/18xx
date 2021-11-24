@@ -41,7 +41,7 @@ module Engine
             revenue: 10,
             desc: 'Owning corporation may exchange this company for a stagecoach token in Albany. ' \
                   'This token is removed when the first 12H is purchased, ' \
-                  'but may be exchaned for an available company token at that point.',
+                  'but may be exchanged for an available company token at that point.',
             color: nil,
             abilities: [
               {
@@ -51,9 +51,7 @@ module Engine
                 hexes: ['F20'],
                 price: 0,
                 teleport_price: 0,
-                count: 1,
                 extra_action: true,
-                # TODO : Token can be exchanged for corporation token when 12H is purchased; otherwise remove
               },
               { type: 'reservation', remove: 'close', hex: 'F20', slot: 1 },
             ],

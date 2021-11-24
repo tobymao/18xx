@@ -90,7 +90,7 @@ module Engine
           end
 
           def share_available?
-            @game.nyc_corporation.available_share || !share_pool.shares_of(@game.nyc_corporation).empty?
+            @game.nyc_corporation.available_share || !@game.share_pool.shares_of(@game.nyc_corporation).empty?
           end
 
           def process_merge(action)

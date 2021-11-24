@@ -28,7 +28,7 @@ module Engine
       @rusted = false
       @obsolete = false
       @operated = false
-      @events = (opts[:events] || []).select { |e| @index == (e[:when] || 0) }
+      @events = (opts[:events] || []).select { |e| @index == (e[:when] || 1) - 1 }
       @reserved = opts[:reserved] || false
       init_variants(opts[:variants])
     end
@@ -76,8 +76,9 @@ module Engine
     # if set ability must be a :train_discount ability
     def min_price(ability: nil)
       return 1 unless from_depot?
+      return @price unless ability
 
-      ability&.discounted_price(self, @price) || @price
+      Array(ability).map { |a| a.discounted_price(self, @price) }.min
     end
 
     def from_depot?
