@@ -953,7 +953,6 @@ module Engine
         end
 
         def payout_companies
-          # Functionality extracted so it can be over-ridden by subclasses
           set_private_revenues
           super
         end
