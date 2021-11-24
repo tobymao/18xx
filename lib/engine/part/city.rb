@@ -127,26 +127,25 @@ module Engine
         if check_tokenable && !tokenable?(
             corporation, free: free, tokens: token, cheater: cheater, extra_slot: extra_slot, spender: spender
           )
-          raise GameError, "#{corporation.name} cannot lay token - has no tokens left" if @error == :no_tokens
 
-          if @error == :existing_token
+          case @error
+          when :no_tokens
+            raise GameError, "#{corporation.name} cannot lay token - has no tokens left"
+          when :existing_token
             raise GameError,
                   "#{corporation.name} cannot lay token - already has a token on #{tile.hex&.id}"
-          end
-          if @error == :blocked_reservation
+          when :blocked_reservation
             raise GameError,
                   "#{corporation.name} cannot lay token - remaining token slots are reserved on #{tile.hex&.id}"
-          end
-          if @error == :no_money
+          when :no_money
             raise GameError,
                   "#{corporation.name} cannot lay token - cannot afford token on #{tile.hex&.id}"
-          end
-          if @error == :no_slots
+          when :no_slots
             raise GameError,
                   "#{corporation.name} cannot lay token - no token slots available on #{tile.hex&.id}"
+          else
+            raise GameError, "#{corporation.name} cannot lay token on #{id} #{tile.hex&.id}"
           end
-
-          raise GameError, "#{corporation.name} cannot lay token on #{id} #{tile.hex&.id}"
         end
 
         exchange_token(token, cheater: cheater, extra_slot: extra_slot)
