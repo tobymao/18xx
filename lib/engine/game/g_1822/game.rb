@@ -1849,6 +1849,18 @@ module Engine
           extra_city.tokens[extra_city.normal_slots] = nil
         end
 
+        def can_only_lay_plain_or_towns?(entity)
+          entity.id == self.class::COMPANY_BER
+        end
+
+        def can_upgrade_one_phase_ahead?(entity)
+          entity.id == self.class::COMPANY_BER
+        end
+
+        def must_remove_town?(entity)
+          entity.id == self.class::COMPANY_MTONR
+        end
+
         private
 
         def find_and_remove_train_by_id(train_id, buyable: true)

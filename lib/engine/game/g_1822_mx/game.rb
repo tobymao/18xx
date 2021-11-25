@@ -49,8 +49,9 @@ module Engine
         BIDDING_BOX_START_MINOR = nil
 
         PRIVATE_TRAINS = %w[P1 P2 P4 P5 P6].freeze
-
+        PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
+        PRIVATE_PHASE_REVENUE = %w[].freeze
         P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
 
         PRIVATE_COMPANIES_ACQUISITION = {
@@ -521,6 +522,22 @@ module Engine
           @log << "-- New player order: #{player_order}"
 
           @p7_choice = nil
+        end
+
+        def can_only_lay_plain_or_towns?(entity)
+          entity.id == 'P8'
+        end
+
+        def can_upgrade_one_phase_ahead?(entity)
+          entity.id == 'P8'
+        end
+
+        def company_ability_extra_track?(company)
+          company.id == 'P9'
+        end
+
+        def must_remove_town?(entity)
+          entity.id == 'P12' || entity.id == 'P13'
         end
       end
     end
