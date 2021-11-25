@@ -155,7 +155,18 @@ module Engine
                   'normal tile laying step. All other normal track laying restrictions apply. Once '\
                   'acquired, the private company pays its revenue to the owning company until '\
                   'the power is exercised and the company closes.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 2,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+            ],
             color: nil,
           },
           {
@@ -198,7 +209,18 @@ module Engine
                   'track laying restrictions apply. Cannot be used in hexes with two small '\
                   'towns. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company is closed.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
+              },
+            ],
             color: nil,
           },
           {
@@ -213,7 +235,18 @@ module Engine
                   'track laying restrictions apply. Cannot be used in hexes with two small '\
                   'towns. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company is closed.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
+              },
+            ],
             color: nil,
           },
           {
