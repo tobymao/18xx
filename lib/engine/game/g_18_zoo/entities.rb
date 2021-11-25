@@ -146,6 +146,7 @@ module Engine
                 extra_slot: true,
                 from_owner: true,
                 when: 'owning_corp_or_turn',
+                special_only: true,
                 hexes: [],
               },
             ],

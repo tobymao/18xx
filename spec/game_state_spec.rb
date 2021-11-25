@@ -380,6 +380,22 @@ module Engine
           expect(corporation.share_price.price).to eq(8)
         end
       end
+
+      describe 6535 do
+        it '"on a diet" cannot be executed automatically' do
+          game = game_at_action(game_file, 255)
+          action = {
+            'type' => 'place_token',
+            'entity' => 'BB',
+            'entity_type' => 'corporation',
+            'city' => '5-1-0',
+            'slot' => 1,
+            'tokener' => 'BB',
+          }
+          expect(game.exception).to be_nil
+          expect(game.process_action(action).exception).to be_a(GameError)
+        end
+      end
     end
   end
 end
