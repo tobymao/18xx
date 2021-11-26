@@ -1185,12 +1185,13 @@
     },
     {
       "type": "place_token",
-      "entity": "TI",
-      "entity_type": "corporation",
+      "entity": "ON_A_DIET",
+      "entity_type": "company",
       "id": 117,
       "created_at": 1624747350,
       "city": "577-0-0",
-      "slot": 0
+      "slot": 0,
+      "tokener": "TI"
     },
     {
       "type": "run_routes",
