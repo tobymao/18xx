@@ -39,9 +39,9 @@ module Engine
             sym: 'SC',
             value: 40,
             revenue: 10,
-            desc: 'Owning corporation may exchange this company for a stagecoach token in Albany. ' \
-                  'This token is removed when the first 12H is purchased, ' \
-                  'but may be exchanged for an available company token at that point.',
+            desc: 'Owning corporation may exchange this company to place the stagecoach token in Albany. ' \
+                  'The Stagecoach token is removed when the first 12H is purchased, ' \
+                  "but may be replaced with one of the corporation's available tokens at that time.",
             color: nil,
             abilities: [
               {

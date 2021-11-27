@@ -7,76 +7,101 @@ module Engine
     module G18NY
       module Step
         class StagecoachExchange < Engine::Step::Base
-          ACTIONS = %w[choose pass].freeze
+          CHOOSE_ACTIONS = %w[choose].freeze
+          REPLACE_ACTIONS = %w[remove_token].freeze
 
           def description
             'Exchange Stagecoach Token for Corporation Token'
           end
 
-          def actions(_entity)
-            return [] unless can_exchange_now?
+          def actions(entity)
+            return CHOOSE_ACTIONS if exchange_at_privates_closed?
+            return [] unless current_entity == entity
+            return [] unless entity == stagecoach_token&.corporation
 
-            ACTIONS
+            REPLACE_ACTIONS
           end
 
           def active?
-            return false unless stagecoach_token
-            return true if can_exchange_now?
+            sc_corp = stagecoach_token&.corporation
+            return false unless sc_corp
+            return true if sc_corp.next_token && (@game.privates_closed || sc_corp == @round.current_operator)
 
-            remove_stagecoach_token if @game.privates_closed && !corporation&.next_token
+            # No token, so no choice to be made
+            if @game.privates_closed
+              @game.log << 'Stagecoach Token is removed from play'
+              remove_stagecoach_token(sc_corp)
+            end
             false
           end
 
+          def blocks?
+            exchange_at_privates_closed?
+          end
+
           def active_entities
-            [stagecoach_token.corporation]
-          end
-
-          def can_exchange_now?
-            exchangeable? && (current_operator? || @game.privates_closed)
-          end
-
-          def current_operator?
-            @round.current_operator == stagecoach_token.corporation && !@passed
+            [stagecoach_token&.corporation].compact
           end
 
           def exchange_at_privates_closed?
-            @game.privates_closed && exchangeable?
-          end
-
-          def exchangeable?
-            stagecoach_token && stagecoach_token&.corporation && stagecoach_token.corporation.next_token
+            @game.privates_closed && stagecoach_token && stagecoach_token&.corporation&.next_token
           end
 
           def stagecoach_token
             @game.stagecoach_token
           end
 
+          def stagecoach_token=(val)
+            @game.stagecoach_token = val
+          end
+
+          def hexes
+            [@game.albany_hex]
+          end
+
+          def can_replace_token?(_entity, token)
+            token == stagecoach_token
+          end
+
+          def process_remove_token(action)
+            @game.log << "#{action.entity.name} replaces the Stagecoach Token with one of its available tokens"
+            replace_stagecoach_token(action.entity)
+          end
+
           def choice_available?(entity)
-            entity == stagecoach_token.corporation
+            entity == stagecoach_token&.corporation
           end
 
           def choice_name
-            'Exchange Stagecoach token'
+            'Stagecoach Token'
           end
 
           def choices
-            %w[Exchange]
+            %w[Replace Remove]
           end
 
           def process_choose(action)
-            stagecoach_token.swap!(action.entity.next_token)
-            remove_stagecoach_token
-            pass!
+            entity = action.entity
+            raise GameError, "#{entity.name} does not own the Stagecoach Token" if entity != stagecoach_token&.corporation
+
+            if action.choice == 'Replace'
+              @game.log << "#{entity.name} replaces the Stagecoach Token with one of its available tokens"
+              replace_stagecoach_token(entity)
+            else
+              @game.log << "#{entity.name} declines to replace the Stagecoach Token and the token is removed from play"
+              remove_stagecoach_token(entity)
+            end
           end
 
-          def process_pass(action)
-            remove_stagecoach_token
-            super
+          def replace_stagecoach_token(entity)
+            stagecoach_token.swap!(entity.next_token)
+            remove_stagecoach_token(entity)
           end
 
-          def remove_stagecoach_token
+          def remove_stagecoach_token(entity)
             stagecoach_token.destroy!
-            @game.stagecoach_token = nil
+            self.stagecoach_token = nil
+            @game.remove_stagecoach_token_exchange_ability(entity)
           end
         end
       end

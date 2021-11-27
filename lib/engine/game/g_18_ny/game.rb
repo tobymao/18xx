@@ -243,10 +243,10 @@ module Engine
             G18NY::Step::BuyCompany,
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
-            G18NY::Step::StagecoachExchange,
             G18NY::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
+            G18NY::Step::StagecoachExchange,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
             G18NY::Step::Track,
@@ -663,6 +663,22 @@ module Engine
           location.find(&:location_name)&.location_name
         end
 
+        def stagecoach_token_exchange_ability
+          detailed_text = 'Owning corporation may replace the Stagecoach Token with one of its available tokens ' \
+                          'for free during its operating turn by selecting the Stagecoach Token in F20 (Albany).'
+          @sc_exchange_ability ||= Engine::Ability::Description.new(type: :description,
+                                                                    description: 'Stagecoach Token Exchange',
+                                                                    desc_detail: detailed_text)
+        end
+
+        def add_stagecoach_token_exchange_ability(entity)
+          entity.add_ability(stagecoach_token_exchange_ability)
+        end
+
+        def remove_stagecoach_token_exchange_ability(entity)
+          entity.remove_ability(stagecoach_token_exchange_ability)
+        end
+
         def salvage_value(train)
           train.price / 4
         end
@@ -892,10 +908,16 @@ module Engine
 
           @log << "#{to.name} acquires #{format_currency(revenue)} in coal revenue from #{from.name}"
 
-          if (ability = abilities(to, :coal_revenue))
-            ability.bonus_revenue += revenue
-          else
-            add_coal_token_ability(to, revenue: revenue)
+          # Connection bonuses do not transfer
+          remove_connection_bonus_ability(from)
+
+          from.all_abilities.dup.each do |ability|
+            if ability.type == :coal_revenue && (coal_ability = abilities(to, :coal_revenue))
+              coal_ability.bonus_revenue += ability.bonus_revenue
+            else
+              from.remove_ability(ability)
+              to.add_ability(ability)
+            end
           end
         end
 
@@ -927,6 +949,7 @@ module Engine
           # Form the NYC
           @log << '-- Event: NYC forms --'
           nyc_corporation.floatable = true
+          nyc_corporation.float_percent = 10
           @stock_market.set_par(nyc_corporation, nyc_formation_share_price)
           nyc_corporation.ipoed = true
           @nyc_formed = true
