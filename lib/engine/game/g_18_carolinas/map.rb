@@ -126,13 +126,13 @@ module Engine
           },
           '8s' =>
           {
-            'count' => 13,
+            'count' => 15,
             'color' => 'yellow',
             'code' => 'path=a:0,b:2,track:narrow',
           },
           '9s' =>
           {
-            'count' => 10,
+            'count' => 12,
             'color' => 'yellow',
             'code' => 'path=a:0,b:3,track:narrow',
           },
@@ -204,7 +204,7 @@ module Engine
           },
           '15s' =>
           {
-            'count' => 3,
+            'count' => 5,
             'color' => 'green',
             'code' => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
