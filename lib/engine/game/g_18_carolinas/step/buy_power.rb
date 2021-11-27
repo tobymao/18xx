@@ -244,7 +244,7 @@ module Engine
             return 0 unless @game.corporation_power[corporation] < @game.min_ebuy_power
 
             diff = @game.min_ebuy_power - @game.corporation_power[corporation]
-            diff * @game.class::POWER_COST[@game.phase.name] * 2
+            diff * @game.class::POWER_COST[@game.phase.name] * 1.5
           end
 
           def ebuy_power_needed(corporation)
