@@ -591,17 +591,15 @@ module Engine
         end
 
         def compute_stops(route)
-          if route.train.name == '5DE'
-            stops = route.visited_stops
-            return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
+          return super unless route.train.name == '5DE'
 
-            if fivede_runs_stations_and_offboards_only?
-              stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.type == 'offboard' }
-            end
-            stops = stops.combination(5).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > 5
-          else
-            stops = super
+          stops = route.visited_stops
+          return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
+
+          if fivede_runs_stations_and_offboards_only?
+            stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.type == 'offboard' }
           end
+          stops = stops.combination(5).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > 5
           stops
         end
 
