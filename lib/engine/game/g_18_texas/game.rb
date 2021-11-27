@@ -226,11 +226,7 @@ module Engine
         end
 
         def tile_lays(_entity)
-          if @phase.available?('3')
-            [{ lay: true, upgrade: true, cost: 0 }, { lay: :not_if_upgraded, upgrade: false }]
-          else
-            [{ lay: true, upgrade: true, cost: 0 }]
-          end
+          [{ lay: true, upgrade: true, cost: 0 }, { lay: :not_if_upgraded, upgrade: false }]
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
