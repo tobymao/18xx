@@ -11,7 +11,10 @@ module View
 
       def render
         children = []
-        children << h(PassButton, before_process_pass: @before_process_pass) if @actions.include?('pass')
+        if @actions.include?('pass')
+          children << h(PassButton, before_process_pass: @before_process_pass)
+          children << h(PassAutoButton) if @game.round.stock? && @game.active_players_id.index(@user['id'])
+        end
         h(:div, children.compact)
       end
     end
