@@ -211,6 +211,10 @@ module Engine
           @albany_hex ||= hex_by_id('F20')
         end
 
+        def fivede_runs_stations_and_offboards_only?
+          @fivede_optional_rule ||= @optional_rules.include?(:fivede)
+        end
+
         def active_minors
           operating_order.select { |c| c.type == :minor && c.floated? }
         end
@@ -422,6 +426,7 @@ module Engine
 
         def can_par?(corporation, _parrer)
           return false if corporation == nyc_corporation && !@nyc_formation_state
+          return false if @turn == 1 && corporation.type != :minor && corporation.id != 'D&H'
 
           super
         end
@@ -581,8 +586,22 @@ module Engine
 
         def check_distance(route, _visits)
           limit = route.train.distance
+          limit = 99 if limit.is_a?(Array)
           distance = route_distance(route)
           raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
+        end
+
+        def compute_stops(route)
+          return super unless route.train.name == '5DE'
+
+          stops = route.visited_stops
+          return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
+
+          if fivede_runs_stations_and_offboards_only?
+            stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.type == 'offboard' }
+          end
+          stops = stops.combination(5).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > 5
+          stops
         end
 
         def revenue_for(route, stops)
@@ -590,7 +609,9 @@ module Engine
         end
 
         def revenue_str(route)
-          str = super
+          stops = route.stops
+          stop_hexes = stops.map(&:hex)
+          str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
 
           if (num_bonuses = route.stops.count { |stop| stop.hex.assigned?(CONNECTION_BONUS_ICON) }).positive?
             str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}"
@@ -732,7 +753,7 @@ module Engine
         def emergency_issuable_bundles(corp)
           bundles = bundles_for_corporation(corp, corp)
 
-          num_issuable_shares = [5 - corp.num_market_shares, corp.num_player_shares].min
+          num_issuable_shares = [5, corp.num_player_shares].min - corp.num_market_shares
           bundles.reject { |bundle| bundle.num_shares > num_issuable_shares }.sort_by(&:price)
         end
 

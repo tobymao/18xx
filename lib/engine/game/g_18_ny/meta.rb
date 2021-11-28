@@ -17,6 +17,13 @@ module Engine
         GAME_TITLE = '18NY'
 
         PLAYER_RANGE = [2, 6].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :fivede,
+            short_name: '5DE Only Scores Stations and Offboards',
+            desc: '5DE trains may only score stationed cities and offboard hexes',
+          },
+        ].freeze
       end
     end
   end
