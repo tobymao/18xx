@@ -426,6 +426,7 @@ module Engine
 
         def can_par?(corporation, _parrer)
           return false if corporation == nyc_corporation && !@nyc_formation_state
+          return false if @turn == 1 && corporation.type != :minor && corporation.id != 'D&H'
 
           super
         end
