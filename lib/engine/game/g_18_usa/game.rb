@@ -668,6 +668,13 @@ module Engine
         BRIDGE_CITY_HEXES = %w[I19 C10 C17 D14 E15 E17 F20 G17].freeze
         BRIDGE_TILE_HEXES = %w[B4 D18 E21 F18 H18].freeze
 
+        # Does not include guaranteed metropolis New York City
+        POTENTIAL_METROPOLIS_HEX_IDS = %w[D20 E11 G3 H14 H22 I19].freeze
+
+        def potential_metropolitan_hexes
+          @potential_metropolitan_hexes ||= POTENTIAL_METROPOLIS_HEX_IDS.map { |hex_id| @hexes.find { |h| h.id == hex_id } }
+        end
+
         def bridge_city_hex?(hex_id)
           BRIDGE_CITY_HEXES.include?(hex_id)
         end
@@ -820,9 +827,9 @@ module Engine
             value: 40,
             revenue: 0,
             desc: 'If this company starts in an unselected and unimproved metropolis, that city becomes a metropolis. '\
-            'All potential metropolises for this private are: '\
-            'Atlanta, Chicago, Denver, Dallas-Fort Worth, Los Angeles, and New Orleans. ' \
-            'Implementation limitation: Cannot be combined with Boomtown subsidy',
+                  'All potential metropolises for this private are: '\
+                  'Atlanta, Chicago, Denver, Dallas-Fort Worth, Los Angeles, and New Orleans. ' \
+                  'Implementation limitation: Cannot be combined with Boomtown subsidy',
 
             sym: 'P10',
             abilities: [
@@ -1621,30 +1628,31 @@ module Engine
           city_by_id('CTownX-0-0').place_token(neutral, neutral.next_token)
           city_by_id('CTownY-0-0').place_token(neutral, neutral.next_token)
 
-          metro = METROPOLITAN_HEXES.sort_by { rand }.take(3)
-          metro.each do |i|
-            hex = @hexes.find { |h| h.id == i }
-            active_metropolitan_hexes << hex
-            case i
-            when 'H14'
-              hex.lay(@tiles.find { |t| t.name == 'DFW1' })
-            when 'E11'
-              # Denver needs to be done at a later date
-              hex.lay(@tiles.find { |t| t.name == 'D0' })
-              @metro_denver = true
-            when 'G3'
-              hex.lay(@tiles.find { |t| t.name == 'LA1' }.rotate!(3))
-            when 'D20'
-              hex.lay(@tiles.find { |t| t.name == 'CHI1' }.rotate!(1))
-            when 'I19'
-              hex.lay(@tiles.find { |t| t.name == 'NO1' })
-              @metro_new_orleans = true
-            when 'H22'
-              hex.lay(@tiles.find { |t| t.name == 'ATL1' })
-            end
-          end
+          metro_hexes = METROPOLITAN_HEXES.sort_by { rand }.take(3)
+          metro_hexes.each { |metro_hex| convert_potential_metro(@hexes.find { |h| h.id == metro_hex }) }
 
           randomize_subsidies
+        end
+
+        # Convert a potential metro hex to a metro hex
+        def convert_potential_metro(hex)
+          active_metropolitan_hexes << hex
+          case hex.id
+          when 'H14'
+            hex.lay(@tiles.find { |t| t.name == 'DFW1' })
+          when 'E11'
+            hex.lay(@tiles.find { |t| t.name == 'D0' })
+            @metro_denver = true
+          when 'G3'
+            hex.lay(@tiles.find { |t| t.name == 'LA1' }.rotate!(3))
+          when 'D20'
+            hex.lay(@tiles.find { |t| t.name == 'CHI1' }.rotate!(1))
+          when 'I19'
+            hex.lay(@tiles.find { |t| t.name == 'NO1' })
+            @metro_new_orleans = true
+          when 'H22'
+            hex.lay(@tiles.find { |t| t.name == 'ATL1' })
+          end
         end
 
         def randomize_subsidies
