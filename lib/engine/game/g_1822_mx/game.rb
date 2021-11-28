@@ -63,7 +63,7 @@ module Engine
           'P6' => { acquire: %i[major minor], phase: 3 },
           'P7' => { acquire: %i[major], phase: 3 },
           'P8' => { acquire: %i[major minor], phase: 1 },
-          'P9' => { acquire: %i[major minor], phase: 1 },
+          'P9' => { acquire: %i[major minor], phase: 3 },
           'P10' => { acquire: %i[major minor], phase: 1 },
           'P11' => { acquire: %i[major minor], phase: 1 },
           'P12' => { acquire: %i[major minor], phase: 1 },
@@ -71,11 +71,11 @@ module Engine
           'P14' => { acquire: %i[major], phase: 3 },
           'P15' => { acquire: %i[major], phase: 3 },
           'P16' => { acquire: %i[major], phase: 2 },
-          'P17' => { acquire: %i[major minor], phase: 1 },
-          'P18' => { acquire: %i[major minor], phase: 1 },
+          'P17' => { acquire: %i[major minor], phase: 2 },
+          'P18' => { acquire: %i[major], phase: 3 },
         }.freeze
 
-        BIDDING_BOX_START_PRIVATE = 'P18'
+        BIDDING_BOX_START_PRIVATE = 'P1'
 
         TRAINS = [
           {
