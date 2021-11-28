@@ -32,7 +32,7 @@ module Engine
           'IRM' => 3,
         }.freeze
 
-        STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P18
+        STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18
                                 C1 C2 C3 C4 C5 C6 C7 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15
                                 M16 M17 M18 M19 M20 M21 M22 M23 M24].freeze
 
@@ -48,7 +48,7 @@ module Engine
 
         BIDDING_BOX_START_MINOR = nil
 
-        PRIVATE_TRAINS = %w[P1 P2 P4 P5 P6].freeze
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze
@@ -206,6 +206,13 @@ module Engine
             num: 2,
             price: 0,
           },
+          {
+            name: '3/2P',
+            distance: 3,
+            num: 1,
+            price: 0,
+            # Dividing by two takes place in revenue_for
+          },
         ].freeze
 
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
@@ -217,7 +224,7 @@ module Engine
             Engine::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
-            G1822::Step::SpecialTrack,
+            G1822MX::Step::SpecialTrack,
             G1822::Step::SpecialToken,
             G1822MX::Step::Track,
             G1822::Step::DestinationToken,
@@ -419,6 +426,7 @@ module Engine
           @company_trains = {}
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
           @company_trains['P2'] = find_and_remove_train_by_id('2P-0', buyable: false)
+          @company_trains['P3'] = find_and_remove_train_by_id('3/2P-0', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('LP-0', buyable: false)
           @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
@@ -533,11 +541,26 @@ module Engine
         end
 
         def company_ability_extra_track?(company)
-          company.id == 'P9'
+          company.id == 'P9' || company.id == 'P17' || company.id == 'P18'
         end
 
         def must_remove_town?(entity)
           entity.id == 'P12' || entity.id == 'P13'
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          route.train.name == '3/2P' ? (revenue / 2).round(-1) : revenue
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return true if from.color == 'blue' && to.color == 'blue'
+
+          super
+        end
+
+        def port_company?(entity)
+          entity.id == 'P17' || entity.id == 'P18'
         end
       end
     end

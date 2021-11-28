@@ -57,7 +57,7 @@ module Engine
             @game.after_lay_tile(action.hex, action.tile)
             ability.use!
 
-            if ability.type == :tile_lay && ability.count.zero? && ability.closed_when_used_up
+            if ability.type == :tile_lay && ability.count <= 0 && ability.closed_when_used_up
               @log << "#{ability.owner.name} closes"
               ability.owner.close!
             end

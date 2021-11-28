@@ -284,7 +284,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P16-VTPN (Tax Haven)',
+            name: 'P16-VTPN (Stock Drop)',
             sym: 'P16',
             value: 0,
             revenue: 10,
@@ -308,7 +308,19 @@ module Engine
                   'normal tile placement and the company does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company is closed.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                closed_when_used_up: true,
+                hexes: %w[F7 G8 H5 H9 I10 J7 J11 M28 M40 Q28],
+                tiles: %w[P1],
+                cost: 0,
+                consume_tile_lay: false,
+              },
+            ],
             color: nil,
           },
           {
@@ -323,7 +335,19 @@ module Engine
                   'normal tile placement and the company does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company is closed.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                closed_when_used_up: true,
+                hexes: %w[F7 G8 H5 H9 I10 J7 J11 M28 M40 Q28],
+                tiles: %w[P2],
+                cost: 0,
+                consume_tile_lay: false,
+              },
+            ],
             color: nil,
           },
           {

@@ -321,6 +321,21 @@ module Engine
                 'city=revenue:100;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;'\
                 'path=a:5,b:_5;label=MC',
             },
+          'P1' =>
+            {
+              'count' => 1,
+              'color' => 'blue',
+              'code' =>
+                'city=revenue:yellow_30|green_40,slots:0;path=a:0,b:_0,terminal:1',
+            },
+          'P2' =>
+            {
+              'count' => 1,
+              'color' => 'blue',
+              'code' =>
+                'city=revenue:green_40|brown_50|gray_60,slots:0;path=a:0,b:_0,terminal:1',
+            },
+
         }.freeze
       end
     end
