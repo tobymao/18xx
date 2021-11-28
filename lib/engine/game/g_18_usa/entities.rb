@@ -146,6 +146,28 @@ module Engine
             ],
             color: 'cyan',
           },
+          # P9
+          {
+            name: 'Boomtown',
+            value: 40,
+            revenue: 0,
+            desc: "Discard during the owning corporation's lay or upgrade track step to upgrade a yellow non-metropolis city "\
+                  'to green. This does not count as a normal track laying action. The corporation must have a legal route to '\
+                  'the city being upgraded.',
+            sym: 'P9',
+            abilities: [
+              {
+                type: 'tile_lay',
+                free: true,
+                when: 'track',
+                owner_type: 'corporation',
+                closed_when_used_up: true,
+                count: 1,
+                hexes: [],
+                tiles: %w[14 15 619],
+              },
+            ],
+          },
           # P10
           {
             name: 'Carnegie Steel Company',
@@ -161,7 +183,6 @@ module Engine
               # Owning the private is the ability
             ],
             color: 'cyan',
-          },
           # P11
           {
             name: 'Pettibone & Mulliken',

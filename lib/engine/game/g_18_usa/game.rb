@@ -28,9 +28,9 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[0l 0a 0a 0a 42 44 46 48 50p 53s 56p 59p 62p 66p 70p 74s 78p 82p 86p 90p 95p 100p 105p 110p 115p 120s 127p 135p 142p 150p 157p
-             165p 172p 180p 190p 200p 210 220 230 240 250 260 270 285 300 315 330 345 360 375 390 405 420 440 460 480 500 520 540 560 580
-             600 625 650 675 700 725 750 775 800],
+          %w[0l 0a 0a 0a 42 44 46 48 50p 53s 56p 59p 62p 66p 70p 74s 78p 82p 86p 90p 95p 100p 105p 110p 115p 120s 127p 135p 142p
+             150p 157p 165p 172p 180p 190p 200p 210 220 230 240 250 260 270 285 300 315 330 345 360 375 390 405 420 440 460 480
+             500 520 540 560 580 600 625 650 675 700 725 750 775 800],
            ].freeze
 
         PHASES = [
@@ -510,6 +510,9 @@ module Engine
         # tile_manifest: true/false Is this being called from the tile manifest screen
         #
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          # This method does not factor in illegal tile lays. Do not show those as a 'Later Phase' tile.
+          return [] if selected_company&.id == 'P9'
+
           upgrades = super
           return filter_by_max_edges(upgrades) unless tile_manifest
 
@@ -884,6 +887,10 @@ module Engine
                     'for fast track upgrade charge'
           end
           super_charge_cost + super
+        end
+
+        def boomtown_company_hexes(entity)
+          @graph.connected_nodes(entity).keys.map(&:hex).select { |node| PLAIN_YELLOW_CITY_TILES.include?(node.tile.name) }
         end
       end
     end

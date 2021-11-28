@@ -25,6 +25,10 @@ module Engine
             tile = action.tile
             check_rural_junction(tile, action.hex) if tile.name.include?('Rural')
 
+            if !@game.loading && entity&.id == 'P9' && !@game.boomtown_hexes(entity.owner).include?(hex)
+              raise GameError, "Cannot use #{entity.name} on #{action.hex.name} (#{action.hex.location_name})"
+            end
+
             super
           end
 
@@ -47,10 +51,19 @@ module Engine
 
           def available_hex(entity, hex)
             return unless (ability = abilities(entity))
+            return @game.boomtown_company_hexes(entity.owner).include?(hex) if entity.id == 'P9'
             return custom_tracker_available_hex(entity, hex, special_override: true) if \
                 ability.hexes&.empty? && ability.consume_tile_lay
 
             hex_neighbors(entity, hex)
+          end
+
+          def potential_tiles(entity, hex)
+            return [] unless (tile_ability = abilities(entity))
+            return super unless tile_ability.owner.id == 'P9'
+
+            tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
+            tiles.select { |t| @game.upgrades_to?(hex.tile, t, selected_company: entity) }
           end
 
           def legal_tile_rotation?(entity, hex, tile)
