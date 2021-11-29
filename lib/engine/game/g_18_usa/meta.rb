@@ -23,7 +23,14 @@ module Engine
         GAME_TITLE = '18USA'
 
         PLAYER_RANGE = [2, 7].freeze
-        OPTIONAL_RULES = [].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :extended,
+            short_name: 'Extended Game',
+            desc: 'Increases share limit, train count, and starting capital and decreases loan interest to make the '\
+                  '5, 6, and 7 player games of 18USA feel more like a 4, 5, or 6 player game.',
+          },
+        ].freeze
       end
     end
   end

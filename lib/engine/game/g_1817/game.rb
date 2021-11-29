@@ -982,10 +982,29 @@ module Engine
           super
         end
 
+        def loans_per_increment
+          self.class::LOANS_PER_INCREMENT
+        end
+
+        def loan_interest_increments
+          self.class::LOAN_INTEREST_INCREMENTS
+        end
+
+        def min_loan
+          self.class::MIN_LOAN
+        end
+
+        def max_loan
+          self.class::MAX_LOAN
+        end
+
+        def total_loans
+          loan_increments = (((max_loan - min_loan) / loan_interest_increments) + 1)
+          loan_increments * loans_per_increment
+        end
+
         def init_loans
           @loan_value = 100
-          loan_increments = (((self.class::MAX_LOAN - self.class::MIN_LOAN) / self.class::LOAN_INTEREST_INCREMENTS) + 1)
-          total_loans = loan_increments * self.class::LOANS_PER_INCREMENT
           Array.new(total_loans) { |id| Loan.new(id, @loan_value) }
         end
 
@@ -998,11 +1017,9 @@ module Engine
         end
 
         def future_interest_rate
-          interest = ((loans_taken + (self.class::LOANS_PER_INCREMENT - 1)) /
-                     self.class::LOANS_PER_INCREMENT).to_i *
-                     self.class::LOAN_INTEREST_INCREMENTS
+          interest = ((loans_taken + (loans_per_increment - 1)) / loans_per_increment).to_i * loan_interest_increments
 
-          [[self.class::MIN_LOAN, interest].max, self.class::MAX_LOAN].min
+          [[min_loan, interest].max, max_loan].min
         end
 
         def interest_rate
@@ -1025,25 +1042,25 @@ module Engine
           rate = future_interest_rate
           summary = []
 
-          unless rate == self.class::MIN_LOAN
-            loans = ((loans_taken - 1) % self.class::LOANS_PER_INCREMENT) + 1
+          unless rate == min_loan
+            loans = ((loans_taken - 1) % loans_per_increment) + 1
             s = loans == 1 ? '' : 's'
             summary << ["Interest if #{loans} more loan#{s} repaid", rate - 5]
           end
           loan_table = []
           if loans_taken.zero?
-            loan_table << [rate, self.class::LOANS_PER_INCREMENT]
-            summary << ["Interest if #{self.class::LOANS_PER_INCREMENT + 1} more loans taken", 10]
-          elsif rate != self.class::MAX_LOAN
-            loans = self.class::LOANS_PER_INCREMENT - ((loans_taken + (self.class::LOANS_PER_INCREMENT - 1)) %
-                    self.class::LOANS_PER_INCREMENT)
+            loan_table << [rate, loans_per_increment]
+            summary << ["Interest if #{loans_per_increment + 1} more loans taken", 10]
+          elsif rate != max_loan
+            loans = loans_per_increment - ((loans_taken + (loans_per_increment - 1)) %
+                    loans_per_increment)
             loan_table << [rate, loans - 1]
             s = loans == 1 ? '' : 's'
-            summary << ["Interest if #{loans} more loan#{s} taken", rate + self.class::LOAN_INTEREST_INCREMENTS]
+            summary << ["Interest if #{loans} more loan#{s} taken", rate + loan_interest_increments]
           end
 
-          (rate + self.class::LOAN_INTEREST_INCREMENTS..self.class::MAX_LOAN).step(5) do |r|
-            loan_table << [r, self.class::LOANS_PER_INCREMENT]
+          (rate + loan_interest_increments..max_loan).step(5) do |r|
+            loan_table << [r, loans_per_increment]
           end
           [summary, loan_table]
         end
