@@ -60,10 +60,10 @@ module Engine
 
           def potential_tiles(entity, hex)
             return [] unless (tile_ability = abilities(entity))
-            return super unless tile_ability.owner.id == 'P9'
+            return super unless %w[P9 S8].include?(tile_ability.owner.id)
+            return [] unless hex.tile.color == 'yellow'
 
-            tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
-            tiles.select { |t| @game.upgrades_to?(hex.tile, t, selected_company: entity) }
+            tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
           end
 
           def legal_tile_rotation?(entity, hex, tile)
@@ -86,6 +86,12 @@ module Engine
               #  Marc Voyer confirmed that coal should be able to connect to the gray pre-printed town
               (ntile.cities&.any? || real_offboard?(ntile) || ntile.towns&.any?) &&
               (ntile.exits.any? { |e| e == Hex.invert(exit) } || potential_future_tiles(entity, neighbor).any?)
+            end
+          end
+
+          def boomtown_company_hexes(corporation)
+            @game.graph.connected_nodes(corporation).keys.map(&:hex).select do |node|
+              @game.plain_yellow_city_tiles.include?(node.tile.name)
             end
           end
         end

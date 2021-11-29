@@ -1382,9 +1382,11 @@ module Engine
           corporation_by_id(id)
         end
 
-        def close_companies_on_train!(entity)
+        def close_companies_on_event!(entity, event)
+          return unless event == 'bought_train'
+
           if entity.system?
-            entity.corporations.each { |c| super(c) }
+            entity.corporations.each { |c| super(c, event) }
           else
             super
           end

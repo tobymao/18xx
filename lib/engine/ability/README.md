@@ -50,6 +50,7 @@ These attributes may be set for all ability types
     - `stock_round`: usable any time during a Stock Round
     - `never`: use with `close` abilities to prevent a company from closing
     - `has_train`: when the owning corporation owns at least one train
+    - `operated`: when the owning corporation has finished the dividend step on their first turn
 
 ## additional_token
 

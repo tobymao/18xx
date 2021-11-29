@@ -13,7 +13,7 @@ module Engine
         include G18USA::Entities
         include G18USA::Map
 
-        attr_reader :jump_graph, :subsidies_by_hex, :recently_floated
+        attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles
 
         CURRENCY_FORMAT_STR = '$%d'
 
@@ -175,7 +175,7 @@ module Engine
           # {
           # icon: 'subsidy_none',
           # abilities: [],
-          # id: 's1',
+          # id: 'S1',
           # name: 'No Subsidy',
           # desc: 'No effect',
           # value: nil,
@@ -183,7 +183,7 @@ module Engine
           # {
           # icon: 'subsidy_none',
           # abilities: [],
-          # id: 's2',
+          # id: 'S2',
           # name: 'No Subsidy'
           # desc: 'No effect',
           # value: nil,
@@ -191,7 +191,7 @@ module Engine
           {
             icon: 'subsidy_none',
             abilities: [],
-            id: 's3',
+            id: 'S3',
             name: 'No Subsidy',
             desc: 'No effect',
             value: nil,
@@ -199,7 +199,7 @@ module Engine
           {
             icon: 'subsidy_none',
             abilities: [],
-            id: 's4',
+            id: 'S4',
             name: 'No Subsidy',
             desc: 'No effect',
             value: nil,
@@ -207,7 +207,7 @@ module Engine
           {
             icon: 'subsidy_none',
             abilities: [],
-            id: 's5',
+            id: 'S5',
             name: 'No Subsidy',
             desc: 'No effect',
             value: nil,
@@ -215,7 +215,7 @@ module Engine
           {
             icon: 'subsidy_none',
             abilities: [],
-            id: 's6',
+            id: 'S6',
             name: 'No Subsidy',
             desc: 'No effect',
             value: nil,
@@ -223,15 +223,31 @@ module Engine
           {
             icon: 'subsidy_none',
             abilities: [],
-            id: 's7',
+            id: 'S7',
             name: 'No Subsidy',
             desc: 'No effect',
             value: nil,
           },
           {
             icon: 'subsidy_boomtown',
-            abilities: [],
-            id: 's8',
+            abilities: [
+              {
+                type: 'tile_lay',
+                free: true,
+                when: 'track',
+                owner_type: 'corporation',
+                closed_when_used_up: true,
+                count: 1,
+                hexes: [], # assigned when claimed
+                tiles: %w[14 15 619],
+              },
+              {
+                type: 'close',
+                when: 'operated',
+                corporation: nil, # assigned when claimed
+              },
+            ],
+            id: 'S8',
             name: 'Boomtown',
             desc: 'On it\'s first operating turn, this corporation may upgrade its home to green as a free action. This does '\
                   'not count as an additional track placement and does not incur any cost for doing so',
@@ -240,7 +256,7 @@ module Engine
           {
             icon: 'subsidy_free_station',
             abilities: [],
-            id: 's9',
+            id: 'S9',
             name: 'Free Station',
             desc: 'The free station is a special token (which counts toward the 8 token limit) that can be placed in any city '\
                   'the corporation can trace a legal route to, even if no open station circle is currently available in the '\
@@ -250,7 +266,7 @@ module Engine
           {
             icon: 'subsidy_plus_ten',
             abilities: [],
-            id: 's10',
+            id: 'S10',
             name: '+10',
             desc: 'This corporation\'s home city is worth $10 for the rest of the game',
             value: nil,
@@ -258,7 +274,7 @@ module Engine
           {
             icon: 'subsidy_plus_ten_twenty',
             abilities: [],
-            id: 's11',
+            id: 'S11',
             name: '+10 / +20',
             desc: 'This corporation\'s home city is worth $10 until phase 5, after which it is worth '\
                   ' $20 more for the rest of the game',
@@ -267,7 +283,7 @@ module Engine
           {
             icon: 'subsidy_thirty',
             abilities: [],
-            id: 's12',
+            id: 'S12',
             name: '$30 Subsidy',
             desc: 'The bank will contribute $30 towards the bid for this corporation',
             value: 30,
@@ -275,7 +291,7 @@ module Engine
           {
             icon: 'subsidy_thirty',
             abilities: [],
-            id: 's13',
+            id: 'S13',
             name: '$30 Subsidy',
             desc: 'The bank will contribute $30 towards the bid for this corporation',
             value: 30,
@@ -283,7 +299,7 @@ module Engine
           {
             icon: 'subsidy_forty',
             abilities: [],
-            id: 's14',
+            id: 'S14',
             name: '$40 Subsidy',
             desc: 'The bank will contribute $40 towards the bid for this corporation',
             value: 40,
@@ -291,7 +307,7 @@ module Engine
           {
             icon: 'subsidy_fifty',
             abilities: [],
-            id: 's15',
+            id: 'S15',
             name: '$50 Subsidy',
             desc: 'The bank will contribute $50 towards the bid for this corporation',
             value: 50,
@@ -299,7 +315,7 @@ module Engine
           {
             icon: 'subsidy_resource',
             abilities: [],
-            id: 's16',
+            id: 'S16',
             name: 'Resource Subsidy',
             desc: 'PLACEHOLDER DESCRIPTION',
             value: nil,
@@ -570,7 +586,7 @@ module Engine
         #
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           # This method does not factor in illegal tile lays. Do not show those as a 'Later Phase' tile.
-          return [] if selected_company&.id == 'P9'
+          return [] if %w[P9 S8].include?(selected_company&.id)
 
           upgrades = super
           return filter_by_max_edges(upgrades) unless tile_manifest
@@ -948,8 +964,19 @@ module Engine
           super_charge_cost + super
         end
 
-        def boomtown_company_hexes(entity)
-          @graph.connected_nodes(entity).keys.map(&:hex).select { |node| PLAIN_YELLOW_CITY_TILES.include?(node.tile.name) }
+        def create_company_from_subsidy(subsidy)
+          company = Engine::Company.new(
+            {
+              sym: subsidy['id'],
+              name: subsidy['name'],
+              desc: subsidy['desc'],
+              value: subsidy['value'] || 0,
+              abilities: subsidy['abilities'] || [],
+            }
+          )
+          @companies << company
+          update_cache(:companies)
+          company
         end
       end
     end
