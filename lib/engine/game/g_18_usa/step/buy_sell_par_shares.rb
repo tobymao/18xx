@@ -137,6 +137,14 @@ module Engine
               company.close!
             end
 
+            corporation_hex = corporation.tokens.first.hex
+            if company.id == 'P10' && @game.potential_metropolitan_hexes.include?(corporation_hex) &&
+                !@game.active_metropolitan_hexes.include?(corporation_hex)
+              @game.log << "#{company.name} turns #{corporation_hex.location_name} into a metropolis"
+              @game.convert_potential_metro(corporation_hex)
+              @game.graph.clear
+            end
+
             par_corporation if available_subsidiaries(entity).empty?
           end
 
