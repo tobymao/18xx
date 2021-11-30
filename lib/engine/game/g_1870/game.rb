@@ -489,7 +489,7 @@ module Engine
             %w[B9 B19 D5 F5 H13 K16 M2 M6] => 'city=revenue:0',
             %w[J3 J5] => 'city=revenue:0;label=P',
             %w[B7 D9 D21 E8 F9 G10 G20 H21 I14 J9 K4 K20 M8 M10] => 'town=revenue:0',
-            ['M20'] => 'city=revenue:0;icon=image:port',
+            ['M20'] => 'city=revenue:0;icon=image:port,sticky:1',
             %w[C14 C16 G2 H5] => 'upgrade=cost:40,terrain:water',
             %w[H7 I8 J11 K10] => 'upgrade=cost:60,terrain:water',
             ['B11'] => 'city=revenue:0;upgrade=cost:40,terrain:water;label=P;label=K',
@@ -511,10 +511,10 @@ module Engine
             ['C18'] =>
                    'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner;label=P;label=L',
             ['M14'] =>
-                   'city=revenue:0;upgrade=cost:80,terrain:river;icon=image:port;'\
+                   'city=revenue:0;upgrade=cost:80,terrain:river;icon=image:port,sticky:1;'\
                    'partition=a:0-,b:2+,type:water,restrict:outer',
             ['H17'] =>
-                   'city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port;'\
+                   'city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port,sticky:1;'\
                    'partition=a:1-,b:3+,type:water,restrict:outer',
             ['D17'] =>
                    'town=revenue:0;upgrade=cost:40,terrain:river;partition=a:4-,b:5+,type:water',
@@ -527,9 +527,9 @@ module Engine
             ['N19'] =>
                    'upgrade=cost:80,terrain:lake;border=edge:0,type:impassable;border=edge:1,type:impassable',
             ['O14'] => 'upgrade=cost:100,terrain:lake',
-            ['N7'] => 'city=revenue:0;upgrade=cost:80,terrain:lake;icon=image:port',
+            ['N7'] => 'city=revenue:0;upgrade=cost:80,terrain:lake;icon=image:port,sticky:1',
             ['N17'] =>
-                   'city=revenue:0;upgrade=cost:80,terrain:lake;icon=image:port;border=edge:4,type:impassable;label=P',
+                   'city=revenue:0;upgrade=cost:80,terrain:lake;icon=image:port,sticky:1;border=edge:4,type:impassable;label=P',
             ['N21'] => 'town=revenue:0;upgrade=cost:80,terrain:lake',
             %w[D13 D15 E14 E16 F11 F13 F15] =>
                    'upgrade=cost:60,terrain:mountain',
