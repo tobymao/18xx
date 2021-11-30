@@ -543,7 +543,7 @@ module Engine
           operator.trains << train
           @crowded_corps = nil
 
-          close_companies_on_train!(operator)
+          close_companies_on_event!(operator, 'bought_train')
 
           return unless old_owner == @depot
 

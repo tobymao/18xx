@@ -140,7 +140,7 @@ module Engine
           end
 
           def all_passed!
-            @companies.each { |c| @game.companies.delete(c) }
+            @companies.each(&:close!)
             # Need to move entity round once more to be back to the priority deal player
             @round.next_entity_index!
             pass!

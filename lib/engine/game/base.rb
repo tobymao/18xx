@@ -1597,15 +1597,15 @@ module Engine
           end
         end
 
-        close_companies_on_par!(corporation)
+        close_companies_on_event!(corporation, 'par')
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
-      def close_companies_on_par!(entity)
+      def close_companies_on_event!(entity, event)
         @companies.each do |company|
           next if company.closed?
 
-          abilities(company, :close, time: 'par') do |ability|
+          abilities(company, :close, time: event) do |ability|
             next if entity&.name != ability.corporation
 
             company.close!
@@ -1675,20 +1675,7 @@ module Engine
         operator.trains << train
         @crowded_corps = nil
 
-        close_companies_on_train!(operator)
-      end
-
-      def close_companies_on_train!(entity)
-        @companies.each do |company|
-          next if company.closed?
-
-          abilities(company, :close, time: 'bought_train') do |ability|
-            next if entity&.name != ability.corporation
-
-            company.close!
-            @log << "#{company.name} closes"
-          end
-        end
+        close_companies_on_event!(operator, 'bought_train')
       end
 
       def discountable_trains_for(corporation)

@@ -184,6 +184,12 @@ module Engine
         @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
       end
 
+      def pass!
+        entity = current_entity
+        @game.close_companies_on_event!(entity, 'operated') if entity.operating_history.size == 1
+        super
+      end
+
       private
 
       def log_payout_shares(entity, revenue, per_share, receivers)

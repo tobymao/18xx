@@ -23,7 +23,6 @@ module Engine
         GAME_TITLE = '18USA'
 
         PLAYER_RANGE = [2, 7].freeze
-        OPTIONAL_RULES = [].freeze
       end
     end
   end
