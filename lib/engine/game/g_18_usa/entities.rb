@@ -593,7 +593,7 @@ module Engine
               },
             ],
             id: 'S8',
-            name: 'Boomtown',
+            name: 'Boomtown Subsidy',
             desc: 'On it\'s first operating turn, this corporation may upgrade its home to green as a free action. This does '\
                   'not count as an additional track placement and does not incur any cost for doing so',
             value: nil,
