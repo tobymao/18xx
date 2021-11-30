@@ -20,10 +20,8 @@ module Engine
         BANK_CASH = 99_999
 
         CERT_LIMIT = { 2 => 32, 3 => 21, 4 => 16, 5 => 16, 6 => 13, 7 => 11 }.freeze
-        EXTENDED_CERT_LIMIT = { 2 => 32, 3 => 21, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
 
-        STARTING_CASH = { 2 => 630, 3 => 420, 4 => 315, 5 => 252, 6 => 210, 7 => 180 }.freeze
-        EXTENDED_STARTING_CASH = { 2 => 750, 3 => 500, 4 => 375, 5 => 300, 6 => 250, 7 => 214 }.freeze
+        STARTING_CASH = { 2 => 630, 3 => 420, 4 => 315, 5 => 300, 6 => 250, 7 => 225 }.freeze
 
         CAPITALIZATION = :incremental
 
@@ -128,14 +126,15 @@ module Engine
             'Oil is worth $20 instead of $10',
           ],
         }.merge(Base::STATUS_TEXT)
+
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 40 },
-                  { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 6 },
+                  { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 5 },
                   { name: '3', distance: 3, price: 250, rusts_on: '6', num: 12 },
-                  { name: '3+', distance: 3, price: 250, obsolete_on: '6', num: 4 },
+                  { name: '3+', distance: 3, price: 250, obsolete_on: '6', num: 2 },
                   { name: '4', distance: 4, price: 400, rusts_on: '8', num: 8 },
-                  { name: '4+', distance: 4, price: 400, obsolete_on: '8', num: 2 },
-                  { name: '5', distance: 5, price: 600, num: 7 },
-                  { name: '6', distance: 6, price: 750, num: 6 },
+                  { name: '4+', distance: 4, price: 400, obsolete_on: '8', num: 1 },
+                  { name: '5', distance: 5, price: 600, num: 6 },
+                  { name: '6', distance: 6, price: 750, num: 5 },
                   { name: '7', distance: 7, price: 900, num: 3 },
                   {
                     name: '8',
@@ -334,6 +333,19 @@ module Engine
           @metro_denver ||= false
         end
 
+        def loans_per_increment(increment)
+          return 4 if @players.size >= 5 && increment == min_loan
+          return 6 if @players.size >= 5
+
+          super
+        end
+
+        def max_loan
+          return 60 if @players.size >= 5
+
+          super
+        end
+
         def setup
           @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
           @company_town_tiles ||= @all_tiles.select { |t| t.name.include?('CTown') }
@@ -375,54 +387,18 @@ module Engine
 
           setup_train_roster
           randomize_subsidies
-          randomize_privates
         end
 
         def setup_train_roster
-          remove_extra_trains(%w[2+ 4 5 6]) if @players.size < 5
-          remove_extra_trains(%w[2+ 3+ 3+ 4+ 5 6]) unless @optional_rules.include?(:extended)
-        end
+          return if @players.size >= 5
 
-        def remove_extra_trains(to_remove)
+          to_remove = %w[2+ 4 5 6]
           @depot.trains.dup.reverse_each do |train|
             next unless train.name == to_remove.last
 
             @depot.forget_train(train)
             to_remove.pop
           end
-        end
-
-        def init_cert_limit
-          cert_limit_table = @optional_rules.include?(:extended) ? EXTENDED_CERT_LIMIT : CERT_LIMIT
-          cert_limit_table[@players.count { |p| !p.bankrupt }]
-        end
-
-        def init_starting_cash(players, bank)
-          starting_cash_table = @optional_rules.include?(:extended) ? EXTENDED_STARTING_CASH : STARTING_CASH
-          cash = starting_cash_table[players.size]
-
-          players.each do |player|
-            bank.spend(cash, player)
-          end
-        end
-
-        def loans_per_increment
-          return super unless @optional_rules.include?(:extended)
-
-          self.class::EXTENDED_LOANS_PER_INCREMENT
-        end
-
-        def max_loan
-          return super unless @optional_rules.include?(:extended)
-
-          self.class::EXTENDED_MAX_LOAN
-        end
-
-        def total_loans
-          return super unless @optional_rules.include?(:extended)
-
-          # The last row only has 4 loans
-          super - loans_per_increment + 4
         end
 
         # Convert a potential metro hex to a metro hex
@@ -455,11 +431,6 @@ module Engine
             hex.tile.icons.reject! { |icon| icon.name == 'coins' }
             hex.tile.icons << Engine::Part::Icon.new("18_usa/#{subsidy['icon']}")
           end
-        end
-
-        def randomize_privates
-          # TODO: Add P10 to the always included privates if extended edition
-          # TODO: implementation
         end
 
         def home_hex_for(corporation)
