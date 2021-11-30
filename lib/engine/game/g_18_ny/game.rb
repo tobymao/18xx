@@ -392,7 +392,7 @@ module Engine
         end
 
         def non_floated_corporations
-          @corporations.each { |c| yield c unless c.floated? }
+          @corporations.each { |c| yield c if c.type != :minor && !c.floated? }
         end
 
         #
