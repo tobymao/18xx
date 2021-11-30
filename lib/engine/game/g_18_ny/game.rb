@@ -392,7 +392,7 @@ module Engine
         end
 
         def non_floated_corporations
-          @corporations.each { |c| yield c unless c.floated? }
+          @corporations.each { |c| yield c if c.type != :minor && !c.floated? }
         end
 
         #
@@ -740,16 +740,6 @@ module Engine
           5
         end
 
-        def calculate_corporation_interest(corporation)
-          @interest[corporation] = corporation.loans.size
-        end
-
-        def calculate_interest
-          # Number of loans interest is due on is set before taking loans in that OR
-          @interest.clear
-          @corporations.each { |c| calculate_corporation_interest(c) }
-        end
-
         def emergency_issuable_bundles(corp)
           bundles = bundles_for_corporation(corp, corp)
 
@@ -757,16 +747,18 @@ module Engine
           bundles.reject { |bundle| bundle.num_shares > num_issuable_shares }.sort_by(&:price)
         end
 
-        def interest_owed_for_loans(loans)
-          interest_rate * loans
+        def interest_owed_for_loans(num_loans)
+          interest_rate * num_loans
         end
 
         def loans_due_interest(entity)
-          @interest[entity] || 0
+          entity&.loans&.size || 0
         end
 
         def interest_owed(entity)
-          interest_rate * loans_due_interest(entity)
+          return 0 unless entity&.loans
+
+          interest_owed_for_loans(entity.loans.size)
         end
 
         def maximum_loans(entity)
