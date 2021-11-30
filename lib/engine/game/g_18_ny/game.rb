@@ -756,9 +756,7 @@ module Engine
         end
 
         def interest_owed(entity)
-          return 0 unless entity&.loans
-
-          interest_owed_for_loans(entity.loans.size)
+          interest_paid[entity] || interest_owed_for_loans(entity.loans.size)
         end
 
         def maximum_loans(entity)
