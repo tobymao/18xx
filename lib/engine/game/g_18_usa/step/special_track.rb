@@ -25,7 +25,7 @@ module Engine
             tile = action.tile
             check_rural_junction(tile, action.hex) if tile.name.include?('Rural')
 
-            if !@game.loading && entity&.id == 'P9' && !@game.boomtown_hexes(entity.owner).include?(hex)
+            if !@game.loading && entity&.id == 'P9' && !boomtown_company_hexes(entity.owner).include?(hex)
               raise GameError, "Cannot use #{entity.name} on #{action.hex.name} (#{action.hex.location_name})"
             end
 
@@ -51,7 +51,7 @@ module Engine
 
           def available_hex(entity, hex)
             return unless (ability = abilities(entity))
-            return @game.boomtown_company_hexes(entity.owner).include?(hex) if entity.id == 'P9'
+            return boomtown_company_hexes(entity.owner).include?(hex) if entity.id == 'P9'
             return custom_tracker_available_hex(entity, hex, special_override: true) if \
                 ability.hexes&.empty? && ability.consume_tile_lay
 
@@ -91,7 +91,7 @@ module Engine
 
           def boomtown_company_hexes(corporation)
             @game.graph.connected_nodes(corporation).keys.map(&:hex).select do |node|
-              @game.plain_yellow_city_tiles.include?(node.tile.name)
+              @game.plain_yellow_city_tiles.find { |t| t.name == node.tile.name }
             end
           end
         end

@@ -41,6 +41,9 @@ module Engine
         BRIDGE_CITY_HEXES = %w[I19 C10 C17 D14 E15 E17 F20 G17].freeze
         BRIDGE_TILE_HEXES = %w[B4 D18 E21 F18 H18].freeze
 
+        METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
+        SUBSIDIZED_HEXES = %w[B8 B14 C3 D6 D14 E3 E7 E23 G7 G11 G27 H8 I13 I25].freeze
+
         TILES = {
           '6' => 'unlimited',
           '5' => 'unlimited',
