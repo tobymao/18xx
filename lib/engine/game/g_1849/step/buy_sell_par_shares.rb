@@ -64,7 +64,7 @@ module Engine
             @round.current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
           end
 
-          def should_stop_applying_program(entity, share_to_buy)
+          def should_stop_applying_program(entity, program, share_to_buy)
             # The automatic program should stop if the 20% share is acquireable
             if !share_to_buy || !share_to_buy.last_cert
               @game.corporations.each do |corporation|
