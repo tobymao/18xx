@@ -611,7 +611,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super + (route_connection_bonus_hexes(route, stops: stops).count * 10)
+          super + (route_connection_bonus_hexes(route, stops: stops).size * 10)
         end
 
         def revenue_str(route)
@@ -619,7 +619,7 @@ module Engine
           stop_hexes = stops.map(&:hex)
           str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
 
-          num_bonuses = route_connection_bonus_hexes(route).count
+          num_bonuses = route_connection_bonus_hexes(route).size
           str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}" if num_bonuses.positive?
 
           str
