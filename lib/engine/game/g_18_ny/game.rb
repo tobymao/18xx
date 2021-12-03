@@ -146,7 +146,7 @@ module Engine
                   {
                     name: '5DE',
                     num: 2,
-                    distance: [{ nodes: %w[city offboard town], pay: 5, visit: 99, multiplier: 2 }],
+                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99, 'multiplier' => 2 }],
                     price: 800,
                     events: [{ 'type' => 'float_60' }],
                   },
@@ -611,7 +611,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super + (route_connection_bonus_hexes(route).count * 10)
+          super + (route_connection_bonus_hexes(route, stops: stops).count * 10)
         end
 
         def revenue_str(route)
@@ -638,19 +638,23 @@ module Engine
           abilities(entity, :connection_bonus)&.bonus_revenue || 0
         end
 
-        def route_connection_bonus_hexes(route)
+        def route_connection_bonus_hexes(route, stops: nil)
           already_claimed = []
+          stops ||= route.stops
 
+          # Only return connection bonus hexes not counted by a previous route
           route.routes.each do |r|
-            hexes = potential_route_connection_bonus_hexes(r)
+            route_stops = r == route ? stops : route.stops
+            hexes = potential_route_connection_bonus_hexes(r, stops: route_stops)
             return hexes.reject { |h| already_claimed.include?(h) } if r == route
 
             already_claimed.concat(hexes)
           end
         end
 
-        def potential_route_connection_bonus_hexes(route)
-          route.stops.map do |stop|
+        def potential_route_connection_bonus_hexes(route, stops: nil)
+          stops ||= route.stops
+          stops.map do |stop|
             if !stop.hex.tile.offboards.empty?
               offboard_connection_bonus_hex(route, stop)
             elsif stop.hex.assigned?('connection_bonus')
