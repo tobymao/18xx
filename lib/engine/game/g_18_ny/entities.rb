@@ -16,6 +16,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_discount',
+                when: 'track',
                 owner_type: 'corporation',
                 terrain: 'water',
                 discount: 80,
@@ -23,6 +24,7 @@ module Engine
               },
               {
                 type: 'tile_lay',
+                when: 'track',
                 owner_type: 'corporation',
                 tiles: [],
                 hexes: [],
