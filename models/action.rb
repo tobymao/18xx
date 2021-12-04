@@ -9,6 +9,7 @@ class Action < Base
   unrestrict_primary_key
 
   def before_create
+    action.delete('id')
     action.delete('user')
     action.delete('created_at')
     action.delete('meta')
@@ -17,6 +18,6 @@ class Action < Base
   end
 
   def to_h
-    action.to_h.merge('user' => user_id, 'created_at' => created_at_ts)
+    action.to_h.merge('id' => action_id, 'user' => user_id, 'created_at' => created_at_ts)
   end
 end
