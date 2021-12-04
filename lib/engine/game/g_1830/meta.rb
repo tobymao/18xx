@@ -15,6 +15,7 @@ module Engine
         GAME_LOCATION = 'Northeastern USA and Southeastern Canada'
         GAME_PUBLISHER = :lookout
         GAME_RULES_URL = 'https://lookout-spiele.de/upload/en_1830re.html_Rules_1830-RE_EN.pdf'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1830'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
