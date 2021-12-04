@@ -14,16 +14,24 @@ module Engine
             return corporate_actions(entity) if entity.corporation? && entity.owned_by?(current_entity)
             return %w[buy_shares sell_shares] if entity.player? && mandatory_nyc_buy?(entity)
 
-            super
+            actions = super
+            actions << 'pass' if entity.player? && actions.empty? && players_corporations_have_actions?(entity)
+            actions
           end
 
           def corporate_actions(entity)
+            return [] unless @round.current_actions.none?
+            return [] if entity.type == :minor
+            return [] if !entity.operated? && (entity != @game.nyc_corporation || !@game.nyc_formed?)
+
             actions = []
-            if @round.current_actions.none?
-              actions << 'sell_shares' unless @game.issuable_shares(entity).empty?
-              actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
-            end
+            actions << 'sell_shares' unless @game.issuable_shares(entity).empty?
+            actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
             actions
+          end
+
+          def players_corporations_have_actions?(player)
+            @game.corporations.any? { |c| c.owner == player && !corporate_actions(c).empty? }
           end
 
           def visible_corporations

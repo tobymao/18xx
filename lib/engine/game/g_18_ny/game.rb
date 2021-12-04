@@ -183,6 +183,7 @@ module Engine
           @stagecoach_token =
             Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
           @original_nyc_corporation = nyc_corporation.dup
+          @fully_capitalized_corporations = []
           init_connection_bonuses
           init_coal_tokens
         end
@@ -367,12 +368,8 @@ module Engine
 
         def event_float_60!
           @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
-          @float_percent = 50
-          non_floated_corporations do |c|
-            c.float_percent = @float_percent
-            c.capitalization = :full
-            c.spend(c.cash, @bank) if c.cash.positive?
-          end
+          @float_percent = 60
+          non_floated_corporations { |c| c.float_percent = @float_percent }
         end
 
         def event_nyc_formation!
@@ -451,26 +448,28 @@ module Engine
           @full_capitalization &&
             entity.type != :minor &&
             !entity.operated? &&
-            entity.capitalization == :incremental &&
+            !corporation_fully_capitalized?(entity) &&
             entity.percent_of(entity) == 40
         end
 
+        def corporation_fully_capitalized?(corporation)
+          @fully_capitalized_corporations.include?(corporation)
+        end
+
         def fully_capitalize_corporation(entity)
-          entity.capitalization = :full
           entity.spend(entity.cash, @bank)
           @bank.spend(entity.par_price.price * entity.total_shares, entity)
           @share_pool.transfer_shares(ShareBundle.new(entity.shares_of(entity)), @share_pool)
-          @log << "#{entity.name} receives full capitalization"
-          @log << "Treasury discard and instead receives #{format_currency(entity.cash)}"
-          @log << 'Remaining shares placed in the market'
+          @fully_capitalized_corporations << entity
+          @log << "#{entity.name} treasury is discarded and instead receives full capitalization " \
+                  "of #{format_currency(entity.cash)}"
+          @log << "#{entity.name}'s remaining shares are placed in the market"
         end
 
         def float_corporation(corporation)
           super
-          return unless corporation.capitalization == :full
 
-          @log << 'Remaining shares placed in the market'
-          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
+          fully_capitalize_corporation(corporation) if can_fully_capitalize?(corporation)
         end
 
         #
@@ -999,6 +998,10 @@ module Engine
 
         def nyc_forming?
           @nyc_formation_state == :round_one || (@nyc_formation_state == :round_two && @nyc_formed)
+        end
+
+        def nyc_formed?
+          @nyc_formed
         end
 
         def form_nyc
