@@ -338,6 +338,11 @@ module Engine
           # they may wish to manipulate share price
           "Corporation #{corporation.name} parred" if !corp_buying || @game.check_sale_timing(entity, corporation)
         when Action::BuyShares
+          # Redeeming a share from a player is definitely shenanigans (equivalent to the player selling).
+          # The code doesn't have access to where the share came from, so it could potentially be market,
+          # but a market redemption could still be shenanigans, and it's better to err on the side of safety.
+          return "#{corporation.name} redeemed a share." if action.entity == corporation
+
           if corporation.owner == entity
             return if corporation_secure?(corporation) # Don't care...
 
