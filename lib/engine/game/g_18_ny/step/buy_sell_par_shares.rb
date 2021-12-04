@@ -20,7 +20,7 @@ module Engine
           end
 
           def corporate_actions(entity)
-            return [] unless @round.current_actions.none?
+            return [] unless @round.current_actions.empty?
             return [] if entity.type == :minor
             return [] if !entity.operated? && (entity != @game.nyc_corporation || !@game.nyc_formed?)
 
