@@ -22,7 +22,7 @@ module Engine
           {
             sym: :multiple_brown_from_ipo,
             short_name: 'Buy Multiple Brown Shares From IPO',
-            desc: 'Mutiple brown shares may be bought from IPO as well as from pool',
+            desc: 'Multiple brown shares may be bought from IPO as well as from pool',
           },
         ].freeze
       end
