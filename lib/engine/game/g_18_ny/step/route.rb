@@ -9,13 +9,10 @@ module Engine
         class Route < Engine::Step::Route
           def process_run_routes(action)
             super
+            return if (hexes = action.routes.flat_map { |route| @game.potential_route_connection_bonus_hexes(route) }.uniq).empty?
 
-            connection_bonus = false
-            action.routes.flat_map(&:stops).select { |stop| stop.hex.assigned?('connection_bonus') }.each do |stop|
-              @game.claim_connection_bonus(action.entity, stop.hex)
-              connection_bonus = true
-            end
-            action.routes.each { |route| route.clear_cache!(only_routes: true) } if connection_bonus
+            hexes.each { |hex| @game.claim_connection_bonus(action.entity, hex) }
+            action.routes.each { |route| route.clear_cache!(only_routes: true) }
           end
         end
       end

@@ -30,6 +30,11 @@ module Engine
           def border_cost_discount(_entity, _spender, _border, _cost, _hex)
             0
           end
+
+          def tile_lay_abilities_should_block?(entity)
+            # AIW should block if the entity still has an action
+            !Array(abilities(entity, time: type, passive_ok: false)).empty? && get_tile_lay(entity)
+          end
         end
       end
     end

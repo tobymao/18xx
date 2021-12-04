@@ -146,7 +146,7 @@ module Engine
                   {
                     name: '5DE',
                     num: 2,
-                    distance: [{ nodes: %w[city offboard town], pay: 5, visit: 99, multiplier: 2 }],
+                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99, 'multiplier' => 2 }],
                     price: 800,
                     events: [{ 'type' => 'float_60' }],
                   },
@@ -173,7 +173,8 @@ module Engine
         }.freeze
 
         CONNECTION_BONUS_HEXES =
-          %w[A13 A19 A23 B12 C11 C23 C25 D0 D18 D20 E9 F10 F12 G9 G13 G19 G21 G25 I19 I23 J18 J22 J26 K19].freeze
+          [%w[A13 A11], %w[A19 A15 A17 A21], %w[A23 A21], %w[C25 A25 B26], %w[G25 H26], %w[D0 E1], %w[J26], 'B12', 'C11',
+           'C23', 'D18', 'D20', 'E9', 'F10', 'F12', 'G9', 'G13', 'G19', 'G21', 'I19', 'I23', 'J18', 'J22', 'K19'].freeze
         COAL_LOCATIONS = [%w[F0 G1], %w[H2 H4], %w[H6 H8 H10], ['H12'], %w[I13 J14], %w[K15 K17]].freeze
 
         def setup
@@ -187,7 +188,12 @@ module Engine
         end
 
         def init_connection_bonuses
-          CONNECTION_BONUS_HEXES.each { |hex_id| hex_by_id(hex_id).assign!(CONNECTION_BONUS_ICON) }
+          CONNECTION_BONUS_HEXES.each do |hex_id|
+            hex_id = hex_id.first if hex_id.is_a?(Array)
+            hex_by_id(hex_id).assign!(CONNECTION_BONUS_ICON)
+          end
+          @offboard_bonus_locations =
+            CONNECTION_BONUS_HEXES.select { |h| h.is_a?(Array) }.map { |a| a.map { |hex_id| hex_by_id(hex_id) } }
         end
 
         def init_coal_tokens
@@ -605,7 +611,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super + (stops.count { |stop| stop.hex.assigned?(CONNECTION_BONUS_ICON) } * 10)
+          super + (route_connection_bonus_hexes(route, stops: stops).size * 10)
         end
 
         def revenue_str(route)
@@ -613,9 +619,8 @@ module Engine
           stop_hexes = stops.map(&:hex)
           str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
 
-          if (num_bonuses = route.stops.count { |stop| stop.hex.assigned?(CONNECTION_BONUS_ICON) }).positive?
-            str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}"
-          end
+          num_bonuses = route_connection_bonus_hexes(route).size
+          str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}" if num_bonuses.positive?
 
           str
         end
@@ -633,9 +638,49 @@ module Engine
           abilities(entity, :connection_bonus)&.bonus_revenue || 0
         end
 
+        def route_connection_bonus_hexes(route, stops: nil)
+          already_claimed = []
+          stops ||= route.stops
+
+          # Only return connection bonus hexes not counted by a previous route
+          route.routes.each do |r|
+            route_stops = r == route ? stops : route.stops
+            hexes = potential_route_connection_bonus_hexes(r, stops: route_stops)
+            return hexes.reject { |h| already_claimed.include?(h) } if r == route
+
+            already_claimed.concat(hexes)
+          end
+        end
+
+        def potential_route_connection_bonus_hexes(route, stops: nil)
+          stops ||= route.stops
+          stops.map do |stop|
+            if !stop.hex.tile.offboards.empty?
+              offboard_connection_bonus_hex(route, stop)
+            elsif stop.hex.assigned?('connection_bonus')
+              stop.hex
+            end
+          end.compact
+        end
+
+        def offboard_connection_bonus_hex(route, stop)
+          hex = stop.hex
+          if stop.hex.id == 'A21'
+            # A21 is split between two locations. Determine which location by path exit.
+            exit = route.paths.find { |path| path.hex == stop.hex }.exits.first
+            hex = hex_by_id(exit.zero? ? 'A19' : 'A23')
+          end
+
+          @offboard_bonus_locations.find { |l| l.include?(hex) }&.first
+        end
+
         def claim_connection_bonus(entity, hex)
           @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{hex.location_name})"
           hex.remove_assignment!('connection_bonus')
+          unless hex.tile.offboards.empty?
+            @offboard_bonus_locations.delete(@offboard_bonus_locations.find { |loc| loc.include?(hex) })
+          end
+
           if (ability = abilities(entity, :connection_bonus))
             ability.bonus_revenue += 10
           else
