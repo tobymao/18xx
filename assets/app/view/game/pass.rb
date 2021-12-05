@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/game/pass_button'
+require 'view/game/pass_auto_button'
 
 module View
   module Game
@@ -13,7 +14,7 @@ module View
         children = []
         if @actions.include?('pass')
           children << h(PassButton, before_process_pass: @before_process_pass)
-          children << h(PassAutoButton) if @game.round.stock? && @game.active_players_id.include?(@user&.get('id'))
+          children << h(PassAutoButton) if @game.round.stock? && @game.active_players_id.include?(@user&.dig('id'))
         end
         h(:div, children.compact)
       end
