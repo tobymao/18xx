@@ -582,7 +582,10 @@ module Engine
 
         def route_distance(route)
           # Count hex edges
-          route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+          distance = route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+          # Springfield is considered one hex
+          distance -= 1 if route.all_hexes.include?(hex_by_id('E25'))
+          distance
         end
 
         def route_distance_str(route)
@@ -603,7 +606,7 @@ module Engine
           return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
 
           if fivede_runs_stations_and_offboards_only?
-            stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.type == 'offboard' }
+            stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == 'red' }
           end
           stops = stops.combination(5).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > 5
           stops
@@ -654,7 +657,7 @@ module Engine
         def potential_route_connection_bonus_hexes(route, stops: nil)
           stops ||= route.stops
           stops.map do |stop|
-            if !stop.hex.tile.offboards.empty?
+            if stop.hex.tile.color == 'red'
               offboard_connection_bonus_hex(route, stop)
             elsif stop.hex.assigned?('connection_bonus')
               stop.hex
@@ -676,9 +679,7 @@ module Engine
         def claim_connection_bonus(entity, hex)
           @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{hex.location_name})"
           hex.remove_assignment!('connection_bonus')
-          unless hex.tile.offboards.empty?
-            @offboard_bonus_locations.delete(@offboard_bonus_locations.find { |loc| loc.include?(hex) })
-          end
+          @offboard_bonus_locations.delete(@offboard_bonus_locations.find { |loc| loc.include?(hex) }) if hex.tile.color == 'red'
 
           if (ability = abilities(entity, :connection_bonus))
             ability.bonus_revenue += 10

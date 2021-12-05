@@ -80,7 +80,7 @@ module Engine
             'You can only assign one tram to a line'
           end
 
-          def check_for_cheapest_train(entity, train); end
+          def check_for_cheapest_train(train); end
         end
       end
     end
