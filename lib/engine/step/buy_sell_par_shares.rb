@@ -388,7 +388,8 @@ module Engine
           corporations.each do |corporation, actions|
             actions.each do |action|
               # ignore shenanigans that happened before the program was enabled
-              next if action.id < program.id
+              # some actions are generated internally and don't have an id, use timestamp instead.
+              next if action.id ? (action.id < program.id) : (Time.at(action.created_at) < Time.at(program.created_at))
 
               reason = action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
               return reason if reason
