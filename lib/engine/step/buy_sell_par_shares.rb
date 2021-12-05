@@ -380,13 +380,16 @@ module Engine
         end
       end
 
-      def should_stop_applying_program(entity, share_to_buy)
+      def should_stop_applying_program(entity, program, share_to_buy)
         # check for shenanigans, returning the first failure reason it finds
         @round.players_history.each do |other_entity, corporations|
           next if other_entity == entity
 
           corporations.each do |corporation, actions|
             actions.each do |action|
+              # ignore shenanigans that happened before the program was enabled
+              next if action.id < program.id
+
               reason = action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
               return reason if reason
             end
@@ -406,7 +409,7 @@ module Engine
         return unless available_actions.include?('pass')
         return unless normal_pass?(entity)
 
-        reason = should_stop_applying_program(entity, nil) unless @game.actions.last == program
+        reason = should_stop_applying_program(entity, program, nil)
         return [Action::ProgramDisable.new(entity, reason: reason)] if reason
 
         [Action::Pass.new(entity)]
@@ -445,7 +448,7 @@ module Engine
 
           share = shares_by_percent.values.first.first
 
-          reason = should_stop_applying_program(entity, share) unless @game.actions.last == program
+          reason = should_stop_applying_program(entity, program, share)
           return [Action::ProgramDisable.new(entity, reason: reason)] if reason
 
           [Action::BuyShares.new(entity, shares: share)]
