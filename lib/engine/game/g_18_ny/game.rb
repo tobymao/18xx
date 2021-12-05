@@ -646,7 +646,7 @@ module Engine
 
           # Only return connection bonus hexes not counted by a previous route
           route.routes.each do |r|
-            route_stops = r == route ? stops : route.stops
+            route_stops = r == route ? stops : r.stops
             hexes = potential_route_connection_bonus_hexes(r, stops: route_stops)
             return hexes.reject { |h| already_claimed.include?(h) } if r == route
 
