@@ -679,9 +679,7 @@ module Engine
         def claim_connection_bonus(entity, hex)
           @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{hex.location_name})"
           hex.remove_assignment!('connection_bonus')
-          if hex.tile.color == 'red'
-            @offboard_bonus_locations.delete(@offboard_bonus_locations.find { |loc| loc.include?(hex) })
-          end
+          @offboard_bonus_locations.delete(@offboard_bonus_locations.find { |loc| loc.include?(hex) }) if hex.tile.color == 'red'
 
           if (ability = abilities(entity, :connection_bonus))
             ability.bonus_revenue += 10
