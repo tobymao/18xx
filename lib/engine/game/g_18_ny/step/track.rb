@@ -20,7 +20,8 @@ module Engine
             # Only need to make sure exits stay consistent for town to city upgrade
             old_tile = hex.tile
             if @game.town_to_city_upgrade?(old_tile, tile)
-              return old_tile.paths.all? { |old| tile.paths.any? { |new| old.exits == new.exits } }
+              return old_tile.paths.all? { |old| tile.paths.any? { |new| old.exits == new.exits } } &&
+                     !(tile.exits & hex_neighbors(entity, hex)).empty?
             end
 
             super
