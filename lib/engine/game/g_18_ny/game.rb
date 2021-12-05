@@ -606,7 +606,7 @@ module Engine
           return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
 
           if fivede_runs_stations_and_offboards_only?
-            stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.type == 'offboard' }
+            stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == 'red' }
           end
           stops = stops.combination(5).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > 5
           stops
@@ -657,7 +657,7 @@ module Engine
         def potential_route_connection_bonus_hexes(route, stops: nil)
           stops ||= route.stops
           stops.map do |stop|
-            if !stop.hex.tile.offboards.empty?
+            if stop.hex.tile.color == 'red'
               offboard_connection_bonus_hex(route, stop)
             elsif stop.hex.assigned?('connection_bonus')
               stop.hex
@@ -679,7 +679,7 @@ module Engine
         def claim_connection_bonus(entity, hex)
           @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{hex.location_name})"
           hex.remove_assignment!('connection_bonus')
-          unless hex.tile.offboards.empty?
+          if hex.tile.color == 'red'
             @offboard_bonus_locations.delete(@offboard_bonus_locations.find { |loc| loc.include?(hex) })
           end
 
