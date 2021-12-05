@@ -20,7 +20,7 @@ module Engine
         OPTIONAL_RULES = [
           {
             sym: :fivede,
-            short_name: '5DE Only Scores Stations and Offboards',
+            short_name: '5DE only scores stations and offboards',
             desc: '5DE trains may only score stationed cities and offboard hexes',
           },
         ].freeze
