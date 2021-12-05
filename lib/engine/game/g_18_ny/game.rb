@@ -582,7 +582,10 @@ module Engine
 
         def route_distance(route)
           # Count hex edges
-          route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+          distance = route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+          # Springfield is considered one hex
+          distance -= 1 if route.all_hexes.include?(hex_by_id('E25'))
+          distance
         end
 
         def route_distance_str(route)
