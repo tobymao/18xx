@@ -388,7 +388,7 @@ module Engine
             sym: 'C1',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and converts into the LNWR’s 10% director certificate. LNWR may also put '\
+            desc: 'Has a face value of £100 and converts into the LNWR’s 10% director certificate. LNWR may also put '\
                   'its destination token into Manchester when converted.',
             abilities: [
               {
@@ -406,7 +406,7 @@ module Engine
             sym: 'C2',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the GWR director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the GWR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -423,7 +423,7 @@ module Engine
             sym: 'C3',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the LBSCR director’s '\
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the LBSCR director’s '\
                   'certificate.',
             abilities: [
               {
@@ -441,7 +441,7 @@ module Engine
             sym: 'C4',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the SECR director’s '\
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the SECR director’s '\
                   'certificate.',
             abilities: [
               {
@@ -459,7 +459,7 @@ module Engine
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the CR director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the CR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -476,7 +476,7 @@ module Engine
             sym: 'C6',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the MR director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the MR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -493,7 +493,7 @@ module Engine
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the LYR director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the LYR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -510,7 +510,7 @@ module Engine
             sym: 'C8',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the NBR director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the NBR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -527,7 +527,7 @@ module Engine
             sym: 'C9',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the SWR director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the SWR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -544,7 +544,7 @@ module Engine
             sym: 'C10',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value £100 and contribute £100 to the conversion into the NER director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the NER director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
