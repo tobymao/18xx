@@ -375,6 +375,8 @@ module Engine
           end
         when Action::SellShares
           'Shares were sold'
+        when Action::TakeLoan
+          "#{corporation.name} took a loan"
         else
           "Unknown action #{action.type} disabling for safety"
         end
