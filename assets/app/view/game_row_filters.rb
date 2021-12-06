@@ -23,7 +23,7 @@ module View
     def render_title(url_search_params)
       selected_title = url_search_params['title']
       game_options = [h(:option, { attrs: { value: '' } }, '(All titles)')]
-      Engine::VISIBLE_GAMES.map(&:title).sort.each do |title|
+      Engine::VISIBLE_GAMES_WITH_VARIANTS.map(&:title).sort.each do |title|
         # Don't use game::GAME_DROPDOWN_TITLE since it's not what is displayed in game cards.
         game_options << h(:option, { attrs: { value: title, selected: title == selected_title } }, title)
       end
