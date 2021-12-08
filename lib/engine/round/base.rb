@@ -117,7 +117,14 @@ module Engine
       def step_for(entity, action)
         return unless entity
 
-        @steps.find { |step| step.active? && step.actions(entity).include?(action) }
+        @steps.each do |step|
+          next unless step.active?
+
+          return step if step.actions(entity).include?(action)
+          break if step.blocking?
+        end
+
+        nil
       end
 
       def step_passed?(action_klass)
