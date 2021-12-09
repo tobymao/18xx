@@ -5,6 +5,7 @@ require_relative '../helper/type'
 module Engine
   module Action
     class Base
+      include Comparable
       include Helper::Type
 
       attr_reader :entity
@@ -76,9 +77,9 @@ module Engine
         false
       end
 
-      def happened_before?(other)
+      def <=>(other)
         # some actions are generated internally and don't have an id, fall back to timestamp.
-        id && other.id ? (id < other.id) : (Time.at(created_at) < Time.at(other.created_at))
+        id && other.id ? (id <=> other.id) : (Time.at(created_at) <=> Time.at(other.created_at))
       end
     end
   end

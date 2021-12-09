@@ -390,7 +390,7 @@ module Engine
           corporations.each do |corporation, actions|
             actions.each do |action|
               # ignore shenanigans that happened before the program was enabled
-              next if action.happened_before?(program)
+              next if action < program
 
               reason = action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
               return reason if reason
