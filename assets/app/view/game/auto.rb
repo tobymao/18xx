@@ -155,6 +155,7 @@ module View
         settings = params(form)
 
         corporation = @game.corporation_by_id(settings['corporation'])
+        auto_pass_after = settings['auto_pass_after']
 
         if settings['float']
           until_condition = 'float'
@@ -172,7 +173,8 @@ module View
             sender,
             corporation: corporation,
             until_condition: until_condition,
-            from_market: from_market
+            from_market: from_market,
+            auto_pass_after: auto_pass_after,
           )
         )
       end
@@ -302,6 +304,10 @@ module View
                                             checked,
                                             corp_settings)
           end
+          children << render_checkbox('Switch to auto-pass after successful completion.',
+                                      'auto_pass_after',
+                                      form,
+                                      !!settings&.auto_pass_after)
           subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_buy_shares(form) }]
           subchildren << render_disable(settings) if settings
           children << h(:div, subchildren)

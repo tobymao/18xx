@@ -75,6 +75,11 @@ module Engine
       def free?
         false
       end
+
+      def happened_before?(other)
+        # some actions are generated internally and don't have an id, fall back to timestamp.
+        id && other.id ? (id < other.id) : (Time.at(created_at) < Time.at(other.created_at))
+      end
     end
   end
 end
