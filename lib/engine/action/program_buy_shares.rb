@@ -35,12 +35,11 @@ module Engine
         }
       end
 
-      def self.description
-        'Buy shares until condition is met'
-      end
-
-      def self.print_name
-        'Buy Shares'
+      def to_s
+        source = @from_market ? 'market' : 'IPO'
+        condition = @until_condition == 'float' ? 'floated' : "#{@until_condition} shares"
+        suffix = @auto_pass_after ? ', then auto pass' : ''
+        "Buy #{corporation.name} from #{source} until #{condition}#{suffix}"
       end
 
       def disable?(game)

@@ -10,11 +10,7 @@ module Engine
         super(entity)
       end
 
-      def self.description
-        'Pass in the Stock Round'
-      end
-
-      def self.print_name
+      def to_s
         'Pass in Stock Round'
       end
 
