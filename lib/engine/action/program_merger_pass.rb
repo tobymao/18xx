@@ -34,8 +34,8 @@ module Engine
 
       def to_s
         corp_names = @corporations_by_round&.transform_values { |corps| corps.map(&:name).join(', ') }
-        ar_corps = corp_names&.fetch('AR') || 'none'
-        mr_corps = corp_names&.fetch('MR') || 'none'
+        ar_corps = corp_names&.dig('AR') || 'none'
+        mr_corps = corp_names&.dig('MR') || 'none'
         suffix = @options&.include?('disable_others') ? ', unless someone else acts' : ''
         "Pass in AR (#{ar_corps}) and MR (#{mr_corps})#{suffix}"
       end
