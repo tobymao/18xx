@@ -884,15 +884,17 @@ module Engine
           multiplier = acquisition_cost_multiplier(entity, corporation)
           if corporation.type == :minor
             cost = share_price * multiplier
-            @log << "#{entity.name} pays #{corporation.owner.name} #{format_currency(cost)}"
-            entity.spend(cost, corporation.owner)
+            entity_to_pay = corporation.owner.share_pool? ? @bank : corporation.owner
+            @log << "#{entity.name} pays #{entity_to_pay.name} #{format_currency(cost)}"
+            entity.spend(cost, entity_to_pay)
           else
             corporation.share_holders.keys.each do |sh|
               next if sh == corporation
 
+              entity_to_pay = sh.share_pool? ? @bank : sh
               cost = share_price * sh.num_shares_of(corporation) * multiplier
-              @log << "#{entity.name} pays #{sh.name} #{format_currency(cost)}"
-              entity.spend(share_price * sh.num_shares_of(corporation), sh)
+              @log << "#{entity.name} pays #{entity_to_pay.name} #{format_currency(cost)}"
+              entity.spend(share_price * sh.num_shares_of(corporation), entity_to_pay)
             end
           end
 
@@ -906,7 +908,7 @@ module Engine
 
             if (remaining_loans = corporation.loans.size - num_to_payoff).positive?
               @log << "#{entity.name} takes on #{remaining_loans} loan#{remaining_loans == 1 ? '' : 's'}" \
-                      " corporation #{corporation.name}"
+                      " from #{corporation.name}"
               @loans.concat(corporation.loans)
               corporation.loans.clear
 
