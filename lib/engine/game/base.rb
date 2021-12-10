@@ -2191,7 +2191,7 @@ module Engine
       def check_programmed_actions
         @programmed_actions.reject! do |entity, action|
           if action&.disable?(self)
-            player_log(entity, 'Programmed action removed due to round change')
+            player_log(entity, "Programmed action '#{action}' removed due to round change")
             true
           end
         end
