@@ -10,6 +10,7 @@ module Engine
       deep_thought_games: {
         name: 'Deep Thought Games',
         url: 'https://boardgamegeek.com/boardgamepublisher/4192/deep-thought-games-llc',
+        hidden: true,
       },
       gmt_games: {
         name: 'GMT Games',
@@ -26,10 +27,12 @@ module Engine
       oo_games: {
         name: 'Double-O Games',
         url: 'http://ohley.de/english/',
+        hidden: true,
       },
       sea_horse: {
         name: 'Sea Horse Laser & Design',
         url: 'https://www.etsy.com/shop/SeahorseLaserDesign?section_id=24360565',
+        hidden: true,
       },
       traxx: {
         name: 'TraXX',
@@ -38,6 +41,7 @@ module Engine
       zman_games: {
         name: 'Z-MAN Games',
         url: 'https://zmangames.com/',
+        hidden: true,
       },
       lonny_games: {
         name: 'Lonny Games',
@@ -46,6 +50,7 @@ module Engine
       self_published: {
         name: 'Self-published',
         url: 'https://18xx.games',
+        hidden: true,
       },
       lookout: {
         name: 'Lookout Games',
