@@ -9,7 +9,7 @@ module Engine
       },
       deep_thought_games: {
         name: 'Deep Thought Games',
-        url: 'https://www.deepthoughtgames.com/',
+        url: 'https://boardgamegeek.com/boardgamepublisher/4192/deep-thought-games-llc',
       },
       gmt_games: {
         name: 'GMT Games',
