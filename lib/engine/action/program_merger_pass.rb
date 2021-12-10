@@ -33,11 +33,12 @@ module Engine
       end
 
       def to_s
-        corp_names = @corporations_by_round&.transform_values { |corps| corps.map(&:name).join(', ') }
-        ar_corps = corp_names&.dig('AR') || 'none'
-        mr_corps = corp_names&.dig('MR') || 'none'
+        phases = @corporations_by_round&.map do |phase, corps|
+          corps_str = corps && !corps.empty? ? corps.map(&:name).join(', ') : 'none'
+          "#{phase} (#{corps_str})"
+        end&.join(' and ')
         suffix = @options&.include?('disable_others') ? ', unless someone else acts' : ''
-        "Pass in AR (#{ar_corps}) and MR (#{mr_corps})#{suffix}"
+        "Pass on mergers in #{phases}#{suffix}"
       end
 
       def disable?(game)
