@@ -7,6 +7,10 @@ module Engine
         name: 'All-Aboard Games',
         url: 'https://all-aboardgames.com/',
       },
+      deep_thought_games: {
+        name: 'Deep Thought Games',
+        url: 'https://www.deepthoughtgames.com/',
+      },
       gmt_games: {
         name: 'GMT Games',
         url: 'https://www.gmtgames.com/',
