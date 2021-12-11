@@ -4,7 +4,7 @@ require_relative 'base'
 
 module Engine
   module Ability
-    class Choose < Base
+    class ChooseAbility < Base
       attr_reader :choices
 
       def setup(choices: nil)

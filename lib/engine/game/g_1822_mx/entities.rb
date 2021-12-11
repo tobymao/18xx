@@ -295,10 +295,10 @@ module Engine
                   'stock drops immediately.',
             abilities: [
               {
-                type: 'choose',
+                type: 'choose_ability',
                 when: 'owning_corp_or_turn',
-                choices: {'close_p16' => 'Close P16'},
-              }
+                choices: { 'close_p16' => 'Close P16' },
+              },
             ],
             color: nil,
           },

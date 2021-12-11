@@ -70,7 +70,7 @@ module Engine
           'P13' => { acquire: %i[major minor], phase: 1 },
           'P14' => { acquire: %i[major], phase: 3 },
           'P15' => { acquire: %i[major], phase: 3 },
-          'P16' => { acquire: %i[minor major], phase: 1 },
+          'P16' => { acquire: %i[major minor], phase: 1 },
           'P17' => { acquire: %i[major minor], phase: 2 },
           'P18' => { acquire: %i[major], phase: 3 },
         }.freeze
@@ -385,6 +385,17 @@ module Engine
 
           # Setup the NdeM
           setup_ndem
+
+          #          e14_tile = hexes.find { |h| h.id == 'E14' }.tile
+          #          print ("AA:#{current_builder_cubes(e14_tile)}")
+          #          e14_tile.icons << Part::Icon.new("../icons/1822_mx/red_cube", "block_1")
+          #          print ("BB:#{current_builder_cubes(e14_tile)}")
+
+          #          g14_tile = hexes.find { |h| h.id == 'G14' }.tile
+          #          print ("CC:#{max_builder_cubes(g14_tile)}")
+
+          #          hexes.find { |h| h.id == 'E14' }.tile.icons <<
+          #            Part::Icon.new("../icons/1822_mx/red_cube", "block_1")
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
@@ -429,7 +440,6 @@ module Engine
           @company_trains['P4'] = find_and_remove_train_by_id('LP-0', buyable: false)
           @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
-
         end
 
         # Stubbed out because this game doesn't it, but base 22 does
@@ -563,15 +573,15 @@ module Engine
           super
           # Check on stock drop private
           company = company_by_id('P16')
+          return unless company.owner.is_a?(Corporation)
+
           payment = 10
-          if company.owner.is_a?(Corporation)
-            if company.owner.cash >= payment
-              @log << "#{company.owner.name} spends #{format_currency(payment)} because of #{company.name}"
-              company.owner.spend(payment, bank)
-            else
-              @log << "#{company.owner.name} cannot afford #{format_currency(payment)} for #{company.name}"
-              close_p16
-            end
+          if company.owner.cash >= payment
+            @log << "#{company.owner.name} spends #{format_currency(payment)} because of #{company.name}"
+            company.owner.spend(payment, bank)
+          else
+            @log << "#{company.owner.name} cannot afford #{format_currency(payment)} for #{company.name}"
+            close_p16
           end
         end
 
@@ -585,7 +595,21 @@ module Engine
         end
 
         def company_status_str
-          ""
+          ''
+        end
+
+        def max_builder_cubes(tile)
+          max = 0
+          tile.parts.each do |part|
+            max += 2 if part.terrains[0] == 'mountain'
+            max += 1 if part.terrains[0] == 'hill'
+            max += 1 if part.terrains[0] == 'river'
+          end
+          max
+        end
+
+        def current_builder_cubes(tile)
+          tile.icons.count { |i| i.name.start_with?('block') }
         end
       end
     end

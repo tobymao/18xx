@@ -9,17 +9,10 @@ module Engine
       ACTIONS = %w[choose_ability].freeze
 
       def actions(entity)
-        return [] unless entity.company?
-        choose = entity.all_abilities.find { |a| a.type == :choose }
-        return [] unless choose
+        action = abilities(entity)
+        return [] unless action
 
-        ACTIONS
-      end
-
-      def choice_name
-        return "Choose for #{current_entity.name}"
-
-        'Choose'
+        action.type == :choose_ability ? ACTIONS : []
       end
 
       def blocks?
@@ -27,8 +20,11 @@ module Engine
       end
 
       def choices_ability
-        choose_ability = current_entity.all_abilities.find { |a| a.type == :choose }
-        choose_ability.choices
+        abilities(current_entity).choices
+      end
+
+      def abilities(entity, **kwargs, &block)
+        @game.abilities(entity, :choose_ability, **kwargs, &block)
       end
 
       def description
@@ -42,7 +38,6 @@ module Engine
       def skip!
         pass!
       end
-
     end
   end
 end
