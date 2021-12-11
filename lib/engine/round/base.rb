@@ -133,9 +133,11 @@ module Engine
 
       def active_step(entity = nil)
         # Steps for companies are non-blocking
-        return @steps.find do |step|
-          step.active? && !step.actions(entity).empty? && (entity.company? || step.blocking?)
-        end if entity
+        if entity
+          return @steps.find do |step|
+            step.active? && !step.actions(entity).empty? && (entity.company? || step.blocking?)
+          end
+        end
 
         @active_step ||= @steps.find { |step| step.active? && step.blocking? }
       end
