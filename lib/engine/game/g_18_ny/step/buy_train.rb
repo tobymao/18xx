@@ -13,7 +13,10 @@ module Engine
             return actions unless entity.corporation?
             return [] if entity.receivership?
 
-            actions << 'buy_train' if must_buy_train?(entity)
+            if must_buy_train?(entity)
+              actions.delete('pass')
+              actions << 'buy_train'
+            end
             actions << 'scrap_train' unless scrappable_trains(entity).empty?
             actions << 'take_loan' if can_take_loan?(entity)
             actions << 'pass' if !actions.empty? && !must_buy_train?(entity)
