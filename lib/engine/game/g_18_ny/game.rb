@@ -962,6 +962,13 @@ module Engine
             from.trains.dup.each { |t| buy_train(to, t, :free) }
           end
 
+          if from.tokens.include?(stagecoach_token)
+            stagecoach_token.corporation = to
+            from.tokens.delete(stagecoach_token)
+            to.tokens << stagecoach_token
+            @log << "#{to.name} acquires Stagecoach token from #{from.name}"
+          end
+
           return unless (revenue = coal_revenue(from)).positive?
 
           @log << "#{to.name} acquires #{format_currency(revenue)} in coal revenue from #{from.name}"
