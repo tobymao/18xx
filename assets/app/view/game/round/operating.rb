@@ -30,7 +30,6 @@ module View
           @step = round.active_step
           entity = @step.current_entity
           @current_actions = round.actions_for(entity)
-          puts @current_actions
 
           entity = entity.owner if entity.company? && !round.active_entities.one?
 
