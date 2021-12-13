@@ -81,6 +81,9 @@ module View
         views << h(Exchange) if actions.include?('buy_shares')
         views << h(Map, game: @game) if !@game.round.is_a?(Engine::Round::Operating) &&
           (actions & %w[lay_tile place_token]).any?
+        if actions.include?('buy_train') && !@game.round.active_step.respond_to?(:buyable_trains)
+          views << h(BuyTrains, show_other_players: false, corporation: @selected_company.owner)
+        end
 
         views
       end

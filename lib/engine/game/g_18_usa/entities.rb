@@ -416,6 +416,28 @@ module Engine
             ],
             color: 'orange',
           },
+          # P25
+          {
+            name: 'American Locomotive Co.',
+            value: 90,
+            revenue: 0,
+            desc: 'The owning corporation receives a 10% discount on all trains from the bank. During the owning company’s ' \
+                  'turn, this company may be discarded prior to the Run Trains step to buy a train from the bank at a 10% ' \
+                  'discount. This company is discarded when the first 6-train is purchased.',
+            sym: 'P25',
+            abilities: [
+              {
+                type: 'train_discount',
+                when: 'owning_corp_or_turn',
+                discount: 0.1,
+                trains: %w[2 2+ 3 3+ 4 4+ 5 6],
+              },
+              {
+                type: 'close',
+                on_phase: '6',
+              },
+            ],
+          },
           # P26
           {
             name: 'Rural Junction',
