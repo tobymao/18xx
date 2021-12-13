@@ -14,12 +14,16 @@ module Engine
         entity ||= current_entity
 
         can_buy_normal = room?(entity) && buying_power(entity) >= @depot.min_price(
-            entity, ability: @game.abilities(entity, :train_discount, time: 'buying_train')
+            entity, ability: @game.abilities(entity, :train_discount, time: ability_timing)
           )
 
         can_buy_normal || (discountable_trains_allowed?(entity) && @game
           .discountable_trains_for(entity)
           .any? { |_, _, _, price| buying_power(entity) >= price })
+      end
+
+      def ability_timing
+        %w[buying_train owning_corp_or_turn]
       end
 
       def room?(entity, _shell = nil)

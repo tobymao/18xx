@@ -17,14 +17,12 @@ module View
 
       def render_president_contributions
         player = @corporation.owner
-        step = @game.round.active_step
-
         children = []
 
         verb = @must_buy_train ? 'must' : 'may'
 
-        cheapest_train_price = if step.respond_to?(:cheapest_train_price)
-                                 step.cheapest_train_price(@corporation)
+        cheapest_train_price = if @step.respond_to?(:cheapest_train_price)
+                                 @step.cheapest_train_price(@corporation)
                                else
                                  @depot.min_depot_price
                                end
@@ -45,7 +43,7 @@ module View
 
         children << h(:div, "#{player.name} has #{@game.format_currency(player.cash)} in cash.")
 
-        if step.can_ebuy_sell_shares?(@corporation)
+        if @step.can_ebuy_sell_shares?(@corporation)
           if share_funds_allowed.positive?
             children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
                                 'in sellable shares.')
@@ -64,7 +62,7 @@ module View
           end
         end
 
-        must_take_loan = step.must_take_loan?(@corporation) if step.respond_to?(:must_take_loan?)
+        must_take_loan = @step.must_take_loan?(@corporation) if @step.respond_to?(:must_take_loan?)
         if must_take_loan
           text = "#{player.name} does not have enough liquidity to "\
                  "contribute towards #{@corporation.name} buying a train "\
@@ -97,18 +95,19 @@ module View
       end
 
       def render
-        step = @game.round.active_step
-        @corporation ||= step.current_entity
+        @step = @game.round.active_step
+        @corporation ||= @step.current_entity
+        @step = @game.round.step_for(@selected_company, 'buy_train') if @selected_company && !@step.respond_to?(:buyable_trains)
 
         @depot = @game.depot
 
-        available = step.buyable_trains(@corporation).group_by(&:owner)
+        available = @step.buyable_trains(@corporation).group_by(&:owner)
         depot_trains = available.delete(@depot) || []
         other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
         children = []
 
-        @must_buy_train = step.must_buy_train?(@corporation)
-        @should_buy_train = step.should_buy_train?(@corporation)
+        @must_buy_train = @step.must_buy_train?(@corporation)
+        @should_buy_train = @step.should_buy_train?(@corporation)
 
         div_props = {
           style: {
@@ -126,7 +125,7 @@ module View
           store(:active_shell, nil, skip: true)
         end
 
-        if (step.can_buy_train?(@corporation, @active_shell) && step.room?(@corporation, @active_shell)) ||
+        if (@step.can_buy_train?(@corporation, @active_shell) && @step.room?(@corporation, @active_shell)) ||
            @must_buy_train
           children << h(:div, "#{@corporation.name} must buy an available train") if @must_buy_train
           if @should_buy_train == :liquidation
@@ -141,13 +140,13 @@ module View
         end
 
         @slot_checkboxes = {}
-        if step.respond_to?(:slot_view) && (view = step.slot_view(@corporation))
+        if @step.respond_to?(:slot_view) && (view = @step.slot_view(@corporation))
           children << send("render_#{view}")
         end
 
         discountable_trains = @game.discountable_trains_for(@corporation)
 
-        if discountable_trains.any? && step.discountable_trains_allowed?(@corporation)
+        if discountable_trains.any? && @step.discountable_trains_allowed?(@corporation)
           children << h(:h3, 'Exchange Trains')
 
           discountable_trains.each do |train, discount_train, variant, price|
@@ -175,15 +174,15 @@ module View
         children << remaining_trains
 
         children << h(:div, "#{@corporation.name} has #{@game.format_currency(@corporation.cash)}.")
-        if step.issuable_shares(@corporation).any? &&
+        if @step.issuable_shares(@corporation).any? &&
            (issuable_cash = @game.emergency_issuable_cash(@corporation)).positive?
           children << h(:div, "#{@corporation.name} can issue shares to raise up to "\
                               "#{@game.format_currency(issuable_cash)} (the corporation "\
                               'must issue shares before the president may contribute).')
         end
 
-        if (@must_buy_train && step.ebuy_president_can_contribute?(@corporation)) ||
-           step.president_may_contribute?(@corporation, @active_shell)
+        if (@must_buy_train && @step.ebuy_president_can_contribute?(@corporation)) ||
+           @step.president_may_contribute?(@corporation, @active_shell)
           children.concat(render_president_contributions)
         end
 
@@ -201,7 +200,7 @@ module View
       def from_depot(depot_trains, corporation)
         depot_trains.flat_map do |train|
           train.variants
-            .select { |_, v| @game.round.active_step.buyable_train_variants(train, @corporation).include?(v) }
+            .select { |_, v| @step.buyable_train_variants(train, @corporation).include?(v) }
             .sort_by { |_, v| v[:price] }
             .flat_map do |name, variant|
             price = variant[:price]
@@ -209,7 +208,7 @@ module View
             entity = @corporation
 
             if @selected_company&.owner == @corporation
-              @game.abilities(@selected_company, :train_discount, time: 'buying_train') do |ability|
+              @game.abilities(@selected_company, :train_discount, time: @step.ability_timing) do |ability|
                 if ability.trains.include?(train.name)
                   price = ability.discounted_price(train, price)
                   entity = @selected_company
@@ -248,8 +247,7 @@ module View
 
       def render_warranty(depot_trains)
         @warranty_input = nil
-        step = @game.round.active_step
-        return if depot_trains.empty? || !step.respond_to?(:warranty_max)
+        return if depot_trains.empty? || !@step.respond_to?(:warranty_max)
 
         @warranty_input =
           h(
@@ -262,15 +260,15 @@ module View
             attrs: {
               type: 'number',
               min: 0,
-              max: step.warranty_max,
+              max: @step.warranty_max,
               value: 0,
               size: 1,
             }
           )
 
         [h(:div, ''),
-         h(:div, step.warranty_text),
-         h(:div, step.warranty_cost),
+         h(:div, @step.warranty_text),
+         h(:div, @step.warranty_cost),
          @warranty_input]
       end
 
@@ -290,11 +288,10 @@ module View
       end
 
       def other_trains(other_corp_trains, corporation)
-        step = @game.round.active_step
         hidden_trains = false
         trains_to_buy = other_corp_trains.flat_map do |other, trains|
           trains.group_by(&:name).flat_map do |name, group|
-            fixed_price = step.respond_to?(:fixed_price) && step.fixed_price(group[0])
+            fixed_price = @step.respond_to?(:fixed_price) && @step.fixed_price(group[0])
             input = if fixed_price
                       h('div.right', @game.format_currency(fixed_price))
                     else
@@ -365,7 +362,7 @@ module View
                      nil
                    end
 
-            if line && step.respond_to?(:extra_due) && step.extra_due(group[0])
+            if line && @step.respond_to?(:extra_due) && @step.extra_due(group[0])
               extra_due_checkbox = h(
                 'input.no_margin',
                 style: {
@@ -381,8 +378,8 @@ module View
               )
 
               line << h(:div, '')
-              line << h(:div, step.extra_due_text(group[0]))
-              line << h(:div, step.extra_due_prompt)
+              line << h(:div, @step.extra_due_text(group[0]))
+              line << h(:div, @step.extra_due_prompt)
               line << h(:div, [extra_due_checkbox])
             end
             line
@@ -411,13 +408,11 @@ module View
 
       # need to abstract due to corporations owning minors owning trains
       def other_owner(other)
-        step = @game.round.active_step
-        step.respond_to?(:real_owner) ? step.real_owner(other) : other.owner
+        @step.respond_to?(:real_owner) ? @step.real_owner(other) : other.owner
       end
 
       def price_range(train)
-        step = @game.round.active_step
-        if step.must_buy_at_face_value?(train, @corporation)
+        if @step.must_buy_at_face_value?(train, @corporation)
           {
             type: 'number',
             min: train.price,
@@ -426,7 +421,7 @@ module View
             size: 1,
           }
         else
-          min, max = step.spend_minmax(@corporation, train)
+          min, max = @step.spend_minmax(@corporation, train)
           {
             type: 'number',
             min: min,

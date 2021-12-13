@@ -29,7 +29,7 @@ module Engine
 
         @round.bought_trains << corporation if from_depot && @round.respond_to?(:bought_trains)
 
-        closes_company = (ability.count - 1).zero? && ability.closed_when_used_up
+        closes_company = ability.count && (ability.count - 1).zero? && ability.closed_when_used_up
 
         ability.use! if action.price < action.train.price &&
           ability.discounted_price(action.train, action.train.price) == action.price
@@ -41,10 +41,14 @@ module Engine
         pass! unless can_buy_train?(corporation)
       end
 
+      def ability_timing
+        %w[buying_train owning_corp_or_turn]
+      end
+
       def ability(entity, train: nil)
         return unless entity&.company?
 
-        @game.abilities(entity, :train_discount, time: 'buying_train') do |ability|
+        @game.abilities(entity, :train_discount, time: ability_timing) do |ability|
           return ability if !train || ability.trains.include?(train.name)
         end
 
