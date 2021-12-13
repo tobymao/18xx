@@ -1384,7 +1384,7 @@ module Engine
           optional_e2 = optional_existing_track ? ['E2'] : []
           {
             red: {
-              ['A4'] => 'city=revenue:yellow_10|green_30|brown_50;'\
+              ['A4'] => 'town=revenue:yellow_20|green_30|brown_50;'\
                         'path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
               ['B5'] => 'path=a:2,b:0;path=a:2,b:5',
               ['B9'] => 'offboard=revenue:yellow_20|green_30|brown_40,hide:1,groups:Wuppertal;'\
