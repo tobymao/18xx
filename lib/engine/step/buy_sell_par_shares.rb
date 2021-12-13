@@ -418,21 +418,21 @@ module Engine
       end
 
       def activate_program_buy_shares(entity, program)
-        available_actions = actions(entity)
         corporation = program.corporation
-        if available_actions.include?('buy_shares')
-          # check if end condition met
-          finished_reason = if program.until_condition == 'float'
-                              "#{corporation.name} is floated" if corporation.floated?
-                            elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
-                              "#{program.until_condition} share(s) bought in #{corporation.name}, end condition met"
-                            end
-          if finished_reason
-            actions = [Action::ProgramDisable.new(entity, reason: finished_reason)]
-            actions << Action::ProgramSharePass.new(entity) if program.auto_pass_after
-            return actions
-          end
+        # check if end condition met
+        finished_reason = if program.until_condition == 'float'
+                            "#{corporation.name} is floated" if corporation.floated?
+                          elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
+                            "#{program.until_condition} share(s) bought in #{corporation.name}, end condition met"
+                          end
+        if finished_reason
+          actions = [Action::ProgramDisable.new(entity, reason: finished_reason)]
+          actions << Action::ProgramSharePass.new(entity) if program.auto_pass_after
+          return actions
+        end
 
+        available_actions = actions(entity)
+        if available_actions.include?('buy_shares')
           shares_by_percent = if from_market?(program)
                                 source = 'market'
                                 @game.share_pool.shares_by_corporation[corporation]
