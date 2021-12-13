@@ -606,7 +606,7 @@ module Engine
           return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
 
           if fivede_runs_stations_and_offboards_only?
-            stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == 'red' }
+            stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == :red }
           end
           stops = stops.combination(5).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > 5
           stops
@@ -657,12 +657,16 @@ module Engine
         def potential_route_connection_bonus_hexes(route, stops: nil)
           stops ||= route.stops
           stops.map do |stop|
-            if stop.hex.tile.color == 'red'
+            if stop.hex.tile.color == :red
               offboard_connection_bonus_hex(route, stop)
             elsif stop.hex.assigned?('connection_bonus')
               stop.hex
             end
           end.compact
+        end
+
+        def offboard_bonus_location_with_hex(hex)
+          @offboard_bonus_locations.find { |l| l.include?(hex) }
         end
 
         def offboard_connection_bonus_hex(route, stop)
@@ -673,13 +677,14 @@ module Engine
             hex = hex_by_id(exit.zero? ? 'A19' : 'A23')
           end
 
-          @offboard_bonus_locations.find { |l| l.include?(hex) }&.first
+          offboard_bonus_location_with_hex(hex)&.first
         end
 
         def claim_connection_bonus(entity, hex)
-          @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{hex.location_name})"
+          location_name = hex.location_name || offboard_bonus_location_with_hex(hex).find(&:location_name).location_name
+          @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{location_name})"
           hex.remove_assignment!('connection_bonus')
-          @offboard_bonus_locations.delete(@offboard_bonus_locations.find { |loc| loc.include?(hex) }) if hex.tile.color == 'red'
+          @offboard_bonus_locations.delete(offboard_bonus_location_with_hex(hex)) if hex.tile.color == :red
 
           if (ability = abilities(entity, :connection_bonus))
             ability.bonus_revenue += 10
@@ -902,9 +907,11 @@ module Engine
 
           # Loans
           unless corporation.loans.empty?
-            num_to_payoff = [entity.cash / loan_face_value, corporation.loans.size].min
-            @log << "#{entity.name} pays off #{num_to_payoff} of #{corporation.name}'s loans"
-            entity.spend(num_to_payoff * loan_face_value, @bank)
+            num_to_payoff = [(entity.cash / loan_face_value.to_f).floor, corporation.loans.size].min
+            if num_to_payoff.positive?
+              @log << "#{entity.name} pays off #{num_to_payoff} of #{corporation.name}'s loans"
+              entity.spend(num_to_payoff * loan_face_value, @bank)
+            end
 
             if (remaining_loans = corporation.loans.size - num_to_payoff).positive?
               @log << "#{entity.name} takes on #{remaining_loans} loan#{remaining_loans == 1 ? '' : 's'}" \
@@ -998,7 +1005,7 @@ module Engine
           return @nyc_share_price if @nyc_share_price
 
           minors = minors_connected_to_albany
-          nyc_calculated_value = (minors.sum { |minor| minor.share_price.price } * 2 / minors.size.to_f)
+          nyc_calculated_value = (minors.sum { |minor| minor.share_price.price } * 2 / minors.size.to_f).ceil
           par_prices = @stock_market.share_prices_with_types(%i[par_2]).to_h do |sp|
             [sp, (sp.price - nyc_calculated_value).abs]
           end
