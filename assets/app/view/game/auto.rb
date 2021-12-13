@@ -320,11 +320,13 @@ module View
         settings = params(form)
 
         unconditional = settings['unconditional']
+        indefinite = settings['indefinite']
 
         process_action(
           Engine::Action::ProgramSharePass.new(
             sender,
             unconditional: unconditional,
+            indefinite: indefinite,
           )
         )
       end
@@ -345,6 +347,10 @@ module View
                                     'unconditional',
                                     form,
                                     !!settings&.unconditional)
+        children << render_checkbox('Indefinite: Continue passing in future SR as well.',
+                                    'indefinite',
+                                    form,
+                                    !!settings&.indefinite)
 
         subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_share_pass(form) }]
         subchildren << render_disable(settings) if settings
