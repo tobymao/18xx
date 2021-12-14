@@ -17,7 +17,9 @@ module Engine
           end
 
           def process_buy_train(action)
+            close_company = !@round.active_step.respond_to?(:buyable_trains)
             super
+            return unless close_company
 
             @log << "#{action.entity.name} closes"
             action.entity.close!
