@@ -343,11 +343,11 @@ module View
         children << h(:p,
                       [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
                          'Please read this for more details when it will deactivate')])
-        children << render_checkbox('Unconditional: Pass even if other players do actions that may impact you.',
+        children << render_checkbox('Pass even if other players do actions that may impact you (unconditional pass).',
                                     'unconditional',
                                     form,
                                     !!settings&.unconditional)
-        children << render_checkbox('Indefinite: Continue passing in future SR as well.',
+        children << render_checkbox('Continue passing in future SR as well (indefinite pass).',
                                     'indefinite',
                                     form,
                                     !!settings&.indefinite)
