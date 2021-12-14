@@ -385,17 +385,6 @@ module Engine
 
           # Setup the NdeM
           setup_ndem
-
-          #          e14_tile = hexes.find { |h| h.id == 'E14' }.tile
-          #          print ("AA:#{current_builder_cubes(e14_tile)}")
-          #          e14_tile.icons << Part::Icon.new("../icons/1822_mx/red_cube", "block_1")
-          #          print ("BB:#{current_builder_cubes(e14_tile)}")
-
-          #          g14_tile = hexes.find { |h| h.id == 'G14' }.tile
-          #          print ("CC:#{max_builder_cubes(g14_tile)}")
-
-          #          hexes.find { |h| h.id == 'E14' }.tile.icons <<
-          #            Part::Icon.new("../icons/1822_mx/red_cube", "block_1")
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
