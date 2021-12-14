@@ -51,7 +51,7 @@ module Engine
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
-        PRIVATE_PHASE_REVENUE = %w[].freeze
+        PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
         P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
 
         PRIVATE_COMPANIES_ACQUISITION = {
@@ -70,12 +70,12 @@ module Engine
           'P13' => { acquire: %i[major minor], phase: 1 },
           'P14' => { acquire: %i[major], phase: 3 },
           'P15' => { acquire: %i[major], phase: 3 },
-          'P16' => { acquire: %i[major], phase: 2 },
+          'P16' => { acquire: %i[major minor], phase: 1 },
           'P17' => { acquire: %i[major minor], phase: 2 },
           'P18' => { acquire: %i[major], phase: 3 },
         }.freeze
 
-        BIDDING_BOX_START_PRIVATE = 'P1'
+        BIDDING_BOX_START_PRIVATE = 'P16'
 
         TRAINS = [
           {
@@ -223,7 +223,7 @@ module Engine
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
-            G1822::Step::SpecialChoose,
+            G1822MX::Step::SpecialChoose,
             G1822MX::Step::SpecialTrack,
             G1822::Step::SpecialToken,
             G1822MX::Step::Track,
@@ -360,7 +360,6 @@ module Engine
           ndem.trains << train
         end
 
-        # setup from 1822 has too much 1822-specific stuff that doesn't apply to this game
         def setup
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
@@ -430,9 +429,6 @@ module Engine
           @company_trains['P4'] = find_and_remove_train_by_id('LP-0', buyable: false)
           @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
-
-          # Setup the minor 14 ability
-          # corporation_by_id(self.class::MINOR_14_ID).add_ability(london_extra_token_ability) if self.class::MINOR_14_ID
         end
 
         # Stubbed out because this game doesn't it, but base 22 does
@@ -509,9 +505,8 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
-          on_acquired_phase_revenue(company) if self.class::PRIVATE_PHASE_REVENUE.include?(company.id)
           adjust_p7_revenue(company) if company.id == 'P7'
+          company.revenue = -10 if company.id == 'P16'
         end
 
         def reorder_players(_order = nil)
@@ -561,6 +556,49 @@ module Engine
 
         def port_company?(entity)
           entity.id == 'P17' || entity.id == 'P18'
+        end
+
+        def payout_companies
+          super
+          # Check on stock drop private
+          company = company_by_id('P16')
+          return unless company.owner.is_a?(Corporation)
+
+          payment = 10
+          if company.owner.cash >= payment
+            @log << "#{company.owner.name} spends #{format_currency(payment)} because of #{company.name}"
+            company.owner.spend(payment, bank)
+          else
+            @log << "#{company.owner.name} cannot afford #{format_currency(payment)} for #{company.name}"
+            close_p16
+          end
+        end
+
+        def close_p16
+          company = company_by_id('P16')
+          @log << "#{company.name} closes"
+          from = company.owner.share_price.price
+          stock_market.move_left(company.owner)
+          log_share_price(company.owner, from)
+          company.close!
+        end
+
+        def company_status_str
+          ''
+        end
+
+        def max_builder_cubes(tile)
+          max = 0
+          tile.parts.each do |part|
+            max += 2 if part.terrains[0] == 'mountain'
+            max += 1 if part.terrains[0] == 'hill'
+            max += 1 if part.terrains[0] == 'river'
+          end
+          max
+        end
+
+        def current_builder_cubes(tile)
+          tile.icons.count { |i| i.name.start_with?('block') }
         end
       end
     end

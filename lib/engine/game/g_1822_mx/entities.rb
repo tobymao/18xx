@@ -293,7 +293,13 @@ module Engine
                   'company during its operating turn, but that makes its stock drop one space. '\
                   'If the company ever cannot pay the $10, this private company closes and the '\
                   'stock drops immediately.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'choose_ability',
+                when: 'owning_corp_or_turn',
+                choices: { 'close_p16' => 'Close P16' },
+              },
+            ],
             color: nil,
           },
           {

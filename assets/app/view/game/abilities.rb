@@ -107,13 +107,7 @@ module View
       end
 
       def render_ability_choice_buttons
-        step = if @game.round.active_step.respond_to?(:choices_ability)
-                 @game.round.active_step
-               else
-                 @game.round.step_for(
-                  @selected_company, 'choose_ability'
-                )
-               end
+        step = @game.round.step_for(@selected_company, 'choose_ability')
         ability_choice_buttons = step.choices_ability(@selected_company).map do |choice, label|
           label ||= choice
           click = lambda do
