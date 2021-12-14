@@ -411,7 +411,7 @@ module Engine
         return unless available_actions.include?('pass')
         return unless normal_pass?(entity)
 
-        reason = should_stop_applying_program(entity, program, nil)
+        reason = should_stop_applying_program(entity, program, nil) unless program.unconditional
         return [Action::ProgramDisable.new(entity, reason: reason)] if reason
 
         [Action::Pass.new(entity)]
