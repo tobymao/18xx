@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'lease_train'
 require_relative '../../../step/route'
 
 module Engine
@@ -7,13 +8,13 @@ module Engine
     module G1825
       module Step
         class Route < Engine::Step::Route
-          LEASE_COST = 10
+          include LeaseTrain
 
           def actions(entity)
             return [] if !entity.operator? || (entity.runnable_trains.empty? && !entity.receivership?)
             return [] unless @game.can_run_route?(entity)
 
-            return ACTIONS + %w[special_buy] if entity.receivership? && !@round.leased_train && !@game.depot.upcoming.empty?
+            return ACTIONS + %w[special_buy] if entity.receivership? && !@round.leased_train && !@game.leaseable_trains.empty?
 
             ACTIONS
           end
@@ -56,29 +57,6 @@ module Engine
             end
 
             super
-          end
-
-          def buyable_items(entity)
-            return [] unless entity.receivership?
-            return [] if @round.leased_train
-
-            train = @game.depot.upcoming.first
-            [Item.new(description: "Lease #{train.name} train from bank", cost: LEASE_COST)]
-          end
-
-          def process_special_buy(action)
-            train = @game.depot.upcoming.first
-            entity = action.entity
-            @round.leased_train = train
-
-            if entity.cash >= LEASE_COST
-              entity.spend(LEASE_COST, @game.bank)
-            else
-              diff = LEASE_COST - entity.cash
-              entity.spend(entity.cash, @game.bank) if entity.cash.positive?
-              @round.receivership_loan += diff
-            end
-            @log << "#{entity.name} leases #{train.name} for #{@game.format_currency(LEASE_COST)}"
           end
         end
       end

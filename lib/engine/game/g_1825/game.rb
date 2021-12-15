@@ -184,7 +184,7 @@ module Engine
             distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 830,
-            multipler: 2,
+            multiplier: 2,
             available_on: '4a',
           },
         }.freeze
@@ -209,7 +209,7 @@ module Engine
             distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 830,
-            multipler: 2,
+            multiplier: 2,
             available_on: '4a',
           },
         }.freeze
@@ -937,18 +937,19 @@ module Engine
           status
         end
 
+        def leaseable_trains
+          @depot.depot_trains
+        end
+
         def node_distance(train)
           return 0 if train.name == 'U3'
 
           train.distance.is_a?(Numeric) ? train.distance : 99
         end
 
-        def biggest_train_distance(entity)
-          biggest_node_distance(entity)
-        end
-
-        def biggest_node_distance(entity)
-          return 0 if entity.trains.empty?
+        def biggest_node_distance(entity, leased = nil)
+          return 0 if entity.trains.empty? && !leased
+          return node_distance(leased) if leased
 
           biggest = entity.trains.map { |t| node_distance(t) }.max
           return 3 if biggest == 2 & entity.trains.count { |t| t.distance == 2 } > 1
@@ -962,8 +963,9 @@ module Engine
           3
         end
 
-        def biggest_city_distance(entity)
-          return 0 if entity.trains.empty?
+        def biggest_city_distance(entity, leased = nil)
+          return 0 if entity.trains.empty? && !leased
+          return city_distance(leased) if leased
 
           entity.trains.map { |t| city_distance(t) }.max
         end
