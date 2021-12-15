@@ -20,6 +20,8 @@ module Engine
         EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = true
         EBUY_OTHER_VALUE = false
         CERT_LIMIT_COUNTS_BANKRUPTED = true
+        MUST_BID_INCREMENT_MULTIPLE = true
+        MIN_BID_INCREMENT = 5
 
         ASSIGNMENT_TOKENS = {
           'CDSPC' => '/icons/18_ireland/port_token.svg',
