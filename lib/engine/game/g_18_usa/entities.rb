@@ -239,6 +239,17 @@ module Engine
             abilities: [],
             color: 'green',
           },
+          # P15
+          {
+            name: 'Western Land Grant',
+            value: 60,
+            revenue: 0,
+            desc: 'The owning company may take one extra loan at a fixed $5 per round interest rate. ' \
+                  'All other rules regarding loans are followed as normal.',
+            sym: 'P15',
+            abilities: [], # Implemented in game class
+            color: 'green',
+          },
           # P16 Regional Headquarters
           {
             name: 'Regional Headquarters',
