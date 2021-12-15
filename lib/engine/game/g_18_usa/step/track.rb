@@ -21,6 +21,18 @@ module Engine
             actions
           end
 
+          def can_lay_tile?(entity)
+            super || can_place_token_with_p20?(entity)
+          end
+
+          def can_place_token_with_p20?(entity)
+            entity.companies.include?(@game.company_by_id('P20')) &&
+            !entity.tokens.reject(&:used).empty? &&
+            @game.graph.connected_nodes(entity).keys.any? do |node|
+              node.city? && node.available_slots.zero? && !node.tokened_by?(entity)
+            end
+          end
+
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
 

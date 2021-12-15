@@ -304,6 +304,28 @@ module Engine
             ],
             color: 'yellow',
           },
+          # P20
+          {
+            name: 'Suem & Wynn Law Firm',
+            value: 80,
+            revenue: 0,
+            desc: 'Discard during the lay or upgrade track step to place an available station token into any city ' \
+                  'which currently has no available open station circles. The station token will immediately fill ' \
+                  'a station circle in the city if one becomes available later. This is an extra station token ' \
+                  'placement. A company may use this to place two station tokens in the same round.',
+            sym: 'P20',
+            abilities: [
+              type: 'token',
+              when: 'track',
+              hexes: [], # Determined in special_token step
+              price: 0,
+              extra_action: true,
+              from_owner: true,
+              special_only: true,
+              cheater: 0,
+            ],
+            color: 'yellow',
+          },
           # P21
           # TODO: Make it work as a combo with P27
           {

@@ -587,6 +587,7 @@ module Engine
             G1817::Step::CashCrisis,
             G18USA::Step::Loan,
             G18USA::Step::SpecialTrack,
+            G18USA::Step::SpecialToken,
             G18USA::Step::SpecialBuyTrain,
             G18USA::Step::Assign,
             G18USA::Step::Track,
