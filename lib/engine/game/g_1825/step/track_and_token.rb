@@ -20,7 +20,7 @@ module Engine
               actions << 'special_buy' if entity.receivership? && !@round.leased_train && !@game.leaseable_trains.empty?
             end
             actions << 'place_token' if can_place_token?(entity)
-            actions << 'pass' if actions.any?
+            actions << 'pass' unless actions.empty?
             actions
           end
 
