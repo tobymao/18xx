@@ -22,7 +22,8 @@ module Engine
       end
 
       def setup
-        start_entity
+        skip_steps
+        next_entity! unless active_step
       end
 
       def after_process(_action)

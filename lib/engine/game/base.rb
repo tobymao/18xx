@@ -515,6 +515,7 @@ module Engine
         setup_optional_rules
         log_optional_rules
         setup
+        @round.setup
 
         initialize_actions(actions, at_action: at_action)
 

@@ -26,11 +26,6 @@ module Engine
         @reverse_order ? @game.players.reverse : @game.players
       end
 
-      def setup
-        @steps.each(&:unpass!)
-        @steps.each(&:setup)
-      end
-
       def next_entity_index!
         @entities.rotate! if @rotating_order && @entity_index == (@entities.size - 1)
         return super unless @snake_order
