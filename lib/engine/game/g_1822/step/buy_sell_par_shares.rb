@@ -209,6 +209,7 @@ module Engine
           end
 
           def setup
+            # This sets the initial value of @bids
             setup_auction
             super
 
@@ -216,6 +217,8 @@ module Engine
             @bidders = @round.bidders || Hash.new { |h, k| h[k] = [] }
             @bid_exceeded = @round.bid_exceeded || Hash.new { |h, k| h[k] = [] }
             @bids = @round.bids if @round.bids
+            # Set initial value of @bids on the round if there's none.
+            @round.bids = @bids unless @round.bids
           end
 
           def bidding_tokens(player)

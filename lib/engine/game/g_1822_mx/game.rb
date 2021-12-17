@@ -373,9 +373,8 @@ module Engine
           # Initialize the stock round choice for P7
           @p7_choice = nil
 
-          # Setup the fist bidboxes
+          # Actual bidbox setup happens in the stock round.
           @bidbox_minors_cache = []
-          setup_bidboxes
 
           # Setup exchange token abilities for all corporations
           setup_exchange_tokens
