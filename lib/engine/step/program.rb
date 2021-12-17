@@ -34,6 +34,7 @@ module Engine
       def process_program_enable(action)
         @game.player_log(action.entity, "Enabled programmed action '#{action}'")
         @game.programmed_actions[action.entity] = action
+        @round.player_enabled_program(action.entity) if @round.respond_to?(:player_enabled_program)
       end
 
       def process_program_disable(action)
