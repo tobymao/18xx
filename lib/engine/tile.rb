@@ -493,6 +493,10 @@ module Engine
       @revenue_to_render ||= @revenue_stops.map(&:revenue_to_render)
     end
 
+    def revenue_changed
+      @revenue_to_render = nil
+    end
+
     # Used to set label for a recently placed tile
     def label=(label_name)
       @labels.clear

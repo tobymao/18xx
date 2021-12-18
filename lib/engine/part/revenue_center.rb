@@ -42,6 +42,7 @@ module Engine
               end
             self.class::PHASES.map { |phase| [phase, revenue.to_i] }.to_h
           end
+        tile&.revenue_changed
         @revenue
       end
 
