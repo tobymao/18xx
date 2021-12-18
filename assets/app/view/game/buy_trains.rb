@@ -176,9 +176,12 @@ module View
         children << h(:div, "#{@corporation.name} has #{@game.format_currency(@corporation.cash)}.")
         if @step.issuable_shares(@corporation).any? &&
            (issuable_cash = @game.emergency_issuable_cash(@corporation)).positive?
-          children << h(:div, "#{@corporation.name} can issue shares to raise up to "\
-                              "#{@game.format_currency(issuable_cash)} (the corporation "\
-                              'must issue shares before the president may contribute).')
+          issue_str = "#{@corporation.name} can issue shares to raise up to #{@game.format_currency(issuable_cash)}"
+          if @step.must_issue_before_ebuy?(@corporation)
+            issue_str += ' (the corporation must issue shares before the president may contribute)'
+          end
+          issue_str += '.'
+          children << h(:div, issue_str)
         end
 
         if (@must_buy_train && @step.ebuy_president_can_contribute?(@corporation)) ||
