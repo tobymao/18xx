@@ -51,12 +51,8 @@ module Engine
             entity.cash >= @game.depot.min_depot_price
           end
 
-          def ebuy_offer_only_cheapest_depot_train?
+          def ebuy_depot_train_must_be_cheapest?
             @loan_taken
-          end
-
-          def needed_cash(_entity)
-            @loan_taken ? @depot.min_depot_price : @depot.max_depot_price
           end
 
           def setup
