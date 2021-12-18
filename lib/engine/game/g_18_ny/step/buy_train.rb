@@ -55,15 +55,23 @@ module Engine
             @loan_taken
           end
 
+          def needed_cash(_entity)
+            @loan_taken ? @depot.min_depot_price : @depot.max_depot_price
+          end
+
           def setup
             super
             @train_salvaged = false
             @loan_taken = false
           end
 
+          def can_issue_shares?(entity)
+            must_buy_train?(entity) && !@train_salvaged && entity.cash < @depot.max_depot_price
+          end
+
           def issuable_shares(entity)
             # Issue is part of emergency buy
-            return [] unless ebuy_president_can_contribute?(entity)
+            return [] unless can_issue_shares?(entity)
 
             super
           end
