@@ -118,7 +118,7 @@ module Engine
       end
 
       def needed_cash(_entity)
-        ebuy_depot_train_must_be_cheapest? ? @depot.min_depot_price : @depot.max_depot_price
+        @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST ? @depot.min_depot_price : @depot.max_depot_price
       end
 
       def available_cash(entity)
@@ -127,7 +127,7 @@ module Engine
         entity.cash + current_entity.cash
       end
 
-      def ebuy_depot_train_must_be_cheapest?
+      def ebuy_offer_only_cheapest_depot_train?
         @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
       end
 
@@ -136,7 +136,7 @@ module Engine
         other_trains = @game.class::ALLOW_TRAIN_BUY_FROM_OTHERS ? @depot.other_trains(entity) : []
 
         if entity.cash < @depot.min_depot_price
-          depot_trains = [@depot.min_depot_train] if ebuy_depot_train_must_be_cheapest?
+          depot_trains = [@depot.min_depot_train] if ebuy_offer_only_cheapest_depot_train?
 
           if @game.class::EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
             # Don't alter the depot train list
@@ -227,7 +227,7 @@ module Engine
         cheapest_names = names_of_cheapest_variants(cheapest)
         raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest_names.first})" if
           !cheapest_names.include?(train.name) &&
-          ebuy_depot_train_must_be_cheapest? &&
+          @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST &&
           (!@game.class::EBUY_OTHER_VALUE || train.from_depot?)
       end
 
