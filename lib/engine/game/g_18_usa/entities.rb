@@ -239,6 +239,17 @@ module Engine
             abilities: [],
             color: 'green',
           },
+          # P15
+          {
+            name: 'Western Land Grant',
+            value: 60,
+            revenue: 0,
+            desc: 'The owning company may take one extra loan at a fixed $5 per round interest rate. ' \
+                  'All other rules regarding loans are followed as normal.',
+            sym: 'P15',
+            abilities: [], # Implemented in game class
+            color: 'green',
+          },
           # P16 Regional Headquarters
           {
             name: 'Regional Headquarters',
@@ -301,6 +312,28 @@ module Engine
             sym: 'P19',
             abilities: [
               # Owning the private is the ability
+            ],
+            color: 'yellow',
+          },
+          # P20
+          {
+            name: 'Suem & Wynn Law Firm',
+            value: 80,
+            revenue: 0,
+            desc: 'Discard during the lay or upgrade track step to place an available station token into any city ' \
+                  'which currently has no available open station circles. The station token will immediately fill ' \
+                  'a station circle in the city if one becomes available later. This is an extra station token ' \
+                  'placement. A company may use this to place two station tokens in the same round.',
+            sym: 'P20',
+            abilities: [
+              type: 'token',
+              when: 'track',
+              hexes: [], # Determined in special_token step
+              price: 0,
+              extra_action: true,
+              from_owner: true,
+              special_only: true,
+              cheater: 0,
             ],
             color: 'yellow',
           },

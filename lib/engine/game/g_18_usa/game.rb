@@ -421,6 +421,14 @@ module Engine
           super
         end
 
+        def owns_p15?(entity)
+          entity.companies.find { |c| c.id == 'P15' }
+        end
+
+        def maximum_loans(entity)
+          super + (owns_p15?(entity) ? 1 : 0)
+        end
+
         def take_loan(entity, loan)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
 
@@ -434,6 +442,12 @@ module Engine
           log_share_price(entity, price)
           entity.loans << loan
           @loans.delete(loan)
+        end
+
+        def interest_owed(entity)
+          owed = super
+          owed += (5 - interest_rate) if owed.positive? && owns_p15?(entity)
+          owed
         end
 
         OFFBOARD_VALUES = [[20, 30, 40, 50], [20, 30, 40, 60], [20, 30, 50, 60], [20, 30, 50, 60], [20, 30, 60, 90],
@@ -587,6 +601,7 @@ module Engine
             G1817::Step::CashCrisis,
             G18USA::Step::Loan,
             G18USA::Step::SpecialTrack,
+            G18USA::Step::SpecialToken,
             G18USA::Step::SpecialBuyTrain,
             G18USA::Step::Assign,
             G18USA::Step::Track,
