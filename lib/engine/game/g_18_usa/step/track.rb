@@ -27,7 +27,7 @@ module Engine
 
           def can_place_token_with_p20?(entity)
             entity.companies.include?(@game.company_by_id('P20')) &&
-            !entity.tokens.reject(&:used).empty? &&
+            !entity.tokens.all?(&:used) &&
             @game.graph.connected_nodes(entity).keys.any? do |node|
               node.city? && node.available_slots.zero? && !node.tokened_by?(entity)
             end
