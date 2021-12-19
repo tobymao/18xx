@@ -64,12 +64,6 @@ module Engine
           }
         end
 
-        def tile_lay_eligible_for_great_northern?(old_tile, new_tile, entity)
-          could_do_great_northern?(entity) &&
-            old_tile.icons.any? { |icon| icon.name == 'gnr' } &&
-            new_tile.color == :yellow
-        end
-
         def could_do_track_engineers?(entity)
           corporation = entity&.company? ? entity.owner : entity
           !@game.company_by_id('P7').closed? && @game.company_by_id('P7').owner == corporation
@@ -98,7 +92,6 @@ module Engine
 
         def get_tile_lay(entity)
           corporation = get_tile_lay_corporation(entity)
-          return great_northern_action if @round.tile_lay_mode == :gnr && could_do_great_northern?(entity)
           return brown_home_action if @round.tile_lay_mode == :brown_home && could_do_brown_home_tile_lay?(entity)
 
           tile_lays = (could_do_track_engineers?(corporation) ? TRACK_ENGINEER_TILE_LAYS : NORMAL_TILE_LAYS)
@@ -141,8 +134,6 @@ module Engine
               !%i[pettibone brown_home].include?(@round.tile_lay_mode)
 
           case @round.tile_lay_mode
-          when :gnr
-            @round.great_northern_track = true
           when :pettibone
             @round.pettibone_upgrade = true
             @round.num_laid_track += 1
@@ -155,10 +146,7 @@ module Engine
         end
 
         def tile_lay_mode_desc(mode)
-          # Standard avoids GNR lay if it can
           return 'Standard' if mode == :standard
-          # GNR mode aggressively uses GNR tile lay
-          return 'GNR Track' if mode == :gnr
           return 'Brown Home' if mode == :brown_home
           return 'P&M Upgrade' if mode == :pettibone
 
@@ -207,7 +195,6 @@ module Engine
           choices = {
             standard: 'Standard tile lay',
           }.freeze
-          choices[:gnr] = 'Great Northern Railway tile lay' if could_do_great_northern?(entity)
           choices[:brown_home] = 'Brown Home tile lay' if could_do_brown_home_tile_lay?(entity)
           choices[:pettibone] = 'P&M tile lay' if could_do_pettibone?(entity)
           choices # .reject { |key, _| key == @round.tile_lay_mode }
@@ -215,7 +202,6 @@ module Engine
 
         def custom_tracker_available_hex(entity, hex, special_override: false)
           (special_override || tracker_available_hex(entity, hex)) &&
-          (@round.tile_lay_mode != :gnr || %w[B4 B6 B8 B10 B12 B14 B16 B18 C19].include?(hex.id)) &&
           (@round.tile_lay_mode != :brown_home || @game.home_hex_for(entity) == hex)
         end
       end

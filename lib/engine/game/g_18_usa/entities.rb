@@ -290,7 +290,16 @@ module Engine
                   '+$60 revenue bonus per train that runs Seattle-Fargo-Helena-Chicago',
             sym: 'P17',
             abilities: [
-              # Owning the private is the ability
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                hexes: %w[B4 B6 B8 B10 B12 B14 B16 B18 C19 D20],
+                tiles: %w[5 6 7 8 9 57],
+                free: true,
+                special: false,
+                count_per_or: 1,
+              },
             ],
             color: 'green',
           },
