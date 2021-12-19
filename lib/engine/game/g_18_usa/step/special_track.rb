@@ -1,19 +1,17 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_track'
-require_relative 'tracker'
 
 module Engine
   module Game
     module G18USA
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
-          include Tracker
           def hex_neighbors(entity, hex)
             # See 1817 and reinsert pittsburgh check for handling metros
 
             return false unless (ability = abilities(entity))
-            
+
             hexes = ability.hexes
             return hex.neighbors.keys if hexes.include?(hex.id) && !ability.reachable
             return if hexes&.any? && !hexes&.include?(hex.id)
@@ -53,10 +51,7 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            return unless (ability = abilities(entity))
             return boomtown_company_hexes(entity.owner).include?(hex) if entity.id == 'P9'
-            return custom_tracker_available_hex(entity, hex, special_override: true) if \
-                ability.hexes&.empty? && ability.consume_tile_lay
 
             hex_neighbors(entity, hex)
           end

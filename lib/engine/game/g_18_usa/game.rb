@@ -300,6 +300,18 @@ module Engine
           end
         end
 
+        TRACK_ENGINEER_TILE_LAYS = [ # Three lays with one being an upgrade, second tile costs 20, third tile free
+          { lay: true, upgrade: true },
+          { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded, cost: 0, cannot_reuse_same_hex: true },
+        ].freeze
+
+        def tile_lays(entity)
+          return TRACK_ENGINEER_TILE_LAYS if entity.companies.include?(company_by_id('P7'))
+
+          super
+        end
+
         #
         # Aggressively allows upgrading to brown tiles; the rules depend on who is laying and the current phase
         # so the track step will need to clamp down on this

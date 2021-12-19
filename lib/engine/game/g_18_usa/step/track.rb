@@ -1,25 +1,14 @@
 # frozen_string_literal: true
 
-require_relative 'tracker'
 require_relative '../../../step/track'
 require_relative '../../../step/upgrade_track_max_exits'
-require_relative '../../../game_error'
 
 module Engine
   module Game
     module G18USA
       module Step
         class Track < Engine::Step::Track
-          include Tracker
-
-          def actions(entity)
-            actions = super
-            return actions unless entity.corporation?
-
-            actions << 'choose' if choice_available?(entity)
-            actions << 'pass' if actions.size == 1
-            actions
-          end
+          include Engine::Step::UpgradeTrackMaxExits
 
           def can_lay_tile?(entity)
             super || can_place_token_with_p20?(entity) || can_assign_p6?(entity)
@@ -38,8 +27,50 @@ module Engine
             @game.graph.connected_hexes(entity).keys.any? { |hex| hex.tile.color == :red }
           end
 
+          def owns_p11?(entity)
+            @p11 ||= @game.company_by_id('P11')
+            entity.companies.include?(@p11)
+          end
+
+          def get_tile_lay(entity)
+            action = super
+            return unless action
+
+            action[:upgrade] = true if owns_p11?(entity) && @num_upgraded < 2
+            action
+          end
+
+          def available_hex(_entity, hex)
+            return nil if hex.tile.color != :white && !hex.tile.cities.empty? && @city_upgraded
+
+            super
+          end
+
+          def potential_tile_colors(entity, hex)
+            colors = super
+            return colors if !hex.tile.cities.empty? || !owns_p11?(entity)
+
+            colors << if colors.include?(:brown)
+                        :gray
+                      elsif colors.include?(:green)
+                        :brown
+                      else
+                        :green
+                      end
+            colors
+          end
+
+          def round_state
+            super.merge({ tile_lay_mode: nil })
+          end
+
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
+            hex = action.hex
+            if hex.tile.color != :white
+              @num_upgraded += 1
+              @city_upgraded = true unless tile.cities.empty?
+            end
 
             check_company_town(tile, action.hex) if tile.name.include?('CTown')
 
@@ -48,7 +79,7 @@ module Engine
             @game.company_by_id('P16').close! if tile.name.include?('RHQ')
             process_company_town(tile) if tile.name.include?('CTown')
             if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
-                action.hex.neighbors.any? { |exit, hex| action.hex.tile.exits.include?(exit) && hex.name == 'E11' }
+                action.hex.neighbors.any? { |exit, h| action.hex.tile.exits.include?(exit) && h.name == 'E11' }
               @round.pending_tracks << { entity: action.entity, hexes: [@game.hex_by_id('E11')] }
             end
             @game.jump_graph.clear
@@ -79,8 +110,10 @@ module Engine
             old_tile.name.include?('iron') && new_tile.name.include?('iron') ? true : super
           end
 
-          def available_hex(entity, hex)
-            custom_tracker_available_hex(entity, hex)
+          def setup
+            super
+            @city_upgraded = false
+            @num_upgraded = 0
           end
         end
       end
