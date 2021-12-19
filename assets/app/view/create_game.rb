@@ -84,7 +84,7 @@ module View
         option_list = game_list.map do |game|
           @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
 
-          title = game.title
+          title = game.display_title
           title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
           title += ' [Prototype]' if game::PROTOTYPE
 

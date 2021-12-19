@@ -9,6 +9,13 @@ module Engine
       PROTOTYPE = false
       DEPENDS_ON = nil
 
+      # game title variations
+      GAME_TITLE = nil # canonical title stored in database, defaults to '18xx' part of 'G18xx' module name
+      GAME_DISPLAY_TITLE = nil # defaults to GAME_TITLE; used in UI on game cards, new game dropdown, game page
+      GAME_SUBTITLE = nil
+      GAME_FULL_TITLE = nil # defaults to "GAME_DISPLAY_TITLE", then "GAME_TITLE: GAME_SUBTITLE"; used in "Game Info" section
+      GAME_DROPDOWN_TITLE = nil # new game dropdown, defaults to GAME_DISPLAY_TITLE + location and dev stage if applicable
+
       # real game metadata
       GAME_DESIGNER = nil
       GAME_IMPLEMENTER = nil
@@ -16,14 +23,9 @@ module Engine
       GAME_LOCATION = nil
       GAME_PUBLISHER = nil
       GAME_RULES_URL = nil
-      GAME_TITLE = nil
-      GAME_SUBTITLE = nil
-      GAME_SUPERTITLE = nil
-      GAME_FULL_TITLE = nil
       GAME_ALIASES = [].freeze
       GAME_VARIANTS = [].freeze
       GAME_IS_VARIANT_OF = nil
-      GAME_DROPDOWN_TITLE = nil
 
       # rules data that needs to be known to the engine without loading in the
       # full game class
@@ -36,7 +38,6 @@ module Engine
       end
 
       module ClassMethods
-        # sort games by display title, whether it is the Game class or Meta module
         def <=>(other)
           [DEV_STAGES.index(self::DEV_STAGE), title.sub(/18\s+/, '18').downcase] <=>
             [DEV_STAGES.index(other::DEV_STAGE), other.title.sub(/18\s+/, '18').downcase]
@@ -53,10 +54,15 @@ module Engine
             end
         end
 
+        def display_title
+          @display_title ||= (self::GAME_DISPLAY_TITLE || title)
+        end
+
         def full_title
           @full_title ||=
             self::GAME_FULL_TITLE ||
-            [self::GAME_SUPERTITLE, title, self::GAME_SUBTITLE].compact.join(': ')
+            self::GAME_DISPLAY_TITLE ||
+            [title, self::GAME_SUBTITLE].compact.join(': ')
         end
 
         def fs_name

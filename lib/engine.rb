@@ -52,6 +52,10 @@ module Engine
     GAME_META_BY_TITLE[closest_title(title)]
   end
 
+  def self.closest_display_title(title)
+    game_by_title(title).display_title
+  end
+
   def self.closest_title(title)
     return VISIBLE_GAMES.first.title unless title
     return @fuzzy_titles[title] if @fuzzy_titles[title]
@@ -71,7 +75,7 @@ module Engine
       candidates = [
         m.title,
         m.full_title,
-        m::GAME_SUPERTITLE,
+        m.display_title,
         m::GAME_SUBTITLE,
         module_name,
         module_name.sub(/^G/, ''),
