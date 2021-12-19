@@ -69,7 +69,7 @@ module Engine
         end
 
         if ability.type == :tile_lay
-          if ability.count.zero? && ability.closed_when_used_up
+          if ability.count&.zero? && ability.closed_when_used_up
             company = ability.owner
             @log << "#{company.name} closes"
             company.close!
