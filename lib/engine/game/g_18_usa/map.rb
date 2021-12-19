@@ -6,27 +6,10 @@ module Engine
       module Map
         LAYOUT = :pointy
 
-        YELLOW_PLAIN_TRACK_TILES = %w[
-          7 7coal 7iron10 7iron20 7oil
-          8 8coal 8iron10 8iron20 8oil
-          9 9coal 9iron10 9iron20 9oil
-        ].freeze
-
-        GREEN_PLAIN_TRACK_TILES = %w[
-          80 80coal 80oil
-          81 81coal 81oil
-          82 82coal 82oil
-          83 83coal 83oil
-        ].freeze
-        BROWN_PLAIN_TRACK_TILES = %w[
-          544 544coal 544oil
-          545 545coal 545oil
-          546 546coal 546oil
-        ].freeze
-        GRAY_PLAIN_TRACK_TILES = %w[
-          X17coal X17oil X17
-          60 60coal 60oil
-        ].freeze
+        YELLOW_PLAIN_TRACK_TILES = %w[7 8 9].freeze
+        GREEN_PLAIN_TRACK_TILES = %w[80 81 82 83].freeze
+        BROWN_PLAIN_TRACK_TILES = %w[544 545 546].freeze
+        GRAY_PLAIN_TRACK_TILES = %w[X17 60].freeze
         PLAIN_TRACK_TILES = YELLOW_PLAIN_TRACK_TILES + GREEN_PLAIN_TRACK_TILES + BROWN_PLAIN_TRACK_TILES + GRAY_PLAIN_TRACK_TILES
 
         PLAIN_YELLOW_CITY_TILES = %w[5 6 57].freeze
@@ -46,384 +29,170 @@ module Engine
         SUBSIDIZED_HEXES = %w[B8 B14 C3 D6 D14 E3 E7 E23 G7 G11 G27 H8 I13 I25].freeze
 
         TILES = {
-          '6' => 'unlimited',
           '5' => 'unlimited',
+          '6' => 'unlimited',
           '7' => 'unlimited',
           '8' => 'unlimited',
           '9' => 'unlimited',
+          '57' => 'unlimited',
           '14' => 'unlimited',
           '15' => 'unlimited',
-          '57' => 'unlimited',
-          '60' => 'unlimited',
-          '63' => 'unlimited',
           '80' => 'unlimited',
           '81' => 'unlimited',
           '82' => 'unlimited',
           '83' => 'unlimited',
+          '592' => 'unlimited',
+          '619' => 'unlimited',
+          '63' => 'unlimited',
           '448' => 'unlimited',
           '544' => 'unlimited',
           '545' => 'unlimited',
           '546' => 'unlimited',
-          '592' => 'unlimited',
           '593' => 'unlimited',
-          '597' => 'unlimited',
           '611' => 'unlimited',
-          '619' => 'unlimited',
-          '7coal' =>
+          '597' => 'unlimited',
+          '60' => 'unlimited',
+          'X01' =>
           {
-            'count' => 'unlimited',
+            'count' => 1,
             'color' => 'yellow',
-            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;label=⛏️',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=ATL',
           },
-          '8coal' =>
+          'X02' =>
           {
-            'count' => 'unlimited',
+            'count' => 1,
             'color' => 'yellow',
-            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:2;label=⛏️',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=CHI',
           },
-          '9coal' =>
-          {
-            'count' => 'unlimited',
+          'X03' => {
+            'count' => 1,
             'color' => 'yellow',
-            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⛏️',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DFW',
           },
-          '544coal' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'brown',
-            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
-          },
-          '545coal' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'brown',
-            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=⛏️',
-          },
-          '546coal' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'brown',
-            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
-          },
-          '80coal' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=⛏️',
-          },
-          '81coal' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=⛏️',
-          },
-          '82coal' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=⛏️',
-          },
-          '83coal' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=⛏️',
-          },
-          '60coal' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'gray',
-            'code' => 'junction;offboard=revenue:10,hide:1;'\
-                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=⛏️',
-          },
-          'X17coal' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'gray',
-            'code' => 'junction;offboard=revenue:10,hide:1;'\
-                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
-          },
-          '7iron10' =>
-          {
-            'count' => 'unlimited',
+          'X04' => {
+            'count' => 1,
             'color' => 'yellow',
-            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;label=⚒️',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DEN',
           },
-          '8iron10' =>
-          {
-            'count' => 'unlimited',
+          'X05' => {
+            'count' => 1,
             'color' => 'yellow',
-            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:2;label=⚒️',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=LA',
           },
-          '9iron10' =>
+          'X06' =>
           {
-            'count' => 'unlimited',
+            'count' => 1,
             'color' => 'yellow',
-            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⚒️',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=NO',
           },
-          '7iron20' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'offboard=revenue:20,hide:1;path=a:0,b:1;label=⚒️',
-          },
-          '8iron20' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'offboard=revenue:20,hide:1;path=a:0,b:2;label=⚒️',
-          },
-          '9iron20' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'offboard=revenue:20,hide:1;path=a:0,b:3;label=⚒️',
-          },
-          '7oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'yellow',
-            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:1;label=🛢️',
-          },
-          '8oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'yellow',
-            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:2;label=🛢️',
-          },
-          '9oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'yellow',
-            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:3;label=🛢️',
-          },
-          '544oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'brown',
-            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
-          },
-          '545oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'brown',
-            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=🛢️',
-          },
-          '546oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'brown',
-            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
-          },
-          '80oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=🛢️',
-          },
-          '81oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=🛢️',
-          },
-          '82oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=🛢️',
-          },
-          '83oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'green',
-            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=🛢️',
-          },
-          '60oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'gray',
-            'code' => 'junction;offboard=revenue:20,hide:1;'\
-                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=🛢️',
-          },
-          'X17oil' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'gray',
-            'code' => 'junction;offboard=revenue:20,hide:1;'\
-                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
-          },
-          'RuralK' =>
+          'X07' =>
           {
             'count' => 1,
             'color' => 'yellow',
             'code' => 'town=revenue:10;'\
                       'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R.J.',
           },
-          'RuralY' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'town=revenue:10;'\
-                      'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
-          },
-          'RuralX' =>
+          'X08' =>
           {
             'count' => 1,
             'color' => 'yellow',
             'code' => 'town=revenue:10;'\
                       'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
           },
-          'CTownK' =>
+          'X09' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
-                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=C.T.',
+            'code' => 'town=revenue:10;'\
+                      'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
           },
-          'CTownY' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
-                      'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C.T.',
-          },
-          'CTownX' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
-                      'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C.T.',
-          },
-          'RHQ4' =>
-          {
-            'count' => 1,
-            'color' => 'blue',
-            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
-                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
-          },
-          'RHQ5' =>
-          {
-            'count' => 1,
-            'color' => 'blue',
-            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
-                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-          },
-          'RHQ6' =>
-          {
-            'count' => 1,
-            'color' => 'blue',
-            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
-                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-          },
-          'ATL1' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
-          },
-          'CHI1' => {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
-          },
-          'NO1' => {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
-          },
-          'D0' => {
-            'count' => 1,
-            'color' => 'white',
-            'code' => 'city=revenue:0;label=D',
-          },
-          'D1' => {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
-          },
-          'D2' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=slots:2,revenue:50;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
-          },
-          'D3' => {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=slots:3,revenue:60;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
-          },
-          'D4' => {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=slots:3,revenue:80;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D',
-          },
-          'DFW1' => {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DFW',
-          },
-          'LA1' => {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=LA',
-          },
-          'DFW2' => {
+          'X10' => {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DFW',
           },
-          'LA2' => {
+          'X11' => {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:50,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=LA',
           },
-          'NY2' => {
+          'X12' => {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,'\
                       'b:_1;label=NY',
           },
-          'CL' => {
+          'X13' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=CL',
           },
-          'DFW3' => {
+          'X14' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
                       'label=DFW',
           },
-          'LA3' => {
+          'X15' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LA',
           },
-          'NY3' => {
+          'X16' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:70,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY',
+            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY',
           },
           'X17' => {
             'count' => 'unlimited',
             'color' => 'gray',
             'code' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;',
           },
-          'DFW4' => {
+          'X18' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
                       'path=a:5,b:_0;label=DFW',
           },
-          'LA4' => {
+          'X19' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:90,slots:4;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LA',
           },
-          'NY4' => {
+          'X20' =>
+          {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY',
+            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=C.T.',
+          },
+          'X21' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C.T.',
+          },
+          'X22' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
+                      'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C.T.',
+          },
+          'X23' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          },
+          'X30' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' =>
+            'city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY',
           },
         }.freeze
 
@@ -468,6 +237,48 @@ module Engine
           'J20' => 'Port of New Orleans',
           'J24' => 'Florida',
           'I9' => 'Mexico',
+        }.freeze
+
+        HEXES = {
+          white: {
+            %w[B20 B26 C5 C11 C13 C15 D2 D4 D12 D22 E13 F2 F6 F12 F14 G9 G13 G19 G25 H10 H12 H16
+               H24 H26] => '',
+            %w[E27] => 'stub=edge:3',
+            %w[E11 G3 H14 I15 H20 H22 F26 C29 D24] => 'city=revenue:0',
+            %w[D6 E3 E7 G7 G11 H8 I13 I25 G27 E23] => 'city=revenue:0;icon=image:18_ms/coins',
+            %w[C17 E15 E17 F20 G17 I19] => 'city=revenue:0;upgrade=cost:10,terrain:water;icon=image:18_usa/bridge',
+            %w[C3
+               D14] => 'city=revenue:0;upgrade=cost:10,terrain:water;icon=image:18_ms/coins;icon=image:18_usa/bridge',
+            %w[B28 C27 F4 G5 G23] => 'upgrade=cost:15,terrain:mountain',
+            %w[D18 E21 F18 H18] => 'upgrade=cost:10,terrain:water',
+            ['B22'] => 'upgrade=cost:20,terrain:lake',
+            %w[C7 E9 G21] => 'upgrade=cost:15,terrain:mountain;icon=image:18_usa/mine',
+            %w[D16 E5 H6] => 'icon=image:18_usa/mine',
+            %w[G15 H4 I17 I21 I23 J14] => 'icon=image:18_usa/oil-derrick',
+            %w[E19 F16] => 'icon=image:18_usa/coalcar',
+            %w[C9 D8 D10 E25 F8 F10 F22 F24] => 'upgrade=cost:15,terrain:mountain;icon=image:18_usa/coalcar',
+            %w[D26] => 'upgrade=cost:15,terrain:mountain;icon=image:18_usa/coalcar;stub=edge:4',
+            %w[B16 B18] => 'icon=image:18_usa/gnr',
+            ['C19'] => 'icon=image:18_usa/gnr;icon=image:18_usa/mine',
+            ['B10'] => 'icon=image:18_usa/gnr;icon=image:18_usa/coalcar;icon=image:18_usa/mine',
+            ['B12'] => 'icon=image:18_usa/gnr;icon=image:18_usa/coalcar;icon=image:18_usa/oil-derrick',
+            ['D20'] => 'icon=image:18_usa/gnr;city=revenue:0',
+            %w[B8 B14] => 'icon=image:18_usa/gnr;city=revenue:0;icon=image:18_ms/coins',
+            ['B6'] => 'icon=image:18_usa/gnr;upgrade=cost:15,terrain:mountain;icon=image:18_usa/coalcar',
+            ['B4'] => 'icon=image:18_usa/gnr;upgrade=cost:10,terrain:water',
+          },
+          gray: {
+            ['B30'] => 'path=a:1,b:0',
+            ['C23'] => 'town=revenue:yellow_30|green_40|brown_50|gray_60;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0',
+            ['C25'] => 'town=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_0',
+          },
+          yellow: {
+            ['D28'] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_0;label=NY',
+          },
+          blue: {
+            ['F28'] => 'offboard=revenue:yellow_0,visit_cost:99;path=a:0,b:_0',
+            %w[B24 C21] => '',
+          },
         }.freeze
       end
     end

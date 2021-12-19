@@ -192,8 +192,8 @@ module Engine
         end
 
         def setup
-          @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
-          @company_town_tiles ||= @all_tiles.select { |t| t.name.include?('CTown') }
+          @rhq_tile = tile_by_id('X23')
+          @company_town_tiles ||= %w[X20 X22 X23].map { |t| tile_by_id(t) }
           @yellow_plain_tiles ||= @all_tiles.select { |t| YELLOW_PLAIN_TRACK_TILES.include?(t.name) }
           @green_plain_tiles ||= @all_tiles.select { |t| GREEN_PLAIN_TRACK_TILES.include?(t.name) }
           @brown_plain_tiles ||= @all_tiles.select { |t| BROWN_PLAIN_TRACK_TILES.include?(t.name) }
@@ -202,12 +202,11 @@ module Engine
           @plain_green_city_tiles ||= @all_tiles.select { |t| PLAIN_GREEN_CITY_TILES.include?(t.name) }
           @plain_brown_city_tiles ||= @all_tiles.select { |t| PLAIN_BROWN_CITY_TILES.include?(t.name) }
 
-          @brown_ny_tile ||= @all_tiles.find { |t| t.name == 'NY3' }
-          @brown_dfw_tile ||= @all_tiles.find { |t| t.name == 'DFW3' }
-          @brown_la_tile ||= @all_tiles.find { |t| t.name == 'LA3' }
-          @brown_d_tile ||= @all_tiles.find { |t| t.name == 'D3' }
-          @brown_cl_tile ||= @all_tiles.find { |t| t.name == 'CL' }
-          @brown_b_tile ||= @all_tiles.find { |t| t.name == '593' }
+          @brown_ny_tile ||= tile_by_id('X16')
+          @brown_dfw_tile ||= tile_by_id('X14')
+          @brown_la_tile ||= tile_by_id('X15')
+          @brown_cl_tile ||= tile_by_id('X13')
+          @brown_b_tile ||= tile_by_id('593')
 
           @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           @jump_graph = Graph.new(self, no_blocking: true)
@@ -223,13 +222,8 @@ module Engine
           neutral.owner = @bank
           @recently_floated = []
 
-          neutral.tokens.each { |token| token.type = :neutral }
-          city_by_id('CTownK-0-0').place_token(neutral, neutral.next_token)
-          city_by_id('CTownX-0-0').place_token(neutral, neutral.next_token)
-          city_by_id('CTownY-0-0').place_token(neutral, neutral.next_token)
-
           metro_hexes = METROPOLITAN_HEXES.sort_by { rand }.take(3)
-          metro_hexes.each { |metro_hex| convert_potential_metro(@hexes.find { |h| h.id == metro_hex }) }
+          metro_hexes.each { |metro_hex| convert_potential_metro(hex_by_id(metro_hex)) }
 
           setup_train_roster
           randomize_subsidies
@@ -252,19 +246,19 @@ module Engine
           active_metropolitan_hexes << hex
           case hex.id
           when 'H14'
-            hex.lay(@tiles.find { |t| t.name == 'DFW1' })
+            hex.lay(@tiles.find { |t| t.name == 'X03' })
           when 'E11'
-            hex.lay(@tiles.find { |t| t.name == 'D0' })
+            hex.lay(@tiles.find { |t| t.name == 'X04' })
             @metro_denver = true
           when 'G3'
-            hex.lay(@tiles.find { |t| t.name == 'LA1' }.rotate!(3))
+            hex.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
           when 'D20'
-            hex.lay(@tiles.find { |t| t.name == 'CHI1' }.rotate!(1))
+            hex.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
           when 'I19'
-            hex.lay(@tiles.find { |t| t.name == 'NO1' })
+            hex.lay(@tiles.find { |t| t.name == 'X06' })
             @metro_new_orleans = true
           when 'H22'
-            hex.lay(@tiles.find { |t| t.name == 'ATL1' })
+            hex.lay(@tiles.find { |t| t.name == 'X01' })
           end
         end
 
@@ -325,7 +319,7 @@ module Engine
           home_hex = home_hex_for(laying_entity)
           # TODO: Check if it's near a metropolis
           return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white && !from.label
-          return @phase.tiles.include?(:brown) if @rhq_tiles.map(&:name).include?(to.name) &&
+          return @phase.tiles.include?(:brown) if @rhq_tile.name == to.name &&
               %w[14 15 619 63 611 448].include?(from.name)
 
           # Phase5+ plain track skips
@@ -357,7 +351,7 @@ module Engine
               from.color == :white && from.cities.size.positive? && !from.label
 
           # Cleveland hex gets special brown upgrade
-          return @phase.tiles.include?(:brown) && from.hex.id == 'D24' if to.name == 'CL' &&
+          return @phase.tiles.include?(:brown) && from.hex.id == 'D24' if to.name == 'X13' &&
               from.name == '15' && from.hex.id == home_hex.id
           return @phase.tiles.include?(:brown) && from.hex.id != 'D24' if to.name == '448' &&
               from.name == '15' && from.hex.id == home_hex.id
@@ -366,20 +360,20 @@ module Engine
           # metro yellow to brown
 
           # NY is preprinted
-          return @phase.tiles.include?(:brown) if to.name == 'NY3' && from.color == :yelow &&
+          return @phase.tiles.include?(:brown) if to.name == 'X12' && from.color == :yellow &&
               from.hex.id == 'D28' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
 
-          return @phase.tiles.include?(:brown) if to.name == '593' && from.name == 'ATL1' && from.hex.id == home_hex.id &&
+          return @phase.tiles.include?(:brown) if to.name == '592' && from.name == 'X01' && from.hex.id == home_hex.id &&
               @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == '593' && from.name == 'CHI1' && from.hex.id == home_hex.id &&
+          return @phase.tiles.include?(:brown) if to.name == '592' && from.name == 'X02' && from.hex.id == home_hex.id &&
               @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == '593' && from.name == 'NO1' && from.hex.id == home_hex.id &&
+          return @phase.tiles.include?(:brown) if to.name == '592' && from.name == 'X06' && from.hex.id == home_hex.id &&
               @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == 'D3' && from.name == 'D1' && from.hex.id == home_hex.id &&
+          return @phase.tiles.include?(:brown) if to.name == '592' && from.name == 'X04' && from.hex.id == home_hex.id &&
               @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == 'DFW3' && from.name == 'DFW1' && from.hex.id == home_hex.id &&
+          return @phase.tiles.include?(:brown) if to.name == 'X10' && from.name == 'X03' && from.hex.id == home_hex.id &&
               @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == 'LA3' && from.name == 'LA1' && from.hex.id == home_hex.id &&
+          return @phase.tiles.include?(:brown) if to.name == 'X11' && from.name == 'X05' && from.hex.id == home_hex.id &&
               @round&.tile_lay_mode == :brown_home
 
           # plain yellow to brown
@@ -393,9 +387,9 @@ module Engine
               from.hex.id != 'D24' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
 
           # Cleveland straight to brown
-          return @phase.tiles.include?(:brown) if to.name == 'CL' && from.color == :white &&
+          return @phase.tiles.include?(:brown) if to.name == 'X13' && from.color == :white &&
               from.hex.id == 'D24' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == 'CL' && from.color == :yellow &&
+          return @phase.tiles.include?(:brown) if to.name == 'X13' && from.color == :yellow &&
               from.hex.id == 'D24' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
 
           super
@@ -421,7 +415,7 @@ module Engine
           return filter_by_max_edges(upgrades) unless tile_manifest
 
           upgrades << @brown_cl_tile if tile.name == '15' # only K green city that fits clevelands hex
-          upgrades |= @rhq_tiles if %w[14 15 619 63 611 448].include?(tile.name)
+          upgrades << @rhq_tile if %w[14 15 619 63 611 448].include?(tile.name)
           upgrades |= @company_town_tiles if tile.color == :white && !tile.label
 
           # Don't include the tile skips; those follow normal tile lay rules, they upgrade multiple times in a row
@@ -474,9 +468,8 @@ module Engine
 
         def optional_hexes
           offboard = OFFBOARD_VALUES.sort_by { rand }
-          plain_hexes = %w[B20 B26 C5 C11 C13 C15 D2 D4 D12 D22 E13 F2 F6 F12 F14 G9 G13 G19 G25 H10 H12 H16
-                           H24 H26]
-          @map_hexes ||= {
+          game_hexes.merge(
+          {
             red: {
               ['A15'] => "town=revenue:yellow_#{offboard[3][0]}|green_#{offboard[3][1]}|brown_#{offboard[3][2]}"\
                          "|gray_#{offboard[3][3]};path=a:0,b:_0;path=a:5,b:_0",
@@ -504,45 +497,8 @@ module Engine
               ['K13'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
                          "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2",
             },
-            white: {
-              %w[E27] => 'stub=edge:3',
-              %w[E11 G3 H14 I15 H20 H22 F26 C29 D24] => 'city=revenue:0',
-              %w[D6 E3 E7 G7 G11 H8 I13 I25 G27 E23] => 'city=revenue:0;icon=image:18_ms/coins',
-              %w[C17 E15 E17 F20 G17 I19] => 'city=revenue:0;upgrade=cost:10,terrain:water;icon=image:18_usa/bridge',
-              %w[C3
-                 D14] => 'city=revenue:0;upgrade=cost:10,terrain:water;icon=image:18_ms/coins;icon=image:18_usa/bridge',
-              %w[B28 C27 F4 G5 G23] => 'upgrade=cost:15,terrain:mountain',
-              %w[D18 E21 F18 H18] => 'upgrade=cost:10,terrain:water',
-              ['B22'] => 'upgrade=cost:20,terrain:lake',
-              %w[C7 E9 G21] => 'upgrade=cost:15,terrain:mountain;icon=image:18_usa/mine',
-              %w[D16 E5 H6] => 'icon=image:18_usa/mine',
-              %w[G15 H4 I17 I21 I23 J14] => 'icon=image:18_usa/oil-derrick',
-              %w[E19 F16] => 'icon=image:18_usa/coalcar',
-              %w[C9 D8 D10 E25 F8 F10 F22 F24] => 'upgrade=cost:15,terrain:mountain;icon=image:18_usa/coalcar',
-              %w[D26] => 'upgrade=cost:15,terrain:mountain;icon=image:18_usa/coalcar;stub=edge:4',
-              %w[B16 B18] => 'icon=image:18_usa/gnr',
-              ['C19'] => 'icon=image:18_usa/gnr;icon=image:18_usa/mine',
-              ['B10'] => 'icon=image:18_usa/gnr;icon=image:18_usa/coalcar;icon=image:18_usa/mine',
-              ['B12'] => 'icon=image:18_usa/gnr;icon=image:18_usa/coalcar;icon=image:18_usa/oil-derrick',
-              ['D20'] => 'icon=image:18_usa/gnr;city=revenue:0',
-              %w[B8 B14] => 'icon=image:18_usa/gnr;city=revenue:0;icon=image:18_ms/coins',
-              ['B6'] => 'icon=image:18_usa/gnr;upgrade=cost:15,terrain:mountain;icon=image:18_usa/coalcar',
-              ['B4'] => 'icon=image:18_usa/gnr;upgrade=cost:10,terrain:water',
-              plain_hexes => '',
-            },
-            gray: {
-              ['B30'] => 'path=a:1,b:0',
-              ['C23'] => 'town=revenue:yellow_30|green_40|brown_50|gray_60;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0',
-              ['C25'] => 'town=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_0',
-            },
-            yellow: {
-              ['D28'] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_0;label=NY',
-            },
-            blue: {
-              ['F28'] => 'offboard=revenue:yellow_0,visit_cost:99;path=a:0,b:_0',
-              %w[B24 C21] => '',
-            },
           }
+        )
         end
 
         def timeline
