@@ -34,7 +34,7 @@ module Engine
       G1849Boot => ['1849Boot', '1849K2S', 'Two Sicilies'],
       G1860 => %w[1860 Wight],
       G1873 => ['Harzbahn 1873', '1873', '73'],
-      G1889 => ['1889', 'Shikoku', 'Shikoku: 1889', 'History of Shikoku Railways'],
+      G1889 => ['1889', 'Shikoku', 'Shikoku 1889', 'History of Shikoku Railways'],
       G18Chesapeake => %w[18Chesapeake Chessie],
       G18ChesapeakeOffTheRails => ['ChesapeakeOTR', 'OTR', '18Chesapeake: Off the Rails'],
       G18LosAngeles => ['18 Los Angeles', '18LosAngeles', '18LA'],

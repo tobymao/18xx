@@ -275,7 +275,7 @@ module View
     private
 
     def render_title
-      title = "#{@game.class.title} - #{@game.id} - 18xx.Games"
+      title = "#{@game.class.display_title} - #{@game.id} - 18xx.Games"
       title = "* #{title}" if @game.active_players_id.include?(@user&.dig('id'))
       `document.title = #{title}`
       change_favicon(active_player)
@@ -373,7 +373,7 @@ module View
 
     def render_round
       description = @game_data['mode'] == :hotseat ? '[HOTSEAT] ' : ''
-      description += "#{@game.class.title}: "
+      description += "#{@game.class.display_title}: "
       description += "Phase #{@game.phase.name} - "
       name = @round.class.name.split(':').last
       description += @game.round_description(name)

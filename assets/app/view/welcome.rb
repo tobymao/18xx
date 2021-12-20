@@ -17,7 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>The <b><a href='https://www.kickstarter.com/projects/joshuastarr/shikoku-1889?ref=5z2fk6'>1889 Kickstarter</a></b> is now live!</p>
+        <p>The <b><a href='https://www.kickstarter.com/projects/joshuastarr/shikoku-1889?ref=5z2fk6'>Shikoku 1889 Kickstarter</a></b> is now live!</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
@@ -52,7 +52,7 @@ module View
     def render_introduction
       message = <<~MESSAGE
         <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)!
-        If you are new to 18xx games then 1889, 18Chesapeake, or 18MS are good games to begin with.</p>
+        If you are new to 18xx games then Shikoku 1889, 18Chesapeake, or 18MS are good games to begin with.</p>
 
         <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
 

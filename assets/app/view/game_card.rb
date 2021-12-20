@@ -130,7 +130,7 @@ module View
 
       h('div.header', div_props, [
         h(:div, text_props, [
-          h(:div, "Game: #{@gdata['title']}"),
+          h(:div, "Game: #{game.display_title}"),
           h('div.nowrap', owner_props, "Owner: #{@gdata['user']['name']}"),
         ]),
         h(:div, buttons_props, buttons),
@@ -306,7 +306,7 @@ module View
       h('div.game.card', [
         h('div.header', header_props, [
           h(:div, [
-            h(:div, "Game: #{@gdata['title']}"),
+            h(:div, "Game: #{Engine.closest_display_title(@gdata['title'])}"),
             h('div.nowrap', 'Owner: You'),
           ]),
           button,
