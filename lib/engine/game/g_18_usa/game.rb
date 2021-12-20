@@ -89,14 +89,13 @@ module Engine
             tiles: %i[yellow green blue brown],
             operating_rounds: 2,
             corporation_sizes: [5, 10],
-            status: ['increased_oil'],
+            events: [{ 'type' => 'increased_oil' }],
           },
           {
             name: '6',
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green blue brown],
-            status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
@@ -105,7 +104,6 @@ module Engine
             on: '7',
             train_limit: 2,
             tiles: %i[yellow green blue brown gray],
-            status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
@@ -114,19 +112,19 @@ module Engine
             on: '8',
             train_limit: 2,
             tiles: %i[yellow green blue brown gray],
-            status: %w[increased_oil no_new_shorts],
+            status: %w[no_new_shorts],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
         ].freeze
 
         # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
-        STATUS_TEXT = {
-          'increased_oil' => [
-            'Increased Oil Prices',
-            'Oil is worth $20 instead of $10',
+        EVENTS_TEXT = {
+          'upgrade_oil' => [
+            'Oil Upgraded',
+            'Oil worth $20 for the remainder of the game',
           ],
-        }.merge(Base::STATUS_TEXT)
+        }.merge(Base::EVENTS_TEXT)
 
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 40 },
                   { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 5 },
@@ -165,6 +163,11 @@ module Engine
         }.freeze
 
         SEED_MONEY = 200
+
+        def event_upgrade_oil!
+          @log << "-- Event: #{EVENTS_TEXT['upgrade_oil'][1]} --"
+          @oil_value = 20
+        end
 
         def active_metropolitan_hexes
           @active_metropolitan_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
@@ -210,6 +213,8 @@ module Engine
 
           @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           @jump_graph = Graph.new(self, no_blocking: true)
+
+          @oil_value = 10
 
           # Place neutral tokens in the off board cities
           neutral = Corporation.new(
@@ -649,9 +654,9 @@ module Engine
           revenue -= 10 if company_tile && !company_tile.cities.first.tokened_by?(corporation)
 
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('coal') }
-          revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('iron10') }
-          revenue += 20 * route.all_hexes.count { |hex| hex.tile.id.include?('iron20') }
-          revenue += (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
+          revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('ore10') }
+          revenue += 20 * route.all_hexes.count { |hex| hex.tile.id.include?('ore20') }
+          revenue += @oil_value * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
 
           pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == 'P' }
           revenue += 20 * stops.count { |s| !s.tile.name.include?('Rural') } if pullman_assigned
@@ -699,10 +704,6 @@ module Engine
           # Otherwise skip the worst untokened stop
           untokened_stops = counted_stops.reject { |stop| stop&.tokened_by(route.train.owner) }
           untokened_stops.min_by { |stop| stop.route_revenue(@game.phase, route.train) }
-        end
-
-        def increased_oil?
-          @phase.status.include?('increased_oil')
         end
 
         def check_distance(route, visits)

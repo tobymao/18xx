@@ -25,7 +25,6 @@ module Engine
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
-                free: false,
                 when: 'track',
                 discount: 15,
                 consume_tile_lay: true,
@@ -54,9 +53,11 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
+              # TODO: Not NO if a metropolis, Yes, Company town if on river
+              # TODO must be reachable
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
+                hexes: BRIDGE_CITY_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -81,9 +82,7 @@ module Engine
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
                 tiles: %w[7oil 8oil 9oil],
-                free: false,
                 when: 'track',
-                discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
@@ -107,9 +106,8 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: IRON_HEXES,
+                hexes: ORE_HEXES,
                 tiles: %w[7iron10 8iron10 9iron10],
-                free: false,
                 when: 'track',
                 discount: 15,
                 consume_tile_lay: true,
@@ -164,7 +162,7 @@ module Engine
             desc: 'May lay two extra yellow tiles instead of one when paying $20.',
             sym: 'P7',
             abilities: [
-              # Owning the private is the ability
+              # Built into game class
             ],
             color: 'cyan',
           },
@@ -215,7 +213,7 @@ module Engine
                   ' May make an extra non-city track upgrade (instead of yellow tile lay) per OR when paying $20',
             sym: 'P11',
             abilities: [
-              # Owning the private is the ability
+              # Built into track class
             ],
             color: 'cyan',
           },
@@ -236,9 +234,7 @@ module Engine
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
                 tiles: %w[7oil 8oil 9oil],
-                free: false,
                 when: 'track',
-                discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
@@ -384,18 +380,18 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
+              # TODO: same as other bridge company
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
+                hexes: BRIDGE_CITY_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
               {
                 type: 'tile_lay',
-                hexes: COAL_HEXES + IRON_HEXES,
+                hexes: (COAL_HEXES + ORE_HEXES).uniq,
                 tiles: %w[7coal 8coal 9coal 7iron10 8iron10 9iron10],
-                free: false,
                 when: 'track',
                 discount: 15,
                 consume_tile_lay: true,
@@ -422,9 +418,10 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
+              # TODO: same as other bridge companies
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
+                hexes: BRIDGE_CITY_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -463,15 +460,14 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: IRON_HEXES,
+                hexes: ORE_HEXES,
                 tiles: %w[7iron10 8iron10 9iron10],
-                free: false,
                 when: 'track',
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
-                count: 1,
+                count: 2,
               },
             ],
             color: 'orange',
@@ -513,7 +509,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: CITY_HEXES,
-                tiles: %w[RuralX RuralY RuralK],
+                tiles: %w[X07 X08 X09],
                 free: false,
                 reachable: true,
                 when: 'track',

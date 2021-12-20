@@ -6,10 +6,26 @@ module Engine
       module Map
         LAYOUT = :pointy
 
-        YELLOW_PLAIN_TRACK_TILES = %w[7 8 9].freeze
-        GREEN_PLAIN_TRACK_TILES = %w[80 81 82 83].freeze
-        BROWN_PLAIN_TRACK_TILES = %w[544 545 546].freeze
-        GRAY_PLAIN_TRACK_TILES = %w[X17 60].freeze
+        YELLOW_PLAIN_TRACK_TILES = %w[
+          7 7coal 7ore10 7ore20 7oil
+          8 8coal 8ore10 8ore20 8oil
+          9 9coal 9ore10 9ore20 9oil
+        ].freeze
+        GREEN_PLAIN_TRACK_TILES = %w[
+          80 80coal 80oil
+          81 81coal 81oil
+          82 82coal 82oil
+          83 83coal 83oil
+        ].freeze
+        BROWN_PLAIN_TRACK_TILES = %w[
+          544 544coal 544oil
+          545 545coal 545oil
+          546 546coal 546oil
+        ].freeze
+        GRAY_PLAIN_TRACK_TILES = %w[
+          X17coal X17oil X17
+          60 60coal 60oil
+        ].freeze
         PLAIN_TRACK_TILES = YELLOW_PLAIN_TRACK_TILES + GREEN_PLAIN_TRACK_TILES + BROWN_PLAIN_TRACK_TILES + GRAY_PLAIN_TRACK_TILES
 
         PLAIN_YELLOW_CITY_TILES = %w[5 6 57].freeze
@@ -19,7 +35,7 @@ module Engine
         CITY_HEXES = %w[B8 B14 C3 C17 C29 D6 D14 D20 D24 E3 E7 E11 E15 E17 E23 F20 F26 G3 G7 G11 G17 G27 H8 H14 H20 H22 I13 I15
                         I19 I25].freeze
         OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze
-        IRON_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
+        ORE_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
         COAL_HEXES = %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24].freeze
         BRIDGE_CITY_HEXES = %w[I19 C3 C17 D14 E15 E17 F20 G17].freeze
         BRIDGE_TILE_HEXES = %w[B4 D18 E21 F18 H18].freeze
@@ -193,6 +209,220 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY',
+          },
+          '7coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;label=⛏️',
+            'hidden' => true,
+          },
+          '8coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:2;label=⛏️',
+            'hidden' => true,
+          },
+          '9coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⛏️',
+            'hidden' => true,
+          },
+          '544coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
+            'hidden' => true,
+          },
+          '545coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=⛏️',
+            'hidden' => true,
+          },
+          '546coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
+            'hidden' => true,
+          },
+          '80coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=⛏️',
+            'hidden' => true,
+          },
+          '81coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=⛏️',
+            'hidden' => true,
+          },
+          '82coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=⛏️',
+            'hidden' => true,
+          },
+          '83coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=⛏️',
+            'hidden' => true,
+          },
+          '60coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:10,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=⛏️',
+            'hidden' => true,
+          },
+          'X17coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:10,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
+            'hidden' => true,
+          },
+          '7ore10' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;label=⚒️',
+            'hidden' => true,
+          },
+          '8ore10' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:2;label=⚒️',
+            'hidden' => true,
+          },
+          '9ore10' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⚒️',
+            'hidden' => true,
+          },
+          '7ore20' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:20,hide:1;path=a:0,b:1;label=⚒️',
+            'hidden' => true,
+          },
+          '8ore20' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:20,hide:1;path=a:0,b:2;label=⚒️',
+            'hidden' => true,
+          },
+          '9ore20' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:20,hide:1;path=a:0,b:3;label=⚒️',
+            'hidden' => true,
+          },
+          '7oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:1;label=🛢️',
+            'hidden' => true,
+          },
+          '8oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:2;label=🛢️',
+            'hidden' => true,
+          },
+          '9oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:3;label=🛢️',
+            'hidden' => true,
+          },
+          '544oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
+            'hidden' => true,
+          },
+          '545oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=🛢️',
+            'hidden' => true,
+          },
+          '546oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
+            'hidden' => true,
+          },
+          '80oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=🛢️',
+            'hidden' => true,
+          },
+          '81oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=🛢️',
+            'hidden' => true,
+          },
+          '82oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=🛢️',
+            'hidden' => true,
+          },
+          '83oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=🛢️',
+            'hidden' => true,
+          },
+          '60oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:20,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=🛢️',
+            'hidden' => true,
+          },
+          'X17oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:20,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
+            'hidden' => true,
           },
         }.freeze
 
