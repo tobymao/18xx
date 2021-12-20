@@ -190,6 +190,7 @@ module Engine
                 tiles: %w[14 15 619],
               },
             ],
+            color: 'cyan',
           },
           # P10
           {
@@ -499,6 +500,7 @@ module Engine
                 on_phase: '6',
               },
             ],
+            color: 'orange',
           },
           # P26
           {
