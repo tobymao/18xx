@@ -10,8 +10,6 @@ module Engine
         class BuySellParShares < Engine::Step::BuySellParShares
           include BidboxAuction
 
-          attr_accessor :bidders, :bid_actions
-
           def actions(entity)
             return ['choose_ability'] unless choices_ability(entity).empty?
             return [] unless entity == current_entity
@@ -121,6 +119,8 @@ module Engine
           end
 
           def pass!
+            # This should only be updated at the end of the round, not after each bid.
+            @round.update_stored_winning_bids(current_entity)
             store_bids!
             super
           end
@@ -209,13 +209,14 @@ module Engine
           end
 
           def setup
+            # This sets the initial value of @bids
             setup_auction
             super
 
             @bid_actions = 0
-            @bidders = @round.bidders || Hash.new { |h, k| h[k] = [] }
-            @bid_exceeded = @round.bid_exceeded || Hash.new { |h, k| h[k] = [] }
             @bids = @round.bids if @round.bids
+            # Set initial value of @bids on the round if there's none.
+            @round.bids = @bids unless @round.bids
           end
 
           def bidding_tokens(player)
@@ -230,21 +231,18 @@ module Engine
           end
 
           def store_bids!
-            @round.bidders = @bidders
             @round.bids = @bids
-            @bid_exceeded[current_entity].clear
-            @round.bid_exceeded = @bid_exceeded
-          end
-
-          def should_stop_applying_program(entity, program, share_to_buy)
-            return "No longer winning bids on #{@bid_exceeded[entity].map(&:id).join(',')}" unless @bid_exceeded[entity].empty?
-
-            super
           end
 
           def action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
-            # Bid is done in should_stop_applying_program
-            return if action.is_a?(Action::Bid)
+            if action.is_a?(Action::Bid)
+              stored_winning_bids = @round.stored_winning_bids(entity)
+              # The parameter is named corporation, but it can be a minor or company as well.
+              return "No longer winning bid on #{corporation.id}" if stored_winning_bids.include?(corporation)
+
+              # Any other bid is fine (probably).
+              return
+            end
 
             # Off shore cannot cause presidency shift, ignore
             return if action.is_a?(Action::Choose) && action.entity.id == @game.class::COMPANY_OSTH
@@ -255,16 +253,12 @@ module Engine
           protected
 
           def add_bid(action)
+            super
+
             company = action.company
             price = action.price
             entity = action.entity
 
-            winning_bid = highest_bid(company)
-            # Mark the previous highest bid as no longer winning
-            @bid_exceeded[winning_bid.entity] << company if winning_bid
-
-            super
-            @bidders[company] |= [entity]
             track_action(action, bid_target(action))
 
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{company.name}"

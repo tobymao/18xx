@@ -1121,9 +1121,8 @@ module Engine
           # Randomize and setup the companies
           setup_companies
 
-          # Setup the fist bidboxes
+          # Actual bidbox setup happens in the stock round.
           @bidbox_minors_cache = []
-          setup_bidboxes
 
           # Setup exchange token abilities for all corporations
           setup_exchange_tokens
