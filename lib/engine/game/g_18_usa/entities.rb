@@ -138,6 +138,24 @@ module Engine
             ],
             color: 'blue',
           },
+          # P6
+          {
+            name: 'Import/Export Hub',
+            value: 30,
+            revenue: 0,
+            desc: 'Discard during a corporation\'s lay or upgrade track step to replace one red area value token with the ' \
+                  '30/40/50/80 value token. The corporation must be able to trace a legal route to reach the red area.',
+            sym: 'P6',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'track',
+                owner_type: 'corporation',
+                hexes: [], # Connected offboards
+              },
+            ],
+            color: 'blue',
+          },
           # P7
           {
             name: 'Track Engineers',

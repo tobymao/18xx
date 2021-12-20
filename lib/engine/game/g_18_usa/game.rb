@@ -13,7 +13,8 @@ module Engine
         include G18USA::Entities
         include G18USA::Map
 
-        attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles
+        attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles,
+                    :mexico_hexes
 
         CURRENCY_FORMAT_STR = '$%d'
 
@@ -208,6 +209,7 @@ module Engine
           @brown_cl_tile ||= @all_tiles.find { |t| t.name == 'CL' }
           @brown_b_tile ||= @all_tiles.find { |t| t.name == '593' }
 
+          @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           @jump_graph = Graph.new(self, no_blocking: true)
 
           # Place neutral tokens in the off board cities
@@ -425,6 +427,10 @@ module Engine
           entity.companies.find { |c| c.id == 'P15' }
         end
 
+        def p6_offboard_revenue
+          @p6_offboard_revenue ||= 'yellow_30|green_40|brown_50|gray_80'
+        end
+
         def maximum_loans(entity)
           super + (owns_p15?(entity) ? 1 : 0)
         end
@@ -460,11 +466,15 @@ module Engine
                            H24 H26]
           @map_hexes ||= {
             red: {
+              ['A15'] => "town=revenue:yellow_#{offboard[3][0]}|green_#{offboard[3][1]}|brown_#{offboard[3][2]}"\
+                         "|gray_#{offboard[3][3]};path=a:0,b:_0;path=a:5,b:_0",
               ['A27'] => "offboard=revenue:yellow_#{offboard[0][0]}|green_#{offboard[0][1]}"\
                          "|brown_#{offboard[0][2]}|gray_#{offboard[0][3]};"\
                          'path=a:5,b:_0;path=a:0,b:_0',
-              ['J20'] => "offboard=revenue:yellow_#{offboard[1][0]}|green_#{offboard[1][1]}|brown_#{offboard[1][2]}"\
-                         "|gray_#{offboard[1][3]};path=a:2,b:_0",
+              ['B2'] => "town=revenue:yellow_#{offboard[4][0]}|green_#{offboard[4][1]}|brown_#{offboard[4][2]}"\
+                        "|gray_#{offboard[4][3]};path=a:4,b:_0;path=a:5,b:_0",
+              ['E1'] => "town=revenue:yellow_#{offboard[6][0]}|green_#{offboard[6][1]}|brown_#{offboard[6][2]}"\
+                        "|gray_#{offboard[6][3]};path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0",
               ['I5'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
                         "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4",
               %w[I7
@@ -475,6 +485,10 @@ module Engine
                          'border=edge:5',
               ['J12'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
                          "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;path=a:4,b:_0;border=edge:2;border=edge:5",
+              ['J20'] => "offboard=revenue:yellow_#{offboard[1][0]}|green_#{offboard[1][1]}|brown_#{offboard[1][2]}"\
+                         "|gray_#{offboard[1][3]};path=a:2,b:_0",
+              ['J24'] => "town=revenue:yellow_#{offboard[5][0]}|green_#{offboard[5][1]}|brown_#{offboard[5][2]}"\
+                         "|gray_#{offboard[5][3]};path=a:2,b:_0;path=a:3,b:_0",
               ['K13'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
                          "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2",
             },
@@ -505,14 +519,6 @@ module Engine
               plain_hexes => '',
             },
             gray: {
-              ['A15'] => "town=revenue:yellow_#{offboard[3][0]}|green_#{offboard[3][1]}|brown_#{offboard[3][2]}"\
-                         "|gray_#{offboard[3][3]};path=a:0,b:_0;path=a:5,b:_0",
-              ['B2'] => "town=revenue:yellow_#{offboard[4][0]}|green_#{offboard[4][1]}|brown_#{offboard[4][2]}"\
-                        "|gray_#{offboard[4][3]};path=a:4,b:_0;path=a:5,b:_0",
-              ['J24'] => "town=revenue:yellow_#{offboard[5][0]}|green_#{offboard[5][1]}|brown_#{offboard[5][2]}"\
-                         "|gray_#{offboard[5][3]};path=a:2,b:_0;path=a:3,b:_0",
-              ['E1'] => "town=revenue:yellow_#{offboard[6][0]}|green_#{offboard[6][1]}|brown_#{offboard[6][2]}"\
-                        "|gray_#{offboard[6][3]};path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0",
               ['B30'] => 'path=a:1,b:0',
               ['C23'] => 'town=revenue:yellow_30|green_40|brown_50|gray_60;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0',
               ['C25'] => 'town=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_0',

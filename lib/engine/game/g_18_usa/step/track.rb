@@ -22,7 +22,7 @@ module Engine
           end
 
           def can_lay_tile?(entity)
-            super || can_place_token_with_p20?(entity)
+            super || can_place_token_with_p20?(entity) || can_assign_p6?(entity)
           end
 
           def can_place_token_with_p20?(entity)
@@ -31,6 +31,11 @@ module Engine
             @game.graph.connected_nodes(entity).keys.any? do |node|
               node.city? && node.available_slots.zero? && !node.tokened_by?(entity)
             end
+          end
+
+          def can_assign_p6?(entity)
+            entity.companies.include?(@game.company_by_id('P6')) &&
+            @game.graph.connected_hexes(entity).keys.any? { |hex| hex.tile.color == :red }
           end
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
