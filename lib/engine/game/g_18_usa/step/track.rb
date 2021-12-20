@@ -60,8 +60,15 @@ module Engine
             colors
           end
 
-          def round_state
-            super.merge({ tile_lay_mode: nil })
+          def process_lay_tile(action)
+            return super unless free_brown_city_upgrade?(action.entity, action.hex, action.tile)
+
+            lay_tile(action)
+            @round.laid_hexes << action.hex
+          end
+
+          def free_brown_city_upgrade?(entity, hex, tile)
+            !entity.operated? && @game.home_hex_for(entity) == hex && tile.color == :brown
           end
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
@@ -77,7 +84,7 @@ module Engine
             super
 
             @game.company_by_id('P16').close! if tile.name == 'X23'
-            process_company_town(tile) if @game.COMPANY_TOWN_TILES.include?(tile.name)
+            process_company_town(tile) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
             if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
                 action.hex.neighbors.any? { |exit, h| action.hex.tile.exits.include?(exit) && h.name == 'E11' }
               @round.pending_tracks << { entity: action.entity, hexes: [@game.hex_by_id('E11')] }

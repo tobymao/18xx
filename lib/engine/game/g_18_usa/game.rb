@@ -86,7 +86,7 @@ module Engine
             name: '5',
             on: '5',
             train_limit: 3,
-            tiles: %i[yellow green blue brown],
+            tiles: %i[yellow green brown],
             operating_rounds: 2,
             corporation_sizes: [5, 10],
             events: [{ 'type' => 'increased_oil' }],
@@ -95,7 +95,7 @@ module Engine
             name: '6',
             on: '6',
             train_limit: 2,
-            tiles: %i[yellow green blue brown],
+            tiles: %i[yellow green brown],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
@@ -103,7 +103,7 @@ module Engine
             name: '7',
             on: '7',
             train_limit: 2,
-            tiles: %i[yellow green blue brown gray],
+            tiles: %i[yellow green brown gray],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
@@ -111,7 +111,7 @@ module Engine
             name: '8',
             on: '8',
             train_limit: 2,
-            tiles: %i[yellow green blue brown gray],
+            tiles: %i[yellow green brown gray],
             status: %w[no_new_shorts],
             operating_rounds: 2,
             corporation_sizes: [10],
@@ -343,7 +343,6 @@ module Engine
         # special - ???
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           laying_entity = @round.current_entity
-          home_hex = home_hex_for(laying_entity)
 
           # Resource tiles
           return @phase.tiles.include?(:green) && ore_upgrade?(from, to) if from.name.include?('ore')
@@ -358,18 +357,18 @@ module Engine
               from.color == :white && from.cities.size.zero? && from.label == to.label
           return @phase.tiles.include?(:brown) if BROWN_PLAIN_TRACK_TILES.include?(to.name) &&
               from.color == :white && from.cities.size.zero? && from.label == to.label
-          return @phase.tiles.include?(:gray) || (@round.tile_lay_mode == :pettibone && @phase.tiles.include?(:brown)) \
+          return @phase.tiles.include?(:gray) \
             if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
               from.color == :white && from.cities.size.zero? && from.label == to.label
           # from yellow
 
           return @phase.tiles.include?(:brown) if BROWN_PLAIN_TRACK_TILES.include?(to.name) &&
               YELLOW_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
-          return @phase.tiles.include?(:gray) || (@round.tile_lay_mode == :pettibone && @phase.tiles.include?(:brown)) \
+          return @phase.tiles.include?(:gray) \
             if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
               YELLOW_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
           # from green
-          return @phase.tiles.include?(:gray) || (@round.tile_lay_mode == :pettibone && @phase.tiles.include?(:brown)) \
+          return @phase.tiles.include?(:gray) \
             if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
               GREEN_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
 
@@ -379,57 +378,32 @@ module Engine
           return !@phase.tiles.include?(:brown) if PLAIN_YELLOW_CITY_TILES.include?(to.name) &&
               from.color == :white && from.cities.size.positive? && !from.label
 
-          # Cleveland hex gets special brown upgrade
-          return @phase.tiles.include?(:brown) && from.hex.id == 'D24' if to.name == 'X13' &&
-              from.name == '15' && from.hex.id == home_hex.id
-          return @phase.tiles.include?(:brown) && from.hex.id != 'D24' if to.name == '448' &&
-              from.name == '15' && from.hex.id == home_hex.id
+          # Brown home city upgrade only on first operation
+          if !laying_entity.operated? &&
+             @phase.tiles.include?(:brown) &&
+             from.hex == home_hex_for(laying_entity) &&
+             to.color == :brown &&
+             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
+            if active_metroplitan_hexes.include?(from.hex)
+              return to.name == 'X14' if from.hex.id == 'H14'
+              return to.name == 'X15' if from.hex.id == 'G3'
+              return to.name == 'X16' if from.hex.id == 'D28'
 
-          # Brown phase brown tile skips
-          # metro yellow to brown
+              return to.name == '593'
+            end
 
-          # NY is preprinted
-          return @phase.tiles.include?(:brown) if to.name == 'X12' && from.color == :yellow &&
-              from.hex.id == 'D28' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
+            return to.name == 'X13' if from.hex.id == 'D24'
 
-          return @phase.tiles.include?(:brown) if to.name == '592' && from.name == 'X01' && from.hex.id == home_hex.id &&
-              @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == '592' && from.name == 'X02' && from.hex.id == home_hex.id &&
-              @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == '592' && from.name == 'X06' && from.hex.id == home_hex.id &&
-              @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == '592' && from.name == 'X04' && from.hex.id == home_hex.id &&
-              @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == 'X10' && from.name == 'X03' && from.hex.id == home_hex.id &&
-              @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == 'X11' && from.name == 'X05' && from.hex.id == home_hex.id &&
-              @round&.tile_lay_mode == :brown_home
-
-          # plain yellow to brown
-          return @phase.tiles.include?(:brown) if PLAIN_BROWN_CITY_TILES.any? { |name| name == to.name } &&
-              PLAIN_YELLOW_CITY_TILES.any? { |name| name == from.name } && from.hex.id != 'D24' && from.hex.id == home_hex.id &&
-              @round&.tile_lay_mode == :brown_home
-
-          # Plain unlaid city to brown
-          return @phase.tiles.include?(:brown) if PLAIN_BROWN_CITY_TILES.any? { |name| name == to.name } &&
-              from.color == :white && from.cities.size.positive? && !from.label &&
-              from.hex.id != 'D24' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
-
-          # Cleveland straight to brown
-          return @phase.tiles.include?(:brown) if to.name == 'X13' && from.color == :white &&
-              from.hex.id == 'D24' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
-          return @phase.tiles.include?(:brown) if to.name == 'X13' && from.color == :yellow &&
-              from.hex.id == 'D24' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
+            return %w[63 448 611].include?(to.name)
+          end
 
           super
         end
 
         def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
           colors = phase_color_cache || @phase.tiles
-          return tile.color == :brown if @round.tile_lay_mode == :brown_home
-
-          colors.include?(tile.color) || (tile.cities.empty? && @round.tile_lay_mode == :pettibone && (tile.color == :green ||
-            (tile.color == :brown && colors.include?(:green)) || (tile.color == :gray && colors.include?(:brown))))
+          colors.include?(tile.color) ||
+            (tile.color == :brown && colors.include?(:green)) || (tile.color == :gray && colors.include?(:brown))
         end
 
         # Get all possible upgrades for a tile
