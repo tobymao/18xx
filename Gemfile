@@ -28,5 +28,6 @@ group :development do
 end
 
 group :test do
+  gem 'parallel_tests'
   gem 'rspec'
 end
