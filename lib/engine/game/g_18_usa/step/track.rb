@@ -71,22 +71,34 @@ module Engine
             !entity.operated? && @game.home_hex_for(entity) == hex && tile.color == :brown
           end
 
-          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+          def lay_tile_action(action, entity: nil, spender: nil)
             tile = action.tile
-            hex = action.hex
-            if hex.tile.color != :white
+            previous_tile = action.hex.tile
+            if previous_tile.color != :white
               @num_upgraded += 1
               @city_upgraded = true unless tile.cities.empty?
             end
 
-            check_company_town(tile, action.hex) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
-
             super
+          end
+
+          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+            tile = action.tile
+            hex = action.hex
+            previous_tile = hex.tile
+
+            check_company_town(tile, hex) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
+
+            if previous_tile.cities.empty? && tile.color != previous_tile.color
+              extra_cost += 10 * (Engine::Tile::COLORS.index(tile.color) - Engine::Tile::COLORS.index(previous_tile.color) - 1)
+            end
+
+            super(action, extra_cost: extra_cost, entity: entity, spender: spender)
 
             @game.company_by_id('P16').close! if tile.name == 'X23'
             process_company_town(tile) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
             if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
-                action.hex.neighbors.any? { |exit, h| action.hex.tile.exits.include?(exit) && h.name == 'E11' }
+                hex.neighbors.any? { |exit, h| hex.tile.exits.include?(exit) && h.name == 'E11' }
               @round.pending_tracks << { entity: action.entity, hexes: [@game.hex_by_id('E11')] }
             end
             @game.jump_graph.clear

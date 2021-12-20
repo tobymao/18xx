@@ -329,10 +329,6 @@ module Engine
           ability.hexes.include?(from.hex.id) && ability.tiles.include?(to.name)
         end
 
-        def ore_upgrade?(from, to)
-          [%w[7ore10 7ore20], %w[8ore10 8ore20], %w[9ore10 9ore20]].any? { |upg| upg == [from.name, to.name] }
-        end
-
         #
         # Aggressively allows upgrading to brown tiles; the rules depend on who is laying and the current phase
         # so the track step will need to clamp down on this
@@ -342,43 +338,14 @@ module Engine
         # to: Tile - Tile to upgrade to
         # special - ???
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          laying_entity = @round.current_entity
-
           # Resource tiles
           return @phase.tiles.include?(:green) && ore_upgrade?(from, to) if from.name.include?('ore')
           if to.color == :yellow && resource_tile?(to)
             return from.color == :white && company_can_lay_resource?(selected_company, from, to)
           end
 
-          # Phase5+ plain track skips
-          # from white
-          # white to green skip requires brown
-          return @phase.tiles.include?(:brown) if GREEN_PLAIN_TRACK_TILES.include?(to.name) &&
-              from.color == :white && from.cities.size.zero? && from.label == to.label
-          return @phase.tiles.include?(:brown) if BROWN_PLAIN_TRACK_TILES.include?(to.name) &&
-              from.color == :white && from.cities.size.zero? && from.label == to.label
-          return @phase.tiles.include?(:gray) \
-            if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
-              from.color == :white && from.cities.size.zero? && from.label == to.label
-          # from yellow
-
-          return @phase.tiles.include?(:brown) if BROWN_PLAIN_TRACK_TILES.include?(to.name) &&
-              YELLOW_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
-          return @phase.tiles.include?(:gray) \
-            if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
-              YELLOW_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
-          # from green
-          return @phase.tiles.include?(:gray) \
-            if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
-              GREEN_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
-
-          return @phase.tiles.include?(:brown) if PLAIN_GREEN_CITY_TILES.include?(to.name) &&
-              from.color == :white && from.cities.size.positive? && !from.label
-          # Laying a yellow city tile in phase 5 beyond is forbidden
-          return !@phase.tiles.include?(:brown) if PLAIN_YELLOW_CITY_TILES.include?(to.name) &&
-              from.color == :white && from.cities.size.positive? && !from.label
-
           # Brown home city upgrade only on first operation
+          laying_entity = @round.current_entity
           if !laying_entity.operated? &&
              @phase.tiles.include?(:brown) &&
              from.hex == home_hex_for(laying_entity) &&
@@ -395,6 +362,23 @@ module Engine
             return to.name == 'X13' if from.hex.id == 'D24'
 
             return %w[63 448 611].include?(to.name)
+          end
+
+          if @phase.tiles.include?(:brown) && from.color == :white && !from.cities.empty? && !from.label
+            # Unplaced cities must go to green
+            return PLAIN_GREEN_CITY_TILES.include?(to.name)
+          end
+
+          super
+        end
+
+        def ore_upgrade?(from, to)
+          [%w[7ore10 7ore20], %w[8ore10 8ore20], %w[9ore10 9ore20]].any? { |upg| upg == [from.name, to.name] }
+        end
+
+        def upgrades_to_correct_color?(from, to)
+          if @phase.tiles.include?(:brown) && from.cities.empty?
+            return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
           end
 
           super
