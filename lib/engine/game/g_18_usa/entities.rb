@@ -184,9 +184,10 @@ module Engine
                 free: true,
                 when: 'track',
                 owner_type: 'corporation',
+                reachable: true,
                 closed_when_used_up: true,
                 count: 1,
-                hexes: [],
+                hexes: CITY_HEXES,
                 tiles: %w[14 15 619],
               },
             ],
@@ -201,7 +202,7 @@ module Engine
                   'All potential metropolises for this private are: '\
                   'Atlanta, Chicago, Denver, Dallas-Fort Worth, Los Angeles, and New Orleans. ' \
                   'Implementation limitation: Cannot be combined with Boomtown subsidy',
-
+            # TODO: fix limitation
             sym: 'P10',
             abilities: [
               # Owning the private is the ability
@@ -253,17 +254,18 @@ module Engine
             name: 'Pyramid Scheme',
             value: 60,
             revenue: 0,
-            desc: 'Does nothing. Min bid of $5',
+            desc: 'This company has no special ability.',
             sym: 'P14',
             abilities: [],
             color: 'green',
           },
           # P15
+          # TODO there are edge cases where you may want to pay back the land grant first. Consider making a choice ability.
           {
             name: 'Western Land Grant',
             value: 60,
             revenue: 0,
-            desc: 'The owning company may take one extra loan at a fixed $5 per round interest rate. ' \
+            desc: 'The owning corporation may take one extra loan at a fixed $5 per round interest rate. ' \
                   'All other rules regarding loans are followed as normal.',
             sym: 'P15',
             abilities: [], # Implemented in game class
@@ -274,10 +276,22 @@ module Engine
             name: 'Regional Headquarters',
             value: 60,
             revenue: 0,
-            desc: 'May upgrade a non-metropolis green or brown city to the RHQ tile after phase 5 starts',
+            desc: 'Regional Headquarters may be used to upgrade a green or brown non-metropolis city after phase 5 begins. ' \
+                  'May be placed on any existing normal city. Three of the track segments are optional and can be placed ' \
+                  'pointing toward water or other off map areas.',
             sym: 'P16',
             abilities: [
-              # TODO: Move ability to tile_lay ability. No rotation is illegal.
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                reachable: true,
+                consume_tile_lay: true,
+                hexes: CITY_HEXES,
+                tiles: ['X23'],
+                count: 1,
+                closed_when_used_up: true,
+              },
             ],
             color: 'green',
           },
@@ -543,7 +557,17 @@ module Engine
                   '$10 river hex, a bridge token may be used. Coal / Oil / Ore markers may not be used with the Company Town. '\
                   'If the station marker in the Company Town hex is ever removed, no token may ever replace it',
             sym: 'P27',
-            abilities: [], # TODO: move tile_lay ability
+            abilities: [
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                reachable: true,
+                consume_tile_lay: true,
+                hexes: [],
+                tiles: COMPANY_TOWN_TILES,
+              },
+            ],
             color: 'orange',
           },
           # P28

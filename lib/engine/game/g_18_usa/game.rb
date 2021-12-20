@@ -622,9 +622,10 @@ module Engine
 
           corporation = route.train.owner
 
+          # TODO: Is it only the junctions and resource non-city track that can't be revisited or all?
           raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
 
-          company_tile = route.all_hexes.find { |hex| hex.tile.id.include?('CTown') }&.tile
+          company_tile = route.all_hexes.find { |hex| COMPANY_TOWN_TILES.include?(hex.tile.name) }&.tile
 
           revenue -= 10 if company_tile && !company_tile.cities.first.tokened_by?(corporation)
 

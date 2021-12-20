@@ -87,42 +87,17 @@ module Engine
             hex = action.hex
             previous_tile = hex.tile
 
-            check_company_town(tile, hex) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
-
             if previous_tile.cities.empty? && tile.color != previous_tile.color
               extra_cost += 10 * (Engine::Tile::COLORS.index(tile.color) - Engine::Tile::COLORS.index(previous_tile.color) - 1)
             end
 
             super(action, extra_cost: extra_cost, entity: entity, spender: spender)
 
-            @game.company_by_id('P16').close! if tile.name == 'X23'
-            process_company_town(tile) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
             if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
                 hex.neighbors.any? { |exit, h| hex.tile.exits.include?(exit) && h.name == 'E11' }
               @round.pending_tracks << { entity: action.entity, hexes: [@game.hex_by_id('E11')] }
             end
             @game.jump_graph.clear
-          end
-
-          def check_company_town(_tile, hex)
-            raise GameError, 'Cannot use Company Town in a tokened hex' if hex.tile.cities&.first&.tokens&.first
-            return if (hex.neighbors.values & @game.active_metropolitan_hexes).empty?
-
-            raise GameError, 'Cannot use Company Town next to a metropolis'
-          end
-
-          def process_company_town(tile)
-            corporation = @game.company_by_id('P27').owner
-            if corporation.tokens.size < 8
-              @game.log << "#{corporation.name} gets a free token to place on the Company Town"
-              bonus_token = Engine::Token.new(corporation)
-              corporation.tokens << bonus_token
-              tile.cities.first.place_token(corporation, bonus_token, free: true, check_tokenable: false, extra_slot: true)
-            else
-              @game.log << "#{corporation.name} forfeits the Company Town token as they are at token limit of 8"
-            end
-            @game.graph.clear
-            @game.company_by_id('P27').close!
           end
 
           def check_track_restrictions!(entity, old_tile, new_tile)

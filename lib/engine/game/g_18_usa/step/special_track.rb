@@ -7,9 +7,14 @@ module Engine
     module G18USA
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
+          def actions(entity)
+            return [] if entity&.id == 'P16' && !@game.phase.tiles.include?(:brown)
+
+            super
+          end
+
           def hex_neighbors(entity, hex)
             # See 1817 and reinsert pittsburgh check for handling metros
-
             return false unless (ability = abilities(entity))
 
             hexes = ability.hexes
@@ -26,11 +31,8 @@ module Engine
             tile = action.tile
             check_rural_junction(tile, action.hex) if @game.class::RURAL_TILES.include?(tile.name)
 
-            if !@game.loading && entity&.id == 'P9' && !boomtown_company_hexes(entity.owner).include?(hex)
-              raise GameError, "Cannot use #{entity.name} on #{action.hex.name} (#{action.hex.location_name})"
-            end
-
             super
+            process_company_town(tile) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
             return if action.entity.id != 'P17' || !@game.resource_tile?(tile)
 
             # Consume the resource used for the tile lay
@@ -66,13 +68,26 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            return boomtown_company_hexes(entity.owner).include?(hex) if entity.id == 'P9'
+            return false unless super
 
-            hex_neighbors(entity, hex)
+            return @game.plain_yellow_city_tiles.find { |t| t.name == hex.tile.name } if entity.id == 'P9'
+            if entity.id == 'P16'
+              return %i[green brown].include?(hex.tile.color) && !@game.active_metropolitan_hexes.include?(hex)
+            end
+            return hex.tile.color == :white if entity.id == 'P26'
+
+            if entity.id == 'P27'
+              return hex.tile.color == :white &&
+                    (hex.tile.cities.empty? || hex.tile.cities.none? { |c| !c.tokens.empty? }) &&
+                    (hex.neighbors.values & @game.active_metropolitan_hexes).empty?
+            end
+
+            true
           end
 
           def legal_tile_rotation?(entity, hex, tile)
             # See 1817 and reinsert pittsburgh check for handling metros
+            return true if tile.name == 'X23'
             return super unless @game.resource_tile?(tile)
 
             super &&
@@ -91,10 +106,18 @@ module Engine
             end
           end
 
-          def boomtown_company_hexes(corporation)
-            @game.graph.connected_nodes(corporation).keys.map(&:hex).select do |node|
-              @game.plain_yellow_city_tiles.find { |t| t.name == node.tile.name }
+          def process_company_town(tile)
+            corporation = @game.company_by_id('P27').owner
+            if corporation.tokens.size < 8
+              @game.log << "#{corporation.name} gets a free token to place on the Company Town"
+              bonus_token = Engine::Token.new(corporation)
+              corporation.tokens << bonus_token
+              tile.cities.first.place_token(corporation, bonus_token, free: true, check_tokenable: false, extra_slot: true)
+            else
+              @game.log << "#{corporation.name} forfeits the Company Town token as they are at token limit of 8"
             end
+            @game.graph.clear
+            @game.company_by_id('P27').close!
           end
         end
       end
