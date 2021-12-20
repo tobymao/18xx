@@ -32,6 +32,9 @@ module Engine
         PLAIN_GREEN_CITY_TILES = %w[14 15 619].freeze
         PLAIN_BROWN_CITY_TILES = %w[63 611 448].freeze
 
+        RURAL_TILES = %w[x07 x08 x09].freeze
+        COMPANY_TOWN_TILES = %w[X20 X21 X22].freeze
+
         CITY_HEXES = %w[B8 B14 C3 C17 C29 D6 D14 D20 D24 E3 E7 E11 E15 E17 E23 F20 F26 G3 G7 G11 G17 G27 H8 H14 H20 H22 I13 I15
                         I19 I25].freeze
         OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze

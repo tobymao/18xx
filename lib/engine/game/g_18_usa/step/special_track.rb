@@ -24,17 +24,32 @@ module Engine
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
-            check_rural_junction(tile, action.hex) if tile.name.include?('Rural')
+            check_rural_junction(tile, action.hex) if @game.class::RURAL_TILES.include?(tile.name)
 
             if !@game.loading && entity&.id == 'P9' && !boomtown_company_hexes(entity.owner).include?(hex)
               raise GameError, "Cannot use #{entity.name} on #{action.hex.name} (#{action.hex.location_name})"
             end
 
             super
+            return if action.entity.id != 'P17' || !@game.resource_tile?(tile)
+
+            # Consume the resource used for the tile lay
+            resource_company = action.entity.owner.companies.find do |c|
+              c.id != 'P17' && abilities(c)&.tiles&.include?(tile.name)
+            end
+            raise GameError, "#{action.entity.name} cannot lay resource tile" unless resource_company
+
+            @game.log << "#{resource_company.name} contributes the resource"
+            ability = abilities(resource_company)
+            ability.use!
+            return if !ability.count&.zero? || !ability.closed_when_used_up
+
+            @log << "#{resource_company.name} closes"
+            resource_company.close!
           end
 
           def check_rural_junction(_tile, hex)
-            return unless hex.neighbors.values.any? { |h| h.tile.name.include?('Rural') }
+            return unless hex.neighbors.values.any? { |h| @game.class::RURAL_TILES.include?(h.tile.name) }
 
             raise GameError, 'Cannot place rural junctions adjacent to each other'
           end
@@ -45,7 +60,7 @@ module Engine
               .select { |t| @game.upgrades_to?(hex.tile, t) }
           end
 
-          # The oil/coal/iron tiles falsely pass as offboards, so we need to be more careful
+          # The oil/coal/ore tiles falsely pass as offboards, so we need to be more careful
           def real_offboard?(tile)
             tile.offboards&.any? && !tile.labels&.any?
           end
@@ -56,21 +71,10 @@ module Engine
             hex_neighbors(entity, hex)
           end
 
-          def potential_tiles(entity, hex)
-            return [] unless (tile_ability = abilities(entity))
-            return super unless %w[P9 S8].include?(tile_ability.owner.id)
-            return [] unless hex.tile.color == 'yellow'
-
-            tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
-          end
-
           def legal_tile_rotation?(entity, hex, tile)
-            # These are needed for the combo private (Keystone Bridge Co)
-            return super if tile.name.include?('Rural')
-            return false if tile.id.include?('iron') && !@game.class::IRON_HEXES.include?(hex.id)
-            return false if tile.id.include?('coal') && !@game.class::COAL_HEXES.include?(hex.id)
-
             # See 1817 and reinsert pittsburgh check for handling metros
+            return super unless @game.resource_tile?(tile)
+
             super &&
             tile.exits.any? do |exit|
               neighbor = hex.neighbors[exit]

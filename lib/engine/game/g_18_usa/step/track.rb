@@ -72,12 +72,12 @@ module Engine
               @city_upgraded = true unless tile.cities.empty?
             end
 
-            check_company_town(tile, action.hex) if tile.name.include?('CTown')
+            check_company_town(tile, action.hex) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
 
             super
 
-            @game.company_by_id('P16').close! if tile.name.include?('RHQ')
-            process_company_town(tile) if tile.name.include?('CTown')
+            @game.company_by_id('P16').close! if tile.name == 'X23'
+            process_company_town(tile) if @game.COMPANY_TOWN_TILES.include?(tile.name)
             if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
                 action.hex.neighbors.any? { |exit, h| action.hex.tile.exits.include?(exit) && h.name == 'E11' }
               @round.pending_tracks << { entity: action.entity, hexes: [@game.hex_by_id('E11')] }
@@ -107,7 +107,7 @@ module Engine
           end
 
           def check_track_restrictions!(entity, old_tile, new_tile)
-            old_tile.name.include?('iron') && new_tile.name.include?('iron') ? true : super
+            old_tile.name.include?('ore') && new_tile.name.include?('ore') ? true : super
           end
 
           def setup

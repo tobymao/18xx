@@ -194,9 +194,13 @@ module Engine
           super
         end
 
+        def tile_by_name(name)
+          @all_tiles.find { |t| t.name == name }
+        end
+
         def setup
-          @rhq_tile = tile_by_id('X23')
-          @company_town_tiles ||= %w[X20 X22 X23].map { |t| tile_by_id(t) }
+          @rhq_tile = tile_by_name('X23')
+          @company_town_tiles ||= COMPANY_TOWN_TILES.map { |id| tile_by_name(id) }
           @yellow_plain_tiles ||= @all_tiles.select { |t| YELLOW_PLAIN_TRACK_TILES.include?(t.name) }
           @green_plain_tiles ||= @all_tiles.select { |t| GREEN_PLAIN_TRACK_TILES.include?(t.name) }
           @brown_plain_tiles ||= @all_tiles.select { |t| BROWN_PLAIN_TRACK_TILES.include?(t.name) }
@@ -205,11 +209,11 @@ module Engine
           @plain_green_city_tiles ||= @all_tiles.select { |t| PLAIN_GREEN_CITY_TILES.include?(t.name) }
           @plain_brown_city_tiles ||= @all_tiles.select { |t| PLAIN_BROWN_CITY_TILES.include?(t.name) }
 
-          @brown_ny_tile ||= tile_by_id('X16')
-          @brown_dfw_tile ||= tile_by_id('X14')
-          @brown_la_tile ||= tile_by_id('X15')
-          @brown_cl_tile ||= tile_by_id('X13')
-          @brown_b_tile ||= tile_by_id('593')
+          @brown_ny_tile ||= tile_by_name('X16')
+          @brown_dfw_tile ||= tile_by_name('X14')
+          @brown_la_tile ||= tile_by_name('X15')
+          @brown_cl_tile ||= tile_by_name('X13')
+          @brown_b_tile ||= tile_by_name('593')
 
           @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           @jump_graph = Graph.new(self, no_blocking: true)
@@ -311,6 +315,24 @@ module Engine
           super
         end
 
+        def resource_tile?(tile)
+          %w[coal ore oil].any? { |resource| tile.name.include?(resource) }
+        end
+
+        def company_can_lay_resource?(company, from, to)
+          return false unless company
+          return false unless (ability = abilities(company, 'tile_lay'))
+          if company.id == 'P17'
+            return company.owner.companies.reject { |c| c == company }.any? { |c| company_can_lay_resource?(c, from, to) }
+          end
+
+          ability.hexes.include?(from.hex.id) && ability.tiles.include?(to.name)
+        end
+
+        def ore_upgrade?(from, to)
+          [%w[7ore10 7ore20], %w[8ore10 8ore20], %w[9ore10 9ore20]].any? { |upg| upg == [from.name, to.name] }
+        end
+
         #
         # Aggressively allows upgrading to brown tiles; the rules depend on who is laying and the current phase
         # so the track step will need to clamp down on this
@@ -322,10 +344,12 @@ module Engine
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           laying_entity = @round.current_entity
           home_hex = home_hex_for(laying_entity)
-          # TODO: Check if it's near a metropolis
-          return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white && !from.label
-          return @phase.tiles.include?(:brown) if @rhq_tile.name == to.name &&
-              %w[14 15 619 63 611 448].include?(from.name)
+
+          # Resource tiles
+          return @phase.tiles.include?(:green) && ore_upgrade?(from, to) if from.name.include?('ore')
+          if to.color == :yellow && resource_tile?(to)
+            return from.color == :white && company_can_lay_resource?(selected_company, from, to)
+          end
 
           # Phase5+ plain track skips
           # from white
@@ -425,13 +449,6 @@ module Engine
 
           # Don't include the tile skips; those follow normal tile lay rules, they upgrade multiple times in a row
           upgrades
-        end
-
-        def legal_tile_rotation?(entity, hex, tile)
-          return company_by_id('P27').owner == entity && !company_by_id('P27').closed? if tile.name.include?('CTown')
-          return company_by_id('P16').owner == entity && !company_by_id('P16').closed? if tile.name.include?('RHQ')
-
-          super
         end
 
         def owns_p15?(entity)
@@ -659,7 +676,7 @@ module Engine
           revenue += @oil_value * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
 
           pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == 'P' }
-          revenue += 20 * stops.count { |s| !s.tile.name.include?('Rural') } if pullman_assigned
+          revenue += 20 * stops.count { |s| !RURAL_TILES.include?(s.tile.name) } if pullman_assigned
 
           revenue += 10 if route.all_hexes.any? { |hex| hex.tile.icons.any? { |icon| icon.name == 'plus_ten' } }
           revenue += @phase.tiles.include?(:brown) ? 20 : 10 if route.all_hexes.any? do |hex|
@@ -708,8 +725,8 @@ module Engine
 
         def check_distance(route, visits)
           super
-          raise GameError, 'Train cannot start or end on a rural junction' if
-              visits.first.tile.name.include?('Rural') || visits.last.tile.name.include?('Rural')
+          raise GameError, 'Train cannot start or end on a rural junction' unless
+              (RURAL_TILES & [visits.first.tile.name, visits.last.tile.name]).empty?
         end
 
         def check_connected(route, token)

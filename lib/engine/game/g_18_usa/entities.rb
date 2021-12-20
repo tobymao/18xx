@@ -26,6 +26,7 @@ module Engine
                 hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
@@ -83,6 +84,7 @@ module Engine
                 hexes: OIL_HEXES,
                 tiles: %w[7oil 8oil 9oil],
                 when: 'track',
+                reachable: true,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
@@ -101,14 +103,15 @@ module Engine
                   'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  A tile lay action may be used to increase the revenue bonus to $20 in phase 3. '\
-                  '  May not start or end a route at an iron mine.',
+                  '  May not start or end a route at an ore mine.',
             sym: 'P4',
             abilities: [
               {
                 type: 'tile_lay',
                 hexes: ORE_HEXES,
-                tiles: %w[7iron10 8iron10 9iron10],
+                tiles: %w[7ore 8ore10 9ore10],
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
@@ -235,6 +238,7 @@ module Engine
                 hexes: OIL_HEXES,
                 tiles: %w[7oil 8oil 9oil],
                 when: 'track',
+                reachable: true,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
@@ -272,7 +276,7 @@ module Engine
             desc: 'May upgrade a non-metropolis green or brown city to the RHQ tile after phase 5 starts',
             sym: 'P16',
             abilities: [
-              # Simply owning this company is the ability
+              # TODO: Move ability to tile_lay ability. No rotation is illegal.
             ],
             color: 'green',
           },
@@ -291,7 +295,7 @@ module Engine
                 when: 'track',
                 owner_type: 'corporation',
                 hexes: %w[B4 B6 B8 B10 B12 B14 B16 B18 C19 D20],
-                tiles: %w[5 6 7 8 9 57],
+                tiles: YELLOW_PLAIN_TRACK_TILES + PLAIN_YELLOW_CITY_TILES,
                 free: true,
                 special: false,
                 count_per_or: 1,
@@ -315,8 +319,8 @@ module Engine
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
-                free: false,
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
@@ -391,8 +395,9 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: (COAL_HEXES + ORE_HEXES).uniq,
-                tiles: %w[7coal 8coal 9coal 7iron10 8iron10 9iron10],
+                tiles: %w[7coal 8coal 9coal 7ore10 8ore10 9ore10],
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 owner_type: 'corporation',
@@ -455,14 +460,15 @@ module Engine
                   'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  A tile lay action may be used to increase the revenue bonus to $20 in phase 3. '\
-                  '  May not start or end a route at an iron mine.',
+                  '  May not start or end a route at an ore mine.',
             sym: 'P24',
             abilities: [
               {
                 type: 'tile_lay',
                 hexes: ORE_HEXES,
-                tiles: %w[7iron10 8iron10 9iron10],
+                tiles: %w[7ore10 8ore10 9ore10],
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
@@ -500,7 +506,7 @@ module Engine
             value: 90,
             revenue: 0,
             desc: 'Comes with three rural junction tiles. Rural junctions can be placed in empty city hexes and fulfill the '\
-                  'revenue center requirement for coal, iron, and oil markers and can receive bridge tokens. Rural junctions '\
+                  'revenue center requirement for coal, ore, and oil markers and can receive bridge tokens. Rural junctions '\
                   'are not towns and do not count against the number of stops for a train and furthermore they may not be the '\
                   'start or end of a route. Rural junctions may never be upgraded; a train may not run through the same rural '\
                   'junction twice',
@@ -532,10 +538,10 @@ module Engine
                   'place a token on the Company Town hex and receive $10 less for the city than the company with the station '\
                   'marker in the city. The Company Town can be placed on any hex, city circle or not, as long as it is not '\
                   'adjacent to a metropolis and has no track or station marker in it. If the Company Town tile is placed on a '\
-                  '$10 river hex, a bridge token may be used. Coal / Oil / Iron markers may not be used with the Company Town. '\
+                  '$10 river hex, a bridge token may be used. Coal / Oil / Ore markers may not be used with the Company Town. '\
                   'If the station marker in the Company Town hex is ever removed, no token may ever replace it',
             sym: 'P27',
-            abilities: [],
+            abilities: [], # TODO: move tile_lay ability
             color: 'orange',
           },
           # P28
@@ -554,8 +560,8 @@ module Engine
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
-                free: false,
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
