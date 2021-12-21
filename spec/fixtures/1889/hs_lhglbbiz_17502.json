@@ -374,7 +374,8 @@
       "created_at": 1615311276,
       "corporation": "IR",
       "until_condition": 1,
-      "from_market": true
+      "from_market": true,
+      "auto_pass_after": true
     },
     {
       "type": "pass",
@@ -393,6 +394,21 @@
             "IR_4"
           ],
           "percent": 10
+        },
+        {
+          "type": "program_disable",
+          "entity": 671,
+          "entity_type": "player",
+          "created_at": 1615311279,
+          "reason": "1 share(s) bought in IR, end condition met"
+        },
+        {
+          "type": "program_share_pass",
+          "entity": 671,
+          "entity_type": "player",
+          "indefinite": false,
+          "created_at": 1615311279,
+          "unconditional": false
         },
         {
           "type": "pass",
@@ -451,7 +467,7 @@
           "entity": 671,
           "entity_type": "player",
           "created_at": 1615311545,
-          "reason": "1 share(s) bought in IR, end condition met"
+          "reason": "LenaC bought on corporation TR and is unsecure"
         }
       ]
     },
