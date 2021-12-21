@@ -178,7 +178,7 @@ class Api
               auto_routing: r['auto_routing'],
             },
             title: title,
-            round: Engine.game_by_title(title).new([]).round&.name,
+            round: 'Unstarted',
           }
 
           game = Game.create(params)
