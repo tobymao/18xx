@@ -210,6 +210,8 @@ module Engine
             color: 'cyan',
           },
           # P11
+          # TODO Do you have to pay the $20 to upgrade non-city track to the next phase color?
+          #      Or does it only apply if you lay two upgrades?
           {
             name: 'Pettibone & Mulliken',
             value: 40,
@@ -532,7 +534,6 @@ module Engine
                 type: 'tile_lay',
                 hexes: CITY_HEXES,
                 tiles: %w[X07 X08 X09],
-                free: false,
                 reachable: true,
                 when: 'track',
                 consume_tile_lay: true,

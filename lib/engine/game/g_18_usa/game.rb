@@ -195,12 +195,11 @@ module Engine
         end
 
         def tile_by_name(name)
-          @all_tiles.find { |t| t.name == name }
+          @tiles.find { |t| t.name == name }
         end
 
         def setup
           @rhq_tile = tile_by_name('X23')
-          @company_town_tiles ||= COMPANY_TOWN_TILES.map { |id| tile_by_name(id) }
           @yellow_plain_tiles ||= @all_tiles.select { |t| YELLOW_PLAIN_TRACK_TILES.include?(t.name) }
           @green_plain_tiles ||= @all_tiles.select { |t| GREEN_PLAIN_TRACK_TILES.include?(t.name) }
           @brown_plain_tiles ||= @all_tiles.select { |t| BROWN_PLAIN_TRACK_TILES.include?(t.name) }
@@ -215,20 +214,13 @@ module Engine
           @brown_cl_tile ||= tile_by_name('X13')
           @brown_b_tile ||= tile_by_name('593')
 
+          setup_company_tiles
+
           @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           @jump_graph = Graph.new(self, no_blocking: true)
 
           @oil_value = 10
 
-          # Place neutral tokens in the off board cities
-          neutral = Corporation.new(
-            sym: 'N',
-            name: 'Neutral',
-            logo: 'minus_ten',
-            simple_logo: 'minus_ten',
-            tokens: [0, 0, 0],
-          )
-          neutral.owner = @bank
           @recently_floated = []
 
           metro_hexes = METROPOLITAN_HEXES.sort_by { rand }.take(3)
@@ -236,6 +228,25 @@ module Engine
 
           setup_train_roster
           randomize_subsidies
+        end
+
+        def setup_company_tiles
+          @neutral = Corporation.new(
+            sym: 'N',
+            name: 'Neutral',
+            logo: 'minus_ten',
+            simple_logo: 'minus_ten',
+            tokens: [0, 0, 0, 0, 0, 0],
+          )
+          @neutral.owner = @bank
+
+          # Add neutral tokens to both the tile display and the actual tile
+          COMPANY_TOWN_TILES.each do |ct_name|
+            [@tiles, @all_tiles].each do |tile_set|
+              tile = tile_set.find { |t| t.name == ct_name }
+              tile.cities.first.place_token(@neutral, @neutral.tokens.reject(&:used).first, check_tokenable: false)
+            end
+          end
         end
 
         def setup_train_roster
@@ -347,9 +358,8 @@ module Engine
           # Brown home city upgrade only on first operation
           laying_entity = @round.current_entity
           if !laying_entity.operated? &&
-             @phase.tiles.include?(:brown) &&
-             from.hex == home_hex_for(laying_entity) &&
              to.color == :brown &&
+             from.hex == home_hex_for(laying_entity) &&
              Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
             if active_metroplitan_hexes.include?(from.hex)
               return to.name == 'X14' if from.hex.id == 'H14'
@@ -363,6 +373,8 @@ module Engine
 
             return %w[63 448 611].include?(to.name)
           end
+
+          return selected_company&.id == 'P27' if COMPANY_TOWN_TILES.include?(to.name)
 
           if @phase.tiles.include?(:brown) && from.color == :white && !from.cities.empty? && !from.label
             # Unplaced cities must go to green
@@ -395,15 +407,10 @@ module Engine
         # tile_manifest: true/false Is this being called from the tile manifest screen
         #
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
-          # This method does not factor in illegal tile lays. Do not show those as a 'Later Phase' tile.
-          return [] if %w[P9 S8].include?(selected_company&.id)
-
           upgrades = super
           return filter_by_max_edges(upgrades) unless tile_manifest
 
           upgrades << @brown_cl_tile if tile.name == '15' # only K green city that fits clevelands hex
-          upgrades << @rhq_tile if %w[14 15 619 63 611 448].include?(tile.name)
-          upgrades |= @company_town_tiles if tile.color == :white && !tile.label
 
           # Don't include the tile skips; those follow normal tile lay rules, they upgrade multiple times in a row
           upgrades
@@ -626,7 +633,6 @@ module Engine
           raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
 
           company_tile = route.all_hexes.find { |hex| COMPANY_TOWN_TILES.include?(hex.tile.name) }&.tile
-
           revenue -= 10 if company_tile && !company_tile.cities.first.tokened_by?(corporation)
 
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('coal') }
@@ -732,18 +738,6 @@ module Engine
           @recently_floated << corporation
 
           super
-        end
-
-        def upgrade_cost(old_tile, hex, entity, spender)
-          new_tile = hex.tile
-          super_charge_cost = 0
-          upgrade_level = (Engine::Tile::COLORS.index(new_tile.color) - Engine::Tile::COLORS.index(old_tile.color))
-          super_charge_cost = 10 * (upgrade_level - 1) if old_tile.cities.size.zero? && upgrade_level > 1
-          if super_charge_cost.positive?
-            @log << "#{entity.name} owes #{format_currency(super_charge_cost)} "\
-                    'for fast track upgrade charge'
-          end
-          super_charge_cost + super
         end
 
         def create_company_from_subsidy(subsidy)

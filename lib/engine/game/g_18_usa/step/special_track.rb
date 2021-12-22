@@ -56,6 +56,13 @@ module Engine
             raise GameError, 'Cannot place rural junctions adjacent to each other'
           end
 
+          def potential_tile_colors(entity, _hex)
+            colors = super
+            colors << :green if %w[P9 S8].include?(entity.id)
+            colors << :gray if %w[P16 P27].include?(entity.id)
+            colors
+          end
+
           def potential_future_tiles(_entity, hex)
             @game.tiles
               .uniq(&:name)
@@ -78,7 +85,7 @@ module Engine
 
             if entity.id == 'P27'
               return hex.tile.color == :white &&
-                    (hex.tile.cities.empty? || hex.tile.cities.none? { |c| !c.tokens.empty? }) &&
+                    (hex.tile.cities.empty? || hex.tile.cities.all? { |c| !c.tokens.empty? }) &&
                     (hex.neighbors.values & @game.active_metropolitan_hexes).empty?
             end
 
@@ -112,7 +119,7 @@ module Engine
               @game.log << "#{corporation.name} gets a free token to place on the Company Town"
               bonus_token = Engine::Token.new(corporation)
               corporation.tokens << bonus_token
-              tile.cities.first.place_token(corporation, bonus_token, free: true, check_tokenable: false, extra_slot: true)
+              tile.cities.first.place_token(corporation, bonus_token, free: true, check_tokenable: false)
             else
               @game.log << "#{corporation.name} forfeits the Company Town token as they are at token limit of 8"
             end
