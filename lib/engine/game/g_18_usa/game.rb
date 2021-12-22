@@ -297,23 +297,6 @@ module Engine
           corporation.tokens.first.hex
         end
 
-        #
-        # In 18USA you need to use the maximum number of exits for a given tile, but unlike 1817 there are more types of tiles
-        # that this applies to:
-        # Gray plain track
-        # Brown cities
-        # Gray plain track with labels
-        # and at a given time it's possible to have multiple legal color choices to lay
-        # so we need to be able to filter within each group
-        def filter_by_max_edges(tiles)
-          tiles.group_by { |t| [t.color, t.cities&.size, t.label&.to_s] }.flat_map do |grouped_tiles|
-            # flat_map on the hash flattens the hash into [[key, value], [key value], [key, value], ...]
-            grouped_tiles = grouped_tiles.last
-            max_edges = grouped_tiles.map { |t| t.edges.size }.max
-            grouped_tiles.select { |t| t.edges.size == max_edges }
-          end
-        end
-
         TRACK_ENGINEER_TILE_LAYS = [ # Three lays with one being an upgrade, second tile costs 20, third tile free
           { lay: true, upgrade: true },
           { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
@@ -400,20 +383,6 @@ module Engine
           colors = phase_color_cache || @phase.tiles
           colors.include?(tile.color) ||
             (tile.color == :brown && colors.include?(:green)) || (tile.color == :gray && colors.include?(:brown))
-        end
-
-        # Get all possible upgrades for a tile
-        # tile: The tile to be upgraded
-        # tile_manifest: true/false Is this being called from the tile manifest screen
-        #
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
-          upgrades = super
-          return filter_by_max_edges(upgrades) unless tile_manifest
-
-          upgrades << @brown_cl_tile if tile.name == '15' # only K green city that fits clevelands hex
-
-          # Don't include the tile skips; those follow normal tile lay rules, they upgrade multiple times in a row
-          upgrades
         end
 
         def owns_p15?(entity)
