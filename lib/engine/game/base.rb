@@ -2560,7 +2560,7 @@ module Engine
       def ability_right_time?(ability, time, on_phase, passive_ok, strict_time)
         return true unless @round
         return true if time == 'any' || ability.when?('any')
-        return (on_phase == ability.on_phase) || (on_phase == 'any') if on_phase
+        return (on_phase == ability.on_phase) || (on_phase == 'any') if ability.on_phase
         return false if ability.passive && !passive_ok
         return true if ability.passive && ability.when.empty?
 
