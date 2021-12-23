@@ -895,11 +895,12 @@ module Engine
           else
             corporation.share_holders.keys.each do |sh|
               next if sh == corporation
+              next unless (num_shares = sh.num_shares_of(corporation)).positive?
 
               entity_to_pay = sh.share_pool? ? @bank : sh
-              cost = share_price * sh.num_shares_of(corporation) * multiplier
+              cost = share_price * num_shares * multiplier
               @log << "#{entity.name} pays #{entity_to_pay.name} #{format_currency(cost)}"
-              entity.spend(share_price * sh.num_shares_of(corporation), entity_to_pay)
+              entity.spend(cost, entity_to_pay)
             end
           end
 
