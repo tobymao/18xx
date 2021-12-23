@@ -49,8 +49,8 @@ module Engine
           '5' => 4,
           '6' => 4,
           '7' => 3,
-          '8' => 13,
-          '9' => 10,
+          '8' => 15,
+          '9' => 12,
           '55' => 1,
           '56' => 1,
           '57' => 4,
@@ -60,7 +60,7 @@ module Engine
           '12' => 3,
           '13' => 8,
           '14' => 3,
-          '15' => 3,
+          '15' => 5,
           '16' => 1,
           '19' => 1,
           '20' => 1,
@@ -126,13 +126,13 @@ module Engine
           },
           '8s' =>
           {
-            'count' => 13,
+            'count' => 15,
             'color' => 'yellow',
             'code' => 'path=a:0,b:2,track:narrow',
           },
           '9s' =>
           {
-            'count' => 10,
+            'count' => 12,
             'color' => 'yellow',
             'code' => 'path=a:0,b:3,track:narrow',
           },
@@ -204,7 +204,7 @@ module Engine
           },
           '15s' =>
           {
-            'count' => 3,
+            'count' => 5,
             'color' => 'green',
             'code' => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },

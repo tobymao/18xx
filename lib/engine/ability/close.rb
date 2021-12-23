@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Ability
     class Close < Base
-      attr_reader :corporation
+      attr_accessor :corporation
 
       def setup(corporation: nil)
         @corporation = corporation

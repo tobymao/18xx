@@ -34,12 +34,14 @@ module Engine
         }
       end
 
-      def self.description
-        "Pass on independent mines until #{@indefinite ? 'turned off' : 'next SR'}"
-      end
-
-      def self.print_name
-        'Pass on independent mines'
+      def to_s
+        steps = []
+        steps << 'track' if @skip_track
+        steps << 'buy trains' if @skip_buy
+        steps << 'close' if @skip_close
+        steps << 'nothing?!' if steps.empty?
+        condition = @indefinite ? 'turned off' : 'next SR'
+        "Pass (#{steps.join(',')}) for independent mines until #{condition}"
       end
 
       def disable?(game)

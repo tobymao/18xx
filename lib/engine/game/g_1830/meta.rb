@@ -15,13 +15,14 @@ module Engine
         GAME_LOCATION = 'Northeastern USA and Southeastern Canada'
         GAME_PUBLISHER = :lookout
         GAME_RULES_URL = 'https://lookout-spiele.de/upload/en_1830re.html_Rules_1830-RE_EN.pdf'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1830'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
           {
             sym: :multiple_brown_from_ipo,
             short_name: 'Buy Multiple Brown Shares From IPO',
-            desc: 'Mutiple brown shares may be bought from IPO as well as from pool',
+            desc: 'Multiple brown shares may be bought from IPO as well as from pool',
           },
         ].freeze
       end

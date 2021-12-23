@@ -81,7 +81,7 @@ module Engine
             false
           end
 
-          def check_for_cheapest_train(entity, train); end
+          def check_for_cheapest_train(train); end
 
           def cheapest_train_price(corporation)
             cheapest_train = @depot.min_depot_train.variants.values.find do |item|

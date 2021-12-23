@@ -117,38 +117,40 @@ module View
 
           step = @game.round.active_step(@selected_company)
           entity = @selected_company || step.current_entity
-          actions = step.actions(entity)
-          return if (%w[remove_token place_token] & actions).empty?
-          return if @token && !step.can_replace_token?(entity, @token) &&
+          remove_token_step = @game.round.step_for(entity, 'remove_token')
+          place_token_step = @game.round.step_for(entity, 'place_token')
+          return if !remove_token_step && !place_token_step
+          return if @token &&
+                    (!remove_token_step&.can_replace_token?(entity, @token) &&
+                     !place_token_step&.can_replace_token?(entity, @token)) &&
                     !(cheater = @game.abilities(entity, :token)&.cheater) &&
                     !@game.abilities(entity, :token)&.extra_slot
 
           event.JS.stopPropagation
 
           # if remove_token and place_token is possible, remove should only be called when a token is available
-          if (actions.include?('remove_token') && !actions.include?('place_token')) ||
-            (actions.include?('remove_token') && @token)
+          if remove_token_step && (@token || !place_token_step)
             return unless @token
 
             action = Engine::Action::RemoveToken.new(
-              @selected_company || @game.current_entity,
+              entity,
               city: @city,
               slot: @slot_index
             )
             process_action(action)
           else
             # If there's a choice of tokens of different types show the selector, otherwise just place
-            next_tokens = step.available_tokens(entity)
-            if next_tokens.size == 1 && actions.include?('place_token')
-              token_owner = @game.token_owner(@selected_company || @game.current_entity)
+            next_tokens = place_token_step.available_tokens(entity)
+            if next_tokens.size == 1 && place_token_step
+              token_owner = @game.token_owner(entity)
               action = Engine::Action::PlaceToken.new(
-                @selected_company || @game.current_entity,
+                entity,
                 city: @city,
                 tokener: @selected_company&.owned_by_player? ? @game.current_entity : token_owner,
                 slot: cheater || @slot_index,
                 token_type: next_tokens[0].type,
               )
-              action.cost = step.token_cost_override(
+              action.cost = place_token_step.token_cost_override(
                 action.entity,
                 action.city,
                 action.slot,

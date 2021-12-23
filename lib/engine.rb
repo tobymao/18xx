@@ -23,8 +23,11 @@ module Engine
 
   GAME_METAS = GAME_META_BY_TITLE.values
 
-  VISIBLE_GAMES = GAME_METAS.select do |game_meta|
-    !game_meta::GAME_IS_VARIANT_OF && %i[alpha beta production].include?(game_meta::DEV_STAGE)
+  VISIBLE_GAMES_WITH_VARIANTS = GAME_METAS.select do |game_meta|
+    %i[alpha beta production].include?(game_meta::DEV_STAGE)
+  end
+  VISIBLE_GAMES = VISIBLE_GAMES_WITH_VARIANTS.reject do |game_meta|
+    game_meta::GAME_IS_VARIANT_OF
   end
 
   def self.game_by_title(title)
@@ -49,6 +52,10 @@ module Engine
     GAME_META_BY_TITLE[closest_title(title)]
   end
 
+  def self.closest_display_title(title)
+    game_by_title(title).display_title
+  end
+
   def self.closest_title(title)
     return VISIBLE_GAMES.first.title unless title
     return @fuzzy_titles[title] if @fuzzy_titles[title]
@@ -68,7 +75,7 @@ module Engine
       candidates = [
         m.title,
         m.full_title,
-        m::GAME_SUPERTITLE,
+        m.display_title,
         m::GAME_SUBTITLE,
         module_name,
         module_name.sub(/^G/, ''),

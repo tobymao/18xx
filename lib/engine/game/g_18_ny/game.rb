@@ -146,7 +146,7 @@ module Engine
                   {
                     name: '5DE',
                     num: 2,
-                    distance: [{ nodes: %w[city offboard town], pay: 5, visit: 99, multiplier: 2 }],
+                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99, 'multiplier' => 2 }],
                     price: 800,
                     events: [{ 'type' => 'float_60' }],
                   },
@@ -173,7 +173,8 @@ module Engine
         }.freeze
 
         CONNECTION_BONUS_HEXES =
-          %w[A13 A19 A23 B12 C11 C23 C25 D0 D18 D20 E9 F10 F12 G9 G13 G19 G21 G25 I19 I23 J18 J22 J26 K19].freeze
+          [%w[A13 A11], %w[A19 A15 A17 A21], %w[A23 A21], %w[C25 A25 B26], %w[G25 H26], %w[D0 E1], %w[J26], 'B12', 'C11',
+           'C23', 'D18', 'D20', 'E9', 'F10', 'F12', 'G9', 'G13', 'G19', 'G21', 'I19', 'I23', 'J18', 'J22', 'K19'].freeze
         COAL_LOCATIONS = [%w[F0 G1], %w[H2 H4], %w[H6 H8 H10], ['H12'], %w[I13 J14], %w[K15 K17]].freeze
 
         def setup
@@ -182,12 +183,18 @@ module Engine
           @stagecoach_token =
             Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
           @original_nyc_corporation = nyc_corporation.dup
+          @fully_capitalized_corporations = []
           init_connection_bonuses
           init_coal_tokens
         end
 
         def init_connection_bonuses
-          CONNECTION_BONUS_HEXES.each { |hex_id| hex_by_id(hex_id).assign!(CONNECTION_BONUS_ICON) }
+          CONNECTION_BONUS_HEXES.each do |hex_id|
+            hex_id = hex_id.first if hex_id.is_a?(Array)
+            hex_by_id(hex_id).assign!(CONNECTION_BONUS_ICON)
+          end
+          @offboard_bonus_locations =
+            CONNECTION_BONUS_HEXES.select { |h| h.is_a?(Array) }.map { |a| a.map { |hex_id| hex_by_id(hex_id) } }
         end
 
         def init_coal_tokens
@@ -209,6 +216,10 @@ module Engine
 
         def albany_hex
           @albany_hex ||= hex_by_id('F20')
+        end
+
+        def fivede_runs_stations_and_offboards_only?
+          @fivede_optional_rule ||= @optional_rules.include?(:fivede)
         end
 
         def active_minors
@@ -243,10 +254,10 @@ module Engine
             G18NY::Step::BuyCompany,
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
-            G18NY::Step::StagecoachExchange,
             G18NY::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
+            G18NY::Step::StagecoachExchange,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
             G18NY::Step::Track,
@@ -357,12 +368,8 @@ module Engine
 
         def event_float_60!
           @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
-          @float_percent = 50
-          non_floated_corporations do |c|
-            c.float_percent = @float_percent
-            c.capitalization = :full
-            c.spend(c.cash, @bank) if c.cash.positive?
-          end
+          @float_percent = 60
+          non_floated_corporations { |c| c.float_percent = @float_percent }
         end
 
         def event_nyc_formation!
@@ -388,7 +395,7 @@ module Engine
         end
 
         def non_floated_corporations
-          @corporations.each { |c| yield c unless c.floated? }
+          @corporations.each { |c| yield c if c.type != :minor && !c.floated? }
         end
 
         #
@@ -422,6 +429,7 @@ module Engine
 
         def can_par?(corporation, _parrer)
           return false if corporation == nyc_corporation && !@nyc_formation_state
+          return false if @turn == 1 && corporation.type != :minor && corporation.id != 'D&H'
 
           super
         end
@@ -440,26 +448,28 @@ module Engine
           @full_capitalization &&
             entity.type != :minor &&
             !entity.operated? &&
-            entity.capitalization == :incremental &&
+            !corporation_fully_capitalized?(entity) &&
             entity.percent_of(entity) == 40
         end
 
+        def corporation_fully_capitalized?(corporation)
+          @fully_capitalized_corporations.include?(corporation)
+        end
+
         def fully_capitalize_corporation(entity)
-          entity.capitalization = :full
           entity.spend(entity.cash, @bank)
           @bank.spend(entity.par_price.price * entity.total_shares, entity)
           @share_pool.transfer_shares(ShareBundle.new(entity.shares_of(entity)), @share_pool)
-          @log << "#{entity.name} receives full capitalization"
-          @log << "Treasury discard and instead receives #{format_currency(entity.cash)}"
-          @log << 'Remaining shares placed in the market'
+          @fully_capitalized_corporations << entity
+          @log << "#{entity.name} treasury is discarded and instead receives full capitalization " \
+                  "of #{format_currency(entity.cash)}"
+          @log << "#{entity.name}'s remaining shares are placed in the market"
         end
 
         def float_corporation(corporation)
           super
-          return unless corporation.capitalization == :full
 
-          @log << 'Remaining shares placed in the market'
-          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
+          fully_capitalize_corporation(corporation) if can_fully_capitalize?(corporation)
         end
 
         #
@@ -572,7 +582,10 @@ module Engine
 
         def route_distance(route)
           # Count hex edges
-          route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+          distance = route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+          # Springfield is considered one hex
+          distance -= 1 if route.all_hexes.include?(hex_by_id('E25'))
+          distance
         end
 
         def route_distance_str(route)
@@ -581,20 +594,35 @@ module Engine
 
         def check_distance(route, _visits)
           limit = route.train.distance
+          limit = 99 if limit.is_a?(Array)
           distance = route_distance(route)
           raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
         end
 
+        def compute_stops(route)
+          return super unless route.train.name == '5DE'
+
+          stops = route.visited_stops
+          return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
+
+          if fivede_runs_stations_and_offboards_only?
+            stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == :red }
+          end
+          stops = stops.combination(5).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > 5
+          stops
+        end
+
         def revenue_for(route, stops)
-          super + (stops.count { |stop| stop.hex.assigned?(CONNECTION_BONUS_ICON) } * 10)
+          super + (route_connection_bonus_hexes(route, stops: stops).size * 10)
         end
 
         def revenue_str(route)
-          str = super
+          stops = route.stops
+          stop_hexes = stops.map(&:hex)
+          str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
 
-          if (num_bonuses = route.stops.count { |stop| stop.hex.assigned?(CONNECTION_BONUS_ICON) }).positive?
-            str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}"
-          end
+          num_bonuses = route_connection_bonus_hexes(route).size
+          str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}" if num_bonuses.positive?
 
           str
         end
@@ -612,9 +640,52 @@ module Engine
           abilities(entity, :connection_bonus)&.bonus_revenue || 0
         end
 
+        def route_connection_bonus_hexes(route, stops: nil)
+          already_claimed = []
+          stops ||= route.stops
+
+          # Only return connection bonus hexes not counted by a previous route
+          route.routes.each do |r|
+            route_stops = r == route ? stops : r.stops
+            hexes = potential_route_connection_bonus_hexes(r, stops: route_stops)
+            return hexes.reject { |h| already_claimed.include?(h) } if r == route
+
+            already_claimed.concat(hexes)
+          end
+        end
+
+        def potential_route_connection_bonus_hexes(route, stops: nil)
+          stops ||= route.stops
+          stops.map do |stop|
+            if stop.hex.tile.color == :red
+              offboard_connection_bonus_hex(route, stop)
+            elsif stop.hex.assigned?('connection_bonus')
+              stop.hex
+            end
+          end.compact
+        end
+
+        def offboard_bonus_location_with_hex(hex)
+          @offboard_bonus_locations.find { |l| l.include?(hex) }
+        end
+
+        def offboard_connection_bonus_hex(route, stop)
+          hex = stop.hex
+          if stop.hex.id == 'A21'
+            # A21 is split between two locations. Determine which location by path exit.
+            exit = route.paths.find { |path| path.hex == stop.hex }.exits.first
+            hex = hex_by_id(exit.zero? ? 'A19' : 'A23')
+          end
+
+          offboard_bonus_location_with_hex(hex)&.first
+        end
+
         def claim_connection_bonus(entity, hex)
-          @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{hex.location_name})"
+          location_name = hex.location_name || offboard_bonus_location_with_hex(hex).find(&:location_name).location_name
+          @log << "#{entity.name} claims the connection bonus at #{hex.name} (#{location_name})"
           hex.remove_assignment!('connection_bonus')
+          @offboard_bonus_locations.delete(offboard_bonus_location_with_hex(hex)) if hex.tile.color == :red
+
           if (ability = abilities(entity, :connection_bonus))
             ability.bonus_revenue += 10
           else
@@ -663,6 +734,22 @@ module Engine
           location.find(&:location_name)&.location_name
         end
 
+        def stagecoach_token_exchange_ability
+          detailed_text = 'Owning corporation may replace the Stagecoach Token with one of its available tokens ' \
+                          'for free during its operating turn by selecting the Stagecoach Token in F20 (Albany).'
+          @sc_exchange_ability ||= Engine::Ability::Description.new(type: :description,
+                                                                    description: 'Stagecoach Token Exchange',
+                                                                    desc_detail: detailed_text)
+        end
+
+        def add_stagecoach_token_exchange_ability(entity)
+          entity.add_ability(stagecoach_token_exchange_ability)
+        end
+
+        def remove_stagecoach_token_exchange_ability(entity)
+          entity.remove_ability(stagecoach_token_exchange_ability)
+        end
+
         def salvage_value(train)
           train.price / 4
         end
@@ -703,33 +790,23 @@ module Engine
           5
         end
 
-        def calculate_corporation_interest(corporation)
-          @interest[corporation] = corporation.loans.size
-        end
-
-        def calculate_interest
-          # Number of loans interest is due on is set before taking loans in that OR
-          @interest.clear
-          @corporations.each { |c| calculate_corporation_interest(c) }
-        end
-
         def emergency_issuable_bundles(corp)
           bundles = bundles_for_corporation(corp, corp)
 
-          num_issuable_shares = [5 - corp.num_market_shares, corp.num_player_shares].min
+          num_issuable_shares = [5, corp.num_player_shares].min - corp.num_market_shares
           bundles.reject { |bundle| bundle.num_shares > num_issuable_shares }.sort_by(&:price)
         end
 
-        def interest_owed_for_loans(loans)
-          interest_rate * loans
+        def interest_owed_for_loans(num_loans)
+          interest_rate * num_loans
         end
 
         def loans_due_interest(entity)
-          @interest[entity] || 0
+          entity&.loans&.size || 0
         end
 
         def interest_owed(entity)
-          interest_rate * loans_due_interest(entity)
+          interest_paid[entity] || interest_owed_for_loans(entity.loans.size)
         end
 
         def maximum_loans(entity)
@@ -812,15 +889,18 @@ module Engine
           multiplier = acquisition_cost_multiplier(entity, corporation)
           if corporation.type == :minor
             cost = share_price * multiplier
-            @log << "#{entity.name} pays #{corporation.owner.name} #{format_currency(cost)}"
-            entity.spend(cost, corporation.owner)
+            entity_to_pay = corporation.owner.share_pool? ? @bank : corporation.owner
+            @log << "#{entity.name} pays #{entity_to_pay.name} #{format_currency(cost)}"
+            entity.spend(cost, entity_to_pay)
           else
             corporation.share_holders.keys.each do |sh|
               next if sh == corporation
+              next unless (num_shares = sh.num_shares_of(corporation)).positive?
 
-              cost = share_price * sh.num_shares_of(corporation) * multiplier
-              @log << "#{entity.name} pays #{sh.name} #{format_currency(cost)}"
-              entity.spend(share_price * sh.num_shares_of(corporation), sh)
+              entity_to_pay = sh.share_pool? ? @bank : sh
+              cost = share_price * num_shares * multiplier
+              @log << "#{entity.name} pays #{entity_to_pay.name} #{format_currency(cost)}"
+              entity.spend(cost, entity_to_pay)
             end
           end
 
@@ -828,13 +908,15 @@ module Engine
 
           # Loans
           unless corporation.loans.empty?
-            num_to_payoff = [entity.cash / loan_face_value, corporation.loans.size].min
-            @log << "#{entity.name} pays off #{num_to_payoff} of #{corporation.name}'s loans"
-            entity.spend(num_to_payoff * loan_face_value, @bank)
+            num_to_payoff = [(entity.cash / loan_face_value.to_f).floor, corporation.loans.size].min
+            if num_to_payoff.positive?
+              @log << "#{entity.name} pays off #{num_to_payoff} of #{corporation.name}'s loans"
+              entity.spend(num_to_payoff * loan_face_value, @bank)
+            end
 
             if (remaining_loans = corporation.loans.size - num_to_payoff).positive?
               @log << "#{entity.name} takes on #{remaining_loans} loan#{remaining_loans == 1 ? '' : 's'}" \
-                      " corporation #{corporation.name}"
+                      " from #{corporation.name}"
               @loans.concat(corporation.loans)
               corporation.loans.clear
 
@@ -888,14 +970,27 @@ module Engine
             from.trains.dup.each { |t| buy_train(to, t, :free) }
           end
 
+          if from.tokens.include?(stagecoach_token)
+            stagecoach_token.corporation = to
+            from.tokens.delete(stagecoach_token)
+            to.tokens << stagecoach_token
+            @log << "#{to.name} acquires Stagecoach token from #{from.name}"
+          end
+
           return unless (revenue = coal_revenue(from)).positive?
 
           @log << "#{to.name} acquires #{format_currency(revenue)} in coal revenue from #{from.name}"
 
-          if (ability = abilities(to, :coal_revenue))
-            ability.bonus_revenue += revenue
-          else
-            add_coal_token_ability(to, revenue: revenue)
+          # Connection bonuses do not transfer
+          remove_connection_bonus_ability(from)
+
+          from.all_abilities.dup.each do |ability|
+            if ability.type == :coal_revenue && (coal_ability = abilities(to, :coal_revenue))
+              coal_ability.bonus_revenue += ability.bonus_revenue
+            else
+              from.remove_ability(ability)
+              to.add_ability(ability)
+            end
           end
         end
 
@@ -911,7 +1006,7 @@ module Engine
           return @nyc_share_price if @nyc_share_price
 
           minors = minors_connected_to_albany
-          nyc_calculated_value = (minors.sum { |minor| minor.share_price.price } * 2 / minors.size.to_f)
+          nyc_calculated_value = (minors.sum { |minor| minor.share_price.price } * 2 / minors.size.to_f).ceil
           par_prices = @stock_market.share_prices_with_types(%i[par_2]).to_h do |sp|
             [sp, (sp.price - nyc_calculated_value).abs]
           end
@@ -923,10 +1018,15 @@ module Engine
           @nyc_formation_state == :round_one || (@nyc_formation_state == :round_two && @nyc_formed)
         end
 
+        def nyc_formed?
+          @nyc_formed
+        end
+
         def form_nyc
           # Form the NYC
           @log << '-- Event: NYC forms --'
           nyc_corporation.floatable = true
+          nyc_corporation.float_percent = 10
           @stock_market.set_par(nyc_corporation, nyc_formation_share_price)
           nyc_corporation.ipoed = true
           @nyc_formed = true
@@ -1040,9 +1140,12 @@ module Engine
 
         def liquidate_remaining_minors
           active_minors.each do |minor|
+            owner = minor.owner
             @stock_market.move_left(minor)
             liquidation_price = minor.share_price.price * 2
-            @log << "#{minor.name} is liquidated for #{format_currency(liquidation_price)}"
+            @log << "#{minor.name} is liquidated and #{owner.name} receives #{format_currency(liquidation_price)} " \
+                    'in compensation from the bank'
+            @bank.spend(liquidation_price, owner)
             close_corporation(minor, quiet: true)
             minor.close!
           end

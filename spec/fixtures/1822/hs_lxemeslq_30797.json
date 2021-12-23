@@ -2713,7 +2713,7 @@
           "entity": 671,
           "entity_type": "player",
           "created_at": 1615652117,
-          "reason": "No longer winning bids on P1"
+          "reason": "No longer winning bid on P1"
         }
       ]
     },
@@ -2820,7 +2820,7 @@
           "entity": 671,
           "entity_type": "player",
           "created_at": 1615652525,
-          "reason": "No longer winning bids on P1"
+          "reason": "No longer winning bid on P1"
         }
       ]
     },

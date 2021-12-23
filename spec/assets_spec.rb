@@ -355,7 +355,7 @@ describe 'Assets' do
 
     it 'renders new_game' do
       expect(render(app_route: '/new_game')).to include('Create New Game')
-      expect(render(app_route: '/new_game', title: '1889')).to include('Shikoku: 1889')
+      expect(render(app_route: '/new_game', title: '1889')).to include('Shikoku 1889')
     end
 
     it 'renders game' do
@@ -379,7 +379,7 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#entities', **needs)).to include('entities', 'Player 1', 'Awa Railroad')
       expect(render(app_route: '/game/1#map', **needs)).to include('Kotohira')
       expect(render(app_route: '/game/1#market', **needs)).to include('The Bank', 'Cash', 'Par value')
-      expect(render(app_route: '/game/1#info', **needs)).to include('Trains', 'Game Phases', 'Shikoku: 1889')
+      expect(render(app_route: '/game/1#info', **needs)).to include('Trains', 'Game Phases', 'Shikoku 1889')
       expect(render(app_route: '/game/1#tiles', **needs)).to include('492')
       expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Value')
       expect(render(app_route: '/game/1#tools', **needs)).to include('Clone Game')

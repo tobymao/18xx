@@ -130,7 +130,18 @@ module Engine
                   'pays its revenue to the owning company until the power is exercised and '\
                   'the company closes. A minor company may not use this power to upgrade '\
                   'beyond green.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[80 81 82 83 544 545 546 60 169 141 142 143 144 767 768 769 X17],
+              },
+            ],
             color: nil,
           },
           {
@@ -144,7 +155,18 @@ module Engine
                   'normal tile laying step. All other normal track laying restrictions apply. Once '\
                   'acquired, the private company pays its revenue to the owning company until '\
                   'the power is exercised and the company closes.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 2,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+            ],
             color: nil,
           },
           {
@@ -187,7 +209,18 @@ module Engine
                   'track laying restrictions apply. Cannot be used in hexes with two small '\
                   'towns. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company is closed.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
+              },
+            ],
             color: nil,
           },
           {
@@ -202,7 +235,18 @@ module Engine
                   'track laying restrictions apply. Cannot be used in hexes with two small '\
                   'towns. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company is closed.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
+              },
+            ],
             color: nil,
           },
           {
@@ -240,7 +284,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P16-VTPN (Tax Haven)',
+            name: 'P16-VTPN (Stock Drop)',
             sym: 'P16',
             value: 0,
             revenue: 10,
@@ -249,7 +293,13 @@ module Engine
                   'company during its operating turn, but that makes its stock drop one space. '\
                   'If the company ever cannot pay the $10, this private company closes and the '\
                   'stock drops immediately.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'choose_ability',
+                when: 'owning_corp_or_turn',
+                choices: { 'close_p16' => 'Close P16' },
+              },
+            ],
             color: nil,
           },
           {
@@ -264,7 +314,19 @@ module Engine
                   'normal tile placement and the company does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company is closed.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                closed_when_used_up: true,
+                hexes: %w[F7 G8 H5 H9 I10 J7 J11 M28 M40 Q28],
+                tiles: %w[P1],
+                cost: 0,
+                consume_tile_lay: false,
+              },
+            ],
             color: nil,
           },
           {
@@ -279,7 +341,19 @@ module Engine
                   'normal tile placement and the company does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company is closed.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                closed_when_used_up: true,
+                hexes: %w[F7 G8 H5 H9 I10 J7 J11 M28 M40 Q28],
+                tiles: %w[P2],
+                cost: 0,
+                consume_tile_lay: false,
+              },
+            ],
             color: nil,
           },
           {
@@ -288,8 +362,8 @@ module Engine
             value: 100,
             discount: -100,
             revenue: 10,
-            desc: 'Have a face value $100 and contribute $100 to the conversion into the FCM director’s certificate.'\
-                  'M18 is purchased along with the FCM concession for a minimum bid of $200.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the FCM director’s certificate.'\
+                  ' M18 is purchased along with the FCM concession for a minimum bid of $200.',
             abilities: [
               {
                 type: 'exchange',
@@ -306,7 +380,7 @@ module Engine
             sym: 'C2',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value $100 and contribute $100 to the conversion into the MC director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the MC director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -323,7 +397,7 @@ module Engine
             sym: 'C3',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value $100 and contribute $100 to the conversion into the CHP director’s '\
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the CHP director’s '\
                   'certificate.',
             abilities: [
               {
@@ -341,7 +415,7 @@ module Engine
             sym: 'C4',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value $100 and contribute $100 to the conversion into the FNM director’s '\
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the FNM director’s '\
                   'certificate.',
             abilities: [
               {
@@ -359,7 +433,7 @@ module Engine
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value $100 and contribute $100 to the conversion into the MIR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the MIR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -376,7 +450,7 @@ module Engine
             sym: 'C6',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value $100 and contribute $100 to the conversion into the FCP director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the FCP director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -393,7 +467,7 @@ module Engine
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Have a face value $100 and contribute £100 to the conversion into the IRM director’s certificate.',
+            desc: 'Has a face value of $100 and contributes £100 to conversion into the IRM director’s certificate.',
             abilities: [
               {
                 type: 'exchange',

@@ -16,6 +16,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_discount',
+                when: 'track',
                 owner_type: 'corporation',
                 terrain: 'water',
                 discount: 80,
@@ -23,6 +24,7 @@ module Engine
               },
               {
                 type: 'tile_lay',
+                when: 'track',
                 owner_type: 'corporation',
                 tiles: [],
                 hexes: [],
@@ -39,9 +41,9 @@ module Engine
             sym: 'SC',
             value: 40,
             revenue: 10,
-            desc: 'Owning corporation may exchange this company for a stagecoach token in Albany. ' \
-                  'This token is removed when the first 12H is purchased, ' \
-                  'but may be exchanged for an available company token at that point.',
+            desc: 'Owning corporation may exchange this company to place the stagecoach token in Albany. ' \
+                  'The Stagecoach token is removed when the first 12H is purchased, ' \
+                  "but may be replaced with one of the corporation's available tokens at that time.",
             color: nil,
             abilities: [
               {
@@ -62,7 +64,7 @@ module Engine
             value: 60,
             revenue: 15,
             desc: 'Owning corporation may exchange this company for half off a train purchase ' \
-                  '(up to a maximimum of $200) from the bank or Bank Pool.',
+                  '(up to a maximum of $200) from the bank or Bank Pool.',
             color: nil,
             abilities: [
               {
@@ -109,7 +111,7 @@ module Engine
             revenue: 30,
             desc: 'The owning player gets the President\'s certificate of the D&H corporation, ' \
                   'and must immediately set its stock price. The corporation floats and receives ' \
-                  'twice the starting stock price to its treasury. The company closes when the D&H ' \
+                  'twice this stock price. This company closes when the D&H ' \
                   'buys a train or with the purchase of the first 12H train.',
             color: nil,
             abilities: [{ type: 'shares', shares: %w[D&H_0] },

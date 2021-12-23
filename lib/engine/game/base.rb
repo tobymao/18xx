@@ -515,6 +515,7 @@ module Engine
         setup_optional_rules
         log_optional_rules
         setup
+        @round.setup
 
         initialize_actions(actions, at_action: at_action)
 
@@ -1394,7 +1395,7 @@ module Engine
 
       def upgrades_to?(from, to, special = false, selected_company: nil)
         # correct color progression?
-        return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+        return false unless upgrades_to_correct_color?(from, to)
 
         # honors pre-existing track?
         return false unless from.paths_are_subset_of?(to.paths)
@@ -1416,6 +1417,10 @@ module Engine
         return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
 
         true
+      end
+
+      def upgrades_to_correct_color?(from, to)
+        Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
       end
 
       def upgrades_to_correct_label?(from, to)
@@ -1597,15 +1602,15 @@ module Engine
           end
         end
 
-        close_companies_on_par!(corporation)
+        close_companies_on_event!(corporation, 'par')
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
-      def close_companies_on_par!(entity)
+      def close_companies_on_event!(entity, event)
         @companies.each do |company|
           next if company.closed?
 
-          abilities(company, :close, time: 'par') do |ability|
+          abilities(company, :close, time: event) do |ability|
             next if entity&.name != ability.corporation
 
             company.close!
@@ -1675,20 +1680,7 @@ module Engine
         operator.trains << train
         @crowded_corps = nil
 
-        close_companies_on_train!(operator)
-      end
-
-      def close_companies_on_train!(entity)
-        @companies.each do |company|
-          next if company.closed?
-
-          abilities(company, :close, time: 'bought_train') do |ability|
-            next if entity&.name != ability.corporation
-
-            company.close!
-            @log << "#{company.name} closes"
-          end
-        end
+        close_companies_on_event!(operator, 'bought_train')
       end
 
       def discountable_trains_for(corporation)
@@ -2204,7 +2196,7 @@ module Engine
       def check_programmed_actions
         @programmed_actions.reject! do |entity, action|
           if action&.disable?(self)
-            player_log(entity, 'Programmed action removed due to round change')
+            player_log(entity, "Programmed action '#{action}' removed due to round change")
             true
           end
         end
@@ -2572,7 +2564,7 @@ module Engine
       def ability_right_time?(ability, time, on_phase, passive_ok, strict_time)
         return true unless @round
         return true if time == 'any' || ability.when?('any')
-        return (on_phase == ability.on_phase) || (on_phase == 'any') if on_phase
+        return (on_phase == ability.on_phase) || (on_phase == 'any') if ability.on_phase
         return false if ability.passive && !passive_ok
         return true if ability.passive && ability.when.empty?
 

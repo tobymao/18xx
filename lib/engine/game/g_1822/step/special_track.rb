@@ -57,7 +57,7 @@ module Engine
             @game.after_lay_tile(action.hex, action.tile)
             ability.use!
 
-            if ability.type == :tile_lay && ability.count.zero? && ability.closed_when_used_up
+            if ability.type == :tile_lay && ability.count <= 0 && ability.closed_when_used_up
               @log << "#{ability.owner.name} closes"
               ability.owner.close!
             end
@@ -88,10 +88,10 @@ module Engine
             return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
 
             # Middleton Railway can only lay track on hexes with one town
-            return nil if entity.id == @game.class::COMPANY_MTONR && (hex.tile.towns.empty? || hex.tile.towns.size > 1)
+            return nil if @game.must_remove_town?(entity) && (hex.tile.towns.empty? || hex.tile.towns.size > 1)
 
             # Bristol & Exeter Railway can only lay track on plain hexes or with one town
-            if entity.id == @game.class::COMPANY_BER && @game.class::TRACK_PLAIN.none?(hex.tile.name) &&
+            if @game.can_only_lay_plain_or_towns?(entity) && @game.class::TRACK_PLAIN.none?(hex.tile.name) &&
               @game.class::TRACK_TOWN.none?(hex.tile.name)
               return nil
             end
@@ -110,12 +110,12 @@ module Engine
 
           def legal_tile_rotation?(entity, hex, tile)
             return tile.rotation.zero? if entity.id == @game.class::COMPANY_LCDR && hex.name == @game.class::ENGLISH_CHANNEL_HEX
-            return legal_tile_rotation_mtonr?(entity.owner, hex, tile) if entity.id == @game.class::COMPANY_MTONR
+            return legal_tile_rotation_remove_town?(entity.owner, hex, tile) if @game.must_remove_town?(entity)
 
             super
           end
 
-          def legal_tile_rotation_mtonr?(entity, hex, tile)
+          def legal_tile_rotation_remove_town?(entity, hex, tile)
             return false unless @game.legal_tile_rotation?(entity, hex, tile)
 
             old_paths = hex.tile.paths
@@ -148,7 +148,7 @@ module Engine
 
             tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
             special = tile_ability.special if tile_ability.type == :tile_lay
-            if entity.id == @game.class::COMPANY_BER
+            if @game.can_upgrade_one_phase_ahead?(entity)
               return tiles.compact
                 .select { |t| @game.upgrades_to?(hex.tile, t, special) }
             end

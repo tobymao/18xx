@@ -14,6 +14,7 @@ module Engine
         GAME_DESIGNER = 'David Hecht'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18FL'
         GAME_LOCATION = 'Florida, US'
+        GAME_PUBLISHER = :deep_thought_games
         GAME_RULES_URL = 'https://drive.google.com/file/d/1gnIU5v_Yv_F7E-jvX4VKWq19h7RKBx6X/view?usp=sharing'
 
         PLAYER_RANGE = [2, 4].freeze

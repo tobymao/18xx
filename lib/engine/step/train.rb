@@ -14,12 +14,16 @@ module Engine
         entity ||= current_entity
 
         can_buy_normal = room?(entity) && buying_power(entity) >= @depot.min_price(
-            entity, ability: @game.abilities(entity, :train_discount, time: 'buying_train')
+            entity, ability: @game.abilities(entity, :train_discount, time: ability_timing)
           )
 
         can_buy_normal || (discountable_trains_allowed?(entity) && @game
           .discountable_trains_for(entity)
           .any? { |_, _, _, price| buying_power(entity) >= price })
+      end
+
+      def ability_timing
+        %w[buying_train owning_corp_or_turn]
       end
 
       def room?(entity, _shell = nil)
@@ -61,7 +65,7 @@ module Engine
 
         remaining = price - buying_power(entity)
         if remaining.positive? && president_may_contribute?(entity, action.shell)
-          check_for_cheapest_train(entity, train)
+          check_for_cheapest_train(train)
 
           raise GameError, 'Cannot contribute funds when exchanging' if exchange
           raise GameError, 'Cannot buy for more than cost' if price > train.price
@@ -123,12 +127,16 @@ module Engine
         entity.cash + current_entity.cash
       end
 
+      def ebuy_offer_only_cheapest_depot_train?
+        @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
+      end
+
       def buyable_trains(entity)
         depot_trains = @depot.depot_trains
         other_trains = @game.class::ALLOW_TRAIN_BUY_FROM_OTHERS ? @depot.other_trains(entity) : []
 
         if entity.cash < @depot.min_depot_price
-          depot_trains = [@depot.min_depot_train] if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
+          depot_trains = [@depot.min_depot_train] if ebuy_offer_only_cheapest_depot_train?
 
           if @game.class::EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
             # Don't alter the depot train list
@@ -214,15 +222,13 @@ module Engine
         false
       end
 
-      def check_for_cheapest_train(entity, train)
+      def check_for_cheapest_train(train)
         cheapest = @depot.min_depot_train
         cheapest_names = names_of_cheapest_variants(cheapest)
         raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest_names.first})" if
           !cheapest_names.include?(train.name) &&
           @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST &&
           (!@game.class::EBUY_OTHER_VALUE || train.from_depot?)
-
-        raise GameError, 'Cannot contribute funds when affordable trains exist' if cheapest.price <= entity.cash
       end
 
       def names_of_cheapest_variants(train)

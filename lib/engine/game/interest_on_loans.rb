@@ -19,7 +19,7 @@ module InterestOnLoans
 
   def pay_interest!(entity)
     owed = interest_owed(entity)
-    interest_paid[entity] = true
+    interest_paid[entity] = owed
 
     while owed > entity.cash &&
         (loan = loans[0]) &&

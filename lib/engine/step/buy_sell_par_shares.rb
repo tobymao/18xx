@@ -338,6 +338,11 @@ module Engine
           # they may wish to manipulate share price
           "Corporation #{corporation.name} parred" if !corp_buying || @game.check_sale_timing(entity, corporation)
         when Action::BuyShares
+          # Redeeming a share from a player is definitely shenanigans (equivalent to the player selling).
+          # The code doesn't have access to where the share came from, so it could potentially be market,
+          # but a market redemption could still be shenanigans, and it's better to err on the side of safety.
+          return "#{corporation.name} redeemed a share." if action.entity == corporation
+
           if corporation.owner == entity
             return if corporation_secure?(corporation) # Don't care...
 
@@ -370,18 +375,23 @@ module Engine
           end
         when Action::SellShares
           'Shares were sold'
+        when Action::TakeLoan
+          "#{corporation.name} took a loan"
         else
           "Unknown action #{action.type} disabling for safety"
         end
       end
 
-      def should_stop_applying_program(entity, share_to_buy)
+      def should_stop_applying_program(entity, program, share_to_buy)
         # check for shenanigans, returning the first failure reason it finds
         @round.players_history.each do |other_entity, corporations|
           next if other_entity == entity
 
           corporations.each do |corporation, actions|
             actions.each do |action|
+              # ignore shenanigans that happened before the program was enabled
+              next if action < program
+
               reason = action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
               return reason if reason
             end
@@ -401,24 +411,28 @@ module Engine
         return unless available_actions.include?('pass')
         return unless normal_pass?(entity)
 
-        reason = should_stop_applying_program(entity, nil) unless @game.actions.last == program
+        reason = should_stop_applying_program(entity, program, nil) unless program.unconditional
         return [Action::ProgramDisable.new(entity, reason: reason)] if reason
 
         [Action::Pass.new(entity)]
       end
 
       def activate_program_buy_shares(entity, program)
-        available_actions = actions(entity)
         corporation = program.corporation
+        # check if end condition met
+        finished_reason = if program.until_condition == 'float'
+                            "#{corporation.name} is floated" if corporation.floated?
+                          elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
+                            "#{program.until_condition} share(s) bought in #{corporation.name}, end condition met"
+                          end
+        if finished_reason
+          actions = [Action::ProgramDisable.new(entity, reason: finished_reason)]
+          actions << Action::ProgramSharePass.new(entity) if program.auto_pass_after
+          return actions
+        end
+
+        available_actions = actions(entity)
         if available_actions.include?('buy_shares')
-          # check if end condition met
-          if program.until_condition == 'float'
-            return [Action::ProgramDisable.new(entity, reason: "#{corporation.name} is floated")] if corporation.floated?
-          elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
-            return [Action::ProgramDisable.new(entity,
-                                               reason: "#{program.until_condition} share(s) bought in "\
-                                                       "#{corporation.name}, end condition met")]
-          end
           shares_by_percent = if from_market?(program)
                                 source = 'market'
                                 @game.share_pool.shares_by_corporation[corporation]
@@ -440,7 +454,7 @@ module Engine
 
           share = shares_by_percent.values.first.first
 
-          reason = should_stop_applying_program(entity, share) unless @game.actions.last == program
+          reason = should_stop_applying_program(entity, program, share)
           return [Action::ProgramDisable.new(entity, reason: reason)] if reason
 
           [Action::BuyShares.new(entity, shares: share)]

@@ -23,7 +23,6 @@ module Engine
 
             @game.repay_loan(entity,
                              entity.loans.first) while can_payoff?(entity) || (entity.loans.size > entity.num_player_shares)
-            @game.calculate_corporation_interest(entity)
           end
         end
       end

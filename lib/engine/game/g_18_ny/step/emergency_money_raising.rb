@@ -23,11 +23,8 @@ module Engine
 
             actions = []
             actions << 'sell_shares' if can_sell_shares?(entity)
-            if entity == @active_entity
-              actions << 'take_loan' if @game.can_take_loan?(entity)
-            elsif @active_entity&.corporation? && entity == @active_entity.owner
-              actions << 'payoff_debt' if owner_can_payoff_debt?
-            end
+            actions << 'payoff_debt' if entity.corporation? || owner_can_payoff_debt?(entity)
+            actions << 'take_loan' if entity.corporation? && @game.can_take_loan?(entity)
 
             actions
           end
@@ -70,8 +67,8 @@ module Engine
             entity.cash.positive? ? entity.cash : 0
           end
 
-          def owner_can_payoff_debt?
-            available_cash(@active_entity.owner) >= needed_cash(@active_entity)
+          def owner_can_payoff_debt?(entity)
+            @active_entity.corporation? && @active_entity.owner == entity && available_cash(entity) >= needed_cash(@active_entity)
           end
 
           def process_take_loan(action)

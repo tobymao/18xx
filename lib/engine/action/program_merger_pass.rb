@@ -32,12 +32,13 @@ module Engine
         }
       end
 
-      def self.description
-        'Automatically Pass conversion/mergers/offering corporations in merger/acquisition rounds'
-      end
-
-      def self.print_name
-        'Pass in Mergers'
+      def to_s
+        phases = @corporations_by_round&.map do |phase, corps|
+          corps_str = corps && !corps.empty? ? corps.map(&:name).join(', ') : 'none'
+          "#{phase} (#{corps_str})"
+        end&.join(' and ')
+        suffix = @options&.include?('disable_others') ? ', unless someone else acts' : ''
+        "Pass on mergers in #{phases}#{suffix}"
       end
 
       def disable?(game)

@@ -779,6 +779,10 @@ module Engine
             .map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
         end
 
+        def choose_step
+          [G1822::Step::Choose]
+        end
+
         def next_round!
           @round =
             case @round
@@ -787,9 +791,7 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Stock
-              G1822::Round::Choices.new(self, [
-                G1822::Step::Choose,
-              ], round_num: @round.round_num)
+              G1822::Round::Choices.new(self, choose_step, round_num: @round.round_num)
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
@@ -1119,9 +1121,8 @@ module Engine
           # Randomize and setup the companies
           setup_companies
 
-          # Setup the fist bidboxes
+          # Actual bidbox setup happens in the stock round.
           @bidbox_minors_cache = []
-          setup_bidboxes
 
           # Setup exchange token abilities for all corporations
           setup_exchange_tokens
@@ -1845,6 +1846,18 @@ module Engine
           return unless extra_city.tokens.size == 1
 
           extra_city.tokens[extra_city.normal_slots] = nil
+        end
+
+        def can_only_lay_plain_or_towns?(entity)
+          entity.id == self.class::COMPANY_BER
+        end
+
+        def can_upgrade_one_phase_ahead?(entity)
+          entity.id == self.class::COMPANY_BER
+        end
+
+        def must_remove_town?(entity)
+          entity.id == self.class::COMPANY_MTONR
         end
 
         private

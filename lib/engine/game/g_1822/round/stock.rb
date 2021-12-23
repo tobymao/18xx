@@ -7,11 +7,38 @@ module Engine
     module G1822
       module Round
         class Stock < Engine::Round::Stock
-          attr_accessor :bids, :bidders, :bid_exceeded
+          attr_accessor :bids
 
           def setup
             super
             @game.setup_bidboxes
+            # Store bids the player was winning at the end of their turn.
+            @stored_winning_bids = Hash.new { |h, k| h[k] = [] }
+          end
+
+          def player_enabled_program(entity)
+            # Update winning bids to exclude being outbid prior to enabling program.
+            update_stored_winning_bids(entity)
+          end
+
+          def stored_winning_bids(entity)
+            @stored_winning_bids[entity]
+          end
+
+          def update_stored_winning_bids(entity)
+            winning_bids = []
+            check_winning = lambda { |bid_target|
+              return unless (bid = highest_bid(bid_target))
+              return unless bid.entity == entity
+
+              winning_bids << bid_target
+            }
+
+            @game.bidbox_minors.each(&check_winning)
+            @game.bidbox_concessions.each(&check_winning)
+            @game.bidbox_privates.each(&check_winning)
+
+            @stored_winning_bids[entity] = winning_bids
           end
 
           def finish_round

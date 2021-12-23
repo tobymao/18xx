@@ -15,10 +15,10 @@ module Engine
 
             @game.stagecoach_token.corporation = corporation
             corporation.tokens << @game.stagecoach_token
-
             token = corporation.tokens.find { |t| t.hex&.id == 'F20' }
             token.swap!(@game.stagecoach_token)
             token.destroy!
+            @game.add_stagecoach_token_exchange_ability(corporation)
 
             @log << "#{company.name} closes"
             company.close!

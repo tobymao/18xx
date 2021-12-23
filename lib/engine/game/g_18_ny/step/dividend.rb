@@ -17,7 +17,7 @@ module Engine
             price = entity.share_price.price
             return { share_direction: :right, share_times: 1 } if entity.type == :minor && revenue.positive?
             return { share_direction: :right, share_times: 1 } if revenue >= price
-            return { share_direction: :left, share_times: 1 } if revenue < price / 2
+            return { share_direction: :left, share_times: 1 } if (revenue * 2) < price
 
             {}
           end

@@ -82,7 +82,7 @@ module Engine
 
       def available_tokens(entity)
         ability = ability(entity)
-        return [Engine::Token.new(entity.owner)] if ability&.type == :token && ability.extra_action
+        return [Engine::Token.new(entity.owner)] if ability&.type == :token && !ability.from_owner
 
         super(@game.token_owner(entity))
       end

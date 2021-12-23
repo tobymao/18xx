@@ -317,8 +317,12 @@ module Engine
         end
       end
 
-      def potential_tiles(_entity, hex)
-        colors = @game.phase.tiles
+      def potential_tile_colors(_entity, _hex)
+        @game.phase.tiles.dup
+      end
+
+      def potential_tiles(entity, hex)
+        colors = potential_tile_colors(entity, hex)
         @game.tiles
           .select { |tile| @game.tile_color_valid_for_phase?(tile, phase_color_cache: colors) }
           .uniq(&:name)

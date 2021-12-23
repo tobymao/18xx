@@ -155,6 +155,7 @@ module View
         settings = params(form)
 
         corporation = @game.corporation_by_id(settings['corporation'])
+        auto_pass_after = settings['auto_pass_after']
 
         if settings['float']
           until_condition = 'float'
@@ -172,7 +173,8 @@ module View
             sender,
             corporation: corporation,
             until_condition: until_condition,
-            from_market: from_market
+            from_market: from_market,
+            auto_pass_after: auto_pass_after,
           )
         )
       end
@@ -302,6 +304,10 @@ module View
                                             checked,
                                             corp_settings)
           end
+          children << render_checkbox('Switch to auto-pass after successful completion.',
+                                      'auto_pass_after',
+                                      form,
+                                      !!settings&.auto_pass_after)
           subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_buy_shares(form) }]
           subchildren << render_disable(settings) if settings
           children << h(:div, subchildren)
@@ -310,15 +316,23 @@ module View
         children
       end
 
-      def enable_share_pass
+      def enable_share_pass(form)
+        settings = params(form)
+
+        unconditional = settings['unconditional']
+        indefinite = settings['indefinite']
+
         process_action(
           Engine::Action::ProgramSharePass.new(
-            sender
+            sender,
+            unconditional: unconditional,
+            indefinite: indefinite,
           )
         )
       end
 
       def render_share_pass(settings)
+        form = {}
         text = 'Auto Pass in Stock Round'
         text += ' (Enabled)' if settings
         children = [h(:h3, text)]
@@ -329,8 +343,16 @@ module View
         children << h(:p,
                       [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
                          'Please read this for more details when it will deactivate')])
+        children << render_checkbox('Pass even if other players do actions that may impact you.',
+                                    'unconditional',
+                                    form,
+                                    !!settings&.unconditional)
+        children << render_checkbox('Continue passing in future SR as well.',
+                                    'indefinite',
+                                    form,
+                                    !!settings&.indefinite)
 
-        subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_share_pass }]
+        subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_share_pass(form) }]
         subchildren << render_disable(settings) if settings
         children << h(:div, subchildren)
 

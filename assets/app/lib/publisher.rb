@@ -7,7 +7,7 @@ module Lib
       if publishers.empty?
         publishers = Engine::VISIBLE_GAMES
           .flat_map { |g| g::GAME_PUBLISHER }
-          .reject { |p| p == :self_published }
+          .reject { |p| Engine::Publisher::INFO.dig(p, :hidden) }
           .compact
           .uniq
           .sort

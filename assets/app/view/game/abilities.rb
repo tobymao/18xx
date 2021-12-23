@@ -81,6 +81,9 @@ module View
         views << h(Exchange) if actions.include?('buy_shares')
         views << h(Map, game: @game) if !@game.round.is_a?(Engine::Round::Operating) &&
           (actions & %w[lay_tile place_token]).any?
+        if actions.include?('buy_train') && !@game.round.active_step.respond_to?(:buyable_trains)
+          views << h(BuyTrains, show_other_players: false, corporation: @selected_company.owner)
+        end
 
         views
       end
@@ -104,13 +107,7 @@ module View
       end
 
       def render_ability_choice_buttons
-        step = if @game.round.active_step.respond_to?(:choices_ability)
-                 @game.round.active_step
-               else
-                 @game.round.step_for(
-                  @selected_company, 'choose_ability'
-                )
-               end
+        step = @game.round.step_for(@selected_company, 'choose_ability')
         ability_choice_buttons = step.choices_ability(@selected_company).map do |choice, label|
           label ||= choice
           click = lambda do
