@@ -15,7 +15,7 @@ module Engine
             color: 'pink',
             type: 'major',
             text_color: 'black',
-            coordinates: 'G17'
+            coordinates: 'G17',
           },
           {
             float_percent: 60,
@@ -27,7 +27,7 @@ module Engine
             color: 'purple',
             type: 'major',
             text_color: 'white',
-            coordinates: 'F10'
+            coordinates: 'F10',
           },
           {
             float_percent: 60,
@@ -39,7 +39,7 @@ module Engine
             color: 'orange',
             type: 'major',
             text_color: 'black',
-            coordinates: 'D20'
+            coordinates: 'D20',
           },
           {
             float_percent: 60,
@@ -51,7 +51,7 @@ module Engine
             color: 'black',
             type: 'major',
             text_color: 'white',
-            coordinates: 'B24'
+            coordinates: 'B24',
           },
           {
             float_percent: 60,
@@ -63,7 +63,7 @@ module Engine
             color: 'teal',
             type: 'major',
             text_color: 'white',
-            coordinates: 'H16'
+            coordinates: 'H16',
           },
           {
             float_percent: 60,
@@ -75,7 +75,7 @@ module Engine
             color: 'blue',
             type: 'major',
             text_color: 'white',
-            coordinates: 'C7'
+            coordinates: 'C7',
           },
           {
             float_percent: 60,
@@ -87,7 +87,7 @@ module Engine
             color: 'lightblue',
             type: 'major',
             text_color: 'black',
-            coordinates: 'F10'
+            coordinates: 'F10',
           },
           {
             float_percent: 60,
@@ -99,7 +99,7 @@ module Engine
             color: 'red',
             type: 'major',
             text_color: 'white',
-            coordinates: 'J2'
+            coordinates: 'J2',
           },
           {
             float_percent: 60,
@@ -111,7 +111,7 @@ module Engine
             color: 'green',
             type: 'major',
             text_color: 'black',
-            coordinates: 'C11'
+            coordinates: 'C11',
           },
           {
             float_percent: 60,
@@ -123,9 +123,9 @@ module Engine
             color: 'yellow',
             type: 'major',
             text_color: 'black',
-            coordinates: 'J14'
-          }
-        ]
+            coordinates: 'J14',
+          },
+        ].freeze
 
         COMPANIES = [
           {
@@ -137,12 +137,14 @@ module Engine
             abilities: [],
             color: nil,
           },
-          # TODO HEY CAP, PLEASE FIX THIS SO THAT IT CAN ASSIGN TO ORLANDO AND OTHER MEDIUM CITIES WHEN THEY GET UPGRADES TY TY
+          # TODO: HEY CAP, PLEASE FIX THIS SO THAT IT CAN ASSIGN TO ORLANDO AND OTHER MEDIUM CITIES WHEN THEY GET UPGRADES TY TY
           {
             name: 'Cotton Warehouse',
             value: 40,
             revenue: 10,
-            desc: 'This company has a $10 token which may be placed in any non-coastal city (Atlantic or Gulf Coast) as an extra token lay during the token placement step of an owning public company\'s operating round.',
+            desc: 'This company has a $10 token which may be placed in any non-coastal city'\
+                  ' (Atlantic or Gulf Coast) as an extra token lay during the'\
+                  ' token placement step of an owning public company\'s operating round.',
             sym: 'P2',
             abilities: [
               {
@@ -165,12 +167,16 @@ module Engine
             name: 'Atlantic Shipping',
             value: 50,
             revenue: 10,
-            desc: 'This company has a Port token which may be placed on any city on the coasts as an extra token lay during the token placement step of an owning public company\'s operating round. All eligible cities are marked with an anchor symbol. This token increases the value of the selected city by $20 for the owning company and by $10 for all other companies.',
+            desc: 'This company has a Port token which may be placed on any city'\
+                  ' on the coasts as an extra token lay during the token placement'\
+                  ' step of an owning public company\'s operating round. All eligible cities are marked with an anchor symbol.'\
+                  ' This token increases the value of the selected city by $20'\
+                  ' for the owning company and by $10 for all other companies.',
             sym: 'P3',
             abilities: [
               {
                 type: 'assign_hexes',
-                hexes: %w[B24 E21 G17 H16 I3 J4 J2 J10 J14 M13 N16 E21 ],
+                hexes: %w[B24 E21 G17 H16 I3 J4 J2 J10 J14 M13 N16 E21],
                 count: 2,
                 owner_type: 'corporation',
                 when: 'owning_corp_or_turn',
@@ -188,7 +194,12 @@ module Engine
             name: 'London Investment',
             value: 70,
             revenue: 10,
-            desc: 'This company represents those shrewd investors in London. They have hired you to invest their money in the new Southern railways. They will purchase a share of your choice in any newly started company. You get the share. After the company pays its first dividend, the London Investment Company is closed, as they realize they have paid you for nothing and you spent the money for yourself.',
+            desc: 'This company represents those shrewd investors in London. They have hired'\
+                  ' you to invest their money in the new Southern railways.'\
+                  ' They will purchase a share of your choice in any newly started company.'\
+                  ' You get the share. After the company pays its first dividend, '\
+                  'the London Investment Company is closed, as they realize they have paid you'\
+                  ' for nothing and you spent the money for yourself.',
             sym: 'P4',
             abilities: [{
               type: 'exchange',
@@ -203,24 +214,27 @@ module Engine
             value: 80,
             revenue: 15,
             sym: 'P5',
-            desc: 'This private company gives the owning company a WVCF token for free. When other companies connect to the coal fields, they may buy a WVCF token (if available) during their operating round for $80 ($40 goes to the company owning the WVCF private company).'
+            desc: 'This private company gives the owning company a WVCF token for free.'\
+                  ' When other companies connect to the coal fields, '\
+                  'they may buy a WVCF token (if available) during their operating round for $80'\
+                  ' ($40 goes to the company owning the WVCF private company).',
           },
           {
             name: 'Central Railroad & Canal',
             sym: 'P7',
             value: 200,
             revenue: 30,
-            desc: 'Comes with the president\'s share of the Central of Georgia Railway. The player buying this private company must immediately set the par value of the CG. ',
+            desc: 'Comes with the president\'s share of the Central of Georgia Railway. The player buying this'\
+                  ' private company must immediately set the par value of the CG. ',
             abilities: [
                         { type: 'close', when: 'bought_train', corporation: 'CG' },
                         { type: 'no_buy' },
-                        { type: 'shares', shares: 'CG_0' }],
+                        { type: 'shares', shares: 'CG_0' },
+],
             color: nil,
           },
 
-        ]
-
-
+        ].freeze
       end
     end
   end

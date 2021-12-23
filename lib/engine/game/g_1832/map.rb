@@ -42,7 +42,7 @@ module Engine
           'L14' => 'Orlando',
           'M13' => 'Tampa',
           'M15' => 'Lakeland & Winter Haven',
-          'N16' => 'Miami'
+          'N16' => 'Miami',
         }.freeze
 
         TILES = {
@@ -101,13 +101,14 @@ module Engine
           '611' => {
             'count' => 2,
             'color' => 'brown',
-            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=JC'
-          }
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=JC',
+          },
         }.freeze
 
         HEXES = {
           white: {
-            %w[B6 B8 B20 B22 C5 C19 C21 C23 D2 D14 D18 D22 E3 E5 E15 E19 F2 F4 F12 F16 F18 G5 G7 G13 H2 H4 H10 H12 H14 I5 I7 I9 I11 I13 J8 K13] => '',
+            %w[B6 B8 B20 B22 C5 C19 C21 C23 D2 D14 D18 D22 E3 E5 E15 E19 F2 F4 F12 F16 F18 G5 G7 G13 H2 H4 H10 H12 H14 I5 I7 I9
+               I11 I13 J8 K13] => '',
             %w[C7 D20 D16 F6] => 'city=revenue:0',
             %w[B18 E17 G3 H8 J12] => 'town=revenue:0;',
             %w[M15 C17] => 'town=revenue:0;town=revenue:0',
@@ -128,25 +129,28 @@ module Engine
             %w[I3 J10] => 'icon=image:port,sticky:1;city=revenue:0;',
             ['J14'] => 'label=JC;icon=image:port,sticky:1;city=revenue:0;',
             ['J4'] => 'icon=image:port,sticky:1;town=revenue:0;upgrade=cost:80,terrain:water;',
-            ['M13'] => 'icon=image:port,sticky:1;city=revenue:0;upgrade=cost:40,terrain:water;'
+            ['M13'] => 'icon=image:port,sticky:1;city=revenue:0;upgrade=cost:40,terrain:water;',
           },
           red: {
             %w[A7 A21] => 'offboard=revenue:yellow_30|brown_50;path=a:5,b:_0;path=a:0,b:_0;',
             ['B2'] => 'offboard=revenue:yellow_30|brown_50|gray_60;path=a:5,b:_0;path=a:4,b:_0;',
-            ['N16'] => 'icon=image:port,sticky:1;offboard=revenue:yellow_20|brown_30|gray_50;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'
+            ['N16'] => 'icon=image:port,sticky:1;'\
+                       'offboard=revenue:yellow_20|brown_30|gray_50;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;',
           },
           yellow: {
-            ['F10'] => 'label=a;city=revenue:20;city=revenue:20;city=revenue:20;path=a:4,b:_0;path=a:0,b:_1;path=a:2,b:_2;'
+            ['F10'] => 'label=a;city=revenue:20;city=revenue:20;city=revenue:20;path=a:4,b:_0;path=a:0,b:_1;path=a:2,b:_2;',
           },
           gray: {
             ['B14'] => 'city=revenue:yellow_40|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0;' \
-            'icon=image:1828/coal;icon=image:1828/coal',
+                       'icon=image:1828/coal;icon=image:1828/coal',
             ['I1'] => 'path=a:4,b:5;',
-            ['B24'] => 'icon=image:port,sticky:1;city=revenue:yellow_20|brown_40|gray_50;path=a:1,b:_0;path=a:0,b:_0;',
-            ['J2'] => 'icon=image:port,sticky:1;city=revenue:yellow_20|brown_30|gray_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;',
-            ['M17'] => 'path=a:2,b:0;'
-          }
-        }
+            ['B24'] => 'icon=image:port,sticky:1;city=revenue:yellow_20|brown_40|gray_50;'\
+                       'path=a:1,b:_0;path=a:0,b:_0;',
+            ['J2'] => 'icon=image:port,sticky:1;city=revenue:yellow_20|brown_30|gray_50;'\
+                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;',
+            ['M17'] => 'path=a:2,b:0;',
+          },
+        }.freeze
       end
     end
   end
