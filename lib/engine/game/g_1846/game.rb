@@ -391,6 +391,7 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
+
           [
             [boomtown, 20],
             [meat_packing, 30],
