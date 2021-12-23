@@ -22,7 +22,7 @@ module Engine
               raise GameError, "Bridge already on #{target.name}" if target.assigned?(id)
               raise GameError, 'Cannot lay bridge on metro New Orleans' if target.id == 'I19' && @game.metro_new_orleans
               raise GameError, 'Cannot lay bridge on plain track' if !@game.bridge_city_hex?(target.id) &&
-                  !target.name.include?('CTown')
+                  !@game.class::COMPANY_TOWN_TILES.include?(target.name)
 
               target.assign!(id)
               ability.use!
@@ -49,7 +49,7 @@ module Engine
             valid = super
 
             valid &&= !(hex.id == 'I19' && @game.metro_new_orleans)
-            valid &&= !(!@game.bridge_city_hex?(hex.id) && !hex.name.include?('CTown'))
+            valid &&= !(!@game.bridge_city_hex?(hex.id) && !@game.class::COMPANY_TOWN_TILES.include?(hex.tile.name))
             valid && @game.graph.reachable_hexes(entity.owner)[hex]
           end
 

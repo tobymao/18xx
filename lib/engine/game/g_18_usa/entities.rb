@@ -25,8 +25,8 @@ module Engine
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
-                free: false,
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
@@ -54,9 +54,11 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
+              # TODO: Not NO if a metropolis, Yes, Company town if on river
+              # TODO must be reachable
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
+                hexes: BRIDGE_CITY_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -81,9 +83,8 @@ module Engine
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
                 tiles: %w[7oil 8oil 9oil],
-                free: false,
                 when: 'track',
-                discount: 15,
+                reachable: true,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
@@ -102,15 +103,15 @@ module Engine
                   'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  A tile lay action may be used to increase the revenue bonus to $20 in phase 3. '\
-                  '  May not start or end a route at an iron mine.',
+                  '  May not start or end a route at an ore mine.',
             sym: 'P4',
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: IRON_HEXES,
-                tiles: %w[7iron10 8iron10 9iron10],
-                free: false,
+                hexes: ORE_HEXES,
+                tiles: %w[7ore 8ore10 9ore10],
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
@@ -164,7 +165,7 @@ module Engine
             desc: 'May lay two extra yellow tiles instead of one when paying $20.',
             sym: 'P7',
             abilities: [
-              # Owning the private is the ability
+              # Built into game class
             ],
             color: 'cyan',
           },
@@ -183,12 +184,14 @@ module Engine
                 free: true,
                 when: 'track',
                 owner_type: 'corporation',
+                reachable: true,
                 closed_when_used_up: true,
                 count: 1,
-                hexes: [],
+                hexes: CITY_HEXES,
                 tiles: %w[14 15 619],
               },
             ],
+            color: 'cyan',
           },
           # P10
           {
@@ -199,7 +202,7 @@ module Engine
                   'All potential metropolises for this private are: '\
                   'Atlanta, Chicago, Denver, Dallas-Fort Worth, Los Angeles, and New Orleans. ' \
                   'Implementation limitation: Cannot be combined with Boomtown subsidy',
-
+            # TODO: fix limitation
             sym: 'P10',
             abilities: [
               # Owning the private is the ability
@@ -207,6 +210,8 @@ module Engine
             color: 'cyan',
           },
           # P11
+          # TODO Do you have to pay the $20 to upgrade non-city track to the next phase color?
+          #      Or does it only apply if you lay two upgrades?
           {
             name: 'Pettibone & Mulliken',
             value: 40,
@@ -215,7 +220,7 @@ module Engine
                   ' May make an extra non-city track upgrade (instead of yellow tile lay) per OR when paying $20',
             sym: 'P11',
             abilities: [
-              # Owning the private is the ability
+              # Built into track class
             ],
             color: 'cyan',
           },
@@ -236,9 +241,8 @@ module Engine
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
                 tiles: %w[7oil 8oil 9oil],
-                free: false,
                 when: 'track',
-                discount: 15,
+                reachable: true,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
@@ -252,17 +256,18 @@ module Engine
             name: 'Pyramid Scheme',
             value: 60,
             revenue: 0,
-            desc: 'Does nothing. Min bid of $5',
+            desc: 'This company has no special ability.',
             sym: 'P14',
             abilities: [],
             color: 'green',
           },
           # P15
+          # TODO there are edge cases where you may want to pay back the land grant first. Consider making a choice ability.
           {
             name: 'Western Land Grant',
             value: 60,
             revenue: 0,
-            desc: 'The owning company may take one extra loan at a fixed $5 per round interest rate. ' \
+            desc: 'The owning corporation may take one extra loan at a fixed $5 per round interest rate. ' \
                   'All other rules regarding loans are followed as normal.',
             sym: 'P15',
             abilities: [], # Implemented in game class
@@ -273,10 +278,22 @@ module Engine
             name: 'Regional Headquarters',
             value: 60,
             revenue: 0,
-            desc: 'May upgrade a non-metropolis green or brown city to the RHQ tile after phase 5 starts',
+            desc: 'Regional Headquarters may be used to upgrade a green or brown non-metropolis city after phase 5 begins. ' \
+                  'May be placed on any existing normal city. Three of the track segments are optional and can be placed ' \
+                  'pointing toward water or other off map areas.',
             sym: 'P16',
             abilities: [
-              # Simply owning this company is the ability
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                reachable: true,
+                consume_tile_lay: true,
+                hexes: CITY_HEXES,
+                tiles: ['X23'],
+                count: 1,
+                closed_when_used_up: true,
+              },
             ],
             color: 'green',
           },
@@ -290,7 +307,16 @@ module Engine
                   '+$60 revenue bonus per train that runs Seattle-Fargo-Helena-Chicago',
             sym: 'P17',
             abilities: [
-              # Owning the private is the ability
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                hexes: %w[B4 B6 B8 B10 B12 B14 B16 B18 C19 D20],
+                tiles: YELLOW_PLAIN_TRACK_TILES + PLAIN_YELLOW_CITY_TILES,
+                free: true,
+                special: false,
+                count_per_or: 1,
+              },
             ],
             color: 'green',
           },
@@ -310,8 +336,8 @@ module Engine
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
-                free: false,
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
@@ -375,19 +401,20 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
+              # TODO: same as other bridge company
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
+                hexes: BRIDGE_CITY_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
               {
                 type: 'tile_lay',
-                hexes: COAL_HEXES + IRON_HEXES,
-                tiles: %w[7coal 8coal 9coal 7iron10 8iron10 9iron10],
-                free: false,
+                hexes: (COAL_HEXES + ORE_HEXES).uniq,
+                tiles: %w[7coal 8coal 9coal 7ore10 8ore10 9ore10],
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 owner_type: 'corporation',
@@ -413,9 +440,10 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
+              # TODO: same as other bridge companies
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
+                hexes: BRIDGE_CITY_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -449,20 +477,20 @@ module Engine
                   'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  A tile lay action may be used to increase the revenue bonus to $20 in phase 3. '\
-                  '  May not start or end a route at an iron mine.',
+                  '  May not start or end a route at an ore mine.',
             sym: 'P24',
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: IRON_HEXES,
-                tiles: %w[7iron10 8iron10 9iron10],
-                free: false,
+                hexes: ORE_HEXES,
+                tiles: %w[7ore10 8ore10 9ore10],
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
-                count: 1,
+                count: 2,
               },
             ],
             color: 'orange',
@@ -488,6 +516,7 @@ module Engine
                 on_phase: '6',
               },
             ],
+            color: 'orange',
           },
           # P26
           {
@@ -495,7 +524,7 @@ module Engine
             value: 90,
             revenue: 0,
             desc: 'Comes with three rural junction tiles. Rural junctions can be placed in empty city hexes and fulfill the '\
-                  'revenue center requirement for coal, iron, and oil markers and can receive bridge tokens. Rural junctions '\
+                  'revenue center requirement for coal, ore, and oil markers and can receive bridge tokens. Rural junctions '\
                   'are not towns and do not count against the number of stops for a train and furthermore they may not be the '\
                   'start or end of a route. Rural junctions may never be upgraded; a train may not run through the same rural '\
                   'junction twice',
@@ -504,8 +533,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: CITY_HEXES,
-                tiles: %w[RuralX RuralY RuralK],
-                free: false,
+                tiles: %w[X07 X08 X09],
                 reachable: true,
                 when: 'track',
                 consume_tile_lay: true,
@@ -527,10 +555,20 @@ module Engine
                   'place a token on the Company Town hex and receive $10 less for the city than the company with the station '\
                   'marker in the city. The Company Town can be placed on any hex, city circle or not, as long as it is not '\
                   'adjacent to a metropolis and has no track or station marker in it. If the Company Town tile is placed on a '\
-                  '$10 river hex, a bridge token may be used. Coal / Oil / Iron markers may not be used with the Company Town. '\
+                  '$10 river hex, a bridge token may be used. Coal / Oil / Ore markers may not be used with the Company Town. '\
                   'If the station marker in the Company Town hex is ever removed, no token may ever replace it',
             sym: 'P27',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                reachable: true,
+                consume_tile_lay: true,
+                hexes: [],
+                tiles: COMPANY_TOWN_TILES,
+              },
+            ],
             color: 'orange',
           },
           # P28
@@ -549,8 +587,8 @@ module Engine
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
-                free: false,
                 when: 'track',
+                reachable: true,
                 discount: 15,
                 consume_tile_lay: true,
                 closed_when_used_up: true,

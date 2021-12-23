@@ -1395,7 +1395,7 @@ module Engine
 
       def upgrades_to?(from, to, special = false, selected_company: nil)
         # correct color progression?
-        return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+        return false unless upgrades_to_correct_color?(from, to)
 
         # honors pre-existing track?
         return false unless from.paths_are_subset_of?(to.paths)
@@ -1417,6 +1417,10 @@ module Engine
         return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
 
         true
+      end
+
+      def upgrades_to_correct_color?(from, to)
+        Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
       end
 
       def upgrades_to_correct_label?(from, to)
