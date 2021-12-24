@@ -56,21 +56,21 @@ module Engine
           def process_lay_tile(action)
             @log << "Tile placement for NDEM by #{@game.ndem_acting_player.name}" if @ndem
             action.tile.label = 'T' if action.hex.tile.label.to_s == 'T'
-            if action.tile.id == "BC-0"
+            if action.tile.id == 'BC-0'
               @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
-              action.hex.tile.icons << Part::Icon.new("../icons/1822_mx/red_cube", "block")
+              action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
               @round.num_laid_track += 1
               @round.laid_hexes << action.hex
             else
               super
-              action.hex.tile.icons.delete_if { |i| i.name == 'block'}
-            end  
+              action.hex.tile.icons.delete_if { |i| i.name == 'block' }
+            end
           end
 
           def potential_tiles(entity, hex)
             tiles = super
             if @game.can_hold_builder_cubes?(hex.tile)
-              cube_tile = @game.tile_by_id("BC-0")
+              cube_tile = @game.tile_by_id('BC-0')
               tiles << cube_tile
             end
             tiles
@@ -78,7 +78,8 @@ module Engine
 
           def legal_tile_rotation?(entity, hex, tile)
             return true if hex.tile.name == tile.name && hex.tile.rotation == tile.rotation
-            return true if tile.id == "BC-0"
+            return true if tile.id == 'BC-0'
+
             super
           end
         end

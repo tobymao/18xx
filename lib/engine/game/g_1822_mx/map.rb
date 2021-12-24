@@ -341,7 +341,7 @@ module Engine
               'count' => 1,
               'color' => 'yellow',
               'code' => 'icon=image:1822_mx/red_cube,large:1',
-            }
+            },
 
         }.freeze
       end

@@ -586,20 +586,18 @@ module Engine
           ''
         end
 
-        def has_terrain?(tile, terrain)
+        def terrain?(tile, terrain)
           tile.parts.each do |part|
-            if part.is_a?(Engine::Part::Upgrade)
-              return true if part.terrains[0] == terrain
-            end
+            return true if part.is_a?(Engine::Part::Upgrade) && (part.terrains[0] == terrain)
           end
-          return false
+          false
         end
 
         def max_builder_cubes(tile)
           max = 0
-          max += 2 if has_terrain?(tile, 'mountain')
-          max += 1 if has_terrain?(tile, 'hill')
-          max += 1 if has_terrain?(tile, 'river')
+          max += 2 if terrain?(tile, 'mountain')
+          max += 1 if terrain?(tile, 'hill')
+          max += 1 if terrain?(tile, 'river')
           max
         end
 
@@ -615,21 +613,17 @@ module Engine
         def upgrade_cost(tile, hex, entity, spender)
           cost = super
           num_cubes = current_builder_cubes(tile)
-          if num_cubes >= 2 && has_terrain?(tile, 'mountain')
+          if num_cubes >= 2 && terrain?(tile, 'mountain')
             num_cubes -= 2
             cost -= 80
           end
-          if num_cubes >= 1 && has_terrain?(tile, 'hill')
+          if num_cubes >= 1 && terrain?(tile, 'hill')
             num_cubes -= 1
             cost -= 40
           end
-          if num_cubes >= 1 && has_terrain?(tile, 'river')
-            num_cubes -= 1
-            cost -= 20
-          end
+          cost -= 20 if num_cubes >= 1 && terrain?(tile, 'river')
           cost
         end
-  
       end
     end
   end
