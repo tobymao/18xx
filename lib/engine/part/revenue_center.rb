@@ -24,7 +24,12 @@ module Engine
       def parse_revenue(revenue, format = nil)
         @revenue =
           if revenue.include?('|')
-            rev = revenue.split('|').map { |s| s.split('_') }.to_h { |c, r| [c.to_sym, r.to_i] }
+            # rubocop:disable Style/MapToHash
+            rev = revenue
+              .split('|')
+              .map { |s| s.split('_') }
+              .to_h { |c, r| [c.to_sym, r.to_i] }
+            # rubocop:enable Style/MapToHash
             @revenue_to_render = rev
             @revenue_to_render =
               if format
