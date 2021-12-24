@@ -125,7 +125,7 @@ module Engine
           private
 
           def refresh_bids
-            @bids = entities.map { |e| [e, nil] }.to_h
+            @bids = entities.to_h { |e| [e, nil] }
           end
 
           def in_auction?

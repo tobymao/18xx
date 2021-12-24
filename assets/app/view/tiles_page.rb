@@ -143,7 +143,7 @@ module View
       game = game_class.new(players)
 
       # map_tiles: hash; key is hex ID, value is the Tile there
-      map_tiles = game.hexes.map { |h| [h.name, h.tile] }.to_h
+      map_tiles = game.hexes.to_h { |h| [h.name, h.tile] }
 
       # get mapping of tile -> all hex coordinates using that tile
       tile_to_coords = {}

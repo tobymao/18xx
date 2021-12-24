@@ -82,7 +82,7 @@ module View
           @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
           paths_and_stubs = @tile.paths + @tile.stubs
-          path_indexes = paths_and_stubs.map { |p| [p, indexes_for(p)] }.to_h
+          path_indexes = paths_and_stubs.to_h { |p| [p, indexes_for(p)] }
 
           sorted = paths_and_stubs
             .flat_map { |path| path_indexes[path].map { |i| [path, i] } }

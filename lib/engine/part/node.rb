@@ -27,7 +27,7 @@ module Engine
       end
 
       def select(paths, corporation: nil)
-        on = paths.map { |p| [p, 0] }.to_h
+        on = paths.to_h { |p| [p, 0] }
 
         walk(on: on, corporation: corporation) do |path|
           on[path] = 1 if on[path]

@@ -149,7 +149,7 @@ module Engine
           end
 
           def check_adjacent(new_hex)
-            coordinates = @round.laid_hexes.map { |h| [[h.x, h.y], h] }.to_h
+            coordinates = @round.laid_hexes.to_h { |h| [[h.x, h.y], h] }
             Engine::Hex::DIRECTIONS[new_hex.layout].each do |xy, _direction|
               x, y = xy
               raise GameError, 'Cannot lay tiles in adjacent hexes' if coordinates[[new_hex.x + x, new_hex.y + y]]

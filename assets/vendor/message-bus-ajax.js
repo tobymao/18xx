@@ -2,7 +2,7 @@
 // as a fallback if jQuery is not present
 //
 // Only implements methods & options used by MessageBus
-(function(global, undefined) {
+(function(global) {
   'use strict';
   if (!global.MessageBus){
       throw new Error("MessageBus must be loaded before the ajax adapter");
@@ -16,7 +16,7 @@
     for (var name in options.headers){
       xhr.setRequestHeader(name, options.headers[name]);
     }
-    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     if (options.messageBus.chunked){
       options.messageBus.onProgressListener(xhr);
     }
@@ -31,7 +31,7 @@
         options.complete();
       }
     }
-    xhr.send(JSON.stringify(options.data));
+    xhr.send(new URLSearchParams(options.data).toString());
     return xhr;
   };
 

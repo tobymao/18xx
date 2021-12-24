@@ -37,7 +37,7 @@ class Assets
   end
 
   def game_builds
-    @game_builds ||= Dir['lib/engine/game/*/game.rb'].map do |dir|
+    @game_builds ||= Dir['lib/engine/game/*/game.rb'].to_h do |dir|
       game = dir.split('/')[-2]
       path = "#{@out_path}/#{game}.js"
       build = {
@@ -45,7 +45,7 @@ class Assets
         'files' => @precompiled ? [path] : [compile(nil, nil, nil, game: game)],
       }
       [game, build]
-    end.to_h
+    end
   end
 
   def game_paths

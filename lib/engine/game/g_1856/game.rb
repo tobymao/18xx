@@ -1049,7 +1049,7 @@ module Engine
           # Can't go anywhere if we have nowhere to start
           return false unless hex_by_id(start_hex_id)
 
-          tokens = hex_by_id(start_hex_id).tile.cities.map { |city| [city, true] }.to_h
+          tokens = hex_by_id(start_hex_id).tile.cities.to_h { |city| [city, true] }
 
           tokens.keys.each do |node|
             visited = tokens.reject { |token, _| token == node }
@@ -1842,7 +1842,7 @@ module Engine
           index_for_trigger = @players.index(@nationalization_trigger)
           # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
           #  where the exact value doesn't really matter
-          order = @players.each_with_index.map { |p, i| i < index_for_trigger ? [p, i + 10] : [p, i] }.to_h
+          order = @players.each_with_index.to_h { |p, i| i < index_for_trigger ? [p, i + 10] : [p, i] }
           floated_player_corps.sort_by { |c| [order[c.player], @round.entities.index(c)] }
         end
 

@@ -8,8 +8,8 @@ module Engine
 
     def initialize(runs, dividend, revenue, laid_hexes)
       # Convert the route into connection hexes as upgrades may break the representation
-      @routes = runs.map { |run| [run.train, run.connection_hexes] }.to_h
-      @halts = runs.map { |run| [run.train, run.halts] }.to_h
+      @routes = runs.to_h { |run| [run.train, run.connection_hexes] }
+      @halts = runs.to_h { |run| [run.train, run.halts] }
       @revenue = revenue
       @dividend = dividend
       @laid_hexes = laid_hexes

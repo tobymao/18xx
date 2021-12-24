@@ -487,9 +487,9 @@ module Engine
         # lays, so track them separately
         def pending_boom_tile_lays
           @pending_boom_tile_lays.merge(
-            @pending_gray_boom_tile_lays[:boom].map { |h| [h, boomcity_tiles(h.tile.name)] }.to_h
+            @pending_gray_boom_tile_lays[:boom].to_h { |h| [h, boomcity_tiles(h.tile.name)] }
           ).merge(
-            @pending_gray_boom_tile_lays[:double_boom].map { |h| [h, [double_boomcity_tile(h.tile.name)]] }.to_h
+            @pending_gray_boom_tile_lays[:double_boom].to_h { |h| [h, [double_boomcity_tile(h.tile.name)]] }
           )
         end
 

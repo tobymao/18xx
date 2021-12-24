@@ -42,12 +42,12 @@ module Engine
         def choices_for_zoo_ticket(company, corporation)
           return [] unless company.owner == corporation.owner
 
-          [*1..company.value].map do |value|
+          [*1..company.value].to_h do |value|
             [
               { type: :sell, price: value, corporation: corporation.id },
               "Company gets #{@game.format_currency(value)}; #{@game.format_currency(company.value - value)} to Player",
             ]
-          end.to_h
+          end
         end
 
         def choices_for_two_barrels?(_corporation)

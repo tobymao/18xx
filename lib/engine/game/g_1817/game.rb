@@ -1531,7 +1531,7 @@ module Engine
             when Engine::Round::Operating
               or_round_finished
               # Store the share price of each corp to determine if they can be acted upon in the AR
-              @stock_prices_start_merger = @corporations.map { |corp| [corp, corp.share_price] }.to_h
+              @stock_prices_start_merger = @corporations.to_h { |corp| [corp, corp.share_price] }
               @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
               G1817::Round::Merger.new(self, [
                 Engine::Step::ReduceTokens,

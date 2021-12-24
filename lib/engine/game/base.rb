@@ -47,7 +47,7 @@ module Engine
                     **kwargs)
       when Hash
         title = data['title']
-        names = data['players'].map { |p| [p['id'] || p['name'], p['name']] }.to_h
+        names = data['players'].to_h { |p| [p['id'] || p['name'], p['name']] }
         id = data['id']
         actions ||= data['actions'] || []
         pin ||= data.dig('settings', 'pin')
@@ -62,7 +62,7 @@ module Engine
                     **kwargs)
       when ::Game
         title = data.title
-        names = data.ordered_players.map { |u| [u.id, u.name] }.to_h
+        names = data.ordered_players.to_h { |u| [u.id, u.name] }
         id = data.id
         actions ||= data.actions.map(&:to_h)
         pin ||= data.settings['pin']
@@ -440,7 +440,7 @@ module Engine
         @names = if names.is_a?(Hash)
                    names.freeze
                  else
-                   names.map { |n| [n, n] }.to_h
+                   names.to_h { |n| [n, n] }
                  end
 
         @players = @names.map { |player_id, name| Player.new(player_id, name) }
@@ -2143,7 +2143,7 @@ module Engine
       end
 
       def connect_hexes
-        coordinates = @hexes.map { |h| [[h.x, h.y], h] }.to_h
+        coordinates = @hexes.to_h { |h| [[h.x, h.y], h] }
 
         @hexes.each do |hex|
           Hex::DIRECTIONS[hex.layout].each do |xy, direction|
@@ -2413,7 +2413,7 @@ module Engine
       def cache_objects
         CACHABLE.each do |type, name|
           ivar = "@_#{type}"
-          instance_variable_set(ivar, send(type).map { |x| [x.id, x] }.to_h)
+          instance_variable_set(ivar, send(type).to_h { |x| [x.id, x] })
 
           self.class.define_method("#{name}_by_id") do |id|
             instance_variable_get(ivar)[id]
@@ -2425,7 +2425,7 @@ module Engine
         return unless CACHABLE.any? { |t, _n| t == type }
 
         ivar = "@_#{type}"
-        instance_variable_set(ivar, send(type).map { |x| [x.id, x] }.to_h)
+        instance_variable_set(ivar, send(type).to_h { |x| [x.id, x] })
       end
 
       def bank_cash

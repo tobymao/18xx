@@ -1158,7 +1158,7 @@ module Engine
         # associated with each
         def nationalize_corps!
           revenues = @corporations.select { |c| c.floated? && !nationalized?(c) }
-            .map { |c| [c, get_or_revenue(c.operating_history[c.operating_history.keys.max])] }.to_h
+            .to_h { |c| [c, get_or_revenue(c.operating_history[c.operating_history.keys.max])] }
 
           sorted_corps = revenues.keys.sort_by { |c| revenues[c] }
 

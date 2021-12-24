@@ -311,17 +311,17 @@ module Engine
         end
 
         def load_minor_extended
-          game_minors.map do |gm|
+          game_minors.to_h do |gm|
             minor = @minors.find { |m| m.name == gm[:sym] }
             [minor, gm[:extended]]
-          end.to_h
+          end
         end
 
         def load_corporation_extended
-          game_corporations.map do |cm|
+          game_corporations.to_h do |cm|
             corp = @corporations.find { |m| m.name == cm[:sym] }
             [corp, cm[:extended]]
-          end.to_h
+          end
         end
 
         # create "dummy" companies based on minors and railways

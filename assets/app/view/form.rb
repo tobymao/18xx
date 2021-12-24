@@ -19,11 +19,11 @@ module View
     end
 
     def params(inputs = nil)
-      (inputs || @inputs).map do |key, input|
+      (inputs || @inputs).to_h do |key, input|
         input = Native(input)
         elm = input['elm']
         [key, %w[checkbox radio].include?(elm['type']) ? elm['checked'] : elm['value']]
-      end.to_h
+      end
     end
 
     def render_form(name, inputs, description = nil)

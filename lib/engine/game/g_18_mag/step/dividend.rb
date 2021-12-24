@@ -127,19 +127,19 @@ module Engine
             return super if entity.minor?
 
             revenue = corp_revenue(entity)
-            dividend_types.map do |type|
+            dividend_types.to_h do |type|
               payout = send(type, entity, revenue)
               payout[:divs_to_corporation] = 0
               [type, payout.merge(share_price_change(entity, revenue - payout[:corporation]))]
-            end.to_h
+            end
           end
 
           def corp_dividend_options(entity, amount = 0)
-            self.class::CORP_TYPES.map do |type|
+            self.class::CORP_TYPES.to_h do |type|
               payout = send(type, entity, amount)
               payout[:divs_to_corporation] = 0
               [type, payout.merge(share_price_change(entity, amount - payout[:corporation]))]
-            end.to_h
+            end
           end
 
           def withhold(entity, revenue)

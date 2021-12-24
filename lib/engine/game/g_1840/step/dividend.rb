@@ -134,10 +134,10 @@ module Engine
           end
 
           def corp_dividend_options(entity, amount = 0)
-            dividend_types.map do |type|
+            dividend_types.to_h do |type|
               payout = send(type, entity, amount)
               [type, payout.merge(share_price_change(entity, amount))]
-            end.to_h
+            end
           end
 
           def share_price_change(entity, revenue = 0)

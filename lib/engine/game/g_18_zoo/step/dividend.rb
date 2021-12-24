@@ -13,9 +13,9 @@ module Engine
             revenue = @game.routes_revenue(routes)
             subsidy = @game.routes_subsidy(routes)
 
-            dividend_types.map do |type|
+            dividend_types.to_h do |type|
               [type, send(type, entity, revenue, subsidy)]
-            end.to_h
+            end
           end
 
           def share_price_change(entity, revenue)

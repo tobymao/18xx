@@ -203,7 +203,7 @@ module Engine
       @connected_hexes[corporation] = hexes
       @connected_nodes[corporation] = nodes
       @connected_paths[corporation] = paths
-      @reachable_hexes[corporation] = paths.map { |path, _| [path.hex, true] }.to_h
+      @reachable_hexes[corporation] = paths.to_h { |path, _| [path.hex, true] }
     end
   end
 end

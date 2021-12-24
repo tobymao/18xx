@@ -19,7 +19,7 @@ module Engine
   end.compact.to_h
 
   GAME_TITLES = GAME_META_BY_TITLE.keys
-  @fuzzy_titles = GAME_TITLES.map { |t| [t, t] }.to_h
+  @fuzzy_titles = GAME_TITLES.to_h { |t| [t, t] }
 
   GAME_METAS = GAME_META_BY_TITLE.values
 
@@ -69,7 +69,7 @@ module Engine
   end
 
   def self.fuzzy_candidates
-    @fuzzy_candidates ||= GAME_METAS.map do |m|
+    @fuzzy_candidates ||= GAME_METAS.to_h do |m|
       module_name = m.name.split('::')[-2]
 
       candidates = [
@@ -87,6 +87,6 @@ module Engine
       candidates = candidates.uniq.reject(&:empty?)
 
       [m.title, candidates]
-    end.to_h
+    end
   end
 end

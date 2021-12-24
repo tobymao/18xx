@@ -297,7 +297,7 @@ module Engine
         end
 
         def init_player_debts
-          @player_debts = @players.map { |player| [player.id, { debt: 0, penalty_interest: 0 }] }.to_h
+          @player_debts = @players.to_h { |player| [player.id, { debt: 0, penalty_interest: 0 }] }
         end
 
         def new_operating_round(round_num = 1)

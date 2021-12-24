@@ -30,7 +30,7 @@ module Engine
 
       now = Time.now
 
-      skip_paths = static.flat_map(&:paths).map { |path| [path, true] }.to_h
+      skip_paths = static.flat_map(&:paths).to_h { |path| [path, true] }
 
       nodes.each do |node|
         if Time.now - now > path_timeout

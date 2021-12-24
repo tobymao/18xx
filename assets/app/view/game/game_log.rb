@@ -99,7 +99,7 @@ module View
 
         last_action = nil
 
-        actions = @game.actions.map { |a| [a.id, a] }.to_h
+        actions = @game.actions.to_h { |a| [a.id, a] }
 
         log = @limit ? @game.log.last(@limit) : @game.log
         the_log = log.group_by(&:action_id).flat_map do |action_id, entries|

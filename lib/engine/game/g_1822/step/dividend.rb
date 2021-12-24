@@ -48,7 +48,7 @@ module Engine
             end
             subsidy = @game.routes_subsidy(routes)
             total_revenue += subsidy
-            dividend_types.map do |type|
+            dividend_types.to_h do |type|
               payout = send(type, entity, revenue, subsidy)
               if extra_train
                 payout[:corporation] += extra_train_payout[:corporation]
@@ -56,7 +56,7 @@ module Engine
               end
               payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
               [type, payout.merge(share_price_change(entity, total_revenue - payout[:corporation]))]
-            end.to_h
+            end
           end
 
           def find_extra_train(entity)

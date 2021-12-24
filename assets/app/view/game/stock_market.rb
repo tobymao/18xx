@@ -298,7 +298,7 @@ module View
           colors = @game.class::STOCKMARKET_COLORS
 
           types_in_market = @game.stock_market.market.flatten.compact.flat_map(&:types)
-          .uniq.map { |p| [p, colors[p]] }.to_h
+          .uniq.to_h { |p| [p, colors[p]] }
 
           legend_items = types_in_market.map do |type, _color|
             line_props = {

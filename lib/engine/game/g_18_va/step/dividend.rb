@@ -19,11 +19,11 @@ module Engine
           def dividend_options(entity)
             revenue = @game.routes_revenue(routes)
             subsidy = @game.routes_subsidy(routes)
-            dividend_types.map do |type|
+            dividend_types.to_h do |type|
               payout = send(type, entity, revenue, subsidy)
               payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
               [type, payout.merge(share_price_change(entity, revenue + subsidy - payout[:corporation]))]
-            end.to_h
+            end
           end
 
           def process_dividend(action)

@@ -81,16 +81,14 @@ module Engine
 
         def choices_for_days_off
           @game.corporations.select(&:ipoed)
-               .map { |corporation| [{ type: :days_off, corporation_id: corporation.id }, corporation.name] }
-               .to_h
+               .to_h { |corporation| [{ type: :days_off, corporation_id: corporation.id }, corporation.name] }
         end
 
         def choices_for_whatsup(player)
           train = @game.depot.depot_trains&.first
           player.presidencies
                 .select { |c| c.cash >= train&.price }
-                .map { |c| [{ type: :whatsup, corporation_id: c.id, train_id: train.id }, c.name] }
-                .to_h
+                .to_h { |c| [{ type: :whatsup, corporation_id: c.id, train_id: train.id }, c.name] }
         end
 
         def choices_for_greek
