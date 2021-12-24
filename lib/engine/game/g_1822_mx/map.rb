@@ -336,6 +336,13 @@ module Engine
                 'city=revenue:green_40|brown_50|gray_60,slots:0;path=a:0,b:_0,terminal:1',
             },
 
+          'BC' =>
+            {
+              'count' => 1,
+              'color' => 'yellow',
+              'code' => 'icon=image:1822_mx/red_cube,large:1',
+            }
+
         }.freeze
       end
     end
