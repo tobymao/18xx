@@ -180,7 +180,18 @@ module Engine
                   'board during their lay track action. These placements are in addition to the '\
                   'tile placement. These cube placements may occur at any time during the '\
                   'action and can be split among turns.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 3,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+            ],
             color: nil,
           },
           {
@@ -194,7 +205,18 @@ module Engine
                   'board during their lay track action. These placements are in addition to the '\
                   'tile placement. These cube placements may occur at any time during the '\
                   'action and can be split among turns.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 3,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+            ],
             color: nil,
           },
           {

@@ -74,6 +74,14 @@ module Engine
           'P18' => { acquire: %i[major], phase: 3 },
         }.freeze
 
+        def port_company?(entity)
+          entity.id == 'P17' || entity.id == 'P18'
+        end
+
+        def cube_company?(entity)
+          entity.id == 'P10' || entity.id == 'P11'
+        end
+
         BIDDING_BOX_START_PRIVATE = 'P1'
         BIDDING_BOX_START_MINOR = nil
 
@@ -506,6 +514,7 @@ module Engine
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
           adjust_p7_revenue(company) if company.id == 'P7'
           company.revenue = -10 if company.id == 'P16'
+          company.revenue = 0 if cube_company?(company)
         end
 
         def reorder_players(_order = nil)
@@ -551,10 +560,6 @@ module Engine
           return true if from.color == 'blue' && to.color == 'blue'
 
           super
-        end
-
-        def port_company?(entity)
-          entity.id == 'P17' || entity.id == 'P18'
         end
 
         def payout_companies
