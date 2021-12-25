@@ -47,7 +47,7 @@ module Engine
               end
             else
               super
-              action.hex.tile.icons.delete_if { |i| i.name == 'block' }
+              action.hex.tile.icons.reject! { |i| i.name == 'block' }
             end
           end
         end
