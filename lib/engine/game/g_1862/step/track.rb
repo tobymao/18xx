@@ -31,6 +31,8 @@ module Engine
           end
 
           def update_tile_lists(tile, old_tile)
+            raise GameError, 'tile already laid' unless @game.tiles.include?(tile)
+
             @game.tiles.delete(tile)
             @game.tiles << old_tile unless old_tile.preprinted
 

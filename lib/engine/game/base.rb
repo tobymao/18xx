@@ -2273,7 +2273,11 @@ module Engine
                        when :current_or
                          " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
                        when :full_or
-                         " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
+                         else
+                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
+                         end
                        when :one_more_full_or_set
                          " : Game Ends at conclusion of #{round_end.short_name}"\
                          " #{@final_turn}.#{final_operating_rounds}"
