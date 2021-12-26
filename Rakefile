@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 unless ENV['RACK_ENV'] == 'production'
+  require 'parallel_tests'
   require 'rspec/core/rake_task'
   require 'rubocop/rake_task'
 
@@ -10,7 +11,12 @@ unless ENV['RACK_ENV'] == 'production'
     task.requires << 'rubocop-performance'
   end
 
-  task default: %i[spec rubocop]
+  desc 'Run spec in parallel'
+  task :spec_parallel do
+    ParallelTests::CLI.new.run(['--type', 'rspec'])
+  end
+
+  task default: %i[spec_parallel rubocop]
 end
 
 # Migrate
