@@ -6,34 +6,51 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Stockholm-Åbo Ferry Company',
             sym: 'Ferry',
+            name: 'Stockholm-Åbo Ferry Company',
             value: 120,
             revenue: 20,
-            desc: 'Two +20 bonus tokens',
-            abilities: [],
+            desc:
+              'Comes with two +20 bonus tokens. '\
+              'Tokens may be purchased by a Corporation for K20 to gain a +20 '\
+              'bonus to runs across the ferry on L7.',
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'shares', shares: 'VR_1' },
+              # TODO: Two +20 bonus tokens for ferry
+            ],
             color: nil,
           },
           {
-            name: 'Lapland Ore Line',
             sym: 'Mine',
+            name: 'Lapland Ore Line',
             value: 150,
             revenue: 25,
-            desc: '+50 bonus token for Kiruna',
-            abilities: [],
+            desc:
+              'Comes with one +50 bonus token. '\
+              'Token can be purchased by a Corporation for K50 to gain a +50 '\
+              'bonus to one run through Kiruna (A20) tile once per OR',
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'shares', shares: 'SNJ_1' },
+              # TODO: +50 bonus token for Kiruna
+            ],
             color: nil,
           },
           {
-            name: 'Sjællandske Jernbaneselskab',
             sym: 'SJS',
+            name: 'Sjællandske Jernbaneselskab',
             value: 180,
             revenue: 30,
-            desc: 'Lays COP tile for free',
+            desc: 'May lay or upgrade a COP (F3) tile for free',
             abilities: [
+              { type: 'no_buy' },
+              { type: 'shares', shares: %w[DSB_0 DSB_1] },
+              { type: 'close', when: 'bought_train', corporation: 'DSB' },
               {
                 type: 'tile_lay',
-                hexes: ['F3'],
-                tiles: ['403', '121', '584'],
+                hexes: %w[F3],
+                tiles: %w[403 121 584],
                 when: 'track',
                 owner_type: 'player',
                 count: 1,
@@ -43,42 +60,108 @@ module Engine
             ],
             color: nil,
           },
+          {
+            sym: '1',
+            name: 'Södra Stambanan',
+            value: 260,
+            revenue: 0,
+            desc:
+              'Owner takes control of Minor Company 1, which begins in '\
+              'Malmo (G4) and has destination in Goteborg (B11). When Phase 5 '\
+              'begins, the Minor Company closes, transferring all belongings '\
+              'to SJ, but its owner receives a 10% share in SJ.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          },
+          {
+            sym: '2',
+            name: 'Nordvärsta Stambanan',
+            value: 220,
+            revenue: 0,
+            desc:
+              'Owner takes control of Minor Company 2, which begins in '\
+              'Stockholm (F11/NW) and has destination in Trondheim (F11). '\
+              'When Phase 5 begins, the Minor Company closes, transferring '\
+              'all belongings to SJ, but its owner receives a 10% share in SJ.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          },
+          {
+            sym: '3',
+            name: 'Värsta Stambanan',
+            value: 200,
+            revenue: 0,
+            desc:
+              'Owner takes control of Minor Company 3, which begins in '\
+              'Stockholm (F11/SW) and has destination in Oslo (D7). When '\
+              'Phase 5 begins, the Minor Company closes, transferring all '\
+              'belongings to SJ, but its owner receives a 10% share in SJ.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          },
+
         ].freeze
 
-        CORPORATIONS = [
+        MINORS = [
           {
             sym: '1',
             name: 'Södra Stambanan',
             logo: '18_scan/1',
             simple_logo: '18_scan/1.alt',
-            tokens: [0, 0],
+            tokens: [0, 40],
             coordinates: 'G4',
-            value: 260,
-            order: 1,
-            type: 'minor',
+            destination_coordinates: 'B11',
+            color: '#5b74b4',
+            abilities: [
+              {
+                type: 'token',
+                city: 'B11',
+                cheater: 1,
+                price: 0,
+                special_only: true,
+              },
+            ],
           },
           {
             sym: '2',
             name: 'Nordvärsta Stambanan',
             logo: '18_scan/2',
             simple_logo: '18_scan/2.alt',
-            tokens: [0, 0],
+            tokens: [0, 40],
             coordinates: 'F11',
-            value: 260,
-            order: 2,
-            type: 'minor',
+            city: 0,
+            destination_coordinates: 'B11',
+            color: '#5b74b4',
+            abilities: [
+              {
+                type: 'token',
+                city: 'F11',
+                cheater: 1,
+                price: 0,
+                special_only: true,
+              },
+            ],
           },
           {
             sym: '3',
             name: 'Västra Stambanan',
             logo: '18_scan/3',
             simple_logo: '18_scan/3.alt',
-            tokens: [0, 0],
-            coordinates: [nil, 'F11'],
-            value: 200,
-            order: 3,
-            type: 'minor',
+            tokens: [0, 40],
+            coordinates: 'F11',
+            city: 1,
+            destination_coordinates: 'D7',
+            color: '#5b74b4',
+            abilities: [
+              {
+                type: 'token',
+                city: 'D7',
+                cheater: 1,
+                price: 0,
+                special_only: true,
+              },
+            ],
           },
+        ].freeze
+
+        CORPORATIONS = [
           {
             float_percent: 20,
             sym: 'DSB',
@@ -87,9 +170,8 @@ module Engine
             simple_logo: '18_scan/DSB.alt',
             tokens: [0, 40, 100],
             coordinates: 'F3',
-            color: "#C62A1D",
+            color: '#C62A1D',
             reservation_color: nil,
-            type: 'major',
           },
           {
             float_percent: 20,
@@ -99,9 +181,8 @@ module Engine
             simple_logo: '18_scan/SNJ.alt',
             tokens: [0, 40, 100],
             coordinates: 'B19',
-            color: "#010301",
+            color: '#010301',
             reservation_color: nil,
-            type: 'major',
           },
           {
             float_percent: 20,
@@ -111,9 +192,8 @@ module Engine
             simple_logo: '18_scan/NSB.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'D7',
-            color: "#041848",
+            color: '#041848',
             reservation_color: nil,
-            type: 'major',
           },
           {
             float_percent: 20,
@@ -125,7 +205,6 @@ module Engine
             coordinates: 'G14',
             color: '#2157B2',
             reservation_color: nil,
-            type: 'major',
           },
           {
             float_percent: 20,
@@ -135,12 +214,23 @@ module Engine
             simple_logo: '18_scan/SJ.alt',
             tokens: [0, 100, 100, 100, 100, 100],
             coordinates: 'F3',
-            color: "#3561AE",
+            color: '#3561AE',
             reservation_color: nil,
-            type: 'national'
+            type: :national,
+            abilities: [
+              {
+                type: 'train_limit',
+                description: '+1 train limit',
+                increase: 1,
+              },
+              {
+                type: 'no_buy',
+                description: 'Unavailable in SR before phase 5',
+              },
+            ],
           },
         ].freeze
-     end
+      end
     end
   end
 end
