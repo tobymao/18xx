@@ -4,6 +4,7 @@ unless ENV['RACK_ENV'] == 'production'
   require 'parallel_tests'
   require 'rspec/core/rake_task'
   require 'rubocop/rake_task'
+  require_relative 'lib/assets'
 
   # Specs
   RSpec::Core::RakeTask.new(:spec)
@@ -13,6 +14,7 @@ unless ENV['RACK_ENV'] == 'production'
 
   desc 'Run spec in parallel'
   task :spec_parallel do
+    Assets.new.combine
     ParallelTests::CLI.new.run(['--type', 'rspec'])
   end
 
