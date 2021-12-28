@@ -1602,13 +1602,10 @@ module Engine
 
           # Check if a stop (excluding start and stop) does not allow pass-through
           # due to temporary passable SJ token
-          passthrough = stops.dup
-          passthrough.shift
-          passthrough.pop
-          passthrough.each do |s|
+          stops[1...-1].each do |s|
             next if !s.city? || s.tokened_by?(route.train.owner)
 
-            raise GameError, 'Cannot passthrough blocked city' if s.tokens.all? { |t| t&.corporation }
+            raise GameError, "Cannot passthrough blocked city in #{s.hex.name}" if s.tokens.all? { |t| t&.corporation }
           end
         end
       end
