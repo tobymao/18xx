@@ -1079,6 +1079,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
+          ensure_route_does_not_passthrough_blocked_city(route, stops)
           revenue = super
 
           icons = visited_icons(stops)
@@ -1594,6 +1595,21 @@ module Engine
           # Two player variant will add a third player during setup but we need
           # to handle setup of cash and cert limit so that it includes the bot.
           two_player_variant ? 3 : @players.size
+        end
+
+        def ensure_route_does_not_passthrough_blocked_city(route, stops)
+          return if stops.size < 3 || !owns_electric_train?(route.train.owner) || route.train.name == 'E'
+
+          # Check if a stop (excluding start and stop) does not allow pass-through
+          # due to temporary passable SJ token
+          passthrough = stops.dup
+          passthrough.shift
+          passthrough.pop
+          passthrough.each do |s|
+            next if !s.city? || s.tokened_by?(route.train.owner)
+
+            raise GameError, 'Cannot passthrough blocked city' if s.tokens.all? { |t| t&.corporation }
+          end
         end
       end
     end

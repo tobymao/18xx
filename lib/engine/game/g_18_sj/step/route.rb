@@ -8,12 +8,6 @@ module Engine
     module G18SJ
       module Step
         class Route < Engine::Step::Route
-          def setup
-            @game.make_sj_tokens_passable_for_electric_trains(current_entity)
-
-            super
-          end
-
           def actions(entity)
             return [] unless can_run_trains?(actual_entity(entity))
 
