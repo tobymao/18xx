@@ -848,17 +848,17 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
-            Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
-            G1893::Step::BuyCompany,
-            G1893::Step::Track,
-            Engine::Step::Token,
-            Engine::Step::Route,
-            G1893::Step::Dividend,
-            G1893::Step::BuyTrain,
-          ], round_num: round_num)
+          G1893::Round::Operating.new(self, [
+          Engine::Step::Bankrupt,
+          Engine::Step::DiscardTrain,
+          Engine::Step::HomeToken,
+          G1893::Step::BuyCompany,
+          G1893::Step::Track,
+          Engine::Step::Token,
+          Engine::Step::Route,
+          G1893::Step::Dividend,
+          G1893::Step::BuyTrain,
+        ], round_num: round_num)
         end
 
         def new_merger_round(count)
@@ -1233,11 +1233,13 @@ module Engine
             move_share(president_share, new_president)
           end
 
-          # Give president the chance to discard any trains
-          @potential_discard_trains << mergable unless mergable.trains.empty?
-
           mergable.ipoed = true
-          @log << "#{mergable.name} have been completely founded and now floats"
+          @log << "-- #{mergable.name} have been completely founded and now floats"
+          return if mergable.trains.empty?
+
+          # Give president the chance to discard any trains
+          @potential_discard_trains << mergable
+          @log << "-- #{mergable.owner.name} will have to decide which trains #{mergable.name} should keep"
         end
 
         def shares_for_presidency_swap(shares, num_shares)

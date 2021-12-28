@@ -8,9 +8,11 @@ module Engine
       module Step
         class PotentialDiscardTrainsAfterMerge < Engine::Step::DiscardTrain
           ACTIONS = %w[discard_train pass].freeze
+          ACTIONS_WITHOUT_PASS = %w[discard_train].freeze
 
           def actions(entity)
             return [] unless @game.potential_discard_trains.include?(entity)
+            return ACTIONS_WITHOUT_PASS if @game.train_limit(entity) < entity.trains.size
 
             ACTIONS
           end
@@ -26,22 +28,14 @@ module Engine
               ' amount of trains.'
           end
 
-          def entities
-            @game.potential_discard_trains.map(:player)
-          end
-
-          def log_skip(entity)
-            super unless entity.corporation?
-          end
-
           def crowded_corps
             return [] if @game.potential_discard_trains.empty?
 
-            [discarding_entity]
+            @game.potential_discard_trains.take(1)
           end
 
           def active?
-            !@game.potential_discard_trains.empty?
+            !crowded_corps.empty?
           end
 
           def blocking?
@@ -66,22 +60,16 @@ module Engine
             super
           end
 
-          def trains(corporation)
-            corporation.trains
-          end
-
           def context_entities
-            [discarding_entity]
+            @game.potential_discard_trains
           end
 
           def active_context_entity
-            discarding_entity.owner
+            crowded_corps
           end
 
-          private
-
-          def discarding_entity
-            @game.potential_discard_trains.first
+          def override_entities
+            @game.potential_discard_trains
           end
         end
       end
