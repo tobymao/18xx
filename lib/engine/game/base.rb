@@ -1641,8 +1641,16 @@ module Engine
         'IPO'
       end
 
+      def ipo_verb(_entity = nil)
+        'pars'
+      end
+
       def ipo_reserved_name(_entity = nil)
         'IPO Reserved'
+      end
+
+      def corporation_is_minor?(corporation)
+        corporation.minor?
       end
 
       def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)

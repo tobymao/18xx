@@ -66,7 +66,7 @@ module View
 
         children = [render_title, render_holdings]
 
-        unless @corporation.minor?
+        unless @game.corporation_is_minor?(@corporation)
           children << render_shares unless @corporation.hide_shares?
           children << render_reserved if @corporation.reserved_shares.any?
           children << render_owned_other_shares if @corporation.corporate_shares.any?

@@ -2,12 +2,16 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative 'entities'
+require_relative 'map'
 
 module Engine
   module Game
     module G18NewEngland
       class Game < Game::Base
         include_meta(G18NewEngland::Meta)
+        include Entities
+        include Map
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -37,87 +41,6 @@ module Engine
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false
 
-        TILES = {
-          '3' => 5,
-          '4' => 5,
-          '6' => 8,
-          '7' => 5,
-          '8' => 18,
-          '9' => 15,
-          '58' => 5,
-          '14' => 4,
-          '15' => 4,
-          '16' => 2,
-          '19' => 2,
-          '20' => 2,
-          '23' => 5,
-          '24' => 5,
-          '25' => 4,
-          '26' => 2,
-          '27' => 2,
-          '28' => 2,
-          '29' => 2,
-          '30' => 2,
-          '31' => 2,
-          '87' => 4,
-          '88' => 4,
-          '204' => 4,
-          '207' => 1,
-          '619' => 4,
-          '622' => 1,
-          '39' => 2,
-          '40' => 2,
-          '41' => 2,
-          '42' => 2,
-          '43' => 2,
-          '44' => 2,
-          '45' => 2,
-          '46' => 2,
-          '47' => 2,
-          '63' => 7,
-          '70' => 2,
-          '611' => 3,
-          '216' => 2,
-          '911' => 4,
-        }.freeze
-
-        LOCATION_NAMES = {
-          B12: 'Campbell Hall',
-          B2: 'Syracuse',
-          C3: 'Albany',
-          C5: 'Hudson',
-          C9: 'Rhinecliff',
-          C11: 'Poughkeepsie',
-          C17: 'White Plains',
-          C19: 'New York',
-          D4: 'New Lebanon',
-          E13: 'Danbury',
-          E15: 'Stamford',
-          F2: 'Burlington',
-          F4: 'Pittsfield',
-          F14: 'Bridgeport',
-          G11: 'Middletown',
-          G13: 'New Haven',
-          H4: 'Greenfield',
-          H6: 'Northampton',
-          H8: 'Springfield',
-          H10: 'Hartford',
-          H14: 'Saybrook',
-          I13: 'New London',
-          J6: 'Worcester',
-          J14: 'Westerly',
-          K1: 'New Hampshire',
-          K3: 'Fitchburg',
-          K5: 'Leominster',
-          L4: 'Lowell and Wilmington',
-          L8: 'Woonsocket',
-          L10: 'Providence',
-          M1: 'Portland',
-          M5: 'Boston',
-          M7: 'Quincy',
-          O11: 'Cape Cod',
-        }.freeze
-
         MARKET = [
           %w[35
              40
@@ -146,7 +69,7 @@ module Engine
              380
              420
              460
-             500],
+             500e],
            ].freeze
 
         PHASES = [
@@ -238,262 +161,183 @@ module Engine
           },
         ].freeze
 
-        # retain this until draft is implemented to allow game to start
-        COMPANIES = [
-                  {
-                    name: 'Delaware and Raritan Canal',
-                    value: 20,
-                    revenue: 5,
-                    desc: 'No special ability. Blocks hex K3 while owned by a player.',
-                    sym: 'D&R',
-                    color: nil,
-                  },
-        ].freeze
-
-        CORPORATIONS = [
-          {
-            sym: 'AWS',
-            name: 'Albany and West Stockbridge Railroad',
-            coordinates: 'C3',
-            city: 1,
-            logo: '18_new_england/AWS',
-            color: 'red',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'BL',
-            name: 'Boston and Lowell Railroad',
-            coordinates: 'M5',
-            city: 0,
-            logo: '18_new_england/BL',
-            color: 'orange',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'BP',
-            name: 'Boston & Providence',
-            coordinates: 'L10',
-            logo: '18_new_england/BP',
-            color: 'black',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'CR',
-            name: 'Connecticut River',
-            coordinates: 'GH',
-            city: 0,
-            logo: '18_new_england/CR',
-            color: 'brown',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'CV',
-            name: 'Connecticut Valley',
-            coordinates: 'F2',
-            logo: '18_new_england/CV',
-            color: 'yellow',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'ER',
-            name: 'Eastern Railroad',
-            coordinates: 'M5',
-            city: 1,
-            logo: '18_new_england/ER',
-            color: 'purple',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'FRR',
-            name: 'Fitchburg Railroad',
-            coordinates: 'K3',
-            logo: '18_new_england/FRR',
-            color: 'green',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'GR',
-            name: 'Granite Railway',
-            coordinates: 'M7',
-            logo: '18_new_england/GR',
-            color: 'olive',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'HNH',
-            name: 'Hartford and New Haven',
-            coordinates: 'G13',
-            city: 1,
-            logo: '18_new_england/HNH',
-            color: 'magenta',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'HRR',
-            name: 'Hudson Railroad',
-            coordinates: 'C3',
-            city: 0,
-            logo: '18_new_england/HRR',
-            color: 'navy',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'NLN',
-            name: 'New London Northern Railroad',
-            coordinates: 'G13',
-            city: 2,
-            logo: '18_new_england/NLN',
-            color: 'lightBlue',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'NYNH',
-            name: 'New York New Haven Railroad',
-            coordinates: 'G13',
-            city: 0,
-            logo: '18_new_england/NYNH',
-            color: 'darkOrange',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'NYW',
-            name: 'New York Westchester Boston',
-            coordinates: 'C19',
-            logo: '18_new_england/NYW',
-            color: 'red',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'PE',
-            name: 'Poughkeepsie and Eastern Railway',
-            coordinates: 'C11',
-            logo: '18_new_england/PE',
-            color: 'black',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-          {
-            sym: 'WNR',
-            name: 'Worcester, Nashua and Rochester Railroad',
-            coordinates: 'J6',
-            logo: '18_new_england/WNR',
-            color: 'black',
-            tokens: [0],
-            float_percent: 100,
-            shares: [100],
-            type: 'minor',
-            reservation_color: nil,
-          },
-        ].freeze
-
-        # rubocop:disable Layout/LineLength
-        HEXES = {
-          white: {
-            %w[B16 B6 C13 D10 D12 D14 D16 D2 D6 D8 E3 G3 G7 G9 I11 I3 I9 J10 J12 J4 J8 K11 K13 K7 L2 M11 M9 N10 N8 O9 L6] => '',
-            %w[E11 E5 E7 E9 F10 F6 F8 G5 I5 I7] => 'upgrade=cost:40,terrain:mountain',
-            %w[B10 B14 B18 B8 C15 C7 H12 H2 K9 M3] => 'upgrade=cost:20,terrain:water',
-            %w[C17 C9 D4 F14 G11 H14 H6 J14 K5 L8] => 'town=revenue:0',
-            %w[C5 E15 F12 F4 I13] => 'city=revenue:0',
-            %w[B12 E13 H4] => 'city=revenue:0;upgrade=cost:20,terrain:water',
-            #  %w[M7] => 'town=revenue:20,loc:1;city=revenue:20,loc:center;path=a:_1,b:_0',
-            #  %w[N4] => 'town=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:water',
-          },
-          yellow: {
-            %w[L10] => 'city=revenue:30;path=a:_0,b:2;path=a:_0,b:3;upgrade=cost:20,terrain:water;label=Y',
-            %w[C3] => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:5,b:_1;label=Y',
-            %w[C11] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:3',
-            %w[G13] => 'city=revenue:30;city=revenue:30;city=revenue:30;path=a:_0,b:1;path=a:_1,b:3;path=a:_2,b:5;label=NH',
-            %w[H10] => 'city=revenue:30;path=a:_0,b:1;path=a:_0,b:2;label=H',
-            %w[H8] => 'city=revenue:20;city=revenue:20;path=a:_0,b:1;path=a:_1,b:3',
-            %w[J6] => 'city=revenue:20;path=a:_0,b:4;path=a:_0,b:5',
-            %w[K3] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;upgrade=cost:20,terrain:water',
-            #   %w[L4] => 'city=revenue:20,loc:center;town=revenue:10,loc:5;path=a:5,b:_0',
-            %w[M5] => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:4,b:_1;label=B',
-          },
-          gray: {
-            %w[A13] => 'path=a:4,b:5',
-            %w[B4] => 'path=a:4,b:5',
-            %w[E17] => 'path=a:2,b:3',
-            %w[G15] => 'path=a:2,b:3;path=a:3,b:4',
-            #  %w[O11] => 'town=revenue:40;path=a:2,b:_0;path=a:3,b:_0',
-          },
-          red: {
-            %w[B2] => 'offboard=revenue:yellow_0|green_20|brown_30|gray_30;path=a:5,b:_0',
-            %w[C19] => 'city=revenue:yellow_40|green_50|brown_70|gray_100;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
-            %w[F2] => 'city=revenue:yellow_30|green_40|brown_50|gray_60;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            %w[K1] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:5,b:_0',
-            %w[M1] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:1,b:_0',
-          },
-        }.freeze
-        # rubocop:enable Layout/LineLength
-
-        LAYOUT = :flat
-
-        HOME_TOKEN_TIMING = :float
+        HOME_TOKEN_TIMING = :operating_round
         MUST_BUY_TRAIN = :always # mostly true, needs custom code
         SELL_MOVEMENT = :down_block_pres
         SELL_BUY_ORDER = :sell_buy
+
+        YELLOW_PRICES = [50, 55, 60, 65, 70].freeze
+        GREEN_PRICES = [80, 90, 100].freeze
 
         # Two lays or one upgrade
         TILE_LAYS = [
           { lay: true, upgrade: true },
           { lay: true, upgrade: :not_if_upgraded },
         ].freeze
+
+        def setup
+          # add yellow and green minor placeholders to stock market
+          #
+          @yellow_dummy = @minors.find { |d| d.name == 'Y' }
+          @green_dummy = @minors.find { |d| d.name == 'G' }
+
+          minor_yellow_prices.each do |p|
+            p.corporations << @yellow_dummy
+            p.corporations << @yellow_dummy
+          end
+
+          minor_green_prices.each do |p|
+            p.corporations << @green_dummy
+            p.corporations << @green_dummy
+          end
+
+          @minor_prices = Hash.new { |h, k| h[k] = 0 }
+          @reserved = {}
+
+          @log << '-- First Stock Round --'
+        end
+
+        def lookup_price(p)
+          @stock_market.market[0].size.times do |i|
+            return @stock_market.share_price(0, i) if @stock_market.share_price(0, i).price == p
+          end
+        end
+
+        def init_round
+          first_stock_round
+        end
+
+        def first_stock_round
+          G18NewEngland::Round::FirstStock.new(self, [G18NewEngland::Step::ReserveParShares], snake_order: true)
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G18NewEngland::Step::BuySellParShares,
+          ])
+        end
+
+        def init_round_finished
+          @reserved = {}
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when init_round.class
+              init_round_finished
+              @operating_rounds = @phase.operating_rounds
+              reorder_players(:most_cash, log_player_order: true)
+              new_operating_round
+            when Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            end
+        end
+
+        def float_corporation(corporation)
+          return super unless corporation.type == :minor
+
+          price = corporation.share_price
+          index = price.corporations.find_index(@yellow_dummy) || price.corporations.find_index(@green_dummy)
+          price.corporations.delete_at(index) if index
+
+          @minor_prices[price] += 1
+        end
+
+        def place_home_token(corporation)
+          buy_first_train(corporation)
+          super
+        end
+
+        # minors formed in ISR auto-buy a train
+        def buy_first_train(corporation)
+          return if corporation.type != :minor || corporation.tokens.first&.used
+          return unless @turn == 1
+
+          train = @depot.upcoming.first
+          @log << "#{corporation.name} buys a #{train.name} train from Bank"
+          buy_train(corporation, train)
+        end
+
+        def minor_yellow_prices
+          @minor_yellow_prices ||=
+            YELLOW_PRICES.map { |p| lookup_price(p) }
+        end
+
+        def minor_green_prices
+          @minor_green_prices ||=
+            GREEN_PRICES.map { |p| lookup_price(p) }
+        end
+
+        def share_prices
+          (minor_yellow_prices + minor_green_prices + @stock_market.par_prices).uniq
+        end
+
+        def available_minor_prices
+          available = @minor_yellow_prices.reject { |p| @minor_prices[p] > 1 }
+          available.concat(@minor_green_prices.reject { |p| @minor_prices[p] > 1 }) if @phase.available?('3')
+          available
+        end
+
+        def status_str(corp)
+          return unless corp.type == :minor
+          return "Minor Company, Price = #{format_currency(corp.share_price.price)}" if corp.share_price
+          return "Reserved by #{@reserved[corp].name}" if @reserved[corp]
+
+          'Minor Company'
+        end
+
+        def corporation_is_minor?(corp)
+          corp.minor? || corp.type == :minor
+        end
+
+        def operating_order
+          mins, majs = @corporations.reject(&:minor?).select(&:floated?).partition(&:type)
+          mins.sort + majs.sort
+        end
+
+        def bank_sort(corporations)
+          mins, majs = corporations.reject(&:minor?).partition(&:type)
+          majs.sort_by(&:name) + mins.sort_by(&:name)
+        end
+
+        def player_sort(entities)
+          mins, majs = entities.partition(&:type)
+          (mins.sort_by(&:name) + majs.sort_by(&:name)).group_by(&:owner)
+        end
+
+        def reserve_minor(minor, entity)
+          @reserved[minor] = entity
+        end
+
+        def unreserve_minor(minor, _entity)
+          @reserved.delete(minor)
+        end
+
+        def ipo_name(corp = nil)
+          corp&.type == :minor ? 'Bank' : 'IPO'
+        end
+
+        def ipo_verb(corp = nil)
+          corp&.type == :minor ? 'forms' : 'pars'
+        end
+
+        def form_button_text(corp)
+          "Reserve #{corp.name}"
+        end
       end
     end
   end
