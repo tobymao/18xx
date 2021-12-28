@@ -25,7 +25,7 @@ module Engine
             desc: 'When enabled, in a 2p game a player can hold up to 70% of a corporation\'s shares',
             players: [2],
           },
-        ]
+        ].freeze
       end
     end
   end

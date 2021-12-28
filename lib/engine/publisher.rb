@@ -60,10 +60,6 @@ module Engine
         name: 'Marflow Games',
         url: 'https://18xx-marflow-games.de/',
       },
-      deep_thought_games: {
-        name: 'Deep Thought Games, LLC',
-        url: 'https://www.deepthoughtgames.com/',
-      }
     }.freeze
   end
 end

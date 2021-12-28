@@ -14,7 +14,7 @@ module Engine
           '403' => {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10,loc:0;city=revenue:30,loc:3;path=a:0,b:_0;path=a:_0,b:_1;label=COP'
+            'code' => 'town=revenue:10,loc:0;city=revenue:30,loc:3;path=a:0,b:_0;path=a:_0,b:_1;label=COP',
           },
           '15' => 6,
           '80' => 3,
@@ -24,7 +24,7 @@ module Engine
           '121' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=COP;'
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=COP;',
           },
           '141' => 3,
           '142' => 3,
@@ -41,7 +41,7 @@ module Engine
           '584' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=COP;'
+            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=COP;',
           },
           '623' => 1,
         }.freeze
@@ -79,11 +79,11 @@ module Engine
         HEXES = {
           red: {
             ['A4'] => 'city=revenue:yellow_20|green_50|brown_80;path=a:5,b:_0,terminal:1',
-            ['A20'] => 'junction;town=revenue:yellow_10|green_50|brown_10;path=a:0,b:_0;path=a:1,b:_0',
-            ['F1'] => 'city=revenue:yellow_20|green_30|brown_60;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
+            ['A20'] => 'town=revenue:yellow_10|green_50|brown_10;junction;path=a:0,b:_0;path=a:1,b:_0',
+            ['F1'] => 'city=revenue:yellow_20|green_30|brown_50;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
             ['G2'] => 'city=revenue:yellow_10|green_30|brown_60;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
             ['H13'] => 'city=revenue:yellow_0|green_30|brown_60;path=a:3,b:_0,terminal:1',
-            ['H17'] => 'city=revenue:yellow_30|green_60|brown_80;path=a:2,b:_0,terminal:1',
+            ['H17'] => 'city=revenue:yellow_30|green_50|brown_80;path=a:2,b:_0,terminal:1',
           },
           yellow: {
             # TODO: Stockholm
@@ -125,7 +125,7 @@ module Engine
           },
           gray: {
             ['G12'] => 'path=a:2,b:3,track:narrow',
-          }
+          },
         }.freeze
 
         LAYOUT = :pointy
