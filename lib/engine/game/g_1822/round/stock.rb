@@ -10,10 +10,11 @@ module Engine
           attr_accessor :bids
 
           def setup
-            super
             @game.setup_bidboxes
             # Store bids the player was winning at the end of their turn.
             @stored_winning_bids = Hash.new { |h, k| h[k] = [] }
+            # Super attempts to skip players, must happen after setting up variables.
+            super
           end
 
           def player_enabled_program(entity)
