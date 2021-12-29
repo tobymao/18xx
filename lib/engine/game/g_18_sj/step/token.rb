@@ -11,6 +11,11 @@ module Engine
             token.price = 0 if @game.bot_corporation?(entity)
             super(entity, city, token)
           end
+
+          def pass!
+            @game.make_sj_tokens_passable_for_electric_trains(current_entity)
+            super
+          end
         end
       end
     end
