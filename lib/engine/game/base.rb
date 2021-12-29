@@ -1722,7 +1722,7 @@ module Engine
       end
 
       def crowded_corps
-        @crowded_corps ||= corporations.select do |c|
+        @crowded_corps ||= (minors + corporations).select do |c|
           trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
           trains > train_limit(c)
         end
