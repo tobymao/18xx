@@ -1649,8 +1649,8 @@ module Engine
         'IPO Reserved'
       end
 
-      def corporation_is_minor?(corporation)
-        corporation.minor?
+      def corporation_show_shares?(corporation)
+        !corporation.minor?
       end
 
       def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)

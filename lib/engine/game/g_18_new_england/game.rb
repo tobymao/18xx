@@ -300,8 +300,8 @@ module Engine
           'Minor Company'
         end
 
-        def corporation_is_minor?(corp)
-          corp.minor? || corp.type == :minor
+        def corporation_show_shares?(corp)
+          corp.type != :minor
         end
 
         def operating_order
