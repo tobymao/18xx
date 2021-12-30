@@ -7,17 +7,6 @@ module Engine
   module Game
     module G18NewEngland
       module Entities
-        # retain this until draft is implemented to allow game to start
-        COMPANIES = [
-                  {
-                    name: 'Delaware and Raritan Canal',
-                    value: 20,
-                    revenue: 5,
-                    desc: 'No special ability. Blocks hex K3 while owned by a player.',
-                    sym: 'D&R',
-                    color: nil,
-                  },
-        ].freeze
 
         CORPORATIONS = [
           # Share Corporations
@@ -36,7 +25,6 @@ module Engine
             logo: '18_new_england/BM',
             color: '#84c77a',
             text_color: 'black',
-
             tokens: [0, 40, 80],
             float_percent: 20,
             max_ownership_percent: 60,
