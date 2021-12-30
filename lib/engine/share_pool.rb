@@ -48,7 +48,7 @@ module Engine
       par_price = corporation.par_price&.price
 
       if ipoed != corporation.ipoed
-        @log << "#{entity.name} pars #{corporation.name} at "\
+        @log << "#{entity.name} #{@game.ipo_verb(corporation)} #{corporation.name} at "\
                 "#{@game.format_currency(par_price)}"
       end
 
