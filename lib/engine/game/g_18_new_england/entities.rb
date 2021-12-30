@@ -104,6 +104,7 @@ module Engine
             city: 0,
             logo: '18_new_england/BL',
             color: '#fbb116',
+            text_color: 'black',
             tokens: [0],
             float_percent: 100,
             max_ownership_percent: 100,
