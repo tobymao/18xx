@@ -35,6 +35,8 @@ module Engine
             name: 'Boston and Maine Railroad',
             logo: '18_new_england/BM',
             color: '#84c77a',
+            text_color: 'black',
+
             tokens: [0, 40, 80],
             float_percent: 20,
             max_ownership_percent: 60,
@@ -53,7 +55,7 @@ module Engine
             sym: 'CVT',
             name: 'Central Vermont Railroad',
             logo: '18_new_england/CVT',
-            color: '#a30d35',
+            color: '#b43e95',
             tokens: [0, 40, 80],
             float_percent: 20,
             max_ownership_percent: 60,
