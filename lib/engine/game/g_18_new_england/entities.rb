@@ -7,7 +7,6 @@ module Engine
   module Game
     module G18NewEngland
       module Entities
-
         CORPORATIONS = [
           # Share Corporations
           {
