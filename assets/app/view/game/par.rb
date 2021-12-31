@@ -47,7 +47,11 @@ module View
 
           flags += " / #{@game.total_shares_to_float(@corporation, share_price.price)}" if @game.class::VARIABLE_FLOAT_PERCENTAGES
 
-          text = "#{@game.par_price_str(share_price)} (#{purchasable_shares}#{flags})"
+          text = if @corporation.presidents_percent < 100
+                   "#{@game.par_price_str(share_price)} (#{purchasable_shares}#{flags})"
+                 else
+                   @game.par_price_str(share_price)
+                 end
           h('button.small.par_price', props, text)
         end
 

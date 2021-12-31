@@ -293,6 +293,13 @@ module Engine
             color: 'green',
             tokens: [0],
           },
+          {
+            sym: 'C',
+            name: 'Closed Dummy',
+            logo: '18_new_england/CLOSED',
+            color: 'black',
+            tokens: [0],
+          },
         ].freeze
       end
     end

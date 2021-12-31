@@ -289,21 +289,28 @@ module Engine
         ].freeze
 
         MINORS = [
-   {
-     sym: 'Y',
-     name: 'Yellow Dummy',
-     logo: '18_new_england/YELLOW',
-     color: 'yellow',
-     tokens: [0],
-   },
-   {
-     sym: 'G',
-     name: 'Green Dummy',
-     logo: '18_new_england/GREEN',
-     color: 'green',
-     tokens: [0],
-   },
- ].freeze
+          {
+            sym: 'Y',
+            name: 'Yellow Dummy',
+            logo: '18_new_england/YELLOW',
+            color: 'yellow',
+            tokens: [0],
+          },
+          {
+            sym: 'G',
+            name: 'Green Dummy',
+            logo: '18_new_england/GREEN',
+            color: 'green',
+            tokens: [0],
+          },
+          {
+            sym: 'C',
+            name: 'Closed Dummy',
+            logo: '18_new_england/CLOSED',
+            color: 'black',
+            tokens: [0],
+          },
+        ].freeze
       end
     end
   end

@@ -26,6 +26,11 @@ module Engine
               @entity_index = @entity_index.send(plus_or_minus, 1) % @entities.size
             end
           end
+
+          # only exit first stock round on consecutive passes
+          def finished?
+            @game.finished || @pass_order.size == @game.players.size
+          end
         end
       end
     end
