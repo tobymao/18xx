@@ -9,13 +9,14 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :prealpha
+        DEPENDS_ON = '18NewEngland'
 
         GAME_DESIGNER = 'Scott Petersen'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18NewEnglandNorth'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/18NewEnglandNorth'
 
-        PLAYER_RANGE = [3, 5].freeze
+        PLAYER_RANGE = [2, 4].freeze
       end
     end
   end

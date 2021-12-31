@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
+require_relative '../g_18_new_england/game'
 require_relative 'meta'
-require_relative '../base'
 require_relative 'map'
 require_relative 'entities'
 
 module Engine
   module Game
     module G18NewEnglandNorth
-      class Game < Game::Base
+      class Game < G18NewEngland::Game
         include_meta(G18NewEnglandNorth::Meta)
-        include Entities
-        include Map
+        include G18NewEnglandNorth::Entities
+        include G18NewEnglandNorth::Map
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -35,9 +35,9 @@ module Engine
                         yellow: '#ffdea8')
 
         CURRENCY_FORMAT_STR = '$%d'
-        BANK_CASH = 12_000
-        CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13 }.freeze
-        STARTING_CASH = { 3 => 400, 4 => 280, 5 => 280 }.freeze
+        BANK_CASH = 6_000
+        CERT_LIMIT = { 2 => 16, 3 => 12, 4 => 10 }.freeze
+        STARTING_CASH = { 2 => 520, 3 => 400, 4 => 280 }.freeze
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false
 
@@ -139,7 +139,7 @@ module Engine
             distance: 4,
             price: 300,
             rusts_on: '8E',
-            num: 4,
+            num: 1,
           },
           {
             name: '5E',
