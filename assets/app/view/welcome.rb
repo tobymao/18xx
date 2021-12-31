@@ -17,7 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>The <b><a href='https://www.kickstarter.com/projects/joshuastarr/shikoku-1889?ref=5z2fk6'>Shikoku 1889 Kickstarter</a></b> is now live!</p>
+        <p>The <b><a href='https://www.kickstarter.com/projects/joshuastarr/shikoku-1889?ref=5z2fk6'>Shikoku 1889 Kickstarter</a></b> is ending in less than 24 hours !</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
