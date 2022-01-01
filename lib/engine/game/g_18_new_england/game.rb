@@ -334,16 +334,16 @@ module Engine
 
         def minor_yellow_prices
           @minor_yellow_prices ||=
-            (YELLOW_PRICES.map do |p|
-               [lookup_minor_price(p, TOP_MINOR_ROW), lookup_minor_price(p, BOTTOM_MINOR_ROW)]
-             end).flatten
+            YELLOW_PRICES.flat_map do |p|
+              [lookup_minor_price(p, TOP_MINOR_ROW), lookup_minor_price(p, BOTTOM_MINOR_ROW)]
+            end
         end
 
         def minor_green_prices
           @minor_green_prices ||=
-            (GREEN_PRICES.map do |p|
-               [lookup_minor_price(p, TOP_MINOR_ROW), lookup_minor_price(p, BOTTOM_MINOR_ROW)]
-             end).flatten
+            GREEN_PRICES.flat_map do |p|
+              [lookup_minor_price(p, TOP_MINOR_ROW), lookup_minor_price(p, BOTTOM_MINOR_ROW)]
+            end
         end
 
         def share_prices
