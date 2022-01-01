@@ -33,13 +33,34 @@ module Engine
             super
           end
 
+          # only exit first stock round on consecutive passes
+          def pass!
+            super
+            @round.pass_order.clear if @round.current_actions.any?
+          end
+
+          def skip!
+            if current_entity && !@acted && entity_reserved?(current_entity)
+              @log << "#{current_entity.name} relinquishes all reservations due to lack of money"
+              remove_entity_reservations(current_entity)
+              @round.relinquished[current_entity] = true
+            end
+            super
+          end
+
+          def log_skip(entity)
+            return super unless @round.relinquished[entity]
+
+            @log << "#{entity.name} is required to pass"
+          end
+
           def can_reserve_any?(entity)
             !bought? && !relinquished?(entity) && @game.available_minor_prices.any? { |p| 2 * p.price <= entity.cash }
           end
 
           def can_ipo_any?(entity)
             !bought? && !relinquished?(entity) && @game.corporations.any? do |c|
-              reserved?(c, entity) && @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
+              reserved?(c, entity) && @game.can_par?(c, entity) && can_par_minor?(entity, c.shares.first&.to_bundle)
             end
           end
 

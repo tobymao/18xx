@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'meta'
 require_relative '../base'
+require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 
@@ -41,7 +41,32 @@ module Engine
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false
 
+        TOP_MINOR_ROW = 0
+        BOTTOM_MINOR_ROW = 1
+        MAJOR_ROW = 2
         MARKET = [
+          [
+            '', '', '',
+            '50r',
+            '55r',
+            '60r',
+            '65r',
+            '70r',
+            '80r',
+            '90r',
+            '100r'
+          ],
+          [
+            '', '', '',
+            '50r',
+            '55r',
+            '60r',
+            '65r',
+            '70r',
+            '80r',
+            '90r',
+            '100r'
+          ],
           %w[35
              40
              45
@@ -72,51 +97,60 @@ module Engine
              500e],
            ].freeze
 
+        MARKET_TEXT = {
+          par: 'Par value',
+          no_cert_limit: 'Corporation shares do not count towards cert limit',
+          unlimited: 'Corporation shares can be held above 60%',
+          multiple_buy: 'Can buy more than one share in the corporation per turn',
+          close: 'Corporation closes',
+          endgame: 'End game trigger',
+          liquidation: 'Liquidation',
+          repar: 'Minor company value',
+          ignore_one_sale: 'Ignore first share sold when moving price',
+        }.freeze
+
         PHASES = [
           {
             name: '2',
-            train_limit: '4',
+            train_limit: { minor: 2, major: 4 },
             tiles: %i[yellow],
             operating_rounds: 2,
           },
           {
             name: '3',
             on: '3',
-            train_limit: 4,
+            train_limit: { minor: 2, major: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '4',
             on: '4',
-            train_limit: 3,
+            train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '5',
             on: '5E',
-            train_limit: 3,
+            train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
           },
           {
             name: '6',
             on: '6E',
-            train_limit: 2,
+            train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
           },
           {
             name: '8',
             on: '8E',
-            train_limit: 2,
+            train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
-          #    status: ['can_buy_companies'],
-          #    status: %w[can_buy_companies export_train],
-          #    status: %w[can_buy_companies export_train],
         ].freeze
 
         TRAINS = [
@@ -165,9 +199,12 @@ module Engine
         MUST_BUY_TRAIN = :always # mostly true, needs custom code
         SELL_MOVEMENT = :down_block_pres
         SELL_BUY_ORDER = :sell_buy
+        GAME_END_CHECK = { stock_market: :current_or, bankrupt: :immediate, bank: :full_or }.freeze
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         YELLOW_PRICES = [50, 55, 60, 65, 70].freeze
         GREEN_PRICES = [80, 90, 100].freeze
+        NUM_START_MINORS = 10
 
         # Two lays or one upgrade
         TILE_LAYS = [
@@ -175,19 +212,27 @@ module Engine
           { lay: true, upgrade: :not_if_upgraded },
         ].freeze
 
+        # one lay or one upgrade
+        MINOR_TILE_LAYS = [
+          { lay: true, upgrade: true },
+        ].freeze
+
         def setup
+          # pick initial 10 minors
+          #
+          @starting_minors = @corporations.select { |c| c.type == :minor }.sort_by { rand }.take(NUM_START_MINORS)
+
           # add yellow and green minor placeholders to stock market
           #
           @yellow_dummy = @minors.find { |d| d.name == 'Y' }
           @green_dummy = @minors.find { |d| d.name == 'G' }
+          @closed_dummy = @minors.find { |d| d.name == 'C' }
 
           minor_yellow_prices.each do |p|
-            p.corporations << @yellow_dummy
             p.corporations << @yellow_dummy
           end
 
           minor_green_prices.each do |p|
-            p.corporations << @green_dummy
             p.corporations << @green_dummy
           end
 
@@ -197,9 +242,10 @@ module Engine
           @log << '-- First Stock Round --'
         end
 
-        def lookup_price(p)
-          @stock_market.market[0].size.times do |i|
-            return @stock_market.share_price(0, i) if @stock_market.share_price(0, i).price == p
+        def lookup_minor_price(p, row)
+          @stock_market.market[row].size.times do |i|
+            next unless @stock_market.share_price(row, i)
+            return @stock_market.share_price(row, i) if @stock_market.share_price(row, i).price == p
           end
         end
 
@@ -218,6 +264,20 @@ module Engine
           ])
         end
 
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            G18NewEngland::Step::RedeemShares,
+            G18NewEngland::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            G18NewEngland::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G18NewEngland::Step::BuyTrain,
+            G18NewEngland::Step::IssueShares,
+          ], round_num: round_num)
+        end
+
         def init_round_finished
           @reserved = {}
         end
@@ -230,11 +290,11 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               reorder_players(:most_cash, log_player_order: true)
               new_operating_round
-            when Round::Stock
+            when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -254,7 +314,7 @@ module Engine
           index = price.corporations.find_index(@yellow_dummy) || price.corporations.find_index(@green_dummy)
           price.corporations.delete_at(index) if index
 
-          @minor_prices[price] += 1
+          @minor_prices[price.price] += 1
         end
 
         def place_home_token(corporation)
@@ -274,12 +334,16 @@ module Engine
 
         def minor_yellow_prices
           @minor_yellow_prices ||=
-            YELLOW_PRICES.map { |p| lookup_price(p) }
+            YELLOW_PRICES.flat_map do |p|
+              [lookup_minor_price(p, TOP_MINOR_ROW), lookup_minor_price(p, BOTTOM_MINOR_ROW)]
+            end
         end
 
         def minor_green_prices
           @minor_green_prices ||=
-            GREEN_PRICES.map { |p| lookup_price(p) }
+            GREEN_PRICES.flat_map do |p|
+              [lookup_minor_price(p, TOP_MINOR_ROW), lookup_minor_price(p, BOTTOM_MINOR_ROW)]
+            end
         end
 
         def share_prices
@@ -287,17 +351,25 @@ module Engine
         end
 
         def available_minor_prices
-          available = @minor_yellow_prices.reject { |p| @minor_prices[p] > 1 }
-          available.concat(@minor_green_prices.reject { |p| @minor_prices[p] > 1 }) if @phase.available?('3')
+          available = @minor_yellow_prices.reject { |p| @minor_prices[p.price] > 1 }
+          available.concat(@minor_green_prices.reject { |p| @minor_prices[p.price] > 1 }) if @phase.available?('3')
           available
         end
 
-        def status_str(corp)
-          return unless corp.type == :minor
-          return "Minor Company, Price = #{format_currency(corp.share_price.price)}" if corp.share_price
-          return "Reserved by #{@reserved[corp].name}" if @reserved[corp]
+        def available_minor_par_prices
+          available = @minor_yellow_prices.select { |p| p.corporations.include?(@yellow_dummy) }
+          return available unless @phase.available?('3')
 
-          'Minor Company'
+          available + minor_green_prices.select { |p| p.corporations.include?(@green_dummy) }
+        end
+
+        def status_array(corp)
+          return unless corp.type == :minor
+          return [['Minor Company'], ["Value: #{format_currency(corp.share_price.price)}"]] if corp.share_price
+          return [["Reserved by #{@reserved[corp].name}", 'bold']] if @reserved[corp]
+          return [['Minor Company']] if @starting_minors.include?(corp) || @phase.available?('3')
+
+          [['Minor Company - Not Available', 'bold']]
         end
 
         def corporation_show_shares?(corp)
@@ -305,13 +377,12 @@ module Engine
         end
 
         def operating_order
-          mins, majs = @corporations.reject(&:minor?).select(&:floated?).partition(&:type)
-          mins.sort + majs.sort
+          @corporations.reject(&:minor?).select(&:floated?).sort
         end
 
         def bank_sort(corporations)
           mins, majs = corporations.reject(&:minor?).partition(&:type)
-          majs.sort_by(&:name) + mins.sort_by(&:name)
+          mins.sort_by(&:name) + majs.sort_by(&:name)
         end
 
         def player_sort(entities)
@@ -337,6 +408,76 @@ module Engine
 
         def form_button_text(corp)
           "Reserve #{corp.name}"
+        end
+
+        def tile_lays(entity)
+          return self.class::TILE_LAYS unless entity.type == :minor
+
+          MINOR_TILE_LAYS
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          # handle special-case upgrades
+          return true if force_upgrade?(from, to)
+
+          super
+        end
+
+        def force_upgrade?(from, to)
+          return false unless from.preprinted
+          return false unless (list = PREPRINTED_UPGRADES[from.hex.coordinates])
+
+          list.include?(to.name)
+        end
+
+        def stock_round_corporations
+          @corporations.select do |c|
+            c.ipoed || (c.type == :minor && (@phase.available?('3') || @starting_minors.include?(c)))
+          end
+        end
+
+        def can_go_bankrupt?(_player, corporation)
+          corporation.type != :minor && super
+        end
+
+        def redeemaable_shares(entity)
+          return [] unless entity.corporation? && entity.type != :minor
+
+          bundles_for_corporation(share_pool, entity)
+            .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.corporation? && entity.type != :minor
+          return [] unless round.steps.find { |step| step.instance_of?(G18NewEngland::Step::RedeemShares) }.active?
+
+          num_shares = entity.num_player_shares - entity.num_market_shares
+          bundles = bundles_for_corporation(entity, entity)
+          share_price = stock_market.find_share_price(entity, :left).price
+
+          bundles
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| bundle.num_shares > num_shares }
+        end
+
+        def par_price_str(share_price)
+          case share_price.coordinates.first
+          when MAJOR_ROW
+            format_currency(share_price.price)
+          when TOP_MINOR_ROW
+            "#{format_currency(share_price.price)}⇧"
+          else
+            "#{format_currency(share_price.price)}⇩"
+          end
+        end
+
+        def close_corporation(corporation, quiet: false)
+          share_price = corporation.share_price
+          minor = corporation.type == :minor
+          super
+          return unless minor
+
+          share_price.corporations << @closed_dummy
         end
       end
     end
