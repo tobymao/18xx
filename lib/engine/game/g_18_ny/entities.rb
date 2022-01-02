@@ -311,7 +311,7 @@ module Engine
             always_market_price: true,
             float_percent: 20,
             coordinates: 'J20',
-            color: 'purple',
+            color: '#8C4776',
             reservation_color: nil,
           },
           {
