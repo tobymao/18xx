@@ -44,7 +44,7 @@ module View
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')
           left << h(ReassignTrains) if @current_actions.include?('reassign_trains')
           if @current_actions.include?('buy_train')
-            left << h(IssueShares) if @current_actions.include?('sell_shares')
+            left << h(IssueShares) if @current_actions.include?('sell_shares') || @current_actions.include?('buy_shares')
             left << h(BuyTrains)
           elsif @current_actions.include?('buy_power')
             left << h(IssueShares) if @current_actions.include?('sell_shares')

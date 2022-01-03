@@ -112,7 +112,7 @@ module Engine
       @game.float_corporation(corporation) if corporation.floatable && floated != corporation.floated?
     end
 
-    def sell_shares(bundle, allow_president_change: true, swap: nil)
+    def sell_shares(bundle, allow_president_change: true, swap: nil, silent: nil)
       entity = bundle.owner
 
       verb = entity.corporation? && entity == bundle.corporation ? 'issues' : 'sells'
@@ -122,8 +122,10 @@ module Engine
       swap_text = swap ? " and a #{swap.percent}% share" : ''
       swap_to_entity = swap ? entity : nil
 
-      @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
-              "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
+      unless silent
+        @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
+                "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
+      end
 
       transfer_shares(bundle,
                       self,

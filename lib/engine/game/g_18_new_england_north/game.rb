@@ -16,6 +16,7 @@ module Engine
         BANK_CASH = 6_000
         CERT_LIMIT = { 2 => 16, 3 => 12, 4 => 10 }.freeze
         STARTING_CASH = { 2 => 520, 3 => 400, 4 => 280 }.freeze
+        NUM_START_MINORS = { 2 => 8, 3 => 9, 4 => 8 }.freeze
 
         TRAINS = [
           {

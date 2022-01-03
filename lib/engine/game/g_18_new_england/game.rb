@@ -38,7 +38,7 @@ module Engine
         BANK_CASH = 12_000
         CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13 }.freeze
         STARTING_CASH = { 3 => 400, 4 => 280, 5 => 280 }.freeze
-        CAPITALIZATION = :incremental
+        CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
 
         TOP_MINOR_ROW = 0
@@ -196,11 +196,13 @@ module Engine
         ].freeze
 
         HOME_TOKEN_TIMING = :operating_round
-        MUST_BUY_TRAIN = :always # mostly true, needs custom code
-        SELL_MOVEMENT = :down_block_pres
+        MUST_BUY_TRAIN = :always
+        SELL_MOVEMENT = :left_share_pres
         SELL_BUY_ORDER = :sell_buy
         GAME_END_CHECK = { stock_market: :current_or, bankrupt: :immediate, bank: :full_or }.freeze
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        LIMIT_TOKENS_AFTER_MERGER = 999
+        SOLD_OUT_INCREASE = false
 
         YELLOW_PRICES = [50, 55, 60, 65, 70].freeze
         GREEN_PRICES = [80, 90, 100].freeze
@@ -218,9 +220,24 @@ module Engine
         ].freeze
 
         def setup
-          # pick initial 10 minors
+          # adjust parameters for majors to allow both IPO and treasury stock
           #
-          @starting_minors = @corporations.select { |c| c.type == :minor }.sort_by { rand }.take(NUM_START_MINORS)
+          @corporations.each do |corp|
+            next if corp.type == :minor
+
+            corp.ipo_owner = @bank
+            corp.share_holders.keys.each do |sh|
+              next if sh == @bank
+
+              sh.shares_by_corporation[corp].dup.each { |share| transfer_share(share, @bank) }
+            end
+          end
+
+          # pick initial minors
+          #
+          num_start = self.class::NUM_START_MINORS
+          num_start = num_start[players.size] if num_start.is_a?(Hash)
+          @starting_minors = @corporations.select { |c| c.type == :minor }.sort_by { rand }.take(num_start)
 
           # add yellow and green minor placeholders to stock market
           #
@@ -242,11 +259,33 @@ module Engine
           @log << '-- First Stock Round --'
         end
 
+        def transfer_share(share, new_owner)
+          corp = share.corporation
+          corp.share_holders[share.owner] -= share.percent
+          corp.share_holders[new_owner] += share.percent
+          share.owner.shares_by_corporation[corp].delete(share)
+          new_owner.shares_by_corporation[corp] << share
+          share.owner = new_owner
+        end
+
         def lookup_minor_price(p, row)
           @stock_market.market[row].size.times do |i|
             next unless @stock_market.share_price(row, i)
             return @stock_market.share_price(row, i) if @stock_market.share_price(row, i).price == p
           end
+        end
+
+        def lookup_par_price(p)
+          @stock_market.market[MAJOR_ROW].size.times do |i|
+            next unless @stock_market.share_price(MAJOR_ROW, i)
+            return @stock_market.share_price(MAJOR_ROW, i) if @stock_market.share_price(MAJOR_ROW, i).price == p
+            return @stock_market.share_price(MAJOR_ROW, i - 1) if @stock_market.share_price(MAJOR_ROW, i).price > p
+          end
+        end
+
+        def total_rounds(name)
+          # Return the total number of rounds for those with more than one.
+          @operating_rounds if %w[Operating Merger].include?(name)
         end
 
         def init_round
@@ -282,6 +321,16 @@ module Engine
           @reserved = {}
         end
 
+        def new_or!
+          if @round.round_num < @operating_rounds
+            new_operating_round(@round.round_num + 1)
+          else
+            @turn += 1
+            or_set_finished
+            new_stock_round
+          end
+        end
+
         def next_round!
           @round =
             case @round
@@ -295,20 +344,24 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
-              if @round.round_num < @operating_rounds
-                or_round_finished
-                new_operating_round(@round.round_num + 1)
+              or_round_finished
+              if phase.name.to_i < 3
+                new_or!
               else
-                @turn += 1
-                or_round_finished
-                or_set_finished
-                new_stock_round
+                @log << "-- #{round_description('Merger', @round.round_num)} --"
+                G18NewEngland::Round::Merger.new(self, [
+                  G18NewEngland::Step::ReduceTokens,
+                  G18NewEngland::Step::PostMergerShares,
+                  G18NewEngland::Step::Merge,
+                ], round_num: @round.round_num)
               end
+            when G18NewEngland::Round::Merger
+              new_or!
             end
         end
 
         def float_corporation(corporation)
-          return super unless corporation.type == :minor
+          return unless corporation.type == :minor
 
           price = corporation.share_price
           index = price.corporations.find_index(@yellow_dummy) || price.corporations.find_index(@green_dummy)
@@ -334,15 +387,15 @@ module Engine
 
         def minor_yellow_prices
           @minor_yellow_prices ||=
-            YELLOW_PRICES.flat_map do |p|
-              [lookup_minor_price(p, TOP_MINOR_ROW), lookup_minor_price(p, BOTTOM_MINOR_ROW)]
+            self.class::YELLOW_PRICES.flat_map do |p|
+              [lookup_minor_price(p, self.class::TOP_MINOR_ROW), lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW)]
             end
         end
 
         def minor_green_prices
           @minor_green_prices ||=
-            GREEN_PRICES.flat_map do |p|
-              [lookup_minor_price(p, TOP_MINOR_ROW), lookup_minor_price(p, BOTTOM_MINOR_ROW)]
+            self.class::GREEN_PRICES.flat_map do |p|
+              [lookup_minor_price(p, self.class::TOP_MINOR_ROW), lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW)]
             end
         end
 
@@ -413,7 +466,7 @@ module Engine
         def tile_lays(entity)
           return self.class::TILE_LAYS unless entity.type == :minor
 
-          MINOR_TILE_LAYS
+          self.class::MINOR_TILE_LAYS
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
@@ -425,7 +478,7 @@ module Engine
 
         def force_upgrade?(from, to)
           return false unless from.preprinted
-          return false unless (list = PREPRINTED_UPGRADES[from.hex.coordinates])
+          return false unless (list = self.class::PREPRINTED_UPGRADES[from.hex.coordinates])
 
           list.include?(to.name)
         end
@@ -436,11 +489,19 @@ module Engine
           end
         end
 
+        def merge_corporations
+          @corporations.select { |c| c.type == :minor && c.ipoed }
+        end
+
+        def any_unstarted_majors?
+          @corporations.any? { |c| c.type == :major && !c.ipoed }
+        end
+
         def can_go_bankrupt?(_player, corporation)
           corporation.type != :minor && super
         end
 
-        def redeemaable_shares(entity)
+        def redeemable_shares(entity)
           return [] unless entity.corporation? && entity.type != :minor
 
           bundles_for_corporation(share_pool, entity)
@@ -449,22 +510,16 @@ module Engine
 
         def issuable_shares(entity)
           return [] unless entity.corporation? && entity.type != :minor
-          return [] unless round.steps.find { |step| step.instance_of?(G18NewEngland::Step::RedeemShares) }.active?
 
-          num_shares = entity.num_player_shares - entity.num_market_shares
-          bundles = bundles_for_corporation(entity, entity)
-          share_price = stock_market.find_share_price(entity, :left).price
-
-          bundles
-            .each { |bundle| bundle.share_price = share_price }
-            .reject { |bundle| bundle.num_shares > num_shares }
+          bundles = bundles_for_corporation(entity, entity) + bundles_for_corporation(@bank, entity)
+          bundles.reject { |bundle| (bundle.num_shares + entity.num_market_shares) * 10 > self.class::MARKET_SHARE_LIMIT }
         end
 
         def par_price_str(share_price)
           case share_price.coordinates.first
-          when MAJOR_ROW
+          when self.class::MAJOR_ROW
             format_currency(share_price.price)
-          when TOP_MINOR_ROW
+          when self.class::TOP_MINOR_ROW
             "#{format_currency(share_price.price)}⇧"
           else
             "#{format_currency(share_price.price)}⇩"

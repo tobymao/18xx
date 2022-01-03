@@ -52,7 +52,13 @@ module View
       end
 
       def render_button(bundle, &block)
-        str = "#{bundle.num_shares} (#{@game.format_currency(bundle.price)})"
+        ipo = if bundle.owner == @game.bank
+                'IPO '
+              else
+                ''
+              end
+
+        str = "#{bundle.num_shares} #{ipo}(#{@game.format_currency(bundle.price)})"
         str += " from #{bundle.owner.name}" if bundle.owner.player?
         h('button.small', { on: { click: block } }, str)
       end

@@ -166,6 +166,8 @@ module Engine
       # down_share -- down one row per share
       # down_per_10 -- down one row per 10% sold
       # down_block -- down one row per block
+      # left_share -- left one column per share
+      # left_share_pres -- left one column per share if president
       # left_block_pres -- left one column per block if president
       # left_block -- one row per block
       # none -- don't drop price
@@ -1018,6 +1020,10 @@ module Engine
           (percent / 10).to_i.times { @stock_market.move_down(corporation) }
         when :down_block
           @stock_market.move_down(corporation)
+        when :left_share
+          bundle.num_shares.times { @stock_market.move_left(corporation) }
+        when :left_share_pres
+          bundle.num_shares.times { @stock_market.move_left(corporation) } if was_president
         when :left_block
           @stock_market.move_left(corporation)
         when :down_block_pres

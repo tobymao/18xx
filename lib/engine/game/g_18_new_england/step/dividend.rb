@@ -27,6 +27,14 @@ module Engine
               { share_direction: :right, share_times: 2 }
             end
           end
+
+          def corporation_dividends(entity, per_share)
+            return 0 if entity.minor?
+
+            # both IPO and treasury pay
+            dividends_for_entity(entity, entity, per_share) +
+              dividends_for_entity(entity, @game.bank, per_share)
+          end
         end
       end
     end
