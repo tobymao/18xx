@@ -1,4 +1,4 @@
-FROM ruby:3.1-rc
+FROM ruby:3.1
 
 ARG RACK_ENV
 RUN mkdir /18xx
