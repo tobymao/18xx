@@ -25,10 +25,9 @@ module View
           @current_actions = @step.current_actions
 
           user_name = @user&.dig('name')
-          @block_show = user_name &&
-            @game.players.map(&:name).include?(user_name) &&
-            @current_entity.name != user_name &&
-            !Lib::Storage[@game.id]&.dig('master_mode')
+          user_is_player = !hotseat? && user_name && @game.players.map(&:name).include?(user_name)
+          @user_is_current_player = user_is_player && @current_entity.name == user_name
+          @block_show = user_is_player && !@user_is_current_player && !Lib::Storage[@game.id]&.dig('master_mode')
 
           store(:before_process_pass, -> { hide! }, skip: true) if @current_actions.include?('pass')
 
@@ -74,6 +73,7 @@ module View
         end
 
         def render_show_button
+          return nil if @user_is_current_player
           return nil if @step.visible? && @step.players_visible?
 
           toggle = lambda do
@@ -331,6 +331,8 @@ module View
         end
 
         def hidden?
+          return false if @user_is_current_player
+
           @block_show || @hidden
         end
 

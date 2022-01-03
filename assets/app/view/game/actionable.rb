@@ -49,9 +49,11 @@ module View
         @valid_actors.any? { |actor| actor.id == @user['id'] }
       end
 
-      def process_action(action)
-        hotseat = @game_data[:mode] == :hotseat
+      def hotseat?
+        @game_data[:mode] == :hotseat
+      end
 
+      def process_action(action)
         if @game.exception
           msg = 'This game is broken and cannot accept any new actions. If '\
                 'this issue has not already been reported, please follow the '\
@@ -64,7 +66,7 @@ module View
             Press >| to navigate to the current game action.')
         end
 
-        if !hotseat &&
+        if !hotseat? &&
            !action.free? &&
            participant? &&
            !valid_actor?(action)
@@ -99,7 +101,7 @@ module View
           @game_data[:status] = 'active'
         end
 
-        if hotseat
+        if hotseat?
           @game_data[:turn] = game.turn
           @game_data[:round] = game.round.name
           @game_data[:acting] = game.active_players_id
