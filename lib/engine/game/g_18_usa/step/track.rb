@@ -105,6 +105,11 @@ module Engine
             old_tile.name.include?('ore') && new_tile.name.include?('ore') ? true : super
           end
 
+          def track_upgrade?(from, to, _hex)
+            super ||
+            (from.cities.empty? && (Engine::Tile::COLORS.index(to.color) - Engine::Tile::COLORS.index(from.color) > 1))
+          end
+
           def setup
             super
             @city_upgraded = false
