@@ -33,6 +33,8 @@ module Engine
             # Foyer
             %w[F11] => 'frame=color:#7D96CD',
             %w[E10] => 'frame=color:#7D96CD;city=revenue:0;',
+            # Utilities
+            %w[F9] => 'frame=color:#CCCCC1;city=revenue:0;',
             # Staircase
             %w[G8 G10 H7 H9] => 'upgrade=cost:80,terrain:mountain;frame=color:#C4E4CD',
             # Study
@@ -43,7 +45,7 @@ module Engine
             %w[K10 L11] => 'frame=color:#E6C4AF;city=revenue:0;',
             %w[L9 K12] => 'frame=color:#E6C4AF;',
             # Hall
-            %w[I4 J5 I8 J7] => 'frame=color:#F5846B',
+            %w[I4 I8 J7] => 'frame=color:#F5846B',
             %w[I6] => 'frame=color:#F5846B;town=revenue:0;town=revenue:0',
             %w[K8] => 'frame=color:#F5846B;city=revenue:0;',
             # Rec Room
@@ -53,14 +55,14 @@ module Engine
             %w[L1 L3] => 'frame=color:#AB9E7F',
             %w[K2] => 'frame=color:#AB9E7F;city=revenue:0;',
             # Bedroom
-            %w[K4] => 'frame=color:#AFDFE0',
-            %w[L5] => 'frame=color:#AFDFE0;city=revenue:0;',
+            %w[K4 L5] => 'frame=color:#AFDFE0',
+            %w[J5] => 'frame=color:#AFDFE0;city=revenue:0;',
           },
           red: {
             %w[E14] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             %w[L13] => 'offboard=revenue:yellow_20|green_80|gray_120;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             %w[A8] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:4,b:_0',
-            %w[J11] => 'city=revenue:20;path=a:1,b:_0',
+            %w[J11] => 'city=revenue:yellow_20|brown_40;path=a:1,b:_0',
             %w[A6] => 'offboard=revenue:20;path=a:5,b:_0',
             %w[K6] => 'offboard=revenue:20,groups:Bathroom;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0;border=edge:5',
             %w[L7] => 'offboard=revenue:20,hide:1,groups:Bathroom;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;border=edge:2',
@@ -73,15 +75,78 @@ module Engine
           },
           gray: {
             %w[D13 G4] => 'path=a:4,b:5',
-            %w[F13 M12] => 'path=a:1,b:2',
+            %w[F13] => 'path=a:1,b:2;path=a:3,b:4',
+            %w[M12] => 'path=a:1,b:2',
             %w[B5] => 'path=a:0,b:3',
-            %w[H13] => 'path=a:2,b:3',
-            %w[G2] => 'path=a:1,b:5',
+            %w[H13] => 'path=a:2,b:3;path=a:2,b:4',
+            %w[G2] => 'path=a:1,b:5;path=a:2,b:5',
             %w[H5] => 'path=a:2,b:5;path=a:3,b:5',
             %w[B11] => 'town=revenue:yellow_20|brown_40;path=a:3,b:_0;path=a:4,b:_0',
             %w[F7] => 'town=revenue:20;path=a:2,b:_0;path=a:3,b:_0',
-          }
+            %w[F1] => 'path=a:0,b:5',
+          },
         }.freeze
+
+        def cornelius
+          @cornelius ||= @companies.find { |company| company.name == '"Santa"?' }
+        end
+
+        COMPANIES = [
+          {
+            name: 'Stair Case Cleanup Co',
+            value: 20,
+            revenue: 5,
+            desc: 'Blocks hex H9 while owned by a player.',
+            sym: 'SCCC',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H9'] }],
+            color: nil,
+          },
+          {
+            name: 'Dumbwaiter Excavation',
+            value: 50,
+            revenue: 10,
+            desc: 'Blocks building a station at F3 while owned by a player.',
+            sym: 'DW',
+            abilities: [{ type: 'reservation', remove: 'sold', hex: 'F3' }],
+            color: nil,
+          },
+          {
+            name: 'Dad\'s Intervention',
+            value: 100,
+            revenue: 0,
+            desc: 'The player purchasing this cert also gains a 10% share of Baltimore and Ohio.',
+            sym: 'DI',
+            abilities: [{ type: 'shares', shares: 'B&O_1' }],
+            color: nil,
+          },
+          {
+            name: '"Santa"?',
+            value: 200,
+            revenue: 30,
+            desc: 'This private closes when the associated corporation buys its first train. It cannot be bought by a corporation.',
+            sym: 'SC',
+            abilities: [{ type: 'shares', shares: 'random_president' },
+                        { type: 'no_buy' }],
+            color: nil,
+          },
+          {
+            name: 'Egg Nog Express',
+            value: 80,
+            revenue: 15,
+            desc: 'The owning company adds $40 to any train run that includes both the Bar (F7) and the DC hex (C10).',
+            sym: 'ENX',
+            color: nil,
+          },
+          {
+            name: 'Conductor\'s Hat',
+            value: 40,
+            revenue: 10,
+            desc: 'Adds $10 per room stopped at at least once by any one train of the owning corporation. Red off-board locations do not count.',
+            sym: 'CH',
+            color: nil,
+          },
+        ].freeze
+        # rubocop:enable Layout/LineLength
 
         CORPORATIONS = [
           {
@@ -125,7 +190,7 @@ module Engine
             logo: '18_chesapeake/BO',
             simple_logo: '18_chesapeake/BO.alt',
             tokens: [0, 40, 60],
-            coordinates: 'L5',
+            coordinates: 'J5',
             city: 0,
             color: '#0189d1',
             reservation_color: nil,
@@ -199,10 +264,13 @@ module Engine
           'L3' => 'Bedroom',
           'I2' => 'Rec Room',
           'F11' => 'Foyer',
+          'F9' => 'Utilities',
 
         }.freeze
 
-        def or_set_finished; end
+        def or_set_finished
+          depot.export! if %w[2 3 4].include?(@depot.upcoming.first.name)
+        end
 
         def timeline
           []
