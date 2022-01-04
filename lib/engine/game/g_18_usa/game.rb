@@ -397,19 +397,14 @@ module Engine
           super + (owns_p15?(entity) ? 1 : 0)
         end
 
-        def take_loan(entity, loan)
-          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+        def loan_taken_stock_market_movement(entity)
+          @stock_market.move_left(entity)
+          @stock_market.move_left(entity)
+        end
 
-          price = entity.share_price.price
-          name = entity.name
-          name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
-          @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
-          @bank.spend(loan.amount, entity)
-          @stock_market.move_left(entity)
-          @stock_market.move_left(entity)
-          log_share_price(entity, price)
-          entity.loans << loan
-          @loans.delete(loan)
+        def loan_payoff_stock_market_movement(entity)
+          @stock_market.move_right(entity)
+          @stock_market.move_right(entity)
         end
 
         def interest_owed(entity)

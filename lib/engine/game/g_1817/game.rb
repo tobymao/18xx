@@ -1358,10 +1358,34 @@ module Engine
           name += " (#{entity.owner.name})" if @round.is_a?(Engine::Round::Stock)
           @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
           @bank.spend(loan.amount, entity)
-          @stock_market.move_left(entity)
+          loan_taken_stock_market_movement(entity)
           log_share_price(entity, price)
           entity.loans << loan
           @loans.delete(loan)
+        end
+
+        def loan_taken_stock_market_movement(entity)
+          @stock_market.move_left(entity)
+        end
+
+        def payoff_loan(entity, loan, adjust_share_price: true)
+          raise GameError, "Loan doesn't belong to that entity" unless entity.loans.include?(loan)
+
+          amount = loan.amount
+          @log << "#{entity.name} pays off a loan for #{format_currency(amount)}"
+          entity.spend(amount, @bank)
+
+          entity.loans.delete(loan)
+          @loans << loan
+          return unless adjust_share_price
+
+          price = entity.share_price.price
+          loan_payoff_stock_market_movement(entity)
+          log_share_price(entity, price)
+        end
+
+        def loan_payoff_stock_market_movement(entity)
+          @stock_market.move_right(entity)
         end
 
         def can_take_loan?(entity)
