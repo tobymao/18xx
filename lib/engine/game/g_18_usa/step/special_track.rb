@@ -76,20 +76,30 @@ module Engine
 
           def available_hex(entity, hex)
             return false unless super
-
-            return @game.plain_yellow_city_tiles.find { |t| t.name == hex.tile.name } if entity.id == 'P9'
-            if entity.id == 'P16'
-              return %i[green brown].include?(hex.tile.color) && !@game.active_metropolitan_hexes.include?(hex)
-            end
-            return hex.tile.color == :white if entity.id == 'P26'
-
-            if entity.id == 'P27'
-              return hex.tile.color == :white &&
-                    (hex.tile.cities.empty? || hex.tile.cities.all? { |c| !c.tokens.empty? }) &&
-                    (hex.neighbors.values & @game.active_metropolitan_hexes).empty?
-            end
+            return p9_available_hex(entity, hex) if entity.id == 'P9'
+            return p16_available_hex(entity, hex) if entity.id == 'P16'
+            return p26_available_hex(entity, hex) if entity.id == 'P26'
+            return p27_available_hex(entity, hex) if entity.id == 'P27'
 
             true
+          end
+
+          def p9_available_hex(_entity, hex)
+            @game.plain_yellow_city_tiles.find { |t| t.name == hex.tile.name }
+          end
+
+          def p16_available_hex(_entity, hex)
+            %i[green brown].include?(hex.tile.color) && !@game.active_metropolitan_hexes.include?(hex)
+          end
+
+          def p26_available_hex(_entity, hex)
+            hex.tile.color == :white
+          end
+
+          def p27_available_hex(_entity, hex)
+            hex.tile.color == :white &&
+              (hex.tile.cities.empty? || hex.tile.cities.all? { |c| !c.tokens.empty? }) &&
+              (hex.neighbors.values & @game.active_metropolitan_hexes).empty?
           end
 
           def legal_tile_rotation?(entity, hex, tile)
