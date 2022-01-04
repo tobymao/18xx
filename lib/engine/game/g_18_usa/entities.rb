@@ -308,6 +308,7 @@ module Engine
                 type: 'tile_lay',
                 when: 'track',
                 owner_type: 'corporation',
+                reachable: true,
                 hexes: %w[B4 B6 B8 B10 B12 B14 B16 B18 C19 D20],
                 tiles: YELLOW_PLAIN_TRACK_TILES + PLAIN_YELLOW_CITY_TILES,
                 free: true,
