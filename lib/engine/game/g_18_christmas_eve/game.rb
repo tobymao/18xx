@@ -89,7 +89,12 @@ module Engine
         }.freeze
 
         def cornelius
+          # cornelius, as inheriting behaviour from the chessie cornelius private
           @cornelius ||= @companies.find { |company| company.name == '"Santa"?' }
+        end
+
+        def hat
+          @hat ||= @companies.find { |company| company.name == "Conductor's Hat" }
         end
 
         COMPANIES = [
@@ -287,6 +292,27 @@ module Engine
 
         def or_set_finished
           depot.export! if %w[2 3 4].include?(@depot.upcoming.first.name)
+        end
+
+        def rooms_in_route(route)
+          route.visited_stops.map { |stop| stop.tile&.frame&.color }.uniq.count { |s| !s.nil? }
+        end
+
+        def most_rooms?(route)
+          most = route.routes.max_by { |r| rooms_in_route(r) }
+          route == most
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue += 10 * rooms_in_route(route) if route.train.owner.companies.include?(hat) && most_rooms?(route)
+          revenue
+        end
+
+        def revenue_str(route)
+          rev_str = super
+          rev_str += ' + Hat' if route.train.owner.companies.include?(hat) && most_rooms?(route)
+          rev_str
         end
       end
     end
