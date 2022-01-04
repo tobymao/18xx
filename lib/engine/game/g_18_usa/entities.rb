@@ -37,7 +37,6 @@ module Engine
             color: 'white',
           },
           # P2
-          # TODO: Make it work as a combo with P27
           {
             name: 'Fox Bridge Works',
             value: 40,
@@ -54,11 +53,9 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
-              # TODO: Not NO if a metropolis, Yes, Company town if on river
-              # TODO must be reachable
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -382,7 +379,6 @@ module Engine
             color: 'yellow',
           },
           # P21
-          # TODO: Make it work as a combo with P27
           {
             name: 'Keystone Bridge Co.',
             value: 80,
@@ -401,10 +397,9 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
-              # TODO: same as other bridge company
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -440,10 +435,9 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
-              # TODO: same as other bridge companies
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
