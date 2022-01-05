@@ -97,6 +97,10 @@ module Engine
           @hat ||= @companies.find { |company| company.name == "Conductor's Hat" }
         end
 
+        def nog
+          @nog ||= @companies.find { |company| company.name == 'Egg Nog Express' }
+        end
+
         COMPANIES = [
           {
             name: 'Stair Case Cleanup Co',
@@ -303,15 +307,23 @@ module Engine
           route == most
         end
 
+        def nog_express?(route)
+          bar = route.visited_stops.find { |s| s.tile&.location_name == 'Bar' }
+          dc = route.visited_stops.find { |s| s.tile&.label&.to_s == 'DC' }
+          bar && dc
+        end
+
         def revenue_for(route, stops)
           revenue = super
           revenue += 10 * rooms_in_route(route) if route.train.owner.companies.include?(hat) && most_rooms?(route)
+          revenue += 40 if route.train.owner.companies.include?(nog) && nog_express?(route)
           revenue
         end
 
         def revenue_str(route)
           rev_str = super
           rev_str += ' + Hat' if route.train.owner.companies.include?(hat) && most_rooms?(route)
+          rev_str += ' + Nog' if route.train.owner.companies.include?(nog) && nog_express?(route)
           rev_str
         end
       end
