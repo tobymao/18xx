@@ -2,6 +2,7 @@
 
 require_relative 'meta'
 require_relative '../g_18_chesapeake/game'
+require_relative '../base'
 
 module Engine
   module Game
@@ -268,12 +269,24 @@ module Engine
 
         }.freeze
 
-        def or_set_finished
-          depot.export! if %w[2 3 4].include?(@depot.upcoming.first.name)
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::BuyCompany,
+            G18ChristmasEve::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
         end
 
-        def timeline
-          []
+        def or_set_finished
+          depot.export! if %w[2 3 4].include?(@depot.upcoming.first.name)
         end
       end
     end
