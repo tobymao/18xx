@@ -8,7 +8,6 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
-            # 1846 and a few others minors can't buy trains
             return [] unless can_entity_buy_train?(entity)
 
             return [] if entity != current_entity

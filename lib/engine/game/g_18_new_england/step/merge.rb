@@ -3,6 +3,7 @@
 require_relative '../../../step/base'
 require_relative '../../../token'
 require_relative '../../../step/token_merger'
+require_relative '../../../step/programmer_merger_pass'
 
 module Engine
   module Game
@@ -10,6 +11,7 @@ module Engine
       module Step
         class Merge < Engine::Step::Base
           include Engine::Step::TokenMerger
+          include Engine::Step::ProgrammerMergerPass
           CONVERT_PAR = 100
 
           def actions(entity)
@@ -32,6 +34,14 @@ module Engine
             return [Engine::Action::Pass.new(entity)] if mergeable_candidates(entity).empty?
 
             super
+          end
+
+          def others_acted?
+            !@round.converts.empty?
+          end
+
+          def merger_auto_pass_entity
+            current_entity unless @converting || @merging
           end
 
           def merge_name(_entity = nil)
@@ -98,6 +108,7 @@ module Engine
             # Replace the entity with the new one.
             @round.entities[@round.entity_index] = target
             @round.converted = target
+            @round.converts << target
             # New president is eligable to buy shares
             @round.share_dealing_players = [target.owner]
           end
@@ -137,6 +148,8 @@ module Engine
             end
 
             @round.converted = target
+            @round.converts << target
+            # New president is eligable to buy shares
             @round.share_dealing_players = [target.owner]
             @merging = nil
           end
@@ -219,6 +232,7 @@ module Engine
           def round_state
             {
               converted: nil,
+              converts: [],
               share_dealing_players: [],
               share_dealing_multiple: [],
             }
