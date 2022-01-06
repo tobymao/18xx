@@ -236,7 +236,7 @@ module Engine
         end
 
         def ability_right_time?(ability, time, on_phase, passive_ok, strict_time)
-          return false if ability.on_phase.is_a?(Array) && !ability.on_phase.include?(@phase.name)
+          return false if %i[teleport tile_lay].include?(ability.type) && !%w[3 4].include?(@phase.name)
 
           super
         end
