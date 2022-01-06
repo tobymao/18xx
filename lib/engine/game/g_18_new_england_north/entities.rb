@@ -10,6 +10,7 @@ module Engine
             sym: 'B&A',
             name: 'Boston and Albany Railroad',
             logo: '18_new_england/BA',
+            type: 'major',
             color: '#ec1c24',
             tokens: [0, 40, 80],
             float_percent: 20,
@@ -19,6 +20,7 @@ module Engine
             sym: 'B&M',
             name: 'Boston and Maine Railroad',
             logo: '18_new_england/BM',
+            type: 'major',
             color: '#84c77a',
             text_color: 'black',
             tokens: [0, 40, 80],
@@ -29,6 +31,7 @@ module Engine
             sym: 'CN',
             name: 'Canadian National Railroad',
             logo: '18_new_england/CN',
+            type: 'major',
             color: '#ffd900',
             text_color: 'black',
             tokens: [0, 40, 80],
@@ -39,6 +42,7 @@ module Engine
             sym: 'CVT',
             name: 'Central Vermont Railroad',
             logo: '18_new_england/CVT',
+            type: 'major',
             color: '#b43e95',
             tokens: [0, 40, 80],
             float_percent: 20,
@@ -48,6 +52,7 @@ module Engine
             sym: 'BAR',
             name: 'Bangor and Aroostook Railroad',
             logo: '18_new_england_north/BAR',
+            type: 'major',
             color: '#0b86c8',
             text_color: 'yellow',
 
@@ -59,6 +64,7 @@ module Engine
             sym: 'R',
             name: 'Rutland Railroad',
             logo: '18_new_england_north/R',
+            type: 'major',
             color: '#ffffd5',
             text_color: 'green',
 
@@ -70,6 +76,7 @@ module Engine
             sym: 'NYNHH',
             name: 'New York, New Haven and Hardford Railroad',
             logo: '18_new_england/NYNHH',
+            type: 'major',
             color: '#f68e1e',
             text_color: 'black',
 
@@ -81,6 +88,7 @@ module Engine
             sym: 'MEC',
             name: 'Maine Central Railroad Company',
             logo: '18_new_england_north/MEC',
+            type: 'major',
             color: '#08944b',
             tokens: [0, 40, 80],
             float_percent: 20,
@@ -99,6 +107,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'MC',
@@ -112,6 +121,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -125,6 +135,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -138,6 +149,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
 
           {
@@ -152,6 +164,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -165,6 +178,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -178,6 +192,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -191,6 +206,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -204,6 +220,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -217,6 +234,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -231,6 +249,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -244,6 +263,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -257,6 +277,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -271,6 +292,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
           {
@@ -284,6 +306,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
             reservation_color: nil,
           },
         ].freeze

@@ -13,6 +13,7 @@ module Engine
             sym: 'B&A',
             name: 'Boston and Albany Railroad',
             logo: '18_new_england/BA',
+            type: 'major',
             color: '#ec1c24',
             tokens: [0, 40, 80],
             float_percent: 20,
@@ -22,6 +23,7 @@ module Engine
             sym: 'B&M',
             name: 'Boston and Maine Railroad',
             logo: '18_new_england/BM',
+            type: 'major',
             color: '#84c77a',
             text_color: 'black',
             tokens: [0, 40, 80],
@@ -32,6 +34,7 @@ module Engine
             sym: 'CN',
             name: 'Canadian National Railroad',
             logo: '18_new_england/CN',
+            type: 'major',
             color: '#ffd900',
             text_color: 'black',
             tokens: [0, 40, 80],
@@ -42,6 +45,7 @@ module Engine
             sym: 'CVT',
             name: 'Central Vermont Railroad',
             logo: '18_new_england/CVT',
+            type: 'major',
             color: '#b43e95',
             tokens: [0, 40, 80],
             float_percent: 20,
@@ -51,6 +55,7 @@ module Engine
             sym: 'D&H',
             name: 'Delaware and Hudson Railroad',
             logo: '18_new_england/DH',
+            type: 'major',
             color: '#0d7bb5',
             tokens: [0, 40, 80],
             float_percent: 20,
@@ -60,6 +65,7 @@ module Engine
             sym: 'NYC',
             name: 'New York Central Railroad',
             logo: '18_new_england/NYC',
+            type: 'major',
             color: '#231f20',
             tokens: [0, 40, 80],
             float_percent: 20,
@@ -69,6 +75,7 @@ module Engine
             sym: 'NYNHH',
             name: 'New York, New Haven and Hardford Railroad',
             logo: '18_new_england/NYNHH',
+            type: 'major',
             color: '#f68e1e',
             tokens: [0, 40, 80],
             float_percent: 20,
@@ -78,6 +85,7 @@ module Engine
             sym: 'P&W',
             name: 'Providence and Worcester Railroad',
             logo: '18_new_england/PW',
+            type: 'major',
             color: '#833000',
             tokens: [0, 40, 80],
             float_percent: 20,
@@ -96,6 +104,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'BL',
@@ -110,6 +119,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'BP',
@@ -123,6 +133,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'CR',
@@ -136,6 +147,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'CV',
@@ -149,6 +161,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'ER',
@@ -162,6 +175,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'FRR',
@@ -174,6 +188,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'GR',
@@ -186,6 +201,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'HNH',
@@ -199,6 +215,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'HRR',
@@ -212,6 +229,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'NLN',
@@ -226,6 +244,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'NYNH',
@@ -239,6 +258,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'NYW',
@@ -251,6 +271,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'PE',
@@ -263,6 +284,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
           {
             sym: 'WNR',
@@ -275,6 +297,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
+            capitalization: 'incremental',
           },
         ].freeze
 
