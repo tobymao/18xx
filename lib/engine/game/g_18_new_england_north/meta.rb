@@ -10,7 +10,8 @@ module Engine
         include Game::Meta
         include G18NewEngland::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
+        PROTOTYPE = true
         DEPENDS_ON = '18NewEngland'
 
         GAME_ALIASES = ['18NewEngland 2'].freeze
