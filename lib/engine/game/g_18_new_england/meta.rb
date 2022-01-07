@@ -13,7 +13,7 @@ module Engine
         GAME_DESIGNER = 'Scott Petersen'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18NewEngland'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://www.dropbox.com/s/x0dsehrxqr1tl6w/18Chesapeake_Rules.pdf'
+        GAME_RULES_URL = 'https://cdn.shopify.com/s/files/1/0252/9371/7588/files/18NewEngland.pdf'
         GAME_VARIANTS = [
           sym: :north,
           name: '18NewEngland 2',
