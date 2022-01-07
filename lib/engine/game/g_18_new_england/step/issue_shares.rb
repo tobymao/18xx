@@ -29,17 +29,28 @@ module Engine
             @round.issued = true
             corp = action.entity
             bundle = action.bundle
+            @log << "#{corp.name} issues #{share_str(bundle)} of #{corp.name} to the market"\
+                    " and receives #{@game.format_currency(bundle.price)}"
+            # @game.share_pool.sell_shares(bundle, silent: true)
+            @game.share_pool.transfer_shares(bundle,
+                                             @game.share_pool,
+                                             spender: @game.bank,
+                                             receiver: corp)
+            price = corp.share_price.price
+            action.bundle.num_shares.times { @game.stock_market.move_left(corp) }
+            @game.log_share_price(corp, price)
+          end
+
+          def share_str(bundle)
             ipo = if bundle.owner == @game.bank
                     'IPO '
                   else
                     ''
                   end
-            @log << "#{corp.name} issues a 10% #{ipo}share of #{corp.name} to market"\
-                    " and receives #{@game.format_currency(bundle.price)}"
-            @game.share_pool.sell_shares(bundle, silent: true)
-            price = corp.share_price.price
-            action.bundle.num_shares.times { @game.stock_market.move_left(corp) }
-            @game.log_share_price(corp, price)
+            num_shares = bundle.num_shares
+            return "a #{bundle.percent}% #{ipo}share" if num_shares == 1
+
+            "#{num_shares} #{ipo}shares"
           end
 
           def setup

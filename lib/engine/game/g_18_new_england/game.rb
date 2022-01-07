@@ -207,11 +207,12 @@ module Engine
         YELLOW_PRICES = [50, 55, 60, 65, 70].freeze
         GREEN_PRICES = [80, 90, 100].freeze
         NUM_START_MINORS = 10
+        START_RESERVATION_COLOR = 'cyan'
 
         # Two lays or one upgrade
         TILE_LAYS = [
           { lay: true, upgrade: true },
-          { lay: true, upgrade: :not_if_upgraded },
+          { lay: :not_if_upgraded, upgrade: false },
         ].freeze
 
         # one lay or one upgrade
@@ -238,6 +239,9 @@ module Engine
           num_start = self.class::NUM_START_MINORS
           num_start = num_start[players.size] if num_start.is_a?(Hash)
           @starting_minors = @corporations.select { |c| c.type == :minor }.sort_by { rand }.take(num_start)
+
+          # highlight the starting minors
+          @starting_minors.each { |m| m.reservation_color = self.class::START_RESERVATION_COLOR }
 
           # add yellow and green minor placeholders to stock market
           #
@@ -305,7 +309,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18NewEngland::Step::Bankrupt,
             G18NewEngland::Step::RedeemShares,
             G18NewEngland::Step::Track,
             Engine::Step::Token,
@@ -319,6 +323,9 @@ module Engine
 
         def init_round_finished
           @reserved = {}
+
+          # un-highlight the starting minors
+          @starting_minors.each { |m| m.reservation_color = nil }
         end
 
         def new_or!
@@ -388,14 +395,14 @@ module Engine
         def minor_yellow_prices
           @minor_yellow_prices ||=
             self.class::YELLOW_PRICES.flat_map do |p|
-              [lookup_minor_price(p, self.class::TOP_MINOR_ROW), lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW)]
+              [lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW), lookup_minor_price(p, self.class::TOP_MINOR_ROW)]
             end
         end
 
         def minor_green_prices
           @minor_green_prices ||=
             self.class::GREEN_PRICES.flat_map do |p|
-              [lookup_minor_price(p, self.class::TOP_MINOR_ROW), lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW)]
+              [lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW), lookup_minor_price(p, self.class::TOP_MINOR_ROW)]
             end
         end
 
@@ -430,7 +437,7 @@ module Engine
         end
 
         def operating_order
-          @corporations.reject(&:minor?).select(&:floated?).sort
+          @corporations.reject(&:minor?).select(&:floated?).sort.partition { |c| c.type == :minor }.flatten
         end
 
         def bank_sort(corporations)
@@ -452,7 +459,7 @@ module Engine
         end
 
         def ipo_name(corp = nil)
-          corp&.type == :minor ? 'Bank' : 'IPO'
+          corp&.type == :minor ? 'Treasury' : 'IPO'
         end
 
         def ipo_verb(corp = nil)
@@ -489,8 +496,18 @@ module Engine
           end
         end
 
+        def can_par?(corporation, _entity)
+          corporation.type == :minor &&
+            !corporation.ipoed &&
+            (@phase.available?('3') || @starting_minors.include?(corporation))
+        end
+
         def merge_corporations
           @corporations.select { |c| c.type == :minor && c.ipoed }
+        end
+
+        def merge_rounds
+          [G18NewEngland::Round::Merger]
         end
 
         def any_unstarted_majors?
@@ -533,6 +550,82 @@ module Engine
           return unless minor
 
           share_price.corporations << @closed_dummy
+        end
+
+        def express_train?(train)
+          train.name.include?('E')
+        end
+
+        def check_distance(route, visits)
+          return super unless express_train?(route.train)
+
+          # express trains can ignore towns
+          city_stops = visits.count { |node| node.city? || node.offboard? }
+          raise GameError, 'Route has too many cities/offboards' if city_stops > route.train.distance
+        end
+
+        def check_other(route)
+          visited_hexes = {}
+          route.visited_stops.each do |stop|
+            hex = stop.hex
+            raise GameError, 'Route cannot run to multiple cities in a hex' if visited_hexes[hex]
+
+            visited_hexes[hex] = true
+          end
+        end
+
+        def compute_stops(route)
+          return super unless express_train?(route.train)
+
+          visits = route.visited_stops
+          return [] if visits.empty?
+
+          # no choice about citys/offboards => they must be stops
+          stops = visits.select { |node| node.city? || node.offboard? }
+
+          # unused city/offboard allowance can be used for towns by express trains
+          t_allowance = route.train.distance - stops.size
+
+          # pick highest revenue towns
+          towns = visits.select(&:town?)
+          num_towns = [t_allowance, towns.size].min
+          stops.concat(towns.sort_by { |t| t.uniq_revenues.first }.reverse.take(num_towns)) if num_towns.positive?
+
+          stops
+        end
+
+        def route_distance(route)
+          route.stops.size
+        end
+
+        # reduce all express trains to the smallest one
+        def route_trains(entity)
+          return [] unless entity.corporation?
+
+          express, normal = entity.trains.partition { |t| express_train?(t) }
+          return normal if express.empty?
+
+          min_express = express.min_by(&:distance)
+          normal + [min_express]
+        end
+
+        def revenue_multiplier(route)
+          return 1 unless express_train?(route.train)
+
+          route.train.owner.trains.count { |t| express_train?(t) }
+        end
+
+        def revenue_for(route, stops)
+          super * revenue_multiplier(route)
+        end
+
+        def revenue_str(route)
+          multiplier = revenue_multiplier(route)
+          super + (multiplier < 2 ? '' : " (x#{multiplier})")
+        end
+
+        def available_programmed_actions
+          [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end
       end
     end

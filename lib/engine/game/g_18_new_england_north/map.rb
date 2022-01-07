@@ -98,6 +98,8 @@ module Engine
           J5: 'Hartford',
         }.freeze
 
+        PREPRINTED_UPGRADES = {}.freeze
+
         HEXES = {
           white: {
             %w[
