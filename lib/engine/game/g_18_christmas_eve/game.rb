@@ -278,6 +278,13 @@ module Engine
 
         }.freeze
 
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G18ChristmasEve::Step::BuySellParGiftShares,
+          ])
+        end
+
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
