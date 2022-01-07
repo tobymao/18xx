@@ -526,6 +526,10 @@ module Engine
       end
     end
 
+    def reframe!(color1, color2 = nil)
+      @frame = Engine::Part::Frame.new(color1, color2)
+    end
+
     def available_slot?
       cities.sum(&:available_slots).positive?
     end
