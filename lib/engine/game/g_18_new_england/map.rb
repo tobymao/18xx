@@ -88,7 +88,7 @@ module Engine
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:_0,b:0;path=a:_0,b:1;'\
+            'code' => 'city=revenue:50,slots:3;path=a:_0,b:0;path=a:_0,b:1;'\
                       'path=a:2,b:_0;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5;label=NH',
           },
           'X7' =>
@@ -109,7 +109,7 @@ module Engine
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:60,slots:2;path=a:_0,b:0;path=a:_0,b:1;'\
+            'code' => 'city=revenue:60,slots:3;path=a:_0,b:0;path=a:_0,b:1;'\
                       'path=a:2,b:_0;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5;label=NH',
           },
         }.freeze
