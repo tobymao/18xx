@@ -302,9 +302,10 @@ module Engine
         end
 
         def status_array(corporation)
-          [] unless @round.respond_to?(:presidencies_gifted)
-          if @round.presidencies_gifted.include? corporation then
-            ["Can not gift presidents certificate again this round."]
+          return [] unless @round.respond_to?(:presidencies_gifted)
+
+          if @round.presidencies_gifted.include? corporation
+            ['Can not gift presidents certificate again this round.']
           else
             []
           end
