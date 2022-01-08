@@ -301,6 +301,15 @@ module Engine
           ], round_num: round_num)
         end
 
+        def status_array(corporation)
+          [] unless @round.respond_to?(:presidencies_gifted)
+          if @round.presidencies_gifted.include? corporation then
+            ["Can not gift presidents certificate again this round."]
+          else
+            []
+          end
+        end
+
         def or_set_finished
           depot.export! if %w[2 3 4].include?(@depot.upcoming.first.name)
         end

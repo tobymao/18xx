@@ -9,6 +9,14 @@ module Engine
             'Sell/Buy/Sell Shares and/or Gift Certs'
           end
 
+          def round_state
+            super.merge!(
+              {
+                presidencies_gifted: []
+              }
+            )
+          end
+
           def actions(entity)
             return [] unless entity == current_entity
             actions = super
@@ -44,6 +52,10 @@ module Engine
               choices.merge!(Hash[@game.players
                 .map.with_index { |p, i| [p, i]}
                 .select { |p, i| p != current_entity }
+                # Co prez can't be gifted twice in a round
+                .select { |p, i| 
+                    !@round.presidencies_gifted.include? entity
+                }
                 .select { |p, i| p.percent_of(entity) == 0 }
                 .map { |p, i| ["prez_#{i}_#{entity.id}", "Presidency to #{p.name}"]}
                 ])
@@ -66,11 +78,12 @@ module Engine
 
           def gift(presidents_cert, receiving_player, corp)
             type = presidents_cert ? "presidency" : "cert"
-            @log << "#{current_entity.id} gifts #{type} of #{corp.id} to #{receiving_player.name}"
+            @log << "#{current_entity.name} gifts #{type} of #{corp.id} to #{receiving_player.name}"
             if presidents_cert then
               @game.share_pool.transfer_shares(corp.presidents_share.to_bundle, receiving_player)
+              @round.presidencies_gifted.append(corp)
             else
-              share = current_entity.shares_by_corporation[corp].find {|i| !i.president }
+              share = current_entity.shares_by_corporation[corp].find { |i| !i.president }
               @game.share_pool.transfer_shares(share.to_bundle, receiving_player)
             end
           end
