@@ -29,15 +29,20 @@ module Engine
             @round.issued = true
             corp = action.entity
             bundle = action.bundle
+            issue_price = if bundle.owner == @game.bank
+                            bundle.num_shares * corp.original_par_price.price
+                          else
+                            bundle.price
+                          end
             @log << "#{corp.name} issues #{share_str(bundle)} of #{corp.name} to the market"\
-                    " and receives #{@game.format_currency(bundle.price)}"
-            # @game.share_pool.sell_shares(bundle, silent: true)
+                    " and receives #{@game.format_currency(issue_price)}"
             @game.share_pool.transfer_shares(bundle,
                                              @game.share_pool,
                                              spender: @game.bank,
-                                             receiver: corp)
+                                             receiver: corp,
+                                             price: issue_price)
             price = corp.share_price.price
-            action.bundle.num_shares.times { @game.stock_market.move_left(corp) }
+            bundle.num_shares.times { @game.stock_market.move_left(corp) }
             @game.log_share_price(corp, price)
           end
 

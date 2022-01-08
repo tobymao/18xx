@@ -227,6 +227,7 @@ module Engine
             next if corp.type == :minor
 
             corp.ipo_owner = @bank
+            corp.always_market_price = true
             corp.share_holders.keys.each do |sh|
               next if sh == @bank
 
@@ -424,7 +425,10 @@ module Engine
         end
 
         def status_array(corp)
-          return unless corp.type == :minor
+          if corp.type == :major && corp.ipoed && !corp.ipo_shares.empty?
+            return [["Par: #{format_currency(corp.original_par_price.price)}"]]
+          end
+          return if corp.type == :major
           return [['Minor Company'], ["Value: #{format_currency(corp.share_price.price)}"]] if corp.share_price
           return [["Reserved by #{@reserved[corp].name}", 'bold']] if @reserved[corp]
           return [['Minor Company']] if @starting_minors.include?(corp) || @phase.available?('3')
@@ -491,9 +495,12 @@ module Engine
         end
 
         def stock_round_corporations
-          @corporations.select do |c|
+          corp_list = @corporations.select do |c|
             c.ipoed || (c.type == :minor && (@phase.available?('3') || @starting_minors.include?(c)))
           end
+          majors, minors = corp_list.partition { |c| c.type == :major }
+          formed, unformed = minors.partition(&:ipoed)
+          majors.sort + unformed.sort + formed.sort
         end
 
         def can_par?(corporation, _entity)
@@ -528,8 +535,12 @@ module Engine
         def issuable_shares(entity)
           return [] unless entity.corporation? && entity.type != :minor
 
-          bundles = bundles_for_corporation(entity, entity) + bundles_for_corporation(@bank, entity)
-          bundles.reject { |bundle| (bundle.num_shares + entity.num_market_shares) * 10 > self.class::MARKET_SHARE_LIMIT }
+          treasury = bundles_for_corporation(entity, entity)
+          ipo = bundles_for_corporation(@bank, entity)
+          ipo.each { |b| b.share_price = entity.original_par_price.price }
+          (treasury + ipo).reject do |bundle|
+            (bundle.num_shares + entity.num_market_shares) * 10 > self.class::MARKET_SHARE_LIMIT
+          end
         end
 
         def par_price_str(share_price)

@@ -35,8 +35,8 @@ module Engine
                                         exchange: exchange,
                                         swap: swap,
                                         allow_president_change: allow_president_change)
-            # bank compensates company always at par price
-            price = corp.par_price.price
+            # bank compensates company always at original par price
+            price = corp.original_par_price.price
             @game.bank.spend(price, corp)
           end
 
