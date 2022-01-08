@@ -27,6 +27,19 @@ module Engine
             player.pass! unless can_buy_any?(player)
           end
 
+          # Overrides method in share_buying
+          def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
+            corp = shares.corporation
+            @game.share_pool.buy_shares(entity,
+                                        shares,
+                                        exchange: exchange,
+                                        swap: swap,
+                                        allow_president_change: allow_president_change)
+            # bank compensates company always at par price
+            price = corp.par_price.price
+            @game.bank.spend(price, corp)
+          end
+
           def process_pass(action)
             log_pass(action.entity)
             action.entity.pass!

@@ -566,11 +566,13 @@ module Engine
 
         def check_other(route)
           visited_hexes = {}
+          last_hex = nil
           route.visited_stops.each do |stop|
             hex = stop.hex
-            raise GameError, 'Route cannot run to multiple cities in a hex' if visited_hexes[hex]
+            raise GameError, 'Route cannot run to multiple unconnected cities in a hex' if hex != last_hex && visited_hexes[hex]
 
             visited_hexes[hex] = true
+            last_hex = hex
           end
         end
 
