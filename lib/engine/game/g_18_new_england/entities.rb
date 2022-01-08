@@ -73,7 +73,7 @@ module Engine
           },
           {
             sym: 'NYNHH',
-            name: 'New York, New Haven and Hardford Railroad',
+            name: 'New York, New Haven and Hartford Railroad',
             logo: '18_new_england/NYNHH',
             type: 'major',
             color: '#f68e1e',
