@@ -1065,7 +1065,7 @@ module Engine
           return 0 unless @phase.name.to_i > 2
           return 0 unless @pass_thru[route.train.name]
 
-          visits.count { |node| node.tile.name == TILE_200 && node.city? && node.tokened_by?(route.corporation) }
+          visits[1...-1].count { |node| node.tile.name == TILE_200 && node.tokened_by?(route.corporation) }
         end
 
         def build_dummy_train(route, num)
