@@ -7,8 +7,15 @@ module View
     class Choose < Snabberb::Component
       include Actionable
 
+      needs :entity, default: nil
+
       def render
-        choice_buttons = @game.round.active_step.choices.map do |choice, label|
+        choices = if @game.round.active_step.respond_to?(:entity_choices)
+                    @game.round.active_step.entity_choices(@entity)
+                  else
+                    @game.round.active_step.choices
+                  end
+        choice_buttons = choices.map do |choice, label|
           label ||= choice
           click = lambda do
             process_action(Engine::Action::Choose.new(

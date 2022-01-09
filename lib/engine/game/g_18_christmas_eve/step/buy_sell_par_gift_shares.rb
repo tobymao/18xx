@@ -24,18 +24,17 @@ module Engine
 
             actions = super
             actions << 'choose' if can_gift_any?
-            if actions.any? && !actions.include?('pass') then actions << 'pass' end
+            actions << 'pass' if actions.any? && !actions.include?('pass')
             actions
           end
 
           def choice_available?(entity)
             return false unless @game.sellable_turn? && entity.corporation?
 
-            @choices = gift_choices(entity)
-            @choices != {}
+            entity_choices(entity) != {}
           end
 
-          def gift_choices(entity)
+          def entity_choices(entity)
             return {} unless entity&.corporation? && entity&.president?(current_entity)
 
             choices = {}
@@ -66,7 +65,7 @@ module Engine
           end
 
           def can_gift_any?
-            @game.sellable_turn? && @game.corporations.any? { |e| gift_choices(e).any? }
+            @game.sellable_turn? && @game.corporations.any? { |e| entity_choices(e).any? }
           end
 
           def choice_name
