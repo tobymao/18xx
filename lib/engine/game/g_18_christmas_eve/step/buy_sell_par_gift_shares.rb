@@ -24,55 +24,53 @@ module Engine
 
             actions = super
             actions << 'choose' if can_gift_any?
-            actions << 'pass' if actions.any? && !actions.include?('pass')
+            actions << 'pass' if !actions.empty? && !actions.include?('pass')
             actions
           end
 
           def choice_available?(entity)
-            return false unless @game.sellable_turn? && entity.corporation?
+            return false if !@game.sellable_turn? || !entity.corporation?
 
             entity_choices(entity) != {}
           end
 
           def entity_choices(entity)
-            return {} unless entity&.corporation? && entity&.president?(current_entity)
+            return {} if !entity&.corporation? || !entity&.president?(current_entity)
 
             choices = {}
+
             # Cert only
             # If we own 20%, then we've only got the pres cert to gift
             if current_entity.percent_of(entity) != 20
-              choices.merge!(@game.players
+              cert_choices = @game.players
                 .map.with_index { |p, i| [p, i] }
                 .reject { |p, _i| p == current_entity }
                 .select { |p, _i| p.percent_of(entity).zero? }
-                .to_h { |p, i| ["cert_#{i}_#{entity.id}", "Cert to #{p.name}"] })
+                .to_h { |p, i| ["cert_#{i}_#{entity.id}", "Cert to #{p.name}"] }
             end
 
             # We can only give the pres cert if it would mean that player has most/equal most shares
             president_possible = current_entity.percent_of(entity) <= 40 &&
               @game.players.reject { |p| p == current_entity }.none? { |p| p.percent_of(entity) > 20 }
             if president_possible
-              choices.merge!(@game.players
+              pres_choices = @game.players
                 .map.with_index { |p, i| [p, i] }
-                .reject { |p, _i| p == current_entity }
                 # Co prez can't be gifted twice in a round
-                .reject { |_p, _i| @round.presidencies_gifted&.include? entity }
+                .reject { |p, _i| p == current_entity || @round.presidencies_gifted&.include?(entity) }
                 .select { |p, _i| p.percent_of(entity).zero? }
-                .to_h { |p, i| ["prez_#{i}_#{entity.id}", "Presidency to #{p.name}"] })
+                .to_h { |p, i| ["prez_#{i}_#{entity.id}", "Presidency to #{p.name}"] }
             end
 
-            choices
+            choices.merge(cert_choices || {}).merge(pres_choices || {})
           end
 
           def can_gift_any?
-            @game.sellable_turn? && @game.corporations.any? { |e| entity_choices(e).any? }
+            @game.sellable_turn? && @game.corporations.any? { |e| !entity_choices(e).empty? }
           end
 
           def choice_name
             'Gift'
           end
-
-          attr_reader :choices
 
           def gift(presidents_cert, receiving_player, corp)
             type = presidents_cert ? 'presidency' : 'cert'
