@@ -7,9 +7,9 @@ module Engine
       module Step
         class SelectionAuction < G1817::Step::SelectionAuction
           def starting_bid(company)
-            return super unless company.id == 'P14'
+            return 5 if company.id == 'P14'
 
-            [5, company.value - @seed_money].max
+            company.value / 2
           end
         end
       end

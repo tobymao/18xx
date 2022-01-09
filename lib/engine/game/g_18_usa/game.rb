@@ -162,7 +162,7 @@ module Engine
           'bridge' => '/icons/1817/bridge_token.svg',
         }.freeze
 
-        SEED_MONEY = 200
+        SEED_MONEY = nil
 
         def event_upgrade_oil!
           @log << "-- Event: #{EVENTS_TEXT['upgrade_oil'][1]} --"
@@ -268,7 +268,7 @@ module Engine
           when 'H14'
             hex.lay(@tiles.find { |t| t.name == 'X03' })
           when 'E11'
-            hex.lay(@tiles.find { |t| t.name == 'X04' })
+            # TODO: add metropolis icon like a subsidy
             @metro_denver = true
           when 'G3'
             hex.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
@@ -342,17 +342,16 @@ module Engine
           laying_entity = @round.current_entity
           if !laying_entity.operated? &&
              to.color == :brown &&
+             tile_color_valid_for_phase?(to) &&
              from.hex == home_hex_for(laying_entity) &&
              Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
-            if active_metroplitan_hexes.include?(from.hex)
+            if active_metropolitan_hexes.include?(from.hex)
               return to.name == 'X14' if from.hex.id == 'H14'
               return to.name == 'X15' if from.hex.id == 'G3'
               return to.name == 'X16' if from.hex.id == 'D28'
 
               return to.name == '593'
             end
-
-            return to.name == 'X13' if from.hex.id == 'D24'
 
             return %w[63 448 611].include?(to.name)
           end
@@ -369,6 +368,18 @@ module Engine
 
         def ore_upgrade?(from, to)
           [%w[7ore10 7ore20], %w[8ore10 8ore20], %w[9ore10 9ore20]].any? { |upg| upg == [from.name, to.name] }
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          case from.hex.name
+          when 'E11'
+            return to.name == 'X04' if from.color == :white && metro_denver
+          when 'D24'
+            return true if to.name == 'X13'
+            return false if to.color == :brown
+          end
+
+          super
         end
 
         def upgrades_to_correct_color?(from, to)
@@ -503,7 +514,6 @@ module Engine
         end
 
         def new_auction_round
-          log << "Seed Money for initial auction is #{format_currency(self.class::SEED_MONEY)}" unless @round
           Engine::Round::Auction.new(self, [
             G18USA::Step::SelectionAuction,
           ])

@@ -178,7 +178,6 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                free: true,
                 when: 'track',
                 owner_type: 'corporation',
                 reachable: true,
@@ -629,7 +628,7 @@ module Engine
           # id: 'S1',
           # name: 'No Subsidy',
           # desc: 'No effect',
-          # value: nil,
+          # value: 0,
           # },
           # {
           # icon: 'subsidy_none',
@@ -637,7 +636,7 @@ module Engine
           # id: 'S2',
           # name: 'No Subsidy'
           # desc: 'No effect',
-          # value: nil,
+          # value: 0,
           # },
           {
             icon: 'subsidy_none',
@@ -645,7 +644,7 @@ module Engine
             id: 'S3',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -653,7 +652,7 @@ module Engine
             id: 'S4',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -661,7 +660,7 @@ module Engine
             id: 'S5',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -669,7 +668,7 @@ module Engine
             id: 'S6',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -677,14 +676,13 @@ module Engine
             id: 'S7',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_boomtown',
             abilities: [
               {
                 type: 'tile_lay',
-                free: true,
                 when: 'track',
                 owner_type: 'corporation',
                 closed_when_used_up: true,
@@ -702,7 +700,7 @@ module Engine
             name: 'Boomtown Subsidy',
             desc: 'On it\'s first operating turn, this corporation may upgrade its home to green as a free action. This does '\
                   'not count as an additional track placement and does not incur any cost for doing so',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_free_station',
@@ -712,7 +710,7 @@ module Engine
             desc: 'The free station is a special token (which counts toward the 8 token limit) that can be placed in any city '\
                   'the corporation can trace a legal route to, even if no open station circle is currently available in the '\
                   'city. If a open station circle becomes available later, the token will immediately fill the opening',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_plus_ten',
@@ -720,7 +718,7 @@ module Engine
             id: 'S10',
             name: '+10',
             desc: 'This corporation\'s home city is worth $10 for the rest of the game',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_plus_ten_twenty',
@@ -729,7 +727,7 @@ module Engine
             name: '+10 / +20',
             desc: 'This corporation\'s home city is worth $10 until phase 5, after which it is worth '\
                   ' $20 more for the rest of the game',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_thirty',
@@ -769,7 +767,7 @@ module Engine
             id: 'S16',
             name: 'Resource Subsidy',
             desc: 'PLACEHOLDER DESCRIPTION',
-            value: nil,
+            value: 0,
           },
         ].freeze
 
