@@ -169,6 +169,8 @@ module Engine
           '3' => { distance: 3, price: 300 },
           '4' => { distance: 4, price: 430 },
           '5' => { distance: 5, price: 550 },
+          '6' => { distance: 6, price: 650 },
+          '7' => { distance: 7, price: 720 },
           '3T' => { distance: 3, price: 370, available_on: '3' },
           'U3' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
@@ -176,10 +178,8 @@ module Engine
             price: 410,
             available_on: '3',
           },
-          '6' => { distance: 6, price: 650 },
           '4T' => { distance: 4, price: 480, available_on: '4' },
           '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '4' },
-          '7' => { distance: 7, price: 720 },
           '4+4E' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
@@ -194,6 +194,8 @@ module Engine
           '3' => { distance: 3, price: 300, rusts_on: '7' },
           '4' => { distance: 4, price: 430 },
           '5' => { distance: 5, price: 550 },
+          '6' => { distance: 6, price: 650 },
+          '7' => { distance: 7, price: 720 },
           '3T' => { distance: 3, price: 370, available_on: '3' },
           'U3' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
@@ -201,10 +203,8 @@ module Engine
             price: 410,
             available_on: '3',
           },
-          '6' => { distance: 6, price: 650 },
           '4T' => { distance: 4, price: 480, available_on: '4' },
           '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '4' },
-          '7' => { distance: 7, price: 720 },
           '4+4E' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
@@ -259,12 +259,12 @@ module Engine
                                       '3' => 0,
                                       '4' => 0,
                                       '5' => 0,
+                                      '6' => 0,
+                                      '7' => 0,
                                       '3T' => 0,
                                       'U3' => 0,
-                                      '6' => 0,
                                       '2+2' => 0,
                                       '4T' => 0,
-                                      '7' => 0,
                                       '4+4E' => 0,
                                     })
 
@@ -275,15 +275,15 @@ module Engine
             add_train_list(trains, { '2' => 5, '3' => 3, '4' => 2, '5' => 3, '6' => 2 })
           when '3'
             # extra 5/3T/U3 for minors
-            add_train_list(trains, { '2' => 5, '3' => 3, '4' => 1, '5' => 3, '3T' => 1, 'U3' => 1, '7' => 2 })
+            add_train_list(trains, { '2' => 5, '3' => 3, '4' => 1, '5' => 3, '7' => 2, '3T' => 1, 'U3' => 1 })
           when '12'
             add_train_list(trains, { '2' => 7, '3' => 6, '4' => 4, '5' => 5, '6' => 2, '7' => 0 })
           when '23'
             # extra 5/3T/U3 for minors
-            add_train_list(trains, { '2' => 5, '3' => 5, '4' => 4, '5' => 6, '3T' => 1, 'U3' => 1, '7' => 2 })
+            add_train_list(trains, { '2' => 5, '3' => 5, '4' => 4, '5' => 6, '7' => 2, '3T' => 1, 'U3' => 1 })
           else # all units
             # extra 5/3T/U3 for minors
-            add_train_list(trains, { '2' => 7, '3' => 6, '4' => 5, '5' => 6, '3T' => 1, 'U3' => 1, '6' => 2, '7' => 2 })
+            add_train_list(trains, { '2' => 7, '3' => 6, '4' => 5, '5' => 6, '6' => 2, '7' => 2, '3T' => 1, 'U3' => 1 })
           end
 
           add_train_list(trains, { '3T' => 2, 'U3' => 2 }) if @optional_rules.include?(:u3p)
@@ -291,7 +291,7 @@ module Engine
           add_train_list(trains, { '5' => 1 }) if @regionals[2]
           add_train_list(trains, { '4T' => 1 }) if @regionals[3]
           add_train_list(trains, { '5' => -1, '6' => 3, '7' => 2 }) if @kits[3]
-          add_train_list(trains, { '3T' => 1, '5' => 1 }) if @kits[5]
+          add_train_list(trains, { '5' => 1, '3T' => 1 }) if @kits[5]
           add_train_list(trains, { '2+2' => 1 }) if @kits[7]
 
           # handle K2
