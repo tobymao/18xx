@@ -94,7 +94,6 @@ module Engine
       @depot_trains ||= [
         @upcoming.first,
         *@upcoming.select { |t| @game.phase.available?(t.available_on) },
-        *@upcoming.find(&:blocks?),
       ].compact.uniq(&:name) + @discarded.uniq(&:name)
     end
 

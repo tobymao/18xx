@@ -24,7 +24,6 @@ module Engine
       @discount = opts[:discount]
       @multiplier = opts[:multiplier]
       @no_local = opts[:no_local]
-      @does_not_block = opts[:does_not_block]
       @buyable = true
       @rusted = false
       @obsolete = false
@@ -88,10 +87,6 @@ module Engine
 
     def buyable
       @buyable && !@obsolete
-    end
-
-    def blocks?
-      !@does_not_block
     end
 
     def local?
