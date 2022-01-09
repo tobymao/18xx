@@ -1070,7 +1070,7 @@ module Engine
 
         def build_dummy_train(route, num)
           train = @pass_thru[route.train.name]
-          train.distance.each { |dist| dist[:visit] = dist[:pay] + num if dist[:pay] < 99 }
+          train.distance.each { |dist| dist[:visit] = dist[:pay] + num }
           train
         end
 
