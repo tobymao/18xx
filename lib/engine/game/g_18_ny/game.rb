@@ -398,6 +398,15 @@ module Engine
           @corporations.each { |c| yield c if c.type != :minor && !c.floated? }
         end
 
+        def close_corporation(corporation, quiet: false)
+          super
+          return unless corporation.tokens.include?(@stagecoach_token)
+
+          @log << 'Stagecoach token removed from play'
+          @stagecoach_token.destroy!
+          @stagecoach_token = nil
+        end
+
         #
         # Stock round logic
         #
