@@ -60,15 +60,13 @@ module Engine
           def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
             corp = shares.corporation
             if corp.type == :major && shares.owner == corp.ipo_owner
-              # players always pay current price for IPO shares
-              shares.share_price = corp.share_price.price
               @game.share_pool.buy_shares(entity,
                                           shares,
                                           exchange: exchange,
                                           swap: swap,
                                           allow_president_change: allow_president_change)
               # bank compensates company always at par price
-              price = corp.par_price.price
+              price = corp.original_par_price.price
               @game.bank.spend(price, corp)
               @log << "The Bank pays #{corp.name} #{@game.format_currency(price)} for the IPO share" if price != shares.price
             else
