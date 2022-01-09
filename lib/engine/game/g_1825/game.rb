@@ -1068,19 +1068,17 @@ module Engine
           visits.count { |node| node.tile.name == TILE_200 && node.city? && node.tokened_by?(route.corporation) }
         end
 
-        def adjust_pass_thru(train, num)
+        def build_dummy_train(route, num)
+          train = @pass_thru[route.train.name]
           train.distance.each { |dist| dist[:visit] = dist[:pay] + num if dist[:pay] < 99 }
+          train
         end
 
         def check_distance(route, visits)
           if (num = num_tile200(route, visits)).zero?
             super
           else
-            orig_train = route.train
-            route.train = @pass_thru[route.train.name]
-            adjust_pass_thru(route.train, num)
-            super
-            route.train = orig_train
+            super(route, visits, build_dummy_train(route, num))
           end
           return if %w[3T 4T].include?(route.train.name)
 
@@ -1118,12 +1116,7 @@ module Engine
           if (num = num_tile200(route, route.visited_stops)).zero?
             super
           else
-            orig_train = route.train
-            route.train = @pass_thru[route.train.name]
-            adjust_pass_thru(route.train, num)
-            stops = super
-            route.train = orig_train
-            stops
+            super(route, build_dummy_train(route, num))
           end
         end
 
