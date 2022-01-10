@@ -10,12 +10,13 @@ module Engine
           def actions(entity)
             return [] unless can_entity_buy_train?(entity)
 
-            return ['sell_shares'] if entity == current_entity.owner
+            return ['sell_shares'] if entity == current_entity.owner && president_may_contribute?(current_entity)
 
             return [] if entity != current_entity
-            return %w[sell_shares buy_train] if entity.type != :minor && president_may_contribute?(entity)
-            return %w[pass sell_shares buy_train] if entity.type == :minor && president_may_contribute?(entity)
-            return %w[buy_train pass] if can_buy_train?(entity)
+
+            # minor companies can be closed when forced to buy trains (closure is processed as pass action)
+            return %w[buy_train] if entity.type != :minor && must_buy_train?(entity)
+            return %w[pass buy_train] if can_buy_train?(entity)
 
             []
           end
