@@ -23,18 +23,21 @@ module Engine
             hex_name = @game.get_location_name(BONUS_HEX)
             description = "#{@game.format_currency(route_bonus)} route bonus for #{hex_name} (#{BONUS_HEX})"
 
-            ability = Engine::Ability::HexBonus.new(
+            if @game.phase.name.to_i < 6
+              route_bonus_given = true
+              ability = Engine::Ability::HexBonus.new(
               type: :hexes_bonus,
               description: description,
               hexes: [BONUS_HEX],
               amount: route_bonus
             )
+              entity.add_ability(ability)
+            end
 
-            entity.add_ability(ability)
             @game.remove_icons(BONUS_HEX)
             bonus = @game.format_currency(one_time_bonus)
             @log << "#{entity.name} receives #{bonus} for a token in #{hex_name}"
-            @log << "Until phase 6 #{entity.name} also receives: #{description}"
+            @log << "Until phase 6 #{entity.name} also receives: #{description}" if route_bonus_given
             entity.cash += one_time_bonus
           end
 
