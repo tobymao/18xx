@@ -214,6 +214,24 @@ module Engine
           },
         }.freeze
 
+        DUMMY_TRAINS = [
+          { name: '2', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 2, 'visit' => 2 }] },
+          { name: '3', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 3, 'visit' => 3 }] },
+          { name: '4', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 4, 'visit' => 4 }] },
+          { name: '5', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 5, 'visit' => 5 }] },
+          { name: '3T', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 3, 'visit' => 3 }] },
+          {
+            name: 'U3',
+            price: 1,
+            distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+          },
+          { name: '6', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 6, 'visit' => 6 }] },
+          { name: '4T', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 4, 'visit' => 4 }] },
+          { name: '2+2', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 2, 'visit' => 2 }] },
+          { name: '7', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 7, 'visit' => 7 }] },
+        ].freeze
+
         def build_train_list(thash)
           thash.keys.map do |t|
             new_hash = {}
@@ -333,6 +351,7 @@ module Engine
         GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
         TRAIN_PRICE_MIN = 10
         IMPASSABLE_HEX_COLORS = %i[blue sepia red].freeze
+        TILE_200 = '200'
 
         TILE200_HEXES = %w[Q11 T16 V14].freeze
 
@@ -631,6 +650,10 @@ module Engine
             @minor_trains << req_train
             @depot.remove_train(req_train)
           end
+
+          # pre-allocate dummy trains used for tile 200
+          @pass_thru = {}
+          DUMMY_TRAINS.each { |train| @pass_thru[train[:name]] = Train.new(**train, index: 999) }
         end
 
         # cache all stock prices
@@ -1038,8 +1061,25 @@ module Engine
           []
         end
 
+        def num_tile200(route, visits)
+          return 0 unless @phase.name.to_i > 2
+          return 0 unless @pass_thru[route.train.name]
+
+          visits[1...-1].count { |node| node.tile.name == TILE_200 && node.tokened_by?(route.corporation) }
+        end
+
+        def build_dummy_train(route, num)
+          train = @pass_thru[route.train.name]
+          train.distance.each { |dist| dist[:visit] = dist[:pay] + num }
+          train
+        end
+
         def check_distance(route, visits)
-          super
+          if (num = num_tile200(route, visits)).zero?
+            super
+          else
+            super(route, visits, build_dummy_train(route, num))
+          end
           return if %w[3T 4T].include?(route.train.name)
 
           node_hexes = {}
@@ -1070,6 +1110,14 @@ module Engine
           return if token.select(paths_, corporation: route.corporation).size == paths_.size
 
           raise GameError, 'Route is not connected'
+        end
+
+        def compute_stops(route)
+          if (num = num_tile200(route, route.visited_stops)).zero?
+            super
+          else
+            super(route, build_dummy_train(route, num))
+          end
         end
 
         # only T trains get halt revenue
