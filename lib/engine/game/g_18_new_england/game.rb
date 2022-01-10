@@ -637,6 +637,10 @@ module Engine
           super + (multiplier < 2 ? '' : " (x#{multiplier})")
         end
 
+        def separate_treasury?
+          true
+        end
+
         def available_programmed_actions
           [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end
