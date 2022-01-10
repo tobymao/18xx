@@ -208,6 +208,8 @@ module Engine
         GREEN_PRICES = [80, 90, 100].freeze
         NUM_START_MINORS = 10
         START_RESERVATION_COLOR = 'cyan'
+        RESERVED_RESERVATION_COLOR = 'lightgray'
+        FORMED_RESERVATION_COLOR = 'gray'
 
         # Two lays or one upgrade
         TILE_LAYS = [
@@ -376,6 +378,7 @@ module Engine
           price.corporations.delete_at(index) if index
 
           @minor_prices[price.price] += 1
+          corporation.reservation_color = self.class::FORMED_RESERVATION_COLOR if corporation.reservation_color
         end
 
         def place_home_token(corporation)
@@ -456,10 +459,12 @@ module Engine
 
         def reserve_minor(minor, entity)
           @reserved[minor] = entity
+          minor.reservation_color = self.class::RESERVED_RESERVATION_COLOR
         end
 
         def unreserve_minor(minor, _entity)
           @reserved.delete(minor)
+          minor.reservation_color = self.class::START_RESERVATION_COLOR
         end
 
         def ipo_name(corp = nil)
