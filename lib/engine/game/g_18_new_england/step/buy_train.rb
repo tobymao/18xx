@@ -10,6 +10,8 @@ module Engine
           def actions(entity)
             return [] unless can_entity_buy_train?(entity)
 
+            return ['sell_shares'] if entity == current_entity.owner
+
             return [] if entity != current_entity
             return %w[sell_shares buy_train] if entity.type != :minor && president_may_contribute?(entity)
             return %w[pass sell_shares buy_train] if entity.type == :minor && president_may_contribute?(entity)
