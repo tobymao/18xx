@@ -1154,8 +1154,9 @@ module Engine
         raise GameError, 'Route is not connected'
       end
 
-      def check_distance(route, visits)
-        distance = route.train.distance
+      def check_distance(route, visits, train = nil)
+        train ||= route.train
+        distance = train.distance
         if distance.is_a?(Numeric)
           route_distance = visits.sum(&:visit_cost)
           raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
@@ -1196,9 +1197,10 @@ module Engine
 
       def check_other(_route); end
 
-      def compute_stops(route)
+      def compute_stops(route, train = nil)
+        train ||= route.train
         visits = route.visited_stops
-        distance = route.train.distance
+        distance = train.distance
         return visits if distance.is_a?(Numeric)
         return [] if visits.empty?
 
