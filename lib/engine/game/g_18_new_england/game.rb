@@ -548,6 +548,10 @@ module Engine
           end
         end
 
+        def buying_power(entity, **)
+          entity.cash
+        end
+
         def par_price_str(share_price)
           case share_price.coordinates.first
           when self.class::MAJOR_ROW
