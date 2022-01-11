@@ -25,7 +25,7 @@ module Engine
 
             @log << "-- #{player.name} goes bankrupt. Any companies with #{player.name} as director will close --"
 
-            @game.corporations.dup.each { |c| close_corporation(c) if c.owner == player }
+            @game.corporations.dup.each { |c| @game.close_corporation(c) if c.owner == player }
           end
         end
       end
