@@ -13,7 +13,8 @@ module Engine
             desc:
               'Comes with two +20 bonus tokens. '\
               'Tokens may be purchased by a Corporation for K20 to gain a +20 '\
-              'bonus to runs across the ferry on L7.',
+              'bonus to runs across the ferry on L7. '\
+              'Comes with a 10% share of the Valtionraurariet (VR)',
             abilities: [
               { type: 'no_buy' },
               { type: 'shares', shares: 'VR_1' },
@@ -29,10 +30,12 @@ module Engine
             desc:
               'Comes with one +50 bonus token. '\
               'Token can be purchased by a Corporation for K50 to gain a +50 '\
-              'bonus to one run through Kiruna (A20) tile once per OR',
+              'bonus to one run through Kiruna (A20) hex once per OR. '\
+              'Comes with a 10% share of the Sveriges & Norges Järnvägar '\
+              '(S&NJ)',
             abilities: [
               { type: 'no_buy' },
-              { type: 'shares', shares: 'SNJ_1' },
+              { type: 'shares', shares: 'S&NJ_1' },
               # TODO: +50 bonus token for Kiruna
             ],
             color: nil,
@@ -42,10 +45,13 @@ module Engine
             name: 'Sjællandske Jernbaneselskab',
             value: 180,
             revenue: 30,
-            desc: 'May lay or upgrade a COP (F3) tile for free',
+            desc:
+              'May lay or upgrade a COP (F3) tile for free. '\
+              'Comes with a president\'s certificate of the '\
+              'Danske Statsbaner (DSB)',
             abilities: [
               { type: 'no_buy' },
-              { type: 'shares', shares: %w[DSB_0 DSB_1] },
+              { type: 'shares', shares: 'DSB_0' },
               { type: 'close', when: 'bought_train', corporation: 'DSB' },
               {
                 type: 'tile_lay',
@@ -112,7 +118,7 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                city: 'B11',
+                hexes: 'B11',
                 cheater: 1,
                 price: 0,
                 special_only: true,
@@ -132,7 +138,7 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                city: 'F11',
+                hexes: 'F11',
                 cheater: 1,
                 price: 0,
                 special_only: true,
@@ -152,7 +158,7 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                city: 'D7',
+                hexes: 'D7',
                 cheater: 1,
                 price: 0,
                 special_only: true,
@@ -163,60 +169,65 @@ module Engine
 
         CORPORATIONS = [
           {
-            float_percent: 20,
             sym: 'DSB',
             name: 'Danske Statsbaner',
             logo: '18_scan/DSB',
             simple_logo: '18_scan/DSB.alt',
+            float_percent: 20,
+            always_market_price: true,
             tokens: [0, 40, 100],
             coordinates: 'F3',
             color: '#C62A1D',
             reservation_color: nil,
           },
           {
-            float_percent: 20,
             sym: 'S&NJ',
             name: 'Sveriges & Norges Järnvägar',
             logo: '18_scan/SNJ',
             simple_logo: '18_scan/SNJ.alt',
+            float_percent: 20,
+            always_market_price: true,
             tokens: [0, 40, 100],
             coordinates: 'B19',
             color: '#010301',
             reservation_color: nil,
           },
           {
-            float_percent: 20,
             sym: 'NSB',
             name: 'Norges Statsbaner',
             logo: '18_scan/NSB',
             simple_logo: '18_scan/NSB.alt',
+            float_percent: 20,
+            always_market_price: true,
             tokens: [0, 40, 100, 100],
             coordinates: 'D7',
             color: '#041848',
             reservation_color: nil,
           },
           {
-            float_percent: 20,
             sym: 'VR',
             name: 'Valtionraurariet',
             logo: '18_scan/VR',
             simple_logo: '18_scan/VR.alt',
+            float_percent: 20,
+            always_market_price: true,
             tokens: [0, 40, 100, 100],
             coordinates: 'G14',
             color: '#2157B2',
             reservation_color: nil,
           },
           {
-            float_percent: 20,
             sym: 'SJ',
             name: 'Statens Järnvägar',
             logo: '18_scan/SJ',
             simple_logo: '18_scan/SJ.alt',
+            float_percent: 50,
+            floatable: false,
+            always_market_price: true,
             tokens: [0, 100, 100, 100, 100, 100],
             coordinates: 'F3',
             color: '#3561AE',
             reservation_color: nil,
-            type: :national,
             abilities: [
               {
                 type: 'train_limit',
@@ -225,7 +236,7 @@ module Engine
               },
               {
                 type: 'no_buy',
-                description: 'Unavailable in SR before phase 5',
+                description: 'Cannot float before phase 5',
               },
             ],
           },
