@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
-            return [] if entity.corporation? && entity.receivership? && buyable_depot_trains(entity).size < 2
+            return [] if receivership_skip?(entity)
             return ['buy_train'] if entity.corporation? && entity.receivership?
 
             super
@@ -42,6 +42,15 @@ module Engine
             super
           end
 
+          # auto-skip receivership companies if
+          # - there is exactly one train to buy, or
+          # - there is no route to run, or
+          # - there is no room for another train
+          def receivership_skip?(entity)
+            entity.corporation? && entity.receivership? &&
+              (buyable_depot_trains(entity).size < 2 || !@game.can_run_route?(entity) || !room?(entity))
+          end
+
           def buyable_depot_trains(entity)
             @depot.depot_trains.reject { |t| entity.cash < t.price }
           end
@@ -49,9 +58,10 @@ module Engine
           def receivership_buy(entity)
             @passed = true
             trains = buyable_depot_trains(entity)
-            raise GameError, 'multiple trains available for receivership purchase' if trains.size > 1
 
             if (train = trains.first) && @game.can_run_route?(entity) && room?(entity)
+              raise GameError, 'multiple trains available for receivership purchase' if trains.size > 1
+
               @log << "#{entity.name} is in Receivership and must buy a #{train.name} train"
 
               buy_train_action(
