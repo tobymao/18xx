@@ -22,6 +22,12 @@ module Engine
             sym: :fivede,
             short_name: '5DE only scores stations and offboards',
             desc: '5DE trains may only score stationed cities and offboard hexes',
+            hidden: true,
+          },
+          {
+            sym: :fourde,
+            short_name: '4DE',
+            desc: 'Replace 5DE trains with 4DE trains',
           },
         ].freeze
       end

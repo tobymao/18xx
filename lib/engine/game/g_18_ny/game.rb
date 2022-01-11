@@ -132,6 +132,18 @@ module Engine
           },
         ].freeze
 
+        def game_phases
+          phases = super
+
+          if @optional_rules.include?(:fourde)
+            phase = phases.find { |p| p[:name] == '5DE' }
+            phase[:name] = '4DE'
+            phase[:on] = '4DE'
+          end
+
+          phases
+        end
+
         TRAINS = [{ name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
                   { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', events: [{ 'type' => 'float_30' }] },
                   { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
@@ -151,6 +163,18 @@ module Engine
                     events: [{ 'type' => 'float_60' }],
                   },
                   { name: 'D', num: 20, distance: 99, price: 1000 }].freeze
+
+        def game_trains
+          trains = super
+
+          if @optional_rules.include?(:fourde)
+            train = trains.find { |t| t[:name] == '5DE' }
+            train[:name] = '4DE'
+            train[:distance][0]['pay'] = 4
+          end
+
+          trains
+        end
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'float_30' => ['30% to Float', 'Corporations must have 30% of their shares sold to float'],
@@ -609,7 +633,7 @@ module Engine
         end
 
         def compute_stops(route)
-          return super unless route.train.name == '5DE'
+          return super unless route.train.name.include?('DE')
 
           stops = route.visited_stops
           return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
@@ -617,7 +641,8 @@ module Engine
           if fivede_runs_stations_and_offboards_only?
             stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == :red }
           end
-          stops = stops.combination(5).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > 5
+          count = route.train.distance.first[:pay]
+          stops = stops.combination(count).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > count
           stops
         end
 

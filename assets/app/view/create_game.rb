@@ -228,6 +228,8 @@ module View
       end
 
       optional_rules = selected_game_or_variant::OPTIONAL_RULES.map do |o_r|
+        next if o_r[:hidden]
+
         label_text = "#{o_r[:short_name]}: #{o_r[:desc]}"
         h(:li, [render_input(
           label_text,
@@ -236,7 +238,7 @@ module View
           attrs: { value: o_r[:sym], disabled: !@visible_optional_rules.find { |vo_r| vo_r[:sym] == o_r[:sym] } },
           on: { input: toggle_optional_rule(o_r[:sym]) },
         )])
-      end
+      end.compact
 
       ul_props = {
         style: {
@@ -405,7 +407,7 @@ module View
     end
 
     def filtered_rule?(rule)
-      rule[:players] && !rule[:players].include?(@num_players)
+      rule[:hidden] || (rule[:players] && !rule[:players].include?(@num_players))
     end
 
     def update_inputs
