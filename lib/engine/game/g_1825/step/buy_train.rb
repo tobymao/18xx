@@ -43,7 +43,7 @@ module Engine
           end
 
           # auto-skip receivership companies if
-          # - there is exactly one train to buy, or
+          # - there is exactly zero or one train to buy, or
           # - there is no route to run, or
           # - there is no room for another train
           def receivership_skip?(entity)
