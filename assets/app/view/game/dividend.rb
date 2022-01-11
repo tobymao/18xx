@@ -144,7 +144,7 @@ module View
                     min: 0,
                     max: max,
                     type: 'number',
-                    size: max.to_s.size,
+                    size: max.to_s.size + 2,
                     step: @step.variable_input_step,
                   })
 
