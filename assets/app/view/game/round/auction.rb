@@ -149,7 +149,7 @@ module View
                       min: @step.min_bid(company),
                       max: @step.max_bid(@current_entity, company),
                       type: 'number',
-                      size: @current_entity.cash.to_s.size,
+                      size: @current_entity.cash.to_s.size + 2,
                     })
 
           buttons = []
@@ -200,7 +200,7 @@ module View
                 min: @step.min_player_bid,
                 max: @step.max_player_bid(@current_entity),
                 type: 'number',
-                size: @current_entity.cash.to_s.size,
+                size: @current_entity.cash.to_s.size + 2,
               })
           h(:div, [
             input,
@@ -276,7 +276,7 @@ module View
                       min: @step.min_bid(minor),
                       max: @step.max_bid(@current_entity, minor),
                       type: 'number',
-                      size: @current_entity.cash.to_s.size,
+                      size: @current_entity.cash.to_s.size + 2,
                     })
 
           [
