@@ -46,9 +46,13 @@ module Engine
           # - there is exactly zero or one train to buy, or
           # - there is no route to run, or
           # - there is no room for another train
+          # - it's a minor and not Unit 3
           def receivership_skip?(entity)
             entity.corporation? && entity.receivership? &&
-              (buyable_depot_trains(entity).size < 2 || !@game.can_run_route?(entity) || !room?(entity))
+              (buyable_depot_trains(entity).size < 2 ||
+               !@game.can_run_route?(entity) ||
+               !room?(entity) ||
+               @game.silent_receivership?(entity))
           end
 
           def buyable_depot_trains(entity)
