@@ -20,7 +20,7 @@ module View
                     type: 'number',
                     min: @min_value,
                     max: @max_value,
-                    size: @size,
+                    size: @size + 2,
                   })
 
         buy_click = lambda do
