@@ -1552,10 +1552,6 @@ module Engine
           bundles.sort_by { |b| [b.presidents_share ? 1 : 0, b.percent, -b.shares.size] }.uniq(&:percent)
         end
 
-        def buying_power(entity)
-          entity.cash
-        end
-
         def purchasable_companies(entity = nil)
           @companies.select do |company|
             !company.closed? &&

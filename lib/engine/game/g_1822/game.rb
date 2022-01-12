@@ -540,10 +540,6 @@ module Engine
           corporations.reject { |c| c.type == :minor }.sort_by(&:name)
         end
 
-        def buying_power(entity, **)
-          entity.cash
-        end
-
         def can_par?(corporation, parrer)
           return false if corporation.type == :minor ||
             !(@phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par'))
