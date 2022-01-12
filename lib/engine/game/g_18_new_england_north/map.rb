@@ -178,7 +178,7 @@ module Engine
             %w[J1 J5] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0',
             %w[A2] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:5,b:_0',
             %w[I14] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:2,b:_0',
-            %w[J13] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:2,b:_0',
+            %w[J13] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:2,b:_0',
           },
         }.freeze
       end
