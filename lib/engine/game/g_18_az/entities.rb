@@ -5,8 +5,28 @@ module Engine
     module G18AZ
       module Entities
         COMPANIES = [
-
-
+             {
+               name: 'Michigan Southern',
+               value: 60,
+               discount: -80,
+               revenue: 0,
+               desc: 'Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). In ORs, '\
+                     'this is the first minor to operate. Splits revenue evenly with owner. Buyer '\
+                     'pays an extra $80 ("debt").',
+               sym: 'MS',
+               color: nil,
+             },
+             {
+               name: 'Big 4',
+               value: 40,
+               discount: -60,
+               revenue: 0,
+               desc: 'Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). In '\
+                     'ORs, this is the second minor to operate. Splits revenue evenly with owner. '\
+                     'Buyer pays an extra $60 ("debt").',
+               sym: 'BIG4',
+               color: nil,
+             },
              {
                name: 'El Paso & Southwestern RR',
                value: 40,
@@ -103,6 +123,21 @@ module Engine
                      'before phase 6, this ability is lost as the Private Company is removed from play.',
                sym: 'SO',
                color: nil,
+                                       abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[B1 C2 F7 F9],
+                count_per_or: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'sold',
+                count: 1,
+                owner_type: 'corporation',
+              },
+                          ],
              },
         ].freeze
 
@@ -190,12 +225,31 @@ module Engine
             color: :'#FF0000',
             always_market_price: true,
             reservation_color: nil,
+
           },
         ].freeze
 
         MINORS = [
-
-
+          {
+            sym: 'MS',
+            name: 'Michigan Southern',
+            logo: '1846/MS',
+            simple_logo: '1846/MS.alt',
+            tokens: [0],
+            coordinates: 'C6',
+            color: :pink,
+            text_color: 'black',
+          },
+          {
+            sym: 'BIG4',
+            name: 'Big 4',
+            logo: '1846/B4',
+            simple_logo: '1846/B4.alt',
+            tokens: [0],
+            coordinates: 'G6',
+            color: :cyan,
+            text_color: 'black',
+          },
         ].freeze
       end
     end
