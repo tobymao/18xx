@@ -1561,9 +1561,9 @@ module Engine
         buying_power
       end
 
-        def buying_power(entity, **)
-          entity.cash
-        end
+      def buying_power(entity, **)
+        entity.cash
+      end
 
       def company_sale_price(_company)
         raise NotImplementedError
