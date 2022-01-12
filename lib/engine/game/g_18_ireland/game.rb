@@ -608,11 +608,6 @@ module Engine
           end
         end
 
-        def buying_power(entity, **)
-          # Cannot issue shares to buy trains
-          entity.cash
-        end
-
         def issuable_shares(entity)
           return [] unless entity.corporation?
           return [] unless entity.num_ipo_shares

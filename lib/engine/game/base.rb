@@ -1562,7 +1562,7 @@ module Engine
       end
 
       def buying_power(entity, **)
-        entity.cash + (issuable_shares(entity).map(&:price).max || 0)
+        entity.cash
       end
 
       def company_sale_price(_company)
