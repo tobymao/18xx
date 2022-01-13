@@ -14,7 +14,16 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy_sell
 
-        GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, bank: :full_or }.freeze
+        GAME_END_CHECK = {
+          bankrupt: :immediate,
+          stock_market: :current_round,
+          bank: :full_or,
+          custom: :one_more_full_or_set,
+        }.freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'First D Purchased'
+        )
 
         # rubocop:disable Layout/LineLength
         HEXES = {
@@ -278,6 +287,60 @@ module Engine
 
         }.freeze
 
+        # Reimplement 18Ches trains for D end game trigger
+        TRAINS = [
+          {
+            name: '2',
+            distance: 2,
+            price: 80,
+            rusts_on: '4',
+            num: 7,
+          },
+          {
+            name: '3',
+            distance: 3,
+            price: 180,
+            rusts_on: '6',
+            num: 6,
+          },
+          {
+            name: '4',
+            distance: 4,
+            price: 300,
+            rusts_on: 'D',
+            num: 5,
+          },
+          {
+            name: '5',
+            distance: 5,
+            price: 500,
+            num: 3,
+            events: [{ 'type' => 'close_companies' }],
+          },
+          { name: '6', distance: 6, price: 630, num: 2 },
+          {
+            name: 'D',
+            distance: 999,
+            price: 900,
+            num: 20,
+            available_on: '6',
+            discount: { '4' => 200, '5' => 200, '6' => 200 },
+            events: [{ 'type' => 'd_trigger' }],
+          },
+        ].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'd_trigger' => ['D Trigger',
+                          'After the purchase of the first D, game ends end of the following OR set'],
+        ).freeze
+
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G18ChristmasEve::Step::BuySellParGiftShares,
+          ])
+        end
+
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -292,6 +355,16 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def status_array(corporation)
+          return [] unless @round.respond_to?(:presidencies_gifted)
+
+          if @round.presidencies_gifted.include?(corporation)
+            ['Can not gift presidents certificate again this round.']
+          else
+            []
+          end
         end
 
         def or_set_finished
@@ -325,6 +398,17 @@ module Engine
           rev_str += ' + Hat' if route.train.owner.companies.include?(hat) && most_rooms?(route)
           rev_str += ' + Nog' if route.train.owner.companies.include?(nog) && nog_express?(route)
           rev_str
+        end
+
+        @d_trigger = false
+
+        def event_d_trigger!
+          @log << 'First D purchased. Game will end at end of next set of ORs' unless @d_trigger
+          @d_trigger = true
+        end
+
+        def custom_end_game_reached?
+          @d_trigger
         end
       end
     end
