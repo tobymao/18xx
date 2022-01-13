@@ -27,45 +27,76 @@ module Engine
                sym: 'BIG4',
                color: nil,
              },
-             {
-               name: 'El Paso & Southwestern RR',
-               value: 40,
-               revenue: 15,
-               desc: 'May lay 1 or 2 extra yellow tiles at no cost on OR 1.  These no cost tiles may '\
-                     'be played in any order with the normal one or two yellow tile lays normally allowed in '\
-                     'phase 2.  The extra tile lays must be used to extend existing track.  If this special '\
-                     'power is not used in OR 1, it is lost for the rest of the game although the Private Company '\
-                     'still pays its income until phase six.  Using this ability does not close the company.',
-               sym: 'EPS',
-               color: nil,
-             },
-             {
-               name: 'Arizona Tunnel Blasting Company',
-               value: 45,
-               revenue: 10,
-               desc: 'The owning player may lay an extra free yellow tile during the operating turn of '\
-                     'a Major Company he controls.  This extra tile lay must be in a mountain hex that is '\
-                     'connected to existing track connected to the Major Company’s token.  This free tile lay '\
-                     'may be either before or after the normal may of the Major Company.  Using this ability does '\
-                     'not close the company.',
-               sym: 'ATBC',
-               color: nil,
-             },
-             {
-               name: 'Arizona Development Office',
-               value: 50,
-               revenue: 15,
-               desc: 'This Private Company may be closed during the operating turn of a Major Company '\
-                     'controlled by the owning player to provide an additional free token that can be used by '\
-                     'that Major Company.  This Private Company’s special ability does not allow an extra token '\
-                     'placement in the Major Company’s operating turn.  If this special ability is not used '\
-                     'before Phase 6, it is lost when the Private Company is closed.',
-               sym: 'ADO',
-               color: nil,
-             },
+          {
+            name: 'Mail Contract',
+            value: 80,
+            revenue: 0,
+            desc: 'Adds $10 per location visited by any one train of the owning corporation. Never '\
+                  'closes once purchased by a corporation.',
+            sym: 'MAIL',
+            abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
+            color: nil,
+          },
+          {
+            name: 'Tunnel Blasting Company',
+            value: 60,
+            revenue: 20,
+            desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles and '\
+                  'tunnel/pass hexsides by $20.',
+            sym: 'TBC',
+            abilities: [
+              {
+                type: 'tile_discount',
+                discount: 20,
+                terrain: 'mountain',
+                owner_type: 'corporation',
+              },
+            ],
+            color: nil,
+          },
+          {
+            name: 'Steamboat Company',
+            value: 40,
+            revenue: 10,
+            desc: 'At the beginning of each Operating Round, the owning player may assign the '\
+                  'Steamboat Company to a corporation/minor and to a port location (J4, J8). '\
+                  'Once per Operating Round, the owning corporation may assign the '\
+                  'Steamboat Company to a port location. Add $20 per port symbol to all routes run '\
+                  'to the assigned location by the owning/assigned corporation/minor.',
+            sym: 'SC',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[J4 J8],
+                count_per_or: 1,
+                when: 'or_start',
+                owner_type: 'player',
+              },
+              {
+                type: 'assign_corporation',
+                count_per_or: 1,
+                when: 'or_start',
+                owner_type: 'player',
+              },
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[J4 J8],
+                count_per_or: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'sold',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
+            color: nil,
+          },
              {
                name: 'Excelsior Mine Company',
-               value: 60,
+               value: 40,
                revenue: 15,
                desc: 'This Private Company provides a free Ghost Town tile which may be played by a Major '\
                      'Company controlled by the owning player.  The placement must be in a mountain hex that is '\
@@ -77,7 +108,7 @@ module Engine
              },
              {
                name: 'Texas & Pacific Railway',
-               value: 60,
+               value: 40,
                revenue: 10,
                desc: 'The owning player receives a free 10% share of AT&SF.  When the current value of the '\
                      'AT&SF is set, the bank place the current value of the AT&SF on the company’s charter.  The '\
@@ -87,7 +118,7 @@ module Engine
              },
              {
                name: 'Arizona & Colorado Railroad',
-               value: 70,
+               value: 40,
                revenue: 10,
                desc: 'This Private Company can be closed at the Train Purchasing part of a Major Company '\
                      'controlled by the owning player, to receive a $150 discount on either a 3Train or a 4Train. '\
@@ -98,8 +129,8 @@ module Engine
              },
              {
                name: 'Arizona Engine Works',
-               value: 75,
-               revenue: 5,
+               value: 40,
+               revenue: 10,
                desc: 'A Major Company controlled by the owning player may close it at any time during the '\
                      'Major Company’s Operating turn to receive a free 3Train after phase 3 starts.  This exchange '\
                      'may not occur if the Major Company is at its train limit.  This 3Train is a normal train and '\
@@ -110,7 +141,7 @@ module Engine
              },
              {
                name: 'Survey Office',
-               value: 50,
+               value: 40,
                revenue: 10,
                desc: 'This Private Company may be closed to allow a Major Company controlled by the owning player '\
                      'to move a token from the board to its charter where it may be played for free during a future '\
@@ -133,7 +164,6 @@ module Engine
             sym: 'ATSF',
             name: 'Atchison, Topeka and Santa Fe Railway',
             logo: '18_mo/ATSF',
-            simple_logo: '1846/PRR.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {
@@ -161,8 +191,7 @@ module Engine
             float_percent: 20,
             sym: 'CBQ',
             name: 'Chicago, Burlington and Quincy Railroad',
-            logo: '1846/PRR',
-            simple_logo: '1846/PRR.alt',
+            logo: '18_mo/CBQ',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {
@@ -191,7 +220,6 @@ module Engine
             sym: 'MKT',
             name: 'Missouri–Kansas–Texas Railroad',
             logo: '18_mo/MKT',
-            simple_logo: '1846/PRR.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {
@@ -220,7 +248,6 @@ module Engine
             sym: 'MP',
             name: 'Missouri Pacific Railroad',
             logo: '18_mo/MP',
-            simple_logo: '1846/PRR.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {
@@ -249,8 +276,7 @@ module Engine
             float_percent: 20,
             sym: 'RI',
             name: 'Chicago, Rock Island & Pacific Railroad',
-            logo: '1846/PRR',
-            simple_logo: '1846/PRR.alt',
+            logo: '18_mo/RI',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {
@@ -279,7 +305,6 @@ module Engine
             sym: 'SLSF',
             name: 'St. Louis–San Francisco Railway',
             logo: '18_mo/SLSF',
-            simple_logo: '1846/PRR.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {
@@ -309,7 +334,6 @@ module Engine
             sym: 'SSW',
             name: 'St. Louis Southwestern Railway',
             logo: '18_mo/SSW',
-            simple_logo: '1846/PRR.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {

@@ -14,8 +14,8 @@ module Engine
         include G18MO::Map
 
         ORANGE_GROUP = [
-        'El Paso & Southwestern RR',
-        'Arizona Tunnel Blasting Company',
+        'Mail Contract',
+        'Tunnel Blasting Company',
         'Arizona Development Office',
         'Excelsior Mine Company',
         ].freeze
@@ -27,9 +27,7 @@ module Engine
         'Survey Office',
         ].freeze
 
-        GREEN_GROUP = %w[ATSF SSW].freeze
-        NORTH_GROUP = %w[RI MKT].freeze
-        SOUTH_GROUP = %w[MP CBQ SLSF].freeze
+        GREEN_GROUP = %w[ATSF MKT CBQ RI MP SSW SLSF].freeze
 
         REMOVED_CORP_SECOND_TOKEN = {
           'ATSF' => 'B8',
@@ -56,6 +54,23 @@ module Engine
         def steamboat
           @steamboat ||= company_by_id('SO')
         end
+
+        def num_removals(group)
+          return 0 if @players.size == 5
+          return 1 if @players.size == 4
+
+          case group
+          when ORANGE_GROUP, BLUE_GROUP
+            1
+          when GREEN_GROUP
+            2
+          end
+        end
+
+        def corporation_removal_groups
+          [GREEN_GROUP]
+        end
+
       end
     end
   end

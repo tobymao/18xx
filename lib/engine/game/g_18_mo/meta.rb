@@ -16,7 +16,7 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/18NewEnglandNorth'
 
-        PLAYER_RANGE = [2, 4].freeze
+        PLAYER_RANGE = [2, 5].freeze
       end
     end
   end
