@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
 
         GAME_DESIGNER = 'Klaus Kiermeier'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/Harzbahn-1873'
