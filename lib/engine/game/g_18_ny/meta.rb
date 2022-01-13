@@ -19,6 +19,11 @@ module Engine
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
           {
+            sym: :second_edition,
+            short_name: '2nd Edition (Prototype)',
+            desc: 'Use second edition rules',
+          },
+          {
             sym: :fivede,
             short_name: '5DE only scores stations and offboards',
             desc: '5DE trains may only score stationed cities and offboard hexes',
@@ -29,6 +34,10 @@ module Engine
             short_name: '4DE',
             desc: 'Replace 5DE trains with 4DE trains',
           },
+        ].freeze
+
+        MUTEX_RULES = [
+          %i[second_edition fourde],
         ].freeze
       end
     end
