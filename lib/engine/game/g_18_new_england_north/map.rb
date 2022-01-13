@@ -43,7 +43,7 @@ module Engine
           '45' => 2,
           '46' => 2,
           '47' => 2,
-          '63' => 3,
+          '63' => 2,
           '70' => 2,
           '611' => 3,
           '216' => 2,
@@ -56,6 +56,13 @@ module Engine
                       'path=a:4,b:_1;path=a:_1,b:5;label=B',
 
           },
+          'X2' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2;path=a:_0,b:0;path=a:_0,b:1;'\
+                      'path=a:2,b:_0;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5;label=H',
+          },
           'X4' =>
           {
             'count' => 1,
@@ -63,7 +70,13 @@ module Engine
             'code' => 'city=revenue:70,slots:2;path=a:_0,b:0;path=a:_0,b:1;'\
                       'path=a:2,b:_0;path=a:_0,b:3;path=a:_0,b:4;label=B',
           },
-
+          'X5' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:50,slots:2;path=a:_0,b:0;path=a:_0,b:1;'\
+                      'path=a:2,b:_0;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5;label=H',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -80,6 +93,7 @@ module Engine
           D5: 'Montpelier',
           E12: 'Conway',
           E16: 'Portland',
+          E18: 'Portland Harbor',
           F15: 'Saco',
           F3: 'Rutland',
           F9: 'Bristol',
@@ -155,8 +169,8 @@ module Engine
           },
           yellow: {
             %w[C2] => 'city=revenue:30;path=a:_0,b:3;upgrade=cost:20,terrain:water;label=B',
-            %w[C18
-               E16] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:3',
+            %w[C18] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:3',
+            %w[E16] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:3;label=H',
             %w[F3] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:5;upgrade=cost:20,terrain:water',
             %w[G10] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:2;upgrade=cost:20,terrain:water',
             %w[G14] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:3',
@@ -175,8 +189,10 @@ module Engine
             %w[A22] => 'city=revenue:40;path=a:_0,b:0;path=a:_0,b:1',
           },
           red: {
-            %w[J1 J5] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0',
-            %w[A2] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:5,b:_0',
+            %w[J1] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0',
+            %w[J5] => 'offboard=revenue:yellow_10|green_30|brown_40|gray_50;path=a:3,b:_0',
+            %w[A2] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0;path=a:5,b:_0',
+            %w[E18] => 'offboard=revenue:green_30|brown_40|gray_60;path=a:1,b:_0',
             %w[I14] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:2,b:_0',
             %w[J13] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:2,b:_0',
           },
