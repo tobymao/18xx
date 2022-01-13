@@ -11,6 +11,12 @@ module Engine
             []
           end
 
+          def redeemable_shares(entity)
+            return [] if @round.issued
+
+            super
+          end
+
           def description
             'Redeem Shares'
           end
