@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18AZ
+    module G18MO
     end
   end
 end

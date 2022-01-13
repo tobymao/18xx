@@ -7,11 +7,11 @@ require_relative 'map'
 
 module Engine
   module Game
-    module G18AZ
+    module G18MO
       class Game < G1846::Game
-        include_meta(G18AZ::Meta)
-        include G18AZ::Entities
-        include G18AZ::Map
+        include_meta(G18MO::Meta)
+        include G18MO::Entities
+        include G18MO::Map
 
         ORANGE_GROUP = [
         'El Paso & Southwestern RR',
@@ -27,29 +27,28 @@ module Engine
         'Survey Office',
         ].freeze
 
-        GREEN_GROUP = %w[UP GC].freeze
-        NORTH_GROUP = %w[SPP SP].freeze
-        SOUTH_GROUP = %w[YV ABC ATSF].freeze
-
+        GREEN_GROUP = %w[ATSF SSW].freeze
+        NORTH_GROUP = %w[RI MKT].freeze
+        SOUTH_GROUP = %w[MP CBQ SLSF].freeze
 
         REMOVED_CORP_SECOND_TOKEN = {
-          'UP' => 'H12',
-          'GC' => 'H12',
-          'SP' => 'D20',
-          'SPP' => 'D14',
-          'YV' => 'G7',
-          'ABC' => 'E17',
-          'ATSF' => 'E11',
+          'ATSF' => 'B8',
+          'SSW' => 'J12',
+          'MKT' => 'E9',
+          'RI' => 'C7',
+          'MP' => 'C13',
+          'CBQ' => 'C7',
+          'SLSF' => 'E9',
         }.freeze
 
-        LSL_HEXES = %w[ ].freeze
+        LSL_HEXES = %w[].freeze
         LSL_ICON = 'sbl'
         LSL_ID = 'SBL'
 
         LITTLE_MIAMI_HEXES = [].freeze
 
-        MEAT_HEXES = %w[ ].freeze
-        STEAMBOAT_HEXES = %w[ ].freeze
+        MEAT_HEXES = %w[].freeze
+        STEAMBOAT_HEXES = %w[].freeze
         BOOMTOWN_HEXES = [].freeze
 
         MEAT_REVENUE_DESC = 'Citrus'
@@ -57,7 +56,6 @@ module Engine
         def steamboat
           @steamboat ||= company_by_id('SO')
         end
-
       end
     end
   end
