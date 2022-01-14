@@ -12,7 +12,7 @@ module Engine
           end
 
           def redeemable_shares(entity)
-            return [] if @round.issued
+            return [] if @round.issued.positive?
 
             super
           end
