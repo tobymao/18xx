@@ -418,10 +418,9 @@ module Engine
           city_node = @game.hex_by_id(@connection_hexes[0][1]).tile.nodes.find do |n|
             @game.city_tokened_by?(n, corporation)
           end
-          return add_single_node_connection(city_node)
-        else
-          @connection_hexes.clear
+          return add_single_node_connection(city_node) if city_node
         end
+        @connection_hexes.clear
       end
 
       possibilities = @connection_hexes.map do |hex_ids|
