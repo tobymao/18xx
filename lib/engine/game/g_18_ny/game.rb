@@ -204,11 +204,17 @@ module Engine
           unless @game_trains
             @game_trains = (second_edition? ? self.class::SECOND_EDITION_TRAINS : self.class::FIRST_EDITION_TRAINS).dup
             if fourde_variant?
-              i = @game_trains.find_index { |t| t[:name] == '5DE' }
-              train = @game_trains[i].dup
-              train[:name] = '4DE'
-              train[:distance] = (train[:distance].dup)[0]['pay'] = 4
-              @game_trains[i] = train
+              @game_trains.map! do |t|
+                train = t.dup
+                case train[:name]
+                when '4H'
+                  train[:rusts_on] = '4DE'
+                when '5DE'
+                  train[:name] = '4DE'
+                  train[:distance] = (train[:distance].dup)[0]['pay'] = 4
+                end
+                train
+              end
             end
           end
           @game_trains
