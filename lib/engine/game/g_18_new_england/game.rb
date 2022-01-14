@@ -316,7 +316,7 @@ module Engine
             G18NewEngland::Step::RedeemShares,
             G18NewEngland::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G18NewEngland::Step::Route,
             G18NewEngland::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18NewEngland::Step::BuyTrain,
@@ -627,23 +627,29 @@ module Engine
           normal + [min_express]
         end
 
-        def revenue_multiplier(route)
-          return 1 unless express_train?(route.train)
+        def revenue_multiplier(train)
+          return 1 unless express_train?(train)
 
-          route.train.owner.trains.count { |t| express_train?(t) }
+          train.owner.trains.count { |t| express_train?(t) }
         end
 
         def revenue_for(route, stops)
-          super * revenue_multiplier(route)
+          super * revenue_multiplier(route.train)
         end
 
         def revenue_str(route)
-          multiplier = revenue_multiplier(route)
-          super + (multiplier < 2 ? '' : " (x#{multiplier})")
+          multiplier = revenue_multiplier(route.train)
+          super + (multiplier < 2 ? '' : " (×#{multiplier})")
         end
 
         def separate_treasury?
           true
+        end
+
+        def train_name(train)
+          return train.name unless (multiplier = revenue_multiplier(train)) > 1
+
+          "#{train.name}×#{multiplier}"
         end
 
         def available_programmed_actions
