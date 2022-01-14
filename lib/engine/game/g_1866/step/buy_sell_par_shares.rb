@@ -36,13 +36,23 @@ module Engine
           end
 
           def get_par_prices(entity, corp)
-            par_type = @game.phase_par_type
+            return get_minor_national_par_prices(entity, corp) if @game.minor_national_corporation?(corp)
+
+            par_type = @game.phase_par_type(corp)
             par_prices = @game.stock_market.par_prices.select do |p|
               multiplier = !corp ? 1 : 2
               p.types.include?(par_type) && p.price * multiplier <= entity.cash && can_par_share_price?(p, corp)
             end
             par_prices.reject! { |p| p.price == @game.class::MAX_PAR_VALUE } if par_prices.size > 1
             par_prices
+          end
+
+          def get_minor_national_par_prices(entity, corp)
+            par_rows = @game.class::MINOR_NATIONAL_PAR_ROWS[corp.name]
+            share_price = @game.stock_market.share_price(par_rows[0], par_rows[1])
+            return [] unless share_price.price <= entity.cash
+
+            [share_price]
           end
 
           def process_choose_ability(action)
