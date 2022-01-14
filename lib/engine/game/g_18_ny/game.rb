@@ -166,12 +166,9 @@ module Engine
         ].freeze
 
         SECOND_EDITION_TRAINS = [
-          # { name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
-          # { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '4DE', events: [{ 'type' => 'float_30' }] },
-          # { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
-          { name: '2H', num: 1, distance: 2, price: 100, rusts_on: '6H' },
-          { name: '4H', num: 1, distance: 4, price: 200, rusts_on: '4DE', events: [{ 'type' => 'float_30' }] },
-          { name: '6H', num: 1, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
+          { name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
+          { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '4DE', events: [{ 'type' => 'float_30' }] },
+          { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
           {
             name: '12H',
             num: 3,
