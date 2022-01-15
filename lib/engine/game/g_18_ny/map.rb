@@ -182,7 +182,7 @@ module Engine
         }.freeze
 
         SECOND_EDITION_LOCATION_NAMES = {
-          'K15' => 'Philidelphia',
+          'K15' => 'Philadelphia',
           'K17' => nil,
           'K19' => 'Staten Island',
           'K21' => 'Brooklyn',
