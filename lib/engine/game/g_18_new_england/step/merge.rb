@@ -137,8 +137,10 @@ module Engine
               receiving = move_assets(minor, target)
               @game.close_corporation(minor)
               @log << "#{minor.name} merges into #{target.name} receiving #{receiving.join(', ')}"
-              @round.entities.delete(minor)
             end
+
+            # only delete 2nd minor from entities if later in order
+            @round.entities.delete(@merging.last) if @round.entities.find_index(@merging.last) > @round.entity_index
 
             token_hexes = target.tokens.map { |t| t.city&.hex }
 
