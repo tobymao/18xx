@@ -449,13 +449,15 @@ module Engine
         end
 
         def bank_sort(corporations)
-          mins, majs = corporations.reject(&:minor?).partition(&:type)
-          mins.sort_by(&:name) + majs.sort_by(&:name)
+          majors, minors = corporations.reject(&:minor?).partition { |c| c.type == :major }
+          avail, unavail = minors.partition { |c| @phase.available?('3') || @starting_minors.include?(c) }
+
+          avail.sort_by(&:name) + unavail.sort_by(&:name) + majors.sort_by(&:name)
         end
 
         def player_sort(entities)
-          mins, majs = entities.partition(&:type)
-          (mins.sort_by(&:name) + majs.sort_by(&:name)).group_by(&:owner)
+          majors, minors = entities.select(&:corporation?).partition { |c| c.type == :major }
+          (minors.sort_by(&:name) + majors.sort_by(&:name)).group_by(&:owner)
         end
 
         def reserve_minor(minor, entity)
