@@ -449,9 +449,9 @@ module Engine
 
         def operating_order
           floated = @corporations.select(&:floated?)
-          minor_nationals, corp = floated.partition { |c| self.class::MINOR_NATIONAL_CORPORATIONS.include?(c.name) }
+          minor_nationals, corporations = floated.partition { |c| minor_national_corporation?(c) }
 
-          minor_nationals + (corp + @stock_turn_token_in_play.values.flatten).sort
+          minor_nationals + (corporations + @stock_turn_token_in_play.values.flatten).sort
         end
 
         # TODO: This is just a basic operating round.
