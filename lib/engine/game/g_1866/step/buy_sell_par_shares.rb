@@ -87,11 +87,29 @@ module Engine
                                           exchange: corporation.par_via_exchange,
                                           exchange_price: bundle.price)
 
+              # Remove the money from the national and put it into the bank
+              corporation.spend(corporation.cash, @game.bank)
+
               # Close the concession company
               corporation.par_via_exchange.close!
 
               @game.after_par(corporation)
               track_action(action, corporation)
+
+            elsif @game.minor_national_corporation?(corporation)
+              @game.stock_market.set_par(corporation, share_price)
+              share = corporation.ipo_shares.first
+              bundle = share.to_bundle
+              @game.share_pool.buy_shares(action.entity,
+                                          bundle,
+                                          exchange: :free,
+                                          exchange_price: share.price_per_share)
+
+              # Remove the money from the minor national and put it into the bank
+              corporation.spend(corporation.cash, @game.bank)
+
+              @game.after_par(corporation)
+              track_action(action, action.corporation)
             else
               super
             end

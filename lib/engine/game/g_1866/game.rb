@@ -65,49 +65,49 @@ module Engine
           {
             name: 'L/2',
             on: '',
-            train_limit: { public_5: 3 },
+            train_limit: { minor: 1, national: 1, public_5: 3 },
             tiles: [:yellow],
             operating_rounds: 99,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { public_5: 3, public_10: 4 },
+            train_limit: { minor: 1, national: 1, public_5: 3, public_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
           },
           {
             name: '4',
             on: '4',
-            train_limit: { public_5: 3, public_10: 4 },
+            train_limit: { minor: 1, national: 1, public_5: 3, public_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
           },
           {
             name: '5',
             on: '5',
-            train_limit: { public_5: 2, public_10: 3 },
+            train_limit: { minor: 1, national: 1, public_5: 2, public_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
           },
           {
             name: '6',
             on: '6',
-            train_limit: { public_5: 2, public_10: 3 },
+            train_limit: { minor: 1, national: 1, public_5: 2, public_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
           },
           {
             name: '8',
             on: '8',
-            train_limit: { public_5: 1, public_10: 2 },
+            train_limit: { minor: 1, national: 1, public_5: 1, public_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
           },
           {
             name: '10',
             on: '10',
-            train_limit: { public_5: 1, public_10: 2 },
+            train_limit: { minor: 1, national: 1, public_5: 1, public_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
           },
@@ -268,6 +268,7 @@ module Engine
         # *********** 1866 Specific constants ***********
         MAX_PAR_VALUE = 200
 
+        MAJOR_NATIONAL_CORPORATIONS = %w[GBN FN AHN BN SPN SWN GN IN].freeze
         MINOR_NATIONAL_CORPORATIONS = %w[G1 G2 G3 G4 G5 IN I1 I2 I3 I4 I5].freeze
         MINOR_NATIONAL_PAR_ROWS = {
           'G1' => [3, 0],
@@ -283,7 +284,6 @@ module Engine
         }.freeze
 
         NATIONAL_CORPORATIONS = %w[GBN FN AHN BN SPN SWN GN G1 G2 G3 G4 G5 IN I1 I2 I3 I4 I5].freeze
-
         NATIONAL_REGION_HEXES = {
           'G1' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
           'G2' => %w[D18 E15 E17 E19 E21 F16 F18],
@@ -303,7 +303,27 @@ module Engine
           'GBN' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
           'SPN' => %w[O1 P2 P4 Q1 Q3 Q5 R2 R4 S1 S3 T2 U1],
           'SWN' => %w[L12 L14 L16 M13 M15],
+          'GN' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25 D18 E15 E17
+                     E19 E21 F16 F18 I17 I19 J16 J18 J20 K17 K19 K21 I13 I15 J14 K15 H20 H22 I21 I23],
+          'IN' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19 N12 O13 O15 S13 T12 M17 N14 N16 N18 N20 O17 P18
+                     Q19 R18 R20 S19 P16 Q17],
         }.freeze
+
+        # Only need up to phase 5, all national concessions are forced to convert in phase 5
+        NATIONAL_PHASE_PAR_TYPES = {
+          'L/2' => :par_1,
+          '3' => :par_2,
+          '4' => :par_2,
+          '5' => :par_3,
+        }.freeze
+
+        NATIONAL_TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+        TILE_LAYS = [
+          { lay: true, upgrade: true, cost: 0 },
+          { lay: true, upgrade: true, cost: 10 },
+          { lay: true, upgrade: true, cost: 20 },
+          { lay: true, upgrade: true, cost: 30 },
+        ].freeze
 
         PHASE_PAR_TYPES = {
           'L/2' => :par,
@@ -313,14 +333,6 @@ module Engine
           '6' => :par_2,
           '8' => :par_3,
           '10' => :par_3,
-        }.freeze
-
-        # Only need up to phase 5, all national concessions are forced to convert in phase 5
-        NATIONAL_PHASE_PAR_TYPES = {
-          'L/2' => :par_1,
-          '3' => :par_2,
-          '4' => :par_2,
-          '5' => :par_3,
         }.freeze
 
         REGION_CORPORATIONS = {
@@ -347,7 +359,32 @@ module Engine
                       GL NRS],
         }.freeze
 
-        attr_accessor :current_turn
+        attr_accessor :current_turn, :national_graph
+
+        def can_run_route?(entity)
+          national_corporation?(entity) || super
+        end
+
+        def check_connected(route, token)
+          return if national_corporation?(route.corporation)
+
+          super
+        end
+
+        def check_distance(route, visits)
+          entity = route.corporation
+          if national_corporation?(entity) && !national_within_region?(entity, visits)
+            raise GameError, 'Nationals can only run within its region'
+          end
+
+          super
+        end
+
+        def city_tokened_by?(city, entity)
+          return true if national_corporation?(entity) && entity.coordinates.include?(city.hex.name)
+
+          super
+        end
 
         def entity_can_use_company?(entity, company)
           entity == company.owner
@@ -357,6 +394,10 @@ module Engine
           return super if (val % 1).zero?
 
           format('£%.1<val>f', val: val)
+        end
+
+        def graph_for_entity(entity)
+          national_corporation?(entity) ? @national_graph : @graph
         end
 
         def init_company_abilities
@@ -370,8 +411,14 @@ module Engine
           super
         end
 
-        def ipo_name(_entity = nil)
+        def ipo_name(entity)
+          return 'Bank' if national_corporation?(entity)
+
           'Treasury'
+        end
+
+        def local_length
+          99
         end
 
         def next_round!
@@ -401,15 +448,17 @@ module Engine
         end
 
         def operating_order
-          corporations = @corporations.select(&:floated?) + @stock_turn_token_in_play.values.flatten
-          corporations.sort
+          floated = @corporations.select(&:floated?)
+          minor_nationals, corp = floated.partition { |c| self.class::MINOR_NATIONAL_CORPORATIONS.include?(c.name) }
+
+          minor_nationals + (corp + @stock_turn_token_in_play.values.flatten).sort
         end
 
         # TODO: This is just a basic operating round.
         def operating_round(round_num)
           Round::Operating.new(self, [
             G1866::Step::StockTurnToken,
-            Engine::Step::Track,
+            G1866::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
@@ -451,6 +500,10 @@ module Engine
           ]
         end
 
+        def reservation_corporations
+          @corporations.reject { |c| national_corporation?(c) }
+        end
+
         def round_description(name, round_number = nil)
           round_number ||= @round.round_num
           "#{name} Round #{round_number}"
@@ -470,11 +523,15 @@ module Engine
 
           @current_turn = 'ISR'
 
+          # Setup the nationals graph
+          @national_graph = Graph.new(self, home_as_token: true, no_blocking: true)
+
           # Setup the nationals infinite trains
           self.class::NATIONAL_CORPORATIONS.each_with_index do |national, index|
             train = train_by_id("INF-#{index}")
             @depot.remove_train(train)
             train.buyable = false
+            train.instance_variable_set(:@local, true)
 
             corporation = corporation_by_id(national)
             train.owner = corporation
@@ -495,7 +552,27 @@ module Engine
                           else
                             @corporations.partition(&:ipoed)
                           end
+          # Remove floated minor nationals
+          ipoed.reject! { |c| minor_national_corporation?(c) }
           ipoed.sort + others
+        end
+
+        def tile_lays(entity)
+          return self.class::NATIONAL_TILE_LAYS if national_corporation?(entity)
+
+          self.class::TILE_LAYS
+        end
+
+        def upgrade_cost(_tile, _hex, entity, _spender)
+          return 0 if national_corporation?(entity)
+
+          super
+        end
+
+        def major_national_corporation?(corp)
+          return unless corp
+
+          self.class::MAJOR_NATIONAL_CORPORATIONS.include?(corp.name)
         end
 
         def minor_national_corporation?(corp)
@@ -508,6 +585,11 @@ module Engine
           return unless corp
 
           self.class::NATIONAL_CORPORATIONS.include?(corp.name)
+        end
+
+        def national_within_region?(entity, visits)
+          hexes = self.class::NATIONAL_REGION_HEXES[entity.id]
+          visits.count { |v| hexes.include?(v.hex.name) } == visits.length
         end
 
         def phase_par_type(corp)
