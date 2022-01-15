@@ -82,7 +82,32 @@ module View
       h('div#chat.half', props, children)
     end
 
+    private
+
+    QUOTED_BASE_URL = Regexp.quote(`window.location.origin || ''`)
+    GAME_LINK_RE = Regexp.new("((?:game #?|#|#{QUOTED_BASE_URL}/game/)(\\d+(?:\\?action=\\d+)?))")
+
+    def parse_message(message)
+      message_parts = message.split(GAME_LINK_RE)
+      return message if message_parts.count <= 1
+
+      children = []
+      # The first element can either unmatched text or a match, depending.
+      children << message_parts.shift unless GAME_LINK_RE.match?(message_parts[0])
+
+      until message_parts.empty?
+        matched_text = message_parts.shift
+        url = "/game/#{message_parts.shift}"
+        children << h(:a, { attrs: { href: url, target: '_blank' } }, matched_text)
+        # There might not be a final unmatched text segment.
+        children << message_parts.shift unless message_parts.empty?
+      end
+
+      children
+    end
+
     def add_line(data)
+      data[:message] = parse_message(data[:message])
       store(:log, @log << data)
     end
   end
