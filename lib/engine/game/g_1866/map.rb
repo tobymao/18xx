@@ -130,59 +130,6 @@ module Engine
               'code' =>
                 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B',
             },
-          'L1' =>
-            {
-              'count' => 1,
-              'color' => 'yellow',
-              'code' =>
-                'city=revenue:30,slots:1;path=a:0,b:_0;path=a:2,b:_0;upgrade=cost:40;label=L',
-            },
-          'L2' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;upgrade=cost:40;label=L',
-            },
-          'L3' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;upgrade=cost:40;label=L',
-            },
-          'L4' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:90,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                'upgrade=cost:40;label=L',
-            },
-          'L5' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:90,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;'\
-                'upgrade=cost:40;label=L',
-            },
-          'L6' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:90,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;'\
-                'upgrade=cost:40;label=L',
-            },
-          'L7' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:120,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;'\
-                'label=L',
-            },
           'C1' =>
             {
               'count' => 1,
@@ -334,6 +281,22 @@ module Engine
                 'city=revenue:90,slots:1;path=a:1,b:_0;path=a:2,b:_0;'\
                 'city=revenue:90,slots:1;path=a:3,b:_1;path=a:4,b:_1;'\
                 'city=revenue:90,slots:1;path=a:0,b:_2;path=a:5,b:_2;label=C',
+            },
+          'L1' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:120,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                'label=L',
+            },
+          'P1' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:90,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                'path=a:5,b:_0;label=P',
             },
         }.freeze
 
@@ -647,9 +610,6 @@ module Engine
               'city=revenue:0;icon=image:1866/port,sticky:1;frame=color:#fde2c5',
             ['F2'] =>
               'city=revenue:0;upgrade=cost:40,terrain:swamp;icon=image:1866/port,sticky:1;frame=color:#fde2c5',
-            ['F6'] =>
-              'city=revenue:0;upgrade=cost:40,terrain:swamp;border=edge:4,type:impassable;'\
-              'border=edge:5,type:impassable;label=L;frame=color:#fde2c5',
             ['D4'] =>
               'city=revenue:0;upgrade=cost:60,terrain:hill;label=Y;frame=color:#fde2c5',
             ['E5'] =>
@@ -694,19 +654,38 @@ module Engine
             # Ferry tiles
             ['G7'] =>
               'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:2,type:impassable;'\
-              'border=edge:4,type:impassable;border=edge:5,type:impassable;stub=edge:2;stub=edge:5;upgrade=cost:50',
+              'border=edge:4,type:impassable;border=edge:5,type:impassable;stub=edge:1;stub=edge:5',
             ['S25'] =>
               'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:2,type:impassable;'\
-              'stub=edge:1;stub=edge:2;upgrade=cost:20',
+              'stub=edge:1;stub=edge:2',
           },
           brown: {
             # Ferry tiles
             ['F8'] =>
               'border=edge:1,type:impassable;border=edge:2,type:impassable;border=edge:4,type:impassable;'\
-              'border=edge:5,type:impassable;stub=edge:2;stub=edge:4;upgrade=cost:50',
+              'border=edge:5,type:impassable;stub=edge:2;stub=edge:4',
             ['H4'] =>
               'border=edge:0,type:impassable;border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-              'border=edge:4,type:impassable;border=edge:5,type:impassable;stub=edge:0;stub=edge:2;upgrade=cost:50',
+              'border=edge:4,type:impassable;border=edge:5,type:impassable;stub=edge:0;stub=edge:2',
+
+            # London
+            ['F6'] =>
+              'city=revenue:yellow_30|green_60|brown_90;path=a:0,b:_0;'\
+              'offboard=revenue:yellow_30|green_60|brown_90;path=a:1,b:_1;'\
+              'city=revenue:yellow_30|green_60|brown_90;path=a:2,b:_2;'\
+              'city=revenue:yellow_30|green_60|brown_90;path=a:3,b:_3;'\
+              'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
+              'label=L;frame=color:#fde2c5',
+
+            # Paris
+            ['J6'] =>
+              'offboard=revenue:yellow_30|green_50|brown_70;path=a:0,b:_0;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:1,b:_1;'\
+              'offboard=revenue:yellow_30|green_50|brown_70;path=a:2,b:_2;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:3,b:_3;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:4,b:_4;'\
+              'offboard=revenue:yellow_30|green_50|brown_70;path=a:5,b:_5;'\
+              'label=P;frame=color:#fffbcc',
           },
           gray: {
             # Germany - Prussia
@@ -729,14 +708,6 @@ module Engine
             # France
             ['J0'] =>
               'junction;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:#fffbcc',
-            ['J6'] =>
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:0,b:_0;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:1,b:_1;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:2,b:_2;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:3,b:_3;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:4,b:_4;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:5,b:_5;'\
-              'frame=color:#fffbcc',
 
             # Great Britain
             ['A3'] =>

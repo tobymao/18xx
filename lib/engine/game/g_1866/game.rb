@@ -46,17 +46,20 @@ module Engine
              200 220 240 260 280 300 330 360 390 420 460 500 540 580 630 680],
           %w[0 5 10 15 20 25 30 35 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
              200pxzw 220 240 260 280 300 330 360 390 420 460 500 540 580 630 680],
+          %w[120P 100P 75P 75P 75P 120P 80P 80P 80P 50P],
         ].freeze
 
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Yellow phase (L/2) par',
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par_overlap: 'Minor nationals',
+                                              par: 'Yellow phase (L/2) par',
                                               par_1: 'Green phase (3/4) par',
                                               par_2: 'Brown phase (5/6) par',
                                               par_3: 'Gray phase (8/10) par').freeze
 
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow,
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_overlap: :white,
+                                                            par: :yellow,
                                                             par_1: :green,
                                                             par_2: :brown,
-                                                            par_3: :gray)
+                                                            par_3: :gray).freeze
 
         PHASES = [
           {
@@ -125,7 +128,7 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 8,
+            num: 14,
             price: 50,
             obsolete_on: '3',
             variants: [
@@ -160,7 +163,18 @@ module Engine
             variants: [
               {
                 name: '3E',
-                distance: 3,
+                distance: [
+                  {
+                    'nodes' => ['city'],
+                    'pay' => 3,
+                    'visit' => 3,
+                  },
+                  {
+                    'nodes' => ['town'],
+                    'pay' => 0,
+                    'visit' => 99,
+                  },
+                ],
                 multiplier: 2,
                 price: 450,
                 obsolete_on: '10',
@@ -175,7 +189,18 @@ module Engine
             variants: [
               {
                 name: '4E',
-                distance: 4,
+                distance: [
+                  {
+                    'nodes' => ['city'],
+                    'pay' => 4,
+                    'visit' => 4,
+                  },
+                  {
+                    'nodes' => ['town'],
+                    'pay' => 0,
+                    'visit' => 99,
+                  },
+                ],
                 multiplier: 2,
                 price: 600,
               },
@@ -189,7 +214,18 @@ module Engine
             variants: [
               {
                 name: '5E',
-                distance: 5,
+                distance: [
+                  {
+                    'nodes' => ['city'],
+                    'pay' => 5,
+                    'visit' => 5,
+                  },
+                  {
+                    'nodes' => ['town'],
+                    'pay' => 0,
+                    'visit' => 99,
+                  },
+                ],
                 multiplier: 2,
                 price: 800,
               },
@@ -203,16 +239,50 @@ module Engine
             variants: [
               {
                 name: '6E',
-                distance: 6,
+                distance: [
+                  {
+                    'nodes' => ['city'],
+                    'pay' => 6,
+                    'visit' => 6,
+                  },
+                  {
+                    'nodes' => ['town'],
+                    'pay' => 0,
+                    'visit' => 99,
+                  },
+                ],
                 multiplier: 2,
                 price: 1000,
               },
             ],
           },
+          {
+            name: 'INF',
+            distance: 99,
+            num: 18,
+            price: 0,
+            reserved: true,
+          },
         ].freeze
 
         # *********** 1866 Specific constants ***********
         MAX_PAR_VALUE = 200
+
+        MINOR_NATIONAL_CORPORATIONS = %w[G1 G2 G3 G4 G5 IN I1 I2 I3 I4 I5].freeze
+        MINOR_NATIONAL_PAR_ROWS = {
+          'G1' => [3, 0],
+          'G2' => [3, 1],
+          'G3' => [3, 2],
+          'G4' => [3, 3],
+          'G5' => [3, 4],
+          'I1' => [3, 5],
+          'I2' => [3, 6],
+          'I3' => [3, 7],
+          'I4' => [3, 8],
+          'I5' => [3, 9],
+        }.freeze
+
+        NATIONAL_CORPORATIONS = %w[GBN FN AHN BN SPN SWN GN G1 G2 G3 G4 G5 IN I1 I2 I3 I4 I5].freeze
 
         NATIONAL_REGION_HEXES = {
           'G1' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
@@ -245,6 +315,14 @@ module Engine
           '10' => :par_3,
         }.freeze
 
+        # Only need up to phase 5, all national concessions are forced to convert in phase 5
+        NATIONAL_PHASE_PAR_TYPES = {
+          'L/2' => :par_1,
+          '3' => :par_2,
+          '4' => :par_2,
+          '5' => :par_3,
+        }.freeze
+
         REGION_CORPORATIONS = {
           'GREAT_BRITAIN' => %w[LNWR GWR NBR],
           'FRANCE' => %w[PLM MIDI OU],
@@ -266,7 +344,7 @@ module Engine
         TURN_CORPORATIONS = {
           'ISR' => %w[GBN FN AHN BN SPN SWN G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU],
           'OR1' => %w[GBN FN AHN BN SPN SWN G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU KPS BY KHS
-                      B GL NRS],
+                      GL NRS],
         }.freeze
 
         attr_accessor :current_turn
@@ -340,6 +418,39 @@ module Engine
           ], round_num: round_num)
         end
 
+        def par_price_str(share_price)
+          row, = share_price.coordinates
+          row_str = case row
+                    when 0
+                      'T'
+                    when 1
+                      'M'
+                    when 2
+                      'B'
+                    else
+                      ''
+                    end
+          "#{format_currency(share_price.price)}#{row_str}"
+        end
+
+        def price_movement_chart
+          [
+            ['Market Action', 'Movement'],
+            ['ST action pass', '3 →'],
+            ['ST action sell (with no buy)', '2 →'],
+            ['ST action buy', '1 →'],
+            ['ST action sell and buy', 'none'],
+            ['Dividend 0', '1 ←'],
+            ['Dividend > 0', 'none'],
+            ['Dividend ≥ stock value', '1 →'],
+            ['Dividend ≥ 2× stock value', '2 →'],
+            ['Dividend ≥ 3× stock value', '3 →'],
+            ['Sale made by director', '1 ←'],
+            ['Sale made by non-director, or for each loan taken', '1 ↓, or 1 ← if cannot go down'],
+            ['For each loan repaid', '1 ↑, or 1 → and 1 ↓ if cannot go up'],
+          ]
+        end
+
         def round_description(name, round_number = nil)
           round_number ||= @round.round_num
           "#{name} Round #{round_number}"
@@ -359,10 +470,21 @@ module Engine
 
           @current_turn = 'ISR'
 
+          # Setup the nationals infinite trains
+          self.class::NATIONAL_CORPORATIONS.each_with_index do |national, index|
+            train = train_by_id("INF-#{index}")
+            @depot.remove_train(train)
+            train.buyable = false
+
+            corporation = corporation_by_id(national)
+            train.owner = corporation
+            corporation.trains << train
+          end
+
           # Randomize and setup the corporations
           setup_corporations
 
-          # Remove the stock turn
+          # Give all players stock turn token and remove unused
           setup_stock_turn_token
         end
 
@@ -376,20 +498,21 @@ module Engine
           ipoed.sort + others
         end
 
-        def par_price_str(share_price)
-          row, = share_price.coordinates
-          row_str = case row
-                    when 0
-                      'T'
-                    when 1
-                      'M'
-                    else
-                      'B'
-                    end
-          "#{format_currency(share_price.price)}#{row_str}"
+        def minor_national_corporation?(corp)
+          return unless corp
+
+          self.class::MINOR_NATIONAL_CORPORATIONS.include?(corp.name)
         end
 
-        def phase_par_type
+        def national_corporation?(corp)
+          return unless corp
+
+          self.class::NATIONAL_CORPORATIONS.include?(corp.name)
+        end
+
+        def phase_par_type(corp)
+          return self.class::NATIONAL_PHASE_PAR_TYPES[@phase.name] if national_corporation?(corp)
+
           self.class::PHASE_PAR_TYPES[@phase.name]
         end
 
