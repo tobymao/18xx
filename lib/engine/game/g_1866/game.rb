@@ -38,6 +38,7 @@ module Engine
         SELL_AFTER = :first
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_share
+        SOLD_OUT_INCREASE = false
 
         MARKET = [
           %w[0 5 10 15 20 25 30p 35p 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
@@ -65,49 +66,49 @@ module Engine
           {
             name: 'L/2',
             on: '',
-            train_limit: { minor: 1, national: 1, public_5: 3 },
+            train_limit: { minor_national: 1, national: 1, public_5: 3 },
             tiles: [:yellow],
             operating_rounds: 99,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { minor: 1, national: 1, public_5: 3, public_10: 4 },
+            train_limit: { minor_national: 1, national: 1, public_5: 3, public_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
           },
           {
             name: '4',
             on: '4',
-            train_limit: { minor: 1, national: 1, public_5: 3, public_10: 4 },
+            train_limit: { minor_national: 1, national: 1, public_5: 3, public_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
           },
           {
             name: '5',
             on: '5',
-            train_limit: { minor: 1, national: 1, public_5: 2, public_10: 3 },
+            train_limit: { minor_national: 1, national: 1, public_5: 2, public_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
           },
           {
             name: '6',
             on: '6',
-            train_limit: { minor: 1, national: 1, public_5: 2, public_10: 3 },
+            train_limit: { minor_national: 1, national: 1, public_5: 2, public_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
           },
           {
             name: '8',
             on: '8',
-            train_limit: { minor: 1, national: 1, public_5: 1, public_10: 2 },
+            train_limit: { minor_national: 1, national: 1, public_5: 1, public_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
           },
           {
             name: '10',
             on: '10',
-            train_limit: { minor: 1, national: 1, public_5: 1, public_10: 2 },
+            train_limit: { minor_national: 1, national: 1, public_5: 1, public_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
           },
@@ -134,7 +135,18 @@ module Engine
             variants: [
               {
                 name: '2',
-                distance: 2,
+                distance: [
+                  {
+                    'nodes' => %w[city offboard],
+                    'pay' => 2,
+                    'visit' => 2,
+                  },
+                  {
+                    'nodes' => ['town'],
+                    'pay' => 99,
+                    'visit' => 99,
+                  },
+                ],
                 price: 100,
                 obsolete_on: '4',
               },
@@ -142,21 +154,54 @@ module Engine
           },
           {
             name: '3',
-            distance: 3,
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 3,
+                'visit' => 3,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+            ],
             num: 4,
             price: 200,
             obsolete_on: '6',
           },
           {
             name: '4',
-            distance: 4,
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 4,
+                'visit' => 4,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+            ],
             num: 4,
             price: 300,
             obsolete_on: '8',
           },
           {
             name: '5',
-            distance: 5,
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 5,
+                'visit' => 5,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+            ],
             num: 4,
             price: 450,
             obsolete_on: '10',
@@ -183,7 +228,18 @@ module Engine
           },
           {
             name: '6',
-            distance: 6,
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 6,
+                'visit' => 6,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+            ],
             num: 4,
             price: 600,
             variants: [
@@ -208,7 +264,18 @@ module Engine
           },
           {
             name: '8',
-            distance: 8,
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 8,
+                'visit' => 8,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+            ],
             num: 4,
             price: 800,
             variants: [
@@ -233,7 +300,18 @@ module Engine
           },
           {
             name: '10',
-            distance: 10,
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 10,
+                'visit' => 10,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+            ],
             num: 20,
             price: 1000,
             variants: [
@@ -266,10 +344,32 @@ module Engine
         ].freeze
 
         # *********** 1866 Specific constants ***********
+        CORPORATIONS_OPERATING_RIGHTS = {
+          'LNWR' => 'GBN',
+          'GWR' => 'GBN',
+          'NBR' => 'GBN',
+          'PLM' => 'FN',
+          'MIDI' => 'FN',
+          'OU' => 'FN',
+          'KPS' => %w[GN G1],
+          'BY' => %w[GN G3],
+          'KHS' => %w[GN G2],
+          'SB' => 'AHN',
+          'BH' => 'AHN',
+          'FNR' => 'AHN',
+          'SSFL' => %w[IN I5],
+          'IFT' => %w[IN I1],
+          'SFAI' => %w[IN I3],
+          'SBB' => 'SWN',
+          'GL' => 'BN',
+          'NRS' => 'BN',
+          'ZPB' => 'SPN',
+          'MZA' => 'SPN',
+        }.freeze
+
+        LOCAL_TRAIN = 'L'
         MAX_PAR_VALUE = 200
 
-        MAJOR_NATIONAL_CORPORATIONS = %w[GBN FN AHN BN SPN SWN GN IN].freeze
-        MINOR_NATIONAL_CORPORATIONS = %w[G1 G2 G3 G4 G5 IN I1 I2 I3 I4 I5].freeze
         MINOR_NATIONAL_PAR_ROWS = {
           'G1' => [3, 0],
           'G2' => [3, 1],
@@ -373,8 +473,11 @@ module Engine
 
         def check_distance(route, visits)
           entity = route.corporation
-          if national_corporation?(entity) && !national_within_region?(entity, visits)
+          if national_corporation?(entity) && !visits_within_national_region?(entity, visits)
             raise GameError, 'Nationals can only run within its region'
+          end
+          if !national_corporation?(entity) && !visits_operating_rights?(entity, visits)
+            raise GameError, 'The director need operating rights to operate in the selected regions'
           end
 
           super
@@ -459,11 +562,11 @@ module Engine
           Round::Operating.new(self, [
             G1866::Step::StockTurnToken,
             G1866::Step::Track,
-            Engine::Step::Token,
+            G1866::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1866::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1866::Step::BuyTrain,
           ], round_num: round_num)
         end
 
@@ -480,6 +583,22 @@ module Engine
                       ''
                     end
           "#{format_currency(share_price.price)}#{row_str}"
+        end
+
+        def place_home_token(corporation)
+          return super unless corporation.id == 'PLM'
+          return if corporation.tokens.first&.used
+
+          corporation.coordinates.each do |coord|
+            hex = hex_by_id(coord)
+            tile = hex&.tile
+            cities = tile.cities
+            city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+            token = corporation.find_token_by_type
+
+            @log << "#{corporation.name} places a token on #{hex.name}"
+            city.place_token(corporation, token)
+          end
         end
 
         def price_movement_chart
@@ -563,33 +682,63 @@ module Engine
           self.class::TILE_LAYS
         end
 
+        def train_help(_entity, runnable_trains, _routes)
+          return [] if runnable_trains.empty?
+
+          entity = runnable_trains.first.owner
+
+          help = []
+          if runnable_trains.any? { |t| self.class::LOCAL_TRAIN == t.name }
+            help << "L (local) trains run in a city which has a #{entity.name} token. "\
+                    'They can additionally run to a single small station, but are not required to do so. '\
+                    'They can thus be considered 1 (+1) trains. '\
+                    'Only one L train may operate on each station token.'
+          end
+
+          if national_corporation?(entity)
+            help << 'Nationals run a hypothetical train of infinite length, within its national boundaries. '\
+                    'This train is allowed to run a route of just a single city.'
+          end
+          help
+        end
+
         def upgrade_cost(_tile, _hex, entity, _spender)
           return 0 if national_corporation?(entity)
 
           super
         end
 
-        def major_national_corporation?(corp)
-          return unless corp
-
-          self.class::MAJOR_NATIONAL_CORPORATIONS.include?(corp.name)
+        def hex_operating_rights?(entity, hex)
+          nationals = operating_rights(entity)
+          nationals.any? { |national| self.class::NATIONAL_REGION_HEXES[national].include?(hex.name) }
         end
 
-        def minor_national_corporation?(corp)
-          return unless corp
-
-          self.class::MINOR_NATIONAL_CORPORATIONS.include?(corp.name)
+        def hex_within_national_region?(entity, hex)
+          self.class::NATIONAL_REGION_HEXES[entity.id].include?(hex.name)
         end
 
-        def national_corporation?(corp)
-          return unless corp
+        def major_national_corporation?(corporation)
+          return false unless corporation
 
-          self.class::NATIONAL_CORPORATIONS.include?(corp.name)
+          corporation.type == :national
         end
 
-        def national_within_region?(entity, visits)
-          hexes = self.class::NATIONAL_REGION_HEXES[entity.id]
-          visits.count { |v| hexes.include?(v.hex.name) } == visits.size
+        def minor_national_corporation?(corporation)
+          return false unless corporation
+
+          corporation.type == :minor_national
+        end
+
+        def operating_rights(entity)
+          player = entity.owner
+          national_shares = player.shares_by_corporation.select { |c, s| national_corporation?(c) && !s.empty? }
+
+          operating_rights = self.class::CORPORATIONS_OPERATING_RIGHTS[entity.id]
+          (national_shares.keys.map(&:id) + Array(operating_rights)).uniq
+        end
+
+        def national_corporation?(corporation)
+          minor_national_corporation?(corporation) || major_national_corporation?(corporation)
         end
 
         def phase_par_type(corp)
@@ -706,8 +855,29 @@ module Engine
           ])
         end
 
+        def stock_turn_corporation?(corporation)
+          return false unless corporation
+
+          corporation.type == :stock_turn_corporation
+        end
+
         def stock_turn_token_company?(company)
           company.id[0..1] == self.class::STOCK_TURN_TOKEN_PREFIX
+        end
+
+        def visits_operating_rights?(entity, visits)
+          nationals = operating_rights(entity)
+
+          count = visits.count do |v|
+            nationals.any? { |national| self.class::NATIONAL_REGION_HEXES[national].include?(v.hex.name) }
+          end
+
+          count == visits.size
+        end
+
+        def visits_within_national_region?(entity, visits)
+          hexes = self.class::NATIONAL_REGION_HEXES[entity.id]
+          visits.count { |v| hexes.include?(v.hex.name) } == visits.size
         end
       end
     end
