@@ -773,7 +773,7 @@ module Engine
           if fivede_runs_stations_and_offboards_only?
             stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == :red }
           end
-          count = route.train.distance.first[:pay]
+          count = route.train.distance.first['pay']
           stops = stops.combination(count).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > count
           stops
         end
