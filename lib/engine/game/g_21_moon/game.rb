@@ -214,9 +214,14 @@ module Engine
           { lay: :not_if_upgraded, upgrade: false },
         ].freeze
 
+        def reservation_corporations
+          corporations + minors
+        end
+
         def setup
           # pick one corp to wait until SR3
           #
+          puts corporations
         end
 
         #def stock_round
@@ -264,6 +269,19 @@ module Engine
 
         def ipo_name(corp = nil)
           'Treasury'
+        end
+
+        # ignore minors
+        def operating_order
+          @corporations.select(&:floated?).sort
+        end
+
+        def operated_operators
+          @corporations.select(&:operated?)
+        end
+
+        def bank_sort(corporations)
+          corporations.reject(&:minor?).sort_by(&:name)
         end
 
         #def redeemable_shares(entity)
