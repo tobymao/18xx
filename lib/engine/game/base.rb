@@ -1885,7 +1885,7 @@ module Engine
       end
 
       def init_cert_limit
-        cert_limit = self.class::CERT_LIMIT
+        cert_limit = game_cert_limit
         if cert_limit.is_a?(Hash)
           player_count = (self.class::CERT_LIMIT_COUNTS_BANKRUPTED ? players : players.reject(&:bankrupt)).size
           cert_limit = cert_limit[player_count]
@@ -1895,6 +1895,10 @@ module Engine
                          .min_by(&:first)&.last || cert_limit.first.last
         end
         cert_limit || @cert_limit
+      end
+
+      def game_cert_limit
+        self.class::CERT_LIMIT
       end
 
       def init_phase

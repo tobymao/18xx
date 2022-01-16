@@ -27,7 +27,13 @@ module Engine
 
         BANK_CASH = 12_000
 
-        CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
+        FIRST_EDITION_CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
+        SECOND_EDITION_CERT_LIMIT = { 2 => 26, 3 => 20, 4 => 15, 5 => 12, 6 => 11 }.freeze
+
+        def game_cert_limit
+          @game_cert_limit ||= second_edition? ? SECOND_EDITION_CERT_LIMIT : FIRST_EDITION_CERT_LIMIT
+          @game_cert_limit
+        end
 
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
 
@@ -246,25 +252,29 @@ module Engine
                 case corp[:sym]
                 when 'B&A'
                   corp[:tokens] = [0, 20, 20, 20]
-                  corp[:shares] = [30, 10, 10, 10, 10, 10, 10, 10]
-                  corp[:float_percent] = 30
-                  corp[:abilities] = corp[:abilities].dup || []
-                  corp[:abilities] << { type: 'description', description: "30% President's Certificate" }
+                  change_president_certificate_to_30_percent(corp)
+                when 'ERIE', 'RWO'
+                  change_president_certificate_to_30_percent(corp)
                 when 'NYNH'
                   corp[:tokens] = [0, 20, 20, 20]
+                  corp[:sym] = 'NH'
+                  change_president_certificate_to_30_percent(corp)
                 when 'NY&H'
                   corp[:tokens] = [0, 20]
-                when 'RWO'
-                  corp[:shares] = [30, 10, 10, 10, 10, 10, 10, 10]
-                  corp[:float_percent] = 30
-                  corp[:abilities] = corp[:abilities].dup || []
-                  corp[:abilities] << { type: 'description', description: "30% President's Certificate" }
                 end
                 corp
               end
             end
           end
           @game_corporations
+        end
+
+        def change_president_certificate_to_30_percent(corporation)
+          corporation[:shares] = [30, 10, 10, 10, 10, 10, 10, 10]
+          corporation[:float_percent] = 30
+          corporation[:abilities] = corporation[:abilities].dup || []
+          corporation[:abilities] << { type: 'description', description: "30% President's Certificate" }
+          corporation
         end
 
         def game_companies
