@@ -331,7 +331,7 @@ module Engine
         end
 
         def init_connection_bonuses
-          hexes = self.class::CONNECTION_BONUS_HEXES
+          hexes = self.class::CONNECTION_BONUS_HEXES.dup
           hexes << self.class::SECOND_EDITION_CONNECTION_BONUS_HEXES if second_edition?
           hexes.each do |hex_id|
             hex_id = hex_id.first if hex_id.is_a?(Array)
