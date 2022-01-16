@@ -490,16 +490,16 @@ module Engine
 
             # Italy - Lom-Venetia - M17 N14 N16 N18 N20 O17 P18
             %w[N14 P18] =>
-              'city=revenue:0;frame=color:#ff7ffe',
+              'city=revenue:0;frame=color:#ff7ffe,color2:#e2ceb6',
             ['N18'] =>
               'city=revenue:0;upgrade=cost:20,terrain:swamp;label=Y;icon=image:1866/port,sticky:1;'\
-              'frame=color:#ff7ffe',
+              'frame=color:#ff7ffe,color2:#e2ceb6',
             ['O17'] =>
-              'town=revenue:0;upgrade=cost:40,terrain:swamp;frame=color:#ff7ffe',
+              'town=revenue:0;upgrade=cost:40,terrain:swamp;frame=color:#ff7ffe,color2:#e2ceb6',
             ['N20'] =>
-              'town=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#ff7ffe',
+              'town=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#ff7ffe,color2:#e2ceb6',
             %w[M17 N16] =>
-              'upgrade=cost:90,terrain:mountain;frame=color:#ff7ffe',
+              'upgrade=cost:90,terrain:mountain;frame=color:#ff7ffe,color2:#e2ceb6',
 
             # Astro-Hungary - J22 J24 J26 K23 K25 L18 L20 L22 L24 L26 M19 M21 M23 M25 N22 N24 N26 O21 O23 O25
             #                 P22 P24 P26 Q23 Q25 R24
@@ -532,27 +532,27 @@ module Engine
               'upgrade=cost:90,terrain:mountain;frame=color:#e2ceb6',
 
             # Benelux - E13 F10 F12 F14 G9 G11 G13 H10 H12 I11
-            ['E13'] =>
-              'town=revenue:0;frame=color:#7eff80',
             ['F10'] =>
               'city=revenue:0;upgrade=cost:40,terrain:swamp;border=edge:1,type:impassable;'\
               'icon=image:1866/port,sticky:1;frame=color:#7eff80',
             ['F12'] =>
               'city=revenue:0;upgrade=cost:40,terrain:swamp;label=Y;frame=color:#7eff80',
-            ['F14'] =>
-              'frame=color:#7eff80',
             ['G9'] =>
               'city=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable;frame=color:#7eff80',
             ['G11'] =>
               'city=revenue:0;upgrade=cost:40,terrain:swamp;frame=color:#7eff80',
-            ['G13'] =>
-              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#7eff80',
             ['H10'] =>
               'city=revenue:0;label=Y;frame=color:#7eff80',
             ['H12'] =>
               'city=revenue:0;frame=color:#7eff80',
             ['I11'] =>
               'city=revenue:0;label=Y;frame=color:#7eff80',
+            ['F14'] =>
+              'frame=color:#7eff80',
+            ['E13'] =>
+              'town=revenue:0;frame=color:#7eff80',
+            ['G13'] =>
+              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#7eff80',
 
             # France - H6 H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
             #          M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13
