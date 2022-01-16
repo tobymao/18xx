@@ -428,9 +428,7 @@ module Engine
 
         def new_nyc_formation_round(round_num)
           @log << "-- NYC Formation Round #{round_num} --"
-          if round_num == 1 && !active_minors.empty?
-            @log << "NYC formation share price is #{format_currency(nyc_formation_share_price.price)}"
-          end
+          nyc_formation_share_price if round_num == 1
           G18NY::Round::NYCFormation.new(self, [
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
@@ -773,7 +771,7 @@ module Engine
           if fivede_runs_stations_and_offboards_only?
             stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == :red }
           end
-          count = route.train.distance.first[:pay]
+          count = route.train.distance.first['pay']
           stops = stops.combination(count).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > count
           stops
         end
@@ -1170,14 +1168,15 @@ module Engine
 
         def nyc_formation_share_price
           return @nyc_share_price if @nyc_share_price
+          return if (minors = minors_connected_to_albany).empty?
 
-          minors = minors_connected_to_albany
           nyc_calculated_value = (minors.sum { |minor| minor.share_price.price } * 2 / minors.size.to_f).ceil
           par_prices = @stock_market.share_prices_with_types(%i[par_2]).to_h do |sp|
             [sp, (sp.price - nyc_calculated_value).abs]
           end
           closest_par = par_prices.values.min
           @nyc_share_price = par_prices.select { |_sp, delta| delta == closest_par }.keys.max_by(&:price)
+          @log << "NYC formation share price is #{format_currency(@nyc_share_price.price)}"
         end
 
         def nyc_forming?
