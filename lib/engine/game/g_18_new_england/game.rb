@@ -332,6 +332,13 @@ module Engine
           @starting_minors.each { |m| m.reservation_color = nil }
         end
 
+        def reorder_by_cash
+          # this should break ties in favor of the closest to previous PD
+          pd_player = @players.max_by(&:cash)
+          @players.rotate!(@players.index(pd_player))
+          @log << "Priority order: #{@players.map(&:name).join(', ')}"
+        end
+
         def new_or!
           if @round.round_num < @operating_rounds
             new_operating_round(@round.round_num + 1)
@@ -348,7 +355,7 @@ module Engine
             when init_round.class
               init_round_finished
               @operating_rounds = @phase.operating_rounds
-              reorder_players(:most_cash, log_player_order: true)
+              reorder_by_cash
               new_operating_round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
