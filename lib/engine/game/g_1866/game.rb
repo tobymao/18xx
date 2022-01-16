@@ -589,7 +589,7 @@ module Engine
 
         def national_within_region?(entity, visits)
           hexes = self.class::NATIONAL_REGION_HEXES[entity.id]
-          visits.count { |v| hexes.include?(v.hex.name) } == visits.length
+          visits.count { |v| hexes.include?(v.hex.name) } == visits.size
         end
 
         def phase_par_type(corp)
