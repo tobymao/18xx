@@ -593,7 +593,7 @@ module Engine
             hex = hex_by_id(coord)
             tile = hex&.tile
             cities = tile.cities
-            city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+            city = cities.find { |c| c.reserved_by?(corporation) } || cities[0]
             token = corporation.find_token_by_type
 
             @log << "#{corporation.name} places a token on #{hex.name}"
@@ -685,7 +685,7 @@ module Engine
         def train_help(_entity, runnable_trains, _routes)
           return [] if runnable_trains.empty?
 
-          entity = runnable_trains.first.owner
+          entity = runnable_trains[0].owner
 
           help = []
           if runnable_trains.any? { |t| self.class::LOCAL_TRAIN == t.name }
