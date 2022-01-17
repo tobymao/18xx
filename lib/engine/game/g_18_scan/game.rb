@@ -34,6 +34,49 @@ module Engine
         MUST_BUY_TRAIN = :always
 
         CERT_LIMIT = { 2 => 18, 3 => 12, 4 => 9 }.freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'close_minors' => [
+            'Minors merge into SJ',
+            'Minors are closed, transferring all assets to SJ. Minor owners get a 10% SJ share',
+          ],
+          'full_cap' => [
+            'Full capitalisation',
+            'Corporationss receive full capitalisation when started',
+          ],
+        ).freeze
+
+        STATUS_TEXT = {
+          'float_2' => [
+            '20% to float',
+            'An unstarted corporation needs 20% sold to start for the first time',
+          ],
+          'float_3' => [
+            '30% to float',
+            'An unstarted corporation needs 30% sold to start for the first time',
+          ],
+          'float_4' => [
+            '40% to float',
+            'An unstarted corporation needs 40% sold to start for the first time',
+          ],
+          'float_5' => [
+            '50% to float',
+            'An unstarted corporation needs 50% sold to start for the first time',
+          ],
+          'incremental_cap' => [
+            'Incremental capitalization',
+            'Corporations receive capitalisation for sold shares when started',
+          ],
+          'full_cap' => [
+            'Full capitalization',
+            'Corporations receive full capitalisation when started',
+          ],
+          'sj_can_float' => [
+            'SJ can float',
+            'SJ can float if 50% of its shares are sold, receiving K700 from the bank',
+          ],
+        }.freeze
+
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 245 270 300 330 360 400],
           %w[75 82 90 100 110 122 135 150 165 180 200 220 245 270],
@@ -47,9 +90,10 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { minor: 2, major: 4  },
+            train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 2,
+            status: %w[incremental_cap float_2],
           },
           {
             name: '3',
@@ -57,7 +101,7 @@ module Engine
             train_limit: 4,
             tiles: %w[yellow green],
             operating_rounds: 2,
-            on: '3'
+            status: %w[float_3 incremental_cap],
           },
           {
             name: '4',
@@ -65,7 +109,7 @@ module Engine
             train_limit: 3,
             tiles: %w[yellow green],
             operating_rounds: 2,
-            on: '4'
+            status: %w[float_4 incremental_cap],
           },
           {
             name: '5',
@@ -73,7 +117,12 @@ module Engine
             train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            on: '5'
+            events: [
+              { 'type' => 'close_minors' },
+              { 'type' => 'close_companies' },
+              { 'type' => 'full_cap' },
+            ],
+            status: %w[float_5 full_cap sj_can_float],
           },
           {
             name: '5E',
@@ -81,7 +130,7 @@ module Engine
             train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            on: '5E'
+            status: %w[float_5 full_cap],
           },
           {
             name: '4D',
@@ -89,7 +138,7 @@ module Engine
             train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            on: '4D'
+            status: %w[float_5 full_cap],
           },
         ].freeze
 
