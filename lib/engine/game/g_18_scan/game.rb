@@ -236,6 +236,13 @@ module Engine
           ])
         end
 
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G18Scan::Step::BuySellParShares,
+          ])
+        end
+
         def train_limit(entity)
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
         end
