@@ -212,13 +212,19 @@ module Engine
           },
           {
             name: '5E',
-            distance: 5,
+            distance: [
+              { 'nodes' => ['city'], 'pay' => 5, 'visit' => 5 },
+              { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+            ],
             price: 600,
             num: 2,
           },
           {
             name: '4D',
-            distance: 99,
+            distance: [
+              { 'nodes' => ['city'], 'pay' => 4, 'visit' => 4, 'multiplier' => 2 },
+              { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+            ],
             price: 800,
             num: 2,
           },
