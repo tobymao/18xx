@@ -40,59 +40,20 @@ module Engine
         STARTING_CASH = { 3 => 540, 4 => 410, 5 => 340 }.freeze
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false
+        SELL_MOVEMENT = :down_block
+        SOLD_OUT_INCREASE = true
+        POOL_SHARE_DROP = :one # needs custom code
 
         MARKET = [
-          [
-            '', '', '',
-            '50r',
-            '55r',
-            '60r',
-            '65r',
-            '70r',
-            '80r',
-            '90r',
-            '100r'
-          ],
-          [
-            '', '', '',
-            '50r',
-            '55r',
-            '60r',
-            '65r',
-            '70r',
-            '80r',
-            '90r',
-            '100r'
-          ],
-          %w[35
-             40
-             45
-             50
-             55
-             60
-             65
-             70
-             80
-             90
-             100p
-             110p
-             120p
-             130p
-             145p
-             160p
-             180p
-             200p
-             220
-             240
-             260
-             280
-             310
-             340
-             380
-             420
-             460
-             500e],
-           ].freeze
+          ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '330', '360', '395', '430'],
+          ['', '', '100', '110', '120', '130', '140', '150', '160', '175', '195', '215', '240', '265', '295', '325', '360',
+           '395'],
+          %w[70 80 90p 100 110 120 130 140 150 160 175 190 215 235 260 285 315 345],
+          %w[60 70 80p 90 100 110 120 130 140 150 160 175 190 200 220 250 275 300],
+          %w[50 60 70p 80 90 100 110 120 130 140 150 160 175 190],
+          %w[40 50 60p 70 80 90 100 110 120 130 140 150],
+          %w[0c 40 50 60 70 80 90 100 110 120],
+        ].freeze
 
         MARKET_TEXT = {
           par: 'Par value',
@@ -109,42 +70,42 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { minor: 2, major: 4 },
+            train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow],
             operating_rounds: 2,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { minor: 2, major: 4 },
+            train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '4',
             on: '4',
-            train_limit: { minor: 1, major: 3 },
+            train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '5',
-            on: '5E',
-            train_limit: { minor: 1, major: 3 },
+            on: '5',
+            train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
           },
           {
             name: '6',
-            on: '6E',
-            train_limit: { minor: 1, major: 2 },
+            on: '6',
+            train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
           },
           {
-            name: '8',
-            on: '8E',
-            train_limit: { minor: 1, major: 2 },
+            name: '10',
+            on: '10',
+            train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
@@ -154,41 +115,41 @@ module Engine
           {
             name: '2',
             distance: 2,
-            price: 100,
-            rusts_on: '4',
-            num: 10,
+            price: 120,
+            rusts_on: '5',
+            num: 5,
           },
           {
             name: '3',
             distance: 3,
-            price: 180,
-            rusts_on: '6E',
-            num: 7,
+            price: 150,
+            rusts_on: '6',
+            num: 4,
           },
           {
             name: '4',
             distance: 4,
-            price: 300,
-            rusts_on: '8E',
-            num: 4,
-          },
-          {
-            name: '5E',
-            distance: 5,
-            price: 500,
-            num: 4,
-          },
-          {
-            name: '6E',
-            distance: 6,
-            price: 600,
+            price: 240,
+            rusts_on: '10',
             num: 3,
           },
           {
-            name: '8E',
-            distance: 8,
-            price: 800,
-            num: 20,
+            name: '5',
+            distance: 5,
+            price: 500,
+            num: 2,
+          },
+          {
+            name: '6',
+            distance: 6,
+            price: 540,
+            num: 2,
+          },
+          {
+            name: '10',
+            distance: 10,
+            price: 730,
+            num: 14,
           },
         ].freeze
 
@@ -214,6 +175,8 @@ module Engine
           { lay: :not_if_upgraded, upgrade: false },
         ].freeze
 
+        LAST_OR = 11
+
         def reservation_corporations
           corporations + minors
         end
@@ -221,17 +184,48 @@ module Engine
         def setup
           # pick one corp to wait until SR3
           #
-          puts corporations
+
+          @or = 0
+          @three_or_round = false
         end
 
-        #def stock_round
+        # def stock_round
         #  Engine::Round::Stock.new(self, [
         #    Engine::Step::DiscardTrain,
         #    G21Moon::Step::BuySellParShares,
         #  ])
-        #end
+        # end
 
-        #def operating_round(round_num)
+        def new_operating_round(round_num = 1)
+          @or += 1
+
+          if @or == 9
+            @operating_rounds = 3
+            @three_or_round = true
+          end
+
+          super
+        end
+
+        def or_round_finished
+          # In case we get phase change during the last OR set we ensure we have 3 ORs
+          @operating_rounds = 3 if @three_or_round
+        end
+
+        # FIXME: add CR
+        def round_description(name, _round_num = nil)
+          case name
+          when 'Stock'
+            super
+          when 'Draft'
+            name
+          else # 'Operating'
+            message += " - Game end after OR #{LAST_OR}" if @or > 8
+            "#{name} Round #{@or} (of #{LAST_OR})#{message}"
+          end
+        end
+
+        # def operating_round(round_num)
         #  Engine::Round::Operating.new(self, [
         #    G21Moon::Step::Bankrupt,
         #    Engine::Step::Track,
@@ -241,8 +235,9 @@ module Engine
         #    Engine::Step::DiscardTrain,
         #    G21Moon::Step::BuyTrain,
         #  ], round_num: round_num)
-        #end
+        # end
 
+        # FIXME: add CR
         def next_round!
           @round =
             case @round
@@ -267,7 +262,12 @@ module Engine
             end
         end
 
-        def ipo_name(corp = nil)
+        # Game will end directly after the end of OR 11
+        def end_now?(_after)
+          @or == LAST_OR
+        end
+
+        def ipo_name(_corp = nil)
           'Treasury'
         end
 
@@ -284,14 +284,14 @@ module Engine
           corporations.reject(&:minor?).sort_by(&:name)
         end
 
-        #def redeemable_shares(entity)
+        # def redeemable_shares(entity)
         #  return [] unless entity.corporation? && entity.type != :minor
 
         #  bundles_for_corporation(share_pool, entity)
         #    .reject { |bundle| entity.cash < bundle.price }
-        #end
+        # end
 
-        #def issuable_shares(entity)
+        # def issuable_shares(entity)
         #  return [] unless entity.corporation? && entity.type != :minor
 
         #  treasury = bundles_for_corporation(entity, entity)
@@ -300,7 +300,49 @@ module Engine
         #  (treasury + ipo).reject do |bundle|
         #    (bundle.num_shares + entity.num_market_shares) * 10 > self.class::MARKET_SHARE_LIMIT
         #  end
-        #end
+        # end
+        #
+        def timeline
+          @timeline ||= [
+            'SR 3: 7th corporation becomes available',
+            'OR 6: Space Port upgraded to 30c',
+            'OR 7: Remaining private companies close',
+            'OR 9: Space Port upgraded to 40c',
+            "Game ends after OR #{LAST_OR}",
+          ].freeze
+          @timeline
+        end
+
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          [
+            { type: :PRE },
+            { type: :SR, name: '1' },
+            { type: :OR, name: '1' },
+            { type: :OR, name: '2' },
+            { type: :CR },
+            { type: :SR, name: '2' },
+            { type: :OR, name: '3' },
+            { type: :OR, name: '4' },
+            { type: :CR },
+            { type: :SR, name: '3' },
+            { type: :OR, name: '5' },
+            { type: :OR, name: '6' },
+            { type: :CR },
+            { type: :SR, name: '4' },
+            { type: :OR, name: '7' },
+            { type: :OR, name: '8' },
+            { type: :CR },
+            { type: :SR, name: '5' },
+            { type: :OR, name: '9' },
+            { type: :OR, name: '10' },
+            { type: :OR, name: '11' },
+            { type: :End },
+          ]
+        end
       end
     end
   end

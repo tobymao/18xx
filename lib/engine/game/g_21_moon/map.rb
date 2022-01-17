@@ -7,6 +7,7 @@ module Engine
   module Game
     module G21Moon
       module Map
+        # rubocop:disable Layout/LineLength
         TILES = {
           # Yellow
           '7' => 3,
@@ -218,13 +219,13 @@ module Engine
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
+            'code' => 'city=revenue:30,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
           'X23' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
+            'code' => 'city=revenue:40,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
           'X24' =>
           {
@@ -269,21 +270,20 @@ module Engine
             'code' => 'city=revenue:yellow_20|green_40|brown_50|gray_10,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=T',
           },
         }.freeze
+        # rubocop:enable Layout/LineLength
 
         LOCATION_NAMES = {
-          'E9' => 'Space Port',
           'F8' => 'Terminal',
         }.freeze
 
         # rubocop:disable Layout/LineLength
         HEXES = {
           white: {
-            %w[C3 C5 C9 C13 D8 D14 E1 E7 F4 F10 F14 G3 G5 G11 G15 H8 H12 H14 I9 J4 J6 K3 L12] => '',
+            %w[C3 C5 C9 C13 D8 D14 E1 E7 F10 F14 G11 G15 H8 H12 H14 I9 J4 J6 K3 L12] => '',
             %w[B6 C11 F12 H6 J8 J12] => 'upgrade=cost:10,terrain:mountain',
             %w[B8 B10 D4 D6 E3 E11 E13 G9 I3 K7 K11] => 'upgrade=cost:40,terrain:mountain',
             %w[C7 D2 D12 G7 I5 I11 K9] => 'city=revenue:0',
             %w[F8] => 'city=revenue:0;label=T',
-            %w[E9] => 'city=revenue:0;label=SP;frame=color:#000000',
             %w[G1] => 'border=edge:5,type:divider',
             %w[G3] => 'border=edge:0,type:divider;border=edge:4,type:divider;border=edge:5,type:divider',
             %w[F4] => 'border=edge:5,type:divider',
@@ -295,6 +295,9 @@ module Engine
             %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10] => 'city=revenue:0;upgrade=cost:20,terrain:mountain',
             %w[H2] => 'city=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:1,type:divider;border=edge:2,type:divider',
             %w[E5 G13] => 'city=revenue:0;city=revenue:0;upgrade=cost:20,terrain:mountain;label=OO',
+          },
+          gray: {
+            %w[E9] => 'city=revenue:20,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
           purple: {
             %w[B2] => 'offboard=revenue:20,groups:NW;path=a:0,b:_0',
@@ -313,7 +316,6 @@ module Engine
           },
         }.freeze
         # rubocop:enable Layout/LineLength
-
         LAYOUT = :flat
       end
     end

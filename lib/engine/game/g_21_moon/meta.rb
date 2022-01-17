@@ -18,8 +18,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/21Moon'
 
         PLAYER_RANGE = [3, 5].freeze
-        OPTIONAL_RULES = [
-        ].freeze
+        OPTIONAL_RULES = [].freeze
       end
     end
   end

@@ -7,7 +7,6 @@ module Engine
   module Game
     module G21Moon
       module Entities
-
         COMPANIES = [
           {
             name: 'Old Landing Site',
@@ -15,10 +14,10 @@ module Engine
             value: 30,
             revenue: 0,
             desc: 'When buying the private, a player must immediately place the black “SD” token on any '\
-            'mineral resource hex on the board in which the black “SD” token blocks an SD spot. '\
-            'A player owning OLS can sell it to corporation for 1 credit. When sold to a corporation, '\
-            'the black SD token will be replaced by a token from the owning corporation. '\
-            'The buyer of the OLS automatically gets last place in SR 1 turn order.',
+                  'mineral resource hex on the board in which the black “SD” token blocks an SD spot. '\
+                  'A player owning OLS can sell it to corporation for 1 credit. When sold to a corporation, '\
+                  'the black SD token will be replaced by a token from the owning corporation. '\
+                  'The buyer of the OLS automatically gets last place in SR 1 turn order.',
             abilities: [],
             color: nil,
           },
@@ -28,8 +27,8 @@ module Engine
             value: 30,
             revenue: 5,
             desc: 'When this private is bought by a company, the president of the company may choose to add '\
-            'a 3/4/5/6 transport to the pile of new transports. If a transport is added, it must be of the '\
-            'current phase or later.',
+                  'a 3/4/5/6 transport to the pile of new transports. If a transport is added, it must be of the '\
+                  'current phase or later.',
             abilities: [],
             color: nil,
           },
@@ -39,8 +38,8 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'The corporation owning the SBC can build and upgrade road tiles crossing the rift. '\
-            'The owning company receives a bonus of 60 credits after the connection across the rift is '\
-            'made for the first time.',
+                  'The owning company receives a bonus of 60 credits after the connection across the rift is '\
+                  'made for the first time.',
             abilities: [],
             color: nil,
           },
@@ -50,7 +49,7 @@ module Engine
             value: 60,
             revenue: 10,
             desc: 'The owning corporation may place the +20 marker on a mineral or base camp hex. The +20 '\
-            'token lasts until the end of the game.',
+                  'token lasts until the end of the game.',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -68,14 +67,14 @@ module Engine
             value: 80,
             revenue: 10,
             desc: 'The owning corporation may teleport place the T tile, then may place its cheapest supply '\
-            'depot on it. This closes the private company',
+                  'depot on it. This closes the private company',
             abilities: [
               {
                 type: 'teleport',
                 owner_type: 'corporation',
                 tiles: ['X30'],
                 hexes: ['F8'],
-              }
+              },
             ],
             color: nil,
           },
@@ -85,8 +84,8 @@ module Engine
             value: 100,
             revenue: 15,
             desc: 'The owning player or corporation may take one share from the pool for free (may be '\
-            'used once per game, cannot be used in first stock round). In addition, mountain terrain is '\
-            'discounted to 10 cost when owned by a corporation',
+                  'used once per game, cannot be used in first stock round). In addition, mountain terrain is '\
+                  'discounted to 10 cost when owned by a corporation',
             abilities: [],
             color: nil,
           },
@@ -165,15 +164,6 @@ module Engine
             tokens: [0, 25, 50, 75],
             float_percent: 50,
             max_ownership_percent: 50,
-          },
-        ].freeze
-
-        MINORS = [
-          {
-            sym: 'SP',
-            name: 'Space Port Minor',
-            coordinates: 'E9',
-            tokens: [],
           },
         ].freeze
       end
