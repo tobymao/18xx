@@ -6,6 +6,10 @@ module Engine
   module Game
     module G18Scan
       module Map
+        TILE_TYPE = :lawson
+
+        LAYOUT = :pointy
+
         TILES = {
           '5' => 12,
           '8' => 8,
@@ -127,9 +131,9 @@ module Engine
             ['G12'] => 'path=a:2,b:3,track:narrow',
           },
         }.freeze
-
-        LAYOUT = :pointy
       end
     end
   end
 end
+
+# rubocop:enable Layout/LineLength

@@ -13,12 +13,27 @@ module Engine
         include Map
         include Entities
 
-        CURRENCY_FORMAT_STR = 'K%d'
+        GAME_END_CHECK = { bank: :full_or }.freeze
+
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+
         BANK_CASH = 6_000
 
-        CERT_LIMIT = { 2 => 18, 3 => 12, 4 => 9 }.freeze
+        CURRENCY_FORMAT_STR = 'K%d'
+
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450 }.freeze
 
+        CAPITALIZATION = :incremental
+
+        SELL_AFTER = :operate
+
+        SELL_BUY_ORDER = :sell_buy
+
+        HOME_TOKEN_TIMING = :float
+
+        MUST_BUY_TRAIN = :always
+
+        CERT_LIMIT = { 2 => 18, 3 => 12, 4 => 9 }.freeze
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 245 270 300 330 360 400],
           %w[75 82 90 100 110 122 135 150 165 180 200 220 245 270],
@@ -38,35 +53,40 @@ module Engine
           },
           {
             name: '3',
-            train_limit: { minor: 2, major: 4  },
+            on: '3',
+            train_limit: 4,
             tiles: %w[yellow green],
             operating_rounds: 2,
             on: '3'
           },
           {
             name: '4',
-            train_limit: { minor: 1, major: 3  },
+            on: '4',
+            train_limit: 3,
             tiles: %w[yellow green],
             operating_rounds: 2,
             on: '4'
           },
           {
             name: '5',
-            train_limit: { major: 2, national: 3 },
+            on: '5',
+            train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
             on: '5'
           },
           {
             name: '5E',
-            train_limit: { major: 2, national: 3 },
+            on: '5E',
+            train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
             on: '5E'
           },
           {
             name: '4D',
-            train_limit: { major: 2, national: 3 },
+            on: '4D',
+            train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
             on: '4D'
