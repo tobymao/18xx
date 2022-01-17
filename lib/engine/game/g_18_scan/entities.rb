@@ -117,8 +117,12 @@ module Engine
             color: '#5b74b4',
             abilities: [
               {
+                type: 'train_limit',
+                increase: -2,
+              },
+              {
                 type: 'token',
-                hexes: 'B11',
+                hexes: ['B11'],
                 cheater: 1,
                 price: 0,
                 special_only: true,
@@ -137,8 +141,12 @@ module Engine
             color: '#5b74b4',
             abilities: [
               {
+                type: 'train_limit',
+                increase: -2,
+              },
+              {
                 type: 'token',
-                hexes: 'F11',
+                hexes: ['F11'],
                 cheater: 1,
                 price: 0,
                 special_only: true,
@@ -157,8 +165,12 @@ module Engine
             color: '#5b74b4',
             abilities: [
               {
+                type: 'train_limit',
+                increase: -2,
+              },
+              {
                 type: 'token',
-                hexes: 'D7',
+                hexes: ['D7'],
                 cheater: 1,
                 price: 0,
                 special_only: true,
@@ -178,7 +190,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'F3',
             color: '#C62A1D',
-            reservation_color: nil,
           },
           {
             sym: 'S&NJ',
@@ -190,7 +201,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'B19',
             color: '#010301',
-            reservation_color: nil,
           },
           {
             sym: 'NSB',
@@ -202,7 +212,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'D7',
             color: '#041848',
-            reservation_color: nil,
           },
           {
             sym: 'VR',
@@ -214,7 +223,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'G14',
             color: '#2157B2',
-            reservation_color: nil,
           },
           {
             sym: 'SJ',
@@ -223,11 +231,9 @@ module Engine
             simple_logo: '18_scan/SJ.alt',
             float_percent: 50,
             floatable: false,
-            always_market_price: true,
             tokens: [0, 100, 100, 100, 100, 100],
             coordinates: 'F3',
             color: '#3561AE',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'train_limit',
