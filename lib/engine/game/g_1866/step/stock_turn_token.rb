@@ -16,11 +16,17 @@ module Engine
 
           def current_entity
             entity = active_entities[0]
-            entity.corporation? && entity.type == :stock_turn_corporation ? entity.owner : entity
+            entity.corporation? && @game.stock_turn_corporation?(entity) ? entity.owner : entity
           end
 
           def description
             'Stock Turn Token'
+          end
+
+          def log_skip(entity)
+            return unless @game.stock_turn_corporation?(entity)
+
+            @log << "#{entity.name} has no valid actions and passes"
           end
 
           def process_buy_shares(action)
