@@ -35,6 +35,9 @@ module Engine
 
         CERT_LIMIT = { 2 => 18, 3 => 12, 4 => 9 }.freeze
 
+        # Custom constants
+        SJ_NAME = 'SJ'
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'close_minors' => [
             'Minors merge into SJ',
@@ -228,7 +231,20 @@ module Engine
             price: 800,
             num: 2,
           },
-       ].freeze
+        ].freeze
+
+        def setup
+          # SJ cannot float until phase 5
+          sj.floatable = false
+
+          # Minors come with a trade-in share of SJ
+          minors.each do |minor|
+            share = sj_share_by_minor(minor.name)
+            share.buyable = false
+            share.counts_for_limit = false
+          end
+        end
+
         def new_auction_round
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
@@ -247,6 +263,15 @@ module Engine
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
         end
 
+        def sj
+          @sj ||= corporation_by_id('SJ')
+        end
+
+        def sj_share_by_minor(name)
+          return sj.shares[6] if name == '1'
+          return sj.shares[7] if name == '2'
+          return sj.shares[8] if name == '3'
+        end
       end
     end
   end
