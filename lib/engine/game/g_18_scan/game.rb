@@ -229,6 +229,13 @@ module Engine
             num: 2,
           },
        ].freeze
+        def new_auction_round
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G18Scan::Step::WaterfallAuction,
+          ])
+        end
+
       end
     end
   end
