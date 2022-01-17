@@ -9,6 +9,7 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :prealpha
+        PROTOTYPE = true
 
         GAME_SUBTITLE = nil
         GAME_DESIGNER = 'Jonas Jones'
