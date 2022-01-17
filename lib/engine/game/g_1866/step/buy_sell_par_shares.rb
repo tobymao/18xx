@@ -13,6 +13,10 @@ module Engine
             super
           end
 
+          def bought_stock_token?
+            @round.current_actions.any? { |x| x.instance_of?(Action::ChooseAbility) }
+          end
+
           def can_par_share_price?(share_price, corp)
             return (share_price.corporations.empty? || share_price.price == @game.class::MAX_PAR_VALUE) unless corp
 
@@ -80,15 +84,20 @@ module Engine
 
             if corporation.par_via_exchange
               @game.stock_market.set_par(corporation, share_price)
+
+              # Select the president share to buy
               share = corporation.ipo_shares.first
+
+              # Move all to the market
+              bundle = ShareBundle.new(corporation.shares_of(corporation))
+              @game.share_pool.transfer_shares(bundle, @game.share_pool)
+
+              # Buy the share from the bank
               bundle = share.to_bundle
               @game.share_pool.buy_shares(action.entity,
                                           bundle,
                                           exchange: corporation.par_via_exchange,
                                           exchange_price: bundle.price)
-
-              # Remove the money from the national and put it into the bank
-              corporation.spend(corporation.cash, @game.bank)
 
               # Close the concession company
               corporation.par_via_exchange.close!
@@ -98,15 +107,19 @@ module Engine
 
             elsif @game.minor_national_corporation?(corporation)
               @game.stock_market.set_par(corporation, share_price)
+
+              # Select the president share to buy
               share = corporation.ipo_shares.first
-              bundle = share.to_bundle
+
+              # Move all to the market
+              bundle = ShareBundle.new(corporation.shares_of(corporation))
+              @game.share_pool.transfer_shares(bundle, @game.share_pool)
+
+              # Buy the share from the bank
               @game.share_pool.buy_shares(action.entity,
-                                          bundle,
+                                          share.to_bundle,
                                           exchange: :free,
                                           exchange_price: share.price_per_share)
-
-              # Remove the money from the minor national and put it into the bank
-              corporation.spend(corporation.cash, @game.bank)
 
               @game.after_par(corporation)
               track_action(action, action.corporation)

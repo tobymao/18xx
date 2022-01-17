@@ -367,6 +367,50 @@ module Engine
           'MZA' => 'SPN',
         }.freeze
 
+        ENTITY_STATUS_TEXT = {
+          'LNWR' => 'Available from ISR',
+          'GWR' => 'Available from ISR',
+          'NBR' => 'Available from ISR',
+          'PLM' => 'Available from ISR',
+          'MIDI' => 'Available from ISR',
+          'OU' => 'Available from ISR',
+          'KPS' => 'Available from OR1',
+          'BY' => 'Available from OR1',
+          'KHS' => 'Available from OR1',
+          'SB' => 'Available from OR2',
+          'BH' => 'Available from OR2',
+          'FNR' => 'Available from OR2',
+          'SSFL' => 'Available from OR2',
+          'IFT' => 'Available from OR2',
+          'SFAI' => 'Available from OR2',
+          'SBB' => 'Available from OR2',
+          'GL' => 'Available from OR1',
+          'NRS' => 'Available from OR1',
+          'ZPB' => 'Available from OR2',
+          'MZA' => 'Available from OR2',
+          'G1' => 'Available from ISR',
+          'G2' => 'Available from ISR',
+          'G3' => 'Available from ISR',
+          'G4' => 'Available from ISR',
+          'G5' => 'Available from ISR',
+          'I1' => 'Available from ISR',
+          'I2' => 'Available from ISR',
+          'I3' => 'Available from ISR',
+          'I4' => 'Available from ISR',
+          'I5' => 'Available from ISR',
+          'AHN' => 'Available from OR1',
+          'BN' => 'Available from OR1',
+          'FN' => 'Available from OR1',
+          'GBN' => 'Available from OR1',
+          'SPN' => 'Available from OR1',
+          'SWN' => 'Available from OR1',
+          'GN' => 'Converted by G1 president or force convert in phase 5',
+          'IN' => 'Converted by I1 president or force convert in phase 5',
+        }.freeze
+
+        GERMANY_NATIONAL = 'GN'
+        ITALY_NATIONAL = 'IN'
+
         LOCAL_TRAIN = 'L'
         MAX_PAR_VALUE = 200
 
@@ -454,12 +498,10 @@ module Engine
 
         # Corporations which will be able to float on which turn
         TURN_CORPORATIONS = {
-          'ISR' => %w[GBN FN AHN BN SPN SWN G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU],
+          'ISR' => %w[G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU],
           'OR1' => %w[GBN FN AHN BN SPN SWN G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU KPS BY KHS
                       GL NRS],
         }.freeze
-
-        attr_accessor :current_turn, :national_graph
 
         def can_run_route?(entity)
           national_corporation?(entity) || super
@@ -503,6 +545,11 @@ module Engine
           national_corporation?(entity) ? @national_graph : @graph
         end
 
+        def init_companies(_players)
+          # Must do the randomize here, since the companies is duped in the setup of the auction
+          super.sort_by { rand }
+        end
+
         def init_company_abilities
           @companies.each do |company|
             next unless (ability = abilities(company, :exchange))
@@ -514,9 +561,7 @@ module Engine
           super
         end
 
-        def ipo_name(entity)
-          return 'Bank' if national_corporation?(entity)
-
+        def ipo_name(_entity)
           'Treasury'
         end
 
@@ -527,10 +572,10 @@ module Engine
         def next_round!
           @round =
             case @round
-            when Round::Stock
+            when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               new_operating_round
-            when Round::Operating
+            when G1866::Round::Operating
               or_round_finished
               new_operating_round(@round.round_num + 1)
             when init_round.class
@@ -540,7 +585,7 @@ module Engine
         end
 
         def new_auction_round
-          Round::Auction.new(self, [
+          Engine::Round::Auction.new(self, [
             G1866::Step::SelectionAuction,
           ])
         end
@@ -559,7 +604,8 @@ module Engine
 
         # TODO: This is just a basic operating round.
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          @current_turn = "OR#{round_num}"
+          G1866::Round::Operating.new(self, [
             G1866::Step::StockTurnToken,
             G1866::Step::Track,
             G1866::Step::Token,
@@ -642,6 +688,9 @@ module Engine
 
           @current_turn = 'ISR'
 
+          @germany_formed = false
+          @italy_formed = false
+
           # Setup the nationals graph
           @national_graph = Graph.new(self, home_as_token: true, no_blocking: true)
 
@@ -673,7 +722,14 @@ module Engine
                           end
           # Remove floated minor nationals
           ipoed.reject! { |c| minor_national_corporation?(c) }
+          others.reject! { |c| c.name == self.class::GERMANY_NATIONAL || c.name == self.class::ITALY_NATIONAL }
           ipoed.sort + others
+        end
+
+        def status_str(corporation)
+          return if corporation.floated?
+
+          self.class::ENTITY_STATUS_TEXT[corporation.id]
         end
 
         def tile_lays(entity)
@@ -733,8 +789,10 @@ module Engine
           player = entity.owner
           national_shares = player.shares_by_corporation.select { |c, s| national_corporation?(c) && !s.empty? }
 
-          operating_rights = self.class::CORPORATIONS_OPERATING_RIGHTS[entity.id]
-          (national_shares.keys.map(&:id) + Array(operating_rights)).uniq
+          operating_rights = Array(self.class::CORPORATIONS_OPERATING_RIGHTS[entity.id])
+          operating_rights.reject! { |o| o == self.class::GERMANY_NATIONAL } unless @germany_formed
+          operating_rights.reject! { |o| o == self.class::ITALY_NATIONAL } unless @italy_formed
+          (national_shares.keys.map(&:id) + operating_rights).uniq
         end
 
         def national_corporation?(corporation)
@@ -761,20 +819,24 @@ module Engine
             logo: "1866/#{index + 1}",
             tokens: [],
             type: 'stock_turn_corporation',
-            float_percent: 100,
-            max_ownership_percent: 100,
-            shares: [100],
+            float_percent: 50,
+            shares: [50, 50],
             always_market_price: true,
             color: 'black',
             text_color: 'white',
             reservation_color: nil,
             capitalization: self.class::CAPITALIZATION,
           )
+          corporation.ipoed = true
           corporation.owner = player
 
           @stock_market.set_par(corporation, share_price)
+          share = corporation.ipo_shares.first
+          @share_pool.transfer_shares(share.to_bundle, player)
+
           player.spend(share_price.price, @bank)
           @stock_turn_token_in_play[player] << corporation
+
           @log << "#{player.name} buys a stock turn token at #{format_currency(share_price.price)}"
         end
 
@@ -850,7 +912,7 @@ module Engine
         def stock_round_isr
           @log << '-- Initial Stock Round --'
           @round_counter += 1
-          Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             G1866::Step::BuySellParShares,
           ])
         end

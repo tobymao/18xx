@@ -44,23 +44,13 @@ module Engine
             end
           end
 
-          def process_dividend(action)
-            super
-
-            entity = action.entity
-            return unless @game.national_corporation?(entity)
-
-            # All cash goes to the bank for the nationals
-            entity.spend(entity.cash, @game.bank)
-          end
-
           def skip!
             entity = current_entity
             return super unless @game.national_corporation?(entity)
 
             process_dividend(Action::Dividend.new(
               entity,
-              kind: @game.minor_national_corporation?(entity) ? 'half' : 'payout',
+              kind: 'payout',
             ))
           end
 
