@@ -542,7 +542,7 @@ module Engine
             ['G11'] =>
               'city=revenue:0;upgrade=cost:40,terrain:swamp;frame=color:#7eff80',
             ['H10'] =>
-              'city=revenue:0;label=Y;frame=color:#7eff80',
+              'city=revenue:0;label=C;frame=color:#7eff80',
             ['H12'] =>
               'city=revenue:0;frame=color:#7eff80',
             ['I11'] =>
