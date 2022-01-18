@@ -367,6 +367,8 @@ module Engine
           'MZA' => 'SPN',
         }.freeze
 
+        DOUBLE_HEX = %w[G15 G19 J12 J18 K5].freeze
+
         ENTITY_STATUS_TEXT = {
           'LNWR' => 'Available from ISR',
           'GWR' => 'Available from ISR',
@@ -479,6 +481,16 @@ module Engine
           '10' => :par_3,
         }.freeze
 
+        PORT_TOKEN_BONUS = {
+          'L/2' => 0,
+          '3' => 20,
+          '4' => 20,
+          '5' => 30,
+          '6' => 30,
+          '8' => 40,
+          '10' => 40,
+        }.freeze
+
         REGION_CORPORATIONS = {
           'GREAT_BRITAIN' => %w[LNWR GWR NBR],
           'FRANCE' => %w[PLM MIDI OU],
@@ -504,7 +516,7 @@ module Engine
         }.freeze
 
         def can_run_route?(entity)
-          national_corporation?(entity) || super
+          national_corporation?(entity) || entity.trains.any? { |t| local_train?(t) } || super
         end
 
         def check_connected(route, token)
@@ -518,7 +530,7 @@ module Engine
           if national_corporation?(entity) && !visits_within_national_region?(entity, visits)
             raise GameError, 'Nationals can only run within its region'
           end
-          if !national_corporation?(entity) && !visits_operating_rights?(entity, visits)
+          if public_corporation?(entity) && !visits_operating_rights?(entity, visits)
             raise GameError, 'The director need operating rights to operate in the selected regions'
           end
 
@@ -602,11 +614,11 @@ module Engine
           minor_nationals + (corporations + @stock_turn_token_in_play.values.flatten).sort
         end
 
-        # TODO: This is just a basic operating round.
         def operating_round(round_num)
           @current_turn = "OR#{round_num}"
           G1866::Round::Operating.new(self, [
             G1866::Step::StockTurnToken,
+            G1866::Step::FirstTurnHousekeeping,
             G1866::Step::Track,
             G1866::Step::Token,
             Engine::Step::Route,
@@ -614,6 +626,11 @@ module Engine
             Engine::Step::DiscardTrain,
             G1866::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def or_round_finished
+          # Export all L/2 trains at the end of OR2
+          @depot.export_all!('L') if @round.round_num == 2 && local_train?(@depot.upcoming.first)
         end
 
         def par_price_str(share_price)
@@ -669,6 +686,49 @@ module Engine
           @corporations.reject { |c| national_corporation?(c) }
         end
 
+        def revenue_for(route, stops)
+          if route.hexes.size != route.hexes.uniq.size &&
+            route.hexes.none? { |h| self.class::DOUBLE_HEX.include?(h.name) }
+            raise GameError, 'Route visits same hex twice'
+          end
+
+          train = route.train
+          entity = route.train.owner
+          revenue = if train_type(train) == :normal
+                      super
+                    else
+                      stops.sum do |stop|
+                        next 0 unless stop.city?
+
+                        tokened = stop.tokened_by?(entity)
+                        if tokened
+                          stop.route_revenue(route.phase, route.train)
+                        else
+                          0
+                        end
+                      end
+                    end
+
+          # If the train is obsolete, pay half revenue
+          revenue /= 2 if train.obsolete
+
+          # Port Token Bonus, check first and last stop to see if we got a token in a port
+          port_bonus = port_token_bonus(route.routes)
+          revenue += port_bonus[route] if port_bonus[route]
+
+          revenue
+        end
+
+        def revenue_str(route)
+          rev_str = super
+
+          # Port Token Bonus, check first and last stop to see if we got a token in a port
+          port_bonus = port_token_bonus(route.routes)
+          rev_str += " (PTB #{format_currency(port_bonus[route])})" if port_bonus[route].positive?
+          rev_str += ' (Obsolete)' if route.train.obsolete
+          rev_str
+        end
+
         def round_description(name, round_number = nil)
           round_number ||= @round.round_num
           "#{name} Round #{round_number}"
@@ -677,10 +737,12 @@ module Engine
         def setup
           @stock_turn_token_per_player = self.class::STOCK_TURN_TOKENS[@players.size.to_s]
           @stock_turn_token_in_play = {}
+          @stock_turn_token_number = {}
           @player_setup_order = @players.dup
           @player_setup_order.each_with_index do |player, index|
             @log << "#{player.name} have stock turn tokens with number #{index + 1}"
             @stock_turn_token_in_play[player] = []
+            @stock_turn_token_number[player] = 0
           end
 
           @red_reservation_entity = corporation_by_id('R')
@@ -744,7 +806,7 @@ module Engine
           entity = runnable_trains[0].owner
 
           help = []
-          if runnable_trains.any? { |t| self.class::LOCAL_TRAIN == t.name }
+          if runnable_trains.any? { |t| local_train?(t) }
             help << "L (local) trains run in a city which has a #{entity.name} token. "\
                     'They can additionally run to a single small station, but are not required to do so. '\
                     'They can thus be considered 1 (+1) trains. '\
@@ -755,13 +817,23 @@ module Engine
             help << 'Nationals run a hypothetical train of infinite length, within its national boundaries. '\
                     'This train is allowed to run a route of just a single city.'
           end
+
+          help << 'Obsolete trains only runs for ½ revenue.' if runnable_trains.any?(&:obsolete)
           help
+        end
+
+        def train_type(train)
+          train.name.include?('E') ? :etrain : :normal
         end
 
         def upgrade_cost(_tile, _hex, entity, _spender)
           return 0 if national_corporation?(entity)
 
           super
+        end
+
+        def hex_is_port?(hex)
+          hex.tile.icons.any? { |i| i.name == 'port' }
         end
 
         def hex_operating_rights?(entity, hex)
@@ -771,6 +843,10 @@ module Engine
 
         def hex_within_national_region?(entity, hex)
           self.class::NATIONAL_REGION_HEXES[entity.id].include?(hex.name)
+        end
+
+        def local_train?(train)
+          self.class::LOCAL_TRAIN == train.name
         end
 
         def major_national_corporation?(corporation)
@@ -795,6 +871,41 @@ module Engine
           (national_shares.keys.map(&:id) + operating_rights).uniq
         end
 
+        def port_token_bonus(routes)
+          # Find all the port hexes and see which route pays the most
+          port_hexes = {}
+          routes.each do |route|
+            train = route.train
+            next if local_train?(train)
+
+            entity = route.train.owner
+            stops = route.visited_stops
+            train_multiplier = train.multiplier || 1
+            train_multiplier /= 2 if train.obsolete
+
+            ptb = [stops.first]
+            ptb << stops.last unless stops.first == stops.last
+            ptb.each do |stop|
+              next if !stop || !stop.city? || !stop.tokened_by?(entity) || !hex_is_port?(stop.hex)
+
+              revenue = self.class::PORT_TOKEN_BONUS[route.phase.name] * train_multiplier
+              if !port_hexes[stop.hex] || revenue > port_hexes[stop.hex]['revenue']
+                port_hexes[stop.hex] = { route: route, revenue: revenue }
+              end
+            end
+          end
+
+          port_bonus = Hash.new { |h, k| h[k] = 0 }
+          port_hexes.each { |_, r| port_bonus[r['route']] += r['revenue'] }
+          port_bonus
+        end
+
+        def public_corporation?(corporation)
+          return false unless corporation
+
+          corporation.type == :public_5 || corporation.type == :public_10
+        end
+
         def national_corporation?(corporation)
           minor_national_corporation?(corporation) || major_national_corporation?(corporation)
         end
@@ -814,7 +925,7 @@ module Engine
         def purchase_stock_turn_token(player, share_price)
           index = @player_setup_order.find_index(player)
           corporation = Corporation.new(
-            sym: 'ST',
+            sym: "ST#{index + 1}.#{@stock_turn_token_number[player] + 1}",
             name: 'Stock Turn Token',
             logo: "1866/#{index + 1}",
             tokens: [],
@@ -836,6 +947,7 @@ module Engine
 
           player.spend(share_price.price, @bank)
           @stock_turn_token_in_play[player] << corporation
+          @stock_turn_token_number[player] += 1
 
           @log << "#{player.name} buys a stock turn token at #{format_currency(share_price.price)}"
         end

@@ -61,7 +61,7 @@ module Engine
             price = entity.share_price.price
             times = 0
             times = 1 if revenue >= price || @game.major_national_corporation?(entity)
-            times = 2 if revenue >= price * 2 && !@game.national_corporation?(entity)
+            times = 2 if revenue >= price * 2 && @game.public_corporation?(entity)
             if times.positive?
               { share_direction: :right, share_times: times }
             else
