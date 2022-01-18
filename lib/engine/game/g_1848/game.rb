@@ -451,7 +451,7 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::BuyCompany,
-            Engine::Step::Track,
+            G1848::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
@@ -459,6 +459,12 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return %w[5 6 57].include?(to.name) if (from.hex.tile.label.to_s == 'K') && (from.hex.tile.color == 'white')
+
+          super
         end
       end
     end
