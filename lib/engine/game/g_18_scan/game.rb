@@ -242,6 +242,15 @@ module Engine
             share = sj_share_by_minor(minor.name)
             share.buyable = false
             share.counts_for_limit = false
+
+            # Reserve token locations for minors
+            cities = hex_by_id(minor.coordinates).tile.cities
+
+            if minor.city
+              cities[minor.city].add_reservation!(minor)
+            else
+              cities.first.add_reservation!(minor)
+            end
           end
         end
 
@@ -257,6 +266,18 @@ module Engine
             Engine::Step::DiscardTrain,
             G18Scan::Step::BuySellParShares,
           ])
+        end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            G18Scan::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+          ], round_num: round_num)
         end
 
         def train_limit(entity)

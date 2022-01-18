@@ -136,7 +136,7 @@ module Engine
             simple_logo: '18_scan/2.alt',
             tokens: [0, 40],
             coordinates: 'F11',
-            city: 0,
+            city: 1,
             destination_coordinates: 'B11',
             color: '#5b74b4',
             abilities: [
@@ -160,7 +160,7 @@ module Engine
             simple_logo: '18_scan/3.alt',
             tokens: [0, 40],
             coordinates: 'F11',
-            city: 1,
+            city: 0,
             destination_coordinates: 'D7',
             color: '#5b74b4',
             abilities: [
