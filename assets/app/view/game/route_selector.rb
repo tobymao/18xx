@@ -263,8 +263,23 @@ module View
           router = Engine::AutoRouter.new(@game)
           @routes = router.test_compute(
             @game.current_entity,
-            #path_timeout: 120, route_timeout: 120, route_limit: 10_000,   # testing higher limits
-            path_timeout: 120,  # allow all paths
+            # base scenario = no options
+            #path_timeout: 120, # allow all paths, benchmark is 48 seconds
+            #path_timeout: 120, first_route_limit: 1000, # benchmark is 350000 combos within route_timeout.  now 500000
+            #route_timeout: 120,
+            #path_timeout: 10, first_route_limit: 1_000,  # limited for profiling
+            path_timeout: 120, route_timeout: 120, first_route_limit: 10_000, route_limit: 10_000,  # everything
+            routes: @routes.reject { |r| r.paths.empty? },
+          )
+          store(:routes, @routes)
+        end
+
+        test_auto_js = lambda do
+          router = Engine::AutoRouter.new(@game)
+          @routes = router.test_compute(
+            @game.current_entity,
+            path_timeout: 120, route_timeout: 120, first_route_limit: 10_000, route_limit: 10_000,  # everything
+            use_js_algorithm:true, # testing js algorithm
             routes: @routes.reject { |r| r.paths.empty? },
           )
           store(:routes, @routes)
@@ -315,6 +330,7 @@ module View
         if @game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat
           buttons << h('button.small', { on: { click: auto } }, 'Auto')
           buttons << h('button.small', { on: { click: test_auto } }, 'TEST Auto')
+          buttons << h('button.small', { on: { click: test_auto_js } }, 'TEST Auto JS')
         end
         if @game.adjustable_train_list?
           buttons << h('button.small', { on: { click: add_train } }, '+Train')
