@@ -213,6 +213,10 @@ module Engine
 
             parts = @game.graph.connected_nodes(corporation).keys
             corps = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+            # add in corps in same hex as home
+            corporation.tokens.first.hex.tile.cities.each do |city|
+              city.tokens.each { |tok| corps.append(tok&.corporation) if tok }
+            end
             corps.uniq.reject { |c| c.type != :minor || c == corporation || c.owner != corporation.owner }
           end
 
