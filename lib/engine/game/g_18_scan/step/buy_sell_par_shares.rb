@@ -12,7 +12,7 @@ module Engine
           def get_par_prices(entity, corp)
             return super unless corp == @game.sj
 
-            @game.stock_market.par_prices.filter do |p|
+            @game.stock_market.par_prices.select do |p|
               p.price == SJ_START_PRICE && p.price * 2 <= entity.cash
             end
           end
