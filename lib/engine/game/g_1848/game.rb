@@ -483,6 +483,10 @@ module Engine
           @sydney ||= hex_by_id('F17')
         end
 
+        def adelaide
+          @adelaide ||= hex_by_id('G6')
+        end
+
         def check_sydney_adelaide_connected
           return @sydney_adelaide_connected if @sydney_adelaide_connected
 
@@ -494,8 +498,16 @@ module Engine
 
         def place_home_token(entity)
           return super if entity.name != :COM
+          return unless @sydney_adelaide_connected
+          return if entity.tokens.first&.used
 
-          super if @sydney_adelaide_connected
+          # COM places home tokens... regardless as to whether there is space for them
+          [sydney, adelaide].each do |home_hex|
+            city = home_hex.tile.cities[0]
+            slot = city.available_slots.positive? ? 0 : city.slots
+            home_token = entity.tokens.find { |token| !token.used && token.price.zero? }
+            city.place_token(entity, home_token, free: true, check_tokenable: false, cheater: slot)
+          end
         end
       end
     end
