@@ -38,6 +38,8 @@ module Engine
         # Custom constants
         SJ_NAME = 'SJ'
 
+        MINOR_SUBSIDY = 10
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'close_minors' => [
             'Minors merge into SJ',
@@ -276,7 +278,7 @@ module Engine
             Engine::Step::Route,
             G18Scan::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Scan::Step::BuyTrain,
           ], round_num: round_num)
         end
 
