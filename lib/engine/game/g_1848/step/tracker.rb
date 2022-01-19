@@ -13,6 +13,11 @@ module Engine
           add_k = action.hex.tile.label.to_s == 'K'
           super
           action.hex.tile.label = 'K' if add_k
+
+          was_connected = @game.sydney_adelaide_connected
+          now_connected = @game.check_sydney_adelaide_connected
+
+          @log << 'Sydney and Adelaide are connected - COM may start operating' if !was_connected && now_connected
         end
       end
     end
