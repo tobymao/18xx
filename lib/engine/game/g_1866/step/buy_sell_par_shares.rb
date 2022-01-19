@@ -27,8 +27,14 @@ module Engine
           def choices_ability(entity)
             return {} if !entity.company? || (entity.company? && !@game.stock_turn_token_company?(entity))
 
+            operator = entity.company? ? entity.owner : entity
+            if entity.company? && @game.stock_turn_token_company?(entity) &&
+              @game.num_certs(operator) >= @game.cert_limit
+              return {}
+            end
+
             choices = {}
-            get_par_prices(entity.owner, nil).reverse_each do |p|
+            get_par_prices(operator, nil).reverse_each do |p|
               par_str = @game.par_price_str(p)
               choices[par_str] = par_str
             end
