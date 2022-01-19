@@ -28,8 +28,12 @@ module Engine
         after_setup
       end
 
+      def any_to_act?
+        @entities.any? { |entity| !skip_entity?(entity) }
+      end
+
       def after_setup
-        start_operating unless @entities.empty?
+        start_operating if any_to_act?
       end
 
       def after_process(action)
@@ -68,6 +72,8 @@ module Engine
 
       def start_operating
         entity = @entities[@entity_index]
+        return next_entity! if skip_entity?(entity)
+
         @current_operator = entity
         @current_operator_acted = false
         entity.trains.each { |train| train.operated = false }
@@ -90,6 +96,10 @@ module Engine
 
       def operating?
         true
+      end
+
+      def finished?
+        super || !any_to_act?
       end
     end
   end
