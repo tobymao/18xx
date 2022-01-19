@@ -282,6 +282,26 @@ module Engine
           ], round_num: round_num)
         end
 
+        def ipo_name
+          'Treasury'
+        end
+
+        def float_percent
+          return 20 if @phase.status.include?('float_2')
+          return 30 if @phase.status.include?('float_3')
+          return 40 if @phase.status.include?('float_4')
+
+          50
+        end
+
+        def event_full_cap!
+          @corporations.each do |corp|
+            next if corp.floated?
+
+            corp.capitalization = :full
+          end
+        end
+
         def train_limit(entity)
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
         end
