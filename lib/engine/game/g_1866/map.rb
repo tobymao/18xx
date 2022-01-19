@@ -379,6 +379,8 @@ module Engine
           'U1' => 'Murcia',
           'V18' => 'Palermo',
           'V20' => 'Catania',
+          'B11' => 'Port Token Bonus',
+          'U8' => 'Port Token Bonus',
         }.freeze
 
         HEXES = {
@@ -757,6 +759,12 @@ module Engine
               'path=a:1,b:4;border=edge:1;border=edge:4',
             ['T18'] =>
               'path=a:1,b:4;border=edge:1',
+
+            # Port bonus
+            %w[B11 U8] =>
+              'offboard=revenue:yellow_00|green_20|brown_30|gray_40;path=a:0,b:_0;'\
+              'offboard=revenue:yellow_00|green_20|brown_30|gray_40;path=a:5,b:_0;'\
+              'icon=image:1866/port,sticky:1',
           },
         }.freeze
       end
