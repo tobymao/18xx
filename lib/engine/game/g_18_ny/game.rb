@@ -651,7 +651,7 @@ module Engine
             Engine::Corporation.new(name: 'Buffalo', sym: 'BUF', tokens: [], coordinates: 'E3')
 
           non_blocking_graph.clear_graph_for(@buffalo_corp)
-          non_blocking_graph.connected_hexes(@buffalo_corp)[albany_hex]
+          non_blocking_graph.reachable_hexes(@buffalo_corp)[albany_hex]
         end
 
         def home_token_locations(corporation)
@@ -874,7 +874,7 @@ module Engine
         def connected_coal_hexes(entity)
           return if @coal_locations.empty?
 
-          @coal_locations.map { |cl| (graph.connected_hexes(entity).keys & cl)&.first }.compact
+          @coal_locations.map { |cl| (graph.reachable_hexes(entity).keys & cl)&.first }.compact
         end
 
         def claim_coal_token(entity, hex)
@@ -1230,7 +1230,7 @@ module Engine
             # Minor 1 and 2 are always considered connected
             next true if %w[1 2].include?(minor.id)
 
-            non_blocking_graph.connected_hexes(minor)[albany_hex]
+            non_blocking_graph.reachable_hexes(minor)[albany_hex]
           end
         end
 
