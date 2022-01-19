@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'lib/whats_this'
 require 'view/form'
 
 module View
   class CreateGame < Form
     include GameManager
+    include Lib::WhatsThis::AutoRoute
 
     needs :mode, default: :multi, store: true
     needs :num_players, default: 3, store: true
@@ -32,7 +34,7 @@ module View
         inputs << h(:label, { style: @label_style }, 'Game Options')
         inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
                                                    container_style: { paddingLeft: '0.5rem' })
-        inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox)
+        inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
         inputs << render_game_info
       when :hotseat
         inputs << h(:label, { style: @label_style }, 'Player Names')
