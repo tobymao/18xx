@@ -50,6 +50,11 @@ module Engine
           %w[120P 100P 75P 75P 75P 120P 80P 80P 80P 50P],
         ].freeze
 
+        EVENTS_TEXT = {
+          'green_ferries' => ['Green ferries', 'The green ferry lines opens up'],
+          'brown_ferries' => ['Brown ferries', 'The brown ferry lines opens up'],
+        }.freeze
+
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_overlap: 'Minor nationals',
                                               par: 'Yellow phase (L/2) par',
                                               par_1: 'Green phase (3/4) par',
@@ -169,6 +174,11 @@ module Engine
             num: 4,
             price: 200,
             obsolete_on: '6',
+            events: [
+              {
+                'type' => 'green_ferries',
+              },
+            ],
           },
           {
             name: '4',
@@ -205,6 +215,11 @@ module Engine
             num: 4,
             price: 450,
             obsolete_on: '10',
+            events: [
+              {
+                'type' => 'brown_ferries',
+              },
+            ],
             variants: [
               {
                 name: '3E',
@@ -410,10 +425,32 @@ module Engine
           'IN' => 'Converted by I1 president or force convert in phase 5',
         }.freeze
 
+        FERRY_TILE_G7 = 'border=edge:2,type:impassable;border=edge:4,type:impassable;path=a:1,b:5'
+        FERRY_TILE_S25 = 'border=edge:0,type:impassable;path=a:1,b:2'
+        FERRY_TILE_F8 = 'border=edge:1,type:impassable;border=edge:5,type:impassable;path=a:2,b:4'
+        FERRY_TILE_H4 = 'border=edge:3,type:impassable;border=edge:5,type:impassable;path=a:0,b:2'
+
         GERMANY_NATIONAL = 'GN'
         ITALY_NATIONAL = 'IN'
 
+        INCOME_BOND = 'P8'
+        INCOME_BOND_REVENUE = {
+          'L/2' => 10,
+          '3' => 20,
+          '4' => 20,
+          '5' => 30,
+          '6' => 30,
+          '8' => 40,
+          '10' => 40,
+        }.freeze
+
         LOCAL_TRAIN = 'L'
+
+        LONDON_HEX = 'F6'
+        LONDON_TILE = 'L1'
+        PARIS_HEX = 'J6'
+        PARIS_TILE = 'P1'
+
         MAX_PAR_VALUE = 200
 
         MINOR_NATIONAL_PAR_ROWS = {
@@ -444,7 +481,7 @@ module Engine
           'AHN' => %w[J22 J24 J26 K23 K25 L18 L20 L22 L24 L26 M19 M21 M23 M25 N22 N24 N26 O21 O23 O25
                       P22 P24 P26 Q23 Q25 R24],
           'BN' => %w[E13 F10 F12 F14 G9 G11 G13 H10 H12 I11],
-          'FN' => %w[H6 H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
+          'FN' => %w[H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
                      M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13],
           'GBN' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
           'SPN' => %w[O1 P2 P4 Q1 Q3 Q5 R2 R4 S1 S3 T2 U1],
@@ -470,6 +507,16 @@ module Engine
           { lay: true, upgrade: true, cost: 20 },
           { lay: true, upgrade: true, cost: 30 },
         ].freeze
+
+        TILE_LAYS_UPGRADE = {
+          'L/2' => 0,
+          '3' => 1,
+          '4' => 1,
+          '5' => 2,
+          '6' => 2,
+          '8' => 3,
+          '10' => 4,
+        }.freeze
 
         PHASE_PAR_TYPES = {
           'L/2' => :par,
@@ -537,14 +584,65 @@ module Engine
           super
         end
 
+        def check_overlap(routes)
+          # Tracks by e-train and normal trains
+          tracks_by_type = Hash.new { |h, k| h[k] = [] }
+
+          # Check local train not use the same token more then one time
+          local_token_hex = []
+          routes.each do |route|
+            if route.train.local? && !route.chains.empty?
+              local_token_hex.concat(route.visited_stops.select(&:city?).map { |n| n.hex.id })
+            end
+
+            route.paths.each do |path|
+              a = path.a
+              b = path.b
+
+              tracks = tracks_by_type[train_type(route.train)]
+              tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+              tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+
+              if b.edge? && a.town? && (nedge = a.tile.preferred_city_town_edges[a]) && nedge != b.num
+                tracks << [path.hex, a, path.lanes[0][1]]
+              end
+              if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
+                tracks << [path.hex, b, path.lanes[1][1]]
+              end
+            end
+          end
+
+          tracks_by_type.each do |_type, tracks|
+            tracks.group_by(&:itself).each do |k, v|
+              raise GameError, "Route can't reuse track on #{k[0].id}" if v.size > 1
+            end
+          end
+
+          local_token_hex.group_by(&:itself).each do |k, v|
+            raise GameError, "Local train can only use the token on #{k} once" if v.size > 1
+          end
+        end
+
         def city_tokened_by?(city, entity)
           return true if national_corporation?(entity) && entity.coordinates.include?(city.hex.name)
 
           super
         end
 
+        def compute_other_paths(routes, route)
+          routes.flat_map do |r|
+            next if r == route || train_type(route.train) != train_type(r.train)
+
+            r.paths
+          end
+        end
+
         def entity_can_use_company?(entity, company)
           entity == company.owner
+        end
+
+        def float_str(_entity)
+          ''
         end
 
         def format_currency(val)
@@ -623,7 +721,7 @@ module Engine
             G1866::Step::Token,
             Engine::Step::Route,
             G1866::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G1866::Step::DiscardTrain,
             G1866::Step::BuyTrain,
           ], round_num: round_num)
         end
@@ -646,6 +744,14 @@ module Engine
                       ''
                     end
           "#{format_currency(share_price.price)}#{row_str}"
+        end
+
+        def payout_companies
+          # Set the correct revenue for the Income Bond
+          income_bond = @companies.find { |c| c.id == self.class::INCOME_BOND }
+          income_bond.revenue = self.class::INCOME_BOND_REVENUE[@phase.name] if income_bond&.owner
+
+          super
         end
 
         def place_home_token(corporation)
@@ -788,6 +894,12 @@ module Engine
           ipoed.sort + others
         end
 
+        def status_array(corporation)
+          return if !public_corporation?(corporation) || !corporation.floated?
+
+          [["#{corporation.type == :public_5 ? '5' : '10'}-share company", 'bold']]
+        end
+
         def status_str(corporation)
           return if corporation.floated?
 
@@ -822,14 +934,34 @@ module Engine
           help
         end
 
-        def train_type(train)
-          train.name.include?('E') ? :etrain : :normal
-        end
-
         def upgrade_cost(_tile, _hex, entity, _spender)
           return 0 if national_corporation?(entity)
 
           super
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # London
+          return to.name == self.class::LONDON_TILE if from.hex.name == self.class::LONDON_HEX && from.color == :brown
+
+          # Paris
+          return to.name == self.class::PARIS_TILE if from.hex.name == self.class::PARIS_HEX && from.color == :brown
+
+          super
+        end
+
+        def event_brown_ferries!
+          @log << '-- Event: Brown Ferries --'
+
+          update_ferry_hex('F8', self.class::FERRY_TILE_F8, [{ hex: 'E7', edge: 5 }, { hex: 'F10', edge: 1 }])
+          update_ferry_hex('H4', self.class::FERRY_TILE_H4, [{ hex: 'G3', edge: 5 }, { hex: 'I3', edge: 3 }])
+        end
+
+        def event_green_ferries!
+          @log << '-- Event: Green Ferries --'
+
+          update_ferry_hex('G7', self.class::FERRY_TILE_G7, [{ hex: 'G5', edge: 4 }, { hex: 'H8', edge: 2 }])
+          update_ferry_hex('S25', self.class::FERRY_TILE_S25, [{ hex: 'R24', edge: 5 }, { hex: 'S23', edge: 4 }])
         end
 
         def hex_is_port?(hex)
@@ -1037,6 +1169,32 @@ module Engine
 
         def stock_turn_token_company?(company)
           company.id[0..1] == self.class::STOCK_TURN_TOKEN_PREFIX
+        end
+
+        def train_type(train)
+          train.name.include?('E') ? :etrain : :normal
+        end
+
+        def update_ferry_hex(hex_name, tile_code, hex_borders)
+          hex = hex_by_id(hex_name)
+          hex_tile = Engine::Tile.from_code(hex_name, :blue, tile_code)
+          hex.tile = hex_tile
+
+          hex_borders.each do |border|
+            hex_border = hex_by_id(border['hex'])
+            border = hex_border.tile.borders.find { |b| b.edge == border['edge'] }
+            hex_border.tile.borders.delete(border)
+          end
+          update_hex_neighbors(hex)
+        end
+
+        def update_hex_neighbors(hex)
+          hex.all_neighbors.each do |direction, neighbor|
+            next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
+
+            neighbor.neighbors[neighbor.neighbor_direction(hex)] = hex
+            hex.neighbors[direction] = neighbor
+          end
         end
 
         def visits_operating_rights?(entity, visits)
