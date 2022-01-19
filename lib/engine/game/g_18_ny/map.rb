@@ -339,7 +339,7 @@ module Engine
                       'path=a:2,b:_0;path=a:3,b:_0;border=edge:1;border=edge:4',
             %w[H10] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Williamsport,hide:1;' \
                        'path=a:2,b:_0;path=a:3,b:_0;border=edge:1',
-            %w[J26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;border=edge:2,type:divider',
+            %w[J26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:1,b:_0;border=edge:2,type:divider',
             %w[K15] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia;' \
                        'path=a:3,b:_0;border=edge:2,type:divider;border=edge:4',
             %w[K17] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia,hide:1;' \
