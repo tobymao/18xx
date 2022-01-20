@@ -240,7 +240,7 @@ module View
               sender = line.entity.name || line.user
               line = "#{sender}: #{line.message}"
             end
-            log_text.push(time ? "#{time} #{line}" : line)
+            log_text << (time ? "#{time} #{line}" : line)
           end
         end
         `navigator.clipboard.writeText(log_text.join('\n'))`
