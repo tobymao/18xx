@@ -153,7 +153,7 @@ module Engine
           },
         ].freeze
 
-        HOME_TOKEN_TIMING = :operating_round
+        HOME_TOKEN_TIMING = :start
         MUST_BUY_TRAIN = :always
         SELL_MOVEMENT = :left_share_pres
         SELL_BUY_ORDER = :sell_buy
@@ -176,12 +176,27 @@ module Engine
         ].freeze
 
         LAST_OR = 11
+        SP_HEX = 'E9'
 
         def reservation_corporations
           corporations + minors
         end
 
         def setup
+          # adjust parameters for majors to allow both IPO and treasury stock
+          # place BC and SP tokens
+          #
+          @corporations.each do |corp|
+            corp.ipo_owner = @bank
+            corp.share_holders.keys.each do |sh|
+              next if sh == @bank
+
+              sh.shares_by_corporation[corp].dup.each { |share| transfer_share(share, @bank) }
+            end
+            place_home_token(corp)
+            place_sp_token(corp)
+          end
+
           # pick one corp to wait until SR3
           #
 
@@ -189,12 +204,28 @@ module Engine
           @three_or_round = false
         end
 
-        # def stock_round
-        #  Engine::Round::Stock.new(self, [
-        #    Engine::Step::DiscardTrain,
-        #    G21Moon::Step::BuySellParShares,
-        #  ])
-        # end
+        def transfer_share(share, new_owner)
+          corp = share.corporation
+          corp.share_holders[share.owner] -= share.percent
+          corp.share_holders[new_owner] += share.percent
+          share.owner.shares_by_corporation[corp].delete(share)
+          new_owner.shares_by_corporation[corp] << share
+          share.owner = new_owner
+        end
+
+        def place_sp_token(corporation)
+          sp_token = corporation.tokens.first.dup
+
+          sp_tile = hex_by_id(self.class::SP_HEX).tile
+          sp_tile.cities.first.place_token(corporation, sp_token)
+          @log << "#{corporation.name} places a token on #{self.class::SP_HEX}"
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            G21Moon::Step::BuySellParShares,
+          ])
+        end
 
         def new_operating_round(round_num = 1)
           @or += 1
@@ -267,10 +298,6 @@ module Engine
           @or == LAST_OR
         end
 
-        def ipo_name(_corp = nil)
-          'Treasury'
-        end
-
         # ignore minors
         def operating_order
           @corporations.select(&:floated?).sort
@@ -284,24 +311,6 @@ module Engine
           corporations.reject(&:minor?).sort_by(&:name)
         end
 
-        # def redeemable_shares(entity)
-        #  return [] unless entity.corporation? && entity.type != :minor
-
-        #  bundles_for_corporation(share_pool, entity)
-        #    .reject { |bundle| entity.cash < bundle.price }
-        # end
-
-        # def issuable_shares(entity)
-        #  return [] unless entity.corporation? && entity.type != :minor
-
-        #  treasury = bundles_for_corporation(entity, entity)
-        #  ipo = bundles_for_corporation(@bank, entity)
-        #  ipo.each { |b| b.share_price = entity.original_par_price.price }
-        #  (treasury + ipo).reject do |bundle|
-        #    (bundle.num_shares + entity.num_market_shares) * 10 > self.class::MARKET_SHARE_LIMIT
-        #  end
-        # end
-        #
         def timeline
           @timeline ||= [
             'SR 3: 7th corporation becomes available',
@@ -342,6 +351,14 @@ module Engine
             { type: :OR, name: '11' },
             { type: :End },
           ]
+        end
+
+        def separate_treasury?
+          true
+        end
+
+        def ipo_name(_corp)
+          'IPO'
         end
       end
     end

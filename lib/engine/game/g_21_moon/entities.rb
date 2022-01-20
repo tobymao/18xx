@@ -101,6 +101,7 @@ module Engine
             tokens: [0, 25, 50, 75],
             float_percent: 50,
             max_ownership_percent: 50,
+            always_market_price: true,
           },
           {
             sym: 'ME',
@@ -112,6 +113,7 @@ module Engine
             tokens: [0, 25, 50, 75],
             float_percent: 50,
             max_ownership_percent: 50,
+            always_market_price: true,
           },
           {
             sym: 'MA',
@@ -123,6 +125,7 @@ module Engine
             tokens: [0, 25, 50, 75],
             float_percent: 50,
             max_ownership_percent: 50,
+            always_market_price: true,
           },
           {
             sym: 'DSE',
@@ -133,6 +136,7 @@ module Engine
             tokens: [0, 25, 50, 75],
             float_percent: 50,
             max_ownership_percent: 50,
+            always_market_price: true,
           },
           {
             sym: 'SM',
@@ -144,16 +148,18 @@ module Engine
             tokens: [0, 25, 50, 75],
             float_percent: 50,
             max_ownership_percent: 50,
+            always_market_price: true,
           },
           {
-            sym: 'I',
+            sym: 'IC',
             name: 'Intergalactic Corporation',
-            logo: '21Moon/I',
+            logo: '21Moon/IC',
             coordinates: 'I11',
             color: 'purple',
             tokens: [0, 25, 50, 75],
             float_percent: 50,
             max_ownership_percent: 50,
+            always_market_price: true,
           },
           {
             sym: 'LP',
@@ -161,9 +167,11 @@ module Engine
             logo: '21Moon/LP',
             coordinates: 'K9',
             color: 'violet',
+            text_color: 'black',
             tokens: [0, 25, 50, 75],
             float_percent: 50,
             max_ownership_percent: 50,
+            always_market_price: true,
           },
         ].freeze
       end
