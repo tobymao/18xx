@@ -56,6 +56,7 @@ module View
           type: 'text',
         },
         style: {
+          cursor: 'text',
           width: '100%',
           margin: '0',
           boxSizing: 'border-box',
