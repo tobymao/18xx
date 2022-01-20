@@ -230,7 +230,7 @@ module View
 
       def copy_log_transcript
         actions = @game.actions.to_h { |a| [a.id, a] }
-        logText = ''
+        logText = String.new
         @game.log.map.group_by(&:action_id).flat_map do |action_id, entries|
           action = actions[action_id]
           entries.flat_map do |entry|
