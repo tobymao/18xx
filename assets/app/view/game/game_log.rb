@@ -230,7 +230,7 @@ module View
 
       def copy_log_transcript
         actions = @game.actions.to_h { |a| [a.id, a] }
-        logText = String.new
+        log_text = String.new
         @game.log.map.group_by(&:action_id).flat_map do |action_id, entries|
           action = actions[action_id]
           entries.flat_map do |entry|
@@ -240,10 +240,10 @@ module View
               sender = line.entity.name || line.user
               line = "#{sender}: #{line.message}"
             end
-            logText += time ? "#{time} #{line}\n" : "#{line}\n"
+            log_text += time ? "#{time} #{line}\n" : "#{line}\n"
           end  
         end
-        `navigator.clipboard.writeText(logText)`
+        `navigator.clipboard.writeText(log_text)`
         store(:flash_opts, {message: 'Game log transcript copied to clipboard', color: 'lightgreen' }, skip: false)  
       end
 
