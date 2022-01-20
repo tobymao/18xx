@@ -24,6 +24,11 @@ module Engine
                 index = @entities_orginal.size
                 @entities_orginal.each_with_index do |e, idx|
                   next if e['type'] == 'minor_national'
+
+                  if @game.germany_or_italy_national?(c)
+                    index = idx
+                    break
+                  end
                   next if e['price'] > c.share_price.price
                   next if e['price'] == c.share_price.price && e['row'] <= c.share_price.coordinates[0]
 
@@ -38,6 +43,27 @@ module Engine
             end
 
             super
+          end
+
+          def start_operating
+            entity = @entities[@entity_index]
+            if @game.germany_or_italy_national?(entity) && entity.num_player_shares.zero?
+              @log << "#{entity.name} operates without any president"
+
+              current_price = entity.share_price.price
+              if @game.germany_or_italy_upgraded?(entity)
+                @game.stock_market.move_right(entity)
+              else
+                @game.stock_market.move_left(entity)
+              end
+
+              @log << "#{entity.name}'s share price changes from #{@game.format_currency(current_price)} "\
+                      "to #{@game.format_currency(entity.share_price.price)}"
+
+              next_entity!
+            else
+              super
+            end
           end
 
           def map_corporation(corporation)

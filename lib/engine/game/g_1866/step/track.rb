@@ -73,6 +73,18 @@ module Engine
 
             @round.num_upgraded_track = 0
           end
+
+          def upgradeable_tiles(entity, ui_hex)
+            hex = @game.hex_by_id(ui_hex.id)
+            potential_tiles(entity, hex).map do |tile|
+              tile.rotate!(0)
+              tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
+              next if tile.legal_rotations.empty?
+
+              tile.rotate!
+              tile
+            end.compact
+          end
         end
       end
     end

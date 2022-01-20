@@ -17,13 +17,6 @@ module Engine
             @round.current_actions.any? { |x| x.instance_of?(Action::ChooseAbility) }
           end
 
-          def can_par_share_price?(share_price, corp)
-            return (share_price.corporations.empty? || share_price.price == @game.class::MAX_PAR_VALUE) unless corp
-
-            share_price.corporations.none? { |c| c.type != :stock_turn_corporation } ||
-              share_price.price == @game.class::MAX_PAR_VALUE
-          end
-
           def choices_ability(entity)
             return {} if !entity.company? || (entity.company? && !@game.stock_turn_token_company?(entity))
 
@@ -47,11 +40,12 @@ module Engine
 
           def get_par_prices(entity, corp)
             return get_minor_national_par_prices(entity, corp) if @game.minor_national_corporation?(corp)
+            return [@game.forced_formation_par_prices(corp).last] if @game.germany_or_italy_national?(corp)
 
             par_type = @game.phase_par_type(corp)
             par_prices = @game.stock_market.par_prices.select do |p|
               multiplier = !corp ? 1 : 2
-              p.types.include?(par_type) && p.price * multiplier <= entity.cash && can_par_share_price?(p, corp)
+              p.types.include?(par_type) && p.price * multiplier <= entity.cash && @game.can_par_share_price?(p, corp)
             end
             par_prices.reject! { |p| p.price == @game.class::MAX_PAR_VALUE } if par_prices.size > 1
             par_prices
@@ -128,7 +122,16 @@ module Engine
                                           exchange_price: share.price_per_share)
 
               @game.after_par(corporation)
-              track_action(action, action.corporation)
+              track_action(action, corporation)
+
+            elsif corporation.id == @game.class::ITALY_NATIONAL
+              @game.forced_formation_major(@game.corporation_by_id(@game.class::ITALY_NATIONAL), %w[I1 I2 I3 I4 I5])
+              track_action(action, corporation)
+
+            elsif corporation.id == @game.class::GERMANY_NATIONAL
+              @game.forced_formation_major(@game.corporation_by_id(@game.class::GERMANY_NATIONAL), %w[G1 G2 G3 G4 G5])
+              track_action(action, corporation)
+
             else
               super
             end
