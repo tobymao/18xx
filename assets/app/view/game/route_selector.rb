@@ -251,9 +251,13 @@ module View
         end
 
         auto = lambda do
+          # Two quick fallbacks if router.test_compute breaks
+          #   1. remove use_js_algorithm: true, to make it use the ruby route-conflict algoritm
+          #   2. go back to router.compute
           router = Engine::AutoRouter.new(@game)
-          @routes = router.compute(
+          @routes = router.test_compute(
             @game.current_entity,
+            use_js_algorithm: true,
             routes: @routes.reject { |r| r.paths.empty? },
           )
           store(:routes, @routes)
@@ -263,12 +267,6 @@ module View
           router = Engine::AutoRouter.new(@game)
           @routes = router.test_compute(
             @game.current_entity,
-            # base scenario = no options
-            #path_timeout: 120, # allow all paths, benchmark is 48 seconds
-            #path_timeout: 120, first_route_limit: 1000, # benchmark is 350000 combos within route_timeout.  now 500000
-            #route_timeout: 120,
-            #path_timeout: 10, first_route_limit: 1_000,  # limited for profiling
-            path_timeout: 120, route_timeout: 120, first_route_limit: 10_000, route_limit: 10_000,  # everything
             routes: @routes.reject { |r| r.paths.empty? },
           )
           store(:routes, @routes)
@@ -278,8 +276,7 @@ module View
           router = Engine::AutoRouter.new(@game)
           @routes = router.test_compute(
             @game.current_entity,
-            path_timeout: 120, route_timeout: 120, first_route_limit: 10_000, route_limit: 10_000,  # everything
-            use_js_algorithm:true, # testing js algorithm
+            use_js_algorithm: true,
             routes: @routes.reject { |r| r.paths.empty? },
           )
           store(:routes, @routes)
@@ -329,8 +326,8 @@ module View
         ]
         if @game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat
           buttons << h('button.small', { on: { click: auto } }, 'Auto')
-          buttons << h('button.small', { on: { click: test_auto } }, 'TEST Auto')
-          buttons << h('button.small', { on: { click: test_auto_js } }, 'TEST Auto JS')
+          #buttons << h('button.small', { on: { click: test_auto } }, 'TEST Auto')
+          #buttons << h('button.small', { on: { click: test_auto_js } }, 'TEST Auto JS')
         end
         if @game.adjustable_train_list?
           buttons << h('button.small', { on: { click: add_train } }, '+Train')

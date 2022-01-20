@@ -40,8 +40,6 @@ module Engine
           puts "Path search: #{nodes.index(node)} / #{nodes.size}"
         end
 
-        # TODO: unwind and inline node/walk and path.walk
-
         node.walk(corporation: corporation, skip_paths: skip_paths) do |_, vp|
           paths = vp.keys
 
@@ -175,15 +173,17 @@ module Engine
       static = opts[:routes] || []
       path_timeout = opts[:path_timeout] || 20
       route_timeout = opts[:route_timeout] || 20
-      first_route_limit = opts[:first_route_limit] || 100   # first (largest) train's route limit
-      route_limit = opts[:route_limit] || 1_000             # other trains' route limit
+      route_limit = opts[:route_limit] || 1_000
       use_js_algorithm = opts[:use_js_algorithm] || false
 
       connections = {}
-      trains = @game.route_trains(corporation)
+      # Sort trains longest first, in case that improves combo calculations (some spotty evidence that it might)
+      #trains = @game.route_trains(corporation).sort_by {|train| -train.distance}
+      #HACK: sort by train price, since some trains have multiple distance portions - or could add them?
+      trains = @game.route_trains(corporation).sort_by {|train| -train.price}
 
       nodes = @game.graph.connected_nodes(corporation).keys.sort_by do |node|
-        revenue = trains#@game.route_trains(corporation)
+        revenue = trains
           .map { |train| node.route_revenue(@game.phase, train) }
           .max
         [
@@ -192,6 +192,10 @@ module Engine
           -revenue,
         ]
       end
+
+      # Add a per-node timeout to ensure we don't spend ALL time on first node's paths (in huge maps), which can cause
+      # all train routes to conflict with each other
+      node_timeout = path_timeout / nodes.size
 
       now = Time.now
 
@@ -227,7 +231,7 @@ module Engine
           puts "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}"
         end
 
-        #longest_train = 6 # TEMP super temp!
+        node_now = Time.now
 
         walk_counter = 0 #TEMP
         counter = 0 #TEMP
@@ -235,12 +239,22 @@ module Engine
         skipped_mirror_routes = 0
         route_counter.each { |train,_| route_counter[train] = 0 }
         #bitfield = []
+        node_abort = false
 
         node.walk(corporation: corporation, skip_paths: skip_paths) do |_, vp|
+          next if node_abort 
           paths = vp.keys
 
           abort = nil
           walk_counter += 1 #TEMP
+
+          if Time.now - node_now > node_timeout
+            #puts ' Node timeout reached'
+            # TODO: this is not a complete node.walk abort, find somthing more than :abort but less than break.
+            # Or wait til node.walk speed is improved and this may become less important
+            abort = :abort 
+            node_abort = true
+          end
 
           chains = []
           chain = []
@@ -252,9 +266,6 @@ module Engine
 
           complete = lambda do
             # assemble connection's bitfield one hexside at a time
-#if (left.hex.coordinates == "C18") && (right.hex.coordinates == "C20")
-#  puts " -- found C18-C20"
-#end
             #TODO: this misses some hex connections for some reason
             # if (left != right) && (left.hex != right.hex) # not sure why left == right is possible, or in two ways!
             #   setBit(bitfield, bitFromHexes(left, right, hexside_bits), bit_to_bitmask)
@@ -314,9 +325,9 @@ module Engine
               bitfield = bitfieldFromConnection(connection, hexside_bits, bit_to_bitmask)
 
               # exclude this route if a duplicate or mirror is already present
-              # NOTE: the mirror check is very cpu intensive currently, and there aren't that many mirror routes found,
+              # NOTE: the mirror check is cpu intensive currently, and there aren't that many mirror routes found,
               #  so it's faster to just add mirror routes to the collections and run them through the combo generator
-              if (false)  #tableContainsBitfield(route_bitfields[train], bitfield))
+              if (false) #tableContainsBitfield(route_bitfields[train], bitfield))
                 skipped_mirror_routes += 1
               else
                 route = Engine::Route.new(
@@ -327,22 +338,6 @@ module Engine
                   bitfield: bitfield,
                 )
                 #route_bitfields[train] << bitfield
-
-                #Looked into route.distance as a quicker way to check at least too-long route if that's the majority failure case
-                #(would still keep route.revenue to handle other cases)
-                #Turns out it does slightly improve speed, but I worry about unintended side effects, comparing two numbers here
-                #may not be enough precision on unique train types like 3+3 or even diesel
-                # if (route.distance > longest_train)
-                #   #puts "route.distance #{route.distance} > longest_train #{longest_train}"
-                #   abort_count += 1
-                #   abort = :abort  # this path is dead for all trains, don't walk it further
-                # else
-                #  if (route.distance <= train.distance)
-                #    route.revenue   # raises various errors if bad route
-                #    train_routes[train] << route
-                #    route_counter[train] += 1 #TEMP
-                #  end
-                # end
 
                 route.revenue   # raises various errors if bad route
                 train_routes[train] << route
@@ -378,99 +373,39 @@ module Engine
           end # trains.each do
           abort
         end # node.walk
+        puts " Node timeout reached" if node_abort
         puts " node.walk iterated #{walk_counter} times, built #{counter} connections, skipped #{skipped_mirror_routes} mirror routes, added routes #{route_counter.map { |k, v| k.name + ':' + v.to_s }.join(', ')}, and aborted #{abort_count} path branches" #TEMP
       end # nodes.each
 
-      puts "Evaluated #{connections.size} paths, found #{hexside_bits.size/2} unique hexsides, and found valid routes #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
+      # Check that there are no duplicate hexside bits(algorithm error)
+      mismatch = hexside_bits.length - hexside_bits.uniq.length
+      puts "  ERROR: hexside_bits contains #{mismatch} duplicate bits" if mismatch != 0
+      maxbit = hexside_bits.map {|hexside, bit| bit}.max() + 1  # safer than hexside_bits.length / 2
+      puts "Evaluated #{connections.size} paths, found #{maxbit} unique hexsides, and found valid routes #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
 
       static.each { |route| train_routes[route.train] = [route] }
 
-      first = true
       train_routes.each do |train, routes|
-        limit = first ? first_route_limit : route_limit
-        train_routes[train] = routes.sort_by(&:revenue).reverse.take(limit)
-        first = false
+        train_routes[train] = routes.sort_by(&:revenue).reverse.take(route_limit)
       end
 
-      #  Code Review note
+      # Code Review note:
+      # Sorting by route array size has intermittent problems if the longer train has fewer routes, like if I limit the first
+      # train's routes.  A suboptimal combo revenue is found in some test scenarios.
+      # Regardless of whether that first-train constraint is kept or discarded, sorting by array size here could be a latent bug;
+      # perhaps if all train's routes are limited to route_limit, the sort order of ties may be unpredictable.
+      # I'd rather sort by train size, which I assume was the original intent.
       #sorted_routes = train_routes.values.sort_by(&:size)
-      #  Sorting by route array size has intermittent problems if the longer train has fewer routes, like if I limit the first
-      #  train's routes.  A suboptimal combo revenue is found in some test scenarios.
-      #  Regardless of whether that first-train constraint is kept or discarded, sorting by array size here could be a latent bug;
-      #  perhaps if all train's routes are limited to route_limit, the sort order of ties may be unprdictable.
-      #  I'd rather sort by train size, which I assume was the original intent.
-      sorted_routes = train_routes.map {|train, routes| routes}
-
-      train_routes.each do |train, routes|
-        #puts "  #{train.name}-train"
-        #puts "    best route: $#{routes[0].revenue}"
-        #puts "    worst route: $#{routes[routes.size-1].revenue}"
-      end
+      sorted_routes = train_routes.map {|train, routes| routes} # already in train order from above
 
       limit = sorted_routes.map(&:size).reduce(&:*)
       puts "Finding route combos of best #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} routes with depth #{limit}"
-      # counter = 0
-      # max_revenue = 0
-      # conflicts = 0
-      # now = Time.now
 
-      #IN PROGRESS: try a pure js combo algorithm
       if use_js_algorithm
         possibilities = js_evaluateCombos(sorted_routes, route_timeout)
       else
         possibilities = evaluateCombos(sorted_routes, route_timeout)
       end
-
-# if (RUBY_ENGINE == 'opal') && use_js_algorithm
-#       # The embedded js (in Opal) algorithm
-#       `
-#       console.log("** Using javascript combo-generator **")
-      
-#       `
-# else # ! Opal
-#       # The Ruby algorithm
-#       sorted_routes.each do |routes|
-#         combos = routes.flat_map do |route|
-#           combos.map do |combo|
-#             counter += 1
-#             if (counter % 50000).zero?
-#               puts "#{counter} / #{limit}"
-#               raise if Time.now - now > route_timeout
-#             end
-#             if (routeBitfieldConflicts(combo, route))
-#               conflicts += 1
-#             else
-#               combo += [route]
-#               route.routes = combo
-#               route.clear_cache!(only_routes: true)
-
-#               possibilities_count += 1
-#               #route.revenue     # throws GameError if routes in the combo conflict
-#               route.auto_router_revenue #simple revenue calc without route validity checks
-#               combo_revenue = @game.routes_revenue(combo)
-
-#               # accumulate best-value routes, or start over if found a bigger best
-#               if (combo_revenue >= max_revenue)
-#                 if (combo_revenue > max_revenue)
-#                   possibilities.clear
-#                   max_revenue = combo_revenue
-#                   #puts "  new max_revenue found $#{max_revenue}"
-#                 end
-#                 possibilities << combo
-#               end
-#               combo
-#             end
-#           rescue GameError => msg # rubocop:disable Lint/SuppressedException
-#             puts " route.auto_router_revenue rejected a conflicting route - SHOULD NEVER HAPPEN - #{msg}"
-#           end
-#         end
-
-#         combos.compact!
-#       rescue RuntimeError
-#         puts 'Route timeout reached'
-#         break
-#       end # sorted_combos.each
-# end # RUBY_ENGINE
 
       # final sanity check on best combos: recompute each route.revenue in case it needs to reject a combo
       bad_route = nil
@@ -491,7 +426,6 @@ module Engine
         routes.each do |route|
           puts "     #{route.connection_hexes.map { |hex| hex }.join('-')}" if route != bad_route
         end
-        #puts "   route: #{bad_route.connection_hexes.map.join('-')}"
       end || []
 
       max_routes.each { |route| route.routes = max_routes }
@@ -576,25 +510,22 @@ module Engine
           # micro-optimized ruby gives much faster opal code
           node1 = node2
           node2 = paths[index]
-          #TODO: use the two nodes as dual keys, hexside = [n1,n2], rather than concatenating strings
-          #hexside = conn[:chain][:paths][index].hex.coordinates + '-' + conn[:chain][:paths][index+1].hex.coordinates
-          #hexside = [node1, node2]
-          #hexside = node1.hex.coordinates + '-' + node2.hex.coordinates
-          #hexside = [ node1.hex.coordinates , node2.hex.coordinates ]
-          hexside = node1.hex.coordinates + node2.hex.coordinates
+          # edges[0] needed for 1817-style tiles with intra-hex connections
+          # TODO: verify this works properly for all games
+          node1_id = node1.edges[0].id # node1.hex.coordinates
+          node2_id = node2.edges[0].id # node2.hex.coordinates
+          hexside = node1_id + '-' + node2_id
           if (hexside_bits.include?(hexside))
             setBit(bitfield, hexside_bits[hexside], bit_to_bitmask)
           else
             # try the reverse direction (same hexside)
-            #reverse = conn[:chain][:paths][index+1].hex.coordinates + '-' + conn[:chain][:paths][index].hex.coordinates
-            #reverse = [node2, node1]
-            #reverse = node2.hex.coordinates + '-' + node1.hex.coordinates
-            #reverse = [ node2.hex.coordinates , node1.hex.coordinates ]
-            reverse = node2.hex.coordinates + node1.hex.coordinates
+            reverse = node2_id + '-' + node1_id
+            puts "  Error? hexside == reverse!  #{hexside}, #{reverse}" if hexside == reverse
             if (hexside_bits.include?(reverse))
               setBit(bitfield, hexside_bits[reverse], bit_to_bitmask)
             else
-              bit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
+              #bit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
+              bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0 # safer than hexside_bits.length / 2
               #puts " bitfieldFromConnection adding bit #{newbit} for #{hexside} and #{reverse}"
               hexside_bits[hexside] = bit
               hexside_bits[reverse] = bit
@@ -607,6 +538,7 @@ module Engine
       bitfield
     end
 
+    #Note: keeping around until decide if can abandon bitfield search in complete lambda
     # def bitFromHexes(node1, node2, hexside_bits)
     #   fromHex = node1.hex.coordinates
     #   toHex = node2.hex.coordinates
@@ -633,8 +565,6 @@ module Engine
     # bit is a bit number, 0 is lowest bit, 32 will jump to the next int in the array, and so on
     def setBit(bitfield, bit, bit_to_bitmask)
       entry = (bit / 32).to_i     # which array entry do we need
-      #mask = 1 << bit.modulo(32)  # which bit in that int to set
-      #mask = bit_to_bitmask[bit.modulo(32)]  # which bit in that int to set
       mask = bit_to_bitmask[bit & 31]  # which bit in that int to set
       addCount = entry + 1 - bitfield.size 
       while addCount > 0 do
@@ -667,101 +597,120 @@ module Engine
       false
     end
 
-    # does test bitfield equal any other bitfields in the table?
-    def tableContainsBitfield(table, testbitfield)
-      #slower
-      #table.map{|bitfield| bitfield == testbitfield}.reduce(:|)
+    #Note: keeping in case finding mirror routes becomes worthwhile
+    # # does test bitfield equal any other bitfields in the table?
+    # def tableContainsBitfield(table, testbitfield)
+    #   #slower
+    #   #table.map{|bitfield| bitfield == testbitfield}.reduce(:|)
 
-      #also slow
-      table.any?{|bitfield| bitfield == testbitfield}
+    #   #also slow
+    #   table.any?{|bitfield| bitfield == testbitfield}
 
-      # faster but still slow
-      # table.each do |bitfield|
-      #   if (bitfield == testbitfield)
-      #     return true
-      #   end
-      # end
-      # false
-    end
+    #   # faster but still slow
+    #   # table.each do |bitfield|
+    #   #   if (bitfield == testbitfield)
+    #   #     return true
+    #   #   end
+    #   # end
+    #   # false
+    # end
 
     #
     # The js-in-Opal algorithm
     #
     def js_evaluateCombos (rb_sorted_routes, route_timeout)
+      rb_possibilities = []
+      possibilities_count = 0
+      conflicts = 0
+      limit = rb_sorted_routes.map(&:size).reduce(&:*)
+      now = Time.now
+
       if RUBY_ENGINE == 'opal'
-        rb_possibilities = []
-        possibilities_count = 0
-        conflicts = 0
-        limit = rb_sorted_routes.map(&:size).reduce(&:*)
-        now = Time.now
-
         puts "** Using javascript combo-generator **"
-
-        # TODO: restructure sorted_routes for js
         `
-        possibilities = []
-        combos = [];
-        counter = 0;
-        max_revenue = 0;
+        let possibilities = []
+        let combos = [];
+        let counter = 0;
+        let max_revenue = 0;
 
         //
         // marshal Opal objects to js for faster/easier access
         //
         js_sorted_routes = [];
-        //for (rb_routes of rb_sorted_routes)
         Opal.send(rb_sorted_routes, 'each', [], function(rb_routes)
           {
-            js_routes = [];
-            //for (rb_route of rb_routes)
+            let js_routes = [];
             Opal.send(rb_routes, 'each', [], function(rb_route)
             {
-              //js_routes.push( { route: rb_route, bitfield: rb_route.$fetch('bitfield'), revenue: rb_route.$fetch('revenue') } );
               js_routes.push( { route: rb_route, bitfield: rb_route.bitfield, revenue: rb_route.revenue } );
             });
             js_sorted_routes.push(js_routes);
           });
+        let js_limit = limit
 
         //
         // init combos with first train's routes
         //
-        for (route of js_sorted_routes[0])
+        for (r=0; r < js_sorted_routes[0].length; r++)
         {
+          let route = js_sorted_routes[0][r];
           counter += 1;
           combo = { revenue: route.revenue, routes: [route] };
           combos.push(combo);
           possibilities_count += 1;
-          if (route.revenue > max_revenue)
-            max_revenue = route.revenue;
+
+          // accumulate best-value combos, or start over if found a bigger best
+          if (combo.revenue >= max_revenue)
+          {
+            if (combo.revenue > max_revenue)
+            {
+              possibilities = []
+              max_revenue = combo.revenue;
+              //console.log("  new max_revenue found $" + max_revenue);
+            }
+            possibilities.push(combo);
+          }
         }
 
         //
         // generate combos with remaining trains' routes
         //
-        r = 1;
-        while (r < js_sorted_routes.length)
+        for (train=1; train < js_sorted_routes.length; train++)
         {
-          new_combos = [];
-          for (route of js_sorted_routes[r])
+          // Recompute limit, since by 3rd train it will start going down as invalid combos are excluded from the test set
+          // revised limit = combos.length * remaining train route lengths
+          js_limit = combos.length;
+          for (var remaining=train; remaining < js_sorted_routes.length; remaining++)
+            js_limit *= js_sorted_routes[remaining].length;
+          if (js_limit != limit)
+            console.log("  adjusting depth to " + js_limit + " because first " + train + " trains only had " + combos.length + " valid combos");
+
+          let new_combos = [];
+          for (rt=0; rt < js_sorted_routes[train].length; rt++)
           {
-            for (combo of combos)
+            let route = js_sorted_routes[train][rt];
+            for (c=0; c < combos.length; c++)
             {
+              let combo = combos[c];
               counter += 1;
               if ((counter % 1_000_000) == 0)
-                console.log(counter + " / " + limit);
+              {
+                console.log(counter + " / " + js_limit);
+                //TODO: raise if Time.now - now > route_timeout
+              }
 
               if (js_routeBitfieldConflicts(combo, route))
                 conflicts += 1;
               else
               {
                 possibilities_count += 1;
-
                 // copy the combo, add the route
-                newcombo = { revenue: combo.revenue, routes: [...combo.routes] };
+                let newcombo = { revenue: combo.revenue, routes: [...combo.routes] };
                 newcombo.routes.push(route);
                 newcombo.revenue += route.revenue;
                 new_combos.push(newcombo);
 
-                // accumulate best-value routes, or start over if found a bigger best
+                // accumulate best-value combos, or start over if found a bigger best
                 if (newcombo.revenue >= max_revenue)
                 {
                   if (newcombo.revenue > max_revenue)
@@ -773,80 +722,28 @@ module Engine
                   possibilities.push(newcombo);
                 }
               }
-              r += 1;
             }
           }
-          for (combo of new_combos)
-            combos.push(combo);
+          new_combos.forEach((combo, n) => { combos.push(combo) });
         }
-        //console.log("final counter: " + counter + ", limit: " + limit);
-        //console.log("Found " + possibilities_count + " possible combos (" + possibilities.length + " best) and rejected " + conflicts + " conflicting combos");
 
         //
         // marshall best combos back to Opal
         //
-        for (combo of possibilities)
+        for (p=0; p < possibilities.length; p++)
         {
-          rb_routes = []
+          let combo = possibilities[p];
+          let rb_routes = []
           for (route of combo.routes)
           {
             rb_routes['$<<'](route.route);
           }
           rb_possibilities['$<<'](rb_routes);
         }
-
-/*
-        sorted_routes.each do |routes|
-          combos = routes.flat_map do |route|
-            combos.map do |combo|
-              counter += 1
-              if (counter % 500000).zero?
-                puts "#{counter} / #{limit}"
-                raise if Time.now - now > route_timeout
-              end
-              if (routeBitfieldConflicts(combo, route))
-                conflicts += 1
-              else
-                combo += [route]
-                route.routes = combo
-                route.clear_cache!(only_routes: true)
-
-                possibilities_count += 1
-                #route.revenue     # throws GameError if routes in the combo conflict
-                route.auto_router_revenue #simple revenue calc without route validity checks
-                combo_revenue = @game.routes_revenue(combo)
-
-                # accumulate best-value routes, or start over if found a bigger best
-                if (combo_revenue >= max_revenue)
-                  if (combo_revenue > max_revenue)
-                    possibilities.clear
-                    max_revenue = combo_revenue
-                    #puts "  new max_revenue found $#{max_revenue}"
-                  end
-                  possibilities << combo
-                end
-                combo
-              end
-            rescue GameError => msg # rubocop:disable Lint/SuppressedException
-              puts " route.auto_router_revenue rejected a conflicting route - SHOULD NEVER HAPPEN - #{msg}"
-            end # combos.map
-          end # route.flat_map
-
-          combos.compact!
-        rescue RuntimeError
-          puts 'Route timeout reached'
-          break
-        end # sorted_combos.each
-*/
         `
-        max_routes = rb_possibilities.max_by do |routes|
-          routes.each { |route| route.routes = routes }
-          @game.routes_revenue(routes)
-        end || []
-  
       else # not Opal
-        puts "** javascript combo-generator requested but not in Opal environment - no combos computed* *"
-      end
+        puts "** javascript combo-generator requested but not running in Opal environment - no combos computed **"
+      end # RUBY_ENGINE == 'opal'
 
       puts "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} conflicting combos in: #{Time.now - now}"
       rb_possibilities
@@ -859,11 +756,17 @@ module Engine
       {
         // each route has 1 or more ints in bitfield array
         // only test up to the shorter size, since bits beyond that obviously don't conflict
-        index = Math.min(cr.bitfield.length, testroute.bitfield.length) - 1;
+        let index = Math.min(cr.bitfield.length, testroute.bitfield.length) - 1;
         while (index >= 0)
         {
           if ((cr.bitfield[index] & testroute.bitfield[index]) != 0)
           {
+            //console.log("  route/combo conflict:");
+            //console.log("    testroute:    " + format_bitfield(testroute.bitfield));
+            //console.log("    combo routes: " + format_bitfield(combo.routes[0].bitfield));
+            //for (var i=1; i < combo.routes.length; i++)
+            //  console.log("                  " + format_bitfield(combo.routes[i].bitfield));
+
             return true;
           }
           index -= 1;
@@ -871,6 +774,19 @@ module Engine
       }
       return false;
     }
+
+    /* keep for future debugging use
+    function format_bitfield(bitfield)
+    {
+      let fmt = "";
+      for (var word=0; word < bitfield.length; word++)
+      {
+        let field = (bitfield[word] >>> 0).toString(2);     // >>> 0 coerces to unsigned number if high bit set
+        field = "00000000000000000000000000000000".substr(field.length) + field;  // pad to 32 bits
+        fmt += " " + field;
+      }
+      return fmt;
+    } */
     `
 
   end
