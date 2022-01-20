@@ -27,7 +27,13 @@ module Engine
 
         BANK_CASH = 12_000
 
-        CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
+        FIRST_EDITION_CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
+        SECOND_EDITION_CERT_LIMIT = { 2 => 26, 3 => 20, 4 => 15, 5 => 12, 6 => 11 }.freeze
+
+        def game_cert_limit
+          @game_cert_limit ||= second_edition? ? SECOND_EDITION_CERT_LIMIT : FIRST_EDITION_CERT_LIMIT
+          @game_cert_limit
+        end
 
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
 
@@ -132,25 +138,90 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [{ name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
-                  { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', events: [{ 'type' => 'float_30' }] },
-                  { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
-                  {
-                    name: '12H',
-                    num: 3,
-                    distance: 12,
-                    price: 600,
-                    events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' },
-                             { 'type' => 'capitalization_round', 'when' => 3 }],
-                  },
-                  {
-                    name: '5DE',
-                    num: 2,
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99, 'multiplier' => 2 }],
-                    price: 800,
-                    events: [{ 'type' => 'float_60' }],
-                  },
-                  { name: 'D', num: 20, distance: 99, price: 1000 }].freeze
+        def game_phases
+          unless @game_phases
+            @game_phases = super.dup
+            if second_edition? || fourde_variant?
+              i = @game_phases.find_index { |p| p[:name] == '5DE' }
+              @game_phases[i] = @game_phases[i].dup.merge({ name: '4DE', on: '4DE' })
+            end
+          end
+          @game_phases
+        end
+
+        FIRST_EDITION_TRAINS = [
+          { name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
+          { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', events: [{ 'type' => 'float_30' }] },
+          { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
+          {
+            name: '12H',
+            num: 3,
+            distance: 12,
+            price: 600,
+            events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' },
+                     { 'type' => 'capitalization_round', 'when' => 3 }],
+          },
+          {
+            name: '5DE',
+            num: 2,
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99, 'multiplier' => 2 }],
+            price: 800,
+            events: [{ 'type' => 'float_60' }],
+          },
+          { name: 'D', num: 20, distance: 99, price: 1000 },
+        ].freeze
+
+        SECOND_EDITION_TRAINS = [
+          { name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
+          { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '4DE', events: [{ 'type' => 'float_30' }] },
+          { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
+          {
+            name: '12H',
+            num: 3,
+            distance: 12,
+            price: 600,
+            events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' },
+                     { 'type' => 'capitalization_round', 'when' => 3 }],
+          },
+          {
+            name: '4DE',
+            num: 2,
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 99, 'multiplier' => 2 }],
+            price: 800,
+            events: [{ 'type' => 'float_60' }],
+          },
+          {
+            name: 'D',
+            num: 20,
+            distance: 99,
+            price: 1000,
+            variants: [
+              name: '5DE',
+              distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99, 'multiplier' => 2 }],
+              price: 1000,
+            ],
+          },
+        ].freeze
+
+        def game_trains
+          unless @game_trains
+            @game_trains = (second_edition? ? self.class::SECOND_EDITION_TRAINS : self.class::FIRST_EDITION_TRAINS).dup
+            if fourde_variant?
+              @game_trains.map! do |t|
+                train = t.dup
+                case train[:name]
+                when '4H'
+                  train[:rusts_on] = '4DE'
+                when '5DE'
+                  train[:name] = '4DE'
+                  train[:distance] = (train[:distance].dup)[0]['pay'] = 4
+                end
+                train
+              end
+            end
+          end
+          @game_trains
+        end
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'float_30' => ['30% to Float', 'Corporations must have 30% of their shares sold to float'],
@@ -172,10 +243,81 @@ module Engine
           'coal' => '/icons/18_ny/coal.svg',
         }.freeze
 
-        CONNECTION_BONUS_HEXES =
-          [%w[A13 A11], %w[A19 A15 A17 A21], %w[A23 A21], %w[C25 A25 B26], %w[G25 H26], %w[D0 E1], %w[J26], 'B12', 'C11',
-           'C23', 'D18', 'D20', 'E9', 'F10', 'F12', 'G9', 'G13', 'G19', 'G21', 'I19', 'I23', 'J18', 'J22', 'K19'].freeze
-        COAL_LOCATIONS = [%w[F0 G1], %w[H2 H4], %w[H6 H8 H10], ['H12'], %w[I13 J14], %w[K15 K17]].freeze
+        def game_corporations
+          unless @game_corporations
+            @game_corporations = super.dup
+            if second_edition?
+              @game_corporations.map! do |c|
+                corp = c.dup
+                case corp[:sym]
+                when 'B&A'
+                  corp[:tokens] = [0, 20, 20, 20]
+                  change_president_certificate_to_30_percent(corp)
+                when 'ERIE', 'RWO'
+                  change_president_certificate_to_30_percent(corp)
+                when 'NYNH'
+                  corp[:tokens] = [0, 20, 20, 20]
+                  corp[:sym] = 'NH'
+                  change_president_certificate_to_30_percent(corp)
+                when 'NY&H'
+                  corp[:tokens] = [0, 20]
+                end
+                corp
+              end
+            end
+          end
+          @game_corporations
+        end
+
+        def change_president_certificate_to_30_percent(corporation)
+          corporation[:shares] = [30, 10, 10, 10, 10, 10, 10, 10]
+          corporation[:float_percent] = 30
+          corporation[:abilities] = corporation[:abilities].dup || []
+          corporation[:abilities] << { type: 'description', description: "30% President's Certificate" }
+          corporation
+        end
+
+        def game_companies
+          unless @game_companies
+            @game_companies = super.dup
+            if second_edition?
+              @game_companies.map! do |c|
+                company = c.dup
+                company[:value] = 180 if company[:sym] == 'DPC'
+                company
+              end
+            end
+          end
+          @game_companies
+        end
+
+        def location_name(coord)
+          unless @locations
+            @locations = self.class::LOCATION_NAMES.dup
+            @locations.merge!(self.class::SECOND_EDITION_LOCATION_NAMES) if second_edition?
+          end
+          @locations[coord]
+        end
+
+        def game_hexes
+          unless @game_hexes
+            @game_hexes = super.dup
+            if second_edition?
+              self.class::SECOND_EDITION_HEXES.each do |color, hexes|
+                @game_hexes[color] = @game_hexes[color].dup.merge(hexes)
+              end
+            end
+          end
+          @game_hexes
+        end
+
+        def game_tiles
+          unless @game_tiles
+            @game_tiles = super.dup
+            @game_tiles.merge!(self.class::SECOND_EDITION_TILES) if second_edition?
+          end
+          @game_tiles
+        end
 
         def setup
           @float_percent = 20
@@ -189,12 +331,14 @@ module Engine
         end
 
         def init_connection_bonuses
-          CONNECTION_BONUS_HEXES.each do |hex_id|
+          hexes = self.class::CONNECTION_BONUS_HEXES.dup
+          hexes << self.class::SECOND_EDITION_CONNECTION_BONUS_HEXES if second_edition?
+          hexes.each do |hex_id|
             hex_id = hex_id.first if hex_id.is_a?(Array)
             hex_by_id(hex_id).assign!(CONNECTION_BONUS_ICON)
           end
           @offboard_bonus_locations =
-            CONNECTION_BONUS_HEXES.select { |h| h.is_a?(Array) }.map { |a| a.map { |hex_id| hex_by_id(hex_id) } }
+            hexes.select { |h| h.is_a?(Array) }.map { |a| a.map { |hex_id| hex_by_id(hex_id) } }
         end
 
         def init_coal_tokens
@@ -218,8 +362,16 @@ module Engine
           @albany_hex ||= hex_by_id('F20')
         end
 
+        def second_edition?
+          @second_edition_optional_rule ||= @optional_rules.include?(:second_edition)
+        end
+
         def fivede_runs_stations_and_offboards_only?
           @fivede_optional_rule ||= @optional_rules.include?(:fivede)
+        end
+
+        def fourde_variant?
+          @fourde_optional_rule ||= @optional_rules.include?(:fourde)
         end
 
         def active_minors
@@ -276,7 +428,7 @@ module Engine
 
         def new_nyc_formation_round(round_num)
           @log << "-- NYC Formation Round #{round_num} --"
-          @log << "NYC formation share price is #{format_currency(nyc_formation_share_price.price)}" if round_num == 1
+          nyc_formation_share_price if round_num == 1
           G18NY::Round::NYCFormation.new(self, [
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
@@ -499,7 +651,7 @@ module Engine
             Engine::Corporation.new(name: 'Buffalo', sym: 'BUF', tokens: [], coordinates: 'E3')
 
           non_blocking_graph.clear_graph_for(@buffalo_corp)
-          non_blocking_graph.connected_hexes(@buffalo_corp)[albany_hex]
+          non_blocking_graph.reachable_hexes(@buffalo_corp)[albany_hex]
         end
 
         def home_token_locations(corporation)
@@ -524,6 +676,7 @@ module Engine
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if town_to_city_upgrade?(from, to)
+          return false if to.name == '448' && from.hex.neighbors.size != 4
 
           super
         end
@@ -545,17 +698,17 @@ module Engine
 
         def upgrades_to_correct_label?(from, to)
           # Handle hexes that change from standard tiles to special city tiles
-          case from.hex.name
-          when 'E3'
+          case from.hex.location_name
+          when 'Buffalo'
             return true if to.name == 'X35'
             return false if to.color == :gray
-          when 'D8'
+          when 'Rochester'
             return true if to.name == 'X13'
             return false if to.color == :green
-          when 'D12'
+          when 'Syracuse'
             return true if to.name == 'X24'
             return false if to.color == :brown
-          when 'K19'
+          when 'Brooklyn'
             return true if to.name == 'X21'
             return false if to.color == :brown
           end
@@ -594,6 +747,7 @@ module Engine
           distance = route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
           # Springfield is considered one hex
           distance -= 1 if route.all_hexes.include?(hex_by_id('E25'))
+          distance -= 1 if second_edition? && route.all_hexes.include?(hex_by_id('E1'))
           distance
         end
 
@@ -609,7 +763,7 @@ module Engine
         end
 
         def compute_stops(route)
-          return super unless route.train.name == '5DE'
+          return super unless route.train.name.include?('DE')
 
           stops = route.visited_stops
           return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
@@ -617,7 +771,8 @@ module Engine
           if fivede_runs_stations_and_offboards_only?
             stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == :red }
           end
-          stops = stops.combination(5).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > 5
+          count = route.train.distance.first['pay']
+          stops = stops.combination(count).map { |s| [s, revenue_for(route, s)] }.max_by(&:last).first if stops.size > count
           stops
         end
 
@@ -719,7 +874,7 @@ module Engine
         def connected_coal_hexes(entity)
           return if @coal_locations.empty?
 
-          @coal_locations.map { |cl| (graph.connected_hexes(entity).keys & cl)&.first }.compact
+          @coal_locations.map { |cl| (graph.reachable_hexes(entity).keys & cl)&.first }.compact
         end
 
         def claim_coal_token(entity, hex)
@@ -1013,14 +1168,15 @@ module Engine
 
         def nyc_formation_share_price
           return @nyc_share_price if @nyc_share_price
+          return if (minors = minors_connected_to_albany).empty?
 
-          minors = minors_connected_to_albany
           nyc_calculated_value = (minors.sum { |minor| minor.share_price.price } * 2 / minors.size.to_f).ceil
           par_prices = @stock_market.share_prices_with_types(%i[par_2]).to_h do |sp|
             [sp, (sp.price - nyc_calculated_value).abs]
           end
           closest_par = par_prices.values.min
           @nyc_share_price = par_prices.select { |_sp, delta| delta == closest_par }.keys.max_by(&:price)
+          @log << "NYC formation share price is #{format_currency(@nyc_share_price.price)}"
         end
 
         def nyc_forming?
@@ -1074,7 +1230,7 @@ module Engine
             # Minor 1 and 2 are always considered connected
             next true if %w[1 2].include?(minor.id)
 
-            non_blocking_graph.connected_hexes(minor)[albany_hex]
+            non_blocking_graph.reachable_hexes(minor)[albany_hex]
           end
         end
 

@@ -24,6 +24,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
         TREASURY_SHARE_LIMIT = 50
+        EBUY_OTHER_VALUE = false
 
         TOKEN_FEE = {
           'T&P' => 140,

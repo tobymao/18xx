@@ -1266,7 +1266,7 @@ module Engine
         end
 
         def connected_to_coalfields?(entity)
-          graph.connected_hexes(entity).include?(hex_by_id(VA_COALFIELDS_HEX))
+          graph.reachable_hexes(entity).include?(hex_by_id(VA_COALFIELDS_HEX))
         end
 
         def can_buy_coal_marker?(entity)

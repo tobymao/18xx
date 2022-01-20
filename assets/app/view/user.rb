@@ -20,7 +20,7 @@ module View
     TILE_COLORS = Lib::Hex::COLOR.freeze
     ROUTE_COLORS = Lib::Settings::ROUTE_COLORS.freeze
     NOTIFICATION_OPTIONS = %i[email webhook none].freeze
-    WEBHOOK_OPTIONS = { slack: '18xx Slack', custom: 'Custom' }.freeze
+    WEBHOOK_OPTIONS = { slack: '18oggs Slack', custom: 'Custom' }.freeze
 
     def render_content
       children =
@@ -167,13 +167,23 @@ module View
         store(:notifications, Native(@inputs[:notifications]).elm&.value)
       end
 
-      children = [render_input(
+      children = [
+        h(
+          :a,
+          {
+            props: { href: 'https://github.com/tobymao/18xx/wiki/Notifications' },
+            style: { marginRight: '1rem' },
+          },
+          'Learn about Notifications',
+        ),
+        render_input(
                     'Turn/Message Notifications',
                     id: :notifications,
                     el: 'select',
                     on: { input: notification_change },
                     children: notification_options
-                  )]
+                  ),
+]
       children.concat(webhook_settings) if @notifications == :webhook
       h(:div, children)
     end
@@ -193,6 +203,7 @@ module View
       end
 
       elements = []
+
       elements << render_input(
                     'Webhook',
                     id: :webhook,

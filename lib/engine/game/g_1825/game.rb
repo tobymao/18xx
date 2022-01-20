@@ -350,6 +350,7 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
         GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
         TRAIN_PRICE_MIN = 10
+        MN_TRAIN_MUST_USE_TOKEN = false
         IMPASSABLE_HEX_COLORS = %i[blue sepia red].freeze
         TILE_200 = '200'
 

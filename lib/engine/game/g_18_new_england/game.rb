@@ -203,6 +203,7 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         LIMIT_TOKENS_AFTER_MERGER = 999
         SOLD_OUT_INCREASE = false
+        EBUY_OTHER_VALUE = false
 
         YELLOW_PRICES = [50, 55, 60, 65, 70].freeze
         GREEN_PRICES = [80, 90, 100].freeze
@@ -316,7 +317,7 @@ module Engine
             G18NewEngland::Step::RedeemShares,
             G18NewEngland::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G18NewEngland::Step::Route,
             G18NewEngland::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18NewEngland::Step::BuyTrain,
@@ -329,6 +330,13 @@ module Engine
 
           # un-highlight the starting minors
           @starting_minors.each { |m| m.reservation_color = nil }
+        end
+
+        def reorder_by_cash
+          # this should break ties in favor of the closest to previous PD
+          pd_player = @players.max_by(&:cash)
+          @players.rotate!(@players.index(pd_player))
+          @log << "Priority order: #{@players.map(&:name).join(', ')}"
         end
 
         def new_or!
@@ -347,7 +355,7 @@ module Engine
             when init_round.class
               init_round_finished
               @operating_rounds = @phase.operating_rounds
-              reorder_players(:most_cash, log_player_order: true)
+              reorder_by_cash
               new_operating_round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
@@ -448,13 +456,15 @@ module Engine
         end
 
         def bank_sort(corporations)
-          mins, majs = corporations.reject(&:minor?).partition(&:type)
-          mins.sort_by(&:name) + majs.sort_by(&:name)
+          majors, minors = corporations.reject(&:minor?).partition { |c| c.type == :major }
+          avail, unavail = minors.partition { |c| @phase.available?('3') || @starting_minors.include?(c) }
+
+          avail.sort_by(&:name) + unavail.sort_by(&:name) + majors.sort_by(&:name)
         end
 
         def player_sort(entities)
-          mins, majs = entities.partition(&:type)
-          (mins.sort_by(&:name) + majs.sort_by(&:name)).group_by(&:owner)
+          majors, minors = entities.select(&:corporation?).partition { |c| c.type == :major }
+          (minors.sort_by(&:name) + majors.sort_by(&:name)).group_by(&:owner)
         end
 
         def reserve_minor(minor, entity)
@@ -627,23 +637,29 @@ module Engine
           normal + [min_express]
         end
 
-        def revenue_multiplier(route)
-          return 1 unless express_train?(route.train)
+        def revenue_multiplier(train)
+          return 1 unless express_train?(train)
 
-          route.train.owner.trains.count { |t| express_train?(t) }
+          train.owner.trains.count { |t| express_train?(t) }
         end
 
         def revenue_for(route, stops)
-          super * revenue_multiplier(route)
+          super * revenue_multiplier(route.train)
         end
 
         def revenue_str(route)
-          multiplier = revenue_multiplier(route)
-          super + (multiplier < 2 ? '' : " (x#{multiplier})")
+          multiplier = revenue_multiplier(route.train)
+          super + (multiplier < 2 ? '' : " (×#{multiplier})")
         end
 
         def separate_treasury?
           true
+        end
+
+        def train_name(train)
+          return train.name unless (multiplier = revenue_multiplier(train)) > 1
+
+          "#{train.name}×#{multiplier}"
         end
 
         def available_programmed_actions

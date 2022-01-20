@@ -130,59 +130,6 @@ module Engine
               'code' =>
                 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B',
             },
-          'L1' =>
-            {
-              'count' => 1,
-              'color' => 'yellow',
-              'code' =>
-                'city=revenue:30,slots:1;path=a:0,b:_0;path=a:2,b:_0;upgrade=cost:40;label=L',
-            },
-          'L2' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;upgrade=cost:40;label=L',
-            },
-          'L3' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;upgrade=cost:40;label=L',
-            },
-          'L4' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:90,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                'upgrade=cost:40;label=L',
-            },
-          'L5' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:90,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;'\
-                'upgrade=cost:40;label=L',
-            },
-          'L6' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:90,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;'\
-                'upgrade=cost:40;label=L',
-            },
-          'L7' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:120,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;'\
-                'label=L',
-            },
           'C1' =>
             {
               'count' => 1,
@@ -335,6 +282,22 @@ module Engine
                 'city=revenue:90,slots:1;path=a:3,b:_1;path=a:4,b:_1;'\
                 'city=revenue:90,slots:1;path=a:0,b:_2;path=a:5,b:_2;label=C',
             },
+          'L1' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:120,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                'label=L',
+            },
+          'P1' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:90,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                'path=a:5,b:_0;label=P',
+            },
         }.freeze
 
         LOCATION_NAMES = {
@@ -416,6 +379,8 @@ module Engine
           'U1' => 'Murcia',
           'V18' => 'Palermo',
           'V20' => 'Catania',
+          'B11' => 'Port Token Bonus',
+          'U8' => 'Port Token Bonus',
         }.freeze
 
         HEXES = {
@@ -527,16 +492,16 @@ module Engine
 
             # Italy - Lom-Venetia - M17 N14 N16 N18 N20 O17 P18
             %w[N14 P18] =>
-              'city=revenue:0;frame=color:#ff7ffe',
+              'city=revenue:0;frame=color:#ff7ffe,color2:#e2ceb6',
             ['N18'] =>
               'city=revenue:0;upgrade=cost:20,terrain:swamp;label=Y;icon=image:1866/port,sticky:1;'\
-              'frame=color:#ff7ffe',
+              'frame=color:#ff7ffe,color2:#e2ceb6',
             ['O17'] =>
-              'town=revenue:0;upgrade=cost:40,terrain:swamp;frame=color:#ff7ffe',
+              'town=revenue:0;upgrade=cost:40,terrain:swamp;frame=color:#ff7ffe,color2:#e2ceb6',
             ['N20'] =>
-              'town=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#ff7ffe',
+              'town=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#ff7ffe,color2:#e2ceb6',
             %w[M17 N16] =>
-              'upgrade=cost:90,terrain:mountain;frame=color:#ff7ffe',
+              'upgrade=cost:90,terrain:mountain;frame=color:#ff7ffe,color2:#e2ceb6',
 
             # Astro-Hungary - J22 J24 J26 K23 K25 L18 L20 L22 L24 L26 M19 M21 M23 M25 N22 N24 N26 O21 O23 O25
             #                 P22 P24 P26 Q23 Q25 R24
@@ -569,33 +534,30 @@ module Engine
               'upgrade=cost:90,terrain:mountain;frame=color:#e2ceb6',
 
             # Benelux - E13 F10 F12 F14 G9 G11 G13 H10 H12 I11
-            ['E13'] =>
-              'town=revenue:0;frame=color:#7eff80',
             ['F10'] =>
               'city=revenue:0;upgrade=cost:40,terrain:swamp;border=edge:1,type:impassable;'\
               'icon=image:1866/port,sticky:1;frame=color:#7eff80',
             ['F12'] =>
               'city=revenue:0;upgrade=cost:40,terrain:swamp;label=Y;frame=color:#7eff80',
-            ['F14'] =>
-              'frame=color:#7eff80',
             ['G9'] =>
               'city=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable;frame=color:#7eff80',
             ['G11'] =>
               'city=revenue:0;upgrade=cost:40,terrain:swamp;frame=color:#7eff80',
-            ['G13'] =>
-              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#7eff80',
             ['H10'] =>
-              'city=revenue:0;label=Y;frame=color:#7eff80',
+              'city=revenue:0;label=C;frame=color:#7eff80',
             ['H12'] =>
               'city=revenue:0;frame=color:#7eff80',
             ['I11'] =>
               'city=revenue:0;label=Y;frame=color:#7eff80',
+            ['F14'] =>
+              'frame=color:#7eff80',
+            ['E13'] =>
+              'town=revenue:0;frame=color:#7eff80',
+            ['G13'] =>
+              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#7eff80',
 
-            # France - H6 H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
+            # France - H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
             #          M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13
-            ['H6'] =>
-              'border=edge:1,type:impassable;border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-              'frame=color:#fffbcc',
             ['H8'] =>
               'city=revenue:0;border=edge:2,type:impassable;frame=color:#fffbcc',
             %w[I9 J10 K9 M9 O5] =>
@@ -635,8 +597,7 @@ module Engine
 
             # Great Britain - A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5
             ['G5'] =>
-              'border=edge:0,type:impassable;border=edge:4,type:impassable;border=edge:5,type:impassable;'\
-              'frame=color:#fde2c5',
+              'border=edge:0,type:impassable;border=edge:4,type:impassable;frame=color:#fde2c5',
             ['E7'] =>
               'border=edge:2,type:impassable;border=edge:5,type:impassable;frame=color:#fde2c5',
             %w[D6 G3] =>
@@ -647,9 +608,6 @@ module Engine
               'city=revenue:0;icon=image:1866/port,sticky:1;frame=color:#fde2c5',
             ['F2'] =>
               'city=revenue:0;upgrade=cost:40,terrain:swamp;icon=image:1866/port,sticky:1;frame=color:#fde2c5',
-            ['F6'] =>
-              'city=revenue:0;upgrade=cost:40,terrain:swamp;border=edge:4,type:impassable;'\
-              'border=edge:5,type:impassable;label=L;frame=color:#fde2c5',
             ['D4'] =>
               'city=revenue:0;upgrade=cost:60,terrain:hill;label=Y;frame=color:#fde2c5',
             ['E5'] =>
@@ -693,20 +651,40 @@ module Engine
           green: {
             # Ferry tiles
             ['G7'] =>
-              'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:2,type:impassable;'\
-              'border=edge:4,type:impassable;border=edge:5,type:impassable;stub=edge:2;stub=edge:5;upgrade=cost:50',
+              'border=edge:1,type:impassable;border=edge:2,type:impassable;border=edge:4,type:impassable;'\
+              'border=edge:5,type:impassable;path=a:1,b:5',
             ['S25'] =>
               'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:2,type:impassable;'\
-              'stub=edge:1;stub=edge:2;upgrade=cost:20',
+              'path=a:1,b:2',
           },
           brown: {
             # Ferry tiles
             ['F8'] =>
               'border=edge:1,type:impassable;border=edge:2,type:impassable;border=edge:4,type:impassable;'\
-              'border=edge:5,type:impassable;stub=edge:2;stub=edge:4;upgrade=cost:50',
+              'border=edge:5,type:impassable;path=a:2,b:4',
             ['H4'] =>
               'border=edge:0,type:impassable;border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-              'border=edge:4,type:impassable;border=edge:5,type:impassable;stub=edge:0;stub=edge:2;upgrade=cost:50',
+              'border=edge:5,type:impassable;path=a:0,b:2',
+
+            # London
+            ['F6'] =>
+              'city=revenue:yellow_30|green_60|brown_90;path=a:0,b:_0;'\
+              'offboard=revenue:yellow_30|green_60|brown_90;path=a:1,b:_1;'\
+              'city=revenue:yellow_30|green_60|brown_90;path=a:2,b:_2;'\
+              'city=revenue:yellow_30|green_60|brown_90;path=a:3,b:_3;'\
+              'offboard=revenue:yellow_30|green_60|brown_90;path=a:1,b:_4;'\
+              'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
+              'label=L;frame=color:#fde2c5',
+
+            # Paris
+            ['J6'] =>
+              'offboard=revenue:yellow_30|green_50|brown_70;path=a:0,b:_0;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:1,b:_1;'\
+              'offboard=revenue:yellow_30|green_50|brown_70;path=a:2,b:_2;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:3,b:_3;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:4,b:_4;'\
+              'offboard=revenue:yellow_30|green_50|brown_70;path=a:5,b:_5;'\
+              'label=P;frame=color:#fffbcc',
           },
           gray: {
             # Germany - Prussia
@@ -729,14 +707,6 @@ module Engine
             # France
             ['J0'] =>
               'junction;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:#fffbcc',
-            ['J6'] =>
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:0,b:_0;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:1,b:_1;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:2,b:_2;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:3,b:_3;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:4,b:_4;'\
-              'city=revenue:yellow_30|green_50|brown_70|gray_90;path=a:5,b:_5;'\
-              'frame=color:#fffbcc',
 
             # Great Britain
             ['A3'] =>
@@ -752,6 +722,8 @@ module Engine
           },
           blue: {
             # Water tiles
+            ['H6'] =>
+              '',
             %w[C7 E11] =>
               'junction;path=a:0,b:_0,terminal:1',
             ['T4'] =>
@@ -786,6 +758,12 @@ module Engine
               'path=a:1,b:4;border=edge:1;border=edge:4',
             ['T18'] =>
               'path=a:1,b:4;border=edge:1',
+
+            # Port bonus
+            %w[B11 U8] =>
+              'offboard=revenue:yellow_00|green_20|brown_30|gray_40;path=a:0,b:_0;'\
+              'offboard=revenue:yellow_00|green_20|brown_30|gray_40;path=a:5,b:_0;'\
+              'icon=image:1866/port,sticky:1',
           },
         }.freeze
       end

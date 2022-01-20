@@ -121,6 +121,16 @@ module Engine
           '455' => 2,
         }.freeze
 
+        SECOND_EDITION_TILES = {
+          'X32' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:120,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                      'path=a:5,b:_0;label=N',
+          },
+          '448' => 2,
+        }.freeze
+
         LOCATION_NAMES = {
           'A11' => 'Ottawa',
           'A17' => 'Montreal',
@@ -170,6 +180,19 @@ module Engine
           'K17' => 'Philadelphia',
           'K19' => 'Brooklyn',
         }.freeze
+
+        SECOND_EDITION_LOCATION_NAMES = {
+          'K15' => 'Philadelphia',
+          'K17' => nil,
+          'K19' => 'Staten Island',
+          'K21' => 'Brooklyn',
+        }.freeze
+
+        CONNECTION_BONUS_HEXES =
+          [%w[A13 A11], %w[A19 A15 A17 A21], %w[A23 A21], %w[C25 A25 B26], %w[G25 H26], %w[D0 E1], %w[J26], 'B12', 'C11',
+           'C23', 'D18', 'D20', 'E9', 'F10', 'F12', 'G9', 'G13', 'G19', 'G21', 'I19', 'I23', 'J18', 'J22', 'K19'].freeze
+        SECOND_EDITION_CONNECTION_BONUS_HEXES = ['K21'].freeze
+        COAL_LOCATIONS = [%w[F0 G1], %w[H2 H4], %w[H6 H8 H10], ['H12'], %w[I13 J14], %w[K15 K17]].freeze
 
         HEXES = {
           white: {
@@ -299,6 +322,31 @@ module Engine
           },
           blue: {
             %w[B10 C1 C3 C5 C7 C9 K23 K25] => '',
+          },
+        }.freeze
+
+        SECOND_EDITION_HEXES = {
+          white: {
+            %w[K19] => 'town=revenue:0;border=edge:1,type:water,cost:80',
+            %w[K21] => 'city=revenue:0;upgrade=cost:80,terrain:water;border=edge:1,type:water,cost:80',
+          },
+          red: {
+            %w[D0] => 'town=revenue:yellow_20|green_40|brown_80|gray_100;path=a:4,b:_0;path=a:5,b:_0;border=edge:5',
+            %w[E1] => 'path=a:3,b:2;path=a:4,b:2;border=edge:2;border=edge:4,type:water,cost:80',
+            %w[H6] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Williamsport,hide:1;' \
+                      'path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:divider;border=edge:4',
+            %w[H8] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Williamsport;' \
+                      'path=a:2,b:_0;path=a:3,b:_0;border=edge:1;border=edge:4',
+            %w[H10] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Williamsport,hide:1;' \
+                       'path=a:2,b:_0;path=a:3,b:_0;border=edge:1',
+            %w[J26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:1,b:_0;border=edge:2,type:divider',
+            %w[K15] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia;' \
+                       'path=a:3,b:_0;border=edge:2,type:divider;border=edge:4',
+            %w[K17] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia,hide:1;' \
+                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;border=edge:4,type:water,cost:80',
+          },
+          blue: {
+            %w[K23] => 'junction;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
           },
         }.freeze
       end
