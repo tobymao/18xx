@@ -147,7 +147,7 @@ module View
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
             wordBreak: 'break-word',
-            cursor: 'text'
+            cursor: 'text',
           },
         }
 
@@ -230,32 +230,32 @@ module View
 
       def copy_log_transcript
         actions = @game.actions.to_h { |a| [a.id, a] }
-        log_text = String.new
+        log_text = []
         @game.log.map.group_by(&:action_id).flat_map do |action_id, entries|
           action = actions[action_id]
           entries.flat_map do |entry|
-            time = action&.created_at ? "[#{Time.at(action.created_at || Time.now).strftime('%R')}]" : ""
+            time = action&.created_at ? "[#{Time.at(action.created_at || Time.now).strftime('%R')}]" : ''
             line = entry.message
-            if line.is_a?(Engine::Action::Message)  
+            if line.is_a?(Engine::Action::Message)
               sender = line.entity.name || line.user
               line = "#{sender}: #{line.message}"
             end
-            log_text += time ? "#{time} #{line}\n" : "#{line}\n"
-          end  
+            log_text.push(time ? "#{time} #{line}" : line)
+          end
         end
-        `navigator.clipboard.writeText(log_text)`
-        store(:flash_opts, {message: 'Game log transcript copied to clipboard', color: 'lightgreen' }, skip: false)  
+        `navigator.clipboard.writeText(log_text.join('\n'))`
+        store(:flash_opts, { message: 'Game log transcript copied to clipboard', color: 'lightgreen' }, skip: false)
       end
 
       def render_log_choices
-        h(:div, { style: { marginBottom: '0.3rem', display: 'flex', justifyContent: 'space-between'} }, [
+        h(:div, { style: { marginBottom: '0.3rem', display: 'flex', justifyContent: 'space-between' } }, [
           h(:div, { style: { textAlign: 'left' } }, [
             h(:button,
               {
                 style: { marginTop: '0' },
-                on: { click: -> {copy_log_transcript} },
+                on: { click: -> { copy_log_transcript } },
               },
-              "Copy Transcript 📋"),
+              'Copy Transcript 📋'),
           ]),
           h(:div, { style: { textAlign: 'right' } }, [
             h(:button,
@@ -270,7 +270,7 @@ module View
                 on: { click: -> { store(:show_chat, !@show_chat) } },
               },
               "Chat #{@show_chat ? '✅' : '❌'}"),
-          ])
+          ]),
         ])
       end
     end
