@@ -409,6 +409,7 @@ module Engine
 
       # final sanity check on best combos: recompute each route.revenue in case it needs to reject a combo
       bad_route = nil
+      print_hexside_bits = false
       max_routes = possibilities.max_by do |routes|
         routes.each do |route|
           route.clear_cache!(only_routes: true)
@@ -418,15 +419,58 @@ module Engine
         end
         @game.routes_revenue(routes)
       rescue GameError => msg  # rubocop:disable Lint/SuppressedException
-        # don't include a combo with errored route in the result set
+        # report error but still include combo with errored route in the result set
         puts " Sanity check error, likely an auto_router bug: #{msg}"
         puts "   route: #{bad_route.connection_hexes.map { |hex| hex }.join('-')}"
-        #puts "   cities: #{bad_route.visited_stops.map { |city| city.hex.coordinates }.join('-')}"
-        puts "   other combo routes:"
+        puts "   combo routes by hex:"
         routes.each do |route|
-          puts "     #{route.connection_hexes.map { |hex| hex }.join('-')}" if route != bad_route
+          puts "          #{route.connection_hexes.map { |hex| hex }.join('-')}" #if route != bad_route
         end
+        puts "   combo routes by edge:"
+        routes.each do |route|
+          edgelist = route.connection_data.map { |conn|
+            conn[:left].paths[0].edges[0].id + ' - ' + conn[:left].paths[1].edges[0].id 
+            # + '-' + conn[:right].paths[0].edges[0].id + '-' + conn[:right].paths[1].edges[0].id
+            }.join(' - ')
+          puts "          #{edgelist}" #if route != bad_route
+        end
+
+        testcombo = routes - [bad_route]
+        conflict = routeBitfieldConflicts(testcombo, bad_route)
+        puts "   routeBitfieldConflicts(combo,bad_route) = #{conflict}"
+        if RUBY_ENGINE == 'opal'
+          js_conflict = false
+          `
+          let js_bad_route =  { route: bad_route, bitfield: bad_route.bitfield };
+          let js_routes = [];
+          Opal.send(testcombo, 'each', [], function(rb_route)
+          {
+            js_routes.push( { route: rb_route, bitfield: rb_route.bitfield } );
+          });
+          let js_combo = { routes: js_routes };
+
+          js_conflict = js_routeBitfieldConflicts(js_combo, js_bad_route);
+
+          let js_mismatch = js_conflict != conflict;
+          console.log("   js_routeBitfieldConflicts(combo,bad_route) = " + js_conflict + (js_mismatch ? "  <== PROBLEM" : ""));
+          if (js_mismatch)
+          {
+            let js_full_combo = { routes: js_routes };
+            js_full_combo.routes.push(js_bad_route);
+            print_combo(js_full_combo);
+          }
+          `
+        end
+        #print_hexside_bits = true
+        routes # include bad combo in the result set
       end || []
+
+      if (print_hexside_bits)
+        puts "  hexside_bits map:"
+        hexside_bits.map do |hexside, bit|
+          puts "    #{bit}  #{hexside}"
+        end
+      end
 
       max_routes.each { |route| route.routes = max_routes }
     end # test_compute()
@@ -511,31 +555,92 @@ module Engine
           node1 = node2
           node2 = paths[index]
           # edges[0] needed for 1817-style tiles with intra-hex connections
-          # TODO: verify this works properly for all games
-          node1_id = node1.edges[0].id # node1.hex.coordinates
-          node2_id = node2.edges[0].id # node2.hex.coordinates
-          hexside = node1_id + '-' + node2_id
-          if (hexside_bits.include?(hexside))
-            setBit(bitfield, hexside_bits[hexside], bit_to_bitmask)
+          # TODO: there are actually two hexside connections to consider
+          node1_edges = node1.edges
+          node2_edges = node2.edges
+          if (node1_edges.size == 1)
+            # node1 has 1 edge, connect it to first edge of next node
+            hexside_left = node1.edges[0].id
+            hexside_right  = node2.edges[0].id
+            checkAndSet(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
+          elsif (node1_edges.size == 2)
+            # node1 has 2 edges, connect them as well as 2nd edge to first node2 edge
+            hexside_left = node1.edges[0].id
+            hexside_right  = node1.edges[1].id
+            checkAndSet(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
+            hexside_left = hexside_right
+            hexside_right  = node2.edges[0].id
+            checkAndSet(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
           else
-            # try the reverse direction (same hexside)
-            reverse = node2_id + '-' + node1_id
-            puts "  Error? hexside == reverse!  #{hexside}, #{reverse}" if hexside == reverse
-            if (hexside_bits.include?(reverse))
-              setBit(bitfield, hexside_bits[reverse], bit_to_bitmask)
-            else
-              #bit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
-              bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0 # safer than hexside_bits.length / 2
-              #puts " bitfieldFromConnection adding bit #{newbit} for #{hexside} and #{reverse}"
-              hexside_bits[hexside] = bit
-              hexside_bits[reverse] = bit
-              setBit(bitfield, bit, bit_to_bitmask)
-            end
+            puts "  ERROR: auto-router found unexpected number of path node edges #{node1_edges.size}.  Route combos may be be incorrect"
           end
+
+          # TODO: this doesn't work in all cases
+          # node1_id = node1.edges[0].id # node1.hex.coordinates
+          # node2_id = node2.edges[0].id # node2.hex.coordinates
+          # hexside = node1_id + '-' + node2_id
+          # if (hexside_bits.include?(hexside))
+          #   setBit(bitfield, hexside_bits[hexside], bit_to_bitmask)
+          # else
+          #   # try the reverse direction (same hexside)
+          #   reverse = node2_id + '-' + node1_id
+          #   puts "  Error? hexside == reverse!  #{hexside}, #{reverse}" if hexside == reverse
+          #   if (hexside_bits.include?(reverse))
+          #     setBit(bitfield, hexside_bits[reverse], bit_to_bitmask)
+          #   else
+          #     #bit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
+          #     bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0 # safer than hexside_bits.length / 2
+          #     #puts " bitfieldFromConnection adding bit #{newbit} for #{hexside} and #{reverse}"
+          #     hexside_bits[hexside] = bit
+          #     hexside_bits[reverse] = bit
+          #     setBit(bitfield, bit, bit_to_bitmask)
+          #   end
+          # end
           index += 1
         end
       end
       bitfield
+    end
+
+    # helper to try fwd and rev combinations of hexside connections
+    def checkAndSet(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
+      #NOTE: now that we're testing edges, each edge IS a hexside, so left and right are simply different hexsides
+      # always check them both
+      checkEdgeAndSet(bitfield, hexside_left, hexside_bits, bit_to_bitmask)
+      checkEdgeAndSet(bitfield, hexside_right, hexside_bits, bit_to_bitmask)
+
+      #OLD: left and right as two hexes that connect
+      # hexside = hexside_left + '-' + hexside_right
+      # if (hexside_bits.include?(hexside))
+      #   setBit(bitfield, hexside_bits[hexside], bit_to_bitmask)
+      # else
+      #   # try the reverse direction (same hexside)
+      #   reverse = hexside_right + '-' + hexside_left
+      #   puts "  Error? hexside == reverse!  #{hexside}, #{reverse}" if hexside == reverse
+      #   if (hexside_bits.include?(reverse))
+      #     setBit(bitfield, hexside_bits[reverse], bit_to_bitmask)
+      #   else
+      #     #bit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
+      #     bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0 # safer than hexside_bits.length / 2
+      #     #puts " bitfieldFromConnection adding bit #{bit} for #{hexside} and #{reverse}"
+      #     hexside_bits[hexside] = bit
+      #     hexside_bits[reverse] = bit
+      #     setBit(bitfield, bit, bit_to_bitmask)
+      #   end
+      # end
+    end
+
+    def checkEdgeAndSet(bitfield, hexside_edge, hexside_bits, bit_to_bitmask)
+      if (hexside_bits.include?(hexside_edge))
+        setBit(bitfield, hexside_bits[hexside_edge], bit_to_bitmask)
+      else
+        #bit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
+        bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0 # safer than hexside_bits.length / 2
+        #puts " bitfieldFromConnection adding bit #{bit} for #{hexside_edge}"
+        hexside_bits[hexside_edge] = bit
+        hexside_bits[hexside_edge] = bit
+        setBit(bitfield, bit, bit_to_bitmask)
+      end
     end
 
     #Note: keeping around until decide if can abandon bitfield search in complete lambda
@@ -579,20 +684,21 @@ module Engine
       combo.each do |route|
         # each route has 1 or more ints in bitfield array
         # only test up to the shorter size, since bits beyond that obviously don't conflict
-        # index = [ route.bitfield.size, testroute.bitfield.size ].min - 1
-        # while index >= 0 do
-        #   if ((route.bitfield[index] & testroute.bitfield[index]) != 0)
-        #     return true
-        #   end
-        #   index -= 1
-        # end
+        index = [ route.bitfield.size, testroute.bitfield.size ].min - 1
+        while index >= 0 do
+          if ((route.bitfield[index] & testroute.bitfield[index]) != 0)
+            return true
+          end
+          index -= 1
+        end
 
         # ruby makes array comparison easier, hopefully with faster opal result
-        index = 0
-        while index < testroute.bitfield.size do
-          return true if (route.bitfield[index] & testroute.bitfield[index]) != 0
-          index += 1
-        end
+        #NO - this is incorrect if sizes are different
+        # index = 0
+        # while index < testroute.bitfield.size do
+        #   return true if (route.bitfield[index] & testroute.bitfield[index]) != 0
+        #   index += 1
+        # end
       end
       false
     end
@@ -763,9 +869,7 @@ module Engine
           {
             //console.log("  route/combo conflict:");
             //console.log("    testroute:    " + format_bitfield(testroute.bitfield));
-            //console.log("    combo routes: " + format_bitfield(combo.routes[0].bitfield));
-            //for (var i=1; i < combo.routes.length; i++)
-            //  console.log("                  " + format_bitfield(combo.routes[i].bitfield));
+            //print_combo(combo)
 
             return true;
           }
@@ -775,18 +879,28 @@ module Engine
       return false;
     }
 
-    /* keep for future debugging use
+    function print_combo(combo)
+    {
+      console.log("    combo routes: " + format_bitfield(combo.routes[0].bitfield));
+      for (var i=1; i < combo.routes.length; i++)
+        console.log("                  " + format_bitfield(combo.routes[i].bitfield));
+    }
+
     function format_bitfield(bitfield)
     {
-      let fmt = "";
+      let binary = "";
+      let numbers = "";
       for (var word=0; word < bitfield.length; word++)
       {
+        if (word > 0)
+          numbers += ", ";
+        numbers +=  bitfield[word];
         let field = (bitfield[word] >>> 0).toString(2);     // >>> 0 coerces to unsigned number if high bit set
         field = "00000000000000000000000000000000".substr(field.length) + field;  // pad to 32 bits
-        fmt += " " + field;
+        binary += " " + field;
       }
-      return fmt;
-    } */
+      return binary + " (" + numbers + ")";
+    }
     `
 
   end
