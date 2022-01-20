@@ -178,9 +178,9 @@ module Engine
 
       connections = {}
       # Sort trains longest first, in case that improves combo calculations (some spotty evidence that it might)
-      #trains = @game.route_trains(corporation).sort_by {|train| -train.distance}
-      #HACK: sort by train price, since some trains have multiple distance portions - or could add them?
-      trains = @game.route_trains(corporation).sort_by {|train| -train.price}
+      # trains = @game.route_trains(corporation).sort_by {|train| -train.distance}
+      # HACK: sort by train price, since some trains have multiple distance portions - or could add them?
+      trains = @game.route_trains(corporation).sort_by { |train| -train.price }
 
       nodes = @game.graph.connected_nodes(corporation).keys.sort_by do |node|
         revenue = trains
@@ -206,19 +206,19 @@ module Engine
       route_counter = Hash.new { |h, k| h[k] = 0 }
 
       trains.each do |train|
-        path_abort[train] = false 
+        path_abort[train] = false
         route_counter[train] = 0
       end
 
-      hexside_bits = Hash.new { |h, k| h[k] = 0 }     # map of hexside_id to bit number
-      #route_bitfields = Hash.new { |h, k| h[k] = [] } # map of train to bitfield
+      hexside_bits = Hash.new { |h, k| h[k] = 0 } # map of hexside_id to bit number
+      # route_bitfields = Hash.new { |h, k| h[k] = [] } # map of train to bitfield
 
       # table of bit 0-31 to bitmask
       bit_to_bitmask = []
       mask = 1
       i = 0
-      while (i < 32) do
-        bit_to_bitmask[i] = mask;
+      while i < 32
+        bit_to_bitmask[i] = mask
         mask <<= 1
         i += 1
       end
@@ -233,26 +233,27 @@ module Engine
 
         node_now = Time.now
 
-        walk_counter = 0 #TEMP
-        counter = 0 #TEMP
-        abort_count = 0 #TEMP
+        walk_counter = 0
+        counter = 0
+        abort_count = 0
         skipped_mirror_routes = 0
-        route_counter.each { |train,_| route_counter[train] = 0 }
-        #bitfield = []
+        route_counter.each { |train, _| route_counter[train] = 0 }
+        # bitfield = []
         node_abort = false
 
         node.walk(corporation: corporation, skip_paths: skip_paths) do |_, vp|
-          next if node_abort 
+          next if node_abort
+
           paths = vp.keys
 
           abort = nil
-          walk_counter += 1 #TEMP
+          walk_counter += 1
 
           if Time.now - node_now > node_timeout
-            #puts ' Node timeout reached'
+            # puts ' Node timeout reached'
             # TODO: this is not a complete node.walk abort, find somthing more than :abort but less than break.
             # Or wait til node.walk speed is improved and this may become less important
-            abort = :abort 
+            abort = :abort
             node_abort = true
           end
 
@@ -262,13 +263,13 @@ module Engine
           right = nil
           last_left = nil
           last_right = nil
-          #bitfield = []
+          # bitfield = []
 
           complete = lambda do
             # assemble connection's bitfield one hexside at a time
-            #TODO: this misses some hex connections for some reason
+            # TODO: this misses some hex connections for some reason
             # if (left != right) && (left.hex != right.hex) # not sure why left == right is possible, or in two ways!
-            #   setBit(bitfield, bitFromHexes(left, right, hexside_bits), bit_to_bitmask)
+            #   set_bit(bitfield, bitFromHexes(left, right, hexside_bits), bit_to_bitmask)
             # end
 
             chains << { nodes: [left, right], paths: chain }
@@ -305,7 +306,7 @@ module Engine
 
           next if chains.empty?
 
-          id = chains.flat_map { |c| c[:paths] }.sort! 
+          id = chains.flat_map { |c| c[:paths] }.sort!
           next if connections[id]
 
           connection = chains.map do |c|
@@ -313,75 +314,69 @@ module Engine
           end
           connections[id] = connection
 
-          counter += 1 #TEMP
+          counter += 1
 
           # each train has opportunity to vote to abort a branch of this node's path-walk tree
-          path_abort.each { |train,_| path_abort[train] = false }
+          path_abort.each { |train, _| path_abort[train] = false }
 
-          #build a test route for each train, use route.revenue to check for errors, keep the good ones
+          # build a test route for each train, use route.revenue to check for errors, keep the good ones
           trains.each do |train|
-            if (! path_abort[train])
+            unless path_abort[train]
               # TODO: working to remove this (move up into prior loop so don't walk loop again)
-              bitfield = bitfieldFromConnection(connection, hexside_bits, bit_to_bitmask)
+              bitfield = bitfield_from_connection(connection, hexside_bits, bit_to_bitmask)
 
               # exclude this route if a duplicate or mirror is already present
               # NOTE: the mirror check is cpu intensive currently, and there aren't that many mirror routes found,
               #  so it's faster to just add mirror routes to the collections and run them through the combo generator
-              if (false) #tableContainsBitfield(route_bitfields[train], bitfield))
-                skipped_mirror_routes += 1
-              else
-                route = Engine::Route.new(
-                  @game,
-                  @game.phase,
-                  train,
-                  connection_data: connection,
-                  bitfield: bitfield,
-                )
-                #route_bitfields[train] << bitfield
+              # if tableContainsBitfield(route_bitfields[train], bitfield)
+              # skipped_mirror_routes += 1
+              # else
+              route = Engine::Route.new(
+                @game,
+                @game.phase,
+                train,
+                connection_data: connection,
+                bitfield: bitfield,
+              )
+              # route_bitfields[train] << bitfield
 
-                route.revenue   # raises various errors if bad route
-                train_routes[train] << route
-                route_counter[train] += 1 #TEMP
-              end # if ! tableContainsBitfield
-            end # if (! path_abort[train])
+              route.revenue # raises various errors if bad route
+              train_routes[train] << route
+              route_counter[train] += 1
+              # end
+            end
 
           # These all result in the route not being added to train_routes[train],
           # but the nature of the error determines how to continue or terminate processing of the connection path
-          rescue RouteTooLong => msg
+          rescue RouteTooLong
             # ignore for this train, and abort walking this path if ignored for all trains
-            #puts msg
-            path_abort[train] = true  # path is dead for this train
-            if (path_abort.values.all?)
+            path_abort[train] = true # path is dead for this train
+            if path_abort.values.all?
               abort_count += 1
-              abort = :abort  # this path is dead for all trains, don't walk it further
+              abort = :abort # this path is dead for all trains, don't walk it further
             end
-          rescue NoToken => msg
+          rescue NoToken, RouteTooShort
             # keep extending this connection set
-            #puts msg
-          rescue RouteTooShort => msg
-            # keep extending this connection set
-            #puts msg
-          rescue ReusesCity => msg
-            #puts msg
-            abort = :abort  # this path is dead, don't walk it further
-          rescue RouteBlocked => msg
-            #puts msg
-            abort = :abort  # this path is dead, don't walk it further
-          rescue GameError => msg
+          rescue ReusesCity, RouteBlocked
+            abort = :abort # this path is dead, don't walk it further
+          rescue GameError => e
             # an unhandled route error that probably needs handling
-            puts msg
-          end # trains.each do
+            puts e
+          end
           abort
-        end # node.walk
-        puts " Node timeout reached" if node_abort
-        puts " node.walk iterated #{walk_counter} times, built #{counter} connections, skipped #{skipped_mirror_routes} mirror routes, added routes #{route_counter.map { |k, v| k.name + ':' + v.to_s }.join(', ')}, and aborted #{abort_count} path branches" #TEMP
-      end # nodes.each
+        end
+        puts ' Node timeout reached' if node_abort
+        puts " node.walk iterated #{walk_counter} times, built #{counter} connections, skipped #{skipped_mirror_routes} "\
+             "mirror routes, added routes #{route_counter.map { |k, v| k.name + ':' + v.to_s }.join(', ')}, "\
+             "and aborted #{abort_count} path branches"
+      end
 
       # Check that there are no duplicate hexside bits(algorithm error)
       mismatch = hexside_bits.length - hexside_bits.uniq.length
       puts "  ERROR: hexside_bits contains #{mismatch} duplicate bits" if mismatch != 0
-      maxbit = hexside_bits.map {|hexside, bit| bit}.max() + 1  # safer than hexside_bits.length / 2
-      puts "Evaluated #{connections.size} paths, found #{maxbit} unique hexsides, and found valid routes #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
+      maxbit = hexside_bits.map { |_hexside, bit| bit }.max + 1
+      puts "Evaluated #{connections.size} paths, found #{maxbit} unique hexsides, and found valid routes "\
+           "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
 
       static.each { |route| train_routes[route.train] = [route] }
 
@@ -395,16 +390,17 @@ module Engine
       # Regardless of whether that first-train constraint is kept or discarded, sorting by array size here could be a latent bug;
       # perhaps if all train's routes are limited to route_limit, the sort order of ties may be unpredictable.
       # I'd rather sort by train size, which I assume was the original intent.
-      #sorted_routes = train_routes.values.sort_by(&:size)
-      sorted_routes = train_routes.map {|train, routes| routes} # already in train order from above
+      # sorted_routes = train_routes.values.sort_by(&:size)
+      sorted_routes = train_routes.map { |_train, routes| routes } # already in train order from above
 
       limit = sorted_routes.map(&:size).reduce(&:*)
-      puts "Finding route combos of best #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} routes with depth #{limit}"
+      puts "Finding route combos of best #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} "\
+           "routes with depth #{limit}"
 
-      if use_js_algorithm
-        possibilities = js_evaluateCombos(sorted_routes, route_timeout)
+      if use_js_algorithm # rubocop:disable Style/ConditionalAssignment
+        possibilities = js_evaluate_combos(sorted_routes, route_timeout)
       else
-        possibilities = evaluateCombos(sorted_routes, route_timeout)
+        possibilities = evaluate_combos(sorted_routes, route_timeout)
       end
 
       # final sanity check on best combos: recompute each route.revenue in case it needs to reject a combo
@@ -418,29 +414,28 @@ module Engine
           route.revenue
         end
         @game.routes_revenue(routes)
-      rescue GameError => msg  # rubocop:disable Lint/SuppressedException
+      rescue GameError => e
         # report error but still include combo with errored route in the result set
-        puts " Sanity check error, likely an auto_router bug: #{msg}"
+        puts " Sanity check error, likely an auto_router bug: #{e}"
         puts "   route: #{bad_route.connection_hexes.map { |hex| hex }.join('-')}"
-        puts "   combo routes by hex:"
+        puts '   combo routes by hex:'
         routes.each do |route|
-          puts "          #{route.connection_hexes.map { |hex| hex }.join('-')}" #if route != bad_route
+          puts "          #{route.connection_hexes.map { |hex| hex }.join('-')}" # if route != bad_route
         end
-        puts "   combo routes by edge:"
-        routes.each do |route|
-          edgelist = route.connection_data.map { |conn|
-            conn[:left].paths[0].edges[0].id + ' - ' + conn[:left].paths[1].edges[0].id 
-            # + '-' + conn[:right].paths[0].edges[0].id + '-' + conn[:right].paths[1].edges[0].id
-            }.join(' - ')
-          puts "          #{edgelist}" #if route != bad_route
-        end
+        # puts '   combo routes by edge:'
+        # routes.each do |route|
+        #   edgelist = route.connection_data.map { |conn| conn[:left].paths[0].edges[0].id + ' - ' +
+        #              conn[:left].paths[1].edges[0].id }.join(' - ')
+        #   # + '-' + conn[:right].paths[0].edges[0].id + '-' + conn[:right].paths[1].edges[0].id
+        #   puts "          #{edgelist}" # if route != bad_route
+        # end
 
         testcombo = routes - [bad_route]
-        conflict = routeBitfieldConflicts(testcombo, bad_route)
-        puts "   routeBitfieldConflicts(combo,bad_route) = #{conflict}"
+        conflict = route_bitfield_conflicts(testcombo, bad_route)
+        puts "   route_bitfield_conflicts(combo,bad_route) = #{conflict}"
         if RUBY_ENGINE == 'opal'
-          js_conflict = false
-          `
+          js_conflict = false # rubocop:disable Lint/UselessAssignment
+          %x(
           let js_bad_route =  { route: bad_route, bitfield: bad_route.bitfield };
           let js_routes = [];
           Opal.send(testcombo, 'each', [], function(rb_route)
@@ -449,36 +444,36 @@ module Engine
           });
           let js_combo = { routes: js_routes };
 
-          js_conflict = js_routeBitfieldConflicts(js_combo, js_bad_route);
+          js_conflict = js_route_bitfield_conflicts(js_combo, js_bad_route);
 
           let js_mismatch = js_conflict != conflict;
-          console.log("   js_routeBitfieldConflicts(combo,bad_route) = " + js_conflict + (js_mismatch ? "  <== PROBLEM" : ""));
+          console.log("   js_route_bitfield_conflicts(combo,bad_route) = " + js_conflict + (js_mismatch ? "  <== PROBLEM" : ""));
           if (js_mismatch)
           {
             let js_full_combo = { routes: js_routes };
             js_full_combo.routes.push(js_bad_route);
             print_combo(js_full_combo);
           }
-          `
+          )
         end
-        #print_hexside_bits = true
+        # print_hexside_bits = true
         routes # include bad combo in the result set
       end || []
 
-      if (print_hexside_bits)
-        puts "  hexside_bits map:"
+      if print_hexside_bits
+        puts '  hexside_bits map:'
         hexside_bits.map do |hexside, bit|
           puts "    #{bit}  #{hexside}"
         end
       end
 
       max_routes.each { |route| route.routes = max_routes }
-    end # test_compute()
+    end
 
     #
     # The Ruby algorithm
     #
-    def evaluateCombos (sorted_routes, route_timeout)
+    def evaluate_combos(sorted_routes, route_timeout)
       combos = [[]]
       possibilities = []
 
@@ -493,11 +488,11 @@ module Engine
         combos = routes.flat_map do |route|
           combos.map do |combo|
             counter += 1
-            if (counter % 50000).zero?
+            if (counter % 50_000).zero?
               puts "#{counter} / #{limit}"
               raise if Time.now - now > route_timeout
             end
-            if (routeBitfieldConflicts(combo, route))
+            if route_bitfield_conflicts(combo, route)
               conflicts += 1
             else
               combo += [route]
@@ -505,74 +500,73 @@ module Engine
               route.clear_cache!(only_routes: true)
 
               possibilities_count += 1
-              #route.revenue     # throws GameError if routes in the combo conflict
-              route.auto_router_revenue #simple revenue calc without route validity checks
+              # route.revenue     # throws GameError if routes in the combo conflict
+              route.auto_router_revenue # simple revenue calc without route validity checks
               combo_revenue = @game.routes_revenue(combo)
 
               # accumulate best-value routes, or start over if found a bigger best
-              if (combo_revenue >= max_revenue)
-                if (combo_revenue > max_revenue)
+              if combo_revenue >= max_revenue
+                if combo_revenue > max_revenue
                   possibilities.clear
                   max_revenue = combo_revenue
-                  #puts "  new max_revenue found $#{max_revenue}"
+                  # puts "  new max_revenue found $#{max_revenue}"
                 end
                 possibilities << combo
               end
               combo
             end
-          rescue GameError => msg # rubocop:disable Lint/SuppressedException
-            puts " route.auto_router_revenue rejected a conflicting route - SHOULD NEVER HAPPEN - #{msg}"
-          end # combos.map
-        end # route.flat_map
+          rescue GameError => e
+            puts " route.auto_router_revenue rejected a conflicting route - SHOULD NEVER HAPPEN - #{e}"
+          end
+        end
 
         combos.compact!
       rescue RuntimeError
         puts 'Route timeout reached'
         break
-      end # sorted_combos.each
+      end
 
-      puts "Found #{possibilities_count} possible combos (#{possibilities.size} best) and rejected #{conflicts} conflicting combos in: #{Time.now - now}"
+      puts "Found #{possibilities_count} possible combos (#{possibilities.size} best) and rejected #{conflicts} "\
+           "conflicting combos in: #{Time.now - now}"
       possibilities
-    end # def evaluateCombos
+    end
 
-    #inputs:
+    # inputs:
     #   connection is a route's connection_data
     #   hexside_bits is a map of hexside_id to bit number
     #   bit_to_bitmask is a helper table of bit 0-31 to integer bitmask (essentially 1 << bit)
-    #returns:
+    # returns:
     #   the bitfield (array of ints) representing all hexsides in the connection path
-    #updates:
+    # updates:
     #   new hexsides are added to hexside_bits
-    def bitfieldFromConnection(connection, hexside_bits, bit_to_bitmask)
+    def bitfield_from_connection(connection, hexside_bits, bit_to_bitmask)
       bitfield = [0]
       connection.each do |conn|
         paths = conn[:chain][:paths]
         index = 1
         stop = paths.size
         node2 = paths[0]
-        while index < stop do
+        while index < stop
           # micro-optimized ruby gives much faster opal code
           node1 = node2
           node2 = paths[index]
-          # edges[0] needed for 1817-style tiles with intra-hex connections
-          # TODO: there are actually two hexside connections to consider
-          node1_edges = node1.edges
-          node2_edges = node2.edges
-          if (node1_edges.size == 1)
+          case node1.edges.size
+          when 1
             # node1 has 1 edge, connect it to first edge of next node
             hexside_left = node1.edges[0].id
-            hexside_right  = node2.edges[0].id
-            checkAndSet(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
-          elsif (node1_edges.size == 2)
+            hexside_right = node2.edges[0].id
+            check_and_set(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
+          when 2
             # node1 has 2 edges, connect them as well as 2nd edge to first node2 edge
             hexside_left = node1.edges[0].id
-            hexside_right  = node1.edges[1].id
-            checkAndSet(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
+            hexside_right = node1.edges[1].id
+            check_and_set(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
             hexside_left = hexside_right
             hexside_right  = node2.edges[0].id
-            checkAndSet(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
+            check_and_set(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
           else
-            puts "  ERROR: auto-router found unexpected number of path node edges #{node1_edges.size}.  Route combos may be be incorrect"
+            puts "  ERROR: auto-router found unexpected number of path node edges #{node1.edges.size}. "\
+                 'Route combos may be be incorrect'
           end
 
           # TODO: this doesn't work in all cases
@@ -580,20 +574,20 @@ module Engine
           # node2_id = node2.edges[0].id # node2.hex.coordinates
           # hexside = node1_id + '-' + node2_id
           # if (hexside_bits.include?(hexside))
-          #   setBit(bitfield, hexside_bits[hexside], bit_to_bitmask)
+          #   set_bit(bitfield, hexside_bits[hexside], bit_to_bitmask)
           # else
           #   # try the reverse direction (same hexside)
           #   reverse = node2_id + '-' + node1_id
           #   puts "  Error? hexside == reverse!  #{hexside}, #{reverse}" if hexside == reverse
           #   if (hexside_bits.include?(reverse))
-          #     setBit(bitfield, hexside_bits[reverse], bit_to_bitmask)
+          #     set_bit(bitfield, hexside_bits[reverse], bit_to_bitmask)
           #   else
           #     #bit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
-          #     bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0 # safer than hexside_bits.length / 2
-          #     #puts " bitfieldFromConnection adding bit #{newbit} for #{hexside} and #{reverse}"
+          #     bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0
+          #     #puts " bitfield_from_connection adding bit #{newbit} for #{hexside} and #{reverse}"
           #     hexside_bits[hexside] = bit
           #     hexside_bits[reverse] = bit
-          #     setBit(bitfield, bit, bit_to_bitmask)
+          #     set_bit(bitfield, bit, bit_to_bitmask)
           #   end
           # end
           index += 1
@@ -603,47 +597,47 @@ module Engine
     end
 
     # helper to try fwd and rev combinations of hexside connections
-    def checkAndSet(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
-      #NOTE: now that we're testing edges, each edge IS a hexside, so left and right are simply different hexsides
+    def check_and_set(bitfield, hexside_left, hexside_right, hexside_bits, bit_to_bitmask)
+      # NOTE: now that we're testing edges, each edge IS a hexside, so left and right are simply different hexsides
       # always check them both
-      checkEdgeAndSet(bitfield, hexside_left, hexside_bits, bit_to_bitmask)
-      checkEdgeAndSet(bitfield, hexside_right, hexside_bits, bit_to_bitmask)
+      check_edge_and_set(bitfield, hexside_left, hexside_bits, bit_to_bitmask)
+      check_edge_and_set(bitfield, hexside_right, hexside_bits, bit_to_bitmask)
 
-      #OLD: left and right as two hexes that connect
+      # OLD: left and right as two hexes that connect
       # hexside = hexside_left + '-' + hexside_right
       # if (hexside_bits.include?(hexside))
-      #   setBit(bitfield, hexside_bits[hexside], bit_to_bitmask)
+      #   set_bit(bitfield, hexside_bits[hexside], bit_to_bitmask)
       # else
       #   # try the reverse direction (same hexside)
       #   reverse = hexside_right + '-' + hexside_left
       #   puts "  Error? hexside == reverse!  #{hexside}, #{reverse}" if hexside == reverse
       #   if (hexside_bits.include?(reverse))
-      #     setBit(bitfield, hexside_bits[reverse], bit_to_bitmask)
+      #     set_bit(bitfield, hexside_bits[reverse], bit_to_bitmask)
       #   else
       #     #bit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
-      #     bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0 # safer than hexside_bits.length / 2
-      #     #puts " bitfieldFromConnection adding bit #{bit} for #{hexside} and #{reverse}"
+      #     bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0
+      #     #puts " bitfield_from_connection adding bit #{bit} for #{hexside} and #{reverse}"
       #     hexside_bits[hexside] = bit
       #     hexside_bits[reverse] = bit
-      #     setBit(bitfield, bit, bit_to_bitmask)
+      #     set_bit(bitfield, bit, bit_to_bitmask)
       #   end
       # end
     end
 
-    def checkEdgeAndSet(bitfield, hexside_edge, hexside_bits, bit_to_bitmask)
-      if (hexside_bits.include?(hexside_edge))
-        setBit(bitfield, hexside_bits[hexside_edge], bit_to_bitmask)
+    def check_edge_and_set(bitfield, hexside_edge, hexside_bits, bit_to_bitmask)
+      if hexside_bits.include?(hexside_edge)
+        set_bit(bitfield, hexside_bits[hexside_edge], bit_to_bitmask)
       else
-        #bit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
-        bit = hexside_bits.length > 0 ? hexside_bits.map {|hexside, bit| bit}.max() + 1 : 0 # safer than hexside_bits.length / 2
-        #puts " bitfieldFromConnection adding bit #{bit} for #{hexside_edge}"
-        hexside_bits[hexside_edge] = bit
-        hexside_bits[hexside_edge] = bit
-        setBit(bitfield, bit, bit_to_bitmask)
+        # newbit = hexside_bits.size / 2 # there are two entries for each bit, forward and reverse
+        newbit = hexside_bits.length.positive? ? hexside_bits.map { |_hexside, bit| bit }.max + 1 : 0
+        # puts " bitfield_from_connection adding bit #{bit} for #{hexside_edge}"
+        hexside_bits[hexside_edge] = newbit
+        hexside_bits[hexside_edge] = newbit
+        set_bit(bitfield, newbit, bit_to_bitmask)
       end
     end
 
-    #Note: keeping around until decide if can abandon bitfield search in complete lambda
+    # NOTE: keeping around until decide if can abandon bitfield search in complete lambda
     # def bitFromHexes(node1, node2, hexside_bits)
     #   fromHex = node1.hex.coordinates
     #   toHex = node2.hex.coordinates
@@ -668,32 +662,31 @@ module Engine
 
     # bitfield is an array of integers, can be expanded by this call if necessary
     # bit is a bit number, 0 is lowest bit, 32 will jump to the next int in the array, and so on
-    def setBit(bitfield, bit, bit_to_bitmask)
-      entry = (bit / 32).to_i     # which array entry do we need
-      mask = bit_to_bitmask[bit & 31]  # which bit in that int to set
-      addCount = entry + 1 - bitfield.size 
-      while addCount > 0 do
-        bitfield << 0         # add a new integer to the array
-        addCount -= 1
+    def set_bit(bitfield, bit, bit_to_bitmask)
+      entry = (bit / 32).to_i # which array entry do we need
+      mask = bit_to_bitmask[bit & 31] # which bit in that int to set
+      add_count = entry + 1 - bitfield.size
+      while add_count.positive?
+        bitfield << 0 # add a new integer to the array
+        add_count -= 1
       end
       bitfield[entry] |= mask
     end
 
     # does testroute's bitfield conflict with any other routes in the combo?
-    def routeBitfieldConflicts(combo, testroute)
+    def route_bitfield_conflicts(combo, testroute)
       combo.each do |route|
         # each route has 1 or more ints in bitfield array
         # only test up to the shorter size, since bits beyond that obviously don't conflict
-        index = [ route.bitfield.size, testroute.bitfield.size ].min - 1
-        while index >= 0 do
-          if ((route.bitfield[index] & testroute.bitfield[index]) != 0)
-            return true
-          end
+        index = [route.bitfield.size, testroute.bitfield.size].min - 1
+        while index >= 0
+          return true if (route.bitfield[index] & testroute.bitfield[index]) != 0
+
           index -= 1
         end
 
         # ruby makes array comparison easier, hopefully with faster opal result
-        #NO - this is incorrect if sizes are different
+        # NO - this is incorrect if sizes are different
         # index = 0
         # while index < testroute.bitfield.size do
         #   return true if (route.bitfield[index] & testroute.bitfield[index]) != 0
@@ -703,7 +696,7 @@ module Engine
       false
     end
 
-    #Note: keeping in case finding mirror routes becomes worthwhile
+    # NOTE: keeping in case finding mirror routes becomes worthwhile
     # # does test bitfield equal any other bitfields in the table?
     # def tableContainsBitfield(table, testbitfield)
     #   #slower
@@ -724,16 +717,16 @@ module Engine
     #
     # The js-in-Opal algorithm
     #
-    def js_evaluateCombos (rb_sorted_routes, route_timeout)
+    def js_evaluate_combos(rb_sorted_routes, _route_timeout)
       rb_possibilities = []
       possibilities_count = 0
       conflicts = 0
-      limit = rb_sorted_routes.map(&:size).reduce(&:*)
+      limit = rb_sorted_routes.map(&:size).reduce(&:*) # rubocop:disable Lint/UselessAssignment
       now = Time.now
 
       if RUBY_ENGINE == 'opal'
-        puts "** Using javascript combo-generator **"
-        `
+        puts '** Using javascript combo-generator **'
+        %x(
         let possibilities = []
         let combos = [];
         let counter = 0;
@@ -789,7 +782,8 @@ module Engine
           for (var remaining=train; remaining < js_sorted_routes.length; remaining++)
             js_limit *= js_sorted_routes[remaining].length;
           if (js_limit != limit)
-            console.log("  adjusting depth to " + js_limit + " because first " + train + " trains only had " + combos.length + " valid combos");
+            console.log("  adjusting depth to " + js_limit + " because first " +
+              train + " trains only had " + combos.length + " valid combos");
 
           let new_combos = [];
           for (rt=0; rt < js_sorted_routes[train].length; rt++)
@@ -805,7 +799,7 @@ module Engine
                 //TODO: raise if Time.now - now > route_timeout
               }
 
-              if (js_routeBitfieldConflicts(combo, route))
+              if (js_route_bitfield_conflicts(combo, route))
                 conflicts += 1;
               else
               {
@@ -846,17 +840,18 @@ module Engine
           }
           rb_possibilities['$<<'](rb_routes);
         }
-        `
+        )
       else # not Opal
-        puts "** javascript combo-generator requested but not running in Opal environment - no combos computed **"
-      end # RUBY_ENGINE == 'opal'
+        puts '** javascript combo-generator requested but not running in Opal environment - no combos computed **'
+      end
 
-      puts "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} conflicting combos in: #{Time.now - now}"
+      puts "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} "\
+           "conflicting combos in: #{Time.now - now}"
       rb_possibilities
-    end # def js_evaluate_combos
+    end
 
-    `
-    function js_routeBitfieldConflicts(combo, testroute)
+    %x(
+    function js_route_bitfield_conflicts(combo, testroute)
     {
       for (cr of combo.routes)
       {
@@ -901,7 +896,6 @@ module Engine
       }
       return binary + " (" + numbers + ")";
     }
-    `
-
+    )
   end
 end

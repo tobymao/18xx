@@ -263,24 +263,24 @@ module View
           store(:routes, @routes)
         end
 
-        test_auto = lambda do
-          router = Engine::AutoRouter.new(@game)
-          @routes = router.test_compute(
-            @game.current_entity,
-            routes: @routes.reject { |r| r.paths.empty? },
-          )
-          store(:routes, @routes)
-        end
+        # test_auto = lambda do
+        #   router = Engine::AutoRouter.new(@game)
+        #   @routes = router.test_compute(
+        #     @game.current_entity,
+        #     routes: @routes.reject { |r| r.paths.empty? },
+        #   )
+        #   store(:routes, @routes)
+        # end
 
-        test_auto_js = lambda do
-          router = Engine::AutoRouter.new(@game)
-          @routes = router.test_compute(
-            @game.current_entity,
-            use_js_algorithm: true,
-            routes: @routes.reject { |r| r.paths.empty? },
-          )
-          store(:routes, @routes)
-        end
+        # test_auto_js = lambda do
+        #   router = Engine::AutoRouter.new(@game)
+        #   @routes = router.test_compute(
+        #     @game.current_entity,
+        #     use_js_algorithm: true,
+        #     routes: @routes.reject { |r| r.paths.empty? },
+        #   )
+        #   store(:routes, @routes)
+        # end
 
         add_train = lambda do
           store(:routes, @routes) if @game.add_route_train(@routes)
@@ -326,8 +326,8 @@ module View
         ]
         if @game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat
           buttons << h('button.small', { on: { click: auto } }, 'Auto')
-          #buttons << h('button.small', { on: { click: test_auto } }, 'TEST Auto')
-          #buttons << h('button.small', { on: { click: test_auto_js } }, 'TEST Auto JS')
+          # buttons << h('button.small', { on: { click: test_auto } }, 'TEST Auto')
+          # buttons << h('button.small', { on: { click: test_auto_js } }, 'TEST Auto JS')
         end
         if @game.adjustable_train_list?
           buttons << h('button.small', { on: { click: add_train } }, '+Train')

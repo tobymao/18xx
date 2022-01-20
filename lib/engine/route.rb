@@ -28,7 +28,7 @@ module Engine
       @last_offboard = []
       @stops = nil
 
-      @bitfield = opts[:bitfield]     # array of ints used only by auto-routing algorithm
+      @bitfield = opts[:bitfield] # array of ints used only by auto-routing algorithm
     end
 
     def clear_cache!(all: false, only_routes: false)
@@ -329,20 +329,6 @@ module Engine
         begin
           visited = visited_stops
           raise GameError, 'Route must have at least 2 stops' if !connection_data.empty? && visited.size < 2 && !@train.local?
-
-          #token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) }
-          #@game.check_route_token(self, token)
-
-          #visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
-          #  raise GameError, "Cannot use group #{key} more than once" unless group.one?
-          #end
-
-          #check_terminals!
-          #check_other!
-          #check_cycles!
-          #check_distance!(visited)
-          #check_overlap!
-          #check_connected!(token)
 
           @game.revenue_for(self, stops)
         end
