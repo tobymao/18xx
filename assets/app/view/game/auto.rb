@@ -319,8 +319,8 @@ module View
       def enable_share_pass(form)
         settings = params(form)
 
-        unconditional = settings['unconditional']
-        indefinite = settings['indefinite']
+        unconditional = settings['sr_unconditional']
+        indefinite = settings['sr_indefinite']
 
         process_action(
           Engine::Action::ProgramSharePass.new(
@@ -344,11 +344,11 @@ module View
                       [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
                          'Please read this for more details when it will deactivate')])
         children << render_checkbox('Pass even if other players do actions that may impact you.',
-                                    'unconditional',
+                                    'sr_unconditional',
                                     form,
                                     !!settings&.unconditional)
         children << render_checkbox('Continue passing in future SR as well.',
-                                    'indefinite',
+                                    'sr_indefinite',
                                     form,
                                     !!settings&.indefinite)
 
@@ -362,10 +362,10 @@ module View
       def enable_independent_mines(form)
         settings = params(form)
 
-        skip_track = settings['skip_track']
-        skip_buy = settings['skip_buy']
-        skip_close = settings['skip_close']
-        indefinite = settings['indefinite']
+        skip_track = settings['im_skip_track']
+        skip_buy = settings['im_skip_buy']
+        skip_close = settings['im_skip_close']
+        indefinite = settings['im_indefinite']
 
         process_action(
           Engine::Action::ProgramIndependentMines.new(
@@ -401,12 +401,12 @@ module View
                       ' It will also deactivate itself when a mine has negative income.')
 
         children << h(:div, [
-          render_checkbox('Skip track lay', 'skip_track', form, settings ? settings.skip_track : true),
-          render_checkbox('Skip switchers', 'skip_buy', form, settings ? settings.skip_buy : true),
-          render_checkbox('Skip close mine', 'skip_close', form, settings ? settings.skip_close : true),
+          render_checkbox('Skip track lay', 'im_skip_track', form, settings ? settings.skip_track : true),
+          render_checkbox('Skip switchers', 'im_skip_buy', form, settings ? settings.skip_buy : true),
+          render_checkbox('Skip close mine', 'im_skip_close', form, settings ? settings.skip_close : true),
         ])
         children << h(:div, [
-          render_checkbox('Indefinite (normally stops after one OR set)', 'indefinite', form, settings&.indefinite),
+          render_checkbox('Indefinite (normally stops after one OR set)', 'im_indefinite', form, settings&.indefinite),
         ])
 
         subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_independent_mines(form) }]
