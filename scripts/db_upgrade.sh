@@ -47,7 +47,7 @@ docker-compose up --detach --build db
 # bring up rack and queue first to talk to the new db and set up their tables
 docker-compose up --detach --build rack
 docker-compose up --detach --build queue
-#docker-compose up --detach --build rack_backup
+docker-compose up --detach --build rack_backup
 
 # restore db backup in postgres ${NEW_VERSION}
 gunzip -k -f ${DB_BACKUP}.gz
