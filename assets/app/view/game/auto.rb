@@ -23,6 +23,7 @@ module View
         if @game.players.find { |p| p.name == @user&.dig('name') }
           types = {
             Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
+            Engine::Action::ProgramHarzbahnDraftPass => ->(settings) { render_harzbahn_draft_pass(settings) },
             Engine::Action::ProgramIndependentMines => ->(settings) { render_independent_mines(settings) },
             Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
             Engine::Action::ProgramSharePass => ->(settings) { render_share_pass(settings) },
@@ -410,6 +411,82 @@ module View
         ])
 
         subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_independent_mines(form) }]
+        subchildren << render_disable(settings) if settings
+        children << h(:div, subchildren)
+
+        children
+      end
+
+      def enable_harzbahn_draft_pass(form)
+        settings = params(form)
+
+        until_premium = settings['hd_until_premium'] ? settings['hd_target_premium'].to_i : nil
+        unconditional = settings['hd_unconditional']
+
+        process_action(
+          Engine::Action::ProgramHarzbahnDraftPass.new(
+            sender,
+            until_premium: until_premium,
+            unconditional: unconditional,
+          )
+        )
+      end
+
+      def render_harzbahn_draft_pass(settings)
+        form = {}
+        text = 'Auto Pass in Initial Draft'
+        text += ' (Enabled)' if settings
+        children = [h(:h3, text)]
+        children << h(:p,
+                      'Automatically passes in the initial draft.'\
+                      ' It will deactivate itself when the specified premium is reached (unless no target).'\
+                      ' It will also deactivate itself when anyone buys something (unless you disable this).')
+
+        children << h(:div, [
+          render_input(
+            'No target premium',
+            id: 'hd_no_target',
+            type: 'radio',
+            inputs: form,
+            attrs: {
+              name: 'hd_until_condition',
+              checked: !settings&.until_premium,
+              value: 'no_target',
+            }
+          ),
+        ])
+        children << h(:div, [
+          render_input(
+            'Until premium',
+            id: 'hd_until_premium',
+            type: 'radio',
+            inputs: form,
+            attrs: {
+              name: 'hd_until_condition',
+              checked: !!settings&.until_premium,
+              value: 'target',
+            }
+          ),
+          render_input(
+            '',
+            id: 'hd_target_premium',
+            type: :number,
+            inputs: form,
+            attrs: {
+              min: 0,
+              step: 10,
+              value: settings&.until_premium || 0,
+            },
+            on: { input: -> { `document.getElementById('hd_until_premium').checked = true` } },
+            input_style: { width: '5rem' },
+            container_style: { margin: '0' },
+          ),
+        ])
+        children << h(:div, [
+          render_checkbox('Keep passing even if someone buys something', 'hd_unconditional', form, !!settings&.unconditional),
+        ])
+
+        subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_harzbahn_draft_pass(form) }]
         subchildren << render_disable(settings) if settings
         children << h(:div, subchildren)
 
