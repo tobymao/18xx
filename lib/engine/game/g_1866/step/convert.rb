@@ -10,8 +10,8 @@ module Engine
           ACTIONS = %w[choose pass].freeze
 
           def actions(entity)
-            if entity != current_entity || !@game.public_corporation?(entity) || !@game.convert_public_corporation? ||
-              entity.type != :public_5
+            if entity != current_entity || !@game.corporation?(entity) || !@game.convert_corporation? ||
+              entity.type != :share_5
               return []
             end
 
@@ -19,7 +19,7 @@ module Engine
           end
 
           def choice_name
-            "Convert #{current_entity.id} from 5 share to 10 share company"
+            "Convert #{current_entity.id} from 5 share to 10 share corporation"
           end
 
           def choices
@@ -65,10 +65,10 @@ module Engine
               entity.share_holders[entity] += share.percent
               entity.shares_by_corporation[entity] << share
             end
-            entity.type = :public_10
+            entity.type = :share_10
 
             # Buy the shares
-            @log << "#{entity.name} converts to a 10-share company"
+            @log << "#{entity.name} converts to a 10-share corporation"
             choice.times do
               share = entity.treasury_shares.first
               @game.share_pool.buy_shares(player, share.to_bundle)

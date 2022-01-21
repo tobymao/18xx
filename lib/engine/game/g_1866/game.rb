@@ -53,7 +53,7 @@ module Engine
         EVENTS_TEXT = {
           'green_ferries' => ['Green ferries', 'The green ferry lines opens up'],
           'brown_ferries' => ['Brown ferries', 'The brown ferry lines opens up'],
-          'formation' => ['Formation', 'Forced formation of Major National Companies. Order of forming is: '\
+          'formation' => ['Formation', 'Forced formation of Major Nationals. Order of forming is: '\
                                        'Switzerland, Spain, Benelux, Austro-Hungarian Empire, Italy, France, '\
                                        'Germany, Great Britain.'],
         }.freeze
@@ -65,7 +65,7 @@ module Engine
                                               par_3: 'Gray phase (8/10) par').freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'can_convert_public' => ['Convert Public', 'Public companies can convert from 5 shares to 10 shares.'],
+          'can_convert_corporation' => ['Convert Corporation', 'Corporations can convert from 5 shares to 10 shares.'],
           'can_convert_major' => ['Convert Major National', 'President of G1 and I1 can form Germany or Italy Major '\
                                                             'National.'],
         ).freeze
@@ -80,57 +80,57 @@ module Engine
           {
             name: 'L/2',
             on: '',
-            train_limit: { minor_national: 1, national: 1, public_5: 3 },
+            train_limit: { minor_national: 1, national: 1, share_5: 3 },
             tiles: [:yellow],
             operating_rounds: 99,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { minor_national: 1, national: 1, public_5: 3, public_10: 4 },
+            train_limit: { minor_national: 1, national: 1, share_5: 3, share_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
-            status: %w[can_convert_public can_convert_major],
+            status: %w[can_convert_corporation can_convert_major],
           },
           {
             name: '4',
             on: '4',
-            train_limit: { minor_national: 1, national: 1, public_5: 3, public_10: 4 },
+            train_limit: { minor_national: 1, national: 1, share_5: 3, share_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
-            status: %w[can_convert_public can_convert_major],
+            status: %w[can_convert_corporation can_convert_major],
           },
           {
             name: '5',
             on: '5',
-            train_limit: { minor_national: 1, national: 1, public_5: 2, public_10: 3 },
+            train_limit: { minor_national: 1, national: 1, share_5: 2, share_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
-            status: %w[can_convert_public],
+            status: %w[can_convert_corporation],
           },
           {
             name: '6',
             on: '6',
-            train_limit: { minor_national: 1, national: 1, public_5: 2, public_10: 3 },
+            train_limit: { minor_national: 1, national: 1, share_5: 2, share_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
-            status: %w[can_convert_public],
+            status: %w[can_convert_corporation],
           },
           {
             name: '8',
             on: '8',
-            train_limit: { minor_national: 1, national: 1, public_5: 1, public_10: 2 },
+            train_limit: { minor_national: 1, national: 1, share_5: 1, share_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
-            status: %w[can_convert_public],
+            status: %w[can_convert_corporation],
           },
           {
             name: '10',
             on: '10',
-            train_limit: { minor_national: 1, national: 1, public_5: 1, public_10: 2 },
+            train_limit: { minor_national: 1, national: 1, share_5: 1, share_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
-            status: %w[can_convert_public],
+            status: %w[can_convert_corporation],
           },
         ].freeze
 
@@ -602,7 +602,7 @@ module Engine
           if national_corporation?(entity) && !visits_within_national_region?(entity, visits)
             raise GameError, 'Nationals can only run within its region'
           end
-          if public_corporation?(entity) && !visits_operating_rights?(entity, visits)
+          if corporation?(entity) && !visits_operating_rights?(entity, visits)
             raise GameError, 'The director need operating rights to operate in the selected regions'
           end
 
@@ -925,9 +925,9 @@ module Engine
         end
 
         def status_array(corporation)
-          return if !public_corporation?(corporation) || !corporation.floated?
+          return if !corporation?(corporation) || !corporation.floated?
 
-          [["#{corporation.type == :public_5 ? '5' : '10'}-share company", 'bold']]
+          [["#{corporation.type == :share_5 ? '5' : '10'}-share corporation", 'bold']]
         end
 
         def status_str(corporation)
@@ -987,8 +987,8 @@ module Engine
             share_price.price == self.class::MAX_PAR_VALUE
         end
 
-        def convert_public_corporation?
-          @phase.status.include?('can_convert_public')
+        def convert_corporation?
+          @phase.status.include?('can_convert_corporation')
         end
 
         def convert_major_national?
@@ -1003,7 +1003,7 @@ module Engine
         end
 
         def event_formation!
-          @log << '-- Event: Forced formation of Major National Companies --'
+          @log << '-- Event: Forced formation of Major Nationals --'
 
           # Order: Switzerland, Spain, Benelux, Austro-Hungarian Empire, Italy, France, Germany, Great Britain
           forced_formation_national(corporation_by_id('SWN'))
@@ -1168,10 +1168,10 @@ module Engine
           port_bonus
         end
 
-        def public_corporation?(corporation)
+        def corporation?(corporation)
           return false unless corporation
 
-          corporation.type == :public_5 || corporation.type == :public_10
+          corporation.type == :share_5 || corporation.type == :share_10
         end
 
         def phase_par_type(corporation)
@@ -1237,10 +1237,10 @@ module Engine
 
         def setup_corporations
           # Randomize from preset seed to get same order
-          corps = @corporations.select { |c| c.type == :public_5 }.sort_by { rand }
+          corps = @corporations.select { |c| c.type == :share_5 }.sort_by { rand }
           @removed_corporations = []
 
-          # Select one of the three public companies based in each of GB, France, A-H, Germany & Italy
+          # Select one of the three corporations based in each of GB, France, A-H, Germany & Italy
           starting_corps = []
           self.class::REGION_CORPORATIONS.each do |_, v|
             corp = corps.find { |c| v.include?(c.name) }

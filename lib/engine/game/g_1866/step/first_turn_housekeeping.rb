@@ -9,7 +9,7 @@ module Engine
       module Step
         class FirstTurnHousekeeping < Engine::Step::BuyTrain
           def actions(entity)
-            if entity.corporation? && @game.public_corporation?(entity) && !entity.operated? &&
+            if entity.corporation? && @game.corporation?(entity) && !entity.operated? &&
               @game.local_train?(@game.depot.upcoming.first) && can_buy_train?(entity)
               return %w[buy_train pass]
             end

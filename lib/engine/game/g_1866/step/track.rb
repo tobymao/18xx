@@ -12,7 +12,7 @@ module Engine
 
           def available_hex(entity, hex)
             return nil if @game.national_corporation?(entity) && !@game.hex_within_national_region?(entity, hex)
-            return nil if @game.public_corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
+            return nil if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
 
             super
           end
@@ -53,7 +53,7 @@ module Engine
             if @game.national_corporation?(entity) && !@game.hex_within_national_region?(entity, hex)
               raise GameError, 'Cannot lay or upgrade tiles outside the nationals region'
             end
-            if @game.public_corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
+            if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
               raise GameError, 'Cannot lay or upgrade tiles without operating rights in the selected region'
             end
 
