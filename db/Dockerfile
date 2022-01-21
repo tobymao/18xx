@@ -1,4 +1,4 @@
-FROM postgres:13.1
+FROM postgres:14.1
 
 # use uid 1000 to (hopefully) match host user (ie, you)
 RUN useradd --uid 1000 --user-group --create-home --home-dir /home/db db

@@ -421,7 +421,8 @@ module Engine
             ['D35'] =>
               'city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_0,b:_1;border=edge:0,type:impassable;label=S',
             ['M38'] =>
-              'city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;'\
+              'city=revenue:20,groups:London;city=revenue:20,groups:London;city=revenue:20,groups:London;'\
+              'city=revenue:20,groups:London;city=revenue:20,groups:London;city=revenue:20,groups:London;'\
               'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;'\
               'label=L',
             %w[B43 K42 M42] =>

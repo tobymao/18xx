@@ -164,13 +164,12 @@ module View
       def render_log_for_action(log, action)
         timestamp_props = {
           style: {
-            margin: '0 0.2rem 0 0',
             fontSize: 'smaller',
           },
         }
         message_props = { style: { margin: '0 0.2rem' } }
 
-        timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}]"
+        timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}] "
 
         click = lambda do
           store(:selected_action_id, @selected_action_id == action.id ? nil : action.id)
