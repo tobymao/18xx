@@ -27,132 +27,128 @@ module Engine
                sym: 'BIG4',
                color: nil,
              },
-          {
-            name: 'Mail Contract',
-            value: 80,
-            revenue: 0,
-            desc: 'Adds $10 per location visited by any one train of the owning corporation. Never '\
-                  'closes once purchased by a corporation.',
-            sym: 'MAIL',
-            abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
-            color: nil,
-          },
-          {
-            name: 'Tunnel Blasting Company',
-            value: 60,
-            revenue: 20,
-            desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles and '\
-                  'tunnel/pass hexsides by $20.',
-            sym: 'TBC',
-            abilities: [
-              {
-                type: 'tile_discount',
-                discount: 20,
-                terrain: 'mountain',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Steamboat Company',
-            value: 40,
-            revenue: 10,
-            desc: 'At the beginning of each Operating Round, the owning player may assign the '\
-                  'Steamboat Company to a corporation/minor and to a port location (J4, J8). '\
-                  'Once per Operating Round, the owning corporation may assign the '\
-                  'Steamboat Company to a port location. Add $20 per port symbol to all routes run '\
-                  'to the assigned location by the owning/assigned corporation/minor.',
-            sym: 'SC',
-            abilities: [
-              {
-                type: 'assign_hexes',
-                hexes: %w[J4 J8],
-                count_per_or: 1,
-                when: 'or_start',
-                owner_type: 'player',
-              },
-              {
-                type: 'assign_corporation',
-                count_per_or: 1,
-                when: 'or_start',
-                owner_type: 'player',
-              },
-              {
-                type: 'assign_hexes',
-                when: 'owning_corp_or_turn',
-                hexes: %w[J4 J8],
-                count_per_or: 1,
-                owner_type: 'corporation',
-              },
-              {
-                type: 'assign_corporation',
-                when: 'sold',
-                count: 1,
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
              {
-               name: 'Excelsior Mine Company',
+               name: 'Mail Contract',
+               value: 80,
+               revenue: 0,
+               desc: 'Adds $10 per location visited by any one train of the owning corporation. Never '\
+                     'closes once purchased by a corporation.',
+               sym: 'MAIL',
+               abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
+               color: nil,
+             },
+             {
+               name: 'Misc Token',
+               value: 60,
+               revenue: 20,
+               desc: 'None.',
+               sym: 'TOK',
+               abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
+               color: nil,
+             },
+             {
+               name: 'Tunnel Blasting Company',
+               value: 60,
+               revenue: 20,
+               desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles and '\
+                     'tunnel/pass hexsides by $20.',
+               sym: 'TBC',
+               abilities: [
+                 {
+                   type: 'tile_discount',
+                   discount: 20,
+                   terrain: 'mountain',
+                   owner_type: 'corporation',
+                 },
+               ],
+               color: nil,
+             },
+             {
+               name: 'Steamboat Company',
+               value: 40,
+               revenue: 10,
+               desc: 'At the beginning of each Operating Round, the owning player may assign the '\
+                     'Steamboat Company to a corporation/minor and to a port location (J4, J8). '\
+                     'Once per Operating Round, the owning corporation may assign the '\
+                     'Steamboat Company to a port location. Add $20 per port symbol to all routes run '\
+                     'to the assigned location by the owning/assigned corporation/minor.',
+               sym: 'SC',
+               abilities: [
+                 {
+                   type: 'assign_hexes',
+                   hexes: %w[J4 J8],
+                   count_per_or: 1,
+                   when: 'or_start',
+                   owner_type: 'player',
+                 },
+                 {
+                   type: 'assign_corporation',
+                   count_per_or: 1,
+                   when: 'or_start',
+                   owner_type: 'player',
+                 },
+                 {
+                   type: 'assign_hexes',
+                   when: 'owning_corp_or_turn',
+                   hexes: %w[J4 J8],
+                   count_per_or: 1,
+                   owner_type: 'corporation',
+                 },
+                 {
+                   type: 'assign_corporation',
+                   when: 'sold',
+                   count: 1,
+                   owner_type: 'corporation',
+                 },
+               ],
+               color: nil,
+             },
+             {
+               name: 'Misc Bonus Token A',
                value: 40,
                revenue: 15,
-               desc: 'This Private Company provides a free Ghost Town tile which may be played by a Major '\
-                     'Company controlled by the owning player.  The placement must be in a mountain hex that is '\
-                     'connected by track to a token of the Major Company.  It is an extra tile lay in addition to '\
-                     'the normal tile lay and can be done either before or after the regular tile lay(s) of the '\
-                     'Major Company.  If this special ability is not used before phase 6, it is lost.',
-               sym: 'EMC',
+               desc: 'None.',
+               sym: 'TKNA',
                color: nil,
              },
              {
-               name: 'Texas & Pacific Railway',
+               name: 'Misc Bonus Token B',
                value: 40,
-               revenue: 10,
-               desc: 'The owning player receives a free 10% share of AT&SF.  When the current value of the '\
-                     'AT&SF is set, the bank place the current value of the AT&SF on the company’s charter.  The '\
-                     'Private Company closes when the AT&SF pays its next dividend.',
-               sym: 'TP',
+               revenue: 15,
+               desc: 'None.',
+               sym: 'TKNB',
                color: nil,
              },
              {
-               name: 'Arizona & Colorado Railroad',
+               name: 'Misc Track A',
                value: 40,
-               revenue: 10,
-               desc: 'This Private Company can be closed at the Train Purchasing part of a Major Company '\
-                     'controlled by the owning player, to receive a $150 discount on either a 3Train or a 4Train. '\
-                     'If this special ability is not used, it pays the $10 income to the owning player until the '\
-                     'start of phase 6.',
-               sym: 'ACR',
+               revenue: 15,
+               desc: 'None.',
+               sym: 'TKA',
                color: nil,
              },
              {
-               name: 'Arizona Engine Works',
+               name: 'Misc Track B',
                value: 40,
-               revenue: 10,
-               desc: 'A Major Company controlled by the owning player may close it at any time during the '\
-                     'Major Company’s Operating turn to receive a free 3Train after phase 3 starts.  This exchange '\
-                     'may not occur if the Major Company is at its train limit.  This 3Train is a normal train and '\
-                     'rusts in phase six when other 3 Trains are rusted.  If this special ability is not used, it '\
-                     'continues to pay its income until phase 6 which it is removed from play.',
-               sym: 'AEW',
+               revenue: 15,
+               desc: 'None.',
+               sym: 'TKB',
                color: nil,
              },
              {
-               name: 'Survey Office',
+               name: 'Misc Track C',
                value: 40,
-               revenue: 10,
-               desc: 'This Private Company may be closed to allow a Major Company controlled by the owning player '\
-                     'to move a token from the board to its charter where it may be played for free during a future '\
-                     'operating round.  A Major Company which uses this special ability must wait until its next operating '\
-                     'turn at the earliest to place this free token.  The Major Company is still limited to placing at the '\
-                     'most one token per operating round after this ability has been used and the free token must be placed '\
-                     'as allowed under the normal token placement rules (for example, it cannot be placed where reserved for '\
-                     'unstarted Major Companies and it must be reachable from another token of the same Major Company).  If a '\
-                     'Major Company only has one token on the board, this special ability may not be used.  If not used '\
-                     'before phase 6, this ability is lost as the Private Company is removed from play.',
-               sym: 'SO',
+               revenue: 15,
+               desc: 'None.',
+               sym: 'TKC',
+               color: nil,
+             },
+             {
+               name: 'Misc Track D',
+               value: 40,
+               revenue: 15,
+               desc: 'None.',
+               sym: 'TKD',
                color: nil,
 
              },
@@ -168,8 +164,8 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Cincinnati (H12) token',
-                desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 '\
+                description: 'Reserved $40/$100 Quincy (H4) token',
+                desc_detail: 'May place token in Quincy (H4) for $40 if connected, $100 '\
                              'otherwise. Token slot is reserved until Phase IV.',
                 hexes: ['H12'],
                 price: 40,
@@ -196,8 +192,8 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Cincinnati (H12) token',
-                desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 '\
+                description: 'Reserved $40/$100 Kansas City (C7) token',
+                desc_detail: 'May place token in Kansas City (C7) for $40 if connected, $100 '\
                              'otherwise. Token slot is reserved until Phase IV.',
                 hexes: ['C7'],
                 price: 40,
@@ -224,8 +220,8 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Cincinnati (H12) token',
-                desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 '\
+                description: 'Reserved $40/$100 Sedalia (E9) token',
+                desc_detail: 'May place token in Sedalia (E9) for $40 if connected, $100 '\
                              'otherwise. Token slot is reserved until Phase IV.',
                 hexes: ['E9'],
                 price: 40,
@@ -252,8 +248,8 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Cincinnati (H12) token',
-                desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 '\
+                description: 'Reserved $40/$100 Pleasant Hill (D8) token',
+                desc_detail: 'May place token in Pleasant Hill (D8) for $40 if connected, $100 '\
                              'otherwise. Token slot is reserved until Phase IV.',
                 hexes: ['D8'],
                 price: 40,
@@ -281,8 +277,8 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Cincinnati (H12) token',
-                desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 '\
+                description: 'Reserved $40/$100 Kansas City (C7) token',
+                desc_detail: 'May place token in Kansas City (C7) for $40 if connected, $100 '\
                              'otherwise. Token slot is reserved until Phase IV.',
                 hexes: ['C7'],
                 price: 40,
@@ -309,8 +305,8 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Cincinnati (H12) token',
-                desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 '\
+                description: 'Reserved $40/$100 Springfield (E13) token',
+                desc_detail: 'May place token in Springfield (E13) for $40 if connected, $100 '\
                              'otherwise. Token slot is reserved until Phase IV.',
                 hexes: ['E13'],
                 price: 40,
@@ -338,21 +334,21 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Cincinnati (H12) token',
-                desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 '\
+                description: 'Reserved $40/$100 St. Louis (J8) token',
+                desc_detail: 'May place token in St. Louis (J8) for $40 if connected, $100 '\
                              'otherwise. Token slot is reserved until Phase IV.',
-                hexes: ['J12'],
+                hexes: ['J8'],
                 price: 40,
                 count: 1,
                 teleport_price: 100,
               },
               {
                 type: 'reservation',
-                hex: 'J12',
+                hex: 'J8',
                 remove: 'IV',
               },
             ],
-            coordinates: 'J8',
+            coordinates: 'J14',
             city: 0,
             color: :darkblue,
             always_market_price: true,

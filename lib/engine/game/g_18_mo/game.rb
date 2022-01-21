@@ -14,24 +14,24 @@ module Engine
         include G18MO::Map
 
         ORANGE_GROUP = [
-        'Mail Contract',
+        'Misc Bonus Token A',
+        'Misc Bonus Token B',
         'Tunnel Blasting Company',
-        'Arizona Development Office',
-        'Excelsior Mine Company',
+        'Steamboat Company',
         ].freeze
 
         BLUE_GROUP = [
-        'Texas & Pacific Railway',
-        'Arizona & Colorado Railroad',
-        'Arizona Engine Works',
-        'Survey Office',
+        'Misc Track A',
+        'Misc Track B',
+        'Misc Track C',
+        'Misc Track D',
         ].freeze
 
         GREEN_GROUP = %w[ATSF MKT CBQ RI MP SSW SLSF].freeze
 
         REMOVED_CORP_SECOND_TOKEN = {
           'ATSF' => 'B8',
-          'SSW' => 'J12',
+          'SSW' => 'J8',
           'MKT' => 'E9',
           'RI' => 'C7',
           'MP' => 'C13',
@@ -52,7 +52,17 @@ module Engine
         MEAT_REVENUE_DESC = 'Citrus'
 
         def steamboat
-          @steamboat ||= company_by_id('SO')
+          @steamboat ||= company_by_id('SC')
+        end
+
+        def check_other(route)
+          visited_hexes = {}
+          route.visited_stops.each do |stop|
+            hex = stop.hex
+            raise GameError, 'Route cannot run to multiple cities in a hex' if visited_hexes[hex]
+
+            visited_hexes[hex] = true
+          end
         end
 
         def num_removals(group)
@@ -61,16 +71,15 @@ module Engine
 
           case group
           when ORANGE_GROUP, BLUE_GROUP
-            1
+            6 - @players.size
           when GREEN_GROUP
-            2
+            5 - @players.size
           end
         end
 
         def corporation_removal_groups
           [GREEN_GROUP]
         end
-
       end
     end
   end

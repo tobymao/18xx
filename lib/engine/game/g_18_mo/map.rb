@@ -140,51 +140,56 @@ module Engine
           'J2' => 'Aurora',
           'J4' => 'Chapin',
           'J8' => 'St. Louis',
-          'J12' => 'Thebes',
+          'J14' => 'Poplar Bluff',
           'K3' => 'Joliet',
           'K5' => 'Springfield, IL',
           'K7' => 'East St. Louis',
-          'K13' => 'Memphis',
+          'K13' => 'Cape Girardeau',
+          'K17' => 'Memphis',
+          'L14' => 'Cairo',
         }.freeze
 
         HEXES = {
           white: {
-            %w[A9 A11 B10 B12 C3 C9 C15 D2 D4 E3 L6 L8 L10] => '',
-            %w[B8 C11 C13 D14 E15 I11 J12 K5] => 'city=revenue:0',
-            %w[D16 F14 F16 G13 H12 H14 I13 I15] => 'upgrade=cost:60,terrain:mountain',
-            ['G11'] => 'city=revenue:0;border=edge:3,type:water,cost:40',
-            ['H10'] => 'border=edge:2,type:water,cost:40',
-            %w[J10] => 'border=edge:4,type:water,cost:60',
-            %w[G3] => 'border=edge:4,type:water,cost:60;border=edge:5,type:water,cost:60',
-            %w[D10] => 'border=edge:4,type:water,cost:60;border=edge:5,type:water,cost:20',
-            ['G7'] => 'city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40',
-            %w[F10 H8 K11] => 'upgrade=cost:40,terrain:water',
-            ['J6'] => 'border=edge:0,type:impassable;border=edge:1,type:water,cost:60;border=edge:2,type:water,cost:60',
-            ['E9'] => 'city=revenue:0;border=edge:0,type:water,cost:60;border=edge:1,type:water,cost:60',
+            %w[A9 A11 B10 B12 C3 C9 C15 D2 D4 E3 L6 L8 L10 J12 K15] => '',
+            %w[B8 C11 C13 D14 E15 I11 K5] => 'city=revenue:0',
+            %w[D16 F14 F16 G13 H12 H14 G15 I13 I15] => 'upgrade=cost:40,terrain:mountain',
+            ['G11'] => 'city=revenue:0;border=edge:3,type:water,cost:20',
+            ['H10'] => 'border=edge:2,type:water,cost:20',
+            %w[J10] => 'border=edge:4,type:water,cost:40',
+            %w[G3] => 'border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40',
+            %w[D10] => 'border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:20',
+            ['G7'] => 'city=revenue:0;border=edge:0,type:water,cost:20;border=edge:1,type:water,cost:20',
+            %w[F10 H8] => 'upgrade=cost:40,terrain:water',
+            %w[K11] => 'upgrade=cost:60,terrain:water',
+            ['J6'] => 'border=edge:0,type:impassable;border=edge:1,type:water,cost:40;border=edge:2,type:water,cost:40',
+            ['E9'] => 'city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40',
+            ['K13'] => 'city=revenue:0;border=edge:4,type:water,cost:40',
+            ['L12'] => 'border=edge:1,type:water,cost:40',
             ['E11'] => 'border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:20;'\
-                       'border=edge:3,type:water,cost:60',
+                       'border=edge:3,type:water,cost:40',
             ['B6'] => 'border=edge:4,type:water,cost:20',
-            ['E5'] => 'border=edge:0,type:water,cost:40',
+            ['E5'] => 'border=edge:0,type:water,cost:20',
             ['D12'] => 'border=edge:4,type:water,cost:20',
-            ['H2'] => 'border=edge:1,type:water,cost:60',
-            ['D6'] => 'border=edge:0,type:water,cost:40;border=edge:5,type:water,cost:40',
-            ['G5'] => 'border=edge:4,type:water,cost:60',
-            ['H4'] => 'city=revenue:0;border=edge:0,type:water,cost:60;border=edge:1,type:water,cost:60;'\
-                      'border=edge:2,type:water,cost:60',
-            ['H6'] => 'city=revenue:0;border=edge:3,type:water,cost:60;border=edge:4,type:water,cost:60',
-            ['I7'] => 'city=revenue:0;border=edge:0,type:water,cost:60;border=edge:3,type:water,cost:60;'\
-                      'border=edge:4,type:water,cost:60',
-            ['I9'] => 'border=edge:3,type:water,cost:60',
-            ['I3'] => 'border=edge:5,type:water,cost:40',
-            ['I5'] => 'border=edge:0,type:water,cost:60;border=edge:1,type:water,cost:60;'\
-                      'border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:60',
-            ['K9'] => 'border=edge:1,type:water,cost:60',
-            ['D8'] => 'border=edge:3,type:water,cost:40;city=revenue:0',
-            ['E7'] => 'border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:40;'\
+            ['H2'] => 'border=edge:1,type:water,cost:40',
+            ['D6'] => 'border=edge:0,type:water,cost:20;border=edge:5,type:water,cost:20',
+            ['G5'] => 'border=edge:4,type:water,cost:40',
+            ['H4'] => 'city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;'\
+                      'border=edge:2,type:water,cost:40',
+            ['H6'] => 'city=revenue:0;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40',
+            ['I7'] => 'city=revenue:0;border=edge:0,type:water,cost:40;border=edge:3,type:water,cost:40;'\
                       'border=edge:4,type:water,cost:40',
-            ['F6'] => 'border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40',
-            ['F8'] => 'border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:40',
-            ['J4'] => 'city=revenue:0;border=edge:1,type:water,cost:40;border=edge:2,type:water,cost:40',
+            ['I9'] => 'border=edge:3,type:water,cost:40',
+            ['I3'] => 'border=edge:5,type:water,cost:20',
+            ['I5'] => 'border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40;'\
+                      'border=edge:4,type:water,cost:20;border=edge:5,type:water,cost:40',
+            ['K9'] => 'border=edge:1,type:water,cost:40',
+            ['D8'] => 'border=edge:3,type:water,cost:20;city=revenue:0',
+            ['E7'] => 'border=edge:2,type:water,cost:20;border=edge:3,type:water,cost:20;'\
+                      'border=edge:4,type:water,cost:20',
+            ['F6'] => 'border=edge:0,type:water,cost:20;border=edge:1,type:water,cost:20',
+            ['F8'] => 'border=edge:3,type:water,cost:20;border=edge:4,type:water,cost:20',
+            ['J4'] => 'city=revenue:0;border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:20',
             ['C5'] => 'city=revenue:0;border=edge:1,type:water,cost:20',
           },
 
@@ -195,11 +200,12 @@ module Engine
             ['E17'] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             ['J2'] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0',
             ['K3'] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:1,b:_0',
-            ['K13'] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0',
+            ['K17'] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0',
 
           },
           yellow: {
             ['B14'] => 'city=revenue:10;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+
             %w[F4] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0',
             %w[F12] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0',
             %w[C7] => 'city=revenue:40,slots:2;path=a:1,b:_0;path=a:5,b:_0;label=Z;'\
@@ -207,14 +213,24 @@ module Engine
             %w[E13] => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;label=Z;'\
                        'upgrade=cost:40,terrain:water;',
             %w[G9] => 'city=revenue:40,slots:2;path=a:2,b:_0;path=a:4,b:_0;label=Z;'\
-                      'upgrade=cost:40,terrain:water;border=edge:0,type:water,cost:40;'\
-                      'border=edge:5,type:water,cost:40;border=edge:3,type:water,cost:40',
+                      'upgrade=cost:40,terrain:water;border=edge:0,type:water,cost:20;'\
+                      'border=edge:5,type:water,cost:20;border=edge:3,type:water,cost:20',
             ['J8'] => 'city=revenue:10;city=revenue:10;city=revenue:10;city=revenue:10;path=a:0,b:_0;'\
                       'path=a:1,b:_1;path=a:2,b:_2;path=a:5,b:_3;label=Chi;'\
-                      'upgrade=cost:60,terrain:water;border=edge:3,type:impassable',
+                      'upgrade=cost:40,terrain:water;border=edge:3,type:impassable',
+
+          },
+          green: {
+
+            ['J14'] => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                       'path=a:5,b:_0',
+
           },
           gray: {
             ['K7'] => 'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+            ['L14'] => 'city=revenue:20;path=a:1,b:_0',
+            ['J16'] => 'path=a:3,b:5',
+
           },
         }.freeze
       end
