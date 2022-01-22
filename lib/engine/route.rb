@@ -322,18 +322,6 @@ module Engine
         end
     end
 
-    # a minimalist revenue calc used only by the test auto-router
-    # basically assumes the auto-router builds proper routes and we only want the revenue calculated
-    def auto_router_revenue
-      @revenue ||=
-        begin
-          visited = visited_stops
-          raise GameError, 'Route must have at least 2 stops' if !connection_data.empty? && visited.size < 2 && !@train.local?
-
-          @game.revenue_for(self, stops)
-        end
-    end
-
     def subsidy
       return nil unless @game.respond_to?(:subsidy_for)
 
