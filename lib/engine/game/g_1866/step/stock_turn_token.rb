@@ -84,8 +84,10 @@ module Engine
             return unless times.positive?
 
             entity = active_entities[0]
-            @log << "#{current_entity.name} move the stock turn token #{times} times to the right on the stock market"
+            current_price = entity.share_price.price
             times.times { @game.stock_market.move_right(entity) }
+            @log << "#{current_entity.name}'s stock turn token price changes from "\
+                    "#{@game.format_currency(current_price)} to #{@game.format_currency(entity.share_price.price)}"
           end
         end
       end
