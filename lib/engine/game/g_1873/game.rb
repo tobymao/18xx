@@ -3175,6 +3175,7 @@ module Engine
 
         def available_programmed_actions
           super + [
+            Action::ProgramHarzbahnDraftPass,
             Action::ProgramIndependentMines,
           ]
         end
