@@ -42,7 +42,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_block
         SOLD_OUT_INCREASE = true
-        POOL_SHARE_DROP = :one # needs custom code
+        POOL_SHARE_DROP = :one
 
         MARKET = [
           ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '330', '360', '395', '430'],
@@ -155,15 +155,11 @@ module Engine
 
         HOME_TOKEN_TIMING = :start
         MUST_BUY_TRAIN = :always
-        SELL_MOVEMENT = :left_share_pres
         SELL_BUY_ORDER = :sell_buy
-        GAME_END_CHECK = { stock_market: :current_or, bankrupt: :immediate, bank: :full_or }.freeze
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
-        LIMIT_TOKENS_AFTER_MERGER = 999
-        SOLD_OUT_INCREASE = false
 
         # Game will end after 5 sets of ORs - checked in end_now? below
-        GAME_END_CHECK = { custom: :current_or }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, custom: :current_or }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           custom: 'Fixed number of ORs'
@@ -172,7 +168,7 @@ module Engine
         # Two lays or one upgrade
         TILE_LAYS = [
           { lay: true, upgrade: true },
-          { lay: :not_if_upgraded, upgrade: false },
+          { lay: :not_if_upgraded, upgrade: false, cost: 20 },
         ].freeze
 
         LAST_OR = 11
@@ -221,8 +217,21 @@ module Engine
           @log << "#{corporation.name} places a token on #{self.class::SP_HEX}"
         end
 
+        def new_corporate_round
+          @log << "-- #{round_description('Corporate')} --"
+          @round_counter += 1
+          corporate_round
+        end
+
+        def corporate_round
+          G21Moon::Round::Corporate.new(self, [
+            G21Moon::Step::CorporateBuySellShares,
+          ])
+        end
+
         def stock_round
           Engine::Round::Stock.new(self, [
+            G21Moon::Step::TradeStock,
             G21Moon::Step::BuySellParShares,
           ])
         end
@@ -243,10 +252,9 @@ module Engine
           @operating_rounds = 3 if @three_or_round
         end
 
-        # FIXME: add CR
         def round_description(name, _round_num = nil)
           case name
-          when 'Stock'
+          when 'Corporate', 'Stock'
             super
           when 'Draft'
             name
@@ -256,27 +264,27 @@ module Engine
           end
         end
 
-        # def operating_round(round_num)
-        #  Engine::Round::Operating.new(self, [
-        #    G21Moon::Step::Bankrupt,
-        #    Engine::Step::Track,
-        #    Engine::Step::Token,
-        #    G21Moon::Step::Route,
-        #    G21Moon::Step::Dividend,
-        #    Engine::Step::DiscardTrain,
-        #    G21Moon::Step::BuyTrain,
-        #  ], round_num: round_num)
-        # end
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            # G21Moon::Step::Bankrupt,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::BuyTrain,
+          ], round_num: round_num)
+        end
 
-        # FIXME: add CR
         def next_round!
           @round =
             case @round
-            when Round::Stock
+            when Round::Corporate
               @operating_rounds = @phase.operating_rounds
-              reorder_players
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Stock
+              reorder_players
+              new_corporate_round
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -330,22 +338,23 @@ module Engine
           [
             { type: :PRE },
             { type: :SR, name: '1' },
+            { type: :CR },
             { type: :OR, name: '1' },
             { type: :OR, name: '2' },
-            { type: :CR },
             { type: :SR, name: '2' },
+            { type: :CR },
             { type: :OR, name: '3' },
             { type: :OR, name: '4' },
-            { type: :CR },
             { type: :SR, name: '3' },
+            { type: :CR },
             { type: :OR, name: '5' },
             { type: :OR, name: '6' },
-            { type: :CR },
             { type: :SR, name: '4' },
+            { type: :CR },
             { type: :OR, name: '7' },
             { type: :OR, name: '8' },
-            { type: :CR },
             { type: :SR, name: '5' },
+            { type: :CR },
             { type: :OR, name: '9' },
             { type: :OR, name: '10' },
             { type: :OR, name: '11' },

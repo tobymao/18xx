@@ -356,7 +356,7 @@ module View
 
         player_rows = entities_rows(@game.players)
 
-        other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation })
+        other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation && !c.treasury_as_holding })
 
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         if @game.respond_to?(:reissued?) && @game.reissued?(@corporation) && !num_ipo_shares.empty?
@@ -377,7 +377,7 @@ module View
           ])
         end
 
-        if !num_treasury_shares.empty? && !@corporation.ipo_is_treasury?
+        if !num_treasury_shares.empty? && !@corporation.ipo_is_treasury? && !@corporation.treasury_as_holding
           pool_rows << h('tr.ipo', [
             h('td.left', 'Treasury'),
             h('td.right', shares_props, num_treasury_shares),
@@ -445,7 +445,7 @@ module View
 
       def render_owned_other_shares
         shares = @corporation
-          .shares_by_corporation.reject { |c, s| s.empty? || c == @corporation }
+          .shares_by_corporation.reject { |c, s| s.empty? || (c == @corporation && !@corporation.treasury_as_holding) }
           .sort_by { |c, s| [s.sum(&:percent), c.president?(@corporation) ? 1 : 0, c.name] }
           .reverse
           .map { |c, s| render_owned_other_corp(c, s) }

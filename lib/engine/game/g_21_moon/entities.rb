@@ -102,6 +102,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
+            treasury_as_holding: true,
           },
           {
             sym: 'ME',
@@ -114,6 +115,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
+            treasury_as_holding: true,
           },
           {
             sym: 'MA',
@@ -126,6 +128,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
+            treasury_as_holding: true,
           },
           {
             sym: 'DSE',
@@ -137,6 +140,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
+            treasury_as_holding: true,
           },
           {
             sym: 'SM',
@@ -149,6 +153,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
+            treasury_as_holding: true,
           },
           {
             sym: 'IC',
@@ -160,6 +165,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
+            treasury_as_holding: true,
           },
           {
             sym: 'LP',
@@ -172,6 +178,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
+            treasury_as_holding: true,
           },
         ].freeze
       end

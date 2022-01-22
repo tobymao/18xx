@@ -8,8 +8,7 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def actions(entity)
-            return ['sell_shares'] if entity&.corporation? && entity&.owner == current_entity && can_ipo_issue?(entity)
-            return [] if @issued
+            return [] unless @round.pending_trades.empty?
 
             super
           end
@@ -21,7 +20,9 @@ module Engine
           end
 
           def can_buy_any?(entity)
-            (can_buy_any_from_market?(entity) || can_buy_any_from_ipo?(entity))
+            (can_buy_any_from_market?(entity) ||
+             can_buy_any_from_ipo?(entity) ||
+             can_trade_any?(entity))
           end
 
           def can_buy_any_from_ipo?(entity)
@@ -33,24 +34,46 @@ module Engine
             false
           end
 
-          def can_ipo_issue?(corp)
-            corp&.corporation? && corp&.ipoed && @round.parred[corp] && !@round.issued[corp] && !bought? && !sold?
+          def can_trade_any?(entity)
+            @game.corporations.each do |corporation|
+              next unless corporation.ipoed
+              return true if can_buy_shares?(entity, corporation.corporate_shares) && can_trade_for_share?(entity, corporation)
+            end
+
+            false
           end
 
-          def parred_this_round?(corp)
-            @round.players_history[corp.owner][corp].include?(Action::Par)
+          def can_trade_for_share?(entity, owner)
+            @game.corporations.reject { |c| c == owner }.any? do |corporation|
+              bundles = @game.bundles_for_corporation(entity, corporation)
+              bundles.any? { |bundle| can_sell?(entity, bundle) }
+            end
           end
 
-          def process_par(action)
+          def can_buy?(entity, bundle)
+            return if bundle&.owner&.corporation? && bundle&.owner&.corporation&.owner != entity
+            return if bundle&.owner&.corporation? && !can_trade_for_share?(entity, bundle.corporation)
+
             super
-
-            @round.parred[action.corporation] = true
           end
 
-          def process_sell_shares(action)
-            return issue_shares(action.entity, action.bundle) if action.entity.corporation?
+          def process_buy_shares(action)
+            return start_trade(action) if action&.bundle&.owner&.corporation?
 
             super
+          end
+
+          def start_trade(action)
+            @log << "#{action.entity.name} starts a trade for a share of #{action.bundle.corporation.name}"
+
+            track_action(action, action.bundle.corporation)
+
+            @round.pending_trades << {
+              entity: action.entity,
+              bundle: action.bundle,
+            }
+
+            @round.clear_cache!
           end
 
           def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
@@ -69,50 +92,16 @@ module Engine
             end
           end
 
-          def issue_shares(corp, bundle)
-            floated = corp.floated?
+          # don't look at corporate holdings, only players
+          def can_dump?(entity, bundle)
+            return true unless bundle.presidents_share
 
-            @log << "#{corp.name} issues #{share_str(bundle)} of #{corp.name} to the market"\
-                    " and receives #{@game.format_currency(bundle.price)}"
-            @game.share_pool.transfer_shares(bundle,
-                                             @game.share_pool,
-                                             spender: @game.bank,
-                                             receiver: corp)
-
-            @game.float_corporation(corp) if corp.floatable && floated != corp.floated?
-
-            @issued = true
-            @round.issued[corp] = true
-            @round.current_actions << :issue
+            sh = bundle.corporation.player_share_holders
+            (sh.reject { |k, _| k == entity }.values.max || 0) >= bundle.presidents_share.percent
           end
 
-          def share_str(bundle)
-            num_shares = bundle.num_shares
-            return "a #{bundle.percent}% IPO share" if num_shares == 1
-
-            "#{num_shares} IPO shares"
-          end
-
-          # can only issue up to number of shares president has
-          def issuable_shares(entity)
-            return [] if bought? || sold?
-
-            shares = @game.bundles_for_corporation(@game.bank, entity) # IPO shares are in bank
-            shares.reject { |bundle| bundle.num_shares > entity.owner.num_shares_of(entity) }
-          end
-
-          def setup
-            @issued = false
-            super
-          end
-
-          def round_state
-            super.merge(
-              {
-                parred: {},
-                issued: {},
-              }
-            )
+          def corporate_buy_text(_share)
+            'Trade for'
           end
         end
       end
