@@ -1659,6 +1659,10 @@ module Engine
         'IPO Reserved'
       end
 
+      def corporation_show_loans?(_corporation)
+        true
+      end
+
       def corporation_show_shares?(corporation)
         !corporation.minor?
       end

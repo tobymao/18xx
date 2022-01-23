@@ -8,13 +8,27 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def actions(entity)
+            return [] if entity == current_entity && @round.stock? && @round.player_passed[entity]
             return ['choose_ability'] unless choices_ability(entity).empty?
+            return [] unless entity == current_entity
+            return ['sell_shares'] if must_sell?(entity)
 
-            super
+            player_debt = @game.player_debt(entity)
+            actions = []
+            actions << 'buy_shares' if can_buy_any?(entity) && player_debt.zero?
+            actions << 'par' if can_ipo_any?(entity) && player_debt.zero?
+            actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'pass' unless actions.empty?
+            actions
+          end
+
+          def bought?
+            super || bought_stock_token? || paid_off_player_debt?
           end
 
           def bought_stock_token?
-            @round.current_actions.any? { |x| x.instance_of?(Action::ChooseAbility) }
+            @round.current_actions.any? { |x| x.instance_of?(Action::ChooseAbility) && x.choice != 'SELL' }
           end
 
           def choices_ability(entity)
@@ -27,9 +41,15 @@ module Engine
             end
 
             choices = {}
-            get_par_prices(operator, nil).reverse_each do |p|
-              par_str = @game.par_price_str(p)
-              choices[par_str] = par_str
+            if @game.player_debt(operator).zero?
+              get_par_prices(operator, nil).reverse_each do |p|
+                par_str = @game.par_price_str(p)
+                choices[par_str] = par_str
+              end
+            end
+            if @round.operating?
+              price = @game.format_currency(active_entities[0].share_price.price)
+              choices['SELL'] = "Sell the Stock Turn Token (#{price})"
             end
             choices
           end
@@ -59,21 +79,34 @@ module Engine
             [share_price]
           end
 
+          def log_skip(entity)
+            if @round.stock? && @round.player_passed[entity]
+              @log << "#{entity.name} have passed and is out of the ISR"
+            else
+              super
+            end
+          end
+
           def process_choose_ability(action)
             entity = action.entity
             choice = action.choice
-            share_price = nil
-            get_par_prices(entity.owner, nil).each do |p|
-              next unless choice == @game.par_price_str(p)
+            if choice == 'SELL'
+              @game.sell_stock_turn_token(active_entities[0])
+              track_action(action, entity.owner)
+            else
+              share_price = nil
+              get_par_prices(entity.owner, nil).each do |p|
+                next unless choice == @game.par_price_str(p)
 
-              share_price = p
+                share_price = p
+              end
+              if share_price
+                @game.purchase_stock_turn_token(entity.owner, share_price)
+                track_action(action, entity.owner)
+                log_pass(entity.owner)
+                pass!
+              end
             end
-            return unless share_price
-
-            @game.purchase_stock_turn_token(entity.owner, share_price)
-            track_action(action, entity.owner)
-            log_pass(entity.owner)
-            pass!
           end
 
           def process_par(action)
@@ -138,6 +171,32 @@ module Engine
 
             log_pass(action.entity)
             pass!
+          end
+
+          def process_pass(action)
+            @round.player_passed[action.entity] = true if @round.stock?
+
+            super
+          end
+
+          def process_payoff_player_debt(action)
+            player = action.entity
+            @game.payoff_player_loan(player)
+            track_action(action, player)
+            log_pass(player)
+            pass!
+          end
+
+          def paid_off_player_debt?
+            @round.current_actions.any? { |x| x.instance_of?(Action::PayoffPlayerDebt) }
+          end
+
+          def sold?
+            super || sold_stock_token?
+          end
+
+          def sold_stock_token?
+            @round.current_actions.any? { |x| x.instance_of?(Action::ChooseAbility) && x.choice == 'SELL' }
           end
         end
       end

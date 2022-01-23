@@ -14,44 +14,21 @@ module Engine
           end
 
           def force_next_entity!
-            # When we are forcing the next entity to operate, make sure the operating order is correct first
-            new_entities = select_entities.reject do |c|
-              @game.minor_national_corporation?(c) || @entities_orginal.find { |e| e['id'] == c.id }
-            end
-            unless new_entities.empty?
-              find_entity = current_entity
-              new_entities.each do |c|
-                index = @entities_orginal.size
-                @entities_orginal.each_with_index do |e, idx|
-                  next if e['type'] == 'minor_national'
-
-                  if @game.germany_or_italy_national?(c)
-                    index = idx
-                    break
-                  end
-                  next if e['price'] > c.share_price.price
-                  next if e['price'] == c.share_price.price && e['row'] <= c.share_price.coordinates[0]
-
-                  index = idx
-                  break
-                end
-                @entities.insert(index, c)
-                @entities_orginal.insert(index, map_corporation(c))
-              end
-
-              goto_entity!(find_entity)
-            end
-
+            entity = current_entity
+            check_operating_order!
             super
+
+            # If we have sold the stock turn token, close the corporation after we are done with all the actions
+            entity.close! if @game.stock_turn_token_removed?(entity)
           end
 
           def start_operating
             entity = @entities[@entity_index]
-            if @game.germany_or_italy_national?(entity) && entity.num_player_shares.zero?
+            if @game.major_national_corporation?(entity) && entity.num_player_shares.zero?
               @log << "#{entity.name} operates without any president"
 
               current_price = entity.share_price.price
-              if @game.germany_or_italy_upgraded?(entity)
+              if @game.national_upgraded?(entity)
                 @game.stock_market.move_right(entity)
               else
                 @game.stock_market.move_left(entity)
@@ -64,6 +41,36 @@ module Engine
             else
               super
             end
+          end
+
+          def check_operating_order!
+            # When we are forcing the next entity to operate, make sure the operating order is correct first
+            new_entities = select_entities.reject do |c|
+              @game.minor_national_corporation?(c) || @entities_orginal.find { |e| e['id'] == c.id }
+            end
+            return if new_entities.empty?
+
+            find_entity = current_entity
+            new_entities.each do |c|
+              index = @entities_orginal.size
+              @entities_orginal.each_with_index do |e, idx|
+                next if e['type'] == 'minor_national'
+
+                if @game.germany_or_italy_national?(c)
+                  index = idx
+                  break
+                end
+                next if e['price'] > c.share_price.price
+                next if e['price'] == c.share_price.price && e['row'] <= c.share_price.coordinates[0]
+
+                index = idx
+                break
+              end
+              @entities.insert(index, c)
+              @entities_orginal.insert(index, map_corporation(c))
+            end
+
+            goto_entity!(find_entity)
           end
 
           def map_corporation(corporation)
