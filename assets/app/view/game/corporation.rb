@@ -339,7 +339,7 @@ module View
           type += '.bold' if last_acted_upon
           name = entity.player? ? entity.name : "© #{entity.name}"
           percent_shares = num_shares * @corporation.share_percent
-          percent_shares_str = percent_shares > 0 ? " (#{percent_shares}%)" : ''
+          percent_shares_str = percent_shares.positive? ? " (#{percent_shares}%)" : ''
 
           h(type, [
             h("td.left.name.nowrap.#{president ? 'president' : ''}", name),
