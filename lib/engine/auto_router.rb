@@ -153,9 +153,7 @@ module Engine
         combos.compact!
       rescue RuntimeError
         puts 'Route timeout reach'
-        if @flash
-          @flash.call('Auto route selection failed to complete (timeout)')
-        end
+        @flash&.call('Auto route selection failed to complete (timeout)')
         break
       end
 
