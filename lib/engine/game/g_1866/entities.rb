@@ -419,7 +419,7 @@ module Engine
           },
           {
             sym: 'I3',
-            name: 'Lom-Venetia Minor National',
+            name: 'Lombardy-Venetia Minor National',
             logo: '1866/I3',
             tokens: [],
             type: 'minor_national',

@@ -41,7 +41,10 @@ module Engine
             end
 
             choices = {}
-            if @game.player_debt(operator).zero?
+            valid_token = @game.stock_turn_token?(operator)
+            token_permium = @game.stock_turn_token_premium?(operator)
+            if @game.player_debt(operator).zero? && ((valid_token && @round.operating?) ||
+              (valid_token && !@round.operating? && !token_permium))
               get_par_prices(operator, nil).reverse_each do |p|
                 par_str = @game.par_price_str(p)
                 choices[par_str] = par_str
@@ -64,8 +67,13 @@ module Engine
 
             par_type = @game.phase_par_type(corp)
             par_prices = @game.stock_market.par_prices.select do |p|
+              extra = if entity.player? && @game.stock_turn_token_premium?(entity)
+                        @round.round_num * (@game.players.size - 1) * 5
+                      else
+                        0
+                      end
               multiplier = !corp ? 1 : 2
-              p.types.include?(par_type) && p.price * multiplier <= entity.cash && @game.can_par_share_price?(p, corp)
+              p.types.include?(par_type) && (p.price * multiplier) + extra <= entity.cash && @game.can_par_share_price?(p, corp)
             end
             par_prices.reject! { |p| p.price == @game.class::MAX_PAR_VALUE } if par_prices.size > 1
             par_prices
@@ -92,6 +100,7 @@ module Engine
             choice = action.choice
             if choice == 'SELL'
               @game.sell_stock_turn_token(active_entities[0])
+              entity.name = @game.stock_turn_token_name(entity.owner)
               track_action(action, entity.owner)
             else
               share_price = nil
@@ -102,6 +111,7 @@ module Engine
               end
               if share_price
                 @game.purchase_stock_turn_token(entity.owner, share_price)
+                entity.name = @game.stock_turn_token_name(entity.owner)
                 track_action(action, entity.owner)
                 log_pass(entity.owner)
                 pass!

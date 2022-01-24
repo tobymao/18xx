@@ -60,6 +60,9 @@ module Engine
           'formation' => ['Formation', 'Forced formation of Major Nationals. Order of forming is: '\
                                        'Switzerland, Spain, Benelux, Austro-Hungarian Empire, Italy, France, '\
                                        'Germany, Great Britain.'],
+          'infrastructure_h' => ['Transit Hub', 'The H, transit hub infrastructure, will be available for purchase'],
+          'infrastructure_p' => ['Palace Car', 'The P, palace car infrastructure, will be available for purchase'],
+          'infrastructure_m' => ['Mail', 'The M, mail infrastructure, will be available for purchase'],
         }.freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_overlap: 'Minor nationals',
@@ -197,6 +200,9 @@ module Engine
               {
                 'type' => 'green_ferries',
               },
+              {
+                'type' => 'infrastructure_h',
+              },
             ],
           },
           {
@@ -216,6 +222,11 @@ module Engine
             num: 5,
             price: 300,
             obsolete_on: '8',
+            events: [
+              {
+                'type' => 'infrastructure_p',
+              },
+            ],
           },
           {
             name: '5',
@@ -240,6 +251,9 @@ module Engine
               },
               {
                 'type' => 'formation',
+              },
+              {
+                'type' => 'infrastructure_m',
               },
             ],
             variants: [
@@ -378,6 +392,24 @@ module Engine
             price: 0,
             reserved: true,
           },
+          {
+            name: 'H',
+            distance: 99,
+            num: 6,
+            price: 120,
+          },
+          {
+            name: 'P',
+            distance: 99,
+            num: 6,
+            price: 160,
+          },
+          {
+            name: 'M',
+            distance: 99,
+            num: 6,
+            price: 200,
+          },
         ].freeze
 
         # *********** 1866 Specific constants ***********
@@ -453,6 +485,12 @@ module Engine
           '8' => 40,
           '10' => 40,
         }.freeze
+
+        INFRASTRUCTURE_COUNT = 6
+        INFRASTRUCTURE_TRAINS = %w[H P M].freeze
+        INFRASTRUCTURE_HUB = 'H'
+        INFRASTRUCTURE_PALACE = 'P'
+        INFRASTRUCTURE_MAIL = 'M'
 
         LOCAL_TRAIN = 'L'
 
@@ -657,6 +695,13 @@ module Engine
           corporation?(corporation)
         end
 
+        def crowded_corps
+          @crowded_corps ||= corporations.select do |c|
+            trains = c.trains.count { |t| !t.obsolete && !infrastructure_train?(t) }
+            trains > train_limit(c)
+          end
+        end
+
         def emergency_issuable_bundles(entity)
           min_price = @depot.min_depot_price
           if !entity.corporation? || !corporation?(entity) || !trains_empty?(entity) || entity.num_ipo_shares.zero? ||
@@ -743,6 +788,10 @@ module Engine
           entity.total_shares
         end
 
+        def must_buy_train?(entity)
+          entity.trains.none? { |t| !infrastructure_train?(t) } && !depot.depot_trains.empty?
+        end
+
         def next_round!
           @round =
             case @round
@@ -788,6 +837,7 @@ module Engine
             G1866::Step::Dividend,
             G1866::Step::DiscardTrain,
             G1866::Step::BuyTrain,
+            G1866::Step::BuyInfrastructure,
             G1866::Step::LoanInterestPayment,
             G1866::Step::LoanRepayment,
             G1866::Step::IssueShares,
@@ -897,20 +947,11 @@ module Engine
 
           # If the train is obsolete, pay half revenue
           revenue /= 2 if train.obsolete
-
-          # Port Token Bonus, check first and last stop to see if we got a token in a port
-          port_bonus = port_token_bonus(route.routes)
-          revenue += port_bonus[route] if port_bonus[route]
-
           revenue
         end
 
         def revenue_str(route)
           rev_str = super
-
-          # Port Token Bonus, check first and last stop to see if we got a token in a port
-          port_bonus = port_token_bonus(route.routes)
-          rev_str += " (PTB #{format_currency(port_bonus[route])})" if port_bonus[route].positive?
           rev_str += ' (Obsolete)' if route.train.obsolete
           rev_str
         end
@@ -918,6 +959,17 @@ module Engine
         def round_description(name, round_number = nil)
           round_number ||= @round.round_num
           "#{name} Round #{round_number}"
+        end
+
+        def routes_subsidy(routes)
+          return 0 if routes.empty?
+
+          port_bonus = port_token_bonus(routes)
+          port_bonus.sum { |_, revenue| revenue }
+        end
+
+        def route_trains(entity)
+          entity.runnable_trains.reject { |t| infrastructure_train?(t) }
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
@@ -935,12 +987,16 @@ module Engine
 
         def setup
           @stock_turn_token_per_player = self.class::STOCK_TURN_TOKENS[@players.size.to_s]
+          @stock_turn_token_count = {}
+          @stock_turn_token_premium_count = {}
           @stock_turn_token_in_play = {}
           @stock_turn_token_number = {}
           @stock_turn_token_remove = []
           @player_setup_order = @players.dup
           @player_setup_order.each_with_index do |player, index|
             @log << "#{player.name} have stock turn tokens with number #{index + 1}"
+            @stock_turn_token_count[player] = @stock_turn_token_per_player
+            @stock_turn_token_premium_count[player] = 2
             @stock_turn_token_in_play[player] = []
             @stock_turn_token_number[player] = 0
           end
@@ -970,6 +1026,25 @@ module Engine
             corporation = corporation_by_id(national)
             train.owner = corporation
             corporation.trains << train
+
+            # Before Italy is formed AHN can access the Lombardy-Venetia region
+            corporation.coordinates.concat(corporation_by_id('I3').coordinates) if national == 'AHN'
+          end
+
+          # Setup the infrastructure depot
+          @depot_infrastructures = []
+          @infrastructure_trains_h = []
+          @infrastructure_trains_p = []
+          @infrastructure_trains_m = []
+          self.class::INFRASTRUCTURE_COUNT.times.each do |index|
+            h_train = train_by_id("H-#{index}")
+            @infrastructure_trains_h << h_train
+
+            p_train = train_by_id("P-#{index}")
+            @infrastructure_trains_p << p_train
+
+            m_train = train_by_id("M-#{index}")
+            @infrastructure_trains_m << m_train
           end
 
           # Randomize and setup the corporations
@@ -1031,6 +1106,22 @@ module Engine
                     'This train is allowed to run a route of just a single city.'
           end
 
+          if corporation?(entity)
+            help << 'When a port city is used as a terminus in a run it pays the port bonus to the treasury. '\
+                    'Each port token can be only used once in an OR'
+          end
+
+          if entity.trains.any? { |t| t.name == self.class::INFRASTRUCTURE_HUB }
+            help << 'The H, transit hub, gives one tokened city value to the treasury (when included on a route)'
+          end
+          if entity.trains.any? { |t| t.name == self.class::INFRASTRUCTURE_PALACE }
+            help << 'The P, palace car, counts 10 for each city for one train, paid to the treasury'
+          end
+          if entity.trains.any? { |t| t.name == self.class::INFRASTRUCTURE_MAIL }
+            help << 'The M, mail, counts the sum value of the start and end locations of a route (cities or towns) '\
+                    'to the treasury'
+          end
+
           help << 'Obsolete trains only runs for ½ revenue.' if runnable_trains.any?(&:obsolete)
           help
         end
@@ -1060,6 +1151,21 @@ module Engine
           super
         end
 
+        def buy_infrastructure(entity, train)
+          take_loan(entity) while entity.cash < train.price
+          entity.spend(train.price, @bank)
+          @depot_infrastructures.delete(train)
+          @depot.remove_train(train)
+          train.owner = entity
+          entity.trains << train
+
+          @log << "#{entity.name} buys a #{train.name} infrastructure for #{format_currency(train.price)}"
+        end
+
+        def buyable_infrastructure
+          @depot_infrastructures.uniq(&:name)
+        end
+
         def can_par_share_price?(share_price, corporation)
           return (share_price.corporations.empty? || share_price.price == self.class::MAX_PAR_VALUE) unless corporation
 
@@ -1083,6 +1189,25 @@ module Engine
           return false unless corporation
 
           corporation.type == :share_5 || corporation.type == :share_10
+        end
+
+        def corporation_token_rights!(corporation)
+          return if !corporation?(corporation) || !corporation.floated?
+
+          corporation.placed_tokens.dup.each do |token|
+            next if hex_operating_rights?(corporation, token.hex)
+
+            next_token = corporation.placed_tokens.last
+            @log << "#{corporation.name} doesn't have operations right to the hex #{token.hex.name}, it's token "\
+                    ' comes back to the charter'
+            token.remove!
+            next if token == next_token
+
+            price = token.price
+            token.price = next_token.price
+            next_token.price = price
+            corporation.tokens.sort_by!(&:price)
+          end
         end
 
         def event_brown_ferries!
@@ -1115,6 +1240,24 @@ module Engine
           update_ferry_hex('S25', self.class::FERRY_TILE_S25, [{ hex: 'R24', edge: 5 }, { hex: 'S23', edge: 4 }])
         end
 
+        def event_infrastructure_h!
+          @log << '-- Event: The H, transit hub infrastructure, will be available for purchase --'
+
+          @depot_infrastructures.concat(@infrastructure_trains_h)
+        end
+
+        def event_infrastructure_m!
+          @log << '-- Event: The M, mail infrastructure, will be available for purchase --'
+
+          @depot_infrastructures.concat(@infrastructure_trains_m)
+        end
+
+        def event_infrastructure_p!
+          @log << '-- Event: The P, palace car infrastructure, will be available for purchase --'
+
+          @depot_infrastructures.concat(@infrastructure_trains_p)
+        end
+
         def forced_formation_major(corporation, minors)
           return if @major_national_formed[corporation.id]
 
@@ -1135,6 +1278,14 @@ module Engine
 
           corporation.ipoed = true
           @major_national_formed[corporation.id] = true
+          return unless corporation.id == self.class::ITALY_NATIONAL
+
+          # Remove the coordinates for AHN in Lombardy-Venetia region
+          minor_i3 = corporation_by_id('I3')
+          corporation_by_id('AHN').coordinates.reject! { |coordinate| minor_i3.coordinates.include?(coordinate) }
+
+          # Check if any of the AH corporations have tokened in Lombardy-Venetia
+          self.class::STARTING_REGION_CORPORATIONS['AHN'].each { |c| corporation_token_rights!(corporation_by_id(c)) }
         end
 
         def forced_formation_national(corporation)
@@ -1176,11 +1327,19 @@ module Engine
 
         def hex_operating_rights?(entity, hex)
           nationals = operating_rights(entity)
-          nationals.any? { |national| self.class::NATIONAL_REGION_HEXES[national].include?(hex.name) }
+          nationals.any? { |national| national_hexes(national).include?(hex.name) }
         end
 
         def hex_within_national_region?(entity, hex)
-          self.class::NATIONAL_REGION_HEXES[entity.id].include?(hex.name)
+          national_hexes(entity.id).include?(hex.name)
+        end
+
+        def infrastructure_limit(corporation)
+          corporation.type == :share_5 ? 1 : 2
+        end
+
+        def infrastructure_train?(train)
+          self.class::INFRASTRUCTURE_TRAINS.include?(train.name)
         end
 
         def interest_owed(entity)
@@ -1221,8 +1380,17 @@ module Engine
           minor_national_corporation?(corporation) || major_national_corporation?(corporation)
         end
 
+        def national_hexes(corporation_id)
+          hexes = self.class::NATIONAL_REGION_HEXES[corporation_id].dup
+          # Special case for AHN
+          if corporation_id == 'AHN' && !@major_national_formed[self.class::ITALY_NATIONAL]
+            hexes.concat(self.class::NATIONAL_REGION_HEXES['I3'])
+          end
+          hexes
+        end
+
         def national_upgraded?(corporation)
-          hexes = self.class::NATIONAL_REGION_HEXES[corporation.id]
+          hexes = national_hexes(corporation.id)
           hexes.any? do |h|
             hex = hex_by_id(h)
             next unless hex.tile.cities.size.positive?
@@ -1236,15 +1404,15 @@ module Engine
           national_shares = player.shares_by_corporation.select { |c, s| national_corporation?(c) && !s.empty? }
 
           rights = self.class::CORPORATIONS_OPERATING_RIGHTS[entity.id]
-          operating_rights = rights.is_a?(Array) ? rights.dup : [rights]
+          corporation_rights = rights.is_a?(Array) ? rights.dup : [rights]
           unless @major_national_formed[self.class::GERMANY_NATIONAL]
-            operating_rights.reject! { |o| o == self.class::GERMANY_NATIONAL }
+            corporation_rights.reject! { |o| o == self.class::GERMANY_NATIONAL }
           end
           unless @major_national_formed[self.class::ITALY_NATIONAL]
-            operating_rights.reject! { |o| o == self.class::ITALY_NATIONAL }
+            corporation_rights.reject! { |o| o == self.class::ITALY_NATIONAL }
           end
 
-          (national_shares.keys.map(&:id) + operating_rights).uniq
+          (national_shares.keys.map(&:id) + corporation_rights).uniq
         end
 
         def payoff_loan(entity, loan)
@@ -1285,8 +1453,7 @@ module Engine
 
             entity = route.train.owner
             stops = route.visited_stops
-            train_multiplier = train.multiplier || 1
-            train_multiplier /= 2 if train.obsolete
+            train_multiplier = train.obsolete ? 0.5 : 1
 
             ptb = [stops.first]
             ptb << stops.last unless stops.first == stops.last
@@ -1365,10 +1532,21 @@ module Engine
           @share_pool.transfer_shares(share.to_bundle, player)
 
           player.spend(share_price.price, @bank)
+          premium_token = stock_turn_token_premium?(player)
+          @log << "#{player.name} buys a#{premium_token ? ' premium' : ''} stock turn token at "\
+                  "#{format_currency(share_price.price)}"
+
           @stock_turn_token_in_play[player] << corporation
           @stock_turn_token_number[player] += 1
+          @stock_turn_token_count[player] -= 1 unless premium_token
+          return unless premium_token
 
-          @log << "#{player.name} buys a stock turn token at #{format_currency(share_price.price)}"
+          @stock_turn_token_premium_count[player] -= 1
+          player_cash = @round.round_num * 5
+          @log << "#{player.name} gives all players #{format_currency(player_cash)}"
+          @players.each { |p| player.spend(player_cash, p) unless player == p }
+
+          @depot.export!
         end
 
         def reorder_players_isr!
@@ -1438,12 +1616,18 @@ module Engine
 
           @stock_turn_token_in_play[player].delete(corporation)
           @stock_turn_token_remove << corporation
+          return unless @stock_turn_token_count[player].positive?
+
+          @log << "#{player.name}'s remaining stock turn tokens (#{@stock_turn_token_count[player]}) becomes premium tokens"
+          @stock_turn_token_premium_count[player] += @stock_turn_token_count[player]
+          @stock_turn_token_count[player] = 0
         end
 
         def setup_stock_turn_token
           # Give each player a stock turn company
           @players.each_with_index do |player, index|
             company = @companies.find { |c| c.id == "#{self.class::STOCK_TURN_TOKEN_PREFIX}#{index + 1}" }
+            company.name = stock_turn_token_name(player)
             company.owner = player
             player.companies << company
           end
@@ -1472,6 +1656,18 @@ module Engine
 
         def stock_turn_token_company?(company)
           company.id[0..1] == self.class::STOCK_TURN_TOKEN_PREFIX
+        end
+
+        def stock_turn_token?(player)
+          @stock_turn_token_count[player].positive? || @stock_turn_token_premium_count[player].positive?
+        end
+
+        def stock_turn_token_name(player)
+          "ST token (#{@stock_turn_token_count[player]} / #{@stock_turn_token_premium_count[player]}P)"
+        end
+
+        def stock_turn_token_premium?(player)
+          @stock_turn_token_count[player].zero?
         end
 
         def stock_turn_token_remove!
@@ -1512,7 +1708,7 @@ module Engine
         def trains_empty?(entity)
           return false unless entity.operator?
 
-          entity.trains.empty?
+          entity.trains.none? { |t| !infrastructure_train?(t) }
         end
 
         def update_ferry_hex(hex_name, tile_code, hex_borders)
@@ -1541,14 +1737,14 @@ module Engine
           nationals = operating_rights(entity)
 
           count = visits.count do |v|
-            nationals.any? { |national| self.class::NATIONAL_REGION_HEXES[national].include?(v.hex.name) }
+            nationals.any? { |national| national_hexes(national).include?(v.hex.name) }
           end
 
           count == visits.size
         end
 
         def visits_within_national_region?(entity, visits)
-          hexes = self.class::NATIONAL_REGION_HEXES[entity.id]
+          hexes = national_hexes(entity.id)
           visits.count { |v| hexes.include?(v.hex.name) } == visits.size
         end
       end

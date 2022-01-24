@@ -60,6 +60,10 @@ module Engine
             @took_loan = true
           end
 
+          def room?(entity, _shell = nil)
+            entity.trains.count { |t| !t.obsolete && !@game.infrastructure_train?(t) } < @game.train_limit(entity)
+          end
+
           def setup
             super
             @took_loan = false

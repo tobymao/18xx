@@ -8,7 +8,7 @@ module Engine
       module Step
         class DiscardTrain < Engine::Step::DiscardTrain
           def trains(corporation)
-            corporation.trains.reject(&:obsolete)
+            corporation.trains.reject { |t| t.obsolete || @game.infrastructure_train?(t) }
           end
         end
       end
