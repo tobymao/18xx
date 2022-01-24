@@ -57,7 +57,7 @@ module Engine
                 type: 'tile_lay',
                 hexes: %w[F3],
                 tiles: %w[403 121 584],
-                when: 'track',
+                when: 'owning_player_track',
                 owner_type: 'player',
                 count: 1,
                 consume_tile_lay: true,
@@ -232,7 +232,6 @@ module Engine
             float_percent: 50,
             floatable: false,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: 'F3',
             color: '#3561AE',
             abilities: [
               {

@@ -35,6 +35,8 @@ module Engine
 
         CERT_LIMIT = { 2 => 18, 3 => 12, 4 => 9 }.freeze
 
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+
         # Custom constants
         SJ_NAME = 'SJ'
 
@@ -98,7 +100,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 2,
-            status: %w[incremental_cap float_2],
+            status: %w[float_2 incremental_cap],
           },
           {
             name: '3',
@@ -195,7 +197,7 @@ module Engine
                   { 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
                   { 'nodes' => ['town'], 'pay' => 3, 'visit' => 3 },
                 ],
-                price: 80,
+                price: 280,
               },
             ],
           },
@@ -221,6 +223,7 @@ module Engine
               { 'nodes' => ['city'], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
             ],
+            available_on: '5',
             price: 600,
             num: 2,
           },
@@ -230,6 +233,7 @@ module Engine
               { 'nodes' => ['city'], 'pay' => 4, 'visit' => 4, 'multiplier' => 2 },
               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
             ],
+            available_on: '5E',
             price: 800,
             num: 2,
           },
