@@ -10,7 +10,7 @@ module Engine
           r, c = corporation.share_price.coordinates
 
           if r == 2
-            c -= 1
+            c -= 1 if c.positive?
           else
             r += 1
           end

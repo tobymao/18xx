@@ -82,10 +82,12 @@ module View
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         extras = []
-        extras.concat(render_loans) if @game.total_loans&.nonzero?
-        if @corporation.corporation? && @corporation.floated? &&
-              @game.total_loans.positive? && @corporation.can_buy?
-          extras << render_buying_power
+        if @game.corporation_show_loans?(@corporation)
+          extras.concat(render_loans) if @game.total_loans&.nonzero?
+          if @corporation.corporation? && @corporation.floated? &&
+            @game.total_loans.positive? && @corporation.can_buy?
+            extras << render_buying_power
+          end
         end
         extras << render_capitalization_type if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
         extras << render_escrow_account if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow

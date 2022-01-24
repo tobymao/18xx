@@ -653,9 +653,13 @@ module Engine
           end
         end
 
+        def corporation_show_loans?(corporation)
+          corporation?(corporation)
+        end
+
         def emergency_issuable_bundles(entity)
           min_price = @depot.min_depot_price
-          if !entity.corporation? || !corporation?(entity) || entity.num_ipo_shares.zero? ||
+          if !entity.corporation? || !corporation?(entity) || !trains_empty?(entity) || entity.num_ipo_shares.zero? ||
             entity.cash >= min_price
             return []
           end
@@ -742,13 +746,13 @@ module Engine
         def next_round!
           @round =
             case @round
-            when Engine::Round::Stock
+            when G1866::Round::Stock
               @operating_rounds = @phase.operating_rounds
               new_operating_round
             when G1866::Round::Operating
               or_round_finished
               new_operating_round(@round.round_num + 1)
-            when init_round.class
+            when Engine::Round::Auction
               reorder_players_isr!
               stock_round_isr
             end
@@ -756,7 +760,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
-            G1866::Step::SelectionAuction,
+            G1866::Step::SingleItemAuction,
           ])
         end
 
@@ -786,12 +790,14 @@ module Engine
             G1866::Step::BuyTrain,
             G1866::Step::LoanInterestPayment,
             G1866::Step::LoanRepayment,
+            G1866::Step::IssueShares,
           ], round_num: round_num)
         end
 
         def or_round_finished
           # Export all L/2 trains at the end of OR2
           @depot.export_all!('L') if @round.round_num == 2 && local_train?(@depot.upcoming.first)
+          stock_turn_token_remove!
         end
 
         def par_price_str(share_price)
@@ -914,10 +920,24 @@ module Engine
           "#{name} Round #{round_number}"
         end
 
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          corporation = bundle.corporation
+          price = corporation.share_price.price
+          was_president = corporation.president?(bundle.owner)
+          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
+          if was_president
+            bundle.num_shares.times { @stock_market.move_left(corporation) }
+          else
+            bundle.num_shares.times { @stock_market.move_down(corporation) }
+          end
+          log_share_price(corporation, price)
+        end
+
         def setup
           @stock_turn_token_per_player = self.class::STOCK_TURN_TOKENS[@players.size.to_s]
           @stock_turn_token_in_play = {}
           @stock_turn_token_number = {}
+          @stock_turn_token_remove = []
           @player_setup_order = @players.dup
           @player_setup_order.each_with_index do |player, index|
             @log << "#{player.name} have stock turn tokens with number #{index + 1}"
@@ -1059,6 +1079,12 @@ module Engine
           @phase.status.include?('can_convert_major')
         end
 
+        def corporation?(corporation)
+          return false unless corporation
+
+          corporation.type == :share_5 || corporation.type == :share_10
+        end
+
         def event_brown_ferries!
           @log << '-- Event: Brown Ferries --'
 
@@ -1078,6 +1104,8 @@ module Engine
           forced_formation_national(corporation_by_id('FN'))
           forced_formation_major(corporation_by_id(self.class::GERMANY_NATIONAL), %w[G1 G2 G3 G4 G5])
           forced_formation_national(corporation_by_id('GBN'))
+
+          @round.check_operating_order!
         end
 
         def event_green_ferries!
@@ -1119,8 +1147,12 @@ module Engine
           # Find the president and give player the share, and spend the money. The player can go into debt
           player = corporation.par_via_exchange.owner
           share = corporation.ipo_shares.first
-          @share_pool.transfer_shares(share.to_bundle, player, price: 0)
-          player_spend(player, share_price.price)
+          if player
+            @share_pool.transfer_shares(share.to_bundle, player, price: 0)
+            player_spend(player, share_price.price)
+          else
+            corporation.ipoed = true
+          end
 
           # Move the rest of the shares into the market
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
@@ -1173,16 +1205,6 @@ module Engine
           corporation.id == self.class::GERMANY_NATIONAL || corporation.id == self.class::ITALY_NATIONAL
         end
 
-        def germany_or_italy_upgraded?(corporation)
-          hexes = self.class::NATIONAL_REGION_HEXES[corporation.id]
-          hexes.any? do |h|
-            hex = hex_by_id(h)
-            next unless hex.tile.cities.size.positive?
-
-            hex.tile != hex.original_tile
-          end
-        end
-
         def major_national_corporation?(corporation)
           return false unless corporation
 
@@ -1197,6 +1219,16 @@ module Engine
 
         def national_corporation?(corporation)
           minor_national_corporation?(corporation) || major_national_corporation?(corporation)
+        end
+
+        def national_upgraded?(corporation)
+          hexes = self.class::NATIONAL_REGION_HEXES[corporation.id]
+          hexes.any? do |h|
+            hex = hex_by_id(h)
+            next unless hex.tile.cities.size.positive?
+
+            hex.tile != hex.original_tile
+          end
         end
 
         def operating_rights(entity)
@@ -1231,6 +1263,19 @@ module Engine
                   "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
         end
 
+        def payoff_player_loan(player)
+          if player.cash >= @player_debts[player]
+            player.cash -= @player_debts[player]
+            @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
+            @player_debts[player] = 0
+          else
+            @player_debts[player] -= player.cash
+            @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
+                    "(#{format_currency(@player_debts[player])})"
+            player.cash = 0
+          end
+        end
+
         def port_token_bonus(routes)
           # Find all the port hexes and see which route pays the most
           port_hexes = {}
@@ -1258,12 +1303,6 @@ module Engine
           port_bonus = Hash.new { |h, k| h[k] = 0 }
           port_hexes.each { |_, r| port_bonus[r['route']] += r['revenue'] }
           port_bonus
-        end
-
-        def corporation?(corporation)
-          return false unless corporation
-
-          corporation.type == :share_5 || corporation.type == :share_10
         end
 
         def phase_par_type(corporation)
@@ -1340,7 +1379,7 @@ module Engine
 
           # The player holding the P1 will become priority dealer
           p1 = @companies.find { |c| c.id == 'P1' }
-          if p1
+          if p1&.owner
             @players.delete(p1.owner)
             @players.unshift(p1.owner)
             p1.close!
@@ -1385,6 +1424,22 @@ module Engine
           end
         end
 
+        def sell_stock_turn_token(corporation)
+          player = corporation.owner
+          price = corporation.share_price.price
+          @bank.spend(price, player)
+          @log << "#{player.name} sells a stock turn token at #{format_currency(price)}"
+
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+          @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
+
+          @stock_turn_token_in_play[player].delete(corporation)
+          @stock_turn_token_remove << corporation
+        end
+
         def setup_stock_turn_token
           # Give each player a stock turn company
           @players.each_with_index do |player, index|
@@ -1404,7 +1459,7 @@ module Engine
         def stock_round_isr
           @log << '-- Initial Stock Round --'
           @round_counter += 1
-          Engine::Round::Stock.new(self, [
+          G1866::Round::Stock.new(self, [
             G1866::Step::BuySellParShares,
           ])
         end
@@ -1417,6 +1472,17 @@ module Engine
 
         def stock_turn_token_company?(company)
           company.id[0..1] == self.class::STOCK_TURN_TOKEN_PREFIX
+        end
+
+        def stock_turn_token_remove!
+          @stock_turn_token_remove.dup.each do |st|
+            close_corporation(st, quiet: true)
+            @stock_turn_token_remove.delete(st)
+          end
+        end
+
+        def stock_turn_token_removed?(corporation)
+          @stock_turn_token_remove.any? { |st| st == corporation }
         end
 
         def take_loan(entity, loan = loans.first)
@@ -1435,12 +1501,18 @@ module Engine
         end
 
         def take_player_loan(player, loan)
-          @bank.spend(loan, player)
+          player.cash += loan
           @player_debts[player] += loan + player_loan_interest(loan)
         end
 
         def train_type(train)
           train.name.include?('E') ? :etrain : :normal
+        end
+
+        def trains_empty?(entity)
+          return false unless entity.operator?
+
+          entity.trains.empty?
         end
 
         def update_ferry_hex(hex_name, tile_code, hex_borders)

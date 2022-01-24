@@ -9,7 +9,7 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
             actions = super
-            if !actions.empty? && entity.operator? && entity.trains.empty? && @game.can_take_loan?(entity) &&
+            if !actions.empty? && entity.operator? && @game.trains_empty?(entity) && @game.can_take_loan?(entity) &&
               entity.cash < @game.depot.min_depot_price
               actions << 'take_loan'
             end
@@ -21,6 +21,12 @@ module Engine
             return super unless @took_loan
 
             super.select(&:from_depot?)
+          end
+
+          def can_sell?(entity, bundle)
+            return true if entity == bundle.corporation
+
+            false
           end
 
           def log_skip(entity)
@@ -42,7 +48,7 @@ module Engine
             entity = action.entity
             price = action.price
             remaining = price - entity.cash
-            if remaining.positive? && @game.can_take_loan?(entity)
+            if remaining.positive? && @game.can_take_loan?(entity) && @game.trains_empty?(entity)
               raise GameError, "#{entity.owner.name} cannot contribute funds as long as #{entity.name} can take loans"
             end
 
