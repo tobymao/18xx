@@ -1346,6 +1346,10 @@ module Engine
         @graph
       end
 
+      def token_graph_for_entity(_entity)
+        @graph
+      end
+
       def upgrade_cost(tile, hex, entity, spender)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&

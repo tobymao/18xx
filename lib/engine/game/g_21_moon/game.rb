@@ -13,6 +13,8 @@ module Engine
         include Entities
         include Map
 
+        attr_reader :bc_graph, :sp_graph
+
         register_colors(black: '#16190e',
                         blue: '#0189d1',
                         brown: '#7b352a',
@@ -43,6 +45,7 @@ module Engine
         SELL_MOVEMENT = :down_block
         SOLD_OUT_INCREASE = true
         POOL_SHARE_DROP = :one
+        IMPASSABLE_HEX_COLORS = %i[purple orange].freeze
 
         MARKET = [
           ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '330', '360', '395', '430'],
@@ -165,22 +168,72 @@ module Engine
           custom: 'Fixed number of ORs'
         )
 
-        # Two lays or one upgrade
+        # Two lays or upgrades, but only one from each base
         TILE_LAYS = [
           { lay: true, upgrade: true },
-          { lay: :not_if_upgraded, upgrade: false, cost: 20 },
+          { lay: true, upgrade: true },
         ].freeze
 
         LAST_OR = 11
         SP_HEX = 'E9'
 
+        ICON_PREFIX = '21Moon/'
+
+        ICON_REVENUES = {
+          'RL' => { yellow: 20, green: 20, brown: 20, gray: 20 },
+          'BC' => { yellow: 30, green: 30, brown: 30, gray: 30 },
+          'X' => { yellow: 20, green: 40, brown: 60, gray: 80 },
+          'H' => { yellow: 30, green: 40, brown: 50, gray: 60 },
+          'R' => { yellow: 20, green: 20, brown: 40, gray: 50 },
+          'A' => { yellow: 40, green: 30, brown: 30, gray: 20 },
+          'M' => { yellow: 10, green: 10, brown: 10, gray: 10 },
+        }.freeze
+
+        MINERAL_HEXES = %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10 H2 E5 G13].freeze
+
         def reservation_corporations
           corporations + minors
         end
 
+        def init_graph
+          Graph.new(self, check_tokens: true)
+        end
+
         def setup
+          # We need a total of three graphs:
+          # One from just BC (@bc_graph)
+          # One from just SP (@sp_graph)
+          # One from both (@graph)
+          #
+          # We always ignore non-BC non-SP tokens however
+          #
+          @bc_graph = Graph.new(self, check_tokens: true)
+          @sp_graph = Graph.new(self, check_tokens: true)
+          select_combined_graph
+
+          # randomize minerals
+          #
+          load_icons
+          MINERAL_HEXES.sort_by { rand }.map { |h| hex_by_id(h) }.each_with_index do |hex, idx|
+            hex.tile.icons << case idx
+                              when 0, 1, 2
+                                @icons['X'][:yellow]
+                              when 3, 4, 5, 6
+                                @icons['H'][:yellow]
+                              when 7, 8, 9, 10
+                                @icons['R'][:yellow]
+                              when 11, 12, 13, 14
+                                @icons['A'][:yellow]
+                              else
+                                @icons['M'][:yellow]
+                              end
+          end
+
+          # pick one corp to wait until SR3
+
           # adjust parameters for majors to allow both IPO and treasury stock
           # place BC and SP tokens
+          # place BC icon
           #
           @corporations.each do |corp|
             corp.ipo_owner = @bank
@@ -191,6 +244,7 @@ module Engine
             end
             place_home_token(corp)
             place_sp_token(corp)
+            hex_by_id(corp.coordinates).tile.icons << @bc_icon
           end
 
           # pick one corp to wait until SR3
@@ -215,6 +269,65 @@ module Engine
           sp_tile = hex_by_id(self.class::SP_HEX).tile
           sp_tile.cities.first.place_token(corporation, sp_token)
           @log << "#{corporation.name} places a token on #{self.class::SP_HEX}"
+        end
+
+        def load_icons
+          @icons = Hash.new { |h, k| h[k] = {} }
+          ICON_REVENUES.keys.each do |root|
+            case root
+            when 'BC'
+              @bc_icon = Part::Icon.new(ICON_PREFIX + 'BC', 'BC', false, false, false)
+              %i[yellow green brown gray].each { |color| @icons[root][color] = @bc_icon }
+            when 'RL'
+              @rl_icon = Part::Icon.new(ICON_PREFIX + 'RL', 'RL', false, false, false)
+              %i[yellow green brown gray].each { |color| @icons[root][color] = @rl_icon }
+            else
+              %i[yellow green brown gray].each do |color|
+                full = root + '_' + color.to_s
+                @icons[root][color] = Part::Icon.new(ICON_PREFIX + full, full, false, false, false)
+              end
+            end
+          end
+        end
+
+        def skip_token?(graph, corporation, city)
+          if graph == @bc_graph
+            city.hex.id != corporation.coordinates
+          elsif graph == @sp_graph
+            city.hex.id != self.class::SP_HEX
+          else
+            city.hex.id != corporation.coordinates &&
+              city.hex.id != self.class::SP_HEX
+          end
+        end
+
+        def select_combined_graph
+          @selected_graph = @graph
+        end
+
+        def select_bc_graph
+          @selected_graph = @bc_graph
+        end
+
+        def select_sp_graph
+          @selected_graph = @sp_graph
+        end
+
+        def graph_for_entity(_entity)
+          @selected_graph
+        end
+
+        def token_graph_for_entity(_entity)
+          @bc_graph
+        end
+
+        def upgrades_to_correct_color?(from, to)
+          case from.color
+          when :red, :gray
+            to.color == :yellow
+          else
+            super
+          end
         end
 
         def new_corporate_round
@@ -252,23 +365,11 @@ module Engine
           @operating_rounds = 3 if @three_or_round
         end
 
-        def round_description(name, _round_num = nil)
-          case name
-          when 'Corporate', 'Stock'
-            super
-          when 'Draft'
-            name
-          else # 'Operating'
-            message += " - Game end after OR #{LAST_OR}" if @or > 8
-            "#{name} Round #{@or} (of #{LAST_OR})#{message}"
-          end
-        end
-
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             # G21Moon::Step::Bankrupt,
-            Engine::Step::Track,
-            Engine::Step::Token,
+            G21Moon::Step::Track,
+            G21Moon::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::BuyTrain,
@@ -315,6 +416,26 @@ module Engine
           @corporations.select(&:operated?)
         end
 
+        def update_icon(old_icon, new_tile)
+          @icons[icon_base(old_icon)][new_tile.color]
+        end
+
+        def icon_base(icon)
+          name = icon.name
+          name[0...name.index('_')]
+        end
+
+        def icon_revenue(stop)
+          tile = stop.tile
+          return 0 if tile.icons.empty?
+
+          tile.icons.sum { |i| ICON_REVENUES[icon_base(i)][tile.color] }
+        end
+
+        def revenue_for(route, stops)
+          stops.sum { |stop| stop.route_revenue(route.phase, route.train) + icon_revenue(stop) }
+        end
+
         def bank_sort(corporations)
           corporations.reject(&:minor?).sort_by(&:name)
         end
@@ -322,10 +443,10 @@ module Engine
         def timeline
           @timeline ||= [
             'SR 3: 7th corporation becomes available',
-            'OR 6: Space Port upgraded to 30c',
-            'OR 7: Remaining private companies close',
-            'OR 9: Space Port upgraded to 40c',
-            "Game ends after OR #{LAST_OR}",
+            'OR 3.2: Space Port upgraded to 30c',
+            'OR 4.1: Remaining private companies close',
+            'OR 5.1: Space Port upgraded to 40c',
+            'Game ends after OR 5.3',
           ].freeze
           @timeline
         end
@@ -338,26 +459,26 @@ module Engine
           [
             { type: :PRE },
             { type: :SR, name: '1' },
-            { type: :CR },
-            { type: :OR, name: '1' },
-            { type: :OR, name: '2' },
+            { type: :CR, name: '1', color: :yellow },
+            { type: :OR, name: '1.1' },
+            { type: :OR, name: '1.2' },
             { type: :SR, name: '2' },
-            { type: :CR },
-            { type: :OR, name: '3' },
-            { type: :OR, name: '4' },
+            { type: :CR, name: '2', color: :yellow },
+            { type: :OR, name: '2.1' },
+            { type: :OR, name: '2.2' },
             { type: :SR, name: '3' },
-            { type: :CR },
-            { type: :OR, name: '5' },
-            { type: :OR, name: '6' },
+            { type: :CR, name: '3', color: :yellow },
+            { type: :OR, name: '3.1' },
+            { type: :OR, name: '3.2' },
             { type: :SR, name: '4' },
-            { type: :CR },
-            { type: :OR, name: '7' },
-            { type: :OR, name: '8' },
+            { type: :CR, name: '4', color: :yellow },
+            { type: :OR, name: '4.1' },
+            { type: :OR, name: '4.2' },
             { type: :SR, name: '5' },
-            { type: :CR },
-            { type: :OR, name: '9' },
-            { type: :OR, name: '10' },
-            { type: :OR, name: '11' },
+            { type: :CR, name: '5', color: :yellow },
+            { type: :OR, name: '5.1' },
+            { type: :OR, name: '5.2' },
+            { type: :OR, name: '5.3' },
             { type: :End },
           ]
         end
