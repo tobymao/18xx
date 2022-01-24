@@ -10,16 +10,37 @@ module Engine
         class Dividend < Engine::Step::Dividend
           include Engine::Step::MinorHalfPay
 
-          def withhold(entity, revenue)
-            return super if entity.corporation? && entity.type != :minor
+          def process_dividend(action)
+            # super clears routes so revenue must be calculated beforehand
+            revenue = @game.routes_revenue(routes)
+            entity = action.entity
 
-            { corporation: 0, per_share: @game.class::MINOR_SUBSIDY }
+            super
+
+            return if (entity.corporation? && entity.type != :minor) ||
+              revenue.positive?
+
+            @game.bank.spend(@game.class::MINOR_SUBSIDY, entity)
+
+            @log << "#{entity.owner.name} received subsidy of #{@game.format_currency(@game.class::MINOR_SUBSIDY)} from the bank"
           end
 
-          def log_run_payout(entity, kind, revenue, action, payout)
-            return super if (entity.corporation? && entity.type != :minor) || revenue.positive?
+          def share_price_change(entity, revenue = 0)
+            return {} if entity.minor?
 
-            @log << "#{entity.owner.name} receives subsidy of #{@game.format_currency(payout[:per_share])}"
+            price = entity.share_price.price
+
+            return { share_direction: :left, share_times: 1 } if revenue.zero?
+
+            times = 0
+            times = 1 if revenue >= price
+            times = 2 if revenue >= price * 2
+
+            if times.positive?
+              { share_direction: :right, share_times: times }
+            else
+              {}
+            end
           end
         end
       end
