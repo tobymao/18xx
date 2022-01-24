@@ -1,15 +1,12 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
-require_relative '../../../step/upgrade_track_max_exits'
 
 module Engine
   module Game
     module G1866
       module Step
         class Track < Engine::Step::Track
-          include Engine::Step::UpgradeTrackMaxExits
-
           def available_hex(entity, hex)
             return nil if @game.national_corporation?(entity) && !@game.hex_within_national_region?(entity, hex)
             return nil if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
@@ -57,6 +54,9 @@ module Engine
               raise GameError, 'Cannot lay or upgrade tiles without operating rights in the selected region'
             end
 
+            # Special case for the B tiles
+            action.tile.label = 'B' if action.hex.tile.label.to_s == 'B'
+
             super
           end
 
@@ -74,16 +74,13 @@ module Engine
             @round.num_upgraded_track = 0
           end
 
-          def upgradeable_tiles(entity, ui_hex)
-            hex = @game.hex_by_id(ui_hex.id)
-            potential_tiles(entity, hex).map do |tile|
-              tile.rotate!(0)
-              tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
-              next if tile.legal_rotations.empty?
+          def upgradeable_tiles(_entity, hex)
+            return super if hex.tile.label.to_s == 'C'
 
-              tile.rotate!
-              tile
-            end.compact
+            super.group_by(&:color).values.flat_map do |group|
+              max_edges = group.map { |t| t.edges.length }.max
+              group.select { |t| t.edges.size == max_edges }
+            end
           end
         end
       end

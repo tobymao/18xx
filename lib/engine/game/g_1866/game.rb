@@ -4,6 +4,8 @@ require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
+require_relative '../../loan'
+require_relative '../interest_on_loans'
 
 module Engine
   module Game
@@ -12,6 +14,7 @@ module Engine
         include_meta(G1866::Meta)
         include G1866::Entities
         include G1866::Map
+        include InterestOnLoans
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
 
@@ -24,6 +27,7 @@ module Engine
 
         CAPITALIZATION = :incremental
 
+        EBUY_CAN_SELL_SHARES = false
         EBUY_OTHER_VALUE = false
 
         TILE_TYPE = :lawson
@@ -41,12 +45,12 @@ module Engine
         SOLD_OUT_INCREASE = false
 
         MARKET = [
-          %w[0 5 10 15 20 25 30p 35p 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
-             200 220 240 260 280 300 330 360 390 420 460 500 540 580 630 680],
-          %w[0 5 10 15 20 25 30p 35p 40p 45p 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
-             200 220 240 260 280 300 330 360 390 420 460 500 540 580 630 680],
-          %w[0 5 10 15 20 25 30 35 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
-             200pxzw 220 240 260 280 300 330 360 390 420 460 500 540 580 630 680],
+          %w[0 10 20 30 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
+             200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
+          %w[0 10 20 30 40p 45p 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
+             200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
+          %w[0 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
+             200pxzw 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
           %w[120P 100P 75P 75P 75P 120P 80P 80P 80P 50P],
         ].freeze
 
@@ -80,7 +84,7 @@ module Engine
           {
             name: 'L/2',
             on: '',
-            train_limit: { minor_national: 1, national: 1, share_5: 3 },
+            train_limit: { minor_national: 1, national: 1, share_5: 4 },
             tiles: [:yellow],
             operating_rounds: 99,
           },
@@ -149,7 +153,7 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 14,
+            num: 20,
             price: 50,
             obsolete_on: '3',
             variants: [
@@ -186,7 +190,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 4,
+            num: 5,
             price: 200,
             obsolete_on: '6',
             events: [
@@ -209,7 +213,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 4,
+            num: 5,
             price: 300,
             obsolete_on: '8',
           },
@@ -227,7 +231,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 4,
+            num: 5,
             price: 450,
             obsolete_on: '10',
             events: [
@@ -273,7 +277,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 4,
+            num: 5,
             price: 600,
             variants: [
               {
@@ -309,7 +313,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 4,
+            num: 5,
             price: 800,
             variants: [
               {
@@ -377,6 +381,24 @@ module Engine
         ].freeze
 
         # *********** 1866 Specific constants ***********
+        C_TILE_UPGRADE = {
+          'C1' => 'C6',
+          'C2' => 'C7',
+          'C3' => 'C8',
+          'C4' => 'C9',
+          'C5' => 'C10',
+          'C6' => 'C11',
+          'C7' => 'C12',
+          'C8' => 'C13',
+          'C9' => 'C14',
+          'C10' => 'C15',
+          'C11' => 'C16',
+          'C12' => 'C17',
+          'C13' => 'C18',
+          'C14' => 'C19',
+          'C15' => 'C20',
+        }.freeze
+
         CORPORATIONS_OPERATING_RIGHTS = {
           'LNWR' => 'GBN',
           'GWR' => 'GBN',
@@ -403,36 +425,6 @@ module Engine
         DOUBLE_HEX = %w[G15 G19 J12 J18 K5].freeze
 
         ENTITY_STATUS_TEXT = {
-          'LNWR' => 'Available from ISR',
-          'GWR' => 'Available from ISR',
-          'NBR' => 'Available from ISR',
-          'PLM' => 'Available from ISR',
-          'MIDI' => 'Available from ISR',
-          'OU' => 'Available from ISR',
-          'KPS' => 'Available from OR1',
-          'BY' => 'Available from OR1',
-          'KHS' => 'Available from OR1',
-          'SB' => 'Available from OR2',
-          'BH' => 'Available from OR2',
-          'FNR' => 'Available from OR2',
-          'SSFL' => 'Available from OR2',
-          'IFT' => 'Available from OR2',
-          'SFAI' => 'Available from OR2',
-          'SBB' => 'Available from OR2',
-          'GL' => 'Available from OR1',
-          'NRS' => 'Available from OR1',
-          'ZPB' => 'Available from OR2',
-          'MZA' => 'Available from OR2',
-          'G1' => 'Available from ISR',
-          'G2' => 'Available from ISR',
-          'G3' => 'Available from ISR',
-          'G4' => 'Available from ISR',
-          'G5' => 'Available from ISR',
-          'I1' => 'Available from ISR',
-          'I2' => 'Available from ISR',
-          'I3' => 'Available from ISR',
-          'I4' => 'Available from ISR',
-          'I5' => 'Available from ISR',
           'AHN' => 'Available from OR1',
           'BN' => 'Available from OR1',
           'FN' => 'Available from OR1',
@@ -556,12 +548,12 @@ module Engine
           '10' => 40,
         }.freeze
 
-        REGION_CORPORATIONS = {
-          'GREAT_BRITAIN' => %w[LNWR GWR NBR],
-          'FRANCE' => %w[PLM MIDI OU],
-          'GERMANY' => %w[KPS BY KHS],
-          'AUSTRIA' => %w[SB BH FNR],
-          'ITALY' => %w[SSFL IFT SFAI],
+        STARTING_REGION_CORPORATIONS = {
+          'GBN' => %w[LNWR GWR NBR],
+          'FN' => %w[PLM MIDI OU],
+          'GN' => %w[KPS BY KHS],
+          'AHN' => %w[SB BH FNR],
+          'IN' => %w[SSFL IFT SFAI],
         }.freeze
 
         STOCK_TURN_TOKEN_PREFIX = 'ST'
@@ -575,9 +567,8 @@ module Engine
 
         # Corporations which will be able to float on which turn
         TURN_CORPORATIONS = {
-          'ISR' => %w[G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU],
-          'OR1' => %w[GBN FN AHN BN SPN SWN G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU KPS BY KHS
-                      GL NRS],
+          'ISR' => %w[G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI
+                      SBB GL NRS ZPB MZA],
         }.freeze
 
         def can_par?(corporation, parrer)
@@ -662,6 +653,20 @@ module Engine
           end
         end
 
+        def emergency_issuable_bundles(entity)
+          min_price = @depot.min_depot_price
+          if !entity.corporation? || !corporation?(entity) || entity.num_ipo_shares.zero? ||
+            entity.cash >= min_price
+            return []
+          end
+
+          remaining = min_price - entity.cash
+          bundles_for_corporation(entity, entity).select do |bundle|
+            max_shares = (remaining / bundle.price_per_share).ceil
+            @share_pool.fit_in_bank?(bundle) && bundle.num_shares <= max_shares
+          end
+        end
+
         def entity_can_use_company?(entity, company)
           entity == company.owner
         end
@@ -696,12 +701,42 @@ module Engine
           super
         end
 
+        def init_loans
+          @loan_value = 100
+
+          # 13 corporations * 10 loans
+          Array.new(130) { |id| Loan.new(id, @loan_value) }
+        end
+
+        def init_stock_market
+          G1866::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def interest_rate
+          20
+        end
+
         def ipo_name(_entity)
           'Treasury'
         end
 
+        def issuable_shares(entity)
+          return [] if !entity.corporation? || !corporation?(entity) || entity.num_ipo_shares.zero?
+
+          bundles_for_corporation(entity, entity).select { |bundle| @share_pool.fit_in_bank?(bundle) }
+        end
+
         def local_length
           99
+        end
+
+        def loan_value(_entity = nil)
+          @loan_value
+        end
+
+        def maximum_loans(entity)
+          entity.total_shares
         end
 
         def next_round!
@@ -749,6 +784,8 @@ module Engine
             G1866::Step::Dividend,
             G1866::Step::DiscardTrain,
             G1866::Step::BuyTrain,
+            G1866::Step::LoanInterestPayment,
+            G1866::Step::LoanRepayment,
           ], round_num: round_num)
         end
 
@@ -796,6 +833,10 @@ module Engine
           end
         end
 
+        def player_value(player)
+          player.value - @player_debts[player]
+        end
+
         def price_movement_chart
           [
             ['Market Action', 'Movement'],
@@ -812,6 +853,13 @@ module Engine
             ['Sale made by non-director, or for each loan taken', '1 ↓, or 1 ← if cannot go down'],
             ['For each loan repaid', '1 ↑, or 1 → and 1 ↓ if cannot go up'],
           ]
+        end
+
+        def redeemable_shares(entity)
+          return [] if !entity.corporation? || !corporation?(entity)
+
+          bundles_for_corporation(share_pool, entity)
+            .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
         end
 
         def reservation_corporations
@@ -876,6 +924,9 @@ module Engine
             @stock_turn_token_in_play[player] = []
             @stock_turn_token_number[player] = 0
           end
+
+          # Initialize the player depts, if player have to take an emergency loan
+          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           @red_reservation_entity = corporation_by_id('R')
           @corporations.delete(@red_reservation_entity)
@@ -977,6 +1028,15 @@ module Engine
           # Paris
           return to.name == self.class::PARIS_TILE if from.hex.name == self.class::PARIS_HEX && from.color == :brown
 
+          # C-tiles
+          return C_TILE_UPGRADE[from.name] == to.name if from.label.to_s == 'C' && %i[yellow green brown].include?(from.color)
+
+          super
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          return true if from.label.to_s == 'B' && from.color == :white && (to.name == '5' || to.name == '6')
+
           super
         end
 
@@ -985,6 +1045,10 @@ module Engine
 
           share_price.corporations.none? { |c| c.type != :stock_turn_corporation } ||
             share_price.price == self.class::MAX_PAR_VALUE
+        end
+
+        def can_take_loan?(entity)
+          entity.corporation? && entity.loans.size < maximum_loans(entity)
         end
 
         def convert_corporation?
@@ -1056,7 +1120,7 @@ module Engine
           player = corporation.par_via_exchange.owner
           share = corporation.ipo_shares.first
           @share_pool.transfer_shares(share.to_bundle, player, price: 0)
-          player.spend(share_price.price, @bank, check_cash: false)
+          player_spend(player, share_price.price)
 
           # Move the rest of the shares into the market
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
@@ -1087,8 +1151,20 @@ module Engine
           self.class::NATIONAL_REGION_HEXES[entity.id].include?(hex.name)
         end
 
+        def interest_owed(entity)
+          interest_owed_for_loans(entity.loans.size)
+        end
+
+        def interest_owed_for_loans(loans)
+          interest_rate * loans
+        end
+
         def local_train?(train)
           self.class::LOCAL_TRAIN == train.name
+        end
+
+        def loans_due_interest(entity)
+          entity&.loans&.size || 0
         end
 
         def germany_or_italy_national?(corporation)
@@ -1139,6 +1215,22 @@ module Engine
           (national_shares.keys.map(&:id) + operating_rights).uniq
         end
 
+        def payoff_loan(entity, loan)
+          raise GameError, "Loan doesn't belong to that entity" unless entity.loans.include?(loan)
+
+          amount = loan.amount
+          @log << "#{entity.name} pays off a loan for #{format_currency(amount)}"
+          entity.spend(amount, @bank)
+
+          entity.loans.delete(loan)
+          @loans << loan
+
+          current_price = entity.share_price.price
+          @stock_market.move_up(entity)
+          @log << "#{entity.name}'s share price changes from " \
+                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+        end
+
         def port_token_bonus(routes)
           # Find all the port hexes and see which route pays the most
           port_hexes = {}
@@ -1186,6 +1278,28 @@ module Engine
           hex = hex_by_id(hex_coordinates)
           city = hex.tile.cities.first
           city.place_token(corporation, token, free: true, check_tokenable: false)
+        end
+
+        def player_debt(player)
+          @player_debts[player] || 0
+        end
+
+        def player_loan_interest(loan)
+          loan
+        end
+
+        def player_spend(player, cash)
+          # Check if player needs a loan
+          remaining = (player.cash.positive? ? player.cash : 0) - cash
+          if remaining.negative?
+            remaining = remaining.abs
+            take_player_loan(player, remaining)
+            @log << "#{player.name} takes a loan of #{format_currency(remaining)} with "\
+                    "#{format_currency(player_loan_interest(remaining))} in interest"
+          end
+
+          # Spend the money
+          player.spend(cash, @bank, check_cash: false)
         end
 
         def purchase_stock_turn_token(player, share_price)
@@ -1238,11 +1352,11 @@ module Engine
         def setup_corporations
           # Randomize from preset seed to get same order
           corps = @corporations.select { |c| c.type == :share_5 }.sort_by { rand }
-          @removed_corporations = []
+          removed_corporations = []
 
           # Select one of the three corporations based in each of GB, France, A-H, Germany & Italy
           starting_corps = []
-          self.class::REGION_CORPORATIONS.each do |_, v|
+          self.class::STARTING_REGION_CORPORATIONS.each do |_, v|
             corp = corps.find { |c| v.include?(c.name) }
             starting_corps << corp
             corps.delete(corp)
@@ -1253,13 +1367,13 @@ module Engine
             if index < 8
               starting_corps << c
             else
-              @removed_corporations << c
+              removed_corporations << c
               @corporations.delete(c)
             end
           end
 
           # Put down the home tokens of all the removed corporations
-          @removed_corporations.each do |corp|
+          removed_corporations.each do |corp|
             Array(corp.coordinates).each do |coord|
               token = Engine::Token.new(corp, logo: "/logos/1866/#{corp.name}_REMOVED.svg",
                                               simple_logo: "/logos/1866/#{corp.name}_REMOVED.svg",
@@ -1303,6 +1417,26 @@ module Engine
 
         def stock_turn_token_company?(company)
           company.id[0..1] == self.class::STOCK_TURN_TOKEN_PREFIX
+        end
+
+        def take_loan(entity, loan = loans.first)
+          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+
+          amount = loan_value(entity)
+          @log << "#{entity.name} takes a loan and receives #{format_currency(amount)}"
+          @bank.spend(amount, entity)
+          entity.loans << loan
+          @loans.delete(loan)
+
+          current_price = entity.share_price.price
+          @stock_market.move_down(entity)
+          @log << "#{entity.name}'s share price changes from " \
+                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+        end
+
+        def take_player_loan(player, loan)
+          @bank.spend(loan, player)
+          @player_debts[player] += loan + player_loan_interest(loan)
         end
 
         def train_type(train)
