@@ -297,6 +297,9 @@ module Engine
 
       VARIABLE_FLOAT_PERCENTAGES = false
 
+      # whether corporation cards should show percentage ownership breakdown for players
+      SHOW_SHARE_PERCENT_OWNERSHIP = false
+
       # Setting this to true is neccessary but insufficent to allow downgrading town tiles into plain track
       # See 1856 for an example
       ALLOW_REMOVING_TOWNS = false
@@ -453,6 +456,7 @@ module Engine
         @round_counter = 0
 
         @optional_rules = init_optional_rules(optional_rules)
+        @show_share_percent_ownership = self.class::SHOW_SHARE_PERCENT_OWNERSHIP
 
         @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
 

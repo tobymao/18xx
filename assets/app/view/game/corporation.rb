@@ -338,8 +338,9 @@ module View
           type = entity.player? ? 'tr.player' : 'tr.corp'
           type += '.bold' if last_acted_upon
           name = entity.player? ? entity.name : "© #{entity.name}"
+          show_percent = @game.instance_variable_get(:@show_share_percent_ownership)
           percent_shares = num_shares * @corporation.share_percent
-          percent_shares_str = percent_shares.positive? ? " (#{percent_shares}%)" : ''
+          percent_shares_str = percent_shares.positive? && show_percent ? " (#{percent_shares}%)" : ''
 
           h(type, [
             h("td.left.name.nowrap.#{president ? 'president' : ''}", name),
