@@ -15,9 +15,6 @@ module Engine
   class RouteTooLong < GameError
   end
 
-  class RouteBlocked < GameError
-  end
-
   class ReusesCity < GameError
   end
 end
