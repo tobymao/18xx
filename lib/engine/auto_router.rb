@@ -276,7 +276,7 @@ module Engine
       let js_route_timeout = _route_timeout * 1000
 
       // marshal Opal objects to js for faster/easier access
-      let js_sorted_routes = []
+      const js_sorted_routes = []
       let limit = 1
       Opal.send(_rb_sorted_routes, 'each', [], function(rb_routes) {
         let js_routes = []
