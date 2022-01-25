@@ -456,7 +456,6 @@ module Engine
         @round_counter = 0
 
         @optional_rules = init_optional_rules(optional_rules)
-        @show_share_percent_ownership = self.class::SHOW_SHARE_PERCENT_OWNERSHIP
 
         @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
 
