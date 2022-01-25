@@ -52,7 +52,11 @@ module Engine
                                "(#{@game.format_currency(player_debt)})"
             end
 
+            corporation = action.bundle.corporation
+            previous_president = corporation.owner
             super
+
+            @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
             change_market
             @round.force_next_entity!
           end
@@ -84,6 +88,14 @@ module Engine
 
             change_market
             @round.force_next_entity!
+          end
+
+          def process_sell_shares(action)
+            corporation = action.bundle.corporation
+            previous_president = corporation.owner
+            super
+
+            @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
           end
 
           def issuable_shares(_entity)
