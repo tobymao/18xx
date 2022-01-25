@@ -46,7 +46,7 @@ module Engine
           def check_operating_order!
             # When we are forcing the next entity to operate, make sure the operating order is correct first
             new_entities = select_entities.reject do |c|
-              @game.minor_national_corporation?(c) || @entities_orginal.find { |e| e['id'] == c.id }
+              @game.minor_national_corporation?(c) || @entities_orginal.find { |e| e[:id] == c.id }
             end
             return if new_entities.empty?
 
@@ -54,14 +54,14 @@ module Engine
             new_entities.each do |c|
               index = @entities_orginal.size
               @entities_orginal.each_with_index do |e, idx|
-                next if e['type'] == 'minor_national'
+                next if e[:type] == 'minor_national'
 
                 if @game.germany_or_italy_national?(c)
                   index = idx
                   break
                 end
-                next if e['price'] > c.share_price.price
-                next if e['price'] == c.share_price.price && e['row'] <= c.share_price.coordinates[0]
+                next if e[:price] > c.share_price.price
+                next if e[:price] == c.share_price.price && e[:row] <= c.share_price.coordinates[0]
 
                 index = idx
                 break

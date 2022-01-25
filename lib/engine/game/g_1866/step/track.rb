@@ -14,6 +14,10 @@ module Engine
             super
           end
 
+          def buying_power(entity)
+            @game.buying_power_with_loans(entity)
+          end
+
           def can_lay_tile?(entity)
             action = get_tile_lay(entity)
             return false unless action
@@ -72,6 +76,12 @@ module Engine
             super
 
             @round.num_upgraded_track = 0
+          end
+
+          def try_take_loan(entity, price)
+            return if !price.positive? || price <= entity.cash
+
+            @game.take_loan(entity) while entity.cash < price
           end
 
           def upgradeable_tiles(_entity, hex)
