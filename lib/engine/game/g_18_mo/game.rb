@@ -14,7 +14,7 @@ module Engine
         include G18MO::Map
 
         STARTING_CASH = { 2 => 600, 3 => 425, 4 => 400, 5 => 385 }.freeze
-        TILE_COST = 21
+        TILE_COST = 0
 
         ORANGE_GROUP = [
         'Pool Share',

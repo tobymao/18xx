@@ -152,16 +152,17 @@ module Engine
 
         HEXES = {
           white: {
-            %w[A9 A11 B8 B10 B12 C3 C9 C11 C15 D2 D14 E3 F12 I11 L6 L8 L10 J12 K15] => '',
-            %w[C13 D4 E15 F4 H10 H12 K5] => 'city=revenue:0',
-            %w[D16 F14 F16 G13 H14 G15 I13 I15] => 'upgrade=cost:40,terrain:mountain',
+            %w[A9 A11 B8 B10 B12 C3 C9 C11 C15 D2 D14 E3 F12 L6 L8 L10 I11 J12 K15] => '',
+            %w[D4 E15 F4 H12 K5] => 'city=revenue:0',
+            %w[D16 F14 F16 G13 H14 G15 I13 I15] => 'upgrade=cost:20,terrain:mountain',
             %w[C13] => 'city=revenue:10;path=a:1,b:_0',
+            ['H10'] => 'city=revenue:0;border=edge:2,type:water,cost:20',
             ['G11'] => 'border=edge:3,type:water,cost:20',
             ['J10'] => 'border=edge:4,type:water,cost:40',
             ['G3'] => 'border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40',
             ['D10'] => 'border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:20',
             ['G7'] => 'city=revenue:0;border=edge:0,type:water,cost:20;border=edge:1,type:water,cost:20',
-            %w[F10 H8] => 'upgrade=cost:40,terrain:water',
+            %w[F10 H8] => 'upgrade=cost:20,terrain:water',
             ['K11'] => 'upgrade=cost:60,terrain:water',
             ['J6'] => 'border=edge:0,type:impassable;border=edge:1,type:water,cost:60;border=edge:2,type:water,cost:40',
             ['E9'] => 'city=revenue:0;border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:40',
