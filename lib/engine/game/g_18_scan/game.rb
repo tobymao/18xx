@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'corporation'
 
 module Engine
   module Game
@@ -260,6 +261,17 @@ module Engine
           end
         end
 
+        def init_corporations(stock_market)
+          game_corporations.map do |corporation|
+            G18Scan::Corporation.new(
+              self,
+              min_price: stock_market.par_prices.map(&:price).min,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
+        end
+
         def new_auction_round
           Round::Auction.new(self, [
             G18Scan::Step::CompanyPendingPar,
@@ -296,6 +308,12 @@ module Engine
           return 40 if @phase.status.include?('float_4')
 
           50
+        end
+
+        def float_str(entity)
+          return 'Floats in phase 5' if entity == sj && !entity.floatable
+
+          super
         end
 
         def event_full_cap!
