@@ -10,12 +10,14 @@ require 'view/game/players'
 require 'view/game/sell_shares'
 require 'view/game/stock_market'
 require 'view/game/bid'
+require 'lib/settings'
 
 module View
   module Game
     module Round
       class Stock < Snabberb::Component
         include Actionable
+        include Lib::Settings
         needs :selected_corporation, default: nil, store: true
         needs :selected_company, default: nil, store: true
         needs :last_player, default: nil, store: true
@@ -69,7 +71,7 @@ module View
           if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
             children << h(BuyCompanyFromOtherPlayer, game: @game)
           end
-          children << h(StockMarket, game: @game)
+          children << h(StockMarket, game: @game, show_train_schedule: true)
 
           h(:div, children)
         end

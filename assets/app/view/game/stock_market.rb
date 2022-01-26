@@ -11,6 +11,7 @@ module View
       needs :game
       needs :user, default: nil, store: true
       needs :show_bank, default: false
+      needs :show_train_schedule, default: false
       needs :explain_colors, default: false
 
       COLOR_MAP = {
@@ -277,14 +278,19 @@ module View
                end
 
         children = []
+        row_children = []
 
         props = {
           style: {
+            display: 'flex',
+            flexDirection: 'row',
             marginBottom: '1rem',
           },
         }
 
-        children << h(:div, props, [h(Bank, game: @game)].compact)
+        row_children << h(:div, [h(Bank, game: @game)].compact)
+        row_children << h(:div, [h(TrainSchedule, game: @game)]) if @show_train_schedule
+        children << h(:div, props, row_children)
         grid_props = {
           style: {
             width: '100%',
