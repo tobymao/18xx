@@ -22,7 +22,7 @@ module Engine
 
             @game.bank.spend(@game.class::MINOR_SUBSIDY, entity)
 
-            @log << "#{entity.owner.name} received subsidy of #{@game.format_currency(@game.class::MINOR_SUBSIDY)} from the bank"
+            @log << "#{entity.owner.name} receives subsidy of #{@game.format_currency(@game.class::MINOR_SUBSIDY)}"
           end
 
           def share_price_change(entity, revenue = 0)

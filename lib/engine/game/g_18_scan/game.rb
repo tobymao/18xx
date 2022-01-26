@@ -41,6 +41,8 @@ module Engine
         # Custom constants
         SJ_NAME = 'SJ'
 
+        SJ_START_PRICE = 100
+
         MINOR_SUBSIDY = 10
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -138,7 +140,7 @@ module Engine
             train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            status: %w[float_5 full_cap],
+            status: %w[float_5 full_cap sj_can_float],
           },
           {
             name: '4D',
@@ -146,7 +148,7 @@ module Engine
             train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            status: %w[float_5 full_cap],
+            status: %w[float_5 full_cap sj_can_float],
           },
         ].freeze
 
