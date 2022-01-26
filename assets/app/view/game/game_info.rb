@@ -392,7 +392,7 @@ module View
         children = @game.progress_information.flat_map.with_index do |item, index|
           cells = []
           # the space is nut just a space but a &nbsp in unicode;
-          cells << h(:div, cell_props(item[:type], @game.round_counter == index),
+          cells << h(:div, cell_props(item[:type], @game.round_counter == index, item[:color]),
                      [h('div.center', item[:value] || ' '), h('div.nowrap', "#{item[:type]} #{item[:name]}")])
           if item[:exportAfter]
             cells << h(:div, cell_props(:Export), [
@@ -406,7 +406,7 @@ module View
         h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children)
       end
 
-      def cell_props(type, current)
+      def cell_props(type, current, color = nil)
         bg_color, font_color, justify =
           case type
           when :SR, :PRE
@@ -416,7 +416,11 @@ module View
           when :End
             [color_for(:blue), contrast_on(color_for(:blue)), 'space-between']
           else
-            [color_for(:bg2), color_for(:font2), 'space-between']
+            if color
+              [color_for(color), contrast_on(color_for(color)), 'space-between']
+            else
+              [color_for(:bg2), color_for(:font2), 'space-between']
+            end
           end
 
         props = {

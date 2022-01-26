@@ -9,48 +9,93 @@ module Engine
         class StockTurnToken < Engine::Game::G1866::Step::BuySellParShares
           def actions(entity)
             return ['choose_ability'] unless choices_ability(entity).empty?
-            return [] unless entity.player?
+            return [] if entity != current_entity || !current_entity.player?
+            return ['sell_shares'] if must_sell?(current_entity)
 
-            super
+            player_debt = @game.player_debt(entity)
+            actions = []
+            # Have to have buy shares, otherwise we dont show the stock page during the operating round
+            actions << 'buy_shares'
+            actions << 'par' if can_ipo_any?(entity) && player_debt.zero?
+            actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'pass' unless actions.empty?
+            actions
           end
 
           def current_entity
             entity = active_entities[0]
-            entity.corporation? && entity.type == :stock_turn_corporation ? entity.owner : entity
+            return unless entity
+
+            entity.corporation? && @game.stock_turn_corporation?(entity) ? entity.owner : entity
           end
 
           def description
             'Stock Turn Token'
           end
 
+          def log_pass(entity)
+            @log << "#{entity.name} passes" if @round.current_actions.empty?
+          end
+
+          def log_skip(entity)
+            return unless @game.stock_turn_corporation?(entity)
+
+            @log << "#{entity.name} has no valid actions and passes"
+          end
+
           def process_buy_shares(action)
+            entity = current_entity
+            player_debt = @game.player_debt(entity)
+            unless player_debt.zero?
+              raise GameError, "#{entity.name} can't buy any shares as long there is a loan "\
+                               "(#{@game.format_currency(player_debt)})"
+            end
+
+            corporation = action.bundle.corporation
+            previous_president = corporation.owner
             super
 
+            @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
+            change_market
             @round.force_next_entity!
           end
 
           def process_choose_ability(action)
             super
+            return if action.choice == 'SELL'
 
+            change_market
             @round.force_next_entity!
           end
 
           def process_par(action)
             super
 
+            change_market
             @round.force_next_entity!
           end
 
           def process_pass(action)
             super
 
+            change_market
+            @round.force_next_entity!
+          end
+
+          def process_payoff_player_debt(action)
+            super
+
+            change_market
             @round.force_next_entity!
           end
 
           def process_sell_shares(action)
+            corporation = action.bundle.corporation
+            previous_president = corporation.owner
             super
 
-            @round.force_next_entity!
+            @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
           end
 
           def issuable_shares(_entity)
@@ -59,6 +104,24 @@ module Engine
 
           def redeemable_shares(_entity)
             []
+          end
+
+          def change_market
+            entity = active_entities[0]
+            return if @game.stock_turn_token_removed?(entity)
+
+            bought = bought?
+            sold = sold?
+            times = 3
+            times = 2 if sold
+            times = 1 if bought
+            times = 0 if bought && sold
+            return unless times.positive?
+
+            current_price = entity.share_price.price
+            times.times { @game.stock_market.move_right(entity) }
+            @log << "#{current_entity.name}'s stock turn token price changes from "\
+                    "#{@game.format_currency(current_price)} to #{@game.format_currency(entity.share_price.price)}"
           end
         end
       end

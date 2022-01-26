@@ -23,6 +23,7 @@ module View
         if @game.players.find { |p| p.name == @user&.dig('name') }
           types = {
             Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
+            Engine::Action::ProgramHarzbahnDraftPass => ->(settings) { render_harzbahn_draft_pass(settings) },
             Engine::Action::ProgramIndependentMines => ->(settings) { render_independent_mines(settings) },
             Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
             Engine::Action::ProgramSharePass => ->(settings) { render_share_pass(settings) },
@@ -319,8 +320,8 @@ module View
       def enable_share_pass(form)
         settings = params(form)
 
-        unconditional = settings['unconditional']
-        indefinite = settings['indefinite']
+        unconditional = settings['sr_unconditional']
+        indefinite = settings['sr_indefinite']
 
         process_action(
           Engine::Action::ProgramSharePass.new(
@@ -344,11 +345,11 @@ module View
                       [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
                          'Please read this for more details when it will deactivate')])
         children << render_checkbox('Pass even if other players do actions that may impact you.',
-                                    'unconditional',
+                                    'sr_unconditional',
                                     form,
                                     !!settings&.unconditional)
         children << render_checkbox('Continue passing in future SR as well.',
-                                    'indefinite',
+                                    'sr_indefinite',
                                     form,
                                     !!settings&.indefinite)
 
@@ -362,10 +363,10 @@ module View
       def enable_independent_mines(form)
         settings = params(form)
 
-        skip_track = settings['skip_track']
-        skip_buy = settings['skip_buy']
-        skip_close = settings['skip_close']
-        indefinite = settings['indefinite']
+        skip_track = settings['im_skip_track']
+        skip_buy = settings['im_skip_buy']
+        skip_close = settings['im_skip_close']
+        indefinite = settings['im_indefinite']
 
         process_action(
           Engine::Action::ProgramIndependentMines.new(
@@ -401,15 +402,91 @@ module View
                       ' It will also deactivate itself when a mine has negative income.')
 
         children << h(:div, [
-          render_checkbox('Skip track lay', 'skip_track', form, settings ? settings.skip_track : true),
-          render_checkbox('Skip switchers', 'skip_buy', form, settings ? settings.skip_buy : true),
-          render_checkbox('Skip close mine', 'skip_close', form, settings ? settings.skip_close : true),
+          render_checkbox('Skip track lay', 'im_skip_track', form, settings ? settings.skip_track : true),
+          render_checkbox('Skip switchers', 'im_skip_buy', form, settings ? settings.skip_buy : true),
+          render_checkbox('Skip close mine', 'im_skip_close', form, settings ? settings.skip_close : true),
         ])
         children << h(:div, [
-          render_checkbox('Indefinite (normally stops after one OR set)', 'indefinite', form, settings&.indefinite),
+          render_checkbox('Indefinite (normally stops after one OR set)', 'im_indefinite', form, settings&.indefinite),
         ])
 
         subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_independent_mines(form) }]
+        subchildren << render_disable(settings) if settings
+        children << h(:div, subchildren)
+
+        children
+      end
+
+      def enable_harzbahn_draft_pass(form)
+        settings = params(form)
+
+        until_premium = settings['hd_until_premium'] ? settings['hd_target_premium'].to_i : nil
+        unconditional = settings['hd_unconditional']
+
+        process_action(
+          Engine::Action::ProgramHarzbahnDraftPass.new(
+            sender,
+            until_premium: until_premium,
+            unconditional: unconditional,
+          )
+        )
+      end
+
+      def render_harzbahn_draft_pass(settings)
+        form = {}
+        text = 'Auto Pass in Initial Draft'
+        text += ' (Enabled)' if settings
+        children = [h(:h3, text)]
+        children << h(:p,
+                      'Automatically passes in the initial draft.'\
+                      ' It will deactivate itself when the specified premium is reached (unless no target).'\
+                      ' It will also deactivate itself when anyone buys something (unless you disable this).')
+
+        children << h(:div, [
+          render_input(
+            'No target premium',
+            id: 'hd_no_target',
+            type: 'radio',
+            inputs: form,
+            attrs: {
+              name: 'hd_until_condition',
+              checked: !settings&.until_premium,
+              value: 'no_target',
+            }
+          ),
+        ])
+        children << h(:div, [
+          render_input(
+            'Until premium',
+            id: 'hd_until_premium',
+            type: 'radio',
+            inputs: form,
+            attrs: {
+              name: 'hd_until_condition',
+              checked: !!settings&.until_premium,
+              value: 'target',
+            }
+          ),
+          render_input(
+            '',
+            id: 'hd_target_premium',
+            type: :number,
+            inputs: form,
+            attrs: {
+              min: 0,
+              step: 10,
+              value: settings&.until_premium || 0,
+            },
+            on: { input: -> { `document.getElementById('hd_until_premium').checked = true` } },
+            input_style: { width: '5rem' },
+            container_style: { margin: '0' },
+          ),
+        ])
+        children << h(:div, [
+          render_checkbox('Keep passing even if someone buys something', 'hd_unconditional', form, !!settings&.unconditional),
+        ])
+
+        subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_harzbahn_draft_pass(form) }]
         subchildren << render_disable(settings) if settings
         children << h(:div, subchildren)
 

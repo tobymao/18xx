@@ -88,7 +88,7 @@ module Engine
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:_0,b:0;path=a:_0,b:1;'\
+            'code' => 'city=revenue:50,slots:3;path=a:_0,b:0;path=a:_0,b:1;'\
                       'path=a:2,b:_0;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5;label=NH',
           },
           'X7' =>
@@ -102,14 +102,14 @@ module Engine
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:50,slots:2;path=a:_0,b:0;path=a:_0,b:1;'\
+            'code' => 'city=revenue:60,slots:2;path=a:_0,b:0;path=a:_0,b:1;'\
                       'path=a:2,b:_0;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5;label=H',
           },
           'X9' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:60,slots:2;path=a:_0,b:0;path=a:_0,b:1;'\
+            'code' => 'city=revenue:70,slots:3;path=a:_0,b:0;path=a:_0,b:1;'\
                       'path=a:2,b:_0;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5;label=NH',
           },
         }.freeze
@@ -128,6 +128,7 @@ module Engine
           D15: 'Stamford',
           E2: 'Burlington',
           E4: 'Pittsfield',
+          E12: 'Waterbury',
           E14: 'Bridgeport',
           F11: 'Middletown',
           F13: 'New Haven',
@@ -136,7 +137,7 @@ module Engine
           G8: 'Springfield',
           G10: 'Hartford',
           G14: 'Saybrook',
-          J13: 'New London',
+          H13: 'New London',
           I6: 'Worcester',
           I14: 'Westerly',
           J1: 'New Hampshire',
@@ -176,7 +177,7 @@ module Engine
             %w[B11] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:3',
             %w[F13] => 'city=revenue:30;city=revenue:30;city=revenue:30;path=a:_0,b:1;path=a:_1,b:3;path=a:_2,b:5;label=NH',
             %w[G10] => 'city=revenue:30;path=a:_0,b:1;path=a:_0,b:2;label=H',
-            %w[G8] => 'city=revenue:20;city=revenue:20;path=a:_0,b:1;path=a:_1,b:3',
+            %w[G8] => 'city=revenue:20;city=revenue:20;path=a:_0,b:1;path=a:_1,b:3;upgrade=cost:20,terrain:water',
             %w[I6] => 'city=revenue:20;path=a:_0,b:4;path=a:_0,b:5',
             %w[J3] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;upgrade=cost:20,terrain:water',
             %w[K4] => 'city=revenue:20,loc:center;town=revenue:10,loc:5;path=a:_0,b:_1;path=a:5,b:_1;upgrade=cost:20,terrain:water',

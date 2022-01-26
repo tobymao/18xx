@@ -82,10 +82,12 @@ module View
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         extras = []
-        extras.concat(render_loans) if @game.total_loans&.nonzero?
-        if @corporation.corporation? && @corporation.floated? &&
-              @game.total_loans.positive? && @corporation.can_buy?
-          extras << render_buying_power
+        if @game.corporation_show_loans?(@corporation)
+          extras.concat(render_loans) if @game.total_loans&.nonzero?
+          if @corporation.corporation? && @corporation.floated? &&
+            @game.total_loans.positive? && @corporation.can_buy?
+            extras << render_buying_power
+          end
         end
         extras << render_capitalization_type if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
         extras << render_escrow_account if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow
@@ -356,7 +358,7 @@ module View
 
         player_rows = entities_rows(@game.players)
 
-        other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation })
+        other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation && !c.treasury_as_holding })
 
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         if @game.respond_to?(:reissued?) && @game.reissued?(@corporation) && !num_ipo_shares.empty?
@@ -377,7 +379,7 @@ module View
           ])
         end
 
-        if !num_treasury_shares.empty? && !@corporation.ipo_is_treasury?
+        if !num_treasury_shares.empty? && !@corporation.ipo_is_treasury? && !@corporation.treasury_as_holding
           pool_rows << h('tr.ipo', [
             h('td.left', 'Treasury'),
             h('td.right', shares_props, num_treasury_shares),
@@ -445,7 +447,7 @@ module View
 
       def render_owned_other_shares
         shares = @corporation
-          .shares_by_corporation.reject { |c, s| s.empty? || c == @corporation }
+          .shares_by_corporation.reject { |c, s| s.empty? || (c == @corporation && !@corporation.treasury_as_holding) }
           .sort_by { |c, s| [s.sum(&:percent), c.president?(@corporation) ? 1 : 0, c.name] }
           .reverse
           .map { |c, s| render_owned_other_corp(c, s) }

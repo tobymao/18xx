@@ -38,6 +38,7 @@ module View
           backgroundColor: color_for(:bg2),
           color: color_for(:font2),
           wordBreak: 'break-word',
+          cursor: 'text',
         },
       }
 

@@ -9,6 +9,7 @@ module View
   class GameCard < Snabberb::Component
     include GameManager
     include Lib::Settings
+    include Lib::WhatsThis::AutoRoute
 
     needs :user
     needs :gdata # can't conflict with game_data
@@ -188,7 +189,7 @@ module View
 
       invite_url = url(@gdata)
       flash = lambda do
-        `navigator.clipboard.writeText((window.location + invite_url).replace('//game', '/game'))`
+        `navigator.clipboard.writeText((window.location.origin + invite_url).replace('//game', '/game'))`
         store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false)
       end
       render_link(invite_url, flash, 'Invite')
@@ -234,7 +235,7 @@ module View
       children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
       if @gdata['status'] == 'new'
         children << h(:div, [h(:i, 'Invite only game')]) if @gdata.dig('settings', 'unlisted')
-        children << h(:div, [h(:i, 'Auto Routing')]) if @gdata.dig('settings', 'auto_routing')
+        children << h(:div, [h(:i, ['Auto Routing', auto_route_whats_this])]) if @gdata.dig('settings', 'auto_routing')
       end
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
 

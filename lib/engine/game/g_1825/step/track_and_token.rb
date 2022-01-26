@@ -58,14 +58,19 @@ module Engine
             tile.reservations.delete(corp)
           end
 
-          # 1825: it is only an "upgrade" if the new tile replaces another laid tile
+          def track_upgrade?(from, _to, _hex)
+            from.color != :white && !(from.color == :yellow && from.preprinted)
+          end
+
+          # 1825: pre-printed yellows are not "upgraded"
           def lay_tile_action(action, entity: nil, spender: nil)
             tile = action.tile
             entity ||= action.entity
             old_tile = action.hex.tile
             tile_lay = get_tile_lay(action.entity)
-            raise GameError, 'Cannot upgrade now' if !old_tile.preprinted && !(tile_lay && tile_lay[:upgrade])
-            raise GameError, 'Cannot lay a tile now' if old_tile.preprinted && !(tile_lay && tile_lay[:lay])
+            upgrade = track_upgrade?(old_tile, tile, action.hex)
+            raise GameError, 'Cannot upgrade now' if upgrade && !(tile_lay && tile_lay[:upgrade])
+            raise GameError, 'Cannot lay a tile now' if !upgrade && !(tile_lay && tile_lay[:lay])
             if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
               raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
             end
@@ -75,7 +80,7 @@ module Engine
             extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
 
             lay_tile(action, extra_cost: extra_cost, entity: entity, spender: spender)
-            upgraded_track(old_tile, tile, action.hex)
+            @round.upgraded_track = true if upgrade
             @round.num_laid_track += 1
             @round.laid_hexes << action.hex
 
@@ -142,10 +147,6 @@ module Engine
 
             @round.tokened = true unless extra_action
             @game.graph.clear
-          end
-
-          def upgraded_track(from, _to, _hex)
-            @round.upgraded_track = true unless from.preprinted
           end
 
           def check_adjacent(new_hex)

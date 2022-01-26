@@ -8,13 +8,12 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
-            # 1846 and a few others minors can't buy trains
             return [] unless can_entity_buy_train?(entity)
+            return ['sell_shares'] if entity == current_entity&.owner && can_ebuy_sell_shares?(current_entity)
 
             return [] if entity != current_entity
-            return %w[sell_shares buy_train] if entity.type != :minor && president_may_contribute?(entity)
-            return %w[pass sell_shares buy_train] if entity.type == :minor && president_may_contribute?(entity)
-            return %w[buy_train pass] if can_buy_train?(entity)
+            return %w[buy_train] if entity.type != :minor && president_may_contribute?(entity)
+            return %w[buy_train pass] if can_buy_train?(entity) || (entity.type == :minor && president_may_contribute?(entity))
 
             []
           end

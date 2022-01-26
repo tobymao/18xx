@@ -203,15 +203,19 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         LIMIT_TOKENS_AFTER_MERGER = 999
         SOLD_OUT_INCREASE = false
+        EBUY_OTHER_VALUE = false
 
         YELLOW_PRICES = [50, 55, 60, 65, 70].freeze
         GREEN_PRICES = [80, 90, 100].freeze
         NUM_START_MINORS = 10
+        START_RESERVATION_COLOR = 'cyan'
+        RESERVED_RESERVATION_COLOR = 'lightgray'
+        FORMED_RESERVATION_COLOR = 'gray'
 
         # Two lays or one upgrade
         TILE_LAYS = [
           { lay: true, upgrade: true },
-          { lay: true, upgrade: :not_if_upgraded },
+          { lay: :not_if_upgraded, upgrade: false },
         ].freeze
 
         # one lay or one upgrade
@@ -226,6 +230,7 @@ module Engine
             next if corp.type == :minor
 
             corp.ipo_owner = @bank
+            corp.always_market_price = true
             corp.share_holders.keys.each do |sh|
               next if sh == @bank
 
@@ -238,6 +243,9 @@ module Engine
           num_start = self.class::NUM_START_MINORS
           num_start = num_start[players.size] if num_start.is_a?(Hash)
           @starting_minors = @corporations.select { |c| c.type == :minor }.sort_by { rand }.take(num_start)
+
+          # highlight the starting minors
+          @starting_minors.each { |m| m.reservation_color = self.class::START_RESERVATION_COLOR }
 
           # add yellow and green minor placeholders to stock market
           #
@@ -305,11 +313,11 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18NewEngland::Step::Bankrupt,
             G18NewEngland::Step::RedeemShares,
             G18NewEngland::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G18NewEngland::Step::Route,
             G18NewEngland::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18NewEngland::Step::BuyTrain,
@@ -319,6 +327,16 @@ module Engine
 
         def init_round_finished
           @reserved = {}
+
+          # un-highlight the starting minors
+          @starting_minors.each { |m| m.reservation_color = nil }
+        end
+
+        def reorder_by_cash
+          # this should break ties in favor of the closest to previous PD
+          pd_player = @players.max_by(&:cash)
+          @players.rotate!(@players.index(pd_player))
+          @log << "Priority order: #{@players.map(&:name).join(', ')}"
         end
 
         def new_or!
@@ -337,7 +355,7 @@ module Engine
             when init_round.class
               init_round_finished
               @operating_rounds = @phase.operating_rounds
-              reorder_players(:most_cash, log_player_order: true)
+              reorder_by_cash
               new_operating_round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
@@ -368,6 +386,7 @@ module Engine
           price.corporations.delete_at(index) if index
 
           @minor_prices[price.price] += 1
+          corporation.reservation_color = self.class::FORMED_RESERVATION_COLOR if corporation.reservation_color
         end
 
         def place_home_token(corporation)
@@ -388,14 +407,14 @@ module Engine
         def minor_yellow_prices
           @minor_yellow_prices ||=
             self.class::YELLOW_PRICES.flat_map do |p|
-              [lookup_minor_price(p, self.class::TOP_MINOR_ROW), lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW)]
+              [lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW), lookup_minor_price(p, self.class::TOP_MINOR_ROW)]
             end
         end
 
         def minor_green_prices
           @minor_green_prices ||=
             self.class::GREEN_PRICES.flat_map do |p|
-              [lookup_minor_price(p, self.class::TOP_MINOR_ROW), lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW)]
+              [lookup_minor_price(p, self.class::BOTTOM_MINOR_ROW), lookup_minor_price(p, self.class::TOP_MINOR_ROW)]
             end
         end
 
@@ -417,7 +436,10 @@ module Engine
         end
 
         def status_array(corp)
-          return unless corp.type == :minor
+          if corp.type == :major && corp.ipoed && !corp.ipo_shares.empty?
+            return [["Par: #{format_currency(corp.original_par_price.price)}"]]
+          end
+          return if corp.type == :major
           return [['Minor Company'], ["Value: #{format_currency(corp.share_price.price)}"]] if corp.share_price
           return [["Reserved by #{@reserved[corp].name}", 'bold']] if @reserved[corp]
           return [['Minor Company']] if @starting_minors.include?(corp) || @phase.available?('3')
@@ -430,29 +452,33 @@ module Engine
         end
 
         def operating_order
-          @corporations.reject(&:minor?).select(&:floated?).sort
+          @corporations.reject(&:minor?).select(&:floated?).sort.partition { |c| c.type == :minor }.flatten
         end
 
         def bank_sort(corporations)
-          mins, majs = corporations.reject(&:minor?).partition(&:type)
-          mins.sort_by(&:name) + majs.sort_by(&:name)
+          majors, minors = corporations.reject(&:minor?).partition { |c| c.type == :major }
+          avail, unavail = minors.partition { |c| @phase.available?('3') || @starting_minors.include?(c) }
+
+          avail.sort_by(&:name) + unavail.sort_by(&:name) + majors.sort_by(&:name)
         end
 
         def player_sort(entities)
-          mins, majs = entities.partition(&:type)
-          (mins.sort_by(&:name) + majs.sort_by(&:name)).group_by(&:owner)
+          majors, minors = entities.select(&:corporation?).partition { |c| c.type == :major }
+          (minors.sort_by(&:name) + majors.sort_by(&:name)).group_by(&:owner)
         end
 
         def reserve_minor(minor, entity)
           @reserved[minor] = entity
+          minor.reservation_color = self.class::RESERVED_RESERVATION_COLOR
         end
 
         def unreserve_minor(minor, _entity)
           @reserved.delete(minor)
+          minor.reservation_color = self.class::START_RESERVATION_COLOR
         end
 
         def ipo_name(corp = nil)
-          corp&.type == :minor ? 'Bank' : 'IPO'
+          corp&.type == :minor ? 'Treasury' : 'IPO'
         end
 
         def ipo_verb(corp = nil)
@@ -484,13 +510,26 @@ module Engine
         end
 
         def stock_round_corporations
-          @corporations.select do |c|
+          corp_list = @corporations.select do |c|
             c.ipoed || (c.type == :minor && (@phase.available?('3') || @starting_minors.include?(c)))
           end
+          majors, minors = corp_list.partition { |c| c.type == :major }
+          formed, unformed = minors.partition(&:ipoed)
+          majors.sort + unformed.sort + formed.sort
+        end
+
+        def can_par?(corporation, _entity)
+          corporation.type == :minor &&
+            !corporation.ipoed &&
+            (@phase.available?('3') || @starting_minors.include?(corporation))
         end
 
         def merge_corporations
           @corporations.select { |c| c.type == :minor && c.ipoed }
+        end
+
+        def merge_rounds
+          [G18NewEngland::Round::Merger]
         end
 
         def any_unstarted_majors?
@@ -511,8 +550,12 @@ module Engine
         def issuable_shares(entity)
           return [] unless entity.corporation? && entity.type != :minor
 
-          bundles = bundles_for_corporation(entity, entity) + bundles_for_corporation(@bank, entity)
-          bundles.reject { |bundle| (bundle.num_shares + entity.num_market_shares) * 10 > self.class::MARKET_SHARE_LIMIT }
+          treasury = bundles_for_corporation(entity, entity)
+          ipo = bundles_for_corporation(@bank, entity)
+          ipo.each { |b| b.share_price = entity.original_par_price.price }
+          (treasury + ipo).reject do |bundle|
+            (bundle.num_shares + entity.num_market_shares) * 10 > self.class::MARKET_SHARE_LIMIT
+          end
         end
 
         def par_price_str(share_price)
@@ -533,6 +576,94 @@ module Engine
           return unless minor
 
           share_price.corporations << @closed_dummy
+        end
+
+        def express_train?(train)
+          train.name.include?('E')
+        end
+
+        def check_distance(route, visits)
+          return super unless express_train?(route.train)
+
+          # express trains can ignore towns
+          city_stops = visits.count { |node| node.city? || node.offboard? }
+          raise GameError, 'Route has too many cities/offboards' if city_stops > route.train.distance
+        end
+
+        def check_other(route)
+          visited_hexes = {}
+          last_hex = nil
+          route.visited_stops.each do |stop|
+            hex = stop.hex
+            raise GameError, 'Route cannot run to multiple unconnected cities in a hex' if hex != last_hex && visited_hexes[hex]
+
+            visited_hexes[hex] = true
+            last_hex = hex
+          end
+        end
+
+        def compute_stops(route)
+          return super unless express_train?(route.train)
+
+          visits = route.visited_stops
+          return [] if visits.empty?
+
+          # no choice about citys/offboards => they must be stops
+          stops = visits.select { |node| node.city? || node.offboard? }
+
+          # unused city/offboard allowance can be used for towns by express trains
+          t_allowance = route.train.distance - stops.size
+
+          # pick highest revenue towns
+          towns = visits.select(&:town?)
+          num_towns = [t_allowance, towns.size].min
+          stops.concat(towns.sort_by { |t| t.uniq_revenues.first }.reverse.take(num_towns)) if num_towns.positive?
+
+          stops
+        end
+
+        def route_distance(route)
+          route.stops.size
+        end
+
+        # reduce all express trains to the smallest one
+        def route_trains(entity)
+          return [] unless entity.corporation?
+
+          express, normal = entity.trains.partition { |t| express_train?(t) }
+          return normal if express.empty?
+
+          min_express = express.min_by(&:distance)
+          normal + [min_express]
+        end
+
+        def revenue_multiplier(train)
+          return 1 unless express_train?(train)
+
+          train.owner.trains.count { |t| express_train?(t) }
+        end
+
+        def revenue_for(route, stops)
+          super * revenue_multiplier(route.train)
+        end
+
+        def revenue_str(route)
+          multiplier = revenue_multiplier(route.train)
+          super + (multiplier < 2 ? '' : " (×#{multiplier})")
+        end
+
+        def separate_treasury?
+          true
+        end
+
+        def train_name(train)
+          return train.name unless (multiplier = revenue_multiplier(train)) > 1
+
+          "#{train.name}×#{multiplier}"
+        end
+
+        def available_programmed_actions
+          [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end
       end
     end

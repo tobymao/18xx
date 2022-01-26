@@ -169,6 +169,8 @@ module Engine
           '3' => { distance: 3, price: 300 },
           '4' => { distance: 4, price: 430 },
           '5' => { distance: 5, price: 550 },
+          '6' => { distance: 6, price: 650 },
+          '7' => { distance: 7, price: 720 },
           '3T' => { distance: 3, price: 370, available_on: '3' },
           'U3' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
@@ -176,10 +178,8 @@ module Engine
             price: 410,
             available_on: '3',
           },
-          '6' => { distance: 6, price: 650 },
           '4T' => { distance: 4, price: 480, available_on: '4' },
           '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '4' },
-          '7' => { distance: 7, price: 720 },
           '4+4E' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
@@ -194,6 +194,8 @@ module Engine
           '3' => { distance: 3, price: 300, rusts_on: '7' },
           '4' => { distance: 4, price: 430 },
           '5' => { distance: 5, price: 550 },
+          '6' => { distance: 6, price: 650 },
+          '7' => { distance: 7, price: 720 },
           '3T' => { distance: 3, price: 370, available_on: '3' },
           'U3' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
@@ -201,10 +203,8 @@ module Engine
             price: 410,
             available_on: '3',
           },
-          '6' => { distance: 6, price: 650 },
           '4T' => { distance: 4, price: 480, available_on: '4' },
           '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '4' },
-          '7' => { distance: 7, price: 720 },
           '4+4E' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
@@ -213,6 +213,24 @@ module Engine
             available_on: '4a',
           },
         }.freeze
+
+        DUMMY_TRAINS = [
+          { name: '2', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 2, 'visit' => 2 }] },
+          { name: '3', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 3, 'visit' => 3 }] },
+          { name: '4', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 4, 'visit' => 4 }] },
+          { name: '5', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 5, 'visit' => 5 }] },
+          { name: '3T', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 3, 'visit' => 3 }] },
+          {
+            name: 'U3',
+            price: 1,
+            distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+          },
+          { name: '6', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 6, 'visit' => 6 }] },
+          { name: '4T', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 4, 'visit' => 4 }] },
+          { name: '2+2', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 2, 'visit' => 2 }] },
+          { name: '7', price: 1, distance: [{ 'nodes' => %w[city town], 'pay' => 7, 'visit' => 7 }] },
+        ].freeze
 
         def build_train_list(thash)
           thash.keys.map do |t|
@@ -259,12 +277,12 @@ module Engine
                                       '3' => 0,
                                       '4' => 0,
                                       '5' => 0,
+                                      '6' => 0,
+                                      '7' => 0,
                                       '3T' => 0,
                                       'U3' => 0,
-                                      '6' => 0,
                                       '2+2' => 0,
                                       '4T' => 0,
-                                      '7' => 0,
                                       '4+4E' => 0,
                                     })
 
@@ -275,15 +293,15 @@ module Engine
             add_train_list(trains, { '2' => 5, '3' => 3, '4' => 2, '5' => 3, '6' => 2 })
           when '3'
             # extra 5/3T/U3 for minors
-            add_train_list(trains, { '2' => 5, '3' => 3, '4' => 1, '5' => 3, '3T' => 1, 'U3' => 1, '7' => 2 })
+            add_train_list(trains, { '2' => 5, '3' => 3, '4' => 1, '5' => 3, '7' => 2, '3T' => 1, 'U3' => 1 })
           when '12'
             add_train_list(trains, { '2' => 7, '3' => 6, '4' => 4, '5' => 5, '6' => 2, '7' => 0 })
           when '23'
             # extra 5/3T/U3 for minors
-            add_train_list(trains, { '2' => 5, '3' => 5, '4' => 4, '5' => 6, '3T' => 1, 'U3' => 1, '7' => 2 })
+            add_train_list(trains, { '2' => 5, '3' => 5, '4' => 4, '5' => 6, '7' => 2, '3T' => 1, 'U3' => 1 })
           else # all units
             # extra 5/3T/U3 for minors
-            add_train_list(trains, { '2' => 7, '3' => 6, '4' => 5, '5' => 6, '3T' => 1, 'U3' => 1, '6' => 2, '7' => 2 })
+            add_train_list(trains, { '2' => 7, '3' => 6, '4' => 5, '5' => 6, '6' => 2, '7' => 2, '3T' => 1, 'U3' => 1 })
           end
 
           add_train_list(trains, { '3T' => 2, 'U3' => 2 }) if @optional_rules.include?(:u3p)
@@ -291,7 +309,7 @@ module Engine
           add_train_list(trains, { '5' => 1 }) if @regionals[2]
           add_train_list(trains, { '4T' => 1 }) if @regionals[3]
           add_train_list(trains, { '5' => -1, '6' => 3, '7' => 2 }) if @kits[3]
-          add_train_list(trains, { '3T' => 1, '5' => 1 }) if @kits[5]
+          add_train_list(trains, { '5' => 1, '3T' => 1 }) if @kits[5]
           add_train_list(trains, { '2+2' => 1 }) if @kits[7]
 
           # handle K2
@@ -332,7 +350,9 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
         GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
         TRAIN_PRICE_MIN = 10
+        MN_TRAIN_MUST_USE_TOKEN = false
         IMPASSABLE_HEX_COLORS = %i[blue sepia red].freeze
+        TILE_200 = '200'
 
         TILE200_HEXES = %w[Q11 T16 V14].freeze
 
@@ -631,6 +651,10 @@ module Engine
             @minor_trains << req_train
             @depot.remove_train(req_train)
           end
+
+          # pre-allocate dummy trains used for tile 200
+          @pass_thru = {}
+          DUMMY_TRAINS.each { |train| @pass_thru[train[:name]] = Train.new(**train, index: 999) }
         end
 
         # cache all stock prices
@@ -1038,8 +1062,25 @@ module Engine
           []
         end
 
+        def num_tile200(route, visits)
+          return 0 unless @phase.name.to_i > 2
+          return 0 unless @pass_thru[route.train.name]
+
+          visits[1...-1].count { |node| node.tile.name == TILE_200 && node.tokened_by?(route.corporation) }
+        end
+
+        def build_dummy_train(route, num)
+          train = @pass_thru[route.train.name]
+          train.distance.each { |dist| dist[:visit] = dist[:pay] + num }
+          train
+        end
+
         def check_distance(route, visits)
-          super
+          if (num = num_tile200(route, visits)).zero?
+            super
+          else
+            super(route, visits, build_dummy_train(route, num))
+          end
           return if %w[3T 4T].include?(route.train.name)
 
           node_hexes = {}
@@ -1070,6 +1111,14 @@ module Engine
           return if token.select(paths_, corporation: route.corporation).size == paths_.size
 
           raise GameError, 'Route is not connected'
+        end
+
+        def compute_stops(route)
+          if (num = num_tile200(route, route.visited_stops)).zero?
+            super
+          else
+            super(route, build_dummy_train(route, num))
+          end
         end
 
         # only T trains get halt revenue

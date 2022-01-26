@@ -8,7 +8,8 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
-            return [] if entity.corporation? && entity.receivership?
+            return [] if receivership_skip?(entity)
+            return ['buy_train'] if entity.corporation? && entity.receivership?
 
             super
           end
@@ -25,7 +26,11 @@ module Engine
             [@game.class::TRAIN_PRICE_MIN, buying_power(entity)]
           end
 
-          def must_buy_train?(_entity)
+          def must_buy_train?(entity)
+            entity.corporation? && entity.receivership?
+          end
+
+          def president_may_contribute?(_entity, _shell = nil)
             false
           end
 
@@ -37,11 +42,31 @@ module Engine
             super
           end
 
+          # auto-skip receivership companies if
+          # - there is exactly zero or one train to buy, or
+          # - there is no route to run, or
+          # - there is no room for another train
+          # - it's a minor and not Unit 3
+          def receivership_skip?(entity)
+            entity.corporation? && entity.receivership? &&
+              (buyable_depot_trains(entity).size < 2 ||
+               !@game.can_run_route?(entity) ||
+               !room?(entity) ||
+               @game.silent_receivership?(entity))
+          end
+
+          def buyable_depot_trains(entity)
+            @depot.depot_trains.reject { |t| entity.cash < t.price }
+          end
+
           def receivership_buy(entity)
             @passed = true
-            train = @depot.depot_trains.first
-            if train && entity.cash >= train.price && @game.can_run_route?(entity) && room?(entity)
-              @log << "#{entity.name} is in Receivership and must buy a train"
+            trains = buyable_depot_trains(entity)
+
+            if (train = trains.first) && @game.can_run_route?(entity) && room?(entity)
+              raise GameError, 'multiple trains available for receivership purchase' if trains.size > 1
+
+              @log << "#{entity.name} is in Receivership and must buy a #{train.name} train"
 
               buy_train_action(
                 Engine::Action::BuyTrain.new(

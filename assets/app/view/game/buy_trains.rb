@@ -265,7 +265,7 @@ module View
               min: 0,
               max: @step.warranty_max,
               value: 0,
-              size: 1,
+              size: @step.warranty_max.to_s.size + 2,
             }
           )
 
@@ -421,7 +421,7 @@ module View
             min: train.price,
             max: train.price,
             value: train.price,
-            size: 1,
+            size: train.price.to_s.size + 2,
           }
         else
           min, max = @step.spend_minmax(@corporation, train)
@@ -430,7 +430,7 @@ module View
             min: min,
             max: max,
             value: min,
-            size: @corporation.cash.to_s.size,
+            size: @corporation.cash.to_s.size + 2,
           }
         end
       end

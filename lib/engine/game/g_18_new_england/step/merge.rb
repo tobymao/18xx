@@ -3,6 +3,7 @@
 require_relative '../../../step/base'
 require_relative '../../../token'
 require_relative '../../../step/token_merger'
+require_relative '../../../step/programmer_merger_pass'
 
 module Engine
   module Game
@@ -10,6 +11,7 @@ module Engine
       module Step
         class Merge < Engine::Step::Base
           include Engine::Step::TokenMerger
+          include Engine::Step::ProgrammerMergerPass
           CONVERT_PAR = 100
 
           def actions(entity)
@@ -32,6 +34,14 @@ module Engine
             return [Engine::Action::Pass.new(entity)] if mergeable_candidates(entity).empty?
 
             super
+          end
+
+          def others_acted?
+            !@round.converts.empty?
+          end
+
+          def merger_auto_pass_entity
+            current_entity unless @converting || @merging
           end
 
           def merge_name(_entity = nil)
@@ -98,6 +108,7 @@ module Engine
             # Replace the entity with the new one.
             @round.entities[@round.entity_index] = target
             @round.converted = target
+            @round.converts << target
             # New president is eligable to buy shares
             @round.share_dealing_players = [target.owner]
           end
@@ -126,8 +137,10 @@ module Engine
               receiving = move_assets(minor, target)
               @game.close_corporation(minor)
               @log << "#{minor.name} merges into #{target.name} receiving #{receiving.join(', ')}"
-              @round.entities.delete(minor)
             end
+
+            # only delete 2nd minor from entities if later in order
+            @round.entities.delete(@merging.last) if @round.entities.find_index(@merging.last) > @round.entity_index
 
             token_hexes = target.tokens.map { |t| t.city&.hex }
 
@@ -137,6 +150,8 @@ module Engine
             end
 
             @round.converted = target
+            @round.converts << target
+            # New president is eligable to buy shares
             @round.share_dealing_players = [target.owner]
             @merging = nil
           end
@@ -198,6 +213,10 @@ module Engine
 
             parts = @game.graph.connected_nodes(corporation).keys
             corps = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+            # add in corps in same hex as home
+            corporation.tokens.first.hex.tile.cities.each do |city|
+              city.tokens.each { |tok| corps.append(tok&.corporation) if tok }
+            end
             corps.uniq.reject { |c| c.type != :minor || c == corporation || c.owner != corporation.owner }
           end
 
@@ -219,6 +238,7 @@ module Engine
           def round_state
             {
               converted: nil,
+              converts: [],
               share_dealing_players: [],
               share_dealing_multiple: [],
             }

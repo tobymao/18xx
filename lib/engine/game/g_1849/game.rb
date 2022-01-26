@@ -531,10 +531,6 @@ module Engine
           GRAY_REVENUE_CENTERS[stop.hex.id][@phase.name]
         end
 
-        def buying_power(entity, **)
-          entity.cash
-        end
-
         def reorder_corps
           just_moved = @moved_this_turn.uniq
           @moved_this_turn = []

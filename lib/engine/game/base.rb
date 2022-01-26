@@ -231,6 +231,8 @@ module Engine
 
       ALLOW_TRAIN_BUY_FROM_OTHERS = true # Allows train buy from other corporations
 
+      MN_TRAIN_MUST_USE_TOKEN = true # when picking best M out of N stops, must one of the stops must be tokened
+
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
       TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
@@ -1154,8 +1156,9 @@ module Engine
         raise GameError, 'Route is not connected'
       end
 
-      def check_distance(route, visits)
-        distance = route.train.distance
+      def check_distance(route, visits, train = nil)
+        train ||= route.train
+        distance = train.distance
         if distance.is_a?(Numeric)
           route_distance = visits.sum(&:visit_cost)
           raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
@@ -1196,9 +1199,10 @@ module Engine
 
       def check_other(_route); end
 
-      def compute_stops(route)
+      def compute_stops(route, train = nil)
+        train ||= route.train
         visits = route.visited_stops
-        distance = route.train.distance
+        distance = train.distance
         return visits if distance.is_a?(Numeric)
         return [] if visits.empty?
 
@@ -1218,8 +1222,8 @@ module Engine
           # to_i to work around Opal bug
           stops, revenue = visits.combination(num_stops.to_i).map do |stops|
             # Make sure this set of stops is legal
-            # 1) At least one stop must have a token
-            next if stops.none? { |stop| stop.tokened_by?(route.corporation) }
+            # 1) At least one stop must have a token (if enabled)
+            next if self.class::MN_TRAIN_MUST_USE_TOKEN && stops.none? { |stop| stop.tokened_by?(route.corporation) }
 
             # 2) We can't ask for more revenue centers of a type than are allowed
             types_used = Array.new(distance.size, 0) # how many slots of each row are filled
@@ -1339,6 +1343,10 @@ module Engine
       end
 
       def graph_for_entity(_entity)
+        @graph
+      end
+
+      def token_graph_for_entity(_entity)
         @graph
       end
 
@@ -1560,7 +1568,7 @@ module Engine
       end
 
       def buying_power(entity, **)
-        entity.cash + (issuable_shares(entity).map(&:price).max || 0)
+        entity.cash
       end
 
       def company_sale_price(_company)
@@ -1653,6 +1661,10 @@ module Engine
 
       def ipo_reserved_name(_entity = nil)
         'IPO Reserved'
+      end
+
+      def corporation_show_loans?(_corporation)
+        true
       end
 
       def corporation_show_shares?(corporation)
@@ -1883,7 +1895,7 @@ module Engine
       end
 
       def init_cert_limit
-        cert_limit = self.class::CERT_LIMIT
+        cert_limit = game_cert_limit
         if cert_limit.is_a?(Hash)
           player_count = (self.class::CERT_LIMIT_COUNTS_BANKRUPTED ? players : players.reject(&:bankrupt)).size
           cert_limit = cert_limit[player_count]
@@ -1893,6 +1905,10 @@ module Engine
                          .min_by(&:first)&.last || cert_limit.first.last
         end
         cert_limit || @cert_limit
+      end
+
+      def game_cert_limit
+        self.class::CERT_LIMIT
       end
 
       def init_phase

@@ -17,7 +17,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>18NY is now in beta.</p>
+        <p>18NewEngland and 18NewEngland 2: Northern States are now in alpha. 1825 and 18NY are now in beta.
+        Harzbahn 1873 and 1888 are now in production.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>

@@ -73,7 +73,7 @@ module Engine
           },
           {
             sym: 'NYNHH',
-            name: 'New York, New Haven and Hardford Railroad',
+            name: 'New York, New Haven and Hartford Railroad',
             logo: '18_new_england/NYNHH',
             type: 'major',
             color: '#f68e1e',
@@ -104,7 +104,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'BL',
@@ -119,7 +119,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'BP',
@@ -133,7 +133,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'CR',
@@ -147,7 +147,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'CV',
@@ -161,7 +161,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'ER',
@@ -175,7 +175,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'FRR',
@@ -188,7 +188,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'GR',
@@ -201,7 +201,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'HNH',
@@ -215,7 +215,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'HRR',
@@ -229,7 +229,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'NLN',
@@ -244,7 +244,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'NYNH',
@@ -258,7 +258,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'NYW',
@@ -271,7 +271,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'PE',
@@ -284,7 +284,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
           {
             sym: 'WNR',
@@ -297,7 +297,7 @@ module Engine
             max_ownership_percent: 100,
             shares: [100],
             type: 'minor',
-            capitalization: 'incremental',
+            capitalization: :incremental,
           },
         ].freeze
 

@@ -5,8 +5,9 @@ require_relative 'route'
 
 module Engine
   class AutoRouter
-    def initialize(game)
+    def initialize(game, flash = nil)
       @game = game
+      @flash = flash
     end
 
     def compute(corporation, **opts)
@@ -152,6 +153,7 @@ module Engine
         combos.compact!
       rescue RuntimeError
         puts 'Route timeout reach'
+        @flash&.call('Auto route selection failed to complete (timeout)')
         break
       end
 

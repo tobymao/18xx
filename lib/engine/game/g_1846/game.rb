@@ -660,6 +660,10 @@ module Engine
           super
         end
 
+        def buying_power(entity, **)
+          entity.cash + (issuable_shares(entity).map(&:price).max || 0)
+        end
+
         def total_emr_buying_power(player, corporation)
           emergency = (issuable = emergency_issuable_cash(corporation)).zero?
           corporation.cash + issuable + liquidity(player, emergency: emergency)

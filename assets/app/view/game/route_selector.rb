@@ -250,8 +250,12 @@ module View
           store(:routes, @routes)
         end
 
+        flash = lambda do |message|
+          store(:flash_opts, { message: message }, skip: false)
+        end
+
         auto = lambda do
-          router = Engine::AutoRouter.new(@game)
+          router = Engine::AutoRouter.new(@game, flash)
           @routes = router.compute(
             @game.current_entity,
             routes: @routes.reject { |r| r.paths.empty? },

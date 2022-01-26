@@ -200,7 +200,7 @@ module Engine
             on: '3',
             train_limit: { five_share: 2, ten_share: 4 },
             tiles: %i[yellow green],
-            corporation_sizes: [5, 10],
+            corporation_sizes: [5],
             operating_rounds: 2,
             status: ['may_convert'],
           },

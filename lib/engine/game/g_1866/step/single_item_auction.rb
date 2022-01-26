@@ -7,7 +7,7 @@ module Engine
   module Game
     module G1866
       module Step
-        class SelectionAuction < Engine::Step::Base
+        class SingleItemAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
 
           ACTIONS = %w[bid pass].freeze
@@ -20,6 +20,12 @@ module Engine
             entity == current_entity ? ACTIONS : []
           end
 
+          def active_auction
+            company = @auctioning
+            bids = @bids[company]
+            yield company, bids
+          end
+
           def active_entities
             if @auctioning
               winning_bid = highest_bid(@auctioning)
@@ -29,8 +35,15 @@ module Engine
             super
           end
 
+          def auction_log(entity)
+            @game.log << "#{entity.name} is up for auction"
+            auction_entity(entity)
+          end
+
           def available
-            @companies.reject { |c| c.id[0..1] == @game.class::STOCK_TURN_TOKEN_PREFIX }
+            return [] if @companies.empty?
+
+            [@companies[0]]
           end
 
           def description
@@ -47,15 +60,10 @@ module Engine
 
           def min_bid(company)
             return unless company
-
             return starting_bid(company) unless @bids[company].any?
 
             high_bid = highest_bid(company)
             (high_bid.price || company.min_bid) + min_increment
-          end
-
-          def min_increment
-            @game.class::MIN_BID_INCREMENT
           end
 
           def next_entity!
@@ -74,33 +82,28 @@ module Engine
 
           def process_pass(action)
             entity = action.entity
+            winning_bid = highest_bid(@auctioning)
+            pass_auction(entity)
+            return if winning_bid || @active_bidders.size == initial_auction_entities.size
 
-            if auctioning
-              pass_auction(entity)
-              resolve_bids
-            else
-              @log << "#{entity.name} passes bidding"
-              entity.pass!
-              return all_passed! if entities.all?(&:passed?)
-
-              next_entity!
-            end
+            entity.pass!
+            next_entity!
           end
 
           def process_bid(action)
-            action.entity.unpass!
+            add_bid(action)
+          end
 
-            if auctioning
-              add_bid(action)
-            else
-              selection_bid(action)
-              next_entity! if auctioning
-            end
+          def remove_company(company)
+            @companies.delete(company)
+            @log << "#{company.name} is removed from the game"
           end
 
           def setup
             setup_auction
-            @companies = @game.companies.dup
+            @companies = @game.companies.reject { |c| @game.stock_turn_token_company?(c) }
+
+            auction_log(@companies[0]) unless @companies.empty?
           end
 
           def starting_bid(company)
@@ -110,38 +113,36 @@ module Engine
           private
 
           def add_bid(bid)
-            super(bid)
             company = bid.company
             entity = bid.entity
             price = bid.price
-
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{company.name}"
+
+            super
+            resolve_bids
           end
 
           def post_win_bid(winner, _company)
             entities.each(&:unpass!)
-            @round.goto_entity!(winner.entity)
+            @round.goto_entity!(winner.entity) if winner
             next_entity!
+
+            auction_log(@companies[0]) unless @companies.empty?
           end
 
-          def win_bid(winner, _company)
-            player = winner.entity
-            company = winner.company
-            price = winner.price
-            company.owner = player
-            player.companies << company
-            player.spend(price, @game.bank) if price.positive?
-            @companies.delete(company)
-            @log << "#{player.name} wins the auction for #{company.name} with a bid of #{@game.format_currency(price)}"
-          end
-
-          def all_passed!
-            available.each do |c|
-              @game.companies.delete(c)
-              @log << "#{c.name} is removed from the game"
+          def win_bid(winner, company)
+            if winner
+              player = winner.entity
+              company = winner.company
+              price = winner.price
+              company.owner = player
+              player.companies << company
+              player.spend(price, @game.bank) if price.positive?
+              @companies.delete(company)
+              @log << "#{player.name} wins the auction for #{company.name} with a bid of #{@game.format_currency(price)}"
+            else
+              remove_company(company)
             end
-            @round.next_entity_index!
-            pass!
           end
         end
       end

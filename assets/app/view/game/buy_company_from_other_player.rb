@@ -22,7 +22,7 @@ module View
                     type: 'number',
                     min: 1,
                     max: max,
-                    size: max,
+                    size: max.to_s.size + 2,
                   })
         children = [input]
         @game.round.active_step.purchasable_companies(@game.current_entity).each do |company|

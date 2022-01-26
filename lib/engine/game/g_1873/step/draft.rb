@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
+require_relative '../../../step/programmer'
 
 module Engine
   module Game
     module G1873
       module Step
         class Draft < Engine::Step::Base
+          include Engine::Step::Programmer
+
           attr_reader :companies, :choices
 
           ACTIONS = %w[bid pass].freeze
@@ -14,6 +17,14 @@ module Engine
 
           def setup
             @companies = @game.start_companies.sort
+            @round.players_history[current_entity] = nil
+          end
+
+          def round_state
+            {
+              # What the players did last turn
+              players_history: {},
+            }
           end
 
           def available
@@ -84,6 +95,7 @@ module Engine
                     else
                       "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
                     end
+            @round.players_history[action.entity.player] = action
 
             action.entity.unpass!
             @round.next_entity_index!
@@ -101,6 +113,28 @@ module Engine
             @game.premium -= PREMIUM_REDUCTION
             @log << "All have passed. Premium reduced to #{@game.premium}"
             @game.players.each(&:unpass!)
+          end
+
+          def auto_actions(entity)
+            programmed_auto_actions(entity)
+          end
+
+          def activate_program_harzbahn_draft_pass(entity, program)
+            if program.until_premium && program.until_premium >= @game.premium
+              return [Action::ProgramDisable.new(entity, reason: "Reached target premium #{program.until_premium}")]
+            end
+
+            unless program.unconditional
+              @round.players_history.each do |other_entity, action|
+                next if other_entity == entity
+                next unless action
+                next if action < program
+
+                return [Action::ProgramDisable.new(entity, reason: "#{action.entity.player.name} bought #{action.company.name}")]
+              end
+            end
+
+            [Action::Pass.new(entity)]
           end
 
           def action_finalized
