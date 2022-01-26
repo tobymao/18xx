@@ -274,6 +274,10 @@ module Engine
           end
         end
 
+        def corporation_opts
+          two_player? && @optional_rules&.include?(:two_player_share_limit) ? { max_ownership_percent: 70 } : {}
+        end
+
         def new_auction_round
           Round::Auction.new(self, [
             G18Scan::Step::CompanyPendingPar,
@@ -292,7 +296,10 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Track,
+            # G18Scan::Step::DestinationToken
+            # G18Scan::Step::DestinationRun
             Engine::Step::Token,
+            # G18Scan::Step::BonusToken
             Engine::Step::Route,
             G18Scan::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -318,6 +325,15 @@ module Engine
           super
         end
 
+        def event_close_minors!
+          @minors.each do |minor|
+            merge_and_close_minor(sj, minor.name)
+          end
+
+          remove_ability(sj, :no_buy)
+          sj.floatable = true
+        end
+
         def event_full_cap!
           @corporations.each do |corp|
             next if corp.floated?
@@ -338,6 +354,37 @@ module Engine
           return sj.shares[6] if name == '1'
           return sj.shares[7] if name == '2'
           return sj.shares[8] if name == '3'
+        end
+
+        def merge_and_close_minor(entity, id)
+          company = company_by_id(id)
+          minor = minor_by_id(id)
+          share = trade_in_share_by_minor_id(id)
+
+          transfer = minor.cash.positive? ? " that receives #{format_currency(minor.cash)}" : ''
+          @log << "-- Minor #{minor.name} merges into #{entity.name}#{transfer} --"
+
+          share.buyable = true
+          @share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
+
+          minor.tokens.each do |token|
+            if token.city.tokened_by?(entity)
+              new_token = Engine::Token.new(entity)
+              token.swap!(new_token)
+              entity.tokens << new_token
+            else
+              token.remove
+            end
+          end
+
+          minor.spend(minor.cash, entity) if minor.cash.positive?
+
+          minor.trains.each do |train|
+            buy_train(entity, train, :free)
+          end
+
+          minor.close!
+          company.close!
         end
       end
     end
