@@ -13,7 +13,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :bc_graph, :sp_graph
+        attr_reader :bc_graph, :sp_graph, :train_base
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -250,6 +250,7 @@ module Engine
           # pick one corp to wait until SR3
           #
 
+          @train_base = {}
           @or = 0
           @three_or_round = false
         end
@@ -370,9 +371,9 @@ module Engine
             # G21Moon::Step::Bankrupt,
             G21Moon::Step::Track,
             G21Moon::Step::Token,
-            Engine::Step::Route,
+            G21Moon::Step::Route,
             Engine::Step::Dividend,
-            Engine::Step::BuyTrain,
+            G21Moon::Step::BuyTrain,
           ], round_num: round_num)
         end
 
@@ -438,6 +439,40 @@ module Engine
 
         def bank_sort(corporations)
           corporations.reject(&:minor?).sort_by(&:name)
+        end
+
+        def bc_trains(corporation)
+          corporation.trains.select { |t| @train_base[t] == :bc }
+        end
+
+        def sp_trains(corporation)
+          corporation.trains.select { |t| @train_base[t] == :sp }
+        end
+
+        def route_trains(entity)
+          bc_trains(entity) + sp_trains(entity)
+        end
+
+        def assign_base(train, base)
+          @train_base[train] = base
+        end
+
+        def trains_str(corporation)
+          if corporation.trains.empty?
+            'None'
+          else
+            bc = bc_trains(corporation)
+            sp = sp_trains(corporation)
+            str = ''
+            str += 'BC:' + bc.map(&:name).join(' ') unless bc.empty?
+            str += ' ' if !bc.empty? && !sp.empty?
+            str += 'SP:' + sp.map(&:name).join(' ') unless sp.empty?
+            str
+          end
+        end
+
+        def train_name(train)
+          "#{train.name} (#{@train_base[train].to_s.upcase})"
         end
 
         def timeline
