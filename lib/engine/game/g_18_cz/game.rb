@@ -52,6 +52,8 @@ module Engine
 
         AVAILABLE_CORP_COLOR = '#c6e9af'
 
+        SHOW_SHARE_PERCENT_OWNERSHIP = true # allow corporation cards to show percentage ownership breakdown for players
+
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par: :red,
           par_2: :green,
