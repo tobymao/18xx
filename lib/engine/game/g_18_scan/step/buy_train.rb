@@ -12,7 +12,7 @@ module Engine
           end
 
           def must_buy_train?(entity)
-            super unless entity.minor?
+            return super unless entity.minor?
 
             false
           end
