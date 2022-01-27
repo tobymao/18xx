@@ -7,7 +7,7 @@ module Engine
   class AutoRouter
     def initialize(game)
       @game = game
-      @nextbit = 0
+      @next_hexside_bit = 0
     end
 
     def compute(corporation, **opts)
@@ -41,7 +41,7 @@ module Engine
       train_routes = Hash.new { |h, k| h[k] = [] }    # map of train to route list
       path_abort = Hash.new { |h, k| h[k] = false }   # each train has opportunity to abort a branch of the path walk tree
       hexside_bits = Hash.new { |h, k| h[k] = 0 }     # map of hexside_id to bit number
-      @nextbit = 0
+      @next_hexside_bit = 0
 
       nodes.each do |node|
         if Time.now - now > path_timeout
@@ -53,7 +53,6 @@ module Engine
 
         node_now = Time.now
 
-        counter = 0
         node_abort = false
 
         node.walk(corporation: corporation, skip_paths: skip_paths) do |_, vp|
@@ -117,8 +116,6 @@ module Engine
             { left: c[:nodes][0], right: c[:nodes][1], chain: c }
           end
 
-          counter += 1
-
           # each train has opportunity to vote to abort a branch of this node's path-walk tree
           path_abort.each { |train, _| path_abort[train] = false }
           abort = nil
@@ -160,7 +157,7 @@ module Engine
       # Check that there are no duplicate hexside bits (algorithm error)
       mismatch = hexside_bits.size - hexside_bits.uniq.size
       puts "  ERROR: hexside_bits contains #{mismatch} duplicate bits" if mismatch != 0
-      puts "Evaluated #{connections.size} paths, found #{@nextbit} unique hexsides, and found valid routes "\
+      puts "Evaluated #{connections.size} paths, found #{@next_hexside_bit} unique hexsides, and found valid routes "\
            "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
 
       static.each { |route| train_routes[route.train] = [route] }
@@ -241,9 +238,9 @@ module Engine
       if hexside_bits.include?(hexside_edge)
         set_bit(bitfield, hexside_bits[hexside_edge])
       else
-        hexside_bits[hexside_edge] = @nextbit
-        set_bit(bitfield, @nextbit)
-        @nextbit += 1
+        hexside_bits[hexside_edge] = @next_hexside_bit
+        set_bit(bitfield, @next_hexside_bit)
+        @next_hexside_bit += 1
       end
     end
 
