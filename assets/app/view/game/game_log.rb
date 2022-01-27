@@ -70,7 +70,7 @@ module View
                   title: 'hotkey: c – esc to leave',
                   type: 'text',
                   value: @chat_input,
-                  placeholder: 'Use @username command to ping a user',
+                  placeholder: 'Use @player command to ping a player',
                 },
                 style: {
                   marginLeft: '0.5rem',
