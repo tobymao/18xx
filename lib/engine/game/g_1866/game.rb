@@ -47,7 +47,7 @@ module Engine
         MARKET = [
           %w[0 10 20 30 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
              200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
-          %w[0 10 20 30 40p 45p 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
+          %w[0 10 20 30 40 45 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
              200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
           %w[0 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
              200pxzw 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
@@ -595,13 +595,6 @@ module Engine
         }.freeze
 
         STOCK_TURN_TOKEN_PREFIX = 'ST'
-        STOCK_TURN_TOKENS = {
-          '3': 5,
-          '4': 4,
-          '5': 3,
-          '6': 3,
-          '7': 2,
-        }.freeze
 
         # Corporations which will be able to float on which turn
         TURN_CORPORATIONS = {
@@ -964,8 +957,11 @@ module Engine
         def routes_subsidy(routes)
           return 0 if routes.empty?
 
-          port_bonus = port_token_bonus(routes)
-          port_bonus.sum { |_, revenue| revenue }
+          entity = routes.first.train.owner
+          subsidy = 0
+          subsidy += port_token_bonus(entity, routes)&.sum { |v| v[:subsidy] } || 0
+          subsidy += infrastructure_bonus(entity, routes).sum { |v| v[:subsidy] }
+          subsidy
         end
 
         def route_trains(entity)
@@ -986,7 +982,6 @@ module Engine
         end
 
         def setup
-          @stock_turn_token_per_player = self.class::STOCK_TURN_TOKENS[@players.size.to_s]
           @stock_turn_token_count = {}
           @stock_turn_token_premium_count = {}
           @stock_turn_token_in_play = {}
@@ -995,7 +990,7 @@ module Engine
           @player_setup_order = @players.dup
           @player_setup_order.each_with_index do |player, index|
             @log << "#{player.name} have stock turn tokens with number #{index + 1}"
-            @stock_turn_token_count[player] = @stock_turn_token_per_player
+            @stock_turn_token_count[player] = starting_stock_turn_tokens
             @stock_turn_token_premium_count[player] = 2
             @stock_turn_token_in_play[player] = []
             @stock_turn_token_number[player] = 0
@@ -1166,6 +1161,11 @@ module Engine
           @depot_infrastructures.uniq(&:name)
         end
 
+        def buying_power_with_loans(entity)
+          loans = maximum_loans(entity) - entity.loans.size
+          entity.cash + (loans * loan_value(entity))
+        end
+
         def can_par_share_price?(share_price, corporation)
           return (share_price.corporations.empty? || share_price.price == self.class::MAX_PAR_VALUE) unless corporation
 
@@ -1334,6 +1334,53 @@ module Engine
           national_hexes(entity.id).include?(hex.name)
         end
 
+        def infrastructure_bonus(entity, routes)
+          transit_hubs = entity.trains.any? { |t| t.name == self.class::INFRASTRUCTURE_HUB }
+          palace_cars = entity.trains.any? { |t| t.name == self.class::INFRASTRUCTURE_PALACE }
+          mail_contracts = entity.trains.any? { |t| t.name == self.class::INFRASTRUCTURE_MAIL }
+          return [] if !transit_hubs && !palace_cars && !mail_contracts
+
+          transit_hub_bonus = []
+          palace_car_bonus = []
+          mail_contract_bonus = []
+          routes.each do |route|
+            stops = route.visited_stops
+            phase = route.phase
+            train = route.train
+            train_multiplier = train.obsolete ? 0.5 : 1
+
+            # Transit hub & palace_car
+            transist_hub_revenue = 0
+            palace_car_revenue = 0
+            stops.each do |stop|
+              next if !stop || !stop.city?
+
+              palace_car_revenue += 10
+              next unless stop.tokened_by?(entity)
+
+              stop_base_revenue = stop.route_base_revenue(phase, train)
+              transist_hub_revenue = stop_base_revenue if stop_base_revenue > transist_hub_revenue
+            end
+            transit_hub_bonus << { route: route, subsidy: transist_hub_revenue * train_multiplier }
+            palace_car_bonus << { route: route, subsidy: palace_car_revenue * train_multiplier }
+
+            # Mail contract
+            first_stop_revnue = stops.first.route_base_revenue(phase, train)
+            last_last_revnue = if stops.size > 1 && stops.first != stops.last
+                                 stops.last.route_base_revenue(phase, train)
+                               else
+                                 0
+                               end
+            mail_contract_bonus << { route: route, subsidy: (first_stop_revnue + last_last_revnue) * train_multiplier }
+          end
+
+          infrastructure_bonus = []
+          infrastructure_bonus << transit_hub_bonus.sort_by { |v| v[:subsidy] }.reverse[0] if transit_hubs
+          infrastructure_bonus << palace_car_bonus.sort_by { |v| v[:subsidy] }.reverse[0] if palace_cars
+          infrastructure_bonus << mail_contract_bonus.sort_by { |v| v[:subsidy] }.reverse[0] if mail_contracts
+          infrastructure_bonus
+        end
+
         def infrastructure_limit(corporation)
           corporation.type == :share_5 ? 1 : 2
         end
@@ -1444,14 +1491,13 @@ module Engine
           end
         end
 
-        def port_token_bonus(routes)
+        def port_token_bonus(entity, routes)
           # Find all the port hexes and see which route pays the most
           port_hexes = {}
           routes.each do |route|
             train = route.train
             next if local_train?(train)
 
-            entity = route.train.owner
             stops = route.visited_stops
             train_multiplier = train.obsolete ? 0.5 : 1
 
@@ -1461,15 +1507,17 @@ module Engine
               next if !stop || !stop.city? || !stop.tokened_by?(entity) || !hex_is_port?(stop.hex)
 
               revenue = self.class::PORT_TOKEN_BONUS[route.phase.name] * train_multiplier
-              if !port_hexes[stop.hex] || revenue > port_hexes[stop.hex]['revenue']
+              if !port_hexes[stop.hex] || revenue > port_hexes[stop.hex][:revenue]
                 port_hexes[stop.hex] = { route: route, revenue: revenue }
               end
             end
           end
 
-          port_bonus = Hash.new { |h, k| h[k] = 0 }
-          port_hexes.each { |_, r| port_bonus[r['route']] += r['revenue'] }
-          port_bonus
+          port_hexes.map do |_, r|
+            next unless r[:revenue].positive?
+
+            { route: r[:route], subsidy: r[:revenue] }
+          end.compact
         end
 
         def phase_par_type(corporation)
@@ -1640,6 +1688,20 @@ module Engine
           end
         end
 
+        def starting_stock_turn_tokens
+          player_size = @players.size
+          case player_size
+          when 3
+            5
+          when 4
+            4
+          when 5, 6
+            3
+          when 7
+            2
+          end
+        end
+
         def stock_round_isr
           @log << '-- Initial Stock Round --'
           @round_counter += 1
@@ -1717,8 +1779,8 @@ module Engine
           hex.tile = hex_tile
 
           hex_borders.each do |border|
-            hex_border = hex_by_id(border['hex'])
-            border = hex_border.tile.borders.find { |b| b.edge == border['edge'] }
+            hex_border = hex_by_id(border[:hex])
+            border = hex_border.tile.borders.find { |b| b.edge == border[:edge] }
             hex_border.tile.borders.delete(border)
           end
           update_hex_neighbors(hex)

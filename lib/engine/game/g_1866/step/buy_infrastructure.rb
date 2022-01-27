@@ -22,8 +22,7 @@ module Engine
           end
 
           def buying_power(entity)
-            loans = @game.maximum_loans(entity) - entity.loans.size
-            entity.cash + (loans * @game.loan_value(entity))
+            @game.buying_power_with_loans(entity)
           end
 
           def can_buy_train?(entity = nil, _shell = nil)
