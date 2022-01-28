@@ -18,7 +18,7 @@ module Engine
 
           def buyable_trains(entity)
             # Can't buy trains from other corporations if the operating corporation took a loan this turn
-            return super unless @took_loan
+            return super if !@took_loan && @game.phase.status.include?('can_buy_trains')
 
             super.select(&:from_depot?)
           end
