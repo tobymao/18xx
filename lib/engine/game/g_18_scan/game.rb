@@ -47,12 +47,12 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'close_minors' => [
-            'Minors merge into SJ',
+            'SJ merger',
             'Minors are closed, transferring all assets to SJ. Minor owners get a 10% SJ share',
           ],
           'full_cap' => [
-            'Full capitalisation',
-            'Corporationss receive full capitalisation when started',
+            'Full Capitalization',
+            'All unfloated corporations will receive full funding on float',
           ],
         ).freeze
 
@@ -72,14 +72,6 @@ module Engine
           'float_5' => [
             '50% to float',
             'An unstarted corporation needs 50% sold to start for the first time',
-          ],
-          'incremental_cap' => [
-            'Incremental capitalization',
-            'Corporations receive capitalisation for sold shares when started',
-          ],
-          'full_cap' => [
-            'Full capitalization',
-            'Corporations receive full capitalisation when started',
           ],
           'sj_can_float' => [
             'SJ can float',
@@ -103,7 +95,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 2,
-            status: %w[float_2 incremental_cap],
+            status: %w[float_2],
           },
           {
             name: '3',
@@ -111,7 +103,7 @@ module Engine
             train_limit: 4,
             tiles: %w[yellow green],
             operating_rounds: 2,
-            status: %w[float_3 incremental_cap],
+            status: %w[float_3],
           },
           {
             name: '4',
@@ -119,7 +111,7 @@ module Engine
             train_limit: 3,
             tiles: %w[yellow green],
             operating_rounds: 2,
-            status: %w[float_4 incremental_cap],
+            status: %w[float_4],
           },
           {
             name: '5',
@@ -127,12 +119,7 @@ module Engine
             train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            events: [
-              { 'type' => 'close_minors' },
-              { 'type' => 'close_companies' },
-              { 'type' => 'full_cap' },
-            ],
-            status: %w[float_5 full_cap sj_can_float],
+            status: %w[float_5 sj_can_float],
           },
           {
             name: '5E',
@@ -140,7 +127,7 @@ module Engine
             train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            status: %w[float_5 full_cap sj_can_float],
+            status: %w[float_5 sj_can_float],
           },
           {
             name: '4D',
@@ -148,7 +135,7 @@ module Engine
             train_limit: 2,
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            status: %w[float_5 full_cap sj_can_float],
+            status: %w[float_5 sj_can_float],
           },
         ].freeze
 
@@ -218,6 +205,11 @@ module Engine
                 ],
                 price: 480,
               },
+            ],
+            events: [
+              { 'type' => 'close_companies' },
+              { 'type' => 'full_cap' },
+              { 'type' => 'close_minors' },
             ],
           },
           {
