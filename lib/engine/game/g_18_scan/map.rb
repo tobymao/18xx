@@ -74,6 +74,7 @@ module Engine
           'F15' => 'Tampere',
           'G2' => 'Stettin',
           'G4' => 'Malmö',
+          'G12' => 'Ferry crossing',
           'G14' => 'Helsinki',
           'G16' => 'Lahti',
           'H13' => 'Tallin',
@@ -116,8 +117,7 @@ module Engine
             ['E4'] => 'city=revenue:30;border=edge:3,type:impassable,color:blue;border=edge:4,type:impassable,color:blue;border=edge:5,type:impassable,color:blue',
             ['E12'] => 'border=edge:4,type:impassable,color:blue;border=edge:5,type:impassable,color:blue',
 
-            # TODO: Copenhagen
-            ['F3'] => 'city=revenue:30,loc:4.5;town=revenue:0,loc:1.5;upgrade=cost:40,terrain:water',
+            ['F3'] => 'city=revenue:30,loc:4.5;town=revenue:0,loc:1.5;upgrade=cost:40,terrain:water;label=COP',
 
             ['F13'] => 'city=revenue:30;border=edge:1,type:impassable,color:blue;border=edge:2,type:impassable,color:blue',
 
@@ -128,7 +128,7 @@ module Engine
             ['G14'] => 'city=revenue:30;label=Y',
           },
           gray: {
-            ['G12'] => 'path=a:2,b:3,track:narrow',
+            ['G12'] => 'path=a:2,b:3',
           },
         }.freeze
       end
