@@ -239,10 +239,6 @@ module Engine
                 description: '+1 train limit',
                 increase: 1,
               },
-              {
-                type: 'no_buy',
-                description: 'Cannot float before phase 5',
-              },
             ],
           },
         ].freeze

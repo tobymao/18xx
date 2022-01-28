@@ -235,9 +235,6 @@ module Engine
         ].freeze
 
         def setup
-          # SJ cannot float until phase 5
-          sj.floatable = false
-
           # Minors come with a trade-in share of SJ
           minors.each do |minor|
             share = sj_share_by_minor(minor.name)
@@ -318,12 +315,23 @@ module Engine
         end
 
         def event_close_minors!
-          @minors.each do |minor|
-            merge_and_close_minor(sj, minor.name)
-          end
-
-          remove_ability(sj, :no_buy)
           sj.floatable = true
+          sj.spend(sj.cash, bank) if sj.cash.positive?
+
+          @minors.each { |minor| merge_and_close_minor(minor) }
+
+          @log << "-- Event: #{sj.name} is formed --"
+        end
+
+        def float_corporation(corporation)
+          return super unless corporation == sj
+
+          @log << "#{corporation.name} floats"
+
+          initial_cash = corporation.par_price.price * 7
+          @bank.spend(initial_cash, corporation)
+
+          @log << "#{corporation.name} receives #{format_currency(initial_cash)}"
         end
 
         def event_full_cap!
@@ -331,7 +339,10 @@ module Engine
             next if corp.floated?
 
             corp.capitalization = :full
+            corp.spend(corp.cash, bank) if corp.cash.positive?
           end
+
+          @log << '-- Event: New corporations will be started as full capitalization --'
         end
 
         def train_limit(entity)
@@ -343,36 +354,47 @@ module Engine
         end
 
         def sj_share_by_minor(name)
-          return sj.shares[6] if name == '1'
-          return sj.shares[7] if name == '2'
-          return sj.shares[8] if name == '3'
+          @reserved_shares ||= {}
+          @reserved_shares[name] ||=
+            case name
+            when '1'
+              sj.shares[6]
+            when '2'
+              sj.shares[7]
+            when '3'
+              sj.shares[8]
+            end
         end
 
-        def merge_and_close_minor(entity, id)
-          company = company_by_id(id)
-          minor = minor_by_id(id)
-          share = trade_in_share_by_minor_id(id)
+        def merge_and_close_minor(minor)
+          company = company_by_id(minor.name)
+          share = sj_share_by_minor(minor.name)
 
-          transfer = minor.cash.positive? ? " that receives #{format_currency(minor.cash)}" : ''
-          @log << "-- Minor #{minor.name} merges into #{entity.name}#{transfer} --"
+          msg = "#{minor.name} merges into #{sj.name}"
+          msg += ' receiving' if minor.cash.positive? || minor.trains.any?
+          msg += " #{minor.trains.map(&:name).join(', ')}" if minor.trains.any?
+          msg += ' and' if minor.cash.positive? && minor.trains.any?
+          msg += " #{format_currency(minor.cash)}" if minor.cash.positive?
+          @log << msg
 
+          # Award reserved share
           share.buyable = true
           @share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
 
+          # Transfer tokens
           minor.tokens.each do |token|
-            if token.city.tokened_by?(entity)
-              new_token = Engine::Token.new(entity)
-              token.swap!(new_token)
-              entity.tokens << new_token
+            if !token.hex || token.hex.tile.cities.any? { |c| c.tokened_by?(sj) }
+              token.remove!
             else
-              token.remove
+              token.swap!(sj.next_token)
             end
           end
 
-          minor.spend(minor.cash, entity) if minor.cash.positive?
+          minor.spend(minor.cash, sj) if minor.cash.positive?
 
-          minor.trains.each do |train|
-            buy_train(entity, train, :free)
+          # Transfer trains
+          minor.trains.dup.each do |train|
+            buy_train(sj, train, :free)
           end
 
           minor.close!
