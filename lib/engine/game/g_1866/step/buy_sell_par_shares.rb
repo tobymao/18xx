@@ -39,13 +39,14 @@ module Engine
               @game.num_certs(operator) >= @game.cert_limit
               return {}
             end
+            return {} if @game.stock_turn_token_removed?(active_entities[0])
 
             choices = {}
             valid_token = @game.stock_turn_token?(operator)
             token_permium = @game.stock_turn_token_premium?(operator)
             if @game.player_debt(operator).zero? && ((valid_token && @round.operating?) ||
               (valid_token && !@round.operating? && !token_permium))
-              get_par_prices(operator, nil).reverse_each do |p|
+              get_par_prices(operator, nil).sort_by(&:price).each do |p|
                 par_str = @game.par_price_str(p)
                 choices[par_str] = par_str
               end
@@ -66,7 +67,7 @@ module Engine
             return [@game.forced_formation_par_prices(corp).last] if @game.germany_or_italy_national?(corp)
 
             par_type = @game.phase_par_type(corp)
-            par_prices = @game.stock_market.par_prices.select do |p|
+            par_prices = @game.par_prices_sorted.select do |p|
               extra = if entity.player? && @game.stock_turn_token_premium?(entity)
                         @round.round_num * (@game.players.size - 1) * 5
                       else
