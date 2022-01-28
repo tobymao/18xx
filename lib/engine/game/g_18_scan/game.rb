@@ -300,6 +300,10 @@ module Engine
           'Treasury'
         end
 
+        def sj
+          @sj ||= corporation_by_id('SJ')
+        end
+
         def float_percent
           return 20 if @phase.status.include?('float_2')
           return 30 if @phase.status.include?('float_3')
@@ -312,15 +316,6 @@ module Engine
           return 'Floats in phase 5' if entity == sj && !entity.floatable
 
           super
-        end
-
-        def event_close_minors!
-          sj.floatable = true
-          sj.spend(sj.cash, bank) if sj.cash.positive?
-
-          @minors.each { |minor| merge_and_close_minor(minor) }
-
-          @log << "-- Event: #{sj.name} is formed --"
         end
 
         def float_corporation(corporation)
@@ -345,12 +340,17 @@ module Engine
           @log << '-- Event: New corporations will be started as full capitalization --'
         end
 
-        def train_limit(entity)
-          super + Array(abilities(entity, :train_limit)).sum(&:increase)
+        def event_close_minors!
+          sj.floatable = true
+          sj.spend(sj.cash, bank) if sj.cash.positive?
+
+          @minors.each { |minor| merge_and_close_minor(minor) }
+
+          @log << "-- Event: #{sj.name} is formed --"
         end
 
-        def sj
-          @sj ||= corporation_by_id('SJ')
+        def train_limit(entity)
+          super + Array(abilities(entity, :train_limit)).sum(&:increase)
         end
 
         def sj_share_by_minor(name)
