@@ -18,7 +18,13 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'shares', shares: 'VR_1' },
-              # TODO: Two +20 bonus tokens for ferry
+              # TODO: Ferry token svg
+              {
+                type: 'assign_corporation',
+                when: 'owning_player_token',
+                count: 2,
+                owner_type: 'player',
+              },
             ],
             color: nil,
           },
@@ -36,7 +42,13 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'shares', shares: 'S&NJ_1' },
-              # TODO: +50 bonus token for Kiruna
+              # TODO: Ore mine token svg
+              {
+                type: 'assign_corporation',
+                when: 'owning_player_token',
+                count: 1,
+                owner_type: 'player',
+              },
             ],
             color: nil,
           },

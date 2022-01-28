@@ -304,6 +304,22 @@ module Engine
           @sj ||= corporation_by_id('SJ')
         end
 
+        def mine
+          @mine ||= company_by_id('Mine')
+        end
+
+        def mine_included(route)
+          route.corporation.assigned?(mine.id) && route.hexes.find { |h| h.id == 'A20' }
+        end
+
+        def ferry
+          @ferry ||= company_by_id('Ferry')
+        end
+
+        def ferry_included(route)
+          route.corporation.assigned?(ferry.id) && route.hexes.find { |h| h.id == 'L7' }
+        end
+
         def float_percent
           return 20 if @phase.status.include?('float_2')
           return 30 if @phase.status.include?('float_3')
@@ -327,6 +343,24 @@ module Engine
           @bank.spend(initial_cash, corporation)
 
           @log << "#{corporation.name} receives #{format_currency(initial_cash)}"
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+
+          revenue += 20 if ferry_included(route)
+          revenue += 50 if mine_included(route)
+
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+
+          str += ' + Stockholm-Åbo Ferry' if ferry_included(route)
+          str += ' + Lapland Ore Mine' if mine_included(route)
+
+          str
         end
 
         def event_full_cap!
