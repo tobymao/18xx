@@ -7,7 +7,7 @@ module Engine
     module G21Moon
       module Step
         class Dividend < Engine::Step::Dividend
-          def actions(entity)
+          def actions(_entity)
             []
           end
 
@@ -33,7 +33,6 @@ module Engine
             entity = action.entity
             bc_revenue = @game.bc_revenue(routes)
             sp_revenue = @game.sp_revenue(routes)
-            kind = action.kind.to_sym
 
             payout = share_price_change(entity, sp_revenue)
 
@@ -41,9 +40,7 @@ module Engine
 
             @log << "#{entity.name} withholds #{@game.format_currency(bc_revenue)}" if bc_revenue.positive?
 
-            if !sp_revenue.positive? && !bc_revenue.positive?
-              @log << "#{entity.name} does not run"
-            end
+            @log << "#{entity.name} does not run" if !sp_revenue.positive? && !bc_revenue.positive?
 
             payout_corporation(bc_revenue, entity)
             payout_shares(entity, sp_revenue) if sp_revenue.positive?

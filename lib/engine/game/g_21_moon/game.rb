@@ -176,11 +176,14 @@ module Engine
 
         LAST_OR = 11
         SP_HEX = 'E9'
+        T_HEX = 'F8'
+        T_BONUS = 30
+        RIFT_BONUS = 60
         EW_BONUS = 100
-        NE_HEXES = %w[K1 L2 L4]
-        SE_HEXES = %w[L14 M11 M13]
-        NW_HEXES = %w[A3 A5 B2]
-        SW_HEXES = %w[B14 C15]
+        NE_HEXES = %w[K1 L2 L4].freeze
+        SE_HEXES = %w[L14 M11 M13].freeze
+        NW_HEXES = %w[A3 A5 B2].freeze
+        SW_HEXES = %w[B14 C15].freeze
         END_BONUS_VALUE = 50
 
         ICON_PREFIX = '21Moon/'
@@ -424,15 +427,25 @@ module Engine
           @corporations.select(&:operated?)
         end
 
-        def east_west_bonus(stops)
+        def route_bonus(stops)
           bonus = { revenue: 0 }
 
           east = stops.find { |stop| stop.groups.include?('E') }
           west = stops.find { |stop| stop.groups.include?('W') }
+          terminal = stops.find { |stop| stop.hex.id == T_HEX }
 
           if east && west
             bonus[:revenue] += EW_BONUS
             bonus[:description] = 'E/W'
+          end
+
+          if east && terminal
+            bonus[:revenue] += T_BONUS
+            if bonus[:description]
+              bonus[:description] += '+Term'
+            else
+              bonus[:description] = 'Term'
+            end
           end
 
           bonus
@@ -455,12 +468,14 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          stops.sum { |stop| stop.route_revenue(route.phase, route.train) + icon_revenue(stop) } + east_west_bonus(stops)[:revenue]
+          stops.sum do |stop|
+            stop.route_revenue(route.phase, route.train) + icon_revenue(stop)
+          end + route_bonus(stops)[:revenue]
         end
 
         def revenue_str(route)
           str = super
-          bonus = east_west_bonus(route.stops)[:description]
+          bonus = route_bonus(route.stops)[:description]
           str += " + #{bonus}" if bonus
           str
         end
@@ -482,8 +497,8 @@ module Engine
         end
 
         def visited_base?(entity, base, route)
-         (base == :sp && route.visited_stops.any? { |s| s.hex.id == SP_HEX }) ||
-           (base == :bc && route.visited_stops.any? { |s| s.hex.id != SP_HEX && s.city? && s.tokened_by?(entity) })
+          (base == :sp && route.visited_stops.any? { |s| s.hex.id == SP_HEX }) ||
+            (base == :bc && route.visited_stops.any? { |s| s.hex.id != SP_HEX && s.city? && s.tokened_by?(entity) })
         end
 
         def intersects?(route_a, route_b)
@@ -498,10 +513,12 @@ module Engine
           this_train = route.train
           base = @train_base[this_train]
           return if visited_base?(this_train.owner, base, route)
+
           other_route = route.routes.find { |r| r.train != this_train && @train_base[r.train] == base }
           return if other_route && visited_base?(this_train.owner, base, other_route) && intersects?(route, other_route)
 
           raise GameError, "Must visit #{base.to_s.upcase}" unless other_route
+
           raise GameError, "Must visit #{base.to_s.upcase} or intersect with a route that does"
         end
 
@@ -513,7 +530,7 @@ module Engine
           routes_revenue(routes.select { |r| @train_base[r.train] == :bc })
         end
 
-        def submit_revenue_str(routes, render_halts)
+        def submit_revenue_str(routes, _render_halts)
           "#{format_revenue_currency(sp_revenue(routes))} (+#{format_revenue_currency(bc_revenue(routes))} Withhold)"
         end
 

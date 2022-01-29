@@ -37,7 +37,8 @@ module Engine
           def can_trade_any?(entity)
             @game.corporations.each do |corporation|
               next unless corporation.ipoed
-              return true if can_trade_shares?(entity, corporation.corporate_shares) && can_trade_for_share_from?(entity, corporation)
+              return true if can_trade_shares?(entity,
+                                               corporation.corporate_shares) && can_trade_for_share_from?(entity, corporation)
             end
 
             false

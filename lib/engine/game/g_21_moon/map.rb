@@ -267,12 +267,16 @@ module Engine
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:yellow_20|green_40|brown_50|gray_10,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=T',
+            'code' => 'city=revenue:yellow_30|green_30|brown_40|gray_10,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=T;frame=color:#ffa500',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
 
         LOCATION_NAMES = {
+          'A3' => 'Space Station',
+          'B14' => 'Tourism Colony',
+          'L2' => 'Solar Farm',
+          'M13' => 'Water Farm',
           'F8' => 'Terminal',
         }.freeze
 
