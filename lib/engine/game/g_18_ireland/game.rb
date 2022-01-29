@@ -112,14 +112,14 @@ module Engine
         TRAINS = [
           {
             name: '2H',
-            num: 6,
+            num: 7,
             distance: 2,
             price: 80,
             rusts_on: '6H',
           },
           {
             name: "1H'",
-            num: 6,
+            num: 7,
             distance: 1,
             price: 40,
             rusts_on: '8H',
