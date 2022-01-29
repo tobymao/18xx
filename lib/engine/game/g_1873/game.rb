@@ -896,8 +896,6 @@ module Engine
 
         def corporation_available?(entity)
           return false unless entity.corporation?
-          return true if entity == @mhe
-          return can_restart?(entity, @round.active_step.current_entity) if entity.receivership?
 
           entity.ipoed || can_par?(entity, @round.active_step.current_entity)
         end
