@@ -322,7 +322,6 @@ module Engine
           'G11' => 'Antwerp',
           'H8' => 'Calais',
           'H10' => 'Brussels',
-          'H12' => 'Liege',
           'H14' => 'Düsseldorf',
           'H20' => 'Leipzig',
           'H26' => 'Warsaw',
@@ -360,7 +359,7 @@ module Engine
           'O5' => 'Toulouse',
           'O7' => 'Montpelier',
           'O13' => 'Genoa',
-          'O21' => 'Rejka',
+          'O21' => 'Rejika',
           'O23' => 'Zagreb',
           'P10' => 'Marseilles',
           'P12' => 'Nice',
@@ -545,13 +544,11 @@ module Engine
               'city=revenue:0;upgrade=cost:40,terrain:swamp;frame=color:#7eff80',
             ['H10'] =>
               'city=revenue:0;label=C;frame=color:#7eff80',
-            ['H12'] =>
-              'city=revenue:0;frame=color:#7eff80',
             ['I11'] =>
-              'city=revenue:0;label=Y;frame=color:#7eff80',
+              'city=revenue:0;frame=color:#7eff80',
             ['F14'] =>
               'frame=color:#7eff80',
-            ['E13'] =>
+            %w[H12 E13] =>
               'town=revenue:0;frame=color:#7eff80',
             ['G13'] =>
               'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#7eff80',

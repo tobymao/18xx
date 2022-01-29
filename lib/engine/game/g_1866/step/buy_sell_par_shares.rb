@@ -73,8 +73,9 @@ module Engine
                       else
                         0
                       end
-              multiplier = !corp ? 1 : 2
-              p.types.include?(par_type) && (p.price * multiplier) + extra <= entity.cash && @game.can_par_share_price?(p, corp)
+              multiplier = !corp || @game.major_national_corporation?(corp) ? 1 : 2
+              p.types.include?(par_type) && (p.price * multiplier) + extra <= entity.cash &&
+                @game.can_par_share_price?(p, corp)
             end
             par_prices.reject! { |p| p.price == @game.class::MAX_PAR_VALUE } if par_prices.size > 1
             par_prices
