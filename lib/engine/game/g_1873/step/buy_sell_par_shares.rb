@@ -105,7 +105,7 @@ module Engine
           end
 
           def process_buy_shares(action)
-            return unless can_buy?(action.entity, action.bundle) # discard illegal auto-actions
+            raise GameError, 'illegal buy action' unless can_buy?(action.entity, action.bundle) # discard illegal auto-actions
 
             corporation = action.bundle.corporation
             if corporation.receivership? && corporation != @game.mhe
