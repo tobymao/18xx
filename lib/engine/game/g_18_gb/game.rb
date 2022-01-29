@@ -31,7 +31,7 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
 
-        SOLD_OUT_INCREASE = true
+        SOLD_OUT_INCREASE = false
 
         NEXT_SR_PLAYER_ORDER = :first_to_pass
 
