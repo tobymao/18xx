@@ -10,7 +10,7 @@ module View
 
       needs :game
       needs :user, default: nil, store: true
-      needs :show_bank, default: false
+      needs :show_bank, default: true
       needs :explain_colors, default: false
 
       COLOR_MAP = {
@@ -284,7 +284,7 @@ module View
           },
         }
 
-        children << h(:div, props, [h(Bank, game: @game)].compact)
+        children << h(:div, props, [h(Bank, game: @game)].compact) if @show_bank
         grid_props = {
           style: {
             width: '100%',
