@@ -7,6 +7,12 @@ module Engine
     module G1866
       module Step
         class IssueShares < Engine::Step::IssueShares
+          def actions(entity)
+            return [] if entity != current_entity || !entity.corporation? || @game.corporation_game_end_operated?(entity)
+
+            super
+          end
+
           def process_sell_shares(action)
             bundle = action.bundle
             corporation = bundle.corporation

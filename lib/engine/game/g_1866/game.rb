@@ -16,7 +16,20 @@ module Engine
         include G1866::Map
         include InterestOnLoans
 
-        GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
+        GAME_END_CHECK = {
+          stock_market: :current_round,
+          stock_market_st: :three_rounds,
+          final_phase: :three_rounds,
+        }.freeze
+        GAME_END_REASONS_TEXT = {
+          stock_market: 'Corporation enters end game trigger on stock market',
+          stock_market_st: 'Stock Turn Token enters end game trigger on stock market',
+          final_phase: 'When the first 10/6E train is purchased',
+        }.freeze
+        GAME_END_REASONS_TIMING_TEXT = {
+          three_rounds: 'Third OR after the current OR',
+          current_round: 'End of the current round',
+        }.freeze
 
         BANKRUPTCY_ALLOWED = false
         CURRENCY_FORMAT_STR = '£%d'
@@ -603,6 +616,8 @@ module Engine
                       SBB GL NRS ZPB MZA],
         }.freeze
 
+        attr_reader :game_end_triggered_corporation, :game_end_triggered_round
+
         def buy_train(operator, train, price = nil)
           super
 
@@ -711,7 +726,7 @@ module Engine
         def emergency_issuable_bundles(entity)
           min_price = @depot.min_depot_price
           if !entity.corporation? || !corporation?(entity) || !trains_empty?(entity) || entity.num_ipo_shares.zero? ||
-            entity.cash >= min_price
+            entity.cash >= min_price || corporation_game_end_operated?(entity)
             return []
           end
 
@@ -720,6 +735,35 @@ module Engine
             max_shares = (remaining / bundle.price_per_share).ceil
             @share_pool.fit_in_bank?(bundle) && bundle.num_shares <= max_shares
           end
+        end
+
+        def end_game!
+          return if @finished
+
+          @corporations.each do |corporation|
+            next if !corporation?(corporation) || corporation.loans.size.zero?
+
+            game_end_loan = corporation.loans.size * loan_value * 2
+            corporation_cash = corporation.cash - game_end_loan
+            if corporation_cash.negative?
+              player = corporation.owner
+              player.cash -= corporation_cash.abs
+              @log << "#{corporation.name} loans double in value (#{format_currency(game_end_loan)}). "\
+                      "#{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name} have to "\
+                      "contribute #{format_currency(corporation_cash.abs)}"
+            else
+              @log << "#{corporation.name} loans double in value (#{format_currency(game_end_loan)}). "\
+                      "#{corporation.name} pays #{format_currency(game_end_loan)}"
+            end
+          end
+          super
+        end
+
+        def end_now?(after)
+          return false unless after
+          return true if after == :current_round
+
+          @round.round_num == @final_round
         end
 
         def entity_can_use_company?(entity, company)
@@ -734,6 +778,62 @@ module Engine
           return super if (val % 1).zero?
 
           format('£%.1<val>f', val: val)
+        end
+
+        def game_end_check
+          @corp_max_reached ||= @corporations.any? do |c|
+            reached = corporation?(c) && c.floated? && c.share_price.end_game_trigger?
+            @game_end_triggered_corporation ||= c if reached
+            reached
+          end
+          @st_max_reached ||= @stock_turn_token_in_play.values.flatten.any? do |c|
+            reached = !c.closed? && c.share_price.end_game_trigger?
+            @game_end_triggered_corporation ||= c if reached
+            reached
+          end
+          phase_trigger = @phase.phases.last == @phase.current
+          @game_end_triggered_corporation ||= @round.active_entities[0] if phase_trigger
+
+          triggers = {
+            stock_market: @corp_max_reached,
+            stock_market_st: @st_max_reached,
+            final_phase: @phase.phases.last == @phase.current,
+          }.select { |_, t| t }
+
+          %i[three_rounds current_round].each do |after|
+            triggers.keys.each do |reason|
+              next unless game_end_check_values[reason] == after
+
+              @final_round ||= @round.round_num + (after == :three_rounds ? 3 : 0)
+              @game_end_triggered_round ||= @round.round_num
+              @game_end_three_rounds ||= after == :three_rounds
+              return [reason, after]
+            end
+          end
+
+          nil
+        end
+
+        def game_ending_description
+          reason, after = game_end_check
+          return unless after
+
+          after_text = ''
+          unless @finished
+            after_text = case after
+                         when :current_round
+                           " : Game Ends at conclusion of this OR (#{@round.round_num})"
+                         when :three_rounds
+                           " : Game Ends at conclusion of #{round_end.short_name} #{@final_round}"
+                         end
+          end
+
+          reason_map = {
+            stock_market: 'Corporation hit end game triggered stock value',
+            stock_market_st: 'Stock Turn Token hit end game triggered stock value',
+            final_phase: 'A 10/6E train was bought and triggered end game',
+          }
+          "#{reason_map[reason]}#{after_text}"
         end
 
         def graph_for_entity(entity)
@@ -1061,6 +1161,11 @@ module Engine
 
           # Give all players stock turn token and remove unused
           setup_stock_turn_token
+
+          @final_round = nil
+          @game_end_three_rounds = nil
+          @game_end_triggered_corporation = nil
+          @game_end_triggered_round = nil
         end
 
         def sorted_corporations
@@ -1209,6 +1314,16 @@ module Engine
           corporation.type == :share_5 || corporation.type == :share_10
         end
 
+        def corporation_game_end_operated(corporarion)
+          @corporation_game_end_operated[corporarion] = true
+        end
+
+        def corporation_game_end_operated?(corporarion)
+          return false unless game_end_triggered?
+
+          @corporation_game_end_operated[corporarion] || false
+        end
+
         def corporation_token_rights!(corporation)
           return if !corporation?(corporation) || !corporation.floated?
 
@@ -1342,6 +1457,14 @@ module Engine
 
         def hex_is_port?(hex)
           hex.tile.icons.any? { |i| i.name == 'port' }
+        end
+
+        def game_end_triggered?
+          !@final_round.nil?
+        end
+
+        def game_end_triggered_last_round?
+          game_end_triggered? && @game_end_three_rounds && @final_round == @round.round_num
         end
 
         def hex_operating_rights?(entity, hex)
@@ -1681,6 +1804,8 @@ module Engine
 
           setup_corporations_captial('F22', 'KPS') if kps_in_play
           setup_corporations_captial('L24', 'FNR') if fnr_in_play
+
+          @corporation_game_end_operated = Hash.new { |h, k| h[k] = false }
         end
 
         def setup_corporations_captial(hex_name, corporation_name)
@@ -1703,7 +1828,7 @@ module Engine
 
           @stock_turn_token_in_play[player].delete(corporation)
           @stock_turn_token_remove << corporation
-          return unless @stock_turn_token_count[player].positive?
+          return if !@stock_turn_token_count[player].positive? || game_end_triggered?
 
           @log << "#{player.name}'s remaining stock turn tokens (#{@stock_turn_token_count[player]}) becomes premium tokens"
           @stock_turn_token_premium_count[player] += @stock_turn_token_count[player]
@@ -1764,6 +1889,8 @@ module Engine
         end
 
         def stock_turn_token_name(player)
+          return 'ST token (ENDGAME)' if game_end_triggered?
+
           "ST token (#{@stock_turn_token_count[player]} / #{@stock_turn_token_premium_count[player]}P)"
         end
 

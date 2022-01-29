@@ -30,10 +30,12 @@ module Engine
 
             choices = {}
             choices['0'] = 'Convert without buying any shares'
-            (6 - share_count).times.each do |i|
-              index = i + 1
-              if player.cash >= (price * index) && (@game.num_certs(player) + index) <= @game.cert_limit
-                choices[index.to_s] = "Convert and buy #{index} share (#{@game.format_currency(price * index)})"
+            unless @game.corporation_game_end_operated?(entity)
+              (6 - share_count).times.each do |i|
+                index = i + 1
+                if player.cash >= (price * index) && (@game.num_certs(player) + index) <= @game.cert_limit
+                  choices[index.to_s] = "Convert and buy #{index} share (#{@game.format_currency(price * index)})"
+                end
               end
             end
             choices

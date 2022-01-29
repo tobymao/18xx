@@ -16,7 +16,7 @@ module Engine
             actions = []
             # Have to have buy shares, otherwise we dont show the stock page during the operating round
             actions << 'buy_shares'
-            actions << 'par' if can_ipo_any?(entity) && player_debt.zero?
+            actions << 'par' if can_ipo_any?(entity) && player_debt.zero? && !@game.game_end_triggered?
             actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'pass' unless actions.empty?
@@ -113,6 +113,15 @@ module Engine
           def change_market
             entity = active_entities[0]
             return if @game.stock_turn_token_removed?(entity)
+
+            if @game.game_end_triggered?
+              @log << 'End game is triggered, the stock turn token will be sold'
+              @game.sell_stock_turn_token(entity)
+              player = entity.owner
+              st_company = player.companies.find { |c| @game.stock_turn_token_company?(c) }
+              st_company.name = @game.stock_turn_token_name(player)
+              return
+            end
 
             bought = bought?
             sold = sold?
