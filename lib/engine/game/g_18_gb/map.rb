@@ -214,6 +214,8 @@ module Engine
           '46' => 2,
           '47' => 2,
           '911' => 4,
+        }.freeze
+        GRAY_TILES = {
           'G31' =>
           {
             'count' => 2,
@@ -377,6 +379,137 @@ module Engine
           green: {
             ['D23'] => 'path=a:2,b:4;path=a:5,b:0;upgrade=cost:50,terrain:river;label=S',
             ['J5'] => 'path=a:1,b:2;upgrade=cost:50,terrain:river;label=FT',
+          },
+        }.freeze
+
+        HEXES_2P_NW = {
+          white: {
+            %w[G8 G16 G20 G28 H21 I24 I26 I28 J19 J25 K2 K20 K24 L3] => '',
+            ['D19'] => 'border=edge:4,type:mountain,cost:50',
+            ['E18'] => 'border=edge:1,type:mountain,cost:50;border=edge:4,type:mountain,cost:50',
+            ['E20'] => 'border=edge:1,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            %w[F17 F25 H25] => 'border=edge:1,type:mountain,cost:50',
+            %w[F21 F23] => 'border=edge:2,type:mountain,cost:50',
+            ['K16'] => 'border=edge:3,type:mountain,cost:50',
+            %w[H3 H11 I8] => 'border=edge:5,type:mountain,cost:50',
+            ['J9'] => 'border=edge:0,type:mountain,cost:50;border=edge:1,type:mountain,cost:50;' \
+                      'border=edge:2,type:mountain,cost:50',
+            ['J11'] => 'border=edge:0,type:mountain,cost:50;border=edge:1,type:mountain,cost:50;' \
+                       'border=edge:3,type:mountain,cost:50;border=edge:4,type:mountain,cost:50',
+            ['K10'] => 'border=edge:1,type:mountain,cost:50',
+            ['I14'] => 'border=edge:1,type:mountain,cost:50;border=edge:2,type:mountain,cost:50;' \
+                       'border=edge:3,type:mountain,cost:50',
+            ['I12'] => 'border=edge:0,type:mountain,cost:50;border=edge:2,type:mountain,cost:50;' \
+                       'border=edge:4,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            %w[G6 I20 J3 J15 K4 K26] => 'city=revenue:0',
+            %w[H19 I10] => 'city=revenue:0;border=edge:4,type:mountain,cost:50',
+            ['K14'] => 'city=revenue:0;border=edge:0,type:mountain,cost:50',
+            %w[G22 H5 H17 I16] => 'city=revenue:0;city=revenue:0;label=XX',
+            %w[I22 J7 K12] => 'city=revenue:0;city=revenue:0;label=OO',
+            ['I18'] => 'city=revenue:0;city=revenue:0;border=edge:1,type:mountain,cost:50;label=OO',
+            ['H15'] => 'city=revenue:0;city=revenue:0;border=edge:3,type:mountain,cost:50;border=edge:4,type:mountain,cost:50;' \
+                       'label=OO',
+            %w[F19 F27 G18 G24 H7 H23 I6 J17 J21 J23 J27 K8] => 'town=revenue:0',
+            ['D21'] => 'town=revenue:0;border=edge:4,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            ['E22'] => 'town=revenue:0;border=edge:2,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            ['G26'] => 'town=revenue:0;border=edge:4,type:mountain,cost:50',
+            ['H13'] => 'town=revenue:0;border=edge:0,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            ['J13'] => 'town=revenue:0;border=edge:2,type:mountain,cost:50;border=edge:3,type:mountain,cost:50',
+            ['I4'] => 'border=edge:2,type:mountain,cost:50;town=revenue:0',
+          },
+          red: {
+            ['E24'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['E26'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:4,b:_0;path=a:5,b:_0;' \
+                       'border=edge:4,type:mountain,cost:50',
+            ['E28'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:4,b:_0;label=S',
+            ['F7'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:4,b:_0;path=a:5,b:_0;label=W',
+            ['F15'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;path=a:5,b:_0',
+            ['H1'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;label=N',
+            ['H27'] => 'offboard=revenue:yellow_30|green_40|blue_50|brown_60|gray_70;path=a:1,b:_0;path=a:2,b:_0;' \
+                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SE',
+            ['J1'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:0,b:_0;label=N',
+            ['K18'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:5,b:0',
+            ['K28'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;label=SE',
+            ['L1'] => 'offboard=revenue:yellow_30|blue_40|gray_50;path=a:0,b:_0;path=a:5,b:_0;label=N',
+            ['L19'] => 'offboard=revenue:yellow_20|blue_20|gray_20;path=a:2,b:_0',
+            ['L23'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;label=E',
+          },
+          gray: {
+            ['G4'] => 'path=a:4,b:5;path=a:5,b:0',
+            ['G14'] => 'path=a:1,b:5;path=a:4,b:5',
+            ['H9'] => 'town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;path=a:3,b:5',
+            ['K6'] => 'path=a:0,b:1;path=a:1,b:2',
+            ['K22'] => 'path=a:1,b:3',
+            ['L5'] => 'path=a:2,b:3',
+            %w[L11 L13] => 'path=a:1,b:2',
+            ['L25'] => 'path=a:1,b:2;path=a:1,b:3',
+            ['M2'] => 'town=revenue:10;path=a:1,b:_0;path=a:2,b:_0',
+          },
+          green: {
+            ['J5'] => 'path=a:1,b:2;upgrade=cost:50,terrain:river;label=FT',
+          },
+        }.freeze
+
+        HEXES_2P_EW = {
+          white: {
+            %w[B19 B25 C26 D27 G16 G20 G28 H21 I24 I26 I28 J19 J25 K20 K24] => '',
+            ['C18'] => 'border=edge:0,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            ['C20'] => 'border=edge:3,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            ['D19'] => 'border=edge:2,type:mountain,cost:50;border=edge:4,type:mountain,cost:50',
+            ['E18'] => 'border=edge:1,type:mountain,cost:50;border=edge:4,type:mountain,cost:50',
+            ['E20'] => 'border=edge:1,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            %w[F17 F25 H25] => 'border=edge:1,type:mountain,cost:50',
+            %w[F21 F23] => 'border=edge:2,type:mountain,cost:50',
+            ['K16'] => 'border=edge:3,type:mountain,cost:50',
+            ['H11'] => 'border=edge:5,type:mountain,cost:50',
+            ['I14'] => 'border=edge:1,type:mountain,cost:50;border=edge:2,type:mountain,cost:50;' \
+                       'border=edge:3,type:mountain,cost:50',
+            ['I12'] => 'border=edge:0,type:mountain,cost:50;border=edge:2,type:mountain,cost:50;' \
+                       'border=edge:4,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            %w[B21 I20 J15 K26] => 'city=revenue:0',
+            %w[E26 H19] => 'city=revenue:0;border=edge:4,type:mountain,cost:50',
+            ['K14'] => 'city=revenue:0;border=edge:0,type:mountain,cost:50',
+            %w[G22 H17 I16] => 'city=revenue:0;city=revenue:0;label=XX',
+            %w[C22 E24 I22] => 'city=revenue:0;city=revenue:0;label=OO',
+            ['I18'] => 'city=revenue:0;city=revenue:0;border=edge:1,type:mountain,cost:50;label=OO',
+            ['H15'] => 'city=revenue:0;city=revenue:0;border=edge:3,type:mountain,cost:50;border=edge:4,type:mountain,cost:50;' \
+                       'label=OO',
+            %w[D25 F19 F27 G18 G24 H23 J17 J21 J23 J27] => 'town=revenue:0',
+            ['D21'] => 'town=revenue:0;border=edge:2,type:mountain,cost:50;border=edge:4,type:mountain,cost:50;' \
+                       'border=edge:5,type:mountain,cost:50',
+            ['E22'] => 'town=revenue:0;border=edge:2,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            ['G26'] => 'town=revenue:0;border=edge:4,type:mountain,cost:50',
+            ['H13'] => 'town=revenue:0;border=edge:0,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            ['J13'] => 'town=revenue:0;border=edge:2,type:mountain,cost:50;border=edge:3,type:mountain,cost:50',
+          },
+          red: {
+            ['A20'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;label=W',
+            ['A26'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;label=SW',
+            ['D15'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;label=W',
+            ['D17'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:1,b:_0;path=a:5,b:_0;label=W',
+            ['E28'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=S',
+            ['F15'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;path=a:5,b:_0',
+            ['H27'] => 'offboard=revenue:yellow_30|green_40|blue_50|brown_60|gray_70;path=a:1,b:_0;path=a:2,b:_0;' \
+                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SE',
+            ['I10'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;label=N',
+            ['K12'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=N',
+            ['K18'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:5,b:0',
+            ['K28'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;label=SE',
+            ['L19'] => 'offboard=revenue:yellow_20|blue_20|gray_20;path=a:2,b:_0',
+            ['L23'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;label=E',
+          },
+          gray: {
+            ['B23'] => 'town=revenue:10;path=a:3,b:_0;path=a:4,b:_0',
+            ['E16'] => 'path=a:2,b:5',
+            ['G14'] => 'path=a:1,b:5;path=a:4,b:5',
+            ['J11'] => 'border=edge:0,type:mountain,cost:50;border=edge:1,type:mountain,cost:50;' \
+                       'junction;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1',
+            ['K22'] => 'path=a:1,b:3',
+            ['L13'] => 'path=a:1,b:2',
+            ['L25'] => 'path=a:1,b:2;path=a:1,b:3',
+          },
+          green: {
+            ['D23'] => 'path=a:2,b:4;path=a:5,b:0;upgrade=cost:50,terrain:river;label=S',
           },
         }.freeze
 

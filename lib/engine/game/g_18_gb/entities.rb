@@ -40,7 +40,7 @@ module Engine
             revenue: 15,
             desc: 'The SD gives a bonus of £10 for Middlesbrough (K14). The owner of the SD may use this bonus for any trains ' \
                   'owned by Companies that they control, from the time that the LM closes until the end of the game.',
-            sym: 'GN',
+            sym: 'SD',
             color: nil,
           },
           {
