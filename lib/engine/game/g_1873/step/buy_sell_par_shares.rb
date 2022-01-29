@@ -29,6 +29,13 @@ module Engine
             end
           end
 
+          def can_buy?(entity, bundle)
+            corp = bundle.corporation
+            return if corp.receivership? && !@game.can_restart?(corp, entity)
+
+            super
+          end
+
           def can_buy_multiple?(entity, corporation, _owner)
             return unless corporation.corporation?
 
