@@ -835,6 +835,7 @@ module Engine
           @current_turn = "OR#{round_num}"
           G1866::Round::Operating.new(self, [
             G1866::Step::StockTurnToken,
+            Engine::Step::HomeToken,
             G1866::Step::FirstTurnHousekeeping,
             G1866::Step::Convert,
             G1866::Step::Track,
@@ -1663,6 +1664,8 @@ module Engine
           end
 
           # Put down the home tokens of all the removed corporations
+          kps_in_play = true
+          fnr_in_play = true
           removed_corporations.each do |corp|
             Array(corp.coordinates).each do |coord|
               token = Engine::Token.new(corp, logo: "/logos/1866/#{corp.name}_REMOVED.svg",
@@ -1672,7 +1675,18 @@ module Engine
               place_starting_token(corp, token, coord)
             end
             @log << "#{corp.name} - #{corp.full_name} is removed from the game"
+            kps_in_play = false if corp.name == 'KPS'
+            fnr_in_play = false if corp.name == 'FNR'
           end
+
+          setup_corporations_captial('F22', 'KPS') if kps_in_play
+          setup_corporations_captial('L24', 'FNR') if fnr_in_play
+        end
+
+        def setup_corporations_captial(hex_name, corporation_name)
+          hex = hex_by_id(hex_name)
+          hex.tile.cities[0].remove_all_reservations!
+          hex.tile.reservations << corporation_by_id(corporation_name)
         end
 
         def sell_stock_turn_token(corporation)
