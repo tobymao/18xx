@@ -60,11 +60,10 @@ module View
           tds = [h(:td, @game.info_train_name(trains.first)),
                  h("td#{price_str_class}", @game.info_train_price(trains.first)),
                  h('td.right', "×#{trains.size}")]
-          tds << h('td.right', events) if events.size.positive?
+          tds << h('td.right', events) unless events.empty?
 
           h(:tr, tds)
         end
-        trs ||= 'None'
 
         h('div#upcoming_trains.card', [
           h('div.title', title_props, 'Upcoming Trains'),
