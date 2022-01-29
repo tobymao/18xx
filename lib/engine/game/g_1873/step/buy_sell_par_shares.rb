@@ -31,7 +31,7 @@ module Engine
 
           def can_buy?(entity, bundle)
             corp = bundle.corporation
-            return if corp.receivership? && !@game.can_restart?(corp, entity)
+            return @game.can_restart?(corp, entity) if corp.receivership?
 
             super
           end
