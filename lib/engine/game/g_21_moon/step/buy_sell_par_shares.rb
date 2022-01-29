@@ -37,13 +37,19 @@ module Engine
           def can_trade_any?(entity)
             @game.corporations.each do |corporation|
               next unless corporation.ipoed
-              return true if can_buy_shares?(entity, corporation.corporate_shares) && can_trade_for_share?(entity, corporation)
+              return true if can_trade_shares?(entity, corporation.corporate_shares) && can_trade_for_share_from?(entity, corporation)
             end
 
             false
           end
 
-          def can_trade_for_share?(entity, owner)
+          def can_trade_shares?(entity, shares)
+            return if shares.empty?
+
+            !@round.players_sold[entity][shares.first.corporation]
+          end
+
+          def can_trade_for_share_from?(entity, owner)
             @game.corporations.reject { |c| c == owner }.any? do |corporation|
               bundles = @game.bundles_for_corporation(entity, corporation)
               bundles.any? { |bundle| can_sell?(entity, bundle) }
@@ -51,10 +57,19 @@ module Engine
           end
 
           def can_buy?(entity, bundle)
-            return if bundle&.owner&.corporation? && bundle&.owner&.corporation&.owner != entity
-            return if bundle&.owner&.corporation? && !can_trade_for_share?(entity, bundle.corporation)
+            return can_trade?(entity, bundle) if bundle&.owner&.corporation?
 
             super
+          end
+
+          def can_trade?(entity, bundle)
+            return unless bundle&.buyable
+
+            corporation = bundle.corporation
+            return unless can_trade_for_share_from?(entity, corporation)
+
+            # ignore holding percent limit on trades
+            !@round.players_sold[entity][corporation]
           end
 
           def process_buy_shares(action)

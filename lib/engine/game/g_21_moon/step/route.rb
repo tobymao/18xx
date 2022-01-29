@@ -65,6 +65,11 @@ module Engine
             end
             choice_list.to_h
           end
+
+          def process_run_routes(action)
+            super
+            @game.update_end_bonuses(action.entity, action.routes)
+          end
         end
       end
     end

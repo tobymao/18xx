@@ -502,7 +502,7 @@ module View
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max]
         revenue = @game.format_revenue_currency(last_run.revenue)
         text, type =
-          case (last_run.dividend.is_a?(Engine::Action::Dividend) ? last_run.dividend.kind : 'no_run')
+          case (last_run.routes.empty? ? 'no_run' : last_run.dividend_kind)
           when 'no_run'
             ["[#{revenue}]", 'did not run']
           when 'withhold'

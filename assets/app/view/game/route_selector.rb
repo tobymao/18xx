@@ -292,14 +292,12 @@ module View
           padding: '0.2rem 0.5rem',
         }
 
-        revenue = begin
-          @game.format_revenue_currency(@game.routes_revenue(active_routes))
+        revenue_str = begin
+          @game.submit_revenue_str(active_routes, render_halts)
         rescue Engine::GameError
           '(Invalid Route)'
         end
 
-        render_halts ||= @game.respond_to?(:routes_subsidy) && @game.routes_subsidy(active_routes).positive?
-        subsidy = render_halts ? " + #{@game.format_currency(@game.routes_subsidy(active_routes))} (subsidy)" : ''
         buttons = [
           h('button.small', { on: { click: clear } }, 'Clear Train'),
           h('button.small', { on: { click: clear_all } }, 'Clear All'),
@@ -318,7 +316,7 @@ module View
         end
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
           h(:div, buttons),
-          h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue + subsidy),
+          h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue_str),
         ])
       end
 
