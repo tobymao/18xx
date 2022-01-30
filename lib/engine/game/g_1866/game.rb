@@ -1026,6 +1026,8 @@ module Engine
         end
 
         def purchasable_companies(entity = nil)
+          return [] unless corporation?(entity)
+
           @companies.select do |company|
             company.owner&.player? && entity != company.owner && entity.owner == company.owner &&
               !abilities(company, :no_buy)
