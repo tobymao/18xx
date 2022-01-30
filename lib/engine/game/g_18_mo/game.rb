@@ -42,6 +42,12 @@ module Engine
           'SLSF' => 'E13',
         }.freeze
 
+        # Two lays with one being an upgrade, second tile costs 20
+        TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: true, upgrade: :not_if_upgraded, cost: 20 },
+        ].freeze
+
         def operating_round(round_num)
           @round_num = round_num
           G1846::Round::Operating.new(self, [
@@ -198,12 +204,6 @@ module Engine
             visited_hexes[hex] = true
           end
         end
-
-        # Two lays with one being an upgrade, second tile costs 20
-        TILE_LAYS = [
-          { lay: true, upgrade: true },
-          { lay: true, upgrade: :not_if_upgraded, cost: 20 },
-        ].freeze
 
         def num_trains(train)
           num_players = @players.size

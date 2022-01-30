@@ -112,7 +112,6 @@ module Engine
              discount: 0.5,
              count: 1,
              from_owner: true,
-             closed_when_used_up: true,
            }],
          },
          {
