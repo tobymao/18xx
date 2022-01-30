@@ -346,22 +346,25 @@ module Engine
             ['I4'] => 'border=edge:2,type:mountain,cost:50;town=revenue:0',
           },
           red: {
-            ['A20'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;label=W',
-            ['A26'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;label=SW',
-            ['D15'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;label=W',
-            ['D17'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:1,b:_0;path=a:5,b:_0;label=W',
-            ['E28'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=S',
-            ['F7'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:4,b:_0;path=a:5,b:_0;label=W',
+            ['A20'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
+            ['A26'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;icon=image:18_gb/south;icon=image:18_gb/west',
+            ['D15'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
+            ['D17'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:1,b:_0;path=a:5,b:_0;icon=image:18_gb/west',
+            ['E28'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                       'icon=image:18_gb/south',
+            ['F7'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:4,b:_0;path=a:5,b:_0;icon=image:18_gb/west',
             ['F15'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;path=a:5,b:_0',
-            ['H1'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;label=N',
+            ['H1'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;icon=image:18_gb/north',
             ['H27'] => 'offboard=revenue:yellow_30|green_40|blue_50|brown_60|gray_70;path=a:1,b:_0;path=a:2,b:_0;' \
-                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SE',
-            ['J1'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:0,b:_0;label=N',
+                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:18_gb/south;icon=image:18_gb/east',
+            ['J1'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:0,b:_0;icon=image:18_gb/north',
             ['K18'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:5,b:0',
-            ['K28'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;label=SE',
-            ['L1'] => 'offboard=revenue:yellow_30|blue_40|gray_50;path=a:0,b:_0;path=a:5,b:_0;label=N',
+            ['K28'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south;' \
+                       'icon=image:18_gb/east',
+            ['L1'] => 'offboard=revenue:yellow_30|blue_40|gray_50;path=a:0,b:_0;path=a:5,b:_0;icon=image:18_gb/north;' \
+                      'icon=image:18_gb/east',
             ['L19'] => 'offboard=revenue:yellow_20|blue_20|gray_20;path=a:2,b:_0',
-            ['L23'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;label=E',
+            ['L23'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;icon=image:18_gb/east',
           },
           gray: {
             ['B23'] => 'town=revenue:10;path=a:3,b:_0;path=a:4,b:_0',
@@ -421,18 +424,20 @@ module Engine
             ['E24'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['E26'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:4,b:_0;path=a:5,b:_0;' \
                        'border=edge:4,type:mountain,cost:50',
-            ['E28'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:4,b:_0;label=S',
-            ['F7'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:4,b:_0;path=a:5,b:_0;label=W',
+            ['E28'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:4,b:_0;icon=image:18_gb/south',
+            ['F7'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:4,b:_0;path=a:5,b:_0;icon=image:18_gb/west',
             ['F15'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;path=a:5,b:_0',
-            ['H1'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;label=N',
+            ['H1'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;icon=image:18_gb/north',
             ['H27'] => 'offboard=revenue:yellow_30|green_40|blue_50|brown_60|gray_70;path=a:1,b:_0;path=a:2,b:_0;' \
-                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SE',
-            ['J1'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:0,b:_0;label=N',
+                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:18_gb/south;icon=image:18_gb/east',
+            ['J1'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:0,b:_0;icon=image:18_gb/north',
             ['K18'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:5,b:0',
-            ['K28'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;label=SE',
-            ['L1'] => 'offboard=revenue:yellow_30|blue_40|gray_50;path=a:0,b:_0;path=a:5,b:_0;label=N',
+            ['K28'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south;' \
+                       'icon=image:18_gb/east',
+            ['L1'] => 'offboard=revenue:yellow_30|blue_40|gray_50;path=a:0,b:_0;path=a:5,b:_0;icon=image:18_gb/north;' \
+                      'icon=image:18_gb/east',
             ['L19'] => 'offboard=revenue:yellow_20|blue_20|gray_20;path=a:2,b:_0',
-            ['L23'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;label=E',
+            ['L23'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;icon=image:18_gb/east',
           },
           gray: {
             ['G4'] => 'path=a:4,b:5;path=a:5,b:0',
@@ -483,20 +488,23 @@ module Engine
             ['J13'] => 'town=revenue:0;border=edge:2,type:mountain,cost:50;border=edge:3,type:mountain,cost:50',
           },
           red: {
-            ['A20'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;label=W',
-            ['A26'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;label=SW',
-            ['D15'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;label=W',
-            ['D17'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:1,b:_0;path=a:5,b:_0;label=W',
-            ['E28'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=S',
+            ['A20'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
+            ['A26'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;icon=image:18_gb/south;icon=image:18_gb/west',
+            ['D15'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
+            ['D17'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:1,b:_0;path=a:5,b:_0;icon=image:18_gb/west',
+            ['E28'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                       'icon=image:18_gb/south',
             ['F15'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;path=a:5,b:_0',
             ['H27'] => 'offboard=revenue:yellow_30|green_40|blue_50|brown_60|gray_70;path=a:1,b:_0;path=a:2,b:_0;' \
-                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SE',
-            ['I10'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;label=N',
-            ['K12'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=N',
+                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:18_gb/south;icon=image:18_gb/east',
+            ['I10'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;icon=image:18_gb/north',
+            ['K12'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;' \
+                       'icon=image:18_gb/north',
             ['K18'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:5,b:0',
-            ['K28'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;label=SE',
+            ['K28'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south;' \
+                       'icon=image:18_gb/east',
             ['L19'] => 'offboard=revenue:yellow_20|blue_20|gray_20;path=a:2,b:_0',
-            ['L23'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;label=E',
+            ['L23'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;icon=image:18_gb/east',
           },
           gray: {
             ['B23'] => 'town=revenue:10;path=a:3,b:_0;path=a:4,b:_0',
