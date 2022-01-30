@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
+require_relative '../base'
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'scenarios'
 require_relative 'trainphases'
-require_relative '../base'
 
 module Engine
   module Game
@@ -17,7 +17,7 @@ module Engine
         include Scenarios
         include TrainPhases
 
-        GAME_END_CHECK = { final_train: :current_or, stock_market: :current_or }.freeze
+        GAME_END_CHECK = { final_train: :current_or, stock_marketMUST_BID_INCREMENT: :current_or }.freeze
 
         BANKRUPTCY_ALLOWED = false
 
@@ -26,6 +26,10 @@ module Engine
         CURRENCY_FORMAT_STR = '£%d'
 
         PRESIDENT_SALES_TO_MARKET = true
+
+        MIN_BID_INCREMENT = 5
+        MUST_BID_INCREMENT_MULTIPLE = true
+        ONLY_HIGHEST_BID_COMMITTED = true
 
         CAPITALIZATION = :full
 
@@ -47,9 +51,17 @@ module Engine
 
         MARKET_SHARE_LIMIT = 100
 
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+          unlimited: 'May buy shares from IPO in excess of 60%',
+        )
+
         MARKET = [
           %w[50o 55o 60o 65o 70p 75p 80p 90p 100p 115 130 160 180 200 220 240 265 290 320 350e 380e],
         ].freeze
+
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
+          unlimited: :yellow,
+        )
 
         def init_scenario(optional_rules)
           num_players = @players.size
@@ -118,6 +130,17 @@ module Engine
           players.each do |player|
             bank.spend(cash, player)
           end
+        end
+
+        def required_bids_to_pass
+          @scenario['required_bids']
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G18GB::Step::WaterfallAuction,
+          ])
         end
 
         def operating_round(round_num)
