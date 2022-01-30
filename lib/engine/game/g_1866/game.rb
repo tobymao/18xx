@@ -1099,7 +1099,7 @@ module Engine
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
           price = corporation.share_price.price
-          was_president = corporation.president?(bundle.owner)
+          was_president = corporation.president?(bundle.owner) || bundle.owner == corporation
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           if was_president
             bundle.num_shares.times { @stock_market.move_left(corporation) }
