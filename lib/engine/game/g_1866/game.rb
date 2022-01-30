@@ -58,11 +58,11 @@ module Engine
         SOLD_OUT_INCREASE = false
 
         MARKET = [
-          %w[0 10 20 30 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
+          %w[0c 10 20 30 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
              200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
-          %w[0 10 20 30 40 45 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
+          %w[0c 10 20 30 40 45 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
              200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
-          %w[0 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
+          %w[0c 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
              200pxzw 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
           %w[120P 100P 75P 75P 75P 120P 80P 80P 80P 50P],
         ].freeze
@@ -95,7 +95,8 @@ module Engine
                                                             par: :yellow,
                                                             par_1: :green,
                                                             par_2: :brown,
-                                                            par_3: :gray).freeze
+                                                            par_3: :gray,
+                                                            close: :red).freeze
 
         PHASES = [
           {
@@ -618,6 +619,8 @@ module Engine
 
         attr_reader :game_end_triggered_corporation, :game_end_triggered_round
 
+        def action_processed(_action); end
+
         def buy_train(operator, train, price = nil)
           super
 
@@ -750,11 +753,11 @@ module Engine
               player = corporation.owner
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
                       " have to contribute #{format_currency(corporation_cash.abs)}"
-              player.cash -= corporation_cash.abs
-              corporation.cash = 0
+              player_spend(player, corporation_cash.abs)
+              corporation.spend(corporation.cash, @bank)
             else
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(game_end_loan)}"
-              corporation.cash -= game_end_loan
+              corporation.spend(game_end_loan, @bank)
             end
             corporation.loans.clear
           end
@@ -950,6 +953,8 @@ module Engine
             G1866::Step::LoanInterestPayment,
             G1866::Step::LoanRepayment,
             G1866::Step::IssueShares,
+            G1866::Step::AcquireCompany,
+            G1866::Step::CloseCorporation,
           ], round_num: round_num)
         end
 
@@ -1018,6 +1023,13 @@ module Engine
             ['Sale made by non-director, or for each loan taken', '1 ↓, or 1 ← if cannot go down'],
             ['For each loan repaid', '1 ↑, or 1 → and 1 ↓ if cannot go up'],
           ]
+        end
+
+        def purchasable_companies(entity = nil)
+          @companies.select do |company|
+            company.owner&.player? && entity != company.owner && entity.owner == company.owner &&
+              !abilities(company, :no_buy)
+          end
         end
 
         def redeemable_shares(entity)
@@ -1314,6 +1326,45 @@ module Engine
           return false unless corporation
 
           corporation.type == :share_5 || corporation.type == :share_10
+        end
+
+        def corporation_closes(corporation)
+          @log << "#{corporation.name} have share price of 0, and will close"
+
+          if corporation.loans.size.positive?
+            loan = corporation.loans.size * loan_value
+            corporation_cash = corporation.cash - loan
+            loan_str = "#{corporation.name} have loans of value #{format_currency(loan)}."
+            if corporation_cash.negative?
+              player = corporation.owner
+              @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
+                      " have to contribute #{format_currency(corporation_cash.abs)}"
+              player_spend(player, corporation_cash.abs)
+              corporation.spend(corporation.cash, @bank)
+            else
+              @log << "#{loan_str} #{corporation.name} pays #{format_currency(loan)}"
+              corporation.spend(loan, @bank)
+            end
+            corporation.loans.clear
+          end
+
+          tokens = []
+          corporation.tokens.each do |token|
+            next unless token.used
+
+            if token.price.zero?
+              tokens << token
+            else
+              token.remove!
+            end
+          end
+          corporation.close!
+          corporation = reset_corporation(corporation)
+          tokens.each do |token|
+            city = token.city
+            token.remove!
+            city.place_token(corporation, corporation.next_token, free: true, check_tokenable: false)
+          end
         end
 
         def corporation_token_rights!(corporation)
