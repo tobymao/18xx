@@ -72,6 +72,7 @@ module Engine
                                               par_3: 'Gray phase (8/10) par').freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
           'can_convert_corporation' => ['Convert Corporation', 'Corporations can convert from 5 shares to 10 shares.'],
           'can_convert_major' => ['Convert Major National', 'President of G1 and I1 can form Germany or Italy Major '\
                                                             'National.'],
@@ -97,7 +98,7 @@ module Engine
             train_limit: { minor_national: 1, national: 1, share_5: 3, share_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
-            status: %w[can_convert_corporation can_convert_major],
+            status: %w[can_buy_trains can_convert_corporation can_convert_major],
           },
           {
             name: '4',
@@ -105,7 +106,7 @@ module Engine
             train_limit: { minor_national: 1, national: 1, share_5: 3, share_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
-            status: %w[can_convert_corporation can_convert_major],
+            status: %w[can_buy_trains can_convert_corporation can_convert_major],
           },
           {
             name: '5',
@@ -113,7 +114,7 @@ module Engine
             train_limit: { minor_national: 1, national: 1, share_5: 2, share_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
-            status: %w[can_convert_corporation],
+            status: %w[can_buy_trains can_convert_corporation],
           },
           {
             name: '6',
@@ -121,7 +122,7 @@ module Engine
             train_limit: { minor_national: 1, national: 1, share_5: 2, share_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
-            status: %w[can_convert_corporation],
+            status: %w[can_buy_trains can_convert_corporation],
           },
           {
             name: '8',
@@ -129,7 +130,7 @@ module Engine
             train_limit: { minor_national: 1, national: 1, share_5: 1, share_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
-            status: %w[can_convert_corporation],
+            status: %w[can_buy_trains can_convert_corporation],
           },
           {
             name: '10',
@@ -137,7 +138,7 @@ module Engine
             train_limit: { minor_national: 1, national: 1, share_5: 1, share_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
-            status: %w[can_convert_corporation],
+            status: %w[can_buy_trains can_convert_corporation],
           },
         ].freeze
 
@@ -201,7 +202,7 @@ module Engine
                 'type' => 'green_ferries',
               },
               {
-                'type' => 'infrastructure_h',
+                'type' => 'infrastructure_p',
               },
             ],
           },
@@ -224,7 +225,7 @@ module Engine
             obsolete_on: '8',
             events: [
               {
-                'type' => 'infrastructure_p',
+                'type' => 'infrastructure_h',
               },
             ],
           },
@@ -393,13 +394,13 @@ module Engine
             reserved: true,
           },
           {
-            name: 'H',
+            name: 'P',
             distance: 99,
             num: 6,
             price: 120,
           },
           {
-            name: 'P',
+            name: 'H',
             distance: 99,
             num: 6,
             price: 160,
@@ -601,6 +602,18 @@ module Engine
           'ISR' => %w[G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI
                       SBB GL NRS ZPB MZA],
         }.freeze
+
+        def buy_train(operator, train, price = nil)
+          super
+
+          train = @depot.upcoming.first
+          return if local_train?(train)
+
+          next_train = @depot.upcoming[1]
+          return if train.name == next_train.name
+
+          @depot.reclaim_train(train)
+        end
 
         def can_par?(corporation, parrer)
           return false if corporation.id == self.class::GERMANY_NATIONAL && corporation_by_id('G1').owner != parrer
@@ -1083,6 +1096,10 @@ module Engine
           self.class::TILE_LAYS
         end
 
+        def timeline
+          ['After the 4th train in each phase, all trains of the next phase will be available for purchase.']
+        end
+
         def train_help(_entity, runnable_trains, _routes)
           return [] if runnable_trains.empty?
 
@@ -1263,6 +1280,7 @@ module Engine
 
           share_price = forced_formation_par_prices(corporation).last
           @stock_market.set_par(corporation, share_price)
+          @log << "#{corporation.name} #{ipo_verb(corporation)} at #{format_currency(share_price.price)}"
 
           # Find the share holders to give a share, then close the minor
           minors.each do |m|
@@ -1298,12 +1316,12 @@ module Engine
           # Find the president and give player the share, and spend the money. The player can go into debt
           player = corporation.par_via_exchange.owner
           share = corporation.ipo_shares.first
+          @log << "#{corporation.name} #{ipo_verb(corporation)} at #{format_currency(share_price.price)}"
           if player
             @share_pool.transfer_shares(share.to_bundle, player, price: 0)
             player_spend(player, share_price.price)
-          else
-            corporation.ipoed = true
           end
+          corporation.ipoed = true
 
           # Move the rest of the shares into the market
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
@@ -1314,7 +1332,7 @@ module Engine
 
         def forced_formation_par_prices(corporation)
           par_type = phase_par_type(corporation)
-          par_prices = @stock_market.par_prices.select do |p|
+          par_prices = par_prices_sorted.select do |p|
             p.types.include?(par_type) && can_par_share_price?(p, corporation)
           end
           par_prices.reject! { |p| p.price == self.class::MAX_PAR_VALUE } if par_prices.size > 1
@@ -1460,6 +1478,13 @@ module Engine
           end
 
           (national_shares.keys.map(&:id) + corporation_rights).uniq
+        end
+
+        def par_prices_sorted
+          @stock_market.par_prices.sort_by do |p|
+            r, = p.coordinates
+            [p.price, -r]
+          end.reverse
         end
 
         def payoff_loan(entity, loan)
