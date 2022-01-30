@@ -28,7 +28,7 @@ module Engine
         }.freeze
         GAME_END_REASONS_TIMING_TEXT = {
           three_rounds: 'Third OR after the current OR',
-          current_round: 'End of the current round',
+          current_round: 'End of the current OR',
         }.freeze
 
         BANKRUPTCY_ALLOWED = false
