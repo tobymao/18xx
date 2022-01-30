@@ -121,7 +121,7 @@ module View
         or_history(@game.all_corporations).map do |turn, round|
           if (op_history = corporation.operating_history[[turn, round]])
             revenue_text, alpha =
-              case (op_history.dividend.is_a?(Engine::Action::Dividend) ? op_history.dividend.kind : 'withhold')
+              case op_history.dividend_kind
               when 'withhold'
                 ["[#{op_history.revenue}]", 0.5]
               when 'half'

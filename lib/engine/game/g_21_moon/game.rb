@@ -36,7 +36,7 @@ module Engine
                         cream: '#fffdd0',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '%dc'
+        CURRENCY_FORMAT_STR = '₡%d'
         BANK_CASH = 12_000
         CERT_LIMIT = { 3 => 15, 4 => 12, 5 => 10 }.freeze
         STARTING_CASH = { 3 => 540, 4 => 410, 5 => 340 }.freeze
@@ -176,6 +176,15 @@ module Engine
 
         LAST_OR = 11
         SP_HEX = 'E9'
+        T_HEX = 'F8'
+        T_BONUS = 30
+        RIFT_BONUS = 60
+        EW_BONUS = 100
+        NE_HEXES = %w[K1 L2 L4].freeze
+        SE_HEXES = %w[L14 M11 M13].freeze
+        NW_HEXES = %w[A3 A5 B2].freeze
+        SW_HEXES = %w[B14 C15].freeze
+        END_BONUS_VALUE = 50
 
         ICON_PREFIX = '21Moon/'
 
@@ -253,6 +262,7 @@ module Engine
           @train_base = {}
           @or = 0
           @three_or_round = false
+          @end_bonuses = Hash.new { |h, k| h[k] = [] }
         end
 
         def transfer_share(share, new_owner)
@@ -368,11 +378,11 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            # G21Moon::Step::Bankrupt,
+            Engine::Step::Bankrupt,
             G21Moon::Step::Track,
             G21Moon::Step::Token,
             G21Moon::Step::Route,
-            Engine::Step::Dividend,
+            G21Moon::Step::Dividend,
             G21Moon::Step::BuyTrain,
           ], round_num: round_num)
         end
@@ -417,6 +427,30 @@ module Engine
           @corporations.select(&:operated?)
         end
 
+        def route_bonus(stops)
+          bonus = { revenue: 0 }
+
+          east = stops.find { |stop| stop.groups.include?('E') }
+          west = stops.find { |stop| stop.groups.include?('W') }
+          terminal = stops.find { |stop| stop.hex.id == T_HEX }
+
+          if east && west
+            bonus[:revenue] += EW_BONUS
+            bonus[:description] = 'E/W'
+          end
+
+          if east && terminal
+            bonus[:revenue] += T_BONUS
+            if bonus[:description]
+              bonus[:description] += '+Term'
+            else
+              bonus[:description] = 'Term'
+            end
+          end
+
+          bonus
+        end
+
         def update_icon(old_icon, new_tile)
           @icons[icon_base(old_icon)][new_tile.color]
         end
@@ -434,7 +468,16 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          stops.sum { |stop| stop.route_revenue(route.phase, route.train) + icon_revenue(stop) }
+          stops.sum do |stop|
+            stop.route_revenue(route.phase, route.train) + icon_revenue(stop)
+          end + route_bonus(stops)[:revenue]
+        end
+
+        def revenue_str(route)
+          str = super
+          bonus = route_bonus(route.stops)[:description]
+          str += " + #{bonus}" if bonus
+          str
         end
 
         def bank_sort(corporations)
@@ -451,6 +494,42 @@ module Engine
 
         def route_trains(entity)
           bc_trains(entity) + sp_trains(entity)
+        end
+
+        def visited_base?(entity, base, route)
+          (base == :sp && route.visited_stops.any? { |s| s.hex.id == SP_HEX }) ||
+            (base == :bc && route.visited_stops.any? { |s| s.hex.id != SP_HEX && s.city? && s.tokened_by?(entity) })
+        end
+
+        def intersects?(route_a, route_b)
+          !(route_a.visited_stops & route_b.visited_stops).empty?
+        end
+
+        def check_other(route)
+          # this route must visit corresponding base, OR it must
+          # intersect with a route that does
+          this_train = route.train
+          base = @train_base[this_train]
+          return if visited_base?(this_train.owner, base, route)
+
+          other_route = route.routes.find { |r| r.train != this_train && @train_base[r.train] == base }
+          return if other_route && visited_base?(this_train.owner, base, other_route) && intersects?(route, other_route)
+
+          raise GameError, "Must visit #{base.to_s.upcase}" unless other_route
+
+          raise GameError, "Must visit #{base.to_s.upcase} or intersect with a route that does"
+        end
+
+        def sp_revenue(routes)
+          routes_revenue(routes.select { |r| @train_base[r.train] == :sp })
+        end
+
+        def bc_revenue(routes)
+          routes_revenue(routes.select { |r| @train_base[r.train] == :bc })
+        end
+
+        def submit_revenue_str(routes, _render_halts)
+          "#{format_revenue_currency(sp_revenue(routes))} (+#{format_revenue_currency(bc_revenue(routes))} Withhold)"
         end
 
         def assign_base(train, base)
@@ -473,6 +552,26 @@ module Engine
 
         def train_name(train)
           "#{train.name} (#{@train_base[train].to_s.upcase})"
+        end
+
+        def update_end_bonuses(corp, routes)
+          offboards = {}
+          routes.each do |r|
+            r.hexes.each do |h|
+              hid = h.id
+              offboards['NE'] = true if NE_HEXES.include?(hid)
+              offboards['SE'] = true if SE_HEXES.include?(hid)
+              offboards['NW'] = true if NW_HEXES.include?(hid)
+              offboards['SW'] = true if SW_HEXES.include?(hid)
+            end
+          end
+
+          offboards.keys.each do |k|
+            unless @end_bonuses[corp].include?(k)
+              @end_bonuses[corp] << k
+              @log << "#{corp.name} receives '#{k}' end game bonus token"
+            end
+          end
         end
 
         def timeline
@@ -524,6 +623,18 @@ module Engine
 
         def ipo_name(_corp)
           'IPO'
+        end
+
+        def status_str(corp)
+          return if @end_bonuses[corp].empty?
+
+          "End game bonus#{@end_bonuses[corp].one? ? '' : 'es'}: #{@end_bonuses[corp].join(',')}"
+        end
+
+        def player_value(player)
+          value = super
+          value += shares.sum { |s| @end_bonuses[s.corporation].size * END_BONUS_VALUE } if @finished
+          value
         end
       end
     end

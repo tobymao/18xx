@@ -267,12 +267,16 @@ module Engine
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:yellow_20|green_40|brown_50|gray_10,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=T',
+            'code' => 'city=revenue:yellow_30|green_30|brown_40|gray_10,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=T;frame=color:#ffa500',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
 
         LOCATION_NAMES = {
+          'A3' => 'Space Station',
+          'B14' => 'Tourism Colony',
+          'L2' => 'Solar Farm',
+          'M13' => 'Water Farm',
           'F8' => 'Terminal',
         }.freeze
 
@@ -300,19 +304,19 @@ module Engine
             %w[E9] => 'city=revenue:20,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
           purple: {
-            %w[B2] => 'offboard=revenue:20,groups:NW;path=a:0,b:_0',
-            %w[A3] => 'offboard=revenue:20,groups:NW;path=a:5,b:_0',
-            %w[A5] => 'offboard=revenue:20,groups:NW;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            %w[B14] => 'offboard=revenue:20,groups:SW;path=a:4,b:_0',
-            %w[C15] => 'offboard=revenue:20,groups:SW;path=a:3,b:_0;path=a:4,b:_0',
+            %w[B2] => 'offboard=revenue:20,groups:W;path=a:0,b:_0',
+            %w[A3] => 'offboard=revenue:20,groups:W;path=a:5,b:_0',
+            %w[A5] => 'offboard=revenue:20,groups:W;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            %w[B14] => 'offboard=revenue:20,groups:W;path=a:4,b:_0',
+            %w[C15] => 'offboard=revenue:20,groups:W;path=a:3,b:_0;path=a:4,b:_0',
           },
           orange: {
-            %w[K1] => 'offboard=revenue:20,groups:NE;path=a:0,b:_0',
-            %w[L2] => 'offboard=revenue:20,groups:NE;path=a:1,b:_0',
-            %w[L4] => 'offboard=revenue:20,groups:NE;path=a:2,b:_0',
-            %w[M11] => 'offboard=revenue:20,groups:SE;path=a:1,b:_0',
-            %w[M13] => 'offboard=revenue:20,groups:SE;path=a:2,b:_0',
-            %w[L14] => 'offboard=revenue:20,groups:SE;path=a:2,b:_0;path=a:3,b:_0',
+            %w[K1] => 'offboard=revenue:20,groups:E;path=a:0,b:_0',
+            %w[L2] => 'offboard=revenue:20,groups:E;path=a:1,b:_0',
+            %w[L4] => 'offboard=revenue:20,groups:E;path=a:2,b:_0',
+            %w[M11] => 'offboard=revenue:20,groups:E;path=a:1,b:_0',
+            %w[M13] => 'offboard=revenue:20,groups:E;path=a:2,b:_0',
+            %w[L14] => 'offboard=revenue:20,groups:E;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
