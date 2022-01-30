@@ -1441,6 +1441,10 @@ module Engine
           warnings
         end
 
+        def pullman_train?(_train)
+          false
+        end
+
         def revenue_for(route, stops)
           revenue = super
 
