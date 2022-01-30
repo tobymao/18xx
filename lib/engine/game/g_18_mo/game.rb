@@ -18,7 +18,7 @@ module Engine
 
         ORANGE_GROUP = [
         'Pool Share',
-        'Steamboat Company',
+        'Extra Yellow Tile',
         'Extra Green Tile',
         'Revenue Change',
         ].freeze
@@ -33,44 +33,20 @@ module Engine
         GREEN_GROUP = %w[ATSF MKT CBQ RI MP SSW SLSF].freeze
 
         REMOVED_CORP_SECOND_TOKEN = {
-          'ATSF' => 'B8',
+          'ATSF' => 'H4',
           'SSW' => 'J8',
           'MKT' => 'E9',
           'RI' => 'C7',
-          'MP' => 'C13',
+          'MP' => 'D8',
           'CBQ' => 'C7',
-          'SLSF' => 'E9',
+          'SLSF' => 'E13',
         }.freeze
-
-        STEAMBOAT_HEXES = %w[].freeze
-
-        def steamboat
-          @steamboat ||= company_by_id('SC')
-        end
-
-        def block_for_steamboat?
-          false
-        end
-
-        LSL_HEXES = %w[].freeze
-        LSL_ICON = 'sbl'
-        LSL_ID = 'SBL'
-
-        LITTLE_MIAMI_HEXES = [].freeze
-
-        MEAT_HEXES = %w[].freeze
-        STEAMBOAT_HEXES = %w[].freeze
-        BOOMTOWN_HEXES = [].freeze
-
-        MEAT_REVENUE_DESC = 'Citrus'
 
         def operating_round(round_num)
           @round_num = round_num
           G1846::Round::Operating.new(self, [
             G1846::Step::Bankrupt,
-            G1846::Step::Assign,
             Engine::Step::SpecialToken,
-            G1846::Step::SpecialTrack,
             G1846::Step::BuyCompany,
             G1846::Step::IssueShares,
             G1846::Step::TrackAndToken,
@@ -144,7 +120,7 @@ module Engine
             name: '2Y',
             distance: 2,
             price: 100,
-            obsolete_on: '4E',
+            obsolete_on: '3E',
             rusts_on: '7',
             variants: [
               {
@@ -158,7 +134,7 @@ module Engine
             name: '3G',
             distance: 3,
             price: 180,
-            obsolete_on: '6E',
+            obsolete_on: '5E',
             variants: [
               {
                 name: '4G',
@@ -168,8 +144,8 @@ module Engine
             ],
           },
           {
-            name: '4E',
-            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 99 }],
+            name: '3E',
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 99 }],
             price: 300,
             obsolete_on: '6E',
           },
@@ -187,8 +163,8 @@ module Engine
             events: [{ 'type' => 'close_companies' }],
           },
           {
-            name: '6E',
-            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 99 }],
+            name: '5E',
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99 }],
             price: 600,
           },
           {
@@ -237,7 +213,7 @@ module Engine
             two_player? ? 7 : num_players + 4
           when '3G'
             two_player? ? 5 : num_players
-          when '4E', '6E'
+          when '3E', '5E'
             1
           when '5'
             two_player? ? 3 : num_players - 1
@@ -252,14 +228,18 @@ module Engine
 
           case group
           when ORANGE_GROUP, BLUE_GROUP
-            6 - @players.size
+            @players.size == 2 ? 1 : 2
           when GREEN_GROUP
-            5 - @players.size
+            2
           end
         end
 
         def corporation_removal_groups
           [GREEN_GROUP]
+        end
+
+        def num_pass_companies(_players)
+          0
         end
       end
     end

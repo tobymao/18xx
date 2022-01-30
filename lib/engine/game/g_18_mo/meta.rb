@@ -12,9 +12,10 @@ module Engine
         DEPENDS_ON = '1846'
 
         GAME_DESIGNER = 'Scott Petersen'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18NewEnglandNorth'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MO'
+        GAME_LOCATION = 'Missouri, USA'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/18NewEnglandNorth'
+        GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/18MO'
 
         PLAYER_RANGE = [2, 5].freeze
       end

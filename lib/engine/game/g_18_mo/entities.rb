@@ -52,11 +52,11 @@ module Engine
                color: nil,
              },
              {
-               name: 'Steamboat Company',
+               name: 'Extra Yellow Tile',
                value: 40,
                revenue: 15,
                desc: 'Lay an extra yellow tile for free one time.',
-               sym: 'SC',
+               sym: 'EXY',
                abilities: [{
                  type: 'tile_lay',
                  owner_type: 'corporation',
