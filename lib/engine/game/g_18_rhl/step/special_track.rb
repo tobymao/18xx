@@ -10,15 +10,26 @@ module Engine
         class SpecialTrack < Engine::Step::SpecialTrack
           include LayTileChecks
 
-          def abilities(entity, **_kwargs)
-            return unless @game.round.active_step.respond_to?(:process_lay_tile)
-
+          def abilities(entity, **kwargs, &block)
+            return unless entity.company?
             # Restrict private No2 and No4 to not be used in yellow phase
-            return if @game.phase.name == '2' &&
+            return if (@game.phase.name == '2' || @game.phase.name == '3') &&
                      (entity == @game.konzession_essen_osterath ||
                       entity == @game.trajektanstalt)
+            # Do not allow special tile lay after train buys (to avoid exploits)
+            return if @round.bought_trains.include?(@game.current_entity)
 
-            super
+            %i[tile_lay teleport].each do |type|
+              ability = @game.abilities(
+                              entity,
+                              type,
+                              time: :owning_player_or_turn,
+                              **kwargs,
+                              &block
+                            )
+              return ability if ability && !ability.used?
+            end
+            nil
           end
 
           def legal_tile_rotations(entity, hex, tile)
