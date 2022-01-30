@@ -502,9 +502,7 @@ module Engine
         end
 
         def intersects?(route_a, route_b)
-          visits_a = route_a.visited_stops
-          visits_b = route_b.visited_stops
-          visits_a.any? { |s| visits_b.include?(s) }
+          !(route_a.visited_stops & route_b.visited_stops).empty?
         end
 
         def check_other(route)
