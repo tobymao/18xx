@@ -375,13 +375,11 @@ module View
           children = []
           props = {
             style: {
-              display: 'flex',
-              flexDirection: 'row',
               marginBottom: '1rem',
             },
           }
-          children << h(:div, [h(Bank, game: @game)].compact)
-          children << h(:div, [h(TrainSchedule, game: @game)])
+          children << h(Bank, game: @game)
+          children << h(TrainSchedule, game: @game)
           h(:div, props, children)
         end
       end
