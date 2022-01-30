@@ -170,8 +170,8 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 3,
-            price: 5,
+            num: 20,
+            price: 50,
             obsolete_on: '3',
             variants: [
               {
@@ -188,7 +188,7 @@ module Engine
                     'visit' => 99,
                   },
                 ],
-                price: 10,
+                price: 100,
                 obsolete_on: '4',
               },
             ],
@@ -207,8 +207,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 2,
-            price: 2,
+            num: 5,
+            price: 200,
             obsolete_on: '6',
             events: [
               {
@@ -233,8 +233,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 2,
-            price: 3,
+            num: 5,
+            price: 300,
             obsolete_on: '8',
             events: [
               {
@@ -256,8 +256,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 2,
-            price: 4,
+            num: 5,
+            price: 450,
             obsolete_on: '10',
             events: [
               {
@@ -286,7 +286,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 4,
+                price: 450,
                 obsolete_on: '10',
               },
             ],
@@ -305,8 +305,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 2,
-            price: 6,
+            num: 5,
+            price: 600,
             variants: [
               {
                 name: '4E',
@@ -323,7 +323,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 6,
+                price: 600,
               },
             ],
           },
@@ -341,8 +341,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 2,
-            price: 8,
+            num: 5,
+            price: 800,
             variants: [
               {
                 name: '5E',
@@ -359,7 +359,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 8,
+                price: 800,
               },
             ],
           },
@@ -378,7 +378,7 @@ module Engine
               },
             ],
             num: 20,
-            price: 10,
+            price: 1000,
             variants: [
               {
                 name: '6E',
@@ -395,7 +395,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 10,
+                price: 1000,
               },
             ],
           },
