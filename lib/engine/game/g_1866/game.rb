@@ -170,8 +170,8 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 20,
-            price: 50,
+            num: 3,
+            price: 5,
             obsolete_on: '3',
             variants: [
               {
@@ -188,7 +188,7 @@ module Engine
                     'visit' => 99,
                   },
                 ],
-                price: 100,
+                price: 10,
                 obsolete_on: '4',
               },
             ],
@@ -207,8 +207,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
-            price: 200,
+            num: 2,
+            price: 2,
             obsolete_on: '6',
             events: [
               {
@@ -233,8 +233,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
-            price: 300,
+            num: 2,
+            price: 3,
             obsolete_on: '8',
             events: [
               {
@@ -256,8 +256,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
-            price: 450,
+            num: 2,
+            price: 4,
             obsolete_on: '10',
             events: [
               {
@@ -286,7 +286,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 450,
+                price: 4,
                 obsolete_on: '10',
               },
             ],
@@ -305,8 +305,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
-            price: 600,
+            num: 2,
+            price: 6,
             variants: [
               {
                 name: '4E',
@@ -323,7 +323,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 600,
+                price: 6,
               },
             ],
           },
@@ -341,8 +341,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
-            price: 800,
+            num: 2,
+            price: 8,
             variants: [
               {
                 name: '5E',
@@ -359,7 +359,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 800,
+                price: 8,
               },
             ],
           },
@@ -378,7 +378,7 @@ module Engine
               },
             ],
             num: 20,
-            price: 1000,
+            price: 10,
             variants: [
               {
                 name: '6E',
@@ -395,7 +395,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 1000,
+                price: 10,
               },
             ],
           },
@@ -748,13 +748,13 @@ module Engine
             loan_str = "#{corporation.name} loans double in value (#{format_currency(game_end_loan)})."
             if corporation_cash.negative?
               player = corporation.owner
-              player.cash -= corporation_cash.abs
-              corporation.cash = 0
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
                       " have to contribute #{format_currency(corporation_cash.abs)}"
+              player.cash -= corporation_cash.abs
+              corporation.cash = 0
             else
-              corporation.cash -= game_end_loan
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(game_end_loan)}"
+              corporation.cash -= game_end_loan
             end
             corporation.loans.clear
           end
