@@ -749,11 +749,14 @@ module Engine
             if corporation_cash.negative?
               player = corporation.owner
               player.cash -= corporation_cash.abs
+              corporation.cash = 0
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
                       " have to contribute #{format_currency(corporation_cash.abs)}"
             else
+              corporation.cash -= game_end_loan
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(game_end_loan)}"
             end
+            corporation.loans.clear
           end
           super
         end
