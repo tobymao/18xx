@@ -10,6 +10,7 @@ module View
     include Lib::WhatsThis::AutoRoute
 
     needs :mode, default: :multi, store: true
+    needs :min_players, default: 3, store: true
     needs :num_players, default: 3, store: true
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
@@ -122,8 +123,10 @@ module View
                                    container_style: @label_style, label_style: @label_style,
                                    input_style: { maxWidth: '90vw' }, children: game_options),
         render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
-        render_input(
-          @mode == :hotseat ? 'Players' : 'Max Players',
+      ]
+      if @mode == :hotseat
+        inputs << render_input(
+          'Players',
           id: :max_players,
           type: :number,
           attrs: {
@@ -135,8 +138,37 @@ module View
           input_style: { width: '3.5rem' },
           label_style: @label_style,
           on: { input: -> { update_inputs } },
-        ),
-      ]
+        )
+      else
+        inputs << render_input(
+          'Min Players',
+          id: :min_players,
+          type: :number,
+          attrs: {
+            min: @min_p.values.first,
+            max: @num_players,
+            value: @min_players,
+            required: true,
+          },
+          input_style: { width: '3.5rem' },
+          label_style: @label_style,
+          on: { input: -> { update_inputs } },
+        )
+        inputs << render_input(
+          'Max Players',
+          id: :max_players,
+          type: :number,
+          attrs: {
+            min: @min_p.values.first,
+            max: @max_p.values.first,
+            value: @num_players,
+            required: true,
+          },
+          input_style: { width: '3.5rem' },
+          label_style: @label_style,
+          on: { input: -> { update_inputs } },
+        )
+      end
 
       @game_variants = selected_game.game_variants
       @visible_optional_rules = selected_game_or_variant::OPTIONAL_RULES.reject { |rule| filtered_rule?(rule) }
@@ -415,13 +447,21 @@ module View
     def update_inputs
       title = selected_game_or_variant.title
 
-      range = Native(@inputs[:max_players]).elm
-      unless range.value == ''
-        min = range.min = @min_p[title]
-        max = range.max = @max_p[title]
-        val = range.value.to_i
-        range.value = (min..max).cover?(val) ? val : max
-        store(:num_players, range.value.to_i, skip: true)
+      max_el = Native(@inputs[:max_players]).elm
+      unless max_el.value == ''
+        min = max_el.min = @min_p[title]
+        max = max_el.max = @max_p[title]
+        val = max_el.value.to_i
+        max_el.value = (min..max).cover?(val) ? val : max
+        store(:num_players, max_el.value.to_i, skip: true)
+      end
+      min_el = Native(@inputs[:min_players]).elm
+      unless min_el.value == ''
+        min = min_el.min = @min_p[title]
+        max = @num_players
+        val = min_el.value.to_i
+        min_el.value = (min..max).cover?(val) ? val : max
+        store(:min_players, min_el.value.to_i, skip: true)
       end
 
       store(:selected_game, selected_game, skip: true)

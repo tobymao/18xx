@@ -33,6 +33,7 @@ Sequel.migration do
       String :description, null: false
 
       String :title, null: false
+      Integer :min_players, null: false, default: 3
       Integer :max_players, null: false, default: 6
       jsonb :settings, null: false, default: '{}'
       String :status, null: false, default: 'new'

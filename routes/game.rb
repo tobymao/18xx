@@ -169,6 +169,7 @@ class Api
           params = {
             user: user,
             description: r['description'],
+            min_players: r['min_players'],
             max_players: r['max_players'],
             settings: {
               seed: (r['seed'] || Random.new_seed) % (2**31),
