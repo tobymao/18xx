@@ -1238,7 +1238,7 @@ module Engine
                     'This train is allowed to run a route of just a single city.'
           end
 
-          if corporation?(entity)
+          if corporation?(entity) && @phase.current[:name] != 'L/2'
             help << 'When a port city is used as a terminus in a run it pays the port bonus to the treasury. '\
                     'Each port token can be only used once in an OR'
           end
