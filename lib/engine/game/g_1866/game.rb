@@ -745,15 +745,14 @@ module Engine
 
             game_end_loan = corporation.loans.size * loan_value * 2
             corporation_cash = corporation.cash - game_end_loan
+            loan_str = "#{corporation.name} loans double in value (#{format_currency(game_end_loan)})."
             if corporation_cash.negative?
               player = corporation.owner
               player.cash -= corporation_cash.abs
-              @log << "#{corporation.name} loans double in value (#{format_currency(game_end_loan)}). "\
-                      "#{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name} have to "\
-                      "contribute #{format_currency(corporation_cash.abs)}"
+              @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
+                      " have to contribute #{format_currency(corporation_cash.abs)}"
             else
-              @log << "#{corporation.name} loans double in value (#{format_currency(game_end_loan)}). "\
-                      "#{corporation.name} pays #{format_currency(game_end_loan)}"
+              @log << "#{loan_str} #{corporation.name} pays #{format_currency(game_end_loan)}"
             end
           end
           super
@@ -797,7 +796,7 @@ module Engine
           triggers = {
             stock_market: @corp_max_reached,
             stock_market_st: @st_max_reached,
-            final_phase: @phase.phases.last == @phase.current,
+            final_phase: phase_trigger,
           }.select { |_, t| t }
 
           %i[three_rounds current_round].each do |after|
