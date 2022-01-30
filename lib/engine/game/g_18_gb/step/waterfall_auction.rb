@@ -35,8 +35,7 @@ module Engine
             winning_bids = @companies.map { |company| highest_bid(company) }.select { |bid| bid }
             return true if winning_bids.size == @companies.size
 
-            winners = winning_bids.map(&:entity)
-            winners.count { |winner| winner == entity } >= @required_bids
+            winning_bids.count { |bid| bid.entity == entity } >= @required_bids
           end
 
           def may_purchase?(_company)
