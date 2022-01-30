@@ -56,7 +56,7 @@ module View
     end
 
     def lookup_min(game)
-      min_p = @gdata['min_players']
+      min_p = @gdata['min_players'] || game::PLAYER_RANGE[0]
       return min_p unless game.respond_to?(:min_players)
 
       optional_rules = @gdata.dig('settings', 'optional_rules') || []
