@@ -5,9 +5,10 @@ require_relative 'route'
 
 module Engine
   class AutoRouter
-    def initialize(game)
+    def initialize(game, flash = nil)
       @game = game
       @next_hexside_bit = 0
+      @flash = flash
     end
 
     def compute(corporation, **opts)

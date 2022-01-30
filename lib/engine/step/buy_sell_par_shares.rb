@@ -120,7 +120,11 @@ module Engine
           !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&
           can_sell_order? &&
           @game.share_pool.fit_in_bank?(bundle) &&
-          bundle.can_dump?(entity)
+          can_dump?(entity, bundle)
+      end
+
+      def can_dump?(entity, bundle)
+        bundle.can_dump?(entity)
       end
 
       def can_sell_order?

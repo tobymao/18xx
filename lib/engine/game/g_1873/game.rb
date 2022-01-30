@@ -903,7 +903,7 @@ module Engine
         end
 
         def can_restart?(corporation, player)
-          return false if corporation == @mhe
+          return true if corporation == @mhe
           return false unless corporation.receivership?
 
           # see if player has corresponding purchase option (private) for corp
@@ -3175,6 +3175,7 @@ module Engine
 
         def available_programmed_actions
           super + [
+            Action::ProgramHarzbahnDraftPass,
             Action::ProgramIndependentMines,
           ]
         end

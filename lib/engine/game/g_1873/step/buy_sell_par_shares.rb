@@ -29,6 +29,13 @@ module Engine
             end
           end
 
+          def can_buy?(entity, bundle)
+            corp = bundle.corporation
+            return if corp.receivership? && !@game.can_restart?(corp, entity)
+
+            super
+          end
+
           def can_buy_multiple?(entity, corporation, _owner)
             return unless corporation.corporation?
 
@@ -98,6 +105,8 @@ module Engine
           end
 
           def process_buy_shares(action)
+            raise GameError, 'illegal buy action' unless can_buy?(action.entity, action.bundle) # discard illegal auto-actions
+
             corporation = action.bundle.corporation
             if corporation.receivership? && corporation != @game.mhe
               @reopened = corporation

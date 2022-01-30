@@ -7,14 +7,24 @@ module Engine
     module G1866
       module Step
         class StockTurnToken < Engine::Game::G1866::Step::BuySellParShares
-          ACTIONS = %w[buy_shares par sell_shares pass].freeze
-
           def actions(entity)
             return ['choose_ability'] unless choices_ability(entity).empty?
             return [] if entity != current_entity || !current_entity.player?
             return ['sell_shares'] if must_sell?(current_entity)
 
-            ACTIONS
+            player_debt = @game.player_debt(entity)
+            actions = []
+            # Have to have buy shares, otherwise we dont show the stock page during the operating round
+            actions << 'buy_shares'
+            actions << 'par' if can_ipo_any?(entity) && player_debt.zero?
+            actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'pass' unless actions.empty?
+            actions
+          end
+
+          def can_sell?(_entity, _bundle)
+            super && !@game.stock_turn_token_removed?(active_entities[0])
           end
 
           def current_entity
@@ -39,14 +49,25 @@ module Engine
           end
 
           def process_buy_shares(action)
+            entity = current_entity
+            player_debt = @game.player_debt(entity)
+            unless player_debt.zero?
+              raise GameError, "#{entity.name} can't buy any shares as long there is a loan "\
+                               "(#{@game.format_currency(player_debt)})"
+            end
+
+            corporation = action.bundle.corporation
+            previous_president = corporation.owner
             super
 
+            @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
             change_market
             @round.force_next_entity!
           end
 
           def process_choose_ability(action)
             super
+            return if action.choice == 'SELL'
 
             change_market
             @round.force_next_entity!
@@ -66,6 +87,21 @@ module Engine
             @round.force_next_entity!
           end
 
+          def process_payoff_player_debt(action)
+            super
+
+            change_market
+            @round.force_next_entity!
+          end
+
+          def process_sell_shares(action)
+            corporation = action.bundle.corporation
+            previous_president = corporation.owner
+            super
+
+            @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
+          end
+
           def issuable_shares(_entity)
             []
           end
@@ -75,7 +111,10 @@ module Engine
           end
 
           def change_market
-            bought = bought? || bought_stock_token?
+            entity = active_entities[0]
+            return if @game.stock_turn_token_removed?(entity)
+
+            bought = bought?
             sold = sold?
             times = 3
             times = 2 if sold
@@ -83,9 +122,10 @@ module Engine
             times = 0 if bought && sold
             return unless times.positive?
 
-            entity = active_entities[0]
-            @log << "#{current_entity.name} move the stock turn token #{times} times to the right on the stock market"
+            current_price = entity.share_price.price
             times.times { @game.stock_market.move_right(entity) }
+            @log << "#{current_entity.name}'s stock turn token price changes from "\
+                    "#{@game.format_currency(current_price)} to #{@game.format_currency(entity.share_price.price)}"
           end
         end
       end

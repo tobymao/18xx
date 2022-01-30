@@ -297,6 +297,9 @@ module Engine
 
       VARIABLE_FLOAT_PERCENTAGES = false
 
+      # whether corporation cards should show percentage ownership breakdown for players
+      SHOW_SHARE_PERCENT_OWNERSHIP = false
+
       # Setting this to true is neccessary but insufficent to allow downgrading town tiles into plain track
       # See 1856 for an example
       ALLOW_REMOVING_TOWNS = false
@@ -1346,6 +1349,10 @@ module Engine
         @graph
       end
 
+      def token_graph_for_entity(_entity)
+        @graph
+      end
+
       def upgrade_cost(tile, hex, entity, spender)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
@@ -1657,6 +1664,10 @@ module Engine
 
       def ipo_reserved_name(_entity = nil)
         'IPO Reserved'
+      end
+
+      def corporation_show_loans?(_corporation)
+        true
       end
 
       def corporation_show_shares?(corporation)

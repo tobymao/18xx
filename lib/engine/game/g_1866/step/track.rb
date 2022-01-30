@@ -1,20 +1,21 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
-require_relative '../../../step/upgrade_track_max_exits'
 
 module Engine
   module Game
     module G1866
       module Step
         class Track < Engine::Step::Track
-          include Engine::Step::UpgradeTrackMaxExits
-
           def available_hex(entity, hex)
             return nil if @game.national_corporation?(entity) && !@game.hex_within_national_region?(entity, hex)
-            return nil if @game.public_corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
+            return nil if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
 
             super
+          end
+
+          def buying_power(entity)
+            @game.buying_power_with_loans(entity)
           end
 
           def can_lay_tile?(entity)
@@ -53,9 +54,12 @@ module Engine
             if @game.national_corporation?(entity) && !@game.hex_within_national_region?(entity, hex)
               raise GameError, 'Cannot lay or upgrade tiles outside the nationals region'
             end
-            if @game.public_corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
+            if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
               raise GameError, 'Cannot lay or upgrade tiles without operating rights in the selected region'
             end
+
+            # Special case for the B tiles
+            action.tile.label = 'B' if action.hex.tile.label.to_s == 'B'
 
             super
           end
@@ -72,6 +76,21 @@ module Engine
             super
 
             @round.num_upgraded_track = 0
+          end
+
+          def try_take_loan(entity, price)
+            return if !price.positive? || price <= entity.cash
+
+            @game.take_loan(entity) while entity.cash < price
+          end
+
+          def upgradeable_tiles(_entity, hex)
+            return super if hex.tile.label.to_s == 'C'
+
+            super.group_by(&:color).values.flat_map do |group|
+              max_edges = group.map { |t| t.edges.length }.max
+              group.select { |t| t.edges.size == max_edges }
+            end
           end
         end
       end

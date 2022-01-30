@@ -69,7 +69,8 @@ module View
           if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
             children << h(BuyCompanyFromOtherPlayer, game: @game)
           end
-          children << h(StockMarket, game: @game)
+          children << render_bank
+          children << h(StockMarket, game: @game, show_bank: false)
 
           h(:div, children)
         end
@@ -368,6 +369,18 @@ module View
           return [] unless @step.respond_to?(:can_bid_company?) && @step.can_bid_company?(@current_entity, company)
 
           [h(Bid, entity: @current_entity, corporation: company)]
+        end
+
+        def render_bank
+          children = []
+          props = {
+            style: {
+              marginBottom: '1rem',
+            },
+          }
+          children << h(Bank, game: @game)
+          children << h(TrainSchedule, game: @game)
+          h(:div, props, children)
         end
       end
     end

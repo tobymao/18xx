@@ -184,6 +184,10 @@ module Engine
         false
       end
 
+      def auction?
+        false
+      end
+
       private
 
       def skip_steps

@@ -633,6 +633,15 @@ module Engine
           fully_capitalize_corporation(corporation) if can_fully_capitalize?(corporation)
         end
 
+        def liquidity(player, emergency: false)
+          value = super
+          if !nyc_corporation.operated? && @nyc_formed && !player.shares_of(nyc_corporation).empty?
+            value += emergency ? value_for_sellable(player, nyc_corporation) : value_for_dumpable(player, nyc_corporation)
+          end
+
+          value
+        end
+
         #
         # Operating round logic
         #

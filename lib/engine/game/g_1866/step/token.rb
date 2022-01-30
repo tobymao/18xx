@@ -8,9 +8,13 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           def available_hex(entity, hex)
-            return nil if @game.public_corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
+            return nil if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
 
             super
+          end
+
+          def buying_power(entity)
+            @game.buying_power_with_loans(entity)
           end
 
           def log_skip(entity)
@@ -22,11 +26,19 @@ module Engine
           def process_place_token(action)
             entity = action.entity
             hex = action.city.hex
-            if @game.public_corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
+            token = action.token
+            if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
               raise GameError, 'Cannot place token without operating rights in the selected region'
             end
 
+            try_take_loan(entity, token.price)
             super
+          end
+
+          def try_take_loan(entity, price)
+            return if !price.positive? || price <= entity.cash
+
+            @game.take_loan(entity) while entity.cash < price
           end
         end
       end
