@@ -726,7 +726,7 @@ module Engine
         def emergency_issuable_bundles(entity)
           min_price = @depot.min_depot_price
           if !entity.corporation? || !corporation?(entity) || !trains_empty?(entity) || entity.num_ipo_shares.zero? ||
-            entity.cash >= min_price || corporation_game_end_operated?(entity)
+            entity.cash >= min_price || game_end_corporation_operated?(entity)
             return []
           end
 
@@ -1316,16 +1316,6 @@ module Engine
           corporation.type == :share_5 || corporation.type == :share_10
         end
 
-        def corporation_game_end_operated(corporarion)
-          @corporation_game_end_operated[corporarion] = true
-        end
-
-        def corporation_game_end_operated?(corporarion)
-          return false unless game_end_triggered?
-
-          @corporation_game_end_operated[corporarion] || false
-        end
-
         def corporation_token_rights!(corporation)
           return if !corporation?(corporation) || !corporation.floated?
 
@@ -1459,6 +1449,16 @@ module Engine
 
         def hex_is_port?(hex)
           hex.tile.icons.any? { |i| i.name == 'port' }
+        end
+
+        def game_end_corporation_operated(corporarion)
+          @game_end_corporation_operated[corporarion] = true
+        end
+
+        def game_end_corporation_operated?(corporarion)
+          return false unless game_end_triggered?
+
+          @game_end_corporation_operated[corporarion] || false
         end
 
         def game_end_triggered?
@@ -1789,8 +1789,6 @@ module Engine
           end
 
           # Put down the home tokens of all the removed corporations
-          kps_in_play = true
-          fnr_in_play = true
           removed_corporations.each do |corp|
             Array(corp.coordinates).each do |coord|
               token = Engine::Token.new(corp, logo: "/logos/1866/#{corp.name}_REMOVED.svg",
@@ -1800,14 +1798,12 @@ module Engine
               place_starting_token(corp, token, coord)
             end
             @log << "#{corp.name} - #{corp.full_name} is removed from the game"
-            kps_in_play = false if corp.name == 'KPS'
-            fnr_in_play = false if corp.name == 'FNR'
           end
 
-          setup_corporations_captial('F22', 'KPS') if kps_in_play
-          setup_corporations_captial('L24', 'FNR') if fnr_in_play
+          setup_corporations_captial('F22', 'KPS') unless removed_corporations.any? { |c| c.name == 'KPS' }
+          setup_corporations_captial('L24', 'FNR') unless removed_corporations.any? { |c| c.name == 'FNR' }
 
-          @corporation_game_end_operated = Hash.new { |h, k| h[k] = false }
+          @game_end_corporation_operated = Hash.new { |h, k| h[k] = false }
         end
 
         def setup_corporations_captial(hex_name, corporation_name)

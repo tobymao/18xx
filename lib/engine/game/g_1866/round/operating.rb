@@ -54,7 +54,7 @@ module Engine
               return
             end
 
-            @game.corporation_game_end_operated(entity)
+            @game.game_end_corporation_operated(entity)
           end
 
           def check_operating_order!

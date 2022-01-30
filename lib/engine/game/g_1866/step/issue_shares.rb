@@ -8,7 +8,7 @@ module Engine
       module Step
         class IssueShares < Engine::Step::IssueShares
           def actions(entity)
-            return [] if entity != current_entity || !entity.corporation? || @game.corporation_game_end_operated?(entity)
+            return [] if entity != current_entity || !entity.corporation? || @game.game_end_corporation_operated?(entity)
 
             super
           end
