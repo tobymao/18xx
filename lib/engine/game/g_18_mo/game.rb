@@ -20,13 +20,13 @@ module Engine
         'Pool Share',
         'Extra Yellow Tile',
         'Extra Green Tile',
-        'Revenue Change',
+        'Tunnel Blasting Company',
         ].freeze
 
         BLUE_GROUP = [
-        'Tunnel Blasting Company',
         'Ranch Tile',
         'Train Discount',
+        'Revenue Change',
         'Mountain Construction Company',
         ].freeze
 
@@ -87,7 +87,7 @@ module Engine
                 {
                   name: '4',
                   train_limit: 4,
-                  on: '4E',
+                  on: '3E',
                   tiles: %i[yellow green],
                   operating_rounds: 2,
                   status: ['can_buy_companies'],
@@ -101,7 +101,7 @@ module Engine
                 },
                 {
                   name: '6',
-                  on: '6E',
+                  on: '5E',
                   train_limit: 3,
                   tiles: %i[yellow green brown],
                   operating_rounds: 2,
@@ -147,7 +147,7 @@ module Engine
             name: '3E',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 99 }],
             price: 300,
-            obsolete_on: '6E',
+            obsolete_on: '5E',
           },
           {
             name: '5',
