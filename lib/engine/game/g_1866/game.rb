@@ -754,7 +754,7 @@ module Engine
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
                       " have to contribute #{format_currency(corporation_cash.abs)}"
               player_spend(player, corporation_cash.abs)
-              corporation.spend(corporation.cash, @bank)
+              corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
             else
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(game_end_loan)}"
               corporation.spend(game_end_loan, @bank)
@@ -1340,7 +1340,7 @@ module Engine
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
                       " have to contribute #{format_currency(corporation_cash.abs)}"
               player_spend(player, corporation_cash.abs)
-              corporation.spend(corporation.cash, @bank)
+              corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
             else
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(loan)}"
               corporation.spend(loan, @bank)
