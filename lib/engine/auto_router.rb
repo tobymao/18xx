@@ -40,9 +40,11 @@ module Engine
       skip_paths = static.flat_map(&:paths).to_h { |path| [path, true] }
 
       train_routes = Hash.new { |h, k| h[k] = [] }    # map of train to route list
-      path_abort = Hash.new { |h, k| h[k] = false }   # each train has opportunity to abort a branch of the path walk tree
       hexside_bits = Hash.new { |h, k| h[k] = 0 }     # map of hexside_id to bit number
       @next_hexside_bit = 0
+
+      path_abort = Hash.new { |h, k| h[k] } # map of train to path_abort flag for that train
+      trains.each { |train| path_abort[train] = false } # populate the hash keys with company's trains
 
       nodes.each do |node|
         if Time.now - now > path_timeout
@@ -123,19 +125,17 @@ module Engine
 
           # build a test route for each train, use route.revenue to check for errors, keep the good ones
           trains.each do |train|
-            unless path_abort[train]
-              bitfield = bitfield_from_connection(connections[id], hexside_bits)
-              route = Engine::Route.new(
-                @game,
-                @game.phase,
-                train,
-                connection_data: connections[id],
-                bitfield: bitfield,
-              )
+            bitfield = bitfield_from_connection(connections[id], hexside_bits)
+            route = Engine::Route.new(
+              @game,
+              @game.phase,
+              train,
+              connection_data: connections[id],
+              bitfield: bitfield,
+            )
 
-              route.revenue # raises various errors if bad route
-              train_routes[train] << route
-            end
+            route.revenue # raises various errors if bad route
+            train_routes[train] << route
 
           # These all result in the route not being added to train_routes[train],
           # but the nature of the error determines how to continue or terminate processing of the path walk
@@ -259,7 +259,7 @@ module Engine
     end
 
     # The js-in-Opal algorithm
-    def js_evaluate_combos(_rb_sorted_routes, _route_timeout)
+    def js_evaluate_combos(_rb_sorted_routes, route_timeout)
       rb_possibilities = []
       possibilities_count = 0
       conflicts = 0
@@ -271,7 +271,7 @@ module Engine
       let counter = 0
       let max_revenue = 0
       let js_now = Date.now()
-      let js_route_timeout = _route_timeout * 1000
+      let js_route_timeout = route_timeout * 1000
 
       // marshal Opal objects to js for faster/easier access
       const js_sorted_routes = []
@@ -368,6 +368,8 @@ module Engine
         rb_possibilities['$<<'](rb_routes)
       }
       )
+
+      @flash&.call('Auto route selection failed to complete (timeout)') if Time.now - now > route_timeout
 
       puts "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} "\
            "conflicting combos in: #{Time.now - now}"
