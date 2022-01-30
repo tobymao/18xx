@@ -87,16 +87,18 @@ module Engine
             tile = action.tile
             hex = action.hex
             previous_tile = hex.tile
+            entity = action.entity
 
             if previous_tile.cities.empty? && tile.color != previous_tile.color
               extra_cost += 10 * (Engine::Tile::COLORS.index(tile.color) - Engine::Tile::COLORS.index(previous_tile.color) - 1)
             end
 
             super(action, extra_cost: extra_cost, entity: entity, spender: spender)
+            @game.consume_abilities_to_lay_resource_tile(hex, tile, entity.companies) if @game.resource_tile?(tile)
 
             if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
                 hex.neighbors.any? { |exit, h| hex.tile.exits.include?(exit) && h.name == 'E11' }
-              @round.pending_tracks << { entity: action.entity, hexes: [@game.hex_by_id('E11')] }
+              @round.pending_tracks << { entity: entity, hexes: [@game.hex_by_id('E11')] }
             end
             @game.jump_graph.clear
           end

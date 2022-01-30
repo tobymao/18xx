@@ -29,25 +29,14 @@ module Engine
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
-            check_rural_junction(tile, action.hex) if @game.class::RURAL_TILES.include?(tile.name)
-
+            hex = action.hex
+            entity = action.entity
+            corp = entity.corporation? ? entity : entity.owner
+         
+            check_rural_junction(tile, hex) if @game.class::RURAL_TILES.include?(tile.name)
             super
+            @game.consume_abilities_to_lay_resource_tile(hex, tile, corp.companies) if @game.resource_tile?(tile)
             process_company_town(tile) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
-            return if action.entity.id != 'P17' || !@game.resource_tile?(tile)
-
-            # Consume the resource used for the tile lay
-            resource_company = action.entity.owner.companies.find do |c|
-              c.id != 'P17' && abilities(c)&.tiles&.include?(tile.name)
-            end
-            raise GameError, "#{action.entity.name} cannot lay resource tile" unless resource_company
-
-            @game.log << "#{resource_company.name} contributes the resource"
-            ability = abilities(resource_company)
-            ability.use!
-            return if !ability.count&.zero? || !ability.closed_when_used_up
-
-            @log << "#{resource_company.name} closes"
-            resource_company.close!
           end
 
           def check_rural_junction(_tile, hex)
@@ -135,6 +124,13 @@ module Engine
             end
             @game.graph.clear
             @game.company_by_id('P27').close!
+          end
+
+          def abilities(entity, **kwargs, &block)
+            ability = super
+            return nil if ability&.type == :tile_lay && !(@game.class::RESOURCE_LABELS.values & ability.tiles).empty?
+            
+            ability
           end
         end
       end

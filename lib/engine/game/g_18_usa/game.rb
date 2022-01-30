@@ -309,18 +309,61 @@ module Engine
           super
         end
 
-        def resource_tile?(tile)
-          %w[coal ore oil].any? { |resource| tile.name.include?(resource) }
+
+        def tile_resources(tile)
+          if tile.color == :white
+            icons = tile.icons.map(&:name)
+            return RESOURCE_ICONS.select { |resource, icon| icons.include?(icon) }.keys
+          end
+          return [] unless (label = tile.label&.to_s)
+
+          RESOURCE_LABELS.select { |resource, text| label.include?(text) }.keys
         end
 
-        def company_can_lay_resource?(company, from, to)
-          return false unless company
-          return false unless (ability = abilities(company, 'tile_lay'))
-          if company.id == 'P17'
-            return company.owner.companies.reject { |c| c == company }.any? { |c| company_can_lay_resource?(c, from, to) }
-          end
+        def resource_tile?(tile)
+          !tile_resources(tile).empty?
+        end
 
-          ability.hexes.include?(from.hex.id) && ability.tiles.include?(to.name)
+        def resource_abilities_for_hex(hex, resource, selected_companies)
+          selected_companies.flat_map { |c| abilities(c, 'tile_lay') }.compact.select do |ability|
+            ability.hexes.include?(hex.id) && ability.tiles.include?(RESOURCE_LABELS[resource])
+          end
+        end
+
+        def abilities_to_lay_resource_tile(hex, tile, selected_companies)
+          # Prioritize single resource type abilities
+          resources = {}
+          tile_resources(tile).each do |r|
+            resources[r] = resource_abilities_for_hex(hex, r, selected_companies).sort_by { |a| a.tiles.size }
+          end
+          return resources.transform_values(&:first) if resources.one?
+
+          # Filter out duplicates
+          dups = resources.values[0].intersection(resources.values[1])
+          resources.transform_values! { |abilities| (abilities - dups)&.first || dups.shift }
+          resources 
+        end
+
+        def consume_abilities_to_lay_resource_tile(hex, tile, selected_companies)
+          abilities_to_lay_resource_tile(hex, tile, selected_companies).each do |resource, ability|
+            raise GameError, "Must have #{resource} resource to lay tile" unless ability
+
+            @log << "#{ability.owner.name} contributes the #{resource} resource"
+            ability.use!
+            if ability.count&.zero? && ability.closed_when_used_up
+              company = ability.owner
+              @log << "#{company.name} closes"
+              company.close!
+            end
+          end
+        end
+
+        def can_lay_resource_tile?(from, to, selected_companies)
+          return false if selected_companies.empty?
+          from_resources = tile_resources(from)
+          return false unless tile_resources(to).all? { |r| from_resources.include?(r) }
+
+          abilities_to_lay_resource_tile(from.hex, to, selected_companies).all? { |k,v| v }
         end
 
         #
@@ -332,14 +375,15 @@ module Engine
         # to: Tile - Tile to upgrade to
         # special - ???
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          laying_entity = @round.current_entity
+          
           # Resource tiles
-          return @phase.tiles.include?(:green) && ore_upgrade?(from, to) if from.name.include?('ore')
+          return @phase.tiles.include?(:green) && ore_upgrade?(from, to) if to.name.include?('ore2')
           if to.color == :yellow && resource_tile?(to)
-            return from.color == :white && company_can_lay_resource?(selected_company, from, to)
+            return from.color == :white && can_lay_resource_tile?(from, to, laying_entity.companies)
           end
 
           # Brown home city upgrade only on first operation
-          laying_entity = @round.current_entity
           if !laying_entity.operated? &&
              to.color == :brown &&
              tile_color_valid_for_phase?(to) &&
@@ -394,6 +438,16 @@ module Engine
           colors = phase_color_cache || @phase.tiles
           colors.include?(tile.color) ||
             (tile.color == :brown && colors.include?(:green)) || (tile.color == :gray && colors.include?(:brown))
+        end
+
+        def tile_cost_with_discount(tile, hex, entity, spender, cost)
+          cost = super
+          return cost unless resource_tile?(tile)
+
+          corp = entity.corporation ? entity : entity.owner
+          ability = abilities_to_lay_resource_tile(hex, tile, corp.companies).values.find { |a| a.discount.positive? }
+          cost -= [cost, ability.discount].min if ability
+          cost
         end
 
         def owns_p15?(entity)
@@ -475,11 +529,6 @@ module Engine
           ].freeze
         end
 
-        def new_operating_round
-          remove_subsidies if @round.stock? && @turn == 1 && @round.round_num == 1
-          super
-        end
-
         def remove_subsidies
           @log << 'All unused subsidies are removed from the game'
           @subsidies_by_hex = {}
@@ -531,7 +580,7 @@ module Engine
             end
           end
 
-          G18USA::Round::Operating.new(self, [
+          G1817::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
             G18USA::Step::Loan,
@@ -555,6 +604,7 @@ module Engine
             case @round
             when Engine::Round::Stock
               @operating_rounds = @final_operating_rounds || @phase.operating_rounds
+              remove_subsidies if @turn == 1 && @round.round_num == 1
               reorder_players
               new_operating_round
             when Engine::Round::Operating

@@ -24,7 +24,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
-                tiles: %w[7coal 8coal 9coal],
+                tiles: [RESOURCE_LABELS[:coal]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -79,7 +79,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
-                tiles: %w[7oil 8oil 9oil],
+                tiles: [RESOURCE_LABELS[:oil]],
                 when: 'track',
                 reachable: true,
                 consume_tile_lay: true,
@@ -106,7 +106,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: ORE_HEXES,
-                tiles: %w[7ore 8ore10 9ore10],
+                tiles: [RESOURCE_LABELS[:ore]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -236,7 +236,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
-                tiles: %w[7oil 8oil 9oil],
+                tiles: [RESOURCE_LABELS[:oil]],
                 when: 'track',
                 reachable: true,
                 consume_tile_lay: true,
@@ -332,7 +332,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
-                tiles: %w[7coal 8coal 9coal],
+                tiles: [RESOURCE_LABELS[:coal]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -407,7 +407,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: (COAL_HEXES + ORE_HEXES).uniq,
-                tiles: %w[7coal 8coal 9coal 7ore10 8ore10 9ore10],
+                tiles: [RESOURCE_LABELS[:coal], RESOURCE_LABELS[:ore]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -477,7 +477,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: ORE_HEXES,
-                tiles: %w[7ore10 8ore10 9ore10],
+                tiles: [RESOURCE_LABELS[:ore]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -580,7 +580,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
-                tiles: %w[7coal 8coal 9coal],
+                tiles: [RESOURCE_LABELS[:coal]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
