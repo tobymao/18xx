@@ -861,6 +861,17 @@ module Engine
         format_currency(val)
       end
 
+      def routes_subsidy(_routes)
+        0
+      end
+
+      def submit_revenue_str(routes, show_subsidy)
+        revenue_str = format_revenue_currency(routes_revenue(routes))
+        subsidy = routes_subsidy(routes)
+        subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (subsidy)" : ''
+        revenue_str + subsidy_str
+      end
+
       def purchasable_companies(entity = nil)
         @companies.select do |company|
           company.owner&.player? && entity != company.owner && !abilities(company, :no_buy)
