@@ -647,33 +647,39 @@ module Engine
         GNR_HALF_BONUS_HEXES = %w[B8 B14].freeze
 
         def revenue_for(route, stops)
-          stop_hexes = stops.map { |stop| stop.hex.id }
+          stop_hexes = stops.map { |stop| stop.hex }
           revenue = super
 
           corporation = route.train.owner
-
-          company_tile = route.all_hexes.find { |hex| COMPANY_TOWN_TILES.include?(hex.tile.name) }&.tile
+          company_tile = stop_hexes.find { |hex| COMPANY_TOWN_TILES.include?(hex.tile.name) }&.tile
           revenue -= 10 if company_tile && !company_tile.cities.first.tokened_by?(corporation)
 
-          revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('coal') }
-          revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('ore10') }
-          revenue += 20 * route.all_hexes.count { |hex| hex.tile.id.include?('ore20') }
-          revenue += @oil_value * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
+          track_hexes = route.all_hexes - stop_hexes
+          revenue += track_hexes.sum do |hex|
+            resource_revenue = 0
+            next resource_revenue if hex.tile.color == :white || (resources = tile_resources(hex.tile)).empty?
+
+            resource_revenue += 10 if resources.include?(:coal)
+            resource_revenue += hex.tile.name.include?('ore10') ? 10 : 20 if resources.include?(:ore)
+            resource_revenue += @oil_value if resources.include?(:oil)
+            resource_revenue 
+          end
 
           pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == 'P' }
           revenue += 20 * stops.count { |s| !RURAL_TILES.include?(s.tile.name) } if pullman_assigned
 
-          revenue += 10 if route.all_hexes.any? { |hex| hex.tile.icons.any? { |icon| icon.name == 'plus_ten' } }
-          revenue += @phase.tiles.include?(:brown) ? 20 : 10 if route.all_hexes.any? do |hex|
-                                                                  hex.tile.icons.any? do |icon|
-                                                                    icon.name == 'plus_ten_twenty'
-                                                                  end
-                                                                end
+          revenue += 10 if stop_hexes.find { |hex| hex.tile.icons.find { |icon| icon.name == 'plus_ten' } }
+          if stop_hexes.find { |hex| hex.tile.icons.find { |icon| icon.name == 'plus_ten_twenty' } }
+            revenue += @phase.tiles.include?(:brown) ? 20 : 10
+          end
 
-          if GNR_FULL_BONUS_HEXES.difference(stop_hexes).empty?
-            revenue += GNR_FULL_BONUS
-          elsif GNR_HALF_BONUS_HEXES.difference(stop_hexes).empty?
-            revenue += GNR_HALF_BONUS
+          if corporation.companies.include?(company_by_id('P17'))
+            stop_hex_ids = stop_hexes.map(&:id)
+            if GNR_FULL_BONUS_HEXES.difference(stop_hex_ids).empty?
+              revenue += GNR_FULL_BONUS
+            elsif GNR_HALF_BONUS_HEXES.difference(stop_hex_ids).empty?
+              revenue += GNR_HALF_BONUS
+            end
           end
 
           if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
