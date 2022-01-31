@@ -527,7 +527,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: CITY_HEXES,
-                tiles: %w[X07 X08 X09],
+                tiles: RURAL_TILES,
                 reachable: true,
                 when: 'track',
                 consume_tile_lay: true,
