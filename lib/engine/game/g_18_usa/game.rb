@@ -344,6 +344,8 @@ module Engine
         end
 
         def consume_abilities_to_lay_resource_tile(hex, tile, selected_companies)
+          return if ORE20_TILES.include?(tile.name)
+
           abilities_to_lay_resource_tile(hex, tile, selected_companies).each do |resource, ability|
             raise GameError, "Must have #{resource} resource to lay tile" unless ability
 
@@ -378,7 +380,7 @@ module Engine
           laying_entity = @round.current_entity
 
           # Resource tiles
-          return @phase.tiles.include?(:green) && ore_upgrade?(from, to) if to.name.include?('ore2')
+          return @phase.tiles.include?(:green) && ore_upgrade?(from, to) if ORE20_TILES.include?(to.name)
           if to.color == :yellow && resource_tile?(to)
             return from.color == :white && can_lay_resource_tile?(from, to, laying_entity.companies)
           end
@@ -411,7 +413,7 @@ module Engine
         end
 
         def ore_upgrade?(from, to)
-          [%w[7ore10 7ore20], %w[8ore10 8ore20], %w[9ore10 9ore20]].any? { |upg| upg == [from.name, to.name] }
+          ORE10_TILES.include?(from.name) && ORE20_TILES.include?(to.name) && upgrades_to_correct_label?(from, to)
         end
 
         def upgrades_to_correct_label?(from, to)
@@ -440,12 +442,14 @@ module Engine
             (tile.color == :brown && colors.include?(:green)) || (tile.color == :gray && colors.include?(:brown))
         end
 
-        def tile_cost_with_discount(tile, hex, entity, spender, cost)
-          cost = super(tile, hex, entity, spender, cost)
-          return cost unless resource_tile?(tile)
+        def upgrade_cost(tile, hex, entity, spender)
+          cost = super
+          return cost if !resource_tile?(tile) || tile.color != :white
 
           corp = entity.corporation ? entity : entity.owner
-          ability = abilities_to_lay_resource_tile(hex, tile, corp.companies).values.find { |a| a.discount.positive? }
+          ability = abilities_to_lay_resource_tile(hex, hex.tile, corp.companies).values.find do |a|
+            a.discount.positive?
+          end
           cost -= [cost, ability.discount].min if ability
           cost
         end

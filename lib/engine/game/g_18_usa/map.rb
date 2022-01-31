@@ -9,11 +9,15 @@ module Engine
         RESOURCE_LABELS = { coal: '⛏️', ore: '⚒️', oil: '🛢️' }.freeze
         RESOURCE_ICONS = { coal: 'coalcar', oil: 'oil-derrick', ore: 'mine' }.freeze
 
-        YELLOW_PLAIN_TRACK_TILES = %w[
-          7 7coal 7ore10 7ore20 7oil 7coalore10 7coalore20 7coaloil
-          8 8coal 8ore10 8ore20 8oil 8coalore10 8coalore20 8coaloil
-          9 9coal 9ore10 9ore20 9oil 9coalore10 9coalore20 9coaloil
-        ].freeze
+        ORE10_TILES = %w[7ore10 8ore10 9ore10 7coalore10 8coalore10 9coalore10].freeze
+        ORE20_TILES = %w[7ore20 8ore20 9ore20 7coalore20 8coalore20 9coalore20].freeze
+
+        YELLOW_PLAIN_TRACK_TILES = (
+          %w[7 7coal 7oil 7coal 7coaloil
+             8 8coal 8oil 8coal 8coaloil
+             9 9coal 9oil 9coal 9coaloil] +
+          ORE10_TILES + ORE20_TILES
+        ).freeze
 
         GREEN_PLAIN_TRACK_TILES = %w[
           80 80coal 80oil 80coaloil
