@@ -580,7 +580,7 @@ module Engine
         end
 
         def upgrade_cost(tile, hex, entity, spender)
-          [TILE_COST, super].max
+          [self.class::TILE_COST, super].max
         end
 
         def event_close_companies!
