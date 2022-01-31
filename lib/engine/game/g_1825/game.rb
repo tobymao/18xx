@@ -350,7 +350,6 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
         GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
         TRAIN_PRICE_MIN = 10
-        MN_TRAIN_MUST_USE_TOKEN = false
         IMPASSABLE_HEX_COLORS = %i[blue sepia red].freeze
         TILE_200 = '200'
 
@@ -654,7 +653,7 @@ module Engine
 
           # pre-allocate dummy trains used for tile 200
           @pass_thru = {}
-          DUMMY_TRAINS.each { |train| @pass_thru[train[:name]] = Train.new(**train, index: 999) }
+          DUMMY_TRAINS.each { |train| @pass_thru[train[:name]] = Train.new(**train, requires_token: false, index: 999) }
         end
 
         # cache all stock prices
