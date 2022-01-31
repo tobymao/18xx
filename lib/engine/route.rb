@@ -4,7 +4,7 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_accessor :halts, :routes
+    attr_accessor :halts, :routes, :bitfield
     attr_reader :last_node, :phase, :train, :abilities
 
     def initialize(game, phase, train, **opts)
@@ -27,6 +27,8 @@ module Engine
       @last_node = nil
       @last_offboard = []
       @stops = nil
+
+      @bitfield = opts[:bitfield] # array of ints used only by auto-routing algorithm
     end
 
     def clear_cache!(all: false, only_routes: false)
@@ -253,7 +255,7 @@ module Engine
       connection_data.each do |c|
         right = c[:right]
         cycles[c[:left]] = true
-        raise GameError, "Cannot use #{right.hex.name} (#{right.inspect}) twice" if cycles[right]
+        raise ReusesCity, "Cannot use #{right.hex.name} (#{right.inspect}) twice" if cycles[right]
 
         cycles[right] = true
       end
@@ -300,7 +302,7 @@ module Engine
       @revenue ||=
         begin
           visited = visited_stops
-          raise GameError, 'Route must have at least 2 stops' if !connection_data.empty? && visited.size < 2 && !@train.local?
+          raise RouteTooShort, 'Route must have at least 2 stops' if !connection_data.empty? && visited.size < 2 && !@train.local?
 
           token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) }
           @game.check_route_token(self, token)

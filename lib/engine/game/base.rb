@@ -1127,7 +1127,7 @@ module Engine
       end
 
       def check_route_token(_route, token)
-        raise GameError, 'Route must contain token' unless token
+        raise NoToken, 'Route must contain token' unless token
       end
 
       def check_overlap(routes)
@@ -1175,7 +1175,7 @@ module Engine
         distance = train.distance
         if distance.is_a?(Numeric)
           route_distance = visits.sum(&:visit_cost)
-          raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
+          raise RouteTooLong, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
 
           return
         end
@@ -1207,7 +1207,7 @@ module Engine
             break unless num.positive?
           end
 
-          raise GameError, 'Route has too many stops' if num.positive?
+          raise RouteTooLong, 'Route has too many stops' if num.positive?
         end
       end
 
