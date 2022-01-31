@@ -79,7 +79,7 @@ module Engine
         def add_optional_train(type)
           modified_trains = @depot.trains.select { |t| t.name == type }
           new_train = modified_trains.first.clone
-          new_train.index = modified_trains.length
+          new_train.index = modified_trains.size
           @depot.add_train(new_train)
         end
 
@@ -192,7 +192,7 @@ module Engine
         end
 
         def route_ends_red?(stops)
-          return false unless stops.length > 1
+          return false unless stops.size > 1
 
           stops.first.hex.tile.color == :red && stops.last.hex.tile.color == :red
         end
