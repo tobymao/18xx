@@ -15,7 +15,7 @@ module Engine
         include Map
         include Scenarios
 
-        GAME_END_CHECK = { final_train: :current_or, stock_marketMUST_BID_INCREMENT: :current_or }.freeze
+        GAME_END_CHECK = { final_train: :current_or, stock_market: :current_or }.freeze
 
         BANKRUPTCY_ALLOWED = false
 
