@@ -529,6 +529,7 @@ module Engine
           'I5' => [3, 9],
         }.freeze
 
+        NATIONAL_COMPANIES = %w[P2 P3 P4 P5 P6 P7].freeze
         NATIONAL_CORPORATIONS = %w[GBN FN AHN BN SPN SWN GN G1 G2 G3 G4 G5 IN I1 I2 I3 I4 I5].freeze
         NATIONAL_REGION_HEXES = {
           'G1' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
@@ -1550,10 +1551,10 @@ module Engine
             transist_hub_revenue = 0
             palace_car_revenue = 0
             stops.each do |stop|
-              next if !stop || !stop.city?
+              next if !stop || (!stop.city? && !stop.offboard?)
 
               palace_car_revenue += 10
-              next unless stop.tokened_by?(entity)
+              next if !stop.city? && !stop.tokened_by?(entity)
 
               stop_base_revenue = stop.route_base_revenue(phase, train)
               transist_hub_revenue = stop_base_revenue if stop_base_revenue > transist_hub_revenue
@@ -1700,8 +1701,6 @@ module Engine
           port_hexes = {}
           routes.each do |route|
             train = route.train
-            next if local_train?(train)
-
             stops = route.visited_stops
             train_multiplier = train.obsolete ? 0.5 : 1
 
