@@ -1286,6 +1286,14 @@ module Engine
           super
         end
 
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
+        end
+
         def buy_infrastructure(entity, train)
           take_loan(entity) while entity.cash < train.price
           entity.spend(train.price, @bank)
