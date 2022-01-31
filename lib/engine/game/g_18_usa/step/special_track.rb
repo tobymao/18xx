@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_track'
+require_relative 'resource_track'
 
 module Engine
   module Game
     module G18USA
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
+          include ResourceTrack
+
           def actions(entity)
             return [] if entity&.id == 'P16' && !@game.phase.tiles.include?(:brown)
 
@@ -31,11 +34,9 @@ module Engine
             tile = action.tile
             hex = action.hex
             entity ||= action.entity
-            corp = entity.corporation? ? entity : entity.owner
 
             check_rural_junction(tile, hex) if @game.class::RURAL_TILES.include?(tile.name)
             super
-            @game.consume_abilities_to_lay_resource_tile(hex, tile, corp.companies) if @game.resource_tile?(tile)
             process_company_town(tile) if @game.class::COMPANY_TOWN_TILES.include?(tile.name)
           end
 
@@ -50,17 +51,6 @@ module Engine
             colors << :green if %w[P9 S8].include?(entity.id)
             colors << :gray if %w[P16 P27].include?(entity.id)
             colors
-          end
-
-          def potential_future_tiles(_entity, hex)
-            @game.tiles
-              .uniq(&:name)
-              .select { |t| @game.upgrades_to?(hex.tile, t) }
-          end
-
-          # The oil/coal/ore tiles falsely pass as offboards, so we need to be more careful
-          def real_offboard?(tile)
-            tile.offboards&.any? && !tile.labels&.any?
           end
 
           def available_hex(entity, hex)
@@ -92,24 +82,10 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            # See 1817 and reinsert pittsburgh check for handling metros
+            # TODO: See 1817 and reinsert pittsburgh check for handling metros
             return true if tile.name == 'X23'
-            return super unless @game.resource_tile?(tile)
 
-            super &&
-            tile.exits.any? do |exit|
-              neighbor = hex.neighbors[exit]
-              ntile = neighbor&.tile
-              next false unless ntile
-
-              # The neighbouring tile must have a city or offboard or town
-              # That neighbouring tile must either connect to an edge on the tile or
-              # potentially be updated in future.
-              # 1817 doesn't have any coal next to towns but 1817NA does and
-              #  Marc Voyer confirmed that coal should be able to connect to the gray pre-printed town
-              (ntile.cities&.any? || real_offboard?(ntile) || ntile.towns&.any?) &&
-              (ntile.exits.any? { |e| e == Hex.invert(exit) } || potential_future_tiles(entity, neighbor).any?)
-            end
+            super
           end
 
           def process_company_town(tile)
@@ -128,7 +104,7 @@ module Engine
 
           def abilities(entity, **kwargs, &block)
             ability = super
-            return nil if ability&.type == :tile_lay && !(@game.class::RESOURCE_LABELS.values & ability.tiles).empty?
+            return nil if ability&.type == :tile_lay && !(@game.class::RESOURCE_LABELS.values & ability&.tiles).empty?
 
             ability
           end

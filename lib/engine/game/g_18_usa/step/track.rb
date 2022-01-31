@@ -2,6 +2,7 @@
 
 require_relative '../../../step/track'
 require_relative '../../../step/upgrade_track_max_exits'
+require_relative 'resource_track'
 
 module Engine
   module Game
@@ -9,6 +10,7 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include Engine::Step::UpgradeTrackMaxExits
+          include ResourceTrack
 
           def can_lay_tile?(entity)
             super || can_place_token_with_p20?(entity) || can_assign_p6?(entity)
@@ -61,6 +63,12 @@ module Engine
             colors
           end
 
+          def legal_tile_rotation?(entity, hex, tile)
+            return true if tile.name == 'X23'
+
+            super
+          end
+
           def process_lay_tile(action)
             return super unless free_brown_city_upgrade?(action.entity, action.hex, action.tile)
 
@@ -94,7 +102,6 @@ module Engine
             end
 
             super(action, extra_cost: extra_cost, entity: entity, spender: spender)
-            @game.consume_abilities_to_lay_resource_tile(hex, tile, entity.companies) if @game.resource_tile?(tile)
 
             if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
                 hex.neighbors.any? { |exit, h| hex.tile.exits.include?(exit) && h.name == 'E11' }
