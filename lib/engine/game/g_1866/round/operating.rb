@@ -68,7 +68,7 @@ module Engine
             new_entities.each do |c|
               index = @entities_orginal.size
               @entities_orginal.each_with_index do |e, idx|
-                next if e[:type] == 'minor_national'
+                next if e[:type] == :minor_national
 
                 if @game.germany_or_italy_national?(c)
                   index = idx
