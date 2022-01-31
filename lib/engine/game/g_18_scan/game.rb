@@ -284,7 +284,7 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Track,
+            G18Scan::Step::Track,
             # G18Scan::Step::DestinationToken
             # G18Scan::Step::DestinationRun
             Engine::Step::Token,
@@ -361,6 +361,27 @@ module Engine
           str += ' + Lapland Ore Mine' if mine_included(route)
 
           str
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # Y cities are same as plain in yellow
+          return to.name == '5' if from.color == :white && from.label.to_s == 'Y'
+
+          # Copenhagen
+          return to.name == '121' if from.name == '403'
+          return to.name == '584' if from.name == '121'
+
+          # Oslo
+          return to.name == '623' if from.name == '622' && from.hex.name == 'D7'
+
+          # Helsinki, Stockholm
+          return to.name == '582' if from.name == '622' && %w[G14 F11].include?(from.hex.name)
+
+          super
+        end
+
+        def copenhagen_dit_upgrade(from, to)
+          from.name == '403' && to.name == '121'
         end
 
         def event_full_cap!
