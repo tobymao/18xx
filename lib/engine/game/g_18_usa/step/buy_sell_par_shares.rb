@@ -31,7 +31,7 @@ module Engine
           end
 
           def max_city_subsidy
-            @game.subsidies_by_hex.values.map { |s| s[:value] }.max
+            @game.subsidies_by_hex.values.map { |s| s[:value] }.max || 0
           end
 
           def add_bid(action)
