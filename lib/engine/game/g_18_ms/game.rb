@@ -175,6 +175,14 @@ module Engine
         HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
         COMPANY_1_AND_2 = %w[AGS BS].freeze
 
+        def p1_company
+          @p1_company ||= company_by_id('AGS')
+        end
+
+        def p2_company
+          @p2_company ||= company_by_id('BS')
+        end
+
         def chattanooga_hex
           @chattanooga_hex ||= @hexes.find { |h| h.name == 'B12' }
         end
