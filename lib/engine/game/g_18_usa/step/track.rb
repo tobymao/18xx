@@ -87,7 +87,7 @@ module Engine
             tile = action.tile
             hex = action.hex
             previous_tile = hex.tile
-            entity = action.entity
+            entity ||= action.entity
 
             if previous_tile.cities.empty? && tile.color != previous_tile.color
               extra_cost += 10 * (Engine::Tile::COLORS.index(tile.color) - Engine::Tile::COLORS.index(previous_tile.color) - 1)

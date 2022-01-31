@@ -30,9 +30,9 @@ module Engine
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
             hex = action.hex
-            entity = action.entity
+            entity ||= action.entity
             corp = entity.corporation? ? entity : entity.owner
-         
+
             check_rural_junction(tile, hex) if @game.class::RURAL_TILES.include?(tile.name)
             super
             @game.consume_abilities_to_lay_resource_tile(hex, tile, corp.companies) if @game.resource_tile?(tile)
@@ -129,7 +129,7 @@ module Engine
           def abilities(entity, **kwargs, &block)
             ability = super
             return nil if ability&.type == :tile_lay && !(@game.class::RESOURCE_LABELS.values & ability.tiles).empty?
-            
+
             ability
           end
         end
