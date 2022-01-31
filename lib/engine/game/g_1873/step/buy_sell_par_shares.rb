@@ -105,15 +105,14 @@ module Engine
           end
 
           def process_buy_shares(action)
-            raise GameError, 'illegal buy action' unless can_buy?(action.entity, action.bundle) # discard illegal auto-actions
-
             corporation = action.bundle.corporation
-            if corporation.receivership? && corporation != @game.mhe
+            was_receivership = corporation.receivership? && corporation != @game.mhe
+            buy_shares(action.entity, action.bundle, swap: action.swap,
+                                                     allow_president_change: @game.pres_change_ok?(corporation))
+            if was_receivership
               @reopened = corporation
               remove_company(action.entity, corporation)
             end
-            buy_shares(action.entity, action.bundle, swap: action.swap,
-                                                     allow_president_change: @game.pres_change_ok?(corporation))
             track_action(action, corporation)
           end
 

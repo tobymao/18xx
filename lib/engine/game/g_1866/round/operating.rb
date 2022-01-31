@@ -22,6 +22,11 @@ module Engine
             entity.close! if @game.stock_turn_token_removed?(entity)
           end
 
+          def next_entity!
+            after_operating(@entities[@entity_index])
+            super
+          end
+
           def start_operating
             entity = @entities[@entity_index]
             if @game.major_national_corporation?(entity) && entity.num_player_shares.zero?
@@ -41,6 +46,15 @@ module Engine
             else
               super
             end
+          end
+
+          def after_operating(entity)
+            if !entity.corporation? || !@game.corporation?(entity) || !@game.game_end_triggered? ||
+              (@game.game_end_triggered_corporation == entity && @game.game_end_triggered_round == @round_num)
+              return
+            end
+
+            @game.game_end_corporation_operated(entity)
           end
 
           def check_operating_order!

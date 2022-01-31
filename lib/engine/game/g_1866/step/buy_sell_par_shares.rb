@@ -44,7 +44,7 @@ module Engine
             choices = {}
             valid_token = @game.stock_turn_token?(operator)
             token_permium = @game.stock_turn_token_premium?(operator)
-            if @game.player_debt(operator).zero? && ((valid_token && @round.operating?) ||
+            if @game.player_debt(operator).zero? && !@game.game_end_triggered? && ((valid_token && @round.operating?) ||
               (valid_token && !@round.operating? && !token_permium))
               get_par_prices(operator, nil).sort_by(&:price).each do |p|
                 par_str = @game.par_price_str(p)

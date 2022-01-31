@@ -21,10 +21,11 @@ module View
     private
 
     def render_title(url_search_params)
-      selected_title = url_search_params['title']
+      selected_value = url_search_params['title']
       game_options = [h(:option, { attrs: { value: '' } }, '(All titles)')]
-      Engine::VISIBLE_GAMES_WITH_VARIANTS.map(&:display_title).sort.each do |title|
-        game_options << h(:option, { attrs: { value: title, selected: title == selected_title } }, title)
+      Engine::VISIBLE_GAMES_WITH_VARIANTS.sort_by(&:display_title).each do |meta|
+        value = meta.title
+        game_options << h(:option, { attrs: { value: value, selected: value == selected_value } }, meta.display_title)
       end
       title_change = lambda do |e|
         title = e.JS['currentTarget'].JS['value']
