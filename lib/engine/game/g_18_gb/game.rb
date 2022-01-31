@@ -261,12 +261,12 @@ module Engine
 
         def game_companies
           scenario_comps = @scenario['companies']
-          self.class::COMPANIES.select { |comp| scenario_comps.include? comp['sym'] }
+          self.class::COMPANIES.select { |comp| scenario_comps.include?(comp['sym']) }
         end
 
         def game_corporations
           scenario_corps = @scenario['corporations'] + @scenario['corporation-extra'].sort_by { rand }.take(1)
-          self.class::CORPORATIONS.select { |corp| scenario_corps.include? corp['sym'] }
+          self.class::CORPORATIONS.select { |corp| scenario_corps.include?(corp['sym']) }
         end
 
         def game_tiles
