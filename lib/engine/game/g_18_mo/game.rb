@@ -48,6 +48,10 @@ module Engine
           { lay: true, upgrade: :not_if_upgraded, cost: 20 },
         ].freeze
 
+        def init_round
+          G18MO::Round::Draft.new(self, [G18MO::Step::DraftPurchase])
+        end
+
         def operating_round(round_num)
           @round_num = round_num
           G1846::Round::Operating.new(self, [
