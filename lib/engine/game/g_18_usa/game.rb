@@ -680,9 +680,9 @@ module Engine
 
           if corporation.companies.include?(company_by_id('P17'))
             stop_hex_ids = stop_hexes.map(&:id)
-            if GNR_FULL_BONUS_HEXES.difference(stop_hex_ids).empty?
+            if (GNR_FULL_BONUS_HEXES - stop_hex_ids).empty?
               revenue += GNR_FULL_BONUS
-            elsif GNR_HALF_BONUS_HEXES.difference(stop_hex_ids).empty?
+            elsif (GNR_HALF_BONUS_HEXES - stop_hex_ids).empty?
               revenue += GNR_HALF_BONUS
             end
           end
