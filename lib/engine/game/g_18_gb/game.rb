@@ -49,6 +49,8 @@ module Engine
 
         MARKET_SHARE_LIMIT = 100
 
+        SHOW_SHARE_PERCENT_OWNERSHIP = true
+
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           unlimited: 'May buy shares from IPO in excess of 60%',
         )
