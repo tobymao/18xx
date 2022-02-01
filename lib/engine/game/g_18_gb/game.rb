@@ -284,6 +284,28 @@ module Engine
           end
         end
 
+        def setup
+          tiers = {}
+          delayed = 0
+          @corporations.sort_by { rand }.each do |corp|
+            if (corp.id != 'LNWR') && (delayed < @scenario['tier2-corps'])
+              tiers[corp.id] = 2
+              delayed += 1
+            else
+              tiers[corp.id] = 1
+            end
+          end
+
+          @log << "Corporations available SR1: #{tiers.select { |_, t| t == 1 }.map { |c, _| c }.sort.join(', ')}"
+          @log << "Corporations available SR2: #{tiers.select { |_, t| t == 2 }.map { |c, _| c }.sort.join(', ')}"
+          @tiers = tiers
+        end
+
+        def sorted_corporations
+          ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
+          ipoed.sort + others
+        end
+
         def required_bids_to_pass
           @scenario['required_bids']
         end
