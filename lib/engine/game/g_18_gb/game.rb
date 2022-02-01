@@ -47,6 +47,8 @@ module Engine
 
         DISCARDED_TRAINS = :remove
 
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: true }].freeze
+
         IMPASSABLE_HEX_COLORS = %i[gray red].freeze
 
         MARKET_SHARE_LIMIT = 100
@@ -378,15 +380,12 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
-            Engine::Step::BuyCompany,
-            Engine::Step::Track,
-            Engine::Step::Token,
+            Engine::Step::HomeToken,
+            G18GB::Step::TrackAndToken,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
