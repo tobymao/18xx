@@ -15,7 +15,7 @@ module Engine
       static = opts[:routes] || []
       path_timeout = opts[:path_timeout] || 20
       route_timeout = opts[:route_timeout] || 20
-      route_limit = opts[:route_limit] || 1_000
+      route_limit = opts[:route_limit] || 10_000
 
       connections = {}
       trains = @game.route_trains(corporation)
@@ -34,10 +34,14 @@ module Engine
       # Add a per-node timeout to ensure we don't spend ALL time on first node's paths in huge maps,
       # which can cause all train routes to conflict with each other
       node_timeout = path_timeout / nodes.size
+      path_walk_timed_out = false
 
       now = Time.now
 
       skip_paths = static.flat_map(&:paths).to_h { |path| [path, true] }
+      # if only routing for subset of trains, omit the trains we won't assemble routes for
+      skip_trains = static.flat_map(:train).to_a
+      trains -= skip_trains
 
       train_routes = Hash.new { |h, k| h[k] = [] }    # map of train to route list
       hexside_bits = Hash.new { |h, k| h[k] = 0 }     # map of hexside_id to bit number
@@ -49,6 +53,7 @@ module Engine
       nodes.each do |node|
         if Time.now - now > path_timeout
           puts 'Path timeout reached'
+          path_walk_timed_out = true
           break
         else
           puts "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}"
@@ -66,6 +71,7 @@ module Engine
           if Time.now - node_now > node_timeout
             # TODO: this is not a complete node.walk abort, find somthing more than :abort but less than break.
             # Or wait til node.walk speed is improved and this may become less important
+            path_walk_timed_out = true
             node_abort = true
             next :abort
           end
@@ -161,7 +167,11 @@ module Engine
       puts "Evaluated #{connections.size} paths, found #{@next_hexside_bit} unique hexsides, and found valid routes "\
            "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
 
-      static.each { |route| train_routes[route.train] = [route] }
+      static.each do |route|
+        # recompute bitfields of passed-in routes since the bits may have changed across auto-router runs
+        route.bitfield = bitfield_from_connection(route.connection_data, hexside_bits)
+        train_routes[route.train] = [route] # force this train's route to be the passed-in one
+      end
 
       train_routes.each do |train, routes|
         train_routes[train] = routes.sort_by(&:revenue).reverse.take(route_limit)
@@ -174,6 +184,8 @@ module Engine
            "routes with depth #{limit}"
 
       possibilities = js_evaluate_combos(sorted_routes, route_timeout)
+
+      @flash&.call('Auto route selection failed to complete (timeout)') if path_walk_timed_out || (Time.now - now > route_timeout)
 
       # final sanity check on best combos: recompute each route.revenue in case it needs to reject a combo
       max_routes = possibilities.max_by do |routes|
@@ -203,27 +215,33 @@ module Engine
       bitfield = [0]
       connection.each do |conn|
         paths = conn[:chain][:paths]
-        (paths.size - 1).times do |index|
-          # hand-optimized ruby gives faster opal code
-          node1 = paths[index]
-          node2 = paths[index + 1]
-          case node1.edges.size
-          when 1
-            # node1 has 1 edge, connect it to first edge of node2
-            hexside_left = node1.edges[0].id
-            hexside_right = node2.edges[0].id
-            check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
-          when 2
-            # node1 has 2 edges, connect them as well as 2nd edge to first node2 edge
-            hexside_left = node1.edges[0].id
-            hexside_right = node1.edges[1].id
-            check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
-            hexside_left = hexside_right
-            hexside_right  = node2.edges[0].id
-            check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
-          else
-            puts "  ERROR: auto-router found unexpected number of path node edges #{node1.edges.size}. "\
-                 'Route combos may be be incorrect'
+        if paths.size == 1 # special case for tiny intra-tile path like in 18NewEngland (issue #6890)
+          hexside_left = paths[0].nodes[0].id
+          hexside_right = paths[0].nodes[1].id
+          check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
+        else
+          (paths.size - 1).times do |index|
+            # hand-optimized ruby gives faster opal code
+            node1 = paths[index]
+            node2 = paths[index + 1]
+            case node1.edges.size
+            when 1
+              # node1 has 1 edge, connect it to first edge of node2
+              hexside_left = node1.edges[0].id
+              hexside_right = node2.edges[0].id
+              check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
+            when 2
+              # node1 has 2 edges, connect them as well as 2nd edge to first node2 edge
+              hexside_left = node1.edges[0].id
+              hexside_right = node1.edges[1].id
+              check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
+              hexside_left = hexside_right
+              hexside_right  = node2.edges[0].id
+              check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
+            else
+              puts "  ERROR: auto-router found unexpected number of path node edges #{node1.edges.size}. "\
+                   'Route combos may be be incorrect'
+            end
           end
         end
       end
@@ -259,7 +277,7 @@ module Engine
     end
 
     # The js-in-Opal algorithm
-    def js_evaluate_combos(_rb_sorted_routes, route_timeout)
+    def js_evaluate_combos(_rb_sorted_routes, _route_timeout)
       rb_possibilities = []
       possibilities_count = 0
       conflicts = 0
@@ -271,7 +289,7 @@ module Engine
       let counter = 0
       let max_revenue = 0
       let js_now = Date.now()
-      let js_route_timeout = route_timeout * 1000
+      let js_route_timeout = _route_timeout * 1000
 
       // marshal Opal objects to js for faster/easier access
       const js_sorted_routes = []
@@ -368,8 +386,6 @@ module Engine
         rb_possibilities['$<<'](rb_routes)
       }
       )
-
-      @flash&.call('Auto route selection failed to complete (timeout)') if Time.now - now > route_timeout
 
       puts "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} "\
            "conflicting combos in: #{Time.now - now}"
