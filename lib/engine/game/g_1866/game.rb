@@ -529,6 +529,7 @@ module Engine
           'I5' => [3, 9],
         }.freeze
 
+        NATIONAL_MARKET_SHARE_LIMIT = 80
         NATIONAL_COMPANIES = %w[P2 P3 P4 P5 P6 P7].freeze
         NATIONAL_CORPORATIONS = %w[GBN FN AHN BN SPN SWN GN G1 G2 G3 G4 G5 IN I1 I2 I3 I4 I5].freeze
         NATIONAL_REGION_HEXES = {
@@ -867,6 +868,10 @@ module Engine
 
           # 13 corporations * 10 loans
           Array.new(130) { |id| Loan.new(id, @loan_value) }
+        end
+
+        def init_share_pool
+          G1866::SharePool.new(self)
         end
 
         def init_stock_market
@@ -1340,7 +1345,7 @@ module Engine
         end
 
         def corporation_closes(corporation)
-          @log << "#{corporation.name} have share price of 0, and will close"
+          @log << "#{corporation.name} have share price of #{format_currency(0)}, and will close"
 
           if corporation.loans.size.positive?
             loan = corporation.loans.size * loan_value
