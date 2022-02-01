@@ -127,7 +127,7 @@ class Game < Base
       description: description,
       user: user.to_h,
       players: ordered_players.map(&:to_h),
-      min_players: defined?(min_players) ? min_players : nil,
+      min_players: min_players || nil,
       max_players: max_players,
       title: title,
       settings: settings_h,
