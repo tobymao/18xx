@@ -428,13 +428,6 @@ module Engine
             Engine::Step::BuyTrain,
           ], round_num: round_num)
         end
-
-        def active_players
-          return super if @finished
-
-          company = company_by_id('ER')
-          current_entity == company ? [@round.company_sellers[company]] : super
-        end
       end
     end
   end
