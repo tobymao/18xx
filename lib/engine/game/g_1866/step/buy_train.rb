@@ -47,8 +47,12 @@ module Engine
           def process_buy_train(action)
             entity = action.entity
             price = action.price
+            train = action.train
+            train.variant = action.variant
             remaining = price - entity.cash
             if remaining.positive? && @game.can_take_loan?(entity) && @game.trains_empty?(entity)
+              check_for_cheapest_train(train)
+
               raise GameError, "#{entity.owner.name} cannot contribute funds as long as #{entity.name} can take loans"
             end
 

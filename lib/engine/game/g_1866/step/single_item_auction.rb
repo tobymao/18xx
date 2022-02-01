@@ -96,7 +96,11 @@ module Engine
 
           def remove_company(company)
             @companies.delete(company)
-            @log << "#{company.name} is removed from the game"
+            @log << if @game.class::NATIONAL_COMPANIES.include?(company.id)
+                      "#{company.name} closes. It will form in phase 5"
+                    else
+                      "#{company.name} closes and is removed from the game"
+                    end
           end
 
           def setup

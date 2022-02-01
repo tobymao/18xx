@@ -11,7 +11,11 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'Gives priority in ISR. Closes at end of IAR when ISR priority determined.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -27,6 +31,9 @@ module Engine
                 corporations: ['GBN'],
                 owner_type: 'player',
                 from: 'par',
+              },
+              {
+                type: 'no_buy',
               },
             ],
             color: nil,
@@ -45,6 +52,9 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              {
+                type: 'no_buy',
+              },
             ],
             color: nil,
           },
@@ -61,6 +71,9 @@ module Engine
                 corporations: ['AHN'],
                 owner_type: 'player',
                 from: 'par',
+              },
+              {
+                type: 'no_buy',
               },
             ],
             color: nil,
@@ -79,6 +92,9 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              {
+                type: 'no_buy',
+              },
             ],
             color: nil,
           },
@@ -96,6 +112,9 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              {
+                type: 'no_buy',
+              },
             ],
             color: nil,
           },
@@ -112,6 +131,9 @@ module Engine
                 corporations: ['SWN'],
                 owner_type: 'player',
                 from: 'par',
+              },
+              {
+                type: 'no_buy',
               },
             ],
             color: nil,
@@ -132,7 +154,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -142,7 +168,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -152,7 +182,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -162,7 +196,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -172,7 +210,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -182,7 +224,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -192,7 +238,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
         ].freeze
@@ -237,7 +287,7 @@ module Engine
             float_percent: 20,
             shares: [20, 20, 20, 20, 20],
             always_market_price: true,
-            coordinates: %w[K25 L18 N22 O23 O21 J22 L24 M23 Q25],
+            coordinates: %w[K25 L18 L26 N22 N26 O23 O21 P26 J22 L24 M23 Q25],
             color: '#e2ceb6',
             text_color: 'black',
             reservation_color: nil,
@@ -293,7 +343,7 @@ module Engine
             float_percent: 20,
             shares: [20, 20, 20, 20, 20],
             always_market_price: true,
-            coordinates: %w[O1 T2 R4 U1],
+            coordinates: %w[O1 T2 R0 R4 U1],
             color: '#bea481',
             text_color: 'black',
             reservation_color: nil,
@@ -322,7 +372,7 @@ module Engine
             hide_shares: true,
             shares: [50, 50],
             always_market_price: true,
-            coordinates: %w[H14 F22 E25],
+            coordinates: %w[H14 H26 F22 E25],
             color: '#d0c1de',
             text_color: 'black',
             reservation_color: nil,
