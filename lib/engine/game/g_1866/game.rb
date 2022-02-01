@@ -944,6 +944,7 @@ module Engine
 
         def operating_round(round_num)
           @current_turn = "OR#{round_num}"
+          @turn = round_num
           G1866::Round::Operating.new(self, [
             G1866::Step::StockTurnToken,
             Engine::Step::HomeToken,
