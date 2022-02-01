@@ -79,13 +79,13 @@ module Engine
                 ' This company survives until phase six as a non-revenue paying company.',
           sym: 'GBC',
           abilities: [
-            type: 'tile lay',
+            type: 'tile_lay',
             owner_type: 'corporation',
             reachable: true,
             special: false,
             when: 'track',
             tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69],
-            cost: 30
+            cost: 30,
           ],
           color: nil,
         },
