@@ -23,6 +23,24 @@ module Engine
           @round.num_laid_track += 1
           @round.laid_hexes << action.hex
         end
+
+        def remove_border_calculate_cost!(tile, entity, spender)
+          hex = tile.hex
+          types = []
+          total_cost = tile.borders.dup.sum do |border|
+            next 0 unless (cost = border.cost)
+
+            edge = border.edge
+            neighbor = hex.neighbors[edge]
+            next 0 unless hex.targeting?(neighbor)
+
+            tile.borders.delete(border)
+            types << border.type
+            cost - border_cost_discount(entity, spender, cost, hex)
+          end
+
+          [total_cost, types]
+        end
       end
     end
   end
