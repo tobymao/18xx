@@ -2,6 +2,7 @@
 
 require_relative '../base'
 require_relative 'meta'
+require_relative 'company'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'scenarios'
@@ -265,6 +266,18 @@ module Engine
           @scenario['cert-limit']
         end
 
+        def init_companies(players)
+          game_companies.map do |company|
+            G18GB::Company.new(**company)
+          end.compact
+        end
+
+        def close_company(company)
+          @bank.spend(company.revenue, company.owner)
+          @log << "#{company.name} closes, paying #{format_currency(company.revenue)} to  #{company.owner.name}"
+          company.close!
+        end
+
         def game_companies
           scenario_comps = @scenario['companies']
           self.class::COMPANIES.select { |comp| scenario_comps.include?(comp['sym']) }
@@ -411,15 +424,14 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
-            Engine::Step::Exchange,
             Engine::Step::HomeToken,
-            Engine::Step::BuySellParSharesCompanies,
+            G18GB::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18GB::Step::SpecialChoose,
             Engine::Step::HomeToken,
             G18GB::Step::TrackAndToken,
             Engine::Step::Route,

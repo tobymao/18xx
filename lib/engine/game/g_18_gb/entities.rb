@@ -14,7 +14,13 @@ module Engine
                   "until they have purchased the LNWR Director's Certificate.",
             sym: 'LB',
             color: nil,
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F21'] }],
+            open_abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['F21'],
+              },
+            ],
           },
           {
             name: 'Arbroath & Forfar',
@@ -25,7 +31,13 @@ module Engine
                   'which they control. A tile placed in Perth as a nomral tile lay does not close the AF.',
             sym: 'AF',
             color: nil,
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['K2'] }],
+            open_abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['K2']
+              }
+            ],
           },
           {
             name: 'Great Northern',
@@ -35,7 +47,13 @@ module Engine
                   'per game, after the GN has closed, for any company which they control.',
             sym: 'GN',
             color: nil,
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I18'] }],
+            open_abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['I18']
+              }
+            ],
           },
           {
             name: 'Stockton & Darlington',
@@ -45,7 +63,13 @@ module Engine
                   'owned by Companies that they control, from the time that the LM closes until the end of the game.',
             sym: 'SD',
             color: nil,
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I12'] }],
+            open_abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['I12']
+              }
+            ],
           },
           {
             name: 'Liverpool & Manchester',
@@ -55,7 +79,13 @@ module Engine
                   'by Companies that they control, from the time that the LM closes until the end of the game.',
             sym: 'LM',
             color: nil,
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F15'] }],
+            open_abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['F15']
+              }
+            ],
           },
           {
             name: 'Leicester & Swannington',
@@ -66,7 +96,13 @@ module Engine
                   'control.',
             sym: 'LS',
             color: nil,
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H21'] }],
+            open_abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['H21']
+              }
+            ],
           },
           {
             name: 'Taff Vale',
@@ -80,7 +116,13 @@ module Engine
                   'force the TV to close.',
             sym: 'TV',
             color: nil,
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C20'] }],
+            open_abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['C20']
+              }
+            ],
           },
           {
             name: 'Maryport & Carlisle',
@@ -90,7 +132,13 @@ module Engine
                   'per game, after the MC has closed, for any company which they control.',
             sym: 'MC',
             color: nil,
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['G10'] }],
+            open_abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['G10']
+              }
+            ],
           },
           {
             name: 'Chester & Holyhead',
@@ -100,7 +148,13 @@ module Engine
                   'trains run by Companies that they control, from the time that the CH closes until the end of the game.',
             sym: 'CH',
             color: nil,
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['E16'] }],
+            open_abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['E16']
+              }
+            ],
           },
         ].freeze
 
