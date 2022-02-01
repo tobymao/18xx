@@ -39,6 +39,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
+        SELL_AFTER = :any_time
+
         TRACK_RESTRICTION = :restrictive
 
         HOME_TOKEN_TIMING = :float
@@ -321,6 +323,56 @@ module Engine
 
         def init_round_finished
           @players.sort_by! { |p| [p.cash, -@companies.count { |c| c.owner == p }] }
+        end
+        
+        def check_new_layer
+        end
+
+        def par_prices(corp)
+          stock_market.par_prices
+        end
+
+        def bundles_for_corporation(share_holder, corporation, shares: nil)
+          return [] unless corporation.ipoed
+
+          shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
+
+          shares.flat_map.with_index do |share, index|
+            bundle = shares.take(index + 1)
+            percent = bundle.sum(&:percent)
+            bundles = [Engine::ShareBundle.new(bundle, percent)]
+            if share.president
+              normal_percent = corporation.share_percent
+              difference = corporation.presidents_percent - normal_percent
+              num_partial_bundles = difference / normal_percent
+              (1..num_partial_bundles).each do |n|
+                bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
+              end
+            end
+            bundles.each { |b| b.share_price = (b.price_per_share / 2).to_i if corporation.trains.empty? }
+            bundles
+          end
+        end
+
+        def player_value(player)
+          player.cash +
+            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
+            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }
+            .sum { |s| (s.price / 2).to_i } + player.companies.sum(&:value)
+        end
+
+        def liquidity(player)
+          player.cash +
+            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
+            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }
+            .sum { |s| (s.price / 2).to_i }
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::Exchange,
+            Engine::Step::BuySellParSharesCompanies,
+          ])
         end
 
         def operating_round(round_num)

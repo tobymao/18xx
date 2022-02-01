@@ -116,6 +116,7 @@ module Engine
             coordinates: 'G4',
             color: '#0a70b3',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'GER',
@@ -128,6 +129,7 @@ module Engine
             coordinates: 'J25',
             color: '#37b2e2',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'GSWR',
@@ -140,6 +142,7 @@ module Engine
             coordinates: 'F5',
             color: '#ec767c',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'GWR',
@@ -152,6 +155,7 @@ module Engine
             coordinates: 'D23',
             color: '#008f4f',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'LNWR',
@@ -165,6 +169,7 @@ module Engine
             color: '#0a0a0a',
             text_color: '#ffffff',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'LSWR',
@@ -177,6 +182,7 @@ module Engine
             coordinates: 'D25',
             color: '#fcea18',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'LYR',
@@ -189,6 +195,7 @@ module Engine
             coordinates: 'H15',
             color: '#baa4cb',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'MR',
@@ -201,6 +208,7 @@ module Engine
             coordinates: 'H19',
             color: '#dd0030',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'MSLR',
@@ -213,6 +221,7 @@ module Engine
             coordinates: 'H17',
             color: '#881a1e',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'NBR',
@@ -225,6 +234,7 @@ module Engine
             coordinates: 'I6',
             color: '#eb6f0e',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'NER',
@@ -237,6 +247,7 @@ module Engine
             coordinates: 'J13',
             color: '#7bb137',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             sym: 'SWR',
@@ -249,6 +260,7 @@ module Engine
             coordinates: 'A20',
             color: '#9a9a9d',
             reservation_color: nil,
+            always_market_price: true,
           },
       ].freeze
       end
