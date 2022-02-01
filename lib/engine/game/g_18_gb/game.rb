@@ -435,7 +435,7 @@ module Engine
             Engine::Step::HomeToken,
             G18GB::Step::TrackAndToken,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18GB::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
