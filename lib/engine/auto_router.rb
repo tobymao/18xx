@@ -39,16 +39,16 @@ module Engine
       now = Time.now
 
       skip_paths = static.flat_map(&:paths).to_h { |path| [path, true] }
-      # if only routing for subset of trains, keep track of which ones we'll assemble routes for
+      # if only routing for subset of trains, omit the trains we won't assemble routes for
       skip_trains = static.flat_map(:train).to_a
-      look_trains = trains - skip_trains
+      trains -= skip_trains
 
       train_routes = Hash.new { |h, k| h[k] = [] }    # map of train to route list
       hexside_bits = Hash.new { |h, k| h[k] = 0 }     # map of hexside_id to bit number
       @next_hexside_bit = 0
 
       path_abort = Hash.new { |h, k| h[k] } # map of train to path_abort flag for that train
-      look_trains.each { |train| path_abort[train] = false } # populate the hash keys with company's trains
+      trains.each { |train| path_abort[train] = false } # populate the hash keys with company's trains
 
       nodes.each do |node|
         if Time.now - now > path_timeout
@@ -130,7 +130,7 @@ module Engine
           abort = nil
 
           # build a test route for each train, use route.revenue to check for errors, keep the good ones
-          look_trains.each do |train|
+          trains.each do |train|
             bitfield = bitfield_from_connection(connections[id], hexside_bits)
             route = Engine::Route.new(
               @game,
@@ -161,8 +161,6 @@ module Engine
         puts ' Node timeout reached' if node_abort
       end
 
-      @flash&.call('Auto route path walk failed to complete (PATH TIMEOUT)') if path_walk_timed_out
-
       # Check that there are no duplicate hexside bits (algorithm error)
       mismatch = hexside_bits.size - hexside_bits.uniq.size
       puts "  ERROR: hexside_bits contains #{mismatch} duplicate bits" if mismatch != 0
@@ -186,6 +184,8 @@ module Engine
            "routes with depth #{limit}"
 
       possibilities = js_evaluate_combos(sorted_routes, route_timeout)
+
+      @flash&.call('Auto route selection failed to complete (timeout)') if path_walk_timed_out || (Time.now - now > route_timeout)
 
       # final sanity check on best combos: recompute each route.revenue in case it needs to reject a combo
       max_routes = possibilities.max_by do |routes|
@@ -277,7 +277,7 @@ module Engine
     end
 
     # The js-in-Opal algorithm
-    def js_evaluate_combos(_rb_sorted_routes, route_timeout)
+    def js_evaluate_combos(_rb_sorted_routes, _route_timeout)
       rb_possibilities = []
       possibilities_count = 0
       conflicts = 0
@@ -289,7 +289,7 @@ module Engine
       let counter = 0
       let max_revenue = 0
       let js_now = Date.now()
-      let js_route_timeout = route_timeout * 1000
+      let js_route_timeout = _route_timeout * 1000
 
       // marshal Opal objects to js for faster/easier access
       const js_sorted_routes = []
@@ -386,8 +386,6 @@ module Engine
         rb_possibilities['$<<'](rb_routes)
       }
       )
-
-      @flash&.call('Auto route selection failed to complete (ROUTE TIMEOUT)') if Time.now - now > route_timeout
 
       puts "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} "\
            "conflicting combos in: #{Time.now - now}"
