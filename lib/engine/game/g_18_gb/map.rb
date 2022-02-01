@@ -379,7 +379,7 @@ module Engine
             ['L25'] => 'path=a:1,b:2;path=a:1,b:3',
             ['M2'] => 'town=revenue:10;path=a:1,b:_0;path=a:2,b:_0',
           },
-          green: {
+          blue: {
             ['D23'] => 'path=a:2,b:4;path=a:5,b:0;upgrade=cost:50,terrain:river;label=S',
             ['J5'] => 'path=a:1,b:2;upgrade=cost:50,terrain:river;label=FT',
           },
@@ -450,7 +450,7 @@ module Engine
             ['L25'] => 'path=a:1,b:2;path=a:1,b:3',
             ['M2'] => 'town=revenue:10;path=a:1,b:_0;path=a:2,b:_0',
           },
-          green: {
+          blue: {
             ['J5'] => 'path=a:1,b:2;upgrade=cost:50,terrain:river;label=FT',
           },
         }.freeze
@@ -516,7 +516,7 @@ module Engine
             ['L13'] => 'path=a:1,b:2',
             ['L25'] => 'path=a:1,b:2;path=a:1,b:3',
           },
-          green: {
+          blue: {
             ['D23'] => 'path=a:2,b:4;path=a:5,b:0;upgrade=cost:50,terrain:river;label=S',
           },
         }.freeze
