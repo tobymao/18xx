@@ -216,7 +216,7 @@ module Engine
           str = super
 
           bonus = revenue_for_red_to_red_bonus(route, route.stops)
-          str += " + R2R(#{bonus})" if bonus.positive
+          str += " + R2R(#{bonus})" if bonus.positive?
 
           str
         end
