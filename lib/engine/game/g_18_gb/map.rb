@@ -47,12 +47,12 @@ module Engine
             'color' => 'yellow',
             'code' => 'city=revenue:10;path=a:0,b:_0;path=a:_0,b:3',
           },
-          '3' => 3,
-          '4' => 7,
-          '7' => 5,
-          '8' => 15,
-          '9' => 12,
-          '58' => 8,
+          '3' => 'unlimited',
+          '4' => 'unlimited',
+          '7' => 'unlimited',
+          '8' => 'unlimited',
+          '9' => 'unlimited',
+          '58' => 'unlimited',
           'G04' =>
           {
             'count' => 1,
