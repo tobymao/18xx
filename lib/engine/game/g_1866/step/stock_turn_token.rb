@@ -99,6 +99,7 @@ module Engine
             previous_president = corporation.owner
             super
 
+            @round.recalculate_order
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
           end
 
