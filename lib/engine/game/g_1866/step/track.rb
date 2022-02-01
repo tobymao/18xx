@@ -7,6 +7,12 @@ module Engine
     module G1866
       module Step
         class Track < Engine::Step::Track
+          def actions(entity)
+            return [] if @game.game_end_triggered_last_round?
+
+            super
+          end
+
           def available_hex(entity, hex)
             return nil if @game.national_corporation?(entity) && !@game.hex_within_national_region?(entity, hex)
             return nil if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
@@ -44,6 +50,15 @@ module Engine
 
           def legal_tile_rotation?(entity, hex, tile)
             return true if hex.name == @game.class::PARIS_HEX || hex.name == @game.class::LONDON_HEX
+
+            super
+          end
+
+          def log_skip(entity)
+            if @game.game_end_triggered_last_round?
+              @log << "Last round, #{entity.name} may not lay any track"
+              return
+            end
 
             super
           end

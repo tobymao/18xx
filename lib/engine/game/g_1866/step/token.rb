@@ -7,6 +7,12 @@ module Engine
     module G1866
       module Step
         class Token < Engine::Step::Token
+          def actions(entity)
+            return [] if @game.game_end_triggered_last_round?
+
+            super
+          end
+
           def available_hex(entity, hex)
             return nil if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
 
@@ -19,6 +25,11 @@ module Engine
 
           def log_skip(entity)
             return if @game.national_corporation?(entity)
+
+            if @game.game_end_triggered_last_round?
+              @log << "Last round, #{entity.name} may not lay any tokens"
+              return
+            end
 
             @log << "#{entity.name} skips place a token"
           end
