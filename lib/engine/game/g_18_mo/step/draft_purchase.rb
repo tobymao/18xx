@@ -38,7 +38,7 @@ module Engine
           end
 
           def pass_description
-            return 'Pass (for free)' if current_entity&.cash < PASS_COST
+            return 'Pass (for free)' if current_entity.cash < PASS_COST
 
             "Pass (Pay #{@game.format_currency(PASS_COST)} to discount #{@companies.first.name})"
           end
