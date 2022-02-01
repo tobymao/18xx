@@ -24,6 +24,38 @@ module Engine
           @round.laid_hexes << action.hex
         end
 
+        def update_token!(action, entity, tile, old_tile)
+          cities = tile.cities
+          if old_tile.paths.empty? &&
+            !tile.paths.empty? &&
+            cities.size > 1 &&
+            !(tokens = cities.flat_map(&:tokens).compact).empty?
+            # OO or XX tile newly connected to the network - we need to handle its tokens
+            tokens.each do |token|
+              token.remove!
+              if token.corporation == entity
+                # if the token is for the corporation laying the tile, it will be connected to track
+                place_token(
+                  token.corporation,
+                  tile.cities[0],
+                  token,
+                  connected: false,
+                  extra_action: true
+                )
+              else
+                # if the token is from another corporation, it will be unconnected
+                place_token(
+                  token.corporation,
+                  tile.cities[1],
+                  token,
+                  connected: false,
+                  extra_action: true
+                )
+              end
+            end
+          end
+        end
+
         def remove_border_calculate_cost!(tile, entity, spender)
           hex = tile.hex
           types = []
