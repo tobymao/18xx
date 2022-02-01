@@ -319,6 +319,10 @@ module Engine
           ])
         end
 
+        def init_round_finished
+          @players.sort_by! { |p| [p.cash, -@companies.count { |c| c.owner == p }] }
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
