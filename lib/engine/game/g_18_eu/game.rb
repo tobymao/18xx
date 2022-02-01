@@ -290,7 +290,7 @@ module Engine
 
           minor_tile = exchange_ability.owner.tokens.first.city.tile
           colocated = corporations.select do |c|
-            c.tokens.map { |t| t.city&.tile }.include?(minor_tile)
+            c.tokens.any? { |t| t.ctity&.tile == minor_tile }
           end
 
           (connected + colocated).uniq
