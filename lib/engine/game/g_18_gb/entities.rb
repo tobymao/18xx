@@ -72,7 +72,7 @@ module Engine
             value: 45,
             revenue: 15,
             desc: 'The SD gives a bonus of £10 for Middlesbrough (J13). The owner of the SD may use this bonus for any trains ' \
-                  'owned by Companies that they control, from the time that the LM closes until the end of the game.',
+                  'owned by Companies that they control, from the time that the SD closes until the end of the game.',
             sym: 'SD',
             color: nil,
             open_abilities: [
@@ -80,6 +80,15 @@ module Engine
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['I12']
+              }
+            ],
+            closed_abilities: [
+              {
+                type: 'hex_bonus',
+                when: 'owning_player_or_turn',
+                owner_type: 'player',
+                amount: 10,
+                hexes: ['J13'],
               }
             ],
           },
@@ -96,6 +105,15 @@ module Engine
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['F15']
+              }
+            ],
+            closed_abilities: [
+              {
+                type: 'hex_bonus',
+                when: 'owning_playing_or_turn',
+                owner_type: 'player',
+                amount: 10,
+                hexes: ['E14'],
               }
             ],
           },
@@ -177,6 +195,15 @@ module Engine
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['E16']
+              }
+            ],
+            closed_abilities: [
+              {
+                type: 'hex_bonus',
+                when: 'owning_playing_or_turn',
+                owner_type: 'player',
+                amount: 20,
+                hexes: ['C14'],
               }
             ],
           },

@@ -464,11 +464,26 @@ module Engine
           tile.rotation.zero?
         end
 
+        def revenue_bonuses(corporation)
+          bonuses = {}
+          @companies.select { |co| co.owner == corporation.owner }.each do |company|
+            ability = abilities(company, :hex_bonus)
+            ability.hexes.each { |hex| bonuses[hex] = ability.amount } if ability
+          end
+          bonuses
+        end
+
         def revenue_for(route, stops)
-          # visit the same hex multiple times, but only count each once
+          # first work out which unique hexes we visited
           revenues = {}
           route.visited_stops.each { |stop| revenues[stop.hex.name] = stop.route_revenue(route.phase, route.train) }
-          estuary_bonuses(route) + revenues.sum { |_hex, revenue| revenue }
+          
+          # now check for bonuses from owner's companies
+          hex_bonuses = revenue_bonuses(route.corporation)
+
+          # total up revenue per hex and add on any estuary bonuses
+          revenues.sum { |hex, revenue| hex_bonuses[hex] ? revenue + hex_bonuses[hex] : revenue } +
+            estuary_bonuses(route)
         end
 
         def estuary_bonuses(route)
