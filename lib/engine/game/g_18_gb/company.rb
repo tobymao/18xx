@@ -24,9 +24,19 @@ module Engine
           @interval = opts[:interval]
           @color = opts[:color] || :yellow
           @text_color = opts[:text_color] || :black
-          @closed_abilities = closed_abilities
-
+          
           init_abilities(open_abilities + [close_ability])
+          init_closed_abilities(closed_abilities)
+        end
+
+        def init_closed_abilities(abilities)
+          @closed_abilities = []
+          (abilities || []).each do |ability|
+            klass = Ability::Base.type(ability[:type])
+            ability = Object.const_get("Engine::Ability::#{klass}").new(**ability)
+            ability.owner = self
+            @closed_abilities << ability
+          end
         end
 
         def close_ability
@@ -39,11 +49,9 @@ module Engine
         end
 
         def close!
-          @closed = true
           @revenue = 0
-
           all_abilities.dup.each { |a| remove_ability(a) }
-          init_abilities(@closed_abilities)
+          @closed_abilities.each { |a| add_ability(a) }
         end
 
       end

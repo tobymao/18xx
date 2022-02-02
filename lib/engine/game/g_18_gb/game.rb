@@ -447,6 +447,7 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             G18GB::Step::SpecialChoose,
+            Engine::Step::SpecialTrack,
             Engine::Step::HomeToken,
             G18GB::Step::TrackAndToken,
             Engine::Step::Route,

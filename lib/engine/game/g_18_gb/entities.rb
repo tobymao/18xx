@@ -38,6 +38,18 @@ module Engine
                 hexes: ['K2']
               }
             ],
+            closed_abilities: [
+              {
+                type: 'tile_lay',
+                when: 'owning_player_track',
+                owner_type: 'player',
+                hexes: ['I2'],
+                tiles: %w[G39 G40 G41 G36 G37 G38 G30 G34],
+                reachable: true,
+                special: false,
+                count: 1,
+              },
+            ],
           },
           {
             name: 'Great Northern',
@@ -102,6 +114,18 @@ module Engine
                 owner_type: 'player',
                 hexes: ['H21']
               }
+            ],
+            closed_abilities: [
+              {
+                type: 'tile_lay',
+                when: 'owning_player_track',
+                owner_type: 'player',
+                hexes: ['H21'],
+                tiles: %w[G18 G19 G21 G22 G24 G26 G27 G28 G30],
+                reachable: true,
+                special: false,
+                count: 1,
+              },
             ],
           },
           {
