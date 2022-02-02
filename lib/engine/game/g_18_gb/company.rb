@@ -50,6 +50,7 @@ module Engine
 
         def close!
           @revenue = 0
+          @value = 0
           all_abilities.dup.each { |a| remove_ability(a) }
           @closed_abilities.dup.each { |a| add_ability(a) }
         end
