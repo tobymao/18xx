@@ -12,8 +12,8 @@ module Engine
 
           def process_place_token(action)
             minor_to_merge = find_minor(action.city, action.entity.owner)
-            exchange_share(minor_to_merge, action.entity) if minor_to_merge
-            merge_minor!(minor_to_merge, action.entity) if minor_to_merge
+            exchange_share(minor_to_merge, action.entity, action.entity) if minor_to_merge
+            merge_minor!(minor_to_merge, action.entity, action.entity) if minor_to_merge
 
             super
           end

@@ -39,12 +39,13 @@ module Engine
 
           def exchange_minor(minor, bundle)
             corporation = bundle.corporation
+            source = bundle.owner
             unless can_gain?(minor.owner, bundle, exchange: true)
               raise GameError, "#{minor.name} cannot be exchanged for #{corporation.name}"
             end
 
-            exchange_share(minor, corporation)
-            merge_minor!(minor, bundle.corporation)
+            exchange_share(minor, corporation, source)
+            merge_minor!(minor, corporation, source)
           end
 
           def can_gain?(entity, bundle, exchange: false)
