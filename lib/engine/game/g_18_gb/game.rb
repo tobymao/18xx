@@ -482,10 +482,11 @@ module Engine
         def revenue_bonuses(corporation)
           bonuses = {}
           @companies.select { |co| co.owner == corporation.owner }.each do |company|
-            ability = abilities(company, :hex_bonus)
-            next unless ability
+            company.all_abilities.each do |ability|
+              next unless ability.type == :hex_bonus
 
-            ability.hexes.each { |hex| bonuses[hex] = ability.amount }
+              ability.hexes.each { |hex| bonuses[hex] = ability.amount }
+            end
           end
           bonuses
         end
@@ -499,7 +500,7 @@ module Engine
           hex_bonuses = revenue_bonuses(route.corporation)
 
           # total up revenue per hex and add on any estuary and NS and EW bonuses
-          revenues.sum { |hex, revenue| hex_bonuses[hex] ? revenue + hex_bonuses[hex] : revenue } +
+          revenues.sum { |hex, revenue| hex_bonuses[hex] ? (revenue + hex_bonuses[hex]) : revenue } +
             estuary_bonuses(route) +
             compass_bonuses(route)
         end
