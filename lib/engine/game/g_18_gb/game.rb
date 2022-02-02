@@ -284,9 +284,16 @@ module Engine
           end.compact
         end
 
+        def remove_blockers(company)
+          abilities(company, :blocks_hexes).hexes.each do |hex|
+            hex_by_id(hex).tile.blockers.reject! { |c| c == company }
+          end
+        end
+
         def close_company(company)
           @bank.spend(company.revenue, company.owner)
           @log << "#{company.name} closes, paying #{format_currency(company.revenue)} to  #{company.owner.name}"
+          remove_blockers(company)
           company.close!
         end
 
