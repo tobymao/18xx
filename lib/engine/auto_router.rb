@@ -183,9 +183,14 @@ module Engine
       puts "Finding route combos of best #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} "\
            "routes with depth #{limit}"
 
+      now = Time.now
       possibilities = js_evaluate_combos(sorted_routes, route_timeout)
 
-      @flash&.call('Auto route selection failed to complete (timeout)') if path_walk_timed_out || (Time.now - now > route_timeout)
+      if path_walk_timed_out
+        @flash&.call('Auto route path walk failed to complete (PATH TIMEOUT)')
+      elsif Time.now - now > route_timeout
+        @flash&.call('Auto route selection failed to complete (ROUTE TIMEOUT)')
+      end
 
       # final sanity check on best combos: recompute each route.revenue in case it needs to reject a combo
       max_routes = possibilities.max_by do |routes|

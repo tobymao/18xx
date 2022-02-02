@@ -19,6 +19,7 @@ class User < Base
   end + %w[
     consent notifications webhook webhook_url webhook_user_id red_logo bg font bg2 font2 your_turn hotseat_game
     white yellow green brown gray red blue purple
+    path_timeout route_timeout
   ]).freeze
 
   def update_settings(params)
