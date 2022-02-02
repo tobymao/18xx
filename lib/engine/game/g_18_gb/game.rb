@@ -337,6 +337,7 @@ module Engine
           @log << "Corporations available SR1: #{tiers.select { |_, t| t == 1 }.map { |c, _| c }.sort.join(', ')}"
           @log << "Corporations available SR2: #{tiers.select { |_, t| t == 2 }.map { |c, _| c }.sort.join(', ')}"
           @tiers = tiers
+          @train_bought = false
         end
 
         def event_float_60!
@@ -460,6 +461,16 @@ module Engine
           revenues.sum { |_hex, revenue| revenue }
         end
 
+        def buy_train(operator, train, price = nil)
+          @train_bought = true
+          super
+        end
+
+        def new_operating_round(round_num = 1)
+          @train_bought = false
+          super
+        end        
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             G18GB::Step::SpecialChoose,
@@ -472,6 +483,11 @@ module Engine
             Engine::Step::BuyTrain,
           ], round_num: round_num)
         end
+
+        def or_round_finished
+          depot.export! if !@train_bought
+        end
+
       end
     end
   end
