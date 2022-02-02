@@ -68,6 +68,11 @@ module Engine
           unlimited: :yellow,
         )
 
+        EVENTS_TEXT = {
+          'float_60' =>
+          ['Start with 60% sold', 'New corporations float once 60% of their shares have been sold']
+        }.freeze
+
         PHASES = [
           {
             name: '2+1',
@@ -153,6 +158,11 @@ module Engine
             ],
             price: 200,
             rusts_on: '4X',
+            events: [
+              {
+                'type' => 'float_60'
+              }
+            ],
           },
           {
             name: '4+2',
@@ -318,6 +328,11 @@ module Engine
           @log << "Corporations available SR1: #{tiers.select { |_, t| t == 1 }.map { |c, _| c }.sort.join(', ')}"
           @log << "Corporations available SR2: #{tiers.select { |_, t| t == 2 }.map { |c, _| c }.sort.join(', ')}"
           @tiers = tiers
+        end
+
+        def event_float_60!
+          @log << '-- Event: New corporations float once 60% of their shares have been sold'
+          @corporations.reject{ |c| c.floated? }.each{ |c| c.float_percent = 60 }
         end
 
         def sorted_corporations
