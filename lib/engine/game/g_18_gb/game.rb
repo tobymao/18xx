@@ -446,6 +446,13 @@ module Engine
           ])
         end
 
+        def revenue_for(route, stops)
+          # visit the same hex multiple times, but only count each once
+          revenues = {}
+          route.visited_stops.each { |stop| revenues[stop.hex.name] = stop.route_revenue(route.phase, route.train) }
+          revenues.sum { |_hex, revenue| revenue }
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             G18GB::Step::SpecialChoose,
