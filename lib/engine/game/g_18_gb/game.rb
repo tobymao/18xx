@@ -77,11 +77,18 @@ module Engine
           ['Start with 60% sold', 'New corporations float once 60% of their shares have been sold']
         }.freeze
 
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'bonus_20_20' => ['NS £20, EW £20', 'North-South bonus £20, East-West bonus £20'],
+          'bonus_20_30' => ['NS £20, EW £30', 'North-South bonus £20, East-West bonus £30'],
+          'bonus_20_40' => ['NS £20, EW £40', 'North-South bonus £20, East-West bonus £40'],
+        ).freeze
+
         PHASES = [
           {
             name: '2+1',
             train_limit: { '5-share': 3, '10-share': 4 },
             tiles: [:yellow],
+            status: ['bonus_20_20'],
             operating_rounds: 2,
           },
           {
@@ -89,6 +96,7 @@ module Engine
             on: '3+1',
             train_limit: { '5-share': 3, '10-share': 4 },
             tiles: %i[yellow green],
+            status: ['bonus_20_20'],
             operating_rounds: 2,
           },
           {
@@ -96,6 +104,7 @@ module Engine
             on: '4+2',
             train_limit: { '5-share': 2, '10-share': 3 },
             tiles: %i[yellow green blue],
+            status: ['bonus_20_30'],
             operating_rounds: 2,
           },
           {
@@ -103,6 +112,7 @@ module Engine
             on: '5+2',
             train_limit: { '5-share': 2, '10-share': 3 },
             tiles: %i[yellow green blue brown],
+            status: ['bonus_20_30'],
             operating_rounds: 2,
           },
           {
@@ -110,6 +120,7 @@ module Engine
             on: '4X',
             train_limit: 2,
             tiles: %i[yellow green blue brown],
+            status: ['bonus_20_30'],
             operating_rounds: 2,
           },
           {
@@ -117,6 +128,7 @@ module Engine
             on: '5X',
             train_limit: 2,
             tiles: %i[yellow green blue brown],
+            status: ['bonus_20_30'],
             operating_rounds: 2,
           },
           {
@@ -124,6 +136,7 @@ module Engine
             on: '6X',
             train_limit: 2,
             tiles: %i[yellow green blue brown gray],
+            status: ['bonus_20_40'],
             operating_rounds: 2,
           },
         ].freeze
@@ -483,9 +496,38 @@ module Engine
           # now check for bonuses from owner's companies
           hex_bonuses = revenue_bonuses(route.corporation)
 
-          # total up revenue per hex and add on any estuary bonuses
+          # total up revenue per hex and add on any estuary and NS and EW bonuses
           revenues.sum { |hex, revenue| hex_bonuses[hex] ? revenue + hex_bonuses[hex] : revenue } +
-            estuary_bonuses(route)
+            estuary_bonuses(route) +
+            compass_bonuses(route)
+        end
+
+        def compass_points_on_route(route)
+          hexes = route.ordered_paths.map { |path| path.hex.coordinates }
+          @scenario['compass-hexes'].select do |compass, compasshexes|
+            hexes.any? { |coords| compasshexes.include?(coords) }
+          end.compact.map(&:first)
+        end
+
+        def ns_bonus
+          return 20
+        end
+
+        def ew_bonus
+          if @phase.status.include?('bonus_20_40')
+            40
+          elsif @phase.status.include?('bonus_20_30')
+            30
+          else
+            20
+          end
+        end
+
+        def compass_bonuses(route)
+          points = compass_points_on_route(route)
+          ns = points.include?('N') && points.include?('S') ? ns_bonus : 0
+          ew = points.include?('E') && points.include?('W') ? ew_bonus : 0
+          ns + ew
         end
 
         def estuary_bonuses(route)

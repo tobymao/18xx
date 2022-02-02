@@ -26,6 +26,13 @@ module Engine
             'required_bids' => 2,
             'map' => '2NS',
             'gray-tiles' => false,
+            'compass-hexes' =>
+            {
+              'N' => %w[G0 I0 K0],
+              'E' => %w[K0 K22 J27 G26],
+              'S' => %w[J27 G26 D27],
+              'W' => ['E6'],
+            },
           },
           '2EW' =>
           {
@@ -48,6 +55,13 @@ module Engine
             'required_bids' => 2,
             'map' => '2EW',
             'gray-tiles' => false,
+            'compass-hexes' =>
+            {
+              'N' => %w[H9 J11],
+              'E' => %w[K22 J27 G26],
+              'S' => %w[J27 G26 D27 a25],
+              'W' => %w[a19 C16 C14],
+            },
           },
           '3' =>
           {
@@ -70,6 +84,13 @@ module Engine
             'required_bids' => 1,
             'map' => 'Standard',
             'gray-tiles' => false,
+            'compass-hexes' =>
+            {
+              'N' => %w[G0 I0 K0],
+              'E' => %w[K0 K22 J27 G26],
+              'S' => %w[J27 G26 D27 a25],
+              'W' => %w[a19 C16 C14 E6],
+            },
           },
           '4Std' =>
           {
@@ -92,6 +113,13 @@ module Engine
             'required_bids' => 1,
             'map' => 'Standard',
             'gray-tiles' => false,
+            'compass-hexes' =>
+            {
+              'N' => %w[G0 I0 K0],
+              'E' => %w[K0 K22 J27 G26],
+              'S' => %w[J27 G26 D27 a25],
+              'W' => %w[a19 C16 C14 E6],
+            },
           },
           '4Alt' =>
           {
@@ -114,6 +142,13 @@ module Engine
             'required_bids' => 1,
             'map' => 'Standard',
             'gray-tiles' => false,
+            'compass-hexes' =>
+            {
+              'N' => %w[G0 I0 K0],
+              'E' => %w[K0 K22 J27 G26],
+              'S' => %w[J27 G26 D27 a25],
+              'W' => %w[a19 C16 C14 E6],
+            },
           },
           '5' =>
           {
@@ -136,6 +171,13 @@ module Engine
             'required_bids' => 1,
             'map' => 'Standard',
             'gray-tiles' => true,
+            'compass-hexes' =>
+            {
+              'N' => %w[G0 I0 K0],
+              'E' => %w[K0 K22 J27 G26],
+              'S' => %w[J27 G26 D27 a25],
+              'W' => %w[a19 C16 C14 E6],
+            },
           },
           '6' =>
           {
@@ -158,6 +200,13 @@ module Engine
             'required_bids' => 2,
             'map' => 'Standard',
             'gray-tiles' => true,
+            'compass-hexes' =>
+            {
+              'N' => %w[G0 I0 K0],
+              'E' => %w[K0 K22 J27 G26],
+              'S' => %w[J27 G26 D27 a25],
+              'W' => %w[a19 C16 C14 E6],
+            },
           },
         }.freeze
       end
