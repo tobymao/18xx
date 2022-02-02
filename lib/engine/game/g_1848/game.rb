@@ -264,6 +264,7 @@ module Engine
             distance: 2,
             price: 200,
             num: 6,
+            available_on: '5',
           },
         ].freeze
 
