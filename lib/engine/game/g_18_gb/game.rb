@@ -454,11 +454,33 @@ module Engine
           ])
         end
 
+        def upgrades_to_correct_color?(from, to)
+          (from.color == to.color && from.color == :blue) || super
+        end
+
+        def legal_tile_rotation?(_entity, _hex, tile)
+          return super unless tile.color == :blue
+
+          tile.rotation.zero?
+        end
+
         def revenue_for(route, stops)
           # visit the same hex multiple times, but only count each once
           revenues = {}
           route.visited_stops.each { |stop| revenues[stop.hex.name] = stop.route_revenue(route.phase, route.train) }
-          revenues.sum { |_hex, revenue| revenue }
+          estuary_bonuses(route) + revenues.sum { |_hex, revenue| revenue }
+        end
+
+        def estuary_bonuses(route)
+          route.ordered_paths.sum do |path|
+            if path.hex.coordinates == 'I4' && path.track == :dual
+              40
+            elsif path.hex.coordinates == 'C22' && path.track == :dual
+              30
+            else
+              0
+            end
+          end
         end
 
         def buy_train(operator, train, price = nil)

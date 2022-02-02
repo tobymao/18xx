@@ -214,6 +214,18 @@ module Engine
           '46' => 2,
           '47' => 2,
           '911' => 4,
+          'G32' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'path=a:0,b:3;path=a:1,b:2;path=a:4,b:5,track:dual;icon=image:18_gb/plus_40;label=FT',
+          },
+          'G33' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'path=a:2,b:4;path=a:2,b:5,track:dual;path=a:5,b:0;icon=image:18_gb/plus_30;label=S',
+          },
         }.freeze
         GRAY_TILES = {
           'G31' =>
@@ -231,18 +243,6 @@ module Engine
                       'path=a:5,b:_0',
           },
           '912' => 2,
-          'G32' =>
-          {
-            'count' => 1,
-            'color' => 'blue',
-            'code' => 'path=a:0,b:1;path=a:2,b:5;path=a:3,b:4,track:dual;label=FT',
-          },
-          'G33' =>
-          {
-            'count' => 1,
-            'color' => 'blue',
-            'code' => 'path=a:2,b:4;path=a:2,b:5,track:dual;path=a:5,b:0;label=S',
-          },
         }.freeze
 
         LOCATION_NAMES = {
