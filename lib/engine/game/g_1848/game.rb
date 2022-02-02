@@ -196,31 +196,76 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 6 },
-                  { name: '2+', distance: 2, price: 120, rusts_on: '4', num: 6 },
-                  { name: '3', distance: 3, price: 200, rusts_on: '6', num: 5 },
-                  { name: '3+', distance: 3, price: 230, rusts_on: '6', num: 5 },
-                  { name: '4', distance: 4, price: 300, rusts_on: '8', num: 4 },
-                  { name: '4+', distance: 4, price: 340, rusts_on: '8', num: 4 },
-                  {
-                    name: '5',
-                    distance: 5,
-                    price: 500,
-                    num: 3,
-                    events: [{ 'type' => 'close_companies' }],
-                  },
-                  { name: '5+', distance: 5, price: 550, num: 3 },
-                  { name: '6', distance: 6, price: 600, num: 2 },
-                  { name: '6+', distance: 6, price: 660, num: 2 },
-                  {
-                    name: 'D',
-                    distance: 999,
-                    price: 1100,
-                    num: 6,
-                    discount: { '4' => 300, '5' => 300, '6' => 300 },
-                  },
-                  { name: '8', distance: 8, price: 800, num: 6 },
-                  { name: '2E', distance: 2, price: 200, num: 6 }].freeze
+        TRAINS = [
+          {
+            name: '2',
+            distance: 2,
+            price: 100,
+            rusts_on: '4',
+            num: 6,
+            variants: [
+              { name: '2+', price: 120 },
+            ],
+          },
+          {
+            name: '3',
+            distance: 3,
+            price: 200,
+            rusts_on: '6',
+            num: 5,
+            variants: [
+              { name: '3+', distance: 3, price: 230 },
+            ],
+          },
+          {
+            name: '4',
+            distance: 4,
+            price: 300,
+            rusts_on: '8',
+            num: 4,
+            variants: [
+              { name: '4+', distance: 4, price: 340 },
+            ],
+          },
+          {
+            name: '5',
+            distance: 5,
+            price: 500,
+            num: 3,
+            events: [{ 'type' => 'close_companies' }],
+            variants: [
+              { name: '5+', distance: 5, price: 550 },
+],
+          },
+          {
+            name: '6',
+            distance: 6,
+            price: 600,
+            num: 2,
+            variants: [
+              { name: '6+', distance: 6, price: 660 },
+            ],
+          },
+          {
+            name: 'D',
+            distance: 999,
+            price: 1100,
+            num: 6,
+            discount: { '4' => 300, '5' => 300, '6' => 300 },
+          },
+          {
+            name: '8',
+            distance: 8,
+            price: 800,
+            num: 6,
+          },
+          {
+            name: '2E',
+            distance: 2,
+            price: 200,
+            num: 6,
+          },
+        ].freeze
 
         COMPANIES = [
           {
