@@ -14,6 +14,8 @@ module Engine
           end
 
           def setup
+            @game.log << 'After First Stock Round is finished any unsold Pre-State Railways, Coal Railways, '\
+                         'and Mountain Railways will be removed from the game'
             @reverse = true
 
             super
@@ -22,6 +24,8 @@ module Engine
           end
 
           def select_entities
+            return super unless @reverse
+
             @game.players.reverse
           end
 
@@ -29,10 +33,10 @@ module Engine
             if @entity_index == @game.players.size - 1
               @reverse = false
               @entities = @game.players
+              @game.log << 'Player order is from now on normal'
             end
-            return super unless @reverse
 
-            @entity_index = (@entity_index - 1) % @entities.size
+            super
           end
 
           def finish_round

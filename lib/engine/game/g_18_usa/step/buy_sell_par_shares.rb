@@ -21,6 +21,10 @@ module Engine
             1
           end
 
+          def must_bid_increment_multiple?
+            false
+          end
+
           def validate_bid(entity, corporation, bid)
             max_bid = max_bid(entity, corporation)
             raise GameError, "Invalid bid, maximum bidding power is #{max_bid}" if bid > max_bid
