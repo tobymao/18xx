@@ -75,6 +75,8 @@ module Engine
         EVENTS_TEXT = {
           'float_60' =>
           ['Start with 60% sold', 'New corporations float once 60% of their shares have been sold'],
+          'float_10_share' =>
+          ['Start as 10-share', 'New corporations are 10-share corporations (that float at 60%)'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -213,6 +215,11 @@ module Engine
               },
             ],
             price: 500,
+            events: [
+              {
+                'type' => 'float_10_share',
+              },
+            ],
           },
           {
             name: '4X',
@@ -360,6 +367,11 @@ module Engine
           @corporations.reject(&:floated?).each { |c| c.float_percent = 60 }
         end
 
+        def event_float_10_share!
+          @log << '-- Event: Unstarted corporations are converted to 10-share corporations'
+          @corporations.reject(&:floated?).each { |c| convert_to_ten_share(c) }
+        end
+
         def sorted_corporations
           ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
           ipoed.sort + others
@@ -460,6 +472,30 @@ module Engine
 
           @log << "#{corporation.name} places a token on #{hex.name}"
           city.place_token(corporation, token)
+        end
+
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+        end
+
+        def convert_to_ten_share(corporation)
+          corporation.type = :'10-share'
+
+          original_shares = shares_for_corporation(corporation)
+          corporation.share_holders.clear
+
+          original_shares.each { |s| s.percent = 10 }
+          original_shares.first.percent = 20
+          shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 5) }
+
+          original_shares.each { |s| corporation.share_holders[s.owner] += s.percent }
+
+          shares.each do |share|
+            add_new_share(share)
+          end
         end
 
         def stock_round
