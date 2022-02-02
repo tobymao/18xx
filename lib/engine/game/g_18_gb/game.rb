@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../base'
+require_relative '../cities_plus_towns_route_distance_str'
 require_relative 'meta'
 require_relative 'company'
 require_relative 'entities'
@@ -12,6 +13,7 @@ module Engine
     module G18GB
       class Game < Game::Base
         include_meta(G18GB::Meta)
+        include CitiesPlusTownsRouteDistanceStr
         include Entities
         include Map
         include Scenarios
