@@ -58,11 +58,11 @@ module Engine
         SOLD_OUT_INCREASE = false
 
         MARKET = [
-          %w[0 10 20 30 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
+          %w[0c 10 20 30 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
              200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
-          %w[0 10 20 30 40 45 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
+          %w[0c 10 20 30 40 45 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
              200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
-          %w[0 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
+          %w[0c 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
              200pxzw 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
           %w[120P 100P 75P 75P 75P 120P 80P 80P 80P 50P],
         ].freeze
@@ -95,7 +95,8 @@ module Engine
                                                             par: :yellow,
                                                             par_1: :green,
                                                             par_2: :brown,
-                                                            par_3: :gray).freeze
+                                                            par_3: :gray,
+                                                            close: :red).freeze
 
         PHASES = [
           {
@@ -528,6 +529,7 @@ module Engine
           'I5' => [3, 9],
         }.freeze
 
+        NATIONAL_COMPANIES = %w[P2 P3 P4 P5 P6 P7].freeze
         NATIONAL_CORPORATIONS = %w[GBN FN AHN BN SPN SWN GN G1 G2 G3 G4 G5 IN I1 I2 I3 I4 I5].freeze
         NATIONAL_REGION_HEXES = {
           'G1' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
@@ -546,7 +548,7 @@ module Engine
           'FN' => %w[H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
                      M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13],
           'GBN' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
-          'SPN' => %w[O1 P2 P4 Q1 Q3 Q5 R2 R4 S1 S3 T2 U1],
+          'SPN' => %w[O1 P2 P4 Q1 Q3 Q5 R0 R2 R4 S1 S3 T2 U1],
           'SWN' => %w[L12 L14 L16 M13 M15],
           'GN' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25 D18 E15 E17
                      E19 E21 F16 F18 I17 I19 J16 J18 J20 K17 K19 K21 I13 I15 J14 K15 H20 H22 I21 I23],
@@ -617,6 +619,8 @@ module Engine
         }.freeze
 
         attr_reader :game_end_triggered_corporation, :game_end_triggered_round
+
+        def action_processed(_action); end
 
         def buy_train(operator, train, price = nil)
           super
@@ -750,11 +754,11 @@ module Engine
               player = corporation.owner
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
                       " have to contribute #{format_currency(corporation_cash.abs)}"
-              player.cash -= corporation_cash.abs
-              corporation.cash = 0
+              player_spend(player, corporation_cash.abs)
+              corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
             else
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(game_end_loan)}"
-              corporation.cash -= game_end_loan
+              corporation.spend(game_end_loan, @bank)
             end
             corporation.loans.clear
           end
@@ -950,6 +954,8 @@ module Engine
             G1866::Step::LoanInterestPayment,
             G1866::Step::LoanRepayment,
             G1866::Step::IssueShares,
+            G1866::Step::AcquireCompany,
+            G1866::Step::CloseCorporation,
           ], round_num: round_num)
         end
 
@@ -1020,6 +1026,15 @@ module Engine
           ]
         end
 
+        def purchasable_companies(entity = nil)
+          return [] unless corporation?(entity)
+
+          @companies.select do |company|
+            company.owner&.player? && entity != company.owner && entity.owner == company.owner &&
+              !abilities(company, :no_buy)
+          end
+        end
+
         def redeemable_shares(entity)
           return [] if !entity.corporation? || !corporation?(entity)
 
@@ -1087,7 +1102,7 @@ module Engine
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
           price = corporation.share_price.price
-          was_president = corporation.president?(bundle.owner)
+          was_president = corporation.president?(bundle.owner) || bundle.owner == corporation
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           if was_president
             bundle.num_shares.times { @stock_market.move_left(corporation) }
@@ -1226,7 +1241,7 @@ module Engine
                     'This train is allowed to run a route of just a single city.'
           end
 
-          if corporation?(entity)
+          if corporation?(entity) && @phase.current[:name] != 'L/2'
             help << 'When a port city is used as a terminus in a run it pays the port bonus to the treasury. '\
                     'Each port token can be only used once in an OR'
           end
@@ -1314,6 +1329,45 @@ module Engine
           return false unless corporation
 
           corporation.type == :share_5 || corporation.type == :share_10
+        end
+
+        def corporation_closes(corporation)
+          @log << "#{corporation.name} have share price of 0, and will close"
+
+          if corporation.loans.size.positive?
+            loan = corporation.loans.size * loan_value
+            corporation_cash = corporation.cash - loan
+            loan_str = "#{corporation.name} have loans of value #{format_currency(loan)}."
+            if corporation_cash.negative?
+              player = corporation.owner
+              @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
+                      " have to contribute #{format_currency(corporation_cash.abs)}"
+              player_spend(player, corporation_cash.abs)
+              corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+            else
+              @log << "#{loan_str} #{corporation.name} pays #{format_currency(loan)}"
+              corporation.spend(loan, @bank)
+            end
+            corporation.loans.clear
+          end
+
+          tokens = []
+          corporation.tokens.each do |token|
+            next unless token.used
+
+            if token.price.zero?
+              tokens << token
+            else
+              token.remove!
+            end
+          end
+          corporation.close!
+          corporation = reset_corporation(corporation)
+          tokens.each do |token|
+            city = token.city
+            token.remove!
+            city.place_token(corporation, corporation.next_token, free: true, check_tokenable: false)
+          end
         end
 
         def corporation_token_rights!(corporation)
@@ -1497,10 +1551,10 @@ module Engine
             transist_hub_revenue = 0
             palace_car_revenue = 0
             stops.each do |stop|
-              next if !stop || !stop.city?
+              next if !stop || (!stop.city? && !stop.offboard?)
 
               palace_car_revenue += 10
-              next unless stop.tokened_by?(entity)
+              next if !stop.city? && !stop.tokened_by?(entity)
 
               stop_base_revenue = stop.route_base_revenue(phase, train)
               transist_hub_revenue = stop_base_revenue if stop_base_revenue > transist_hub_revenue
@@ -1647,8 +1701,6 @@ module Engine
           port_hexes = {}
           routes.each do |route|
             train = route.train
-            next if local_train?(train)
-
             stops = route.visited_stops
             train_multiplier = train.obsolete ? 0.5 : 1
 

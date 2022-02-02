@@ -15,6 +15,18 @@ module Engine
             actions
           end
 
+          def revenue
+            duplicates = path.group_by(&:hex).select { |_, nodes| nodes.size > 1 }.keys
+            if duplicates.find { |hex| @game.resource_tile?(hex.tile) }
+              raise GameError, 'Cannot pass through resource tiles more than once'
+            end
+            if duplicates.find { |hex| @game.class::RURAL_TILES.include?(hex.tile.name) }
+              raise GameError, 'Cannot pass through Rural Junction tiles more than once'
+            end
+
+            super
+          end
+
           def round_state
             super.merge({
                           train_upgrade_assignments: {},

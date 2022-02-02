@@ -11,7 +11,7 @@ module Engine
         DEV_STAGE = :prealpha
         PROTOTYPE = true
 
-        GAME_SUBTITLE = 'The Seven Weeks War'
+        GAME_SUBTITLE = 'Railways of Europe'
         GAME_DESIGNER = 'Simon Cutforth'
         GAME_INFO_URL = 'https://google.com'
         GAME_LOCATION = 'Western Europe'

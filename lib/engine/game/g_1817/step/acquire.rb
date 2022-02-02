@@ -121,13 +121,8 @@ module Engine
 
           def process_payoff_loan(action)
             entity = action.entity
-            loan = action.loan
-            amount = loan.amount
-            @log << "#{entity.name} pays off a loan for #{@game.format_currency(amount)}"
-            entity.spend(amount, @game.bank)
+            @game.payoff_loan(entity, action.loan, adjust_share_price: false)
 
-            entity.loans.delete(loan)
-            @game.loans << loan
             # The unpaid loans don't affect share price unless they're not paid off.
             @unpaid_loans -= 1
             @passed_take_loans = true
@@ -294,7 +289,7 @@ module Engine
             if @unpaid_loans.positive?
               price = @buyer.share_price.price
               @unpaid_loans.times do
-                @game.stock_market.move_left(@buyer)
+                @game.loan_taken_stock_market_movement(@buyer)
               end
               @game.log_share_price(@buyer, price)
               if @buyer.share_price.acquisition? && @round.offering.include?(@buyer)

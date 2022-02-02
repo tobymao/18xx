@@ -46,7 +46,7 @@ module Engine
             token_permium = @game.stock_turn_token_premium?(operator)
             if @game.player_debt(operator).zero? && !@game.game_end_triggered? && ((valid_token && @round.operating?) ||
               (valid_token && !@round.operating? && !token_permium))
-              get_par_prices(operator, nil).sort_by(&:price).each do |p|
+              get_par_prices(operator).sort_by(&:price).each do |p|
                 par_str = @game.par_price_str(p)
                 choices[par_str] = par_str
               end
@@ -62,18 +62,18 @@ module Engine
             'Initial Stock Round'
           end
 
-          def get_par_prices(entity, corp)
+          def get_par_prices(entity, corp = nil)
             return get_minor_national_par_prices(entity, corp) if @game.minor_national_corporation?(corp)
             return [@game.forced_formation_par_prices(corp).last] if @game.germany_or_italy_national?(corp)
 
             par_type = @game.phase_par_type(corp)
             par_prices = @game.par_prices_sorted.select do |p|
-              extra = if entity.player? && @game.stock_turn_token_premium?(entity)
+              extra = if corp.nil? && entity.player? && @game.stock_turn_token_premium?(entity)
                         @round.round_num * (@game.players.size - 1) * 5
                       else
                         0
                       end
-              multiplier = !corp || @game.major_national_corporation?(corp) ? 1 : 2
+              multiplier = corp.nil? || @game.major_national_corporation?(corp) ? 1 : 2
               p.types.include?(par_type) && (p.price * multiplier) + extra <= entity.cash &&
                 @game.can_par_share_price?(p, corp)
             end
@@ -106,7 +106,7 @@ module Engine
               track_action(action, entity.owner)
             else
               share_price = nil
-              get_par_prices(entity.owner, nil).each do |p|
+              get_par_prices(entity.owner).each do |p|
                 next unless choice == @game.par_price_str(p)
 
                 share_price = p
