@@ -24,6 +24,8 @@ module Engine
 
         CURRENCY_FORMAT_STR = '£%d'
 
+        CERT_LIMIT_INCLUDES_PRIVATES = false
+
         PRESIDENT_SALES_TO_MARKET = true
 
         MIN_BID_INCREMENT = 5
