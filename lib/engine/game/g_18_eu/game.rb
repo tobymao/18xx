@@ -265,6 +265,17 @@ module Engine
           super
         end
 
+        def float_corporation(corporation)
+          super
+
+          return unless @phase.status.include?('normal_formation')
+
+          bundle = Engine::ShareBundle.new(corporation.treasury_shares)
+          @bank.spend(bundle.price, corporation)
+          @share_pool.transfer_shares(bundle, @share_pool)
+          @log << "#{corporation.name} places remaining shares on the Market for #{format_currency(bundle.price)}"
+        end
+
         def all_free_hexes(corporation)
           hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
