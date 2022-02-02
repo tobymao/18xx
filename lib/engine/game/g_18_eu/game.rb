@@ -221,6 +221,16 @@ module Engine
           str
         end
 
+        def check_other(route)
+          city_hexes = route.stops.map do |stop|
+            next unless stop.city?
+
+            stop.tile.hex
+          end.compact
+
+          raise GameError, 'Cannot stop at Paris/Vienna/Berlin twice' if city_hexes.size != city_hexes.uniq.size
+        end
+
         def emergency_issuable_cash(corporation)
           emergency_issuable_bundles(corporation).max_by(&:num_shares)&.price || 0
         end
