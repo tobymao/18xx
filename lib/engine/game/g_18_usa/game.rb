@@ -523,13 +523,13 @@ module Engine
 
         def timeline
           @timeline = [
-            'After SR 1 all unused subsidies are removed from the map',
-            'After OR 1.1 all unsold 2 trains are exported.',
-            'After OR 1.2 all unsold 2+ trains are exported.',
-            'After OR 2.1 no trains are exported',
-            'After OR 2.2 all unsold 3 trains are exported',
-            'After OR 3.1 and further ORs the next available train will be exported '\
-            '(removed, triggering phase change as if purchased)',
+            'End of SR 1: All unused subsidies are removed from the map',
+            'End of OR 1.1: All unsold 2 trains are exported.',
+            'End of OR 1.2: All unsold 2+ trains are exported.',
+            'End of OR 2.1: No trains are exported',
+            'End of OR 2.2: All unsold 3 trains are exported',
+            'End of each subsequent OR: The next available train is exported', \
+            '*Exported trains are removed from the game and can trigger phase changes as if purchased',
           ].freeze
         end
 
