@@ -15,6 +15,23 @@ module Engine
 
             super
           end
+
+          def update_token!(_action, _entity, tile, old_tile)
+            super
+
+            return if old_tile.cities.size == 1 || tile.color != :brown
+
+            tile.cities.each do |city|
+              prev = nil
+              city.tokens.compact.sort_by { |t| t.corporation.name }.each do |token|
+                if prev&.corporation == token.corporation
+                  prev.remove!
+                  @game.log << "#{token.corporation.name} redundant token removed from #{tile.hex.name}"
+                end
+                prev = token
+              end
+            end
+          end
         end
       end
     end
