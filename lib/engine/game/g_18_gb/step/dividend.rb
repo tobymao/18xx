@@ -8,7 +8,7 @@ module Engine
       module Step
         class Dividend < Engine::Step::Dividend
           def holder_for_corporation(entity)
-            return entity
+            entity
           end
 
           def share_price_change(entity, revenue)

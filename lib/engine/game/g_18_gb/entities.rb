@@ -35,8 +35,8 @@ module Engine
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
-                hexes: ['K2']
-              }
+                hexes: ['K2'],
+              },
             ],
             closed_abilities: [
               {
@@ -63,8 +63,8 @@ module Engine
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
-                hexes: ['I18']
-              }
+                hexes: ['I18'],
+              },
             ],
           },
           {
@@ -79,8 +79,8 @@ module Engine
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
-                hexes: ['I12']
-              }
+                hexes: ['I12'],
+              },
             ],
             closed_abilities: [
               {
@@ -89,7 +89,7 @@ module Engine
                 owner_type: 'player',
                 amount: 10,
                 hexes: ['J13'],
-              }
+              },
             ],
           },
           {
@@ -104,8 +104,8 @@ module Engine
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
-                hexes: ['F15']
-              }
+                hexes: ['F15'],
+              },
             ],
             closed_abilities: [
               {
@@ -114,7 +114,7 @@ module Engine
                 owner_type: 'player',
                 amount: 10,
                 hexes: ['E14'],
-              }
+              },
             ],
           },
           {
@@ -130,8 +130,8 @@ module Engine
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
-                hexes: ['H21']
-              }
+                hexes: ['H21'],
+              },
             ],
             closed_abilities: [
               {
@@ -162,8 +162,8 @@ module Engine
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
-                hexes: ['C20']
-              }
+                hexes: ['C20'],
+              },
             ],
           },
           {
@@ -178,8 +178,8 @@ module Engine
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
-                hexes: ['G10']
-              }
+                hexes: ['G10'],
+              },
             ],
           },
           {
@@ -194,8 +194,8 @@ module Engine
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
-                hexes: ['E16']
-              }
+                hexes: ['E16'],
+              },
             ],
             closed_abilities: [
               {
@@ -204,7 +204,7 @@ module Engine
                 owner_type: 'player',
                 amount: 20,
                 hexes: ['C14'],
-              }
+              },
             ],
           },
         ].freeze

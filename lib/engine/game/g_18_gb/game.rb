@@ -74,7 +74,7 @@ module Engine
 
         EVENTS_TEXT = {
           'float_60' =>
-          ['Start with 60% sold', 'New corporations float once 60% of their shares have been sold']
+          ['Start with 60% sold', 'New corporations float once 60% of their shares have been sold'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -177,8 +177,8 @@ module Engine
             rusts_on: '4X',
             events: [
               {
-                'type' => 'float_60'
-              }
+                'type' => 'float_60',
+              },
             ],
           },
           {
@@ -293,7 +293,7 @@ module Engine
           @scenario['cert-limit']
         end
 
-        def init_companies(players)
+        def init_companies(_players)
           game_companies.map do |company|
             G18GB::Company.new(**company)
           end.compact
@@ -357,7 +357,7 @@ module Engine
 
         def event_float_60!
           @log << '-- Event: New corporations float once 60% of their shares have been sold'
-          @corporations.reject{ |c| c.floated? }.each{ |c| c.float_percent = 60 }
+          @corporations.reject(&:floated?).each { |c| c.float_percent = 60 }
         end
 
         def sorted_corporations
@@ -379,11 +379,10 @@ module Engine
         def init_round_finished
           @players.sort_by! { |p| [p.cash, -@companies.count { |c| c.owner == p }] }
         end
-        
-        def check_new_layer
-        end
 
-        def par_prices(corp)
+        def check_new_layer; end
+
+        def par_prices(_corp)
           stock_market.par_prices
         end
 
@@ -458,6 +457,7 @@ module Engine
           city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
           token = corporation.find_token_by_type
           return unless city.tokenable?(corporation, tokens: token)
+
           @log << "#{corporation.name} places a token on #{hex.name}"
           city.place_token(corporation, token)
         end
@@ -483,16 +483,18 @@ module Engine
           bonuses = {}
           @companies.select { |co| co.owner == corporation.owner }.each do |company|
             ability = abilities(company, :hex_bonus)
-            ability.hexes.each { |hex| bonuses[hex] = ability.amount } if ability
+            next unless ability
+
+            ability.hexes.each { |hex| bonuses[hex] = ability.amount }
           end
           bonuses
         end
 
-        def revenue_for(route, stops)
+        def revenue_for(route, _stops)
           # first work out which unique hexes we visited
           revenues = {}
           route.visited_stops.each { |stop| revenues[stop.hex.name] = stop.route_revenue(route.phase, route.train) }
-          
+
           # now check for bonuses from owner's companies
           hex_bonuses = revenue_bonuses(route.corporation)
 
@@ -504,13 +506,13 @@ module Engine
 
         def compass_points_on_route(route)
           hexes = route.ordered_paths.map { |path| path.hex.coordinates }
-          @scenario['compass-hexes'].select do |compass, compasshexes|
+          @scenario['compass-hexes'].select do |_compass, compasshexes|
             hexes.any? { |coords| compasshexes.include?(coords) }
           end.compact.map(&:first)
         end
 
         def ns_bonus
-          return 20
+          20
         end
 
         def ew_bonus
@@ -550,7 +552,7 @@ module Engine
         def new_operating_round(round_num = 1)
           @train_bought = false
           super
-        end        
+        end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
@@ -566,9 +568,8 @@ module Engine
         end
 
         def or_round_finished
-          depot.export! if !@train_bought
+          depot.export! unless @train_bought
         end
-
       end
     end
   end

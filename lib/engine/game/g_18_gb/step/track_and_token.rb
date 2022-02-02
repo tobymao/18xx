@@ -21,25 +21,25 @@ module Engine
             actions << 'pass' if can_use_company_abilities?(entity) || actions.any?
             actions
           end
- 
+
           def can_use_company_abilities?(entity)
             return false unless entity == current_entity
 
-            @game.companies.select(&:owner == current_entity.owner).map { |c| @game.abilities(c, :tile_lay) }.any?
+            @game.companies.select { |c| entity.owner == c.owner }.map { |c| @game.abilities(c, :tile_lay) }.any?
           end
 
           def lay_tile_action(action)
             tile = action.tile
             tile_lay = get_tile_lay(action.entity)
             raise GameError, 'Cannot lay a city tile now' if tile.cities.any? && @laid_city
-  
+
             lay_tile(action, extra_cost: tile_lay[:cost])
             @laid_city = true if action.tile.cities.any?
             @round.num_laid_track += 1
             @round.laid_hexes << action.hex
           end
-  
-          def update_token!(action, entity, tile, old_tile)
+
+          def update_token!(_action, entity, tile, old_tile)
             cities = tile.cities
             if old_tile.paths.empty? &&
               !tile.paths.empty? &&
@@ -70,22 +70,22 @@ module Engine
               end
             end
           end
-  
+
           def remove_border_calculate_cost!(tile, entity, spender)
             hex = tile.hex
             types = []
             total_cost = tile.borders.dup.sum do |border|
               next 0 unless (cost = border.cost)
-  
+
               edge = border.edge
               neighbor = hex.neighbors[edge]
               next 0 unless hex.targeting?(neighbor)
-  
+
               tile.borders.delete(border)
               types << border.type
               cost - border_cost_discount(entity, spender, cost, hex)
             end
-  
+
             [total_cost, types]
           end
 

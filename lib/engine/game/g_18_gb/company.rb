@@ -24,7 +24,7 @@ module Engine
           @interval = opts[:interval]
           @color = opts[:color] || :yellow
           @text_color = opts[:text_color] || :black
-          
+
           init_abilities(open_abilities + [close_ability])
           init_closed_abilities(closed_abilities)
         end
@@ -44,7 +44,7 @@ module Engine
             type: 'choose_ability',
             owner_type: 'player',
             when: 'any',
-            choices: { "close_#{@sym}": "Close #{@name}" }
+            choices: { "close_#{@sym}": "Close #{@name}" },
           }
         end
 
@@ -54,7 +54,6 @@ module Engine
           all_abilities.dup.each { |a| remove_ability(a) }
           @closed_abilities.dup.each { |a| add_ability(a) }
         end
-
       end
     end
   end

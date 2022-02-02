@@ -7,7 +7,6 @@ module Engine
     module G18GB
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-
           def actions(entity)
             return ['choose_ability'] unless choices_ability(entity).empty?
             return [] unless entity == current_entity
@@ -49,7 +48,7 @@ module Engine
             return false if corporation.share_price&.type == :unlimited
 
             percent = entity.percent_of(corporation) + extra_percent
-            return percent > 60
+            percent > 60
           end
 
           def can_buy?(entity, bundle)
@@ -66,30 +65,29 @@ module Engine
           def can_sell?(entity, bundle)
             return super unless @game.class::PRESIDENT_SALES_TO_MARKET
             return unless bundle
-    
+
             corporation = bundle.corporation
-    
+
             timing = @game.check_sale_timing(entity, corporation)
-    
+
             timing &&
               !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&
               can_sell_order? &&
               @game.share_pool.fit_in_bank?(bundle) &&
               can_dump?(entity, bundle)
           end
-    
+
           # can't sell partial president's share to pool if pool is empty
           def can_dump?(entity, bundle)
             corp = bundle.corporation
             return true if !bundle.presidents_share || bundle.percent >= corp.presidents_percent
-    
+
             max_shares = corp.player_share_holders.reject { |p, _| p == entity }.values.max || 0
             return true if max_shares > 10
-    
+
             pool_shares = @game.share_pool.percent_of(corp) || 0
             pool_shares.positive?
           end
-
         end
       end
     end
