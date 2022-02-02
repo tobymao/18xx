@@ -11,7 +11,23 @@ module Engine
             @laid_city = false
             super
           end
-  
+
+          def actions(entity)
+            actions = []
+            return actions if entity != current_entity
+
+            actions << 'lay_tile' if can_lay_tile?(entity)
+            actions << 'place_token' if can_place_token?(entity)
+            actions << 'pass' if can_use_company_abilities?(entity) || actions.any?
+            actions
+          end
+ 
+          def can_use_company_abilities?(entity)
+            return false unless entity == current_entity
+
+            @game.companies.select(&:owner == current_entity.owner).map { |c| @game.abilities(c, :tile_lay) }.any?
+          end
+
           def lay_tile_action(action)
             tile = action.tile
             tile_lay = get_tile_lay(action.entity)
@@ -71,6 +87,16 @@ module Engine
             end
   
             [total_cost, types]
+          end
+
+          def process_place_token(action)
+            entity = action.entity
+            place_token(entity, action.city, action.token)
+            @tokened = true
+          end
+
+          def process_tile_lay(action)
+            lay_tile_action(action)
           end
         end
       end
