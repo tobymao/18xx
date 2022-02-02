@@ -170,11 +170,11 @@ module Engine
               track_action(action, corporation)
 
             elsif corporation.id == @game.class::ITALY_NATIONAL
-              @game.forced_formation_major(@game.corporation_by_id(@game.class::ITALY_NATIONAL), %w[I1 I2 I3 I4 I5])
+              @game.forced_formation_major(@game.corporation_by_id(@game.class::ITALY_NATIONAL), %w[K2S SAR LV PAP TUS])
               track_action(action, corporation)
 
             elsif corporation.id == @game.class::GERMANY_NATIONAL
-              @game.forced_formation_major(@game.corporation_by_id(@game.class::GERMANY_NATIONAL), %w[G1 G2 G3 G4 G5])
+              @game.forced_formation_major(@game.corporation_by_id(@game.class::GERMANY_NATIONAL), %w[PRU HAN BAV WTB SAX])
               track_action(action, corporation)
 
             else

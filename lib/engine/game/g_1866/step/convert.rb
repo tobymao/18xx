@@ -63,10 +63,7 @@ module Engine
 
             # Create 5 new shares
             shares = Array.new(5) { |i| Share.new(entity, percent: 10, index: i + 4) }
-            shares.each do |share|
-              entity.share_holders[entity] += share.percent
-              entity.shares_by_corporation[entity] << share
-            end
+            shares.each { |share| @game.add_new_share(share) }
             entity.type = :share_10
 
             # Buy the shares

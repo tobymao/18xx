@@ -28,7 +28,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['GBN'],
+                corporations: ['GB'],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -48,7 +48,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['FN'],
+                corporations: ['FR'],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -68,7 +68,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['AHN'],
+                corporations: ['AHE'],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -88,7 +88,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['BN'],
+                corporations: ['BNL'],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -108,7 +108,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['SPN'],
+                corporations: ['ESP'],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -128,7 +128,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['SWN'],
+                corporations: ['CH'],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -249,9 +249,9 @@ module Engine
 
         CORPORATIONS = [
           {
-            sym: 'GBN',
+            sym: 'GB',
             name: 'Great Britain National',
-            logo: '1866/GBN',
+            logo: '1866/GB',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -264,9 +264,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'FN',
+            sym: 'FR',
             name: 'France National',
-            logo: '1866/FN',
+            logo: '1866/FR',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -279,9 +279,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'AHN',
+            sym: 'AHE',
             name: 'Austro-Hungary National',
-            logo: '1866/AHN',
+            logo: '1866/AHE',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -293,9 +293,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'GN',
+            sym: 'DE',
             name: 'Germany National',
-            logo: '1866/GN',
+            logo: '1866/DE',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -307,9 +307,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'IN',
+            sym: 'IT',
             name: 'Italy National',
-            logo: '1866/IN',
+            logo: '1866/IT',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -321,9 +321,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'BN',
+            sym: 'BNL',
             name: 'Benelux National',
-            logo: '1866/BN',
+            logo: '1866/BNL',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -335,9 +335,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'SPN',
+            sym: 'ESP',
             name: 'Spain National',
-            logo: '1866/SPN',
+            logo: '1866/ESP',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -349,9 +349,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'SWN',
+            sym: 'CH',
             name: 'Switzerland National',
-            logo: '1866/SWN',
+            logo: '1866/CH',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -363,9 +363,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'G1',
+            sym: 'PRU',
             name: 'Prussia Minor National',
-            logo: '1866/G1',
+            logo: '1866/PRU',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -378,9 +378,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'G2',
+            sym: 'HAN',
             name: 'Hannover Minor National',
-            logo: '1866/G2',
+            logo: '1866/HAN',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -393,9 +393,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'G3',
+            sym: 'BAV',
             name: 'Bavaria Minor National',
-            logo: '1866/G3',
+            logo: '1866/BAV',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -408,9 +408,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'G4',
+            sym: 'WTB',
             name: 'Wurttemburg Minor National',
-            logo: '1866/G4',
+            logo: '1866/WTB',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -423,9 +423,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'G5',
+            sym: 'SAX',
             name: 'Saxony Minor National',
-            logo: '1866/G5',
+            logo: '1866/SAX',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -438,9 +438,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I1',
+            sym: 'K2S',
             name: 'Kgdm 2 Sicilies Minor National',
-            logo: '1866/I1',
+            logo: '1866/K2S',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -453,9 +453,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I2',
+            sym: 'SAR',
             name: 'Sardinia Minor National',
-            logo: '1866/I2',
+            logo: '1866/SAR',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -468,9 +468,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I3',
+            sym: 'LV',
             name: 'Lombardy-Venetia Minor National',
-            logo: '1866/I3',
+            logo: '1866/LV',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -483,9 +483,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I4',
+            sym: 'PAP',
             name: 'Papal States Minor National',
-            logo: '1866/I4',
+            logo: '1866/PAP',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -498,9 +498,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I5',
+            sym: 'TUS',
             name: 'Tuscany Minor National',
-            logo: '1866/I5',
+            logo: '1866/TUS',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
