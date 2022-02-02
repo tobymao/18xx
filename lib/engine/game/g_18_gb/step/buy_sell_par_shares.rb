@@ -45,6 +45,24 @@ module Engine
             @game.close_company(action.entity)
           end
 
+          def ipo_buy_forbidden(entity, corporation, extra_percent)
+            return false if corporation.share_price&.type == :unlimited
+
+            percent = entity.percent_of(corporation) + extra_percent
+            return percent > 60
+          end
+
+          def can_buy?(entity, bundle)
+            return unless bundle&.buyable
+
+            corporation = bundle.corporation
+            entity.cash >= bundle.price &&
+              !@round.players_sold[entity][corporation] &&
+              (can_buy_multiple?(entity, corporation, bundle.owner) || !bought?) &&
+              !(bundle.owner == corporation && ipo_buy_forbidden(entity, corporation, bundle.percent)) &&
+              can_gain?(entity, bundle)
+          end
+
           def can_sell?(entity, bundle)
             return super unless @game.class::PRESIDENT_SALES_TO_MARKET
             return unless bundle

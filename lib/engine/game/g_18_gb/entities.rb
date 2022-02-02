@@ -195,6 +195,7 @@ module Engine
             color: '#0a70b3',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'GER',
@@ -208,6 +209,7 @@ module Engine
             color: '#37b2e2',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'GSWR',
@@ -221,6 +223,7 @@ module Engine
             color: '#ec767c',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'GWR',
@@ -234,6 +237,7 @@ module Engine
             color: '#008f4f',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'LNWR',
@@ -248,6 +252,7 @@ module Engine
             text_color: '#ffffff',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'LSWR',
@@ -261,6 +266,7 @@ module Engine
             color: '#fcea18',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'LYR',
@@ -274,6 +280,7 @@ module Engine
             color: '#baa4cb',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'MR',
@@ -287,6 +294,7 @@ module Engine
             color: '#dd0030',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'MSLR',
@@ -300,6 +308,7 @@ module Engine
             color: '#881a1e',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'NBR',
@@ -313,6 +322,7 @@ module Engine
             color: '#eb6f0e',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'NER',
@@ -326,6 +336,7 @@ module Engine
             color: '#7bb137',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             sym: 'SWR',
@@ -339,6 +350,7 @@ module Engine
             color: '#9a9a9d',
             reservation_color: nil,
             always_market_price: true,
+            max_ownership_percent: 100,
           },
       ].freeze
       end
