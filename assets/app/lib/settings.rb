@@ -35,6 +35,8 @@ module Lib
       hotseat_game: HOTSEAT_VIOLET,
       **Lib::Hex::COLOR,
       **ROUTES,
+      path_timeout: 20,
+      route_timeout: 20,
     }.freeze
 
     def self.included(base)
