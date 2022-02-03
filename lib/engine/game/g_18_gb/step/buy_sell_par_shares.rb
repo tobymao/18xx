@@ -55,6 +55,9 @@ module Engine
             return unless bundle&.buyable
 
             corporation = bundle.corporation
+
+            return if @game.married_to_lnwr(entity) && corporation.id != 'LNWR'
+
             entity.cash >= bundle.price &&
               !@round.players_sold[entity][corporation] &&
               (can_buy_multiple?(entity, corporation, bundle.owner) || !bought?) &&

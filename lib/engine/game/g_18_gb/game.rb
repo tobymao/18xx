@@ -359,6 +359,7 @@ module Engine
           @log << "Corporations available SR1: #{tiers.select { |_, t| t == 1 }.map { |c, _| c }.sort.join(', ')}"
           @log << "Corporations available SR2: #{tiers.select { |_, t| t == 2 }.map { |c, _| c }.sort.join(', ')}"
           @tiers = tiers
+          @lnwr_ipoed = false
           @train_bought = false
         end
 
@@ -396,6 +397,28 @@ module Engine
 
         def par_prices(_corp)
           stock_market.par_prices
+        end
+
+        def married_to_lnwr(player)
+          return false if @lnwr_ipoed
+
+          @companies.any? { |co| co.owner == player && co.sym == 'LB' }
+        end
+
+        def can_par?(corporation, player)
+          return true if @lnwr_ipoed
+
+          if married_to_lnwr(player)
+            # player owns the LB so can only start the LNWR
+            corporation.id == 'LNWR'
+          else
+            # player doesn't own the LB so can start any except the LNWR
+            corporation.id != 'LNWR'
+          end
+        end
+
+        def after_par(corporation)
+          @lnwr_ipoed = true if corporation.id == 'LNWR'
         end
 
         def bundles_for_corporation(share_holder, corporation, shares: nil)
