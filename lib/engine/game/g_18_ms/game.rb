@@ -30,6 +30,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        FIRST_OR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+
         MARKET = [
           %w[65y
              70
@@ -416,8 +418,7 @@ module Engine
 
         def tile_lays(entity)
           return super unless @recently_floated.include?(entity)
-
-          [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+          FIRST_OR_TILE_LAYS
         end
 
         def add_free_train_and_close_company(corporation, company)
