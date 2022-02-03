@@ -102,14 +102,14 @@ module Engine
           {
             name: 'L/2',
             on: '',
-            train_limit: { minor_national: 1, national: 1, share_5: 4 },
+            train_limit: { share_5: 4 },
             tiles: [:yellow],
             operating_rounds: 99,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { minor_national: 1, national: 1, share_5: 3, share_10: 4 },
+            train_limit: { share_5: 3, share_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation can_convert_major],
@@ -117,7 +117,7 @@ module Engine
           {
             name: '4',
             on: '4',
-            train_limit: { minor_national: 1, national: 1, share_5: 3, share_10: 4 },
+            train_limit: { share_5: 3, share_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation can_convert_major],
@@ -125,7 +125,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { minor_national: 1, national: 1, share_5: 2, share_10: 3 },
+            train_limit: { share_5: 2, share_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation],
@@ -133,7 +133,7 @@ module Engine
           {
             name: '6',
             on: '6',
-            train_limit: { minor_national: 1, national: 1, share_5: 2, share_10: 3 },
+            train_limit: { share_5: 2, share_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation],
@@ -141,7 +141,7 @@ module Engine
           {
             name: '8',
             on: '8',
-            train_limit: { minor_national: 1, national: 1, share_5: 1, share_10: 2 },
+            train_limit: { share_5: 1, share_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation],
@@ -149,7 +149,7 @@ module Engine
           {
             name: '10',
             on: '10',
-            train_limit: { minor_national: 1, national: 1, share_5: 1, share_10: 2 },
+            train_limit: { share_5: 1, share_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation],
@@ -724,7 +724,7 @@ module Engine
         def crowded_corps
           @crowded_corps ||= corporations.select do |c|
             trains = c.trains.count { |t| !t.obsolete && !infrastructure_train?(t) }
-            trains > train_limit(c)
+            trains > train_limit(c) && !national_corporation?(c)
           end
         end
 
@@ -944,6 +944,7 @@ module Engine
 
         def operating_round(round_num)
           @current_turn = "OR#{round_num}"
+          @turn = round_num
           G1866::Round::Operating.new(self, [
             G1866::Step::StockTurnToken,
             Engine::Step::HomeToken,
@@ -951,7 +952,7 @@ module Engine
             G1866::Step::Convert,
             G1866::Step::Track,
             G1866::Step::Token,
-            Engine::Step::Route,
+            G1866::Step::Route,
             G1866::Step::Dividend,
             G1866::Step::DiscardTrain,
             G1866::Step::BuyTrain,
@@ -1299,6 +1300,11 @@ module Engine
           return true if from.label.to_s == 'B' && from.color == :white && (to.name == '5' || to.name == '6')
 
           super
+        end
+
+        def after_lay_tile(corporation)
+          @graph.clear if national_corporation?(corporation)
+          @national_graph.clear if corporation?(corporation)
         end
 
         def add_new_share(share)

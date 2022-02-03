@@ -301,7 +301,7 @@ module Engine
             float_percent: 20,
             shares: [20, 20, 20, 20, 20],
             always_market_price: true,
-            coordinates: %w[H14 F22 E25 E19 F18 E17 K19 I15 K15 I23 H20],
+            coordinates: %w[H14 H26 F22 E25 E19 F18 E17 K19 I15 K15 I23 H20],
             color: '#d0c1de',
             text_color: 'black',
             reservation_color: nil,
