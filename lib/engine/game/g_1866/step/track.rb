@@ -95,6 +95,16 @@ module Engine
             check_special_capitol_tile!(hex, @game.class::CORPORATION_FNR, @game.class::CORPORATION_FNR_HOME_HEX)
             check_special_capitol_tile!(hex, @game.class::CORPORATION_KPS, @game.class::CORPORATION_KPS_HOME_HEX)
 
+            # Special case for London
+            if hex.name == @game.class::LONDON_HEX && hex.tile.color == :brown && action.tile.color == :gray
+              hex.tile.cities[1].remove_all_reservations!
+            end
+
+            # Special case for Paris
+            if hex.name == @game.class::PARIS_HEX && hex.tile.color == :brown && action.tile.color == :gray
+              [0, 2, 5].each { |city| hex.tile.cities[city].remove_all_reservations! }
+            end
+
             super
             @game.after_lay_tile(entity)
           end

@@ -698,21 +698,20 @@ module Engine
             # London
             ['F6'] =>
               'city=revenue:yellow_30|green_60|brown_90;path=a:0,b:_0;'\
-              'offboard=revenue:yellow_30|green_60|brown_90;path=a:1,b:_1;'\
+              'city=revenue:yellow_30|green_60|brown_90;path=a:1,b:_1;'\
               'city=revenue:yellow_30|green_60|brown_90;path=a:2,b:_2;'\
               'city=revenue:yellow_30|green_60|brown_90;path=a:3,b:_3;'\
-              'offboard=revenue:yellow_30|green_60|brown_90;path=a:1,b:_4;'\
               'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
               'label=L;frame=color:#fde2c5',
 
             # Paris
             ['J6'] =>
-              'offboard=revenue:yellow_30|green_50|brown_70;path=a:0,b:_0;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:0,b:_0;'\
               'city=revenue:yellow_30|green_50|brown_70;path=a:1,b:_1;'\
-              'offboard=revenue:yellow_30|green_50|brown_70;path=a:2,b:_2;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:2,b:_2;'\
               'city=revenue:yellow_30|green_50|brown_70;path=a:3,b:_3;'\
               'city=revenue:yellow_30|green_50|brown_70;path=a:4,b:_4;'\
-              'offboard=revenue:yellow_30|green_50|brown_70;path=a:5,b:_5;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:5,b:_5;'\
               'label=P;frame=color:#fffbcc',
           },
           gray: {

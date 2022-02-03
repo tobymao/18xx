@@ -1158,6 +1158,12 @@ module Engine
           @red_reservation_entity = corporation_by_id('R')
           @corporations.delete(@red_reservation_entity)
 
+          @london_reservation_entity = corporation_by_id('L')
+          @corporations.delete(@london_reservation_entity)
+
+          @paris_reservation_entity = corporation_by_id('P')
+          @corporations.delete(@paris_reservation_entity)
+
           @current_turn = 'ISR'
 
           @major_national_formed = {}
