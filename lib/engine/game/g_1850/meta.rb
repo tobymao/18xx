@@ -10,7 +10,7 @@ module Engine
         include Game::Meta
         # include G1870::Meta
 
-        DEV_STAGE = :production
+        DEV_STAGE = :prealpha
         # DEPENDS_ON = '1870'
 
         GAME_TITLE = '1850'
