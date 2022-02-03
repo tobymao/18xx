@@ -409,7 +409,7 @@ module Engine
           },
           {
             sym: 'WTB',
-            name: 'Wurttemburg Minor National',
+            name: 'Württemberg Minor National',
             logo: '1866/WTB',
             tokens: [],
             type: 'minor_national',
@@ -612,7 +612,7 @@ module Engine
           },
           {
             sym: 'BY',
-            name: 'Bayrische Staatsbahn',
+            name: 'Bayerische Staatsbahn',
             logo: '1866/BY',
             tokens: [0, 20, 40, 60, 80, 100],
             type: 'share_5',
