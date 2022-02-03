@@ -68,14 +68,18 @@ module Engine
         ].freeze
 
         EVENTS_TEXT = {
-          'green_ferries' => ['Green ferries', 'The green ferry lines opens up'],
-          'brown_ferries' => ['Brown ferries', 'The brown ferry lines opens up'],
+          'green_ferries' => ['Green ferries', 'The green ferry lines opens up.'],
+          'brown_ferries' => ['Brown ferries', 'The brown ferry lines opens up.'],
           'formation' => ['Formation', 'Forced formation of Major Nationals. Order of forming is: '\
                                        'Switzerland, Spain, Benelux, Austro-Hungarian Empire, Italy, France, '\
                                        'Germany, Great Britain.'],
-          'infrastructure_h' => ['Transit Hub', 'The H, transit hub infrastructure, will be available for purchase'],
-          'infrastructure_p' => ['Palace Car', 'The P, palace car infrastructure, will be available for purchase'],
-          'infrastructure_m' => ['Mail', 'The M, mail infrastructure, will be available for purchase'],
+          'infrastructure_h' => ['Transit Hub', 'The H, transit hub infrastructure, will be available for purchase'\
+                                                'The transit hub, gives one tokened city value to the treasury '\
+                                                '(when included on a route).'],
+          'infrastructure_p' => ['Palace Car', 'The P, palace car infrastructure, will be available for purchase. '\
+                                               'The palace car counts 10 for each city for one train, paid to the treasury.'],
+          'infrastructure_m' => ['Mail', 'The M, mail infrastructure, will be available for purchase. The mail, counts '\
+                                         'the sum value of the start and end locations of a route to the treasury.'],
         }.freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_overlap: 'Minor nationals',
@@ -469,6 +473,11 @@ module Engine
           'MZA' => 'ESP',
         }.freeze
 
+        CORPORATION_FNR = 'FNR'
+        CORPORATION_FNR_HOME_HEX = 'L24'
+        CORPORATION_KPS = 'KPS'
+        CORPORATION_KPS_HOME_HEX = 'F22'
+
         DOUBLE_HEX = %w[G15 G19 J12 J18 K5].freeze
 
         ENTITY_STATUS_TEXT = {
@@ -480,6 +489,16 @@ module Engine
           'CH' => 'Available from OR1',
           'DE' => 'Converted by PRU president or force convert in phase 5',
           'IT' => 'Converted by K2S president or force convert in phase 5',
+          'PRU' => 'President share costs £120',
+          'HAN' => 'President share costs £100',
+          'BAV' => 'President share costs £75',
+          'WTB' => 'President share costs £75',
+          'SAX' => 'President share costs £75',
+          'K2S' => 'President share costs £120',
+          'SAR' => 'President share costs £80',
+          'LV' => 'President share costs £80',
+          'PAP' => 'President share costs £80',
+          'TUS' => 'President share costs £50',
         }.freeze
 
         FERRY_TILE_G7 = 'border=edge:2,type:impassable;border=edge:4,type:impassable;path=a:1,b:5'
@@ -1227,15 +1246,19 @@ module Engine
 
         def timeline
           [
+            'OR2: When OR2 is complete all remaining L/2 are exported.',
             'Trains: After the 4th train in each phase, all trains of the next phase will be available for purchase.',
             'Nationals tile lay: 1 track, 1 yellow or 1 upgrade.',
-            "Corporations tile lay: 4 track, first is free, second cost #{format_currency(10)}, "\
+            "Corporations tile lay: 4 tracks, first is free, second cost #{format_currency(10)}, "\
             "third cost #{format_currency(20)} and fourth cost #{format_currency(30)}. "\
             "With a total of #{format_currency(60)} if all four is used.",
-            'Corporations tile lay phase 3 & 4: 4 track, max 1 upgrade. Can be done in any order.',
-            'Corporations tile lay phase 5 & 6: 4 track, max 2 upgrades. Can be done in any order. Can upgrade the same tile',
-            'Corporations tile lay phase 8: 4 track, max 3 upgrades. Can be done in any order. Can upgrade the same tile',
-            'Corporations tile lay phase 9: 4 track, max 4 upgrades. Can be done in any order. Can upgrade the same tile',
+            'Corporations tile lay phase 3 & 4: 4 tracks, max 1 upgrade. Can be done in any order.',
+            'Corporations tile lay phase 5 & 6: 4 tracks, max 2 upgrades. Can be done in any order. Can upgrade the '\
+            'same tile.',
+            'Corporations tile lay phase 8: 4 tracks, max 3 upgrades. Can be done in any order. Can upgrade the same '\
+            'tile.',
+            'Corporations tile lay phase 9: 4 tracks, max 4 upgrades. Can be done in any order. Can upgrade the same '\
+            'tile.',
           ]
         end
 
@@ -1395,7 +1418,7 @@ module Engine
           tokens.each do |token|
             city = token.city
             token.remove!
-            city.place_token(corporation, corporation.next_token, free: true, check_tokenable: false)
+            city.place_token(corporation, corporation&.next_token, free: true, check_tokenable: false)
           end
         end
 
@@ -1881,16 +1904,7 @@ module Engine
             @log << "#{corp.name} - #{corp.full_name} is removed from the game"
           end
 
-          setup_corporations_captial('F22', 'KPS') unless removed_corporations.any? { |c| c.name == 'KPS' }
-          setup_corporations_captial('L24', 'FNR') unless removed_corporations.any? { |c| c.name == 'FNR' }
-
           @game_end_corporation_operated = Hash.new { |h, k| h[k] = false }
-        end
-
-        def setup_corporations_captial(hex_name, corporation_name)
-          hex = hex_by_id(hex_name)
-          hex.tile.cities[0].remove_all_reservations!
-          hex.tile.reservations << corporation_by_id(corporation_name)
         end
 
         def sell_stock_turn_token(corporation)
