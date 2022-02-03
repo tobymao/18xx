@@ -185,6 +185,8 @@ module Engine
       end
 
       def pass!
+        return unless current_entity
+
         entity = current_entity
         @game.close_companies_on_event!(entity, 'operated') if entity.operating_history.size == 1
         super
