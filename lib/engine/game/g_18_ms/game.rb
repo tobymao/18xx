@@ -418,6 +418,7 @@ module Engine
 
         def tile_lays(entity)
           return super unless @recently_floated.include?(entity)
+          
           FIRST_OR_TILE_LAYS
         end
 
