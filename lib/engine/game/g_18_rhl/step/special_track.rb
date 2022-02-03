@@ -13,7 +13,7 @@ module Engine
           def abilities(entity, **kwargs, &block)
             return unless entity.company?
             # Restrict private No2 and No4 to not be used in yellow phase
-            return if (@game.phase.name == '2' || @game.phase.name == '3') &&
+            return if (@game.phase.name == '2') &&
                      (entity == @game.konzession_essen_osterath ||
                       entity == @game.trajektanstalt)
             # Do not allow special tile lay after train buys (to avoid exploits)
