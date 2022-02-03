@@ -51,12 +51,12 @@ module View
       end
 
       def submit_path_timeout
-        store(:path_timeout, params['path_timeout'])
+        store(:path_timeout, params['path_timeout'], skip: true)
         edit_user(params)
       end
 
       def submit_route_timeout
-        store(:route_timeout, params['route_timeout'])
+        store(:route_timeout, params['route_timeout'], skip: true)
         edit_user(params)
       end
     end
