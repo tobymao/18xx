@@ -169,14 +169,14 @@ class Api
           params = {
             user: user,
             description: r['description'],
-            min_players: r['min_players'],
-            max_players: r['max_players'],
             settings: {
               seed: (r['seed'] || Random.new_seed) % (2**31),
               player_order: r['player_order'],
               unlisted: r['unlisted'],
               optional_rules: r['optional_rules'],
               auto_routing: r['auto_routing'],
+              min_players: r['min_players'],
+              max_players: r['max_players'],
             },
             title: title,
             round: 'Unstarted',
