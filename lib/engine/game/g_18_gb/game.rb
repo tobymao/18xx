@@ -363,12 +363,12 @@ module Engine
         end
 
         def event_float_60!
-          @log << '-- Event: New corporations float once 60% of their shares have been sold'
+          @log << '-- Event: New corporations float once 60% of their shares have been sold --'
           @corporations.reject(&:floated?).each { |c| c.float_percent = 60 }
         end
 
         def event_float_10_share!
-          @log << '-- Event: Unstarted corporations are converted to 10-share corporations'
+          @log << '-- Event: Unstarted corporations are converted to 10-share corporations --'
           @corporations.reject(&:floated?).each { |c| convert_to_ten_share(c) }
         end
 
