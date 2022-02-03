@@ -444,7 +444,7 @@ module Engine
 
         def upgrade_cost(tile, hex, entity, spender)
           cost = super
-          return cost if !resource_tile?(tile) || tile.color != :white
+          return cost if !resource_tile?(hex.tile) || tile.color != :white
 
           corp = entity.corporation ? entity : entity.owner
           ability = abilities_to_lay_resource_tile(hex, hex.tile, corp.companies).values.find do |a|
@@ -523,13 +523,13 @@ module Engine
 
         def timeline
           @timeline = [
-            'After SR 1 all unused subsidies are removed from the map',
-            'After OR 1.1 all unsold 2 trains are exported.',
-            'After OR 1.2 all unsold 2+ trains are exported.',
-            'After OR 2.1 no trains are exported',
-            'After OR 2.2 all unsold 3 trains are exported',
-            'After OR 3.1 and further ORs the next available train will be exported '\
-            '(removed, triggering phase change as if purchased)',
+            'End of SR 1: All unused subsidies are removed from the map',
+            'End of OR 1.1: All unsold 2 trains are exported.',
+            'End of OR 1.2: All unsold 2+ trains are exported.',
+            'End of OR 2.1: No trains are exported',
+            'End of OR 2.2: All unsold 3 trains are exported',
+            'End of each subsequent OR: The next available train is exported', \
+            '*Exported trains are removed from the game and can trigger phase changes as if purchased',
           ].freeze
         end
 
@@ -652,6 +652,18 @@ module Engine
         GNR_HALF_BONUS_HEXES = %w[B8 B14].freeze
 
         def revenue_for(route, stops)
+          duplicates = route.ordered_hexes.group_by(&:itself).select { |_, nodes| nodes.size > 1 }.keys
+          if duplicates.find { |hex| resource_tile?(hex.tile) }
+            raise GameError, 'Cannot pass through resource tiles more than once'
+          end
+          if duplicates.find { |hex| RURAL_TILES.include?(hex.tile.name) }
+            raise GameError, 'Cannot pass through Rural Junction tiles more than once'
+          end
+
+          if route.routes.count { |r| !(r.stops.map { |s| s.hex.id } & MEXICO_HEXES).empty? } > 2
+            raise GameError, 'No more than two trains can run to Mexico'
+          end
+
           stop_hexes = stops.map(&:hex)
           revenue = super
 

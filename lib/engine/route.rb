@@ -39,6 +39,7 @@ module Engine
       return if !all && only_routes
 
       @ordered_paths = nil
+      @ordered_hexes = nil
       @distance_str = nil
       @distance = nil
       @hexes = nil
@@ -274,6 +275,10 @@ module Engine
         cpaths = c[:chain][:paths]
         cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
       end
+    end
+
+    def ordered_hexes
+      @ordered_hexes ||= ordered_paths.map(&:hex).chunk(&:itself).to_a.map(&:first)
     end
 
     def check_terminals!

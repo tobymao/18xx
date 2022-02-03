@@ -444,7 +444,7 @@ module Engine
 
         def init_round
           @log << '-- First Stock Round --'
-          @log << 'Player order is reversed the first turn'
+          @log << 'Player order is reversed during the first turn'
           G1824::Round::FirstStock.new(self, [
             G1824::Step::BuySellParSharesFirstSr,
           ])

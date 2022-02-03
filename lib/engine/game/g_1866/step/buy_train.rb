@@ -18,7 +18,7 @@ module Engine
 
           def buyable_trains(entity)
             # Can't buy trains from other corporations if the operating corporation took a loan this turn
-            return super if !@took_loan && @game.phase.status.include?('can_buy_trains')
+            return reject_infrastructure_train(super) if !@took_loan && @game.phase.status.include?('can_buy_trains')
 
             super.select(&:from_depot?)
           end
@@ -81,6 +81,10 @@ module Engine
             @game.take_player_loan(entity, difference)
             @log << "#{entity.name} takes a loan of #{@game.format_currency(difference)} with "\
                     "#{@game.format_currency(@game.player_loan_interest(difference))} in interest"
+          end
+
+          def reject_infrastructure_train(trains)
+            trains.reject { |t| @game.infrastructure_train?(t) }
           end
         end
       end

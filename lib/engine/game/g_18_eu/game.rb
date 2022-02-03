@@ -221,6 +221,16 @@ module Engine
           str
         end
 
+        def check_other(route)
+          city_hexes = route.stops.map do |stop|
+            next unless stop.city?
+
+            stop.tile.hex
+          end.compact
+
+          raise GameError, 'Cannot stop at Paris/Vienna/Berlin twice' if city_hexes.size != city_hexes.uniq.size
+        end
+
         def emergency_issuable_cash(corporation)
           emergency_issuable_bundles(corporation).max_by(&:num_shares)&.price || 0
         end
@@ -253,6 +263,17 @@ module Engine
           return false unless owns_any_minor?(entity)
 
           super
+        end
+
+        def float_corporation(corporation)
+          super
+
+          return unless @phase.status.include?('normal_formation')
+
+          bundle = Engine::ShareBundle.new(corporation.treasury_shares)
+          @bank.spend(bundle.price, corporation)
+          @share_pool.transfer_shares(bundle, @share_pool)
+          @log << "#{corporation.name} places remaining shares on the Market for #{format_currency(bundle.price)}"
         end
 
         def all_free_hexes(corporation)
@@ -290,7 +311,7 @@ module Engine
 
           minor_tile = exchange_ability.owner.tokens.first.city.tile
           colocated = corporations.select do |c|
-            c.tokens.any? { |t| t.ctity&.tile == minor_tile }
+            c.tokens.any? { |t| t.city&.tile == minor_tile }
           end
 
           (connected + colocated).uniq

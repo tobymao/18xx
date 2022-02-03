@@ -34,7 +34,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'white',
           },
           # P2
           {
@@ -61,7 +60,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: 'white',
           },
           # P3
           {
@@ -88,7 +86,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'white',
           },
           # P4
           {
@@ -116,7 +113,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'white',
           },
           # P5
           {
@@ -134,7 +130,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: 'blue',
           },
           # P6
           {
@@ -152,7 +147,6 @@ module Engine
                 hexes: [], # Connected offboards
               },
             ],
-            color: 'blue',
           },
           # P7
           {
@@ -164,7 +158,6 @@ module Engine
             abilities: [
               # Built into game class
             ],
-            color: 'cyan',
           },
           # P9
           {
@@ -187,7 +180,6 @@ module Engine
                 tiles: %w[14 15 619],
               },
             ],
-            color: 'cyan',
           },
           # P10
           {
@@ -203,7 +195,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'cyan',
           },
           # P11
           # TODO Do you have to pay the $20 to upgrade non-city track to the next phase color?
@@ -218,7 +209,6 @@ module Engine
             abilities: [
               # Built into track class
             ],
-            color: 'cyan',
           },
           # P12
           {
@@ -245,7 +235,6 @@ module Engine
                 count: 2,
               },
             ],
-            color: 'green',
           },
           # P14
           {
@@ -255,7 +244,6 @@ module Engine
             desc: 'This company has no special ability.',
             sym: 'P14',
             abilities: [],
-            color: 'green',
           },
           # P15
           # TODO there are edge cases where you may want to pay back the land grant first. Consider making a choice ability.
@@ -267,7 +255,6 @@ module Engine
                   'All other rules regarding loans are followed as normal.',
             sym: 'P15',
             abilities: [], # Implemented in game class
-            color: 'green',
           },
           # P16 Regional Headquarters
           {
@@ -291,7 +278,6 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: 'green',
           },
           # P17
           {
@@ -315,7 +301,6 @@ module Engine
                 count_per_or: 1,
               },
             ],
-            color: 'green',
           },
           # P18
           {
@@ -342,7 +327,6 @@ module Engine
                 count: 2,
               },
             ],
-            color: 'green',
           },
           # P19
           {
@@ -354,7 +338,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'yellow',
           },
           # P20
           {
@@ -376,7 +359,6 @@ module Engine
               special_only: true,
               cheater: 0,
             ],
-            color: 'yellow',
           },
           # P21
           {
@@ -416,7 +398,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'yellow',
           },
           # P22
           {
@@ -443,7 +424,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: 'yellow',
           },
           # P23
           {
@@ -459,7 +439,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: 'yellow',
           },
           # P24
           {
@@ -487,7 +466,6 @@ module Engine
                 count: 2,
               },
             ],
-            color: 'orange',
           },
           # P25
           {
@@ -510,7 +488,6 @@ module Engine
                 on_phase: '6',
               },
             ],
-            color: 'orange',
           },
           # P26
           {
@@ -536,7 +513,6 @@ module Engine
                 count: 3,
               },
             ],
-            color: 'orange',
           },
           # P27
           {
@@ -563,7 +539,6 @@ module Engine
                 tiles: COMPANY_TOWN_TILES,
               },
             ],
-            color: 'orange',
           },
           # P28
           {
@@ -590,7 +565,6 @@ module Engine
                 count: 3,
               },
             ],
-            color: 'orange',
           },
           # P29
           {
@@ -603,7 +577,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'red',
           },
           # P30
           {
@@ -615,7 +588,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'red',
           },
         ].freeze
 

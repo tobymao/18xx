@@ -87,7 +87,7 @@ module Engine
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
           'can_convert_corporation' => ['Convert Corporation', 'Corporations can convert from 5 shares to 10 shares.'],
-          'can_convert_major' => ['Convert Major National', 'President of G1 and I1 can form Germany or Italy Major '\
+          'can_convert_major' => ['Convert Major National', 'President of PRU and K2S can form Germany or Italy Major '\
                                                             'National.'],
         ).freeze
 
@@ -102,14 +102,14 @@ module Engine
           {
             name: 'L/2',
             on: '',
-            train_limit: { minor_national: 1, national: 1, share_5: 4 },
+            train_limit: { share_5: 4 },
             tiles: [:yellow],
             operating_rounds: 99,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { minor_national: 1, national: 1, share_5: 3, share_10: 4 },
+            train_limit: { share_5: 3, share_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation can_convert_major],
@@ -117,7 +117,7 @@ module Engine
           {
             name: '4',
             on: '4',
-            train_limit: { minor_national: 1, national: 1, share_5: 3, share_10: 4 },
+            train_limit: { share_5: 3, share_10: 4 },
             tiles: %i[yellow green],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation can_convert_major],
@@ -125,7 +125,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { minor_national: 1, national: 1, share_5: 2, share_10: 3 },
+            train_limit: { share_5: 2, share_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation],
@@ -133,7 +133,7 @@ module Engine
           {
             name: '6',
             on: '6',
-            train_limit: { minor_national: 1, national: 1, share_5: 2, share_10: 3 },
+            train_limit: { share_5: 2, share_10: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation],
@@ -141,7 +141,7 @@ module Engine
           {
             name: '8',
             on: '8',
-            train_limit: { minor_national: 1, national: 1, share_5: 1, share_10: 2 },
+            train_limit: { share_5: 1, share_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation],
@@ -149,7 +149,7 @@ module Engine
           {
             name: '10',
             on: '10',
-            train_limit: { minor_national: 1, national: 1, share_5: 1, share_10: 2 },
+            train_limit: { share_5: 1, share_10: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 99,
             status: %w[can_buy_trains can_convert_corporation],
@@ -447,39 +447,39 @@ module Engine
         }.freeze
 
         CORPORATIONS_OPERATING_RIGHTS = {
-          'LNWR' => 'GBN',
-          'GWR' => 'GBN',
-          'NBR' => 'GBN',
-          'PLM' => 'FN',
-          'MIDI' => 'FN',
-          'OU' => 'FN',
-          'KPS' => %w[GN G1],
-          'BY' => %w[GN G3],
-          'KHS' => %w[GN G2],
-          'SB' => 'AHN',
-          'BH' => 'AHN',
-          'FNR' => 'AHN',
-          'SSFL' => %w[IN I5],
-          'IFT' => %w[IN I1],
-          'SFAI' => %w[IN I3],
-          'SBB' => 'SWN',
-          'GL' => 'BN',
-          'NRS' => 'BN',
-          'ZPB' => 'SPN',
-          'MZA' => 'SPN',
+          'LNWR' => 'GB',
+          'GWR' => 'GB',
+          'NBR' => 'GB',
+          'PLM' => 'FR',
+          'MIDI' => 'FR',
+          'OU' => 'FR',
+          'KPS' => %w[DE PRU],
+          'BY' => %w[DE BAV],
+          'KHS' => %w[DE HAN],
+          'SB' => 'AHE',
+          'BH' => 'AHE',
+          'FNR' => 'AHE',
+          'SSFL' => %w[IT TUS],
+          'IFT' => %w[IT K2S],
+          'SFAI' => %w[IT LV],
+          'SBB' => 'CH',
+          'GL' => 'BNL',
+          'NRS' => 'BNL',
+          'ZPB' => 'ESP',
+          'MZA' => 'ESP',
         }.freeze
 
         DOUBLE_HEX = %w[G15 G19 J12 J18 K5].freeze
 
         ENTITY_STATUS_TEXT = {
-          'AHN' => 'Available from OR1',
-          'BN' => 'Available from OR1',
-          'FN' => 'Available from OR1',
-          'GBN' => 'Available from OR1',
-          'SPN' => 'Available from OR1',
-          'SWN' => 'Available from OR1',
-          'GN' => 'Converted by G1 president or force convert in phase 5',
-          'IN' => 'Converted by I1 president or force convert in phase 5',
+          'AHE' => 'Available from OR1',
+          'BNL' => 'Available from OR1',
+          'FR' => 'Available from OR1',
+          'GB' => 'Available from OR1',
+          'ESP' => 'Available from OR1',
+          'CH' => 'Available from OR1',
+          'DE' => 'Converted by PRU president or force convert in phase 5',
+          'IT' => 'Converted by K2S president or force convert in phase 5',
         }.freeze
 
         FERRY_TILE_G7 = 'border=edge:2,type:impassable;border=edge:4,type:impassable;path=a:1,b:5'
@@ -487,8 +487,8 @@ module Engine
         FERRY_TILE_F8 = 'border=edge:1,type:impassable;border=edge:5,type:impassable;path=a:2,b:4'
         FERRY_TILE_H4 = 'border=edge:3,type:impassable;border=edge:5,type:impassable;path=a:0,b:2'
 
-        GERMANY_NATIONAL = 'GN'
-        ITALY_NATIONAL = 'IN'
+        GERMANY_NATIONAL = 'DE'
+        ITALY_NATIONAL = 'IT'
 
         INCOME_BOND = 'P8'
         INCOME_BOND_REVENUE = {
@@ -517,42 +517,43 @@ module Engine
         MAX_PAR_VALUE = 200
 
         MINOR_NATIONAL_PAR_ROWS = {
-          'G1' => [3, 0],
-          'G2' => [3, 1],
-          'G3' => [3, 2],
-          'G4' => [3, 3],
-          'G5' => [3, 4],
-          'I1' => [3, 5],
-          'I2' => [3, 6],
-          'I3' => [3, 7],
-          'I4' => [3, 8],
-          'I5' => [3, 9],
+          'PRU' => [3, 0],
+          'HAN' => [3, 1],
+          'BAV' => [3, 2],
+          'WTB' => [3, 3],
+          'SAX' => [3, 4],
+          'K2S' => [3, 5],
+          'SAR' => [3, 6],
+          'LV' => [3, 7],
+          'PAP' => [3, 8],
+          'TUS' => [3, 9],
         }.freeze
 
+        NATIONAL_MARKET_SHARE_LIMIT = 80
         NATIONAL_COMPANIES = %w[P2 P3 P4 P5 P6 P7].freeze
-        NATIONAL_CORPORATIONS = %w[GBN FN AHN BN SPN SWN GN G1 G2 G3 G4 G5 IN I1 I2 I3 I4 I5].freeze
+        NATIONAL_CORPORATIONS = %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS].freeze
         NATIONAL_REGION_HEXES = {
-          'G1' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
-          'G2' => %w[D18 E15 E17 E19 E21 F16 F18],
-          'G3' => %w[I17 I19 J16 J18 J20 K17 K19 K21],
-          'G4' => %w[I13 I15 J14 K15],
-          'G5' => %w[H20 H22 I21 I23],
-          'I1' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19],
-          'I2' => %w[N12 O13 O15 S13 T12],
-          'I3' => %w[M17 N14 N16 N18 N20 O17 P18],
-          'I4' => %w[Q19 R18 R20 S19],
-          'I5' => %w[P16 Q17],
-          'AHN' => %w[J22 J24 J26 K23 K25 L18 L20 L22 L24 L26 M19 M21 M23 M25 N22 N24 N26 O21 O23 O25
+          'PRU' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
+          'HAN' => %w[D18 E15 E17 E19 E21 F16 F18],
+          'BAV' => %w[I17 I19 J16 J18 J20 K17 K19 K21],
+          'WTB' => %w[I13 I15 J14 K15],
+          'SAX' => %w[H20 H22 I21 I23],
+          'K2S' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19],
+          'SAR' => %w[N12 O13 O15 S13 T12],
+          'LV' => %w[M17 N14 N16 N18 N20 O17 P18],
+          'PAP' => %w[Q19 R18 R20 S19],
+          'TUS' => %w[P16 Q17],
+          'AHE' => %w[J22 J24 J26 K23 K25 L18 L20 L22 L24 L26 M19 M21 M23 M25 N22 N24 N26 O21 O23 O25
                       P22 P24 P26 Q23 Q25 R24],
-          'BN' => %w[E13 F10 F12 F14 G9 G11 G13 H10 H12 I11],
-          'FN' => %w[H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
+          'BNL' => %w[E13 F10 F12 F14 G9 G11 G13 H10 H12 I11],
+          'FR' => %w[H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
                      M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13],
-          'GBN' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
-          'SPN' => %w[O1 P2 P4 Q1 Q3 Q5 R0 R2 R4 S1 S3 T2 U1],
-          'SWN' => %w[L12 L14 L16 M13 M15],
-          'GN' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25 D18 E15 E17
+          'GB' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
+          'ESP' => %w[O1 P2 P4 Q1 Q3 Q5 R0 R2 R4 S1 S3 T2 U1],
+          'CH' => %w[L12 L14 L16 M13 M15],
+          'DE' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25 D18 E15 E17
                      E19 E21 F16 F18 I17 I19 J16 J18 J20 K17 K19 K21 I13 I15 J14 K15 H20 H22 I21 I23],
-          'IN' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19 N12 O13 O15 S13 T12 M17 N14 N16 N18 N20 O17 P18
+          'IT' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19 N12 O13 O15 S13 T12 M17 N14 N16 N18 N20 O17 P18
                      Q19 R18 R20 S19 P16 Q17],
         }.freeze
 
@@ -603,18 +604,18 @@ module Engine
         }.freeze
 
         STARTING_REGION_CORPORATIONS = {
-          'GBN' => %w[LNWR GWR NBR],
-          'FN' => %w[PLM MIDI OU],
-          'GN' => %w[KPS BY KHS],
-          'AHN' => %w[SB BH FNR],
-          'IN' => %w[SSFL IFT SFAI],
+          'GB' => %w[LNWR GWR NBR],
+          'FR' => %w[PLM MIDI OU],
+          'DE' => %w[KPS BY KHS],
+          'AHE' => %w[SB BH FNR],
+          'IT' => %w[SSFL IFT SFAI],
         }.freeze
 
         STOCK_TURN_TOKEN_PREFIX = 'ST'
 
         # Corporations which will be able to float on which turn
         TURN_CORPORATIONS = {
-          'ISR' => %w[G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI
+          'ISR' => %w[PRU HAN BAV WTB SAX K2S SAR LV PAP TUS LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI
                       SBB GL NRS ZPB MZA],
         }.freeze
 
@@ -635,8 +636,8 @@ module Engine
         end
 
         def can_par?(corporation, parrer)
-          return false if corporation.id == self.class::GERMANY_NATIONAL && corporation_by_id('G1').owner != parrer
-          return false if corporation.id == self.class::ITALY_NATIONAL && corporation_by_id('I1').owner != parrer
+          return false if corporation.id == self.class::GERMANY_NATIONAL && corporation_by_id('PRU').owner != parrer
+          return false if corporation.id == self.class::ITALY_NATIONAL && corporation_by_id('K2S').owner != parrer
 
           super
         end
@@ -723,7 +724,7 @@ module Engine
         def crowded_corps
           @crowded_corps ||= corporations.select do |c|
             trains = c.trains.count { |t| !t.obsolete && !infrastructure_train?(t) }
-            trains > train_limit(c)
+            trains > train_limit(c) && !national_corporation?(c)
           end
         end
 
@@ -869,6 +870,10 @@ module Engine
           Array.new(130) { |id| Loan.new(id, @loan_value) }
         end
 
+        def init_share_pool
+          G1866::SharePool.new(self)
+        end
+
         def init_stock_market
           G1866::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
@@ -939,6 +944,7 @@ module Engine
 
         def operating_round(round_num)
           @current_turn = "OR#{round_num}"
+          @turn = round_num
           G1866::Round::Operating.new(self, [
             G1866::Step::StockTurnToken,
             Engine::Step::HomeToken,
@@ -946,7 +952,7 @@ module Engine
             G1866::Step::Convert,
             G1866::Step::Track,
             G1866::Step::Token,
-            Engine::Step::Route,
+            G1866::Step::Route,
             G1866::Step::Dividend,
             G1866::Step::DiscardTrain,
             G1866::Step::BuyTrain,
@@ -1153,8 +1159,8 @@ module Engine
             train.owner = corporation
             corporation.trains << train
 
-            # Before Italy is formed AHN can access the Lombardy-Venetia region
-            corporation.coordinates.concat(corporation_by_id('I3').coordinates) if national == 'AHN'
+            # Before Italy is formed AHE can access the Lombardy-Venetia region
+            corporation.coordinates.concat(corporation_by_id('LV').coordinates) if national == 'AHE'
           end
 
           # Setup the infrastructure depot
@@ -1220,7 +1226,17 @@ module Engine
         end
 
         def timeline
-          ['After the 4th train in each phase, all trains of the next phase will be available for purchase.']
+          [
+            'Trains: After the 4th train in each phase, all trains of the next phase will be available for purchase.',
+            'Nationals tile lay: 1 track, 1 yellow or 1 upgrade.',
+            "Corporations tile lay: 4 track, first is free, second cost #{format_currency(10)}, "\
+            "third cost #{format_currency(20)} and fourth cost #{format_currency(30)}. "\
+            "With a total of #{format_currency(60)} if all four is used.",
+            'Corporations tile lay phase 3 & 4: 4 track, max 1 upgrade. Can be done in any order.',
+            'Corporations tile lay phase 5 & 6: 4 track, max 2 upgrades. Can be done in any order. Can upgrade the same tile',
+            'Corporations tile lay phase 8: 4 track, max 3 upgrades. Can be done in any order. Can upgrade the same tile',
+            'Corporations tile lay phase 9: 4 track, max 4 upgrades. Can be done in any order. Can upgrade the same tile',
+          ]
         end
 
         def train_help(_entity, runnable_trains, _routes)
@@ -1286,6 +1302,19 @@ module Engine
           super
         end
 
+        def after_lay_tile(corporation)
+          @graph.clear if national_corporation?(corporation)
+          @national_graph.clear if corporation?(corporation)
+        end
+
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
+        end
+
         def buy_infrastructure(entity, train)
           take_loan(entity) while entity.cash < train.price
           entity.spend(train.price, @bank)
@@ -1332,7 +1361,7 @@ module Engine
         end
 
         def corporation_closes(corporation)
-          @log << "#{corporation.name} have share price of 0, and will close"
+          @log << "#{corporation.name} have share price of #{format_currency(0)}, and will close"
 
           if corporation.loans.size.positive?
             loan = corporation.loans.size * loan_value
@@ -1400,14 +1429,14 @@ module Engine
           @log << '-- Event: Forced formation of Major Nationals --'
 
           # Order: Switzerland, Spain, Benelux, Austro-Hungarian Empire, Italy, France, Germany, Great Britain
-          forced_formation_national(corporation_by_id('SWN'))
-          forced_formation_national(corporation_by_id('SPN'))
-          forced_formation_national(corporation_by_id('BN'))
-          forced_formation_national(corporation_by_id('AHN'))
-          forced_formation_major(corporation_by_id(self.class::ITALY_NATIONAL), %w[I1 I2 I3 I4 I5])
-          forced_formation_national(corporation_by_id('FN'))
-          forced_formation_major(corporation_by_id(self.class::GERMANY_NATIONAL), %w[G1 G2 G3 G4 G5])
-          forced_formation_national(corporation_by_id('GBN'))
+          forced_formation_national(corporation_by_id('CH'))
+          forced_formation_national(corporation_by_id('ESP'))
+          forced_formation_national(corporation_by_id('BNL'))
+          forced_formation_national(corporation_by_id('AHE'))
+          forced_formation_major(corporation_by_id(self.class::ITALY_NATIONAL), %w[K2S SAR LV PAP TUS])
+          forced_formation_national(corporation_by_id('FR'))
+          forced_formation_major(corporation_by_id(self.class::GERMANY_NATIONAL), %w[PRU HAN BAV WTB SAX])
+          forced_formation_national(corporation_by_id('GB'))
 
           @round.check_operating_order!
         end
@@ -1460,12 +1489,12 @@ module Engine
           @major_national_formed[corporation.id] = true
           return unless corporation.id == self.class::ITALY_NATIONAL
 
-          # Remove the coordinates for AHN in Lombardy-Venetia region
-          minor_i3 = corporation_by_id('I3')
-          corporation_by_id('AHN').coordinates.reject! { |coordinate| minor_i3.coordinates.include?(coordinate) }
+          # Remove the coordinates for AHE in Lombardy-Venetia region
+          minor_lv = corporation_by_id('LV')
+          corporation_by_id('AHE').coordinates.reject! { |coordinate| minor_lv.coordinates.include?(coordinate) }
 
           # Check if any of the AH corporations have tokened in Lombardy-Venetia
-          self.class::STARTING_REGION_CORPORATIONS['AHN'].each { |c| corporation_token_rights!(corporation_by_id(c)) }
+          self.class::STARTING_REGION_CORPORATIONS['AHE'].each { |c| corporation_token_rights!(corporation_by_id(c)) }
         end
 
         def forced_formation_national(corporation)
@@ -1627,9 +1656,9 @@ module Engine
 
         def national_hexes(corporation_id)
           hexes = self.class::NATIONAL_REGION_HEXES[corporation_id].dup
-          # Special case for AHN
-          if corporation_id == 'AHN' && !@major_national_formed[self.class::ITALY_NATIONAL]
-            hexes.concat(self.class::NATIONAL_REGION_HEXES['I3'])
+          # Special case for AHE
+          if corporation_id == 'AHE' && !@major_national_formed[self.class::ITALY_NATIONAL]
+            hexes.concat(self.class::NATIONAL_REGION_HEXES['LV'])
           end
           hexes
         end
@@ -1770,7 +1799,7 @@ module Engine
             float_percent: 50,
             shares: [50, 50],
             always_market_price: true,
-            color: 'black',
+            color: 'white',
             text_color: 'white',
             reservation_color: nil,
             capitalization: self.class::CAPITALIZATION,
