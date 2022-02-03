@@ -24,7 +24,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
-                tiles: %w[7coal 8coal 9coal],
+                tiles: [RESOURCE_LABELS[:coal]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -34,10 +34,8 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'white',
           },
           # P2
-          # TODO: Make it work as a combo with P27
           {
             name: 'Fox Bridge Works',
             value: 40,
@@ -54,17 +52,14 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
-              # TODO: Not NO if a metropolis, Yes, Company town if on river
-              # TODO must be reachable
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
             ],
-            color: 'white',
           },
           # P3
           {
@@ -82,7 +77,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
-                tiles: %w[7oil 8oil 9oil],
+                tiles: [RESOURCE_LABELS[:oil]],
                 when: 'track',
                 reachable: true,
                 consume_tile_lay: true,
@@ -91,7 +86,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'white',
           },
           # P4
           {
@@ -109,7 +103,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: ORE_HEXES,
-                tiles: %w[7ore 8ore10 9ore10],
+                tiles: [RESOURCE_LABELS[:ore]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -119,7 +113,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'white',
           },
           # P5
           {
@@ -137,7 +130,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: 'blue',
           },
           # P6
           {
@@ -155,7 +147,6 @@ module Engine
                 hexes: [], # Connected offboards
               },
             ],
-            color: 'blue',
           },
           # P7
           {
@@ -167,7 +158,6 @@ module Engine
             abilities: [
               # Built into game class
             ],
-            color: 'cyan',
           },
           # P9
           {
@@ -181,7 +171,6 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                free: true,
                 when: 'track',
                 owner_type: 'corporation',
                 reachable: true,
@@ -191,7 +180,6 @@ module Engine
                 tiles: %w[14 15 619],
               },
             ],
-            color: 'cyan',
           },
           # P10
           {
@@ -207,7 +195,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'cyan',
           },
           # P11
           # TODO Do you have to pay the $20 to upgrade non-city track to the next phase color?
@@ -222,7 +209,6 @@ module Engine
             abilities: [
               # Built into track class
             ],
-            color: 'cyan',
           },
           # P12
           {
@@ -240,7 +226,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
-                tiles: %w[7oil 8oil 9oil],
+                tiles: [RESOURCE_LABELS[:oil]],
                 when: 'track',
                 reachable: true,
                 consume_tile_lay: true,
@@ -249,7 +235,6 @@ module Engine
                 count: 2,
               },
             ],
-            color: 'green',
           },
           # P14
           {
@@ -259,7 +244,6 @@ module Engine
             desc: 'This company has no special ability.',
             sym: 'P14',
             abilities: [],
-            color: 'green',
           },
           # P15
           # TODO there are edge cases where you may want to pay back the land grant first. Consider making a choice ability.
@@ -271,7 +255,6 @@ module Engine
                   'All other rules regarding loans are followed as normal.',
             sym: 'P15',
             abilities: [], # Implemented in game class
-            color: 'green',
           },
           # P16 Regional Headquarters
           {
@@ -295,7 +278,6 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: 'green',
           },
           # P17
           {
@@ -311,6 +293,7 @@ module Engine
                 type: 'tile_lay',
                 when: 'track',
                 owner_type: 'corporation',
+                reachable: true,
                 hexes: %w[B4 B6 B8 B10 B12 B14 B16 B18 C19 D20],
                 tiles: YELLOW_PLAIN_TRACK_TILES + PLAIN_YELLOW_CITY_TILES,
                 free: true,
@@ -318,7 +301,6 @@ module Engine
                 count_per_or: 1,
               },
             ],
-            color: 'green',
           },
           # P18
           {
@@ -335,7 +317,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
-                tiles: %w[7coal 8coal 9coal],
+                tiles: [RESOURCE_LABELS[:coal]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -345,7 +327,6 @@ module Engine
                 count: 2,
               },
             ],
-            color: 'green',
           },
           # P19
           {
@@ -357,7 +338,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'yellow',
           },
           # P20
           {
@@ -379,10 +359,8 @@ module Engine
               special_only: true,
               cheater: 0,
             ],
-            color: 'yellow',
           },
           # P21
-          # TODO: Make it work as a combo with P27
           {
             name: 'Keystone Bridge Co.',
             value: 80,
@@ -401,10 +379,9 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
-              # TODO: same as other bridge company
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -412,7 +389,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: (COAL_HEXES + ORE_HEXES).uniq,
-                tiles: %w[7coal 8coal 9coal 7ore10 8ore10 9ore10],
+                tiles: [RESOURCE_LABELS[:coal], RESOURCE_LABELS[:ore]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -421,7 +398,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'yellow',
           },
           # P22
           {
@@ -440,16 +416,14 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
-              # TODO: same as other bridge companies
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
             ],
-            color: 'yellow',
           },
           # P23
           {
@@ -465,7 +439,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: 'yellow',
           },
           # P24
           {
@@ -483,7 +456,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: ORE_HEXES,
-                tiles: %w[7ore10 8ore10 9ore10],
+                tiles: [RESOURCE_LABELS[:ore]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -493,7 +466,6 @@ module Engine
                 count: 2,
               },
             ],
-            color: 'orange',
           },
           # P25
           {
@@ -516,7 +488,6 @@ module Engine
                 on_phase: '6',
               },
             ],
-            color: 'orange',
           },
           # P26
           {
@@ -533,7 +504,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: CITY_HEXES,
-                tiles: %w[X07 X08 X09],
+                tiles: RURAL_TILES,
                 reachable: true,
                 when: 'track',
                 consume_tile_lay: true,
@@ -542,7 +513,6 @@ module Engine
                 count: 3,
               },
             ],
-            color: 'orange',
           },
           # P27
           {
@@ -569,7 +539,6 @@ module Engine
                 tiles: COMPANY_TOWN_TILES,
               },
             ],
-            color: 'orange',
           },
           # P28
           {
@@ -586,7 +555,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
-                tiles: %w[7coal 8coal 9coal],
+                tiles: [RESOURCE_LABELS[:coal]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -596,7 +565,6 @@ module Engine
                 count: 3,
               },
             ],
-            color: 'orange',
           },
           # P29
           {
@@ -609,7 +577,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'red',
           },
           # P30
           {
@@ -621,7 +588,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'red',
           },
         ].freeze
 
@@ -634,7 +600,7 @@ module Engine
           # id: 'S1',
           # name: 'No Subsidy',
           # desc: 'No effect',
-          # value: nil,
+          # value: 0,
           # },
           # {
           # icon: 'subsidy_none',
@@ -642,7 +608,7 @@ module Engine
           # id: 'S2',
           # name: 'No Subsidy'
           # desc: 'No effect',
-          # value: nil,
+          # value: 0,
           # },
           {
             icon: 'subsidy_none',
@@ -650,7 +616,7 @@ module Engine
             id: 'S3',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -658,7 +624,7 @@ module Engine
             id: 'S4',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -666,7 +632,7 @@ module Engine
             id: 'S5',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -674,7 +640,7 @@ module Engine
             id: 'S6',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -682,14 +648,13 @@ module Engine
             id: 'S7',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_boomtown',
             abilities: [
               {
                 type: 'tile_lay',
-                free: true,
                 when: 'track',
                 owner_type: 'corporation',
                 closed_when_used_up: true,
@@ -707,7 +672,7 @@ module Engine
             name: 'Boomtown Subsidy',
             desc: 'On it\'s first operating turn, this corporation may upgrade its home to green as a free action. This does '\
                   'not count as an additional track placement and does not incur any cost for doing so',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_free_station',
@@ -717,7 +682,7 @@ module Engine
             desc: 'The free station is a special token (which counts toward the 8 token limit) that can be placed in any city '\
                   'the corporation can trace a legal route to, even if no open station circle is currently available in the '\
                   'city. If a open station circle becomes available later, the token will immediately fill the opening',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_plus_ten',
@@ -725,7 +690,7 @@ module Engine
             id: 'S10',
             name: '+10',
             desc: 'This corporation\'s home city is worth $10 for the rest of the game',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_plus_ten_twenty',
@@ -734,7 +699,7 @@ module Engine
             name: '+10 / +20',
             desc: 'This corporation\'s home city is worth $10 until phase 5, after which it is worth '\
                   ' $20 more for the rest of the game',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_thirty',
@@ -774,7 +739,7 @@ module Engine
             id: 'S16',
             name: 'Resource Subsidy',
             desc: 'PLACEHOLDER DESCRIPTION',
-            value: nil,
+            value: 0,
           },
         ].freeze
 

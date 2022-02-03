@@ -12,7 +12,7 @@ module Engine
           end
 
           def pass_description
-            @round.issued ? 'Done (Issue)' : 'Skip (Issue)'
+            @round.issued.positive? ? 'Done (Issue)' : 'Skip (Issue)'
           end
 
           def redeemable_shares(_entity)
@@ -25,10 +25,27 @@ module Engine
             super
           end
 
+          def log_pass(entity)
+            return super unless @round.issued.positive?
+
+            @log << "#{entity.name} finishes #{description.downcase}"
+          end
+
+          def pass!
+            if @round.issued.positive?
+              # drop share price after all issuing is done
+              price = current_entity.share_price.price
+              @round.issued.times { @game.stock_market.move_left(current_entity) }
+              @game.log_share_price(current_entity, price)
+            end
+
+            super
+          end
+
           def process_sell_shares(action)
-            @round.issued = true
             corp = action.entity
             bundle = action.bundle
+            @round.issued += bundle.num_shares
             issue_price = if bundle.owner == @game.bank
                             bundle.num_shares * corp.original_par_price.price
                           else
@@ -41,9 +58,6 @@ module Engine
                                              spender: @game.bank,
                                              receiver: corp,
                                              price: issue_price)
-            price = corp.share_price.price
-            bundle.num_shares.times { @game.stock_market.move_left(corp) }
-            @game.log_share_price(corp, price)
           end
 
           def share_str(bundle)
@@ -59,14 +73,14 @@ module Engine
           end
 
           def setup
-            @round.issued = nil
+            @round.issued = 0
             super
           end
 
           def round_state
             super.merge(
               {
-                issued: nil,
+                issued: 0,
               }
             )
           end

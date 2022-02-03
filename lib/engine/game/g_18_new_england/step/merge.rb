@@ -137,8 +137,10 @@ module Engine
               receiving = move_assets(minor, target)
               @game.close_corporation(minor)
               @log << "#{minor.name} merges into #{target.name} receiving #{receiving.join(', ')}"
-              @round.entities.delete(minor)
             end
+
+            # only delete 2nd minor from entities if later in order
+            @round.entities.delete(@merging.last) if @round.entities.find_index(@merging.last) > @round.entity_index
 
             token_hexes = target.tokens.map { |t| t.city&.hex }
 
@@ -211,6 +213,10 @@ module Engine
 
             parts = @game.graph.connected_nodes(corporation).keys
             corps = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+            # add in corps in same hex as home
+            corporation.tokens.first.hex.tile.cities.each do |city|
+              city.tokens.each { |tok| corps.append(tok&.corporation) if tok }
+            end
             corps.uniq.reject { |c| c.type != :minor || c == corporation || c.owner != corporation.owner }
           end
 

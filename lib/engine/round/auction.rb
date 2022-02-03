@@ -13,6 +13,10 @@ module Engine
         'ISR'
       end
 
+      def auction?
+        true
+      end
+
       def select_entities
         @game.players
       end

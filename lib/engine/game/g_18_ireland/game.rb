@@ -112,14 +112,14 @@ module Engine
         TRAINS = [
           {
             name: '2H',
-            num: 6,
+            num: 7,
             distance: 2,
             price: 80,
             rusts_on: '6H',
           },
           {
             name: "1H'",
-            num: 6,
+            num: 7,
             distance: 1,
             price: 40,
             rusts_on: '8H',
@@ -606,11 +606,6 @@ module Engine
           hexes.select do |hex|
             !hex.tile.exits.empty? && hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
-        end
-
-        def buying_power(entity, **)
-          # Cannot issue shares to buy trains
-          entity.cash
         end
 
         def issuable_shares(entity)

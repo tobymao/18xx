@@ -653,7 +653,7 @@ module Engine
 
           # pre-allocate dummy trains used for tile 200
           @pass_thru = {}
-          DUMMY_TRAINS.each { |train| @pass_thru[train[:name]] = Train.new(**train, index: 999) }
+          DUMMY_TRAINS.each { |train| @pass_thru[train[:name]] = Train.new(**train, requires_token: false, index: 999) }
         end
 
         # cache all stock prices
@@ -1098,7 +1098,7 @@ module Engine
         end
 
         def check_route_token(route, token)
-          raise GameError, 'Route must contain token' if !token && !double_header?(route)
+          raise NoToken, 'Route must contain token' if !token && !double_header?(route)
         end
 
         def check_connected(route, token)

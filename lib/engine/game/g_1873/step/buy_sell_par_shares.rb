@@ -29,6 +29,13 @@ module Engine
             end
           end
 
+          def can_buy?(entity, bundle)
+            corp = bundle.corporation
+            return if corp.receivership? && !@game.can_restart?(corp, entity)
+
+            super
+          end
+
           def can_buy_multiple?(entity, corporation, _owner)
             return unless corporation.corporation?
 
@@ -99,12 +106,13 @@ module Engine
 
           def process_buy_shares(action)
             corporation = action.bundle.corporation
-            if corporation.receivership? && corporation != @game.mhe
+            was_receivership = corporation.receivership? && corporation != @game.mhe
+            buy_shares(action.entity, action.bundle, swap: action.swap,
+                                                     allow_president_change: @game.pres_change_ok?(corporation))
+            if was_receivership
               @reopened = corporation
               remove_company(action.entity, corporation)
             end
-            buy_shares(action.entity, action.bundle, swap: action.swap,
-                                                     allow_president_change: @game.pres_change_ok?(corporation))
             track_action(action, corporation)
           end
 

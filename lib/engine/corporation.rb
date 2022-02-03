@@ -26,7 +26,7 @@ module Engine
                   :type, :floatable, :original_par_price, :reservation_color, :min_price, :ipo_owner,
                   :always_market_price
     attr_reader :companies, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
-                :presidents_share, :price_multiplier
+                :presidents_share, :price_multiplier, :treasury_as_holding
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -77,6 +77,7 @@ module Engine
       @reservation_color = opts[:reservation_color]
       @price_percent = opts[:price_percent] || @second_share&.percent || (@presidents_share.percent / 2)
       @price_multiplier = (@second_share&.percent || (@presidents_share.percent / 2)) / @price_percent
+      @treasury_as_holding = opts[:treasury_as_holding] || false
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -145,7 +146,7 @@ module Engine
     end
 
     def num_treasury_shares
-      num_shares_of(self)
+      @treasury_as_holding ? 0 : num_shares_of(self)
     end
 
     def num_player_shares
@@ -175,11 +176,11 @@ module Engine
     end
 
     def corporate_share_holders
-      share_holders.select { |s_h, _| s_h.corporation? && s_h != self }
+      share_holders.select { |s_h, _| s_h.corporation? && (s_h != self || @treasury_as_holding) }
     end
 
     def corporate_shares
-      shares.reject { |share| share.corporation == self }
+      shares.reject { |share| share.corporation == self && !@treasury_as_holding }
     end
 
     def ipo_shares
@@ -187,7 +188,7 @@ module Engine
     end
 
     def treasury_shares
-      shares.select { |share| share.corporation == self }
+      shares.select { |share| share.corporation == self && !@treasury_as_holding }
     end
 
     def president?(player)

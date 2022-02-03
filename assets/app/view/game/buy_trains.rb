@@ -144,6 +144,9 @@ module View
           children << send("render_#{view}")
         end
 
+        @slot_dropdown = nil
+        children << render_dropdown if @step.respond_to?(:slot_dropdown?) && @step.slot_dropdown?(@corporation)
+
         discountable_trains = @game.discountable_trains_for(@corporation)
 
         if discountable_trains.any? && @step.discountable_trains_allowed?(@corporation)
@@ -265,7 +268,7 @@ module View
               min: 0,
               max: @step.warranty_max,
               value: 0,
-              size: 1,
+              size: @step.warranty_max.to_s.size + 2,
             }
           )
 
@@ -277,11 +280,13 @@ module View
 
       # return checkbox values for slots (if any)
       def slots
-        return if @slot_checkboxes.empty?
-
-        @slot_checkboxes.keys.map do |k|
-          k if Native(@slot_checkboxes[k]).elm.checked
-        end.compact
+        if !@slot_checkboxes.empty?
+          @slot_checkboxes.keys.map do |k|
+            k if Native(@slot_checkboxes[k]).elm.checked
+          end.compact
+        elsif @slot_dropdown
+          [Native(@slot_dropdown).elm.value]
+        end
       end
 
       def warranties
@@ -421,7 +426,7 @@ module View
             min: train.price,
             max: train.price,
             value: train.price,
-            size: 1,
+            size: train.price.to_s.size + 2,
           }
         else
           min, max = @step.spend_minmax(@corporation, train)
@@ -430,7 +435,7 @@ module View
             min: min,
             max: max,
             value: min,
-            size: @corporation.cash.to_s.size,
+            size: @corporation.cash.to_s.size + 2,
           }
         end
       end
@@ -481,6 +486,15 @@ module View
           },
         }
         h(:div, button_div_props, buttons)
+      end
+
+      def render_dropdown
+        slot_options = @step.slot_dropdown_options(@corporation).map do |option|
+          h(:option, { attrs: { value: option[:slot] } }, option[:text])
+        end
+
+        @slot_dropdown = h('select', slot_options)
+        h(:div, [@step.slot_dropdown_title(@corporation), @slot_dropdown])
       end
     end
   end

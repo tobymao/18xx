@@ -91,10 +91,11 @@ module View
             h('td.right', @game.format_currency(@game.loan_value)),
           ])
         end
-        if @game.round.active_step.respond_to?(:seed_money)
+        active_step = @game.round.active_step
+        if active_step.respond_to?(:seed_money) && active_step.seed_money
           trs << h(:tr, [
             h(:td, 'Seed Money'),
-            h('td.right', @game.format_currency(@game.round.active_step.seed_money)),
+            h('td.right', @game.format_currency(active_step.seed_money)),
           ])
         end
         if @game.respond_to?(:unstarted_corporation_summary)

@@ -113,7 +113,7 @@ module View
             min: min,
             max: max,
             value: min,
-            size: 2,
+            size: max.to_s.size + 2,
           }
         )
 

@@ -49,6 +49,15 @@ module Engine
           ]
         ).freeze
 
+        RED_TO_RED_BONUS = {
+          '2' => [0, 0],
+          '3' => [10, 10],
+          '4' => [10, 10],
+          '5' => [20, 80],
+          '6' => [20, 80],
+          '8' => [30, 150],
+        }.freeze
+
         def setup
           @minors.each do |minor|
             train = @depot.upcoming[0]
@@ -70,7 +79,7 @@ module Engine
         def add_optional_train(type)
           modified_trains = @depot.trains.select { |t| t.name == type }
           new_train = modified_trains.first.clone
-          new_train.index = modified_trains.length
+          new_train.index = modified_trains.size
           @depot.add_train(new_train)
         end
 
@@ -182,23 +191,45 @@ module Engine
           (minors.sort_by { |m| m.name.to_i } + majors.sort_by(&:name)).group_by(&:owner)
         end
 
-        # def revenue_for(route, stops)
-        # revenue = super
+        def route_ends_red?(stops)
+          return false unless stops.size > 1
 
-        # TODO: Token Bonus
-        # TODO: Pullman Car
+          stops.first.hex.tile.color == :red && stops.last.hex.tile.color == :red
+        end
 
-        # revenue
-        # end
+        def revenue_for_red_to_red_bonus(route, stops)
+          return 0 unless route_ends_red?(stops)
 
-        # def revenue_str(route)
-        # str = super
+          per_token, max_bonus = RED_TO_RED_BONUS[@phase.name]
+          [stops.sum do |stop|
+            next per_token if stop.city? && stop.tokened_by?(route.train.owner)
 
-        # TODO: Token Bonus
-        # TODO: Pullman Car
+            0
+          end, max_bonus].min
+        end
 
-        # str
-        # end
+        def revenue_for(route, stops)
+          super + revenue_for_red_to_red_bonus(route, stops)
+        end
+
+        def revenue_str(route)
+          str = super
+
+          bonus = revenue_for_red_to_red_bonus(route, route.stops)
+          str += " + R2R(#{bonus})" if bonus.positive?
+
+          str
+        end
+
+        def check_other(route)
+          city_hexes = route.stops.map do |stop|
+            next unless stop.city?
+
+            stop.tile.hex
+          end.compact
+
+          raise GameError, 'Cannot stop at Paris/Vienna/Berlin twice' if city_hexes.size != city_hexes.uniq.size
+        end
 
         def emergency_issuable_cash(corporation)
           emergency_issuable_bundles(corporation).max_by(&:num_shares)&.price || 0
@@ -234,6 +265,17 @@ module Engine
           super
         end
 
+        def float_corporation(corporation)
+          super
+
+          return unless @phase.status.include?('normal_formation')
+
+          bundle = Engine::ShareBundle.new(corporation.treasury_shares)
+          @bank.spend(bundle.price, corporation)
+          @share_pool.transfer_shares(bundle, @share_pool)
+          @log << "#{corporation.name} places remaining shares on the Market for #{format_currency(bundle.price)}"
+        end
+
         def all_free_hexes(corporation)
           hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
@@ -265,7 +307,14 @@ module Engine
           return super if !exchange_ability.owner.minor? || @loading
 
           parts = graph.connected_nodes(exchange_ability.owner).keys
-          parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+          connected = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+
+          minor_tile = exchange_ability.owner.tokens.first.city.tile
+          colocated = corporations.select do |c|
+            c.tokens.any? { |t| t.city&.tile == minor_tile }
+          end
+
+          (connected + colocated).uniq
         end
 
         def after_par(corporation)

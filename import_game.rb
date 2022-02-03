@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'argon2'
 require 'net/http'
 require 'uri'
 
@@ -35,7 +36,7 @@ def import_game(game_id)
       id: player_id,
       name: name,
       email: "#{name}@example.com",
-      password: name,
+      password: 'password',
       settings: {
         notifications: 'none',
         webhook: nil,
@@ -95,4 +96,8 @@ def import_game(game_id)
   end
 
   game.id
+end
+
+def fix_existing_users
+  DB[:users].update(password: Argon2::Password.create('password'))
 end

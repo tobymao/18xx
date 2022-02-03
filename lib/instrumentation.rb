@@ -15,7 +15,7 @@ class Roda
 
         def _roda_run_main_route(r)
           params = NewRelic::Agent::ParameterFiltering.apply_filters(r.env, r.params)
-          perform_action_with_newrelic_trace(category: 'Roda', params: params) { super }
+          perform_action_with_newrelic_trace(category: :controller, params: params) { super }
         rescue StandardError => e
           NewRelic::Agent.notice_error(e)
           raise e

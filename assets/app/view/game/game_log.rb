@@ -70,10 +70,12 @@ module View
                   title: 'hotkey: c – esc to leave',
                   type: 'text',
                   value: @chat_input,
+                  placeholder: 'Use @player command to ping a player',
                 },
                 style: {
                   marginLeft: '0.5rem',
                   flex: '1',
+                  cursor: 'text',
                 },
                 on: { keyup: key_event }),
               ]),
@@ -146,6 +148,7 @@ module View
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
             wordBreak: 'break-word',
+            cursor: 'text',
           },
         }
 
@@ -162,13 +165,12 @@ module View
       def render_log_for_action(log, action)
         timestamp_props = {
           style: {
-            margin: '0 0.2rem 0 0',
             fontSize: 'smaller',
           },
         }
         message_props = { style: { margin: '0 0.2rem' } }
 
-        timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}]"
+        timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}] "
 
         click = lambda do
           store(:selected_action_id, @selected_action_id == action.id ? nil : action.id)
@@ -226,8 +228,36 @@ module View
         h('div.chatline', { style: { textAlign: :center } }, date)
       end
 
+      def copy_log_transcript
+        actions = @game.actions.to_h { |a| [a.id, a] }
+        log_text = []
+        @game.log.map.group_by(&:action_id).flat_map do |action_id, entries|
+          action = actions[action_id]
+          entries.flat_map do |entry|
+            time = action&.created_at ? "[#{Time.at(action.created_at || Time.now).strftime('%R')}]" : ''
+            line = entry.message
+            if line.is_a?(Engine::Action::Message)
+              sender = line.entity.name || line.user
+              line = "#{sender}: #{line.message}"
+            end
+            log_text << (time ? "#{time} #{line}" : line)
+          end
+        end
+        `navigator.clipboard.writeText(log_text.join('\n'))`
+        store(:flash_opts, { message: 'Game log transcript copied to clipboard', color: 'lightgreen' }, skip: false)
+      end
+
       def render_log_choices
-        h(:div, { style: { marginBottom: '0.3rem', textAlign: 'right' } }, [
+        h(:div, { style: { marginBottom: '0.3rem', display: 'flex', justifyContent: 'space-between' } }, [
+          h(:div, { style: { textAlign: 'left' } }, [
+            h(:button,
+              {
+                style: { marginTop: '0' },
+                on: { click: -> { copy_log_transcript } },
+              },
+              'Copy Transcript 📋'),
+          ]),
+          h(:div, { style: { textAlign: 'right' } }, [
             h(:button,
               {
                 style: { marginTop: '0' },
@@ -240,7 +270,8 @@ module View
                 on: { click: -> { store(:show_chat, !@show_chat) } },
               },
               "Chat #{@show_chat ? '✅' : '❌'}"),
-          ])
+          ]),
+        ])
       end
     end
   end

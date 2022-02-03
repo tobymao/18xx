@@ -580,7 +580,7 @@ module Engine
         end
 
         def upgrade_cost(tile, hex, entity, spender)
-          [TILE_COST, super].max
+          [self.class::TILE_COST, super].max
         end
 
         def event_close_companies!
@@ -658,6 +658,10 @@ module Engine
           return [] if corporation.receivership?
 
           super
+        end
+
+        def buying_power(entity, **)
+          entity.cash + (issuable_shares(entity).map(&:price).max || 0)
         end
 
         def total_emr_buying_power(player, corporation)
