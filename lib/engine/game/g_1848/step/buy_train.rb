@@ -15,6 +15,10 @@ module Engine
 
             super.reject { |t| t.name == '2E' }
           end
+
+          def room?(entity)
+            entity.trains.count { |t| t.name != '2E' } < @game.train_limit(entity)
+          end
         end
       end
     end

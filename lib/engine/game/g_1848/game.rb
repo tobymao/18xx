@@ -555,6 +555,13 @@ module Engine
             city.place_token(entity, home_token, free: true, check_tokenable: false, cheater: slot)
           end
         end
+
+        def crowded_corps
+          # 2E does not create a crowded corp
+          @crowded_corps ||= (minors + corporations).select do |c|
+            c.trains.count { |t| !t.obsolete && t.name != '2E' } > train_limit(c)
+          end
+        end
       end
     end
   end
