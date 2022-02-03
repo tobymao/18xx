@@ -70,7 +70,7 @@ module View
             children << h(BuyCompanyFromOtherPlayer, game: @game)
           end
           children << render_bank
-          children << h(StockMarket, game: @game, show_bank: false)
+          children << h(StockMarket, game: @game, show_bank: true)
 
           h(:div, children)
         end
@@ -378,7 +378,6 @@ module View
               marginBottom: '1rem',
             },
           }
-          children << h(Bank, game: @game)
           children << h(TrainSchedule, game: @game)
           h(:div, props, children)
         end
