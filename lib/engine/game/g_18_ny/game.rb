@@ -957,6 +957,11 @@ module Engine
           super
         end
 
+        def buy_train(operator, train, price = nil)
+          super
+          @round.active_train_loan = false if @round.respond_to?(:active_train_loan)
+        end
+
         def init_loans
           @loan_value = 50
           # 11 minors * 2, 8 majors * 10
