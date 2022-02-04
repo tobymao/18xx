@@ -35,6 +35,15 @@ module Engine
           raise GameError, msg
         end
 
+        sell_bankrupt_shares(player, corp)
+        @round.recalculate_order if @round.respond_to?(:recalculate_order)
+
+        player.spend(player.cash, @game.bank) if player.cash.positive?
+
+        @game.declare_bankrupt(player)
+      end
+
+      def sell_bankrupt_shares(player, _corp)
         @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
 
         player.shares_by_corporation(sorted: true).each do |corporation, _|
@@ -47,11 +56,6 @@ module Engine
             @game.sell_shares_and_change_price(bundle)
           end
         end
-        @round.recalculate_order if @round.respond_to?(:recalculate_order)
-
-        player.spend(player.cash, @game.bank) if player.cash.positive?
-
-        @game.declare_bankrupt(player)
       end
     end
   end

@@ -56,7 +56,7 @@ module Engine
 
           transferred = []
           if destination == @game.depot
-            source.trains.each do |train|
+            source.trains.dup.each do |train|
               @game.depot.reclaim_train(train)
               transferred << train
             end

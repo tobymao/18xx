@@ -25,6 +25,8 @@ module Engine
         MUST_BID_INCREMENT_MULTIPLE = true
         TOKENS_FEE = 100
 
+        GAME_END_CHECK = { bank: :full_or }.freeze # TODO: extreme edge case of one player remaining
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
             'minor_exchange' => [
               'Minor Exchange',
