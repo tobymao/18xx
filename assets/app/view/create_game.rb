@@ -455,13 +455,15 @@ module View
         max_el.value = (min..max).cover?(val) ? val : max
         store(:num_players, max_el.value.to_i, skip: true)
       end
-      min_el = Native(@inputs[:min_players]).elm
-      unless min_el.value == ''
-        min = min_el.min = @min_p[title]
-        max = @num_players
-        val = min_el.value.to_i
-        min_el.value = (min..max).cover?(val) ? val : max
-        store(:min_players, min_el.value.to_i, skip: true)
+      if Native(@inputs[:min_players])&.elm
+        min_el = Native(@inputs[:min_players]).elm
+        unless min_el.value == ''
+          min = min_el.min = @min_p[title]
+          max = @num_players
+          val = min_el.value.to_i
+          min_el.value = (min..max).cover?(val) ? val : max
+          store(:min_players, min_el.value.to_i, skip: true)
+        end
       end
 
       store(:selected_game, selected_game, skip: true)
