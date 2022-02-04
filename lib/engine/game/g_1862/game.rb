@@ -785,7 +785,7 @@ module Engine
             raise GameError, 'Player missing charter' if @chartered[corporation]
 
             @round.buy_tokens = corporation
-            @log << "#{corporation.name} (#{corporation.owner.name}) must buy tokens"
+            @log << "#{corporation.name} (#{acting_for_entity(corporation).name}) must buy tokens"
             @round.clear_cache!
             return
           end
@@ -957,7 +957,7 @@ module Engine
         # breaking ties with closest to priority deal
         def acting_for_entity(entity)
           return entity if entity.player?
-          return entity.owner if entity.owner.player?
+          return entity.owner if entity.owner&.player?
 
           @players.max_by { |h| h.shares_of(entity).sum(&:percent) }
         end
