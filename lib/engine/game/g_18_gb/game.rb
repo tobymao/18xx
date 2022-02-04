@@ -356,8 +356,9 @@ module Engine
             end
           end
 
-          @log << "Corporations available SR1: #{tiers.select { |_, t| t == 1 }.map { |c, _| c }.sort.join(', ')}"
-          @log << "Corporations available SR2: #{tiers.select { |_, t| t == 2 }.map { |c, _| c }.sort.join(', ')}"
+          tier1, tier2 = tiers.partition { |_co, tier| tier == 1 }
+          @log << "Corporations available SR1: #{tier1.map(&:first).sort.join(', ')}"
+          @log << "Corporations available SR2: #{tier2.map(&:first).sort.join(', ')}"
           @tiers = tiers
           @lnwr_ipoed = false
           @train_bought = false
