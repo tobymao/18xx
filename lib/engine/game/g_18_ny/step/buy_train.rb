@@ -13,13 +13,13 @@ module Engine
             return actions unless entity.corporation?
             return [] if entity.receivership?
 
-            if must_buy_train?(entity)
+            if must_buy_train?(entity) || @loan_taken
               actions.delete('pass')
               actions << 'buy_train'
             end
             actions << 'scrap_train' unless scrappable_trains(entity).empty?
             actions << 'take_loan' if can_take_loan?(entity)
-            actions << 'pass' if !actions.empty? && !must_buy_train?(entity)
+            actions << 'pass' if !actions.empty? && !must_buy_train?(entity) && !@loan_taken
             actions.uniq
           end
 
@@ -98,6 +98,7 @@ module Engine
             check_for_cheapest_train(train) if train.from_depot? && @loan_taken
 
             super
+            @loan_taken = false
           end
 
           def process_take_loan(action)
