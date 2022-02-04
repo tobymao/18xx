@@ -14,11 +14,17 @@ module Engine
                   "until they have purchased the LNWR Director's Certificate.",
             sym: 'LB',
             color: nil,
-            open_abilities: [
+            abilities: [
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['F21'],
+              },
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close' },
               },
             ],
           },
@@ -31,14 +37,18 @@ module Engine
                   'which they control. A tile placed in Perth as a nomral tile lay does not close the AF.',
             sym: 'AF',
             color: nil,
-            open_abilities: [
+            abilities: [
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['K2'],
               },
-            ],
-            closed_abilities: [
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close' },
+              },
               {
                 type: 'tile_lay',
                 when: 'owning_player_track',
@@ -59,11 +69,17 @@ module Engine
                   'per game, after the GN has closed, for any company which they control.',
             sym: 'GN',
             color: nil,
-            open_abilities: [
+            abilities: [
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['I18'],
+              },
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close' },
               },
             ],
           },
@@ -75,14 +91,18 @@ module Engine
                   'owned by Companies that they control, from the time that the SD closes until the end of the game.',
             sym: 'SD',
             color: nil,
-            open_abilities: [
+            abilities: [
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['I12'],
               },
-            ],
-            closed_abilities: [
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close' },
+              },
               {
                 type: 'hex_bonus',
                 when: 'owning_player_or_turn',
@@ -100,14 +120,18 @@ module Engine
                   'by Companies that they control, from the time that the LM closes until the end of the game.',
             sym: 'LM',
             color: nil,
-            open_abilities: [
+            abilities: [
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['F15'],
               },
-            ],
-            closed_abilities: [
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close' },
+              },
               {
                 type: 'hex_bonus',
                 when: 'owning_playing_or_turn',
@@ -126,14 +150,18 @@ module Engine
                   'control.',
             sym: 'LS',
             color: nil,
-            open_abilities: [
+            abilities: [
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['H21'],
               },
-            ],
-            closed_abilities: [
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close' },
+              },
               {
                 type: 'tile_lay',
                 when: 'owning_player_track',
@@ -158,11 +186,17 @@ module Engine
                   'force the TV to close.',
             sym: 'TV',
             color: nil,
-            open_abilities: [
+            abilities: [
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['C20'],
+              },
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close' },
               },
             ],
           },
@@ -174,11 +208,17 @@ module Engine
                   'per game, after the MC has closed, for any company which they control.',
             sym: 'MC',
             color: nil,
-            open_abilities: [
+            abilities: [
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['G10'],
+              },
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close' },
               },
             ],
           },
@@ -190,14 +230,18 @@ module Engine
                   'trains run by Companies that they control, from the time that the CH closes until the end of the game.',
             sym: 'CH',
             color: nil,
-            open_abilities: [
+            abilities: [
               {
                 type: 'blocks_hexes',
                 owner_type: 'player',
                 hexes: ['E16'],
               },
-            ],
-            closed_abilities: [
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close' },
+              },
               {
                 type: 'hex_bonus',
                 when: 'owning_playing_or_turn',

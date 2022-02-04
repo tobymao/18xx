@@ -12,7 +12,7 @@ module Engine
           end
 
           def process_choose_ability(action)
-            return unless action.choice.start_with?('close')
+            return unless action.choice == 'close'
             return unless action.entity.company?
 
             @game.close_company(action.entity)
