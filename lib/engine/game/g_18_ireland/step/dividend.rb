@@ -22,6 +22,12 @@ module Engine
               {}
             end
           end
+
+          def dividends_for_entity(entity, holder, per_share)
+            return 0 if holder.player? && holder.bankrupt
+
+            super
+          end
         end
       end
     end
