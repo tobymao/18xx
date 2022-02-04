@@ -530,6 +530,13 @@ module Engine
           shares.each do |share|
             add_new_share(share)
           end
+
+          corporation.abilities.dup.each do |ability|
+            if ability.description.start_with?('Conversion tokens:')
+              ability.count.times { corporation.tokens << Engine::Token.new(corporation, price: 50) }
+              corporation.remove_ability(ability)
+            end
+          end
         end
 
         def stock_round
