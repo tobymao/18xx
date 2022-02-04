@@ -132,13 +132,13 @@ module Engine
            name: 'Ranch Tile',
            value: 50,
            revenue: 15,
-           desc: 'May lay the X1 ranch tile on any empty plain hex adjacent to a Z lettered city. May not be laid in B6.',
+           desc: 'May lay the X1 ranch tile on any empty plain hex adjacent to a Z lettered city.',
            sym: 'RT',
            abilities: [
           {
             type: 'tile_lay',
             when: %w[owning_corp_or_turn],
-            hexes: %w[C9 D6 D9 D12 E11 F8 F10 F14 G11 H8],
+            hexes: %w[B6 C9 D6 D9 D12 E11 F8 F10 F14 G11 H8],
             tiles: ['X1'],
             owner_type: 'corporation',
             count: 1,

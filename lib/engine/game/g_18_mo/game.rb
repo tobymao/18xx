@@ -72,7 +72,6 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1846::Step::Assign,
             Engine::Step::Exchange,
             G1846::Step::BuySellParShares,
           ])
@@ -244,6 +243,10 @@ module Engine
 
         def num_pass_companies(_players)
           0
+        end
+
+        def block_for_steamboat?
+          false
         end
       end
     end
