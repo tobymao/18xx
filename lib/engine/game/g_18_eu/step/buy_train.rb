@@ -20,7 +20,18 @@ module Engine
             []
           end
 
-          # TODO: Limit to 1 Pullman, Require other train for Pullman
+          def buyable_trains(entity)
+            trains = super
+
+            trains.reject! do |t|
+              @game.pullman?(t) &&
+                (entity.trains.empty? ||
+                  @game.owns_pullman?(entity) ||
+                  t.owner.corporation?)
+            end
+
+            trains
+          end
         end
       end
     end

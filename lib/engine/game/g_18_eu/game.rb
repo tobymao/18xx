@@ -102,15 +102,16 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             G18EU::Step::Dividend,
+            G18EU::Step::OptionalDiscardTrain,
             G18EU::Step::BuyTrain,
             G18EU::Step::IssueShares,
-            G18EU::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
           ], round_num: round_num)
         end
 
         def stock_round
           Round::Stock.new(self, [
-            G18EU::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
             G18EU::Step::HomeToken,
             G18EU::Step::ReplaceToken,
             G18EU::Step::BuySellParShares,
@@ -321,6 +322,58 @@ module Engine
           @log << "#{corporation.name} spends #{format_currency(TOKENS_FEE)} for four additional tokens"
 
           corporation.spend(TOKENS_FEE, @bank)
+        end
+
+        def check_overlap(routes)
+          super
+
+          pullman_stop = routes.find { |r| pullman?(r.train) }&.visited_stops&.first
+          return if pullman_stop.nil?
+
+          raise GameError, 'Pullman cannot be run alone' if routes.one?
+
+          matching_stop = routes.find do |r|
+            next if pullman?(r.train)
+
+            r.visited_stops.include?(pullman_stop)
+          end
+
+          raise GameError, "Pullman must reuse another route's city or off-board" unless matching_stop
+        end
+
+        def check_route_token(route, token)
+          return if pullman?(route.train)
+
+          super
+        end
+
+        def check_connected(route, token)
+          return if pullman?(route.train)
+
+          super
+        end
+
+        def pullman?(train)
+          train.name == 'P'
+        end
+
+        def owns_pullman?(entity)
+          entity.trains.find { |t| pullman?(t) }
+        end
+
+        def rust_trains!(train, entity)
+          super
+
+          all_corporations.each do |c|
+            pullman = owns_pullman?(c)
+            next unless pullman
+
+            trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
+            next if trains > 1 && trains <= train_limit(c)
+
+            depot.reclaim_train(pullman)
+            @log << "#{c.name} is forced to discard pullman train"
+          end
         end
       end
     end
