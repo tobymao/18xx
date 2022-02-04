@@ -444,18 +444,17 @@ module Engine
           end
         end
 
+        def player_shares_value(player)
+          train_shares, trainless_shares = player.shares.partition { |s| s.corporation.trains.any? }
+          train_shares.sum(&:price) + trainless_shares.sum { |s| (s.price / 2).to_i }
+        end
+
         def player_value(player)
-          player.cash +
-            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
-            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }
-            .sum { |s| (s.price / 2).to_i } + player.companies.sum(&:value)
+          player.cash + player_shares_value(player) + player.companies.sum(&:value)
         end
 
         def liquidity(player)
-          player.cash +
-            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
-            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }
-            .sum { |s| (s.price / 2).to_i }
+          player.cash + player_shares_value(player)
         end
 
         def place_home_token(corporation)
