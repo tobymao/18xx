@@ -11,8 +11,8 @@ module View
       include Lib::Settings
       include UserManager
 
-      needs :path_timeout, store: true, default: 20
-      needs :route_timeout, store: true, default: 20
+      needs :path_timeout, store: true, default: 30
+      needs :route_timeout, store: true, default: 10
 
       def render_content
         fields = [
