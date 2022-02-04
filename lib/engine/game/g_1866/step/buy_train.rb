@@ -29,19 +29,20 @@ module Engine
             false
           end
 
+          def spend_minmax(entity, train)
+            train_corp = train.owner
+            min = 1
+            max = buying_power(entity)
+            min = train.price if train_corp.corporation? && @game.corporation?(train_corp) && !train_corp.loans.empty?
+            max = train.price unless entity.loans.empty?
+
+            [min, max]
+          end
+
           def log_skip(entity)
             return if @game.national_corporation?(entity)
 
             @log << "#{entity.name} skips buy trains"
-          end
-
-          def must_buy_at_face_value?(train, entity)
-            train_corp = train.owner
-            if train_corp.corporation? && @game.corporation?(train_corp) && (entity.loans.any? || train_corp.loans.any?)
-              return true
-            end
-
-            face_value_ability?(entity) || face_value_ability?(train.owner)
           end
 
           def process_buy_train(action)
