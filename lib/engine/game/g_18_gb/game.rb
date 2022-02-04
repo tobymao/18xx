@@ -445,7 +445,7 @@ module Engine
         end
 
         def player_shares_value(player)
-          train_shares, trainless_shares = player.shares.partition { |s| s.corporation.trains.any? }
+          trainless_shares, train_shares = player.shares.partition { |s| s.corporation.trains.empty? }
           train_shares.sum(&:price) + trainless_shares.sum { |s| (s.price / 2).to_i }
         end
 
@@ -463,7 +463,7 @@ module Engine
           hex = hex_by_id(corporation.coordinates)
 
           tile = hex&.tile
-          if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+          if !tile || (tile.reserved_by?(corporation) && !tile.paths.empty?)
 
             # If the tile has no paths at the present time, clear up the ambiguity when the tile is laid
             # Otherwise, for yellow tiles the corporation is placed disconnected and for other tiles it

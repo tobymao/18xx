@@ -18,7 +18,7 @@ module Engine
 
             actions << 'lay_tile' if can_lay_tile?(entity)
             actions << 'place_token' if can_place_token?(entity)
-            actions << 'pass' if can_use_company_abilities?(entity) || actions.any?
+            actions << 'pass' if can_use_company_abilities?(entity) || !actions.empty?
             actions
           end
 
@@ -31,10 +31,10 @@ module Engine
           def lay_tile_action(action)
             tile = action.tile
             tile_lay = get_tile_lay(action.entity)
-            raise GameError, 'Cannot lay a city tile now' if tile.cities.any? && @laid_city
+            raise GameError, 'Cannot lay a city tile now' if !tile.cities.empty? && @laid_city
 
             lay_tile(action, extra_cost: tile_lay[:cost])
-            @laid_city = true if action.tile.cities.any?
+            @laid_city = true if !action.tile.cities.empty?
             @round.num_laid_track += 1
             @round.laid_hexes << action.hex
           end
