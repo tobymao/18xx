@@ -25,7 +25,7 @@ module Engine
           def can_use_company_abilities?(entity)
             return false unless entity == current_entity
 
-            @game.companies.select { |c| entity.owner == c.owner }.map { |c| @game.abilities(c, :tile_lay) }.any?
+            @game.companies.select { |c| entity.owner == c.owner }.any? { |c| @game.abilities(c, :tile_lay) }
           end
 
           def lay_tile_action(action)
@@ -34,7 +34,7 @@ module Engine
             raise GameError, 'Cannot lay a city tile now' if !tile.cities.empty? && @laid_city
 
             lay_tile(action, extra_cost: tile_lay[:cost])
-            @laid_city = true if !action.tile.cities.empty?
+            @laid_city = true unless action.tile.cities.empty?
             @round.num_laid_track += 1
             @round.laid_hexes << action.hex
           end
@@ -45,28 +45,18 @@ module Engine
               !tile.paths.empty? &&
               cities.size > 1 &&
               !(tokens = cities.flat_map(&:tokens).compact).empty?
-              # OO or XX tile newly connected to the network - we need to handle its tokens
+              # OO or XX tile newly connected to the network - we need to handle its tokens:
+              # - if the token is for the corporation laying the tile, it will be connected to track
+              # - if the token is from another corporation, it will be unconnected
               tokens.each do |token|
                 token.remove!
-                if token.corporation == entity
-                  # if the token is for the corporation laying the tile, it will be connected to track
-                  place_token(
-                    token.corporation,
-                    tile.cities[0],
-                    token,
-                    connected: false,
-                    extra_action: true
-                  )
-                else
-                  # if the token is from another corporation, it will be unconnected
-                  place_token(
-                    token.corporation,
-                    tile.cities[1],
-                    token,
-                    connected: false,
-                    extra_action: true
-                  )
-                end
+                place_token(
+                  token.corporation,
+                  cities[token.corporation == entity ? 0 : 1],
+                  token,
+                  connected: false,
+                  extra_action: true
+                )
               end
             end
           end

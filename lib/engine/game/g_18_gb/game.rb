@@ -505,7 +505,7 @@ module Engine
         end
 
         def convert_to_ten_share(corporation)
-          corporation.type = :'10-share'
+          corporation.type = '10-share'
 
           original_shares = shares_for_corporation(corporation)
           corporation.share_holders.clear
@@ -567,8 +567,10 @@ module Engine
         def compass_points_on_route(route)
           hexes = route.ordered_paths.map { |path| path.hex.coordinates }
           @scenario['compass-hexes'].select do |_compass, compasshexes|
-            hexes.any? { |coords| compasshexes.include?(coords) }
-          end.compact.map(&:first)
+            hexes.any? do |coords|
+              compasshexes.include?(coords)
+            end
+          end.map(&:first)
         end
 
         def ns_bonus
