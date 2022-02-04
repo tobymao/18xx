@@ -299,8 +299,8 @@ module Engine
           @scenario['cert-limit']
         end
 
-        VALID_ABILITIES_OPEN = %i[blocks_hexes choose_ability].freeze
-        VALID_ABILITIES_CLOSED = %i[hex_bonus tile_lay].freeze
+        VALID_ABILITIES_OPEN = %i[blocks_hexes choose_ability reservation].freeze
+        VALID_ABILITIES_CLOSED = %i[hex_bonus reservation tile_lay token].freeze
 
         def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
           ability = super
@@ -631,6 +631,7 @@ module Engine
           Round::Operating.new(self, [
             G18GB::Step::SpecialChoose,
             Engine::Step::SpecialTrack,
+            G18GB::Step::SpecialToken,
             Engine::Step::HomeToken,
             G18GB::Step::TrackAndToken,
             Engine::Step::Route,
