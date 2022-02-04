@@ -328,7 +328,7 @@ module Engine
           super
 
           pullman_stop = routes.find { |r| pullman?(r.train) }&.visited_stops&.first
-          return if pullman_stop.nil?
+          return unless pullman_stop
 
           raise GameError, 'Pullman cannot be run alone' if routes.one?
 
