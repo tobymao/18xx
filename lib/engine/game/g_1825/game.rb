@@ -1177,8 +1177,7 @@ module Engine
         end
 
         def hex_blocked_by_ability?(_entity, abilities, hex)
-          abilities = Array(abilities)
-          abilities.any? { |ability| ability.hexes.include?(hex.id) }
+          Array(abilities).any? { |ability| ability.hexes.include?(hex.id) }
         end
 
         def action_processed(_action); end
