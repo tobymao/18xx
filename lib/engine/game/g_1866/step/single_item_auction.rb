@@ -36,7 +36,10 @@ module Engine
           end
 
           def auction_log(entity)
-            @game.log << "#{entity.name} is up for auction"
+            privates_left = @companies.sort_by(&:name).map { |c| c.name unless c.id == entity.id }.compact.join(', ')
+            privates_left_str = "In alphabetical order, these are left for auction #{privates_left}."
+            privates_left_str = 'Last one.' if privates_left.empty?
+            @game.log << "#{entity.name} is up for auction. #{privates_left_str}"
             auction_entity(entity)
           end
 

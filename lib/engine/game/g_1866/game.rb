@@ -197,6 +197,11 @@ module Engine
                 obsolete_on: '4',
               },
             ],
+            events: [
+              {
+                'type' => 'infrastructure_p',
+              },
+            ],
           },
           {
             name: '3',
@@ -220,7 +225,7 @@ module Engine
                 'type' => 'green_ferries',
               },
               {
-                'type' => 'infrastructure_p',
+                'type' => 'infrastructure_h',
               },
             ],
           },
@@ -243,7 +248,7 @@ module Engine
             obsolete_on: '8',
             events: [
               {
-                'type' => 'infrastructure_h',
+                'type' => 'infrastructure_m',
               },
             ],
           },
@@ -270,9 +275,6 @@ module Engine
               },
               {
                 'type' => 'formation',
-              },
-              {
-                'type' => 'infrastructure_m',
               },
             ],
             variants: [
@@ -415,19 +417,19 @@ module Engine
             name: 'P',
             distance: 99,
             num: 6,
-            price: 120,
+            price: 80,
           },
           {
             name: 'H',
             distance: 99,
             num: 6,
-            price: 160,
+            price: 120,
           },
           {
             name: 'M',
             distance: 99,
             num: 6,
-            price: 200,
+            price: 160,
           },
         ].freeze
 
@@ -472,11 +474,6 @@ module Engine
           'ZPB' => 'ESP',
           'MZA' => 'ESP',
         }.freeze
-
-        CORPORATION_FNR = 'FNR'
-        CORPORATION_FNR_HOME_HEX = 'L24'
-        CORPORATION_KPS = 'KPS'
-        CORPORATION_KPS_HOME_HEX = 'F22'
 
         DOUBLE_HEX = %w[G15 G19 J12 J18 K5].freeze
 
@@ -583,6 +580,8 @@ module Engine
           '4' => :par_2,
           '5' => :par_3,
         }.freeze
+
+        NATIONAL_PREPRINTED_TILES = %w[AHE DE ESP].freeze
 
         NATIONAL_TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
         TILE_LAYS = [
@@ -1693,6 +1692,8 @@ module Engine
         end
 
         def national_upgraded?(corporation)
+          return true if self.class::NATIONAL_PREPRINTED_TILES.include?(corporation.id)
+
           hexes = national_hexes(corporation.id)
           hexes.any? do |h|
             hex = hex_by_id(h)
@@ -1895,6 +1896,13 @@ module Engine
             else
               removed_corporations << c
               @corporations.delete(c)
+            end
+          end
+
+          # Put down the home tokens of all the starting corporations
+          starting_corps.each do |corp|
+            Array(corp.coordinates).each do |coord|
+              place_starting_token(corp, corp.find_token_by_type, coord)
             end
           end
 
