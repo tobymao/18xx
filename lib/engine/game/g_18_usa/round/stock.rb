@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../../round/stock'
+require_relative '../../g_1817/round/stock'
 
 module Engine
   module Game

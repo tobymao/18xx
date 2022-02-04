@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
 require_relative '../../g_1817/step/dividend'
 
 module Engine
