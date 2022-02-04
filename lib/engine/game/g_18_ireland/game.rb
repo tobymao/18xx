@@ -404,7 +404,7 @@ module Engine
         end
 
         def unstarted_corporation_summary
-          unipoed = @corporations.reject(&:ipoed)
+          unipoed = (@corporations + @future_corporations).reject(&:ipoed)
           minor, major = unipoed.partition { |c| c.type == :minor }
           ["#{major.size} major", minor]
         end
