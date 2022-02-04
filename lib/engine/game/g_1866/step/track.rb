@@ -91,10 +91,6 @@ module Engine
             # Special case for the B tiles
             action.tile.label = 'B' if action.hex.tile.label.to_s == 'B'
 
-            # Special case for FNR and KPS
-            check_special_capitol_tile!(hex, @game.class::CORPORATION_FNR, @game.class::CORPORATION_FNR_HOME_HEX)
-            check_special_capitol_tile!(hex, @game.class::CORPORATION_KPS, @game.class::CORPORATION_KPS_HOME_HEX)
-
             # Special case for London
             if hex.name == @game.class::LONDON_HEX && hex.tile.color == :brown && action.tile.color == :gray
               hex.tile.cities[1].remove_all_reservations!
@@ -136,16 +132,6 @@ module Engine
               max_edges = group.map { |t| t.edges.length }.max
               group.select { |t| t.edges.size == max_edges }
             end
-          end
-
-          def check_special_capitol_tile!(hex, corporation_name, corporation_home_hex)
-            if hex.tile.color != :white || hex.name != corporation_home_hex ||
-              @game.corporations.none? { |c| c.name == corporation_name }
-              return
-            end
-
-            hex.tile.cities[0].remove_all_reservations!
-            hex.tile.reservations << @game.corporation_by_id(corporation_name)
           end
         end
       end

@@ -728,7 +728,7 @@ module Engine
               'frame=color:#e2ceb6',
             ['N26'] =>
               'city=revenue:yellow_20|green_40|brown_50|gray_60,slots:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-              'label=Y;frame=color:#e2ceb6',
+              'frame=color:#e2ceb6',
             ['J26'] =>
               'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;frame=color:#e2ceb6',
 
