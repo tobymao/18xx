@@ -1160,8 +1160,7 @@ module Engine
         end
       end
 
-      def check_connected(route, token_city)
-        corporation = token_city ? route.corporation : nil
+      def check_connected(route, corporation)
         return if route.ordered_paths.each_cons(2).all? { |a, b| a.connects_to?(b, corporation) }
 
         raise GameError, 'Route is not connected'

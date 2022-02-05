@@ -1558,12 +1558,11 @@ module Engine
           visits[1..-2].any? { |node| node.city? && custom_blocks?(node, corporation) }
         end
 
-        def check_connected(route, _token)
+        def check_connected(route, corporation)
           visits = route.visited_stops
           blocked = nil
 
           if visits.size > 2
-            corporation = route.corporation
             visits[1..-2].each do |node|
               next if !node.city? || !custom_blocks?(node, corporation)
               raise GameError, 'Route can only bypass one tokened-out city' if blocked

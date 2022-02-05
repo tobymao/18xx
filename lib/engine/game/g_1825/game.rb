@@ -1101,7 +1101,7 @@ module Engine
           raise NoToken, 'Route must contain token' if !token && !double_header?(route)
         end
 
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           # no need if distance is 2, avoids dealing with double-header route missing a token
           return if route.train.distance == 2
 

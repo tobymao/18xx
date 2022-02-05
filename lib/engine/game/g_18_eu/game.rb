@@ -347,7 +347,7 @@ module Engine
           super
         end
 
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           return if pullman?(route.train)
 
           super
