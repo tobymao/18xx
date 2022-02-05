@@ -9,6 +9,13 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include LayTileChecks
+
+          def actions(entity)
+            # Do not allow any tile lay if tokening has been used
+            return [] if @round.tokened
+
+            super
+          end
         end
       end
     end

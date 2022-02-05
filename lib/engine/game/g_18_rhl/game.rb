@@ -259,8 +259,8 @@ module Engine
           G18Rhl::Round::Operating.new(self, [
             G18Rhl::Step::Bankrupt,
             Engine::Step::HomeToken,
-            G18Rhl::Step::SpecialToken, # Must be before any track lay (due to private No. 4)
             G18Rhl::Step::SpecialTrack,
+            G18Rhl::Step::SpecialToken, # Must be before regular track lay (due to private No. 4)
             G18Rhl::Step::Track,
             G18Rhl::Step::RheBonusCheck,
             Engine::Step::Token,

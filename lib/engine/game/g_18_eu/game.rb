@@ -20,10 +20,16 @@ module Engine
 
         attr_accessor :corporations_operated
 
+        EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true # if ebuying from depot, must buy cheapest train
+        EBUY_CAN_SELL_SHARES = true # true if a player can sell shares for ebuy
+
         HOME_TOKEN_TIMING = :par
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
         TOKENS_FEE = 100
+
+        GAME_END_CHECK = { bank: :full_or }.freeze # TODO: extreme edge case of one player remaining
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
             'minor_exchange' => [
@@ -232,12 +238,8 @@ module Engine
           raise GameError, 'Cannot stop at Paris/Vienna/Berlin twice' if city_hexes.size != city_hexes.uniq.size
         end
 
-        def emergency_issuable_cash(corporation)
-          emergency_issuable_bundles(corporation).max_by(&:num_shares)&.price || 0
-        end
-
-        def emergency_issuable_bundles(entity)
-          issuable_shares(entity)
+        def emergency_issuable_bundles(_entity)
+          []
         end
 
         def issuable_shares(entity)
@@ -374,6 +376,28 @@ module Engine
             depot.reclaim_train(pullman)
             @log << "#{c.name} is forced to discard pullman train"
           end
+        end
+
+        def depot_trains(entity)
+          has_pullman = owns_pullman?(entity)
+          has_train = entity.trains.empty?
+          @depot.depot_trains.reject do |t|
+            pullman?(t) && (has_train || has_pullman)
+          end
+        end
+
+        def min_depot_train(entity)
+          depot_trains(entity).min_by(&:price)
+        end
+
+        def min_depot_price(entity)
+          return 0 unless (train = min_depot_train(entity))
+
+          train.variants.map { |_, v| v[:price] }.min
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          total_emr_buying_power(player, corporation) < min_depot_price(corporation)
         end
       end
     end

@@ -16,6 +16,14 @@ module Engine
             @round.teleport_ability
           end
 
+          def adjust_token_price_ability!(entity, token, _hex, _city, special_ability: nil)
+            return super unless entity == @game.konzession_essen_osterath
+
+            # Need to override this as base implementation otherwise change token price to 0.
+            # In 18Rhl the full current price is paid for teleported token.
+            [token, special_ability]
+          end
+
           def process_place_token(action)
             return super unless @round.teleported
 
@@ -31,6 +39,7 @@ module Engine
               action.token,
               connected: false,
               special_ability: ability(entity),
+              spender: @game.current_entity,
             )
 
             teleport_complete
