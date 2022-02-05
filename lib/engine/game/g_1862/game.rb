@@ -1209,6 +1209,12 @@ module Engine
           end
         end
 
+        def share_jumps(steps)
+          return steps / 2 if steps > 1
+
+          steps
+        end
+
         def selling_movement?(corporation)
           corporation.floated? && !@lner
         end

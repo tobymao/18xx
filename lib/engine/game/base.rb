@@ -1056,12 +1056,22 @@ module Engine
         self.class::SOLD_OUT_INCREASE
       end
 
-      def log_share_price(entity, from)
+      def log_share_price(entity, from, steps = nil)
         to = entity.share_price.price
         return unless from != to
 
+        jumps = ''
+        if steps
+          steps = share_jumps(steps)
+          jumps = " (#{steps} steps)" unless steps < 2
+        end
+
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                "to #{format_currency(to)}"
+                "to #{format_currency(to)}#{jumps}"
+      end
+
+      def share_jumps(steps)
+        steps
       end
 
       def can_run_route?(entity)
