@@ -55,6 +55,14 @@ module Engine
             min_price.positive? && entity.cash >= min_price
           end
 
+          def train_name(entity, train)
+            if @game.nationalization
+              "%s (%s)" % [train.name.split("+")[0], train.name]
+            else
+              train.name
+            end
+          end
+
           def process_run_routes(action)
             entity = action.entity
             @round.routes = action.routes
