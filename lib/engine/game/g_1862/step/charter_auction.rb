@@ -65,21 +65,19 @@ module Engine
 
           def can_start_auction?(entity)
             max_bid(entity) >= MIN_BID && !@round.won_auction[entity] &&
-            rval = @game.ipoable_corporations.any? do |c|
+            @game.ipoable_corporations.any? do |c|
               @game.can_par?(c, entity) && can_buy?(entity, c.ipo_shares.first&.to_bundle)
             end
-            rval
           end
 
           def can_bid?(entity)
-            max_bid(entity) >= MIN_BID &&
             @game.ipoable_corporations.any? do |c|
               @game.can_par?(c, entity) && can_buy?(entity, c.ipo_shares.first&.to_bundle)
             end
           end
 
           def can_increase_bid?(entity)
-            max_bid(entity) >= min_required(entity)
+            max_bid(entity) >= min_required(entity) && can_bid?(entity)
           end
 
           def min_par
@@ -178,8 +176,12 @@ module Engine
               player == @auction_triggerer || can_increase_bid?(player)
             end
             cannot_bid.each do |player|
-              @game.log << "#{player.name} cannot afford minimum bid + 3 x minimum par of "\
-                           "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
+              if max_bid(player) < min_required(player)
+                @game.log << "#{player.name} cannot afford minimum bid + 3 x minimum par of "\
+                             "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
+              else
+                @game.log << "#{player.name} cannot acquire #{auctioning.name}"
+              end
             end
             resolve_bids
           end
