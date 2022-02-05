@@ -52,8 +52,8 @@ module Engine
               have_cert_room_to_protect?(entity, bundle)
           end
 
-          def have_cert_room_to_protect?(entity, bundle)
-            if (bundle.corporation.counts_for_limit)
+          def cert_room_to_protect?(entity, bundle)
+            if bundle.corporation.counts_for_limit
               num_certs = @game.num_certs(entity)
               # special case: selling white shares into yellow zone, @game.num_certs(entity) undercounts
               # the "yellow until price protecteed" shares, so do an accurate num_certs count
