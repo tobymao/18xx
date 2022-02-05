@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative '../base'
+require_relative '../cities_plus_towns_route_distance_str'
 require_relative '../stubs_are_restricted'
-
 module Engine
   module Game
     module G18Rhl
@@ -13,6 +13,7 @@ module Engine
         include_meta(G18Rhl::Meta)
         include Entities
         include Map
+        include CitiesPlusTownsRouteDistanceStr
 
         attr_reader :osterath_tile
 
