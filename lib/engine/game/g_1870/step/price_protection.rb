@@ -49,7 +49,7 @@ module Engine
 
             entity.cash >= bundle.price &&
               !@round.players_sold[entity][bundle.corporation] &&
-              have_cert_room_to_protect?(entity, bundle)
+              cert_room_to_protect?(entity, bundle)
           end
 
           def cert_room_to_protect?(entity, bundle)
