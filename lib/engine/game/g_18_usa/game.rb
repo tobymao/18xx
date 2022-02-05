@@ -753,10 +753,8 @@ module Engine
             end
           end
 
-          paths_ = route.paths.uniq
-          token = blocked if blocked
-
-          return if token.select(paths_, corporation: route.corporation).size == paths_.size
+          # no need to check whether tokened out because of the above
+          return if route.ordered_paths.each_cons(2).all? { |pair| pair[0].connects_to?(pair[1], nil) }
 
           raise GameError, 'Route is not connected'
         end

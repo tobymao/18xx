@@ -1558,25 +1558,7 @@ module Engine
           visits[1..-2].any? { |node| node.city? && custom_blocks?(node, corporation) }
         end
 
-        # change all bankrupt flipped tokens to neutral
-        def flipped_to_neutral
-          @bankrupt_corps.each do |corp|
-            corp.tokens.each do |token|
-              token.type = :neutral if token.status == :flipped
-            end
-          end
-        end
-
-        # change all bankrupt neutral tokens to flipped
-        def neutral_to_flipped
-          @bankrupt_corps.each do |corp|
-            corp.tokens.each do |token|
-              token.type = :normal if token.status == :flipped
-            end
-          end
-        end
-
-        def check_connected(route, token)
+        def check_connected(route, _token)
           visits = route.visited_stops
           blocked = nil
 
@@ -1590,16 +1572,10 @@ module Engine
             end
           end
 
-          paths_ = route.paths.uniq
-          token = blocked if blocked
-
-          flipped_to_neutral
-          if token.select(paths_, corporation: route.corporation).size != paths_.size
-            neutral_to_flipped
+          # no need to check whether cities are tokened out because of the above
+          unless route.ordered_paths.each_cons(2).all? { |pair| pair[0].connects_to?(pair[1], nil) }
             raise GameError, 'Route is not connected'
           end
-
-          neutral_to_flipped
 
           return unless blocked && route.routes.any? { |r| r != route && tokened_out?(r) }
 

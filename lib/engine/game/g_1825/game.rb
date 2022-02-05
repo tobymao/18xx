@@ -1105,11 +1105,7 @@ module Engine
           # no need if distance is 2, avoids dealing with double-header route missing a token
           return if route.train.distance == 2
 
-          paths_ = route.paths.uniq
-
-          return if token.select(paths_, corporation: route.corporation).size == paths_.size
-
-          raise GameError, 'Route is not connected'
+          super
         end
 
         def compute_stops(route)
