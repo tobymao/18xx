@@ -754,7 +754,7 @@ module Engine
           end
 
           # no need to check whether tokened out because of the above
-          return if route.ordered_paths.each_cons(2).all? { |pair| pair[0].connects_to?(pair[1], nil) }
+          super(route, nil)
 
           raise GameError, 'Route is not connected'
         end

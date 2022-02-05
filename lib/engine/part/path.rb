@@ -110,7 +110,7 @@ module Engine
             edge = part.num
             if (neighbor = hex.neighbors[edge])
               np_edge = hex.invert(edge)
-              return true if neighbor == other.hex && other.edges.find { |e| e.num == np_edge }
+              return true if neighbor == other.hex && other.edges.any? { |e| e.num == np_edge }
             end
           elsif part.junction?
             return true if other.junction == part

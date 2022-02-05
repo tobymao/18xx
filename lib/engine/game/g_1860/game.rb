@@ -1573,9 +1573,7 @@ module Engine
           end
 
           # no need to check whether cities are tokened out because of the above
-          unless route.ordered_paths.each_cons(2).all? { |pair| pair[0].connects_to?(pair[1], nil) }
-            raise GameError, 'Route is not connected'
-          end
+          super(route, nil)
 
           return unless blocked && route.routes.any? { |r| r != route && tokened_out?(r) }
 
