@@ -22,10 +22,18 @@ module Engine
 
             super
 
-            return unless old_tile.label.to_s == 'P'
-
             old_tile.label = nil if %i[yellow green].include?(old_tile.color)
-            action.tile.label = 'P' if %i[yellow green].include?(action.tile.color)
+            old_tile.label = 'P' if old_tile.id == '170'
+
+            return if action.tile.color == 'gray'
+
+            if action.tile.hex.id == 'B11'
+              action.tile.label = 'K P'
+            elsif action.tile.hex.id == 'C18'
+              action.tile.label = 'P L'
+            elsif %w[J3 J5 N17].include?(action.tile.hex.id)
+              action.tile.label = 'P'
+            end
           end
         end
       end
