@@ -31,7 +31,7 @@ module Engine
               action.tile.label = 'K P'
             elsif action.tile.hex.id == 'C18'
               action.tile.label = 'P L'
-            elsif %i[J3 J5 N17].include?(action.tile.hex.id)
+            elsif %w[J3 J5 N17].include?(action.tile.hex.id)
               action.tile.label = 'P'
             end
           end
