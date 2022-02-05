@@ -396,7 +396,7 @@ module Engine
 
         # minors formed in ISR auto-buy a train
         def buy_first_train(corporation)
-          return if corporation.type != :minor || corporation.tokens.first&.used
+          return if corporation.type != :minor || corporation.tokens.first&.used || !corporation.floated?
           return unless @turn == 1
 
           train = @depot.upcoming.first
