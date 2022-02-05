@@ -472,6 +472,14 @@ module Engine
           player.cash + player_shares_value(player)
         end
 
+        def float_corporation(corporation)
+          super
+          return unless corporation.type == '10-share'
+
+          bundle = ShareBundle.new(corporation.shares_of(corporation))
+          @share_pool.transfer_shares(bundle, @share_pool)
+        end
+
         def place_home_token(corporation)
           return if corporation.tokens.first&.used
 
