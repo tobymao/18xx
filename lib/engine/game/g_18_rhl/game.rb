@@ -436,7 +436,13 @@ module Engine
           if corporation == rhe
             @aachen_duren_cologne_link_bonus = rhe.par_price.price * 3
             delayed = format_currency(@aachen_duren_cologne_link_bonus)
-            @log << "#{rhe.name} will receive #{delayed} when there is a link from Köln to Aachen via Düren"
+            @log << "#{rhe.name} will receive #{delayed} when there is a link from Köln to Aachen via Düren (KDA link)"
+            ability = abilities(rhe, :base)
+            ability.description = "When KDA link created: treasury +#{format_currency(@aachen_duren_cologne_link_bonus)}"
+            ability.desc_detail = 'The first time it is possible to go from Köln to Aachen via Düren the 3 times PAR '\
+                                  "value of RhE (#{format_currency(@aachen_duren_cologne_link_bonus)}) will be added "\
+                                  '̈́to the treasury of RhE. '\
+                                  'Note: The link check ignores blocking tokens, available trains and length of route.'
           else
             @bank.spend(corporation.par_price.price * paid_to_treasury, corporation)
             @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
@@ -662,6 +668,7 @@ module Engine
           @log << "#{rhe.name} adds #{format_currency(@aachen_duren_cologne_link_bonus)} to its treasury"
           @bank.spend(@aachen_duren_cologne_link_bonus, rhe)
           @aachen_duren_cologne_link_bonus = 0
+          rhe.remove_ability(abilities(rhe, :base))
         end
 
         def eastern_ruhr_connection_check(hex)
