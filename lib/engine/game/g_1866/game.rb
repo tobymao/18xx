@@ -664,8 +664,8 @@ module Engine
           national_corporation?(entity) || entity.trains.any? { |t| local_train?(t) } || super
         end
 
-        def check_connected(route, token)
-          return if national_corporation?(route.corporation)
+        def check_connected(route, corporation)
+          return if national_corporation?(corporation)
 
           super
         end

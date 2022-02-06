@@ -748,7 +748,7 @@ module Engine
           raise GameError, 'Route cannot use holes as terminal more than once' if hole_used_twice
         end
 
-        def check_connected(route, _token)
+        def check_connected(route, corporation)
           blocked = nil
           blocked_by = nil
           train_with_sugar = nil
@@ -758,7 +758,6 @@ module Engine
 
             next unless visits.size > 2
 
-            corporation = route.corporation
             visits[1..-2].each do |node|
               next if !node.city? || !node.blocks?(corporation)
               raise GameError, 'Route is not connected' unless route.train.owner.assigned?(wings.id)

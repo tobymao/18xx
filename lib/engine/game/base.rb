@@ -1170,10 +1170,8 @@ module Engine
         end
       end
 
-      def check_connected(route, token)
-        paths_ = route.paths.uniq
-
-        return if token.select(paths_, corporation: route.corporation).size == paths_.size
+      def check_connected(route, corporation)
+        return if route.ordered_paths.each_cons(2).all? { |a, b| a.connects_to?(b, corporation) }
 
         raise GameError, 'Route is not connected'
       end
