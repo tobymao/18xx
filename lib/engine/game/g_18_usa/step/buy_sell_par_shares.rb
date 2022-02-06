@@ -42,7 +42,7 @@ module Engine
             unless @auctioning
               bid = action.price
               max_bid = @game.bidding_power(action.entity)
-              @round.needed_city_subsidy = bid - max_bid if bid > max_bid
+              @round.minimum_city_subsidy = bid - max_bid if bid > max_bid
             end
 
             super
@@ -74,13 +74,6 @@ module Engine
           def par_price(bid)
             par_price = super
             [par_price, self.class::MAX_PAR_PRICE].min
-          end
-
-          def transfer_subsidy_ownership(to, subsidy)
-            from = subsidy.owner
-            subsidy.owner = to
-            from.companies.delete(subsidy)
-            to.companies << subsidy
           end
 
           def city_subsidy(corporation)
@@ -128,31 +121,11 @@ module Engine
             true
           end
 
-          def handle_plus_ten(subsidy_company)
-            subsidy_company.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', sticky: true)
-            subsidy_company.close!
-          end
-
-          def handle_plus_ten_twenty(subsidy_company)
-            subsidy_company.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', sticky: true)
-            subsidy_company.close!
-          end
-
           def par_corporation
             return unless @corporation_size
 
             corporation = @winning_bid.corporation
-
-            corporation.companies.dup.each do |c|
-              case c.name
-              when 'No Subsidy'
-                c.close!
-              when '+10'
-                handle_plus_ten(c)
-              when '+10 / +20'
-                handle_plus_ten_twenty(c)
-              end
-            end
+            @game.apply_subsidy(corporation)
 
             if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver
               @round.pending_tracks << {

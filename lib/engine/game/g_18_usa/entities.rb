@@ -605,6 +605,8 @@ module Engine
           },
         ].freeze
 
+        NO_SUBSIDIES = %w[S1 S2 S3 S4 S5 S6 S7].freeze
+
         SUBSIDIES = [
           # Temporarily commenting out the first two subsidies to guarantee all "interesting" subsidies
           # come out during randomization during pre-alpha development
@@ -690,7 +692,13 @@ module Engine
           },
           {
             icon: 'subsidy_free_station',
-            abilities: [],
+            abilities: [
+              {
+                type: 'additional_token',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
             id: 'S9',
             name: 'Free Station',
             desc: 'The free station is a special token (which counts toward the 8 token limit) that can be placed in any city '\
@@ -749,10 +757,22 @@ module Engine
           },
           {
             icon: 'subsidy_resource',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: [], # Added during setup
+                tiles: [], # Added during setup
+                when: 'track',
+                reachable: true,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 1,
+              },
+            ],
             id: 'S16',
             name: 'Resource Subsidy',
-            desc: 'PLACEHOLDER DESCRIPTION',
+            desc: '', # Added during setup
             value: 0,
           },
         ].freeze

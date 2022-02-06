@@ -217,17 +217,20 @@ module Engine
 
           setup_company_tiles
 
-          @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           @jump_graph = Graph.new(self, no_blocking: true)
 
           @oil_value = 10
 
           @recently_floated = []
 
+          @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           metro_hexes = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro_hexes.each { |metro_hex| convert_potential_metro(hex_by_id(metro_hex)) }
 
           setup_train_roster
+
+          @subsidies = SUBSIDIES.dup
+          setup_resource_subsidy
           randomize_subsidies
         end
 
@@ -283,8 +286,41 @@ module Engine
           end
         end
 
+        def setup_resource_subsidy
+          subsidy = @subsidies.find { |s| s[:id] == 'S16' }
+          ability = subsidy[:abilities][0].dup
+          subsidy[:abilities][0] = ability
+
+          resources = []
+          if company_by_id('P24').closed?
+            ability.hexes += ORE_HEXES
+            ability.tiles += RESOURCE_LABELS[:ore]
+            ability.discount = 15
+            resources << 'ore'
+          end
+          if company_by_id('P12').closed?
+            ability.hexes += OIL_HEXES
+            ability.tiles += RESOURCE_LABELS[:oil]
+            resources << 'oil'
+          end
+          if company_by_id('P18').closed? || company_by_id('P28').closed?
+            ability.hexes += COAL_HEXES
+            ability.tiles += RESOURCE_LABELS[:coal]
+            ability.discount = 15
+            resources << 'coal'
+          end
+          resources << 'NO RESOURCES' if resources.empty?
+
+          subsidy[:description] =
+            "The corporation can place its choice of one of the following resources: #{resources.join(', ')}. " \
+            'Placing a track and the resource token from the Resource Subsidy is a free extra ' \
+            'track lay in addition to the normal track placements.'
+
+          @log << "Resource subsidy includes #{resources.join(', ')}"
+        end
+
         def randomize_subsidies
-          randomized_subsidies = SUBSIDIES.sort_by { rand }.take(SUBSIDIZED_HEXES.size)
+          randomized_subsidies = @subsidies.sort_by { rand }.take(SUBSIDIZED_HEXES.size)
           @subsidies_by_hex = {}
           SUBSIDIZED_HEXES.zip(randomized_subsidies).each do |hex_id, subsidy|
             hex = hex_by_id(hex_id)
@@ -728,11 +764,11 @@ module Engine
           our_tokened_stops = counted_stops.select { |stop| stop&.tokened_by?(route.train.owner) }
 
           # Skip the worst stop if enough tokened stops
-          return counted_stops.min_by { |stop| stop.route_revenue(@game.phase, route.train) } if our_tokened_stops.size > 1
+          return counted_stops.min_by { |stop| stop.route_revenue(@phase, route.train) } if our_tokened_stops.size > 1
 
           # Otherwise skip the worst untokened stop
           untokened_stops = counted_stops.reject { |stop| stop&.tokened_by(route.train.owner) }
-          untokened_stops.min_by { |stop| stop.route_revenue(@game.phase, route.train) }
+          untokened_stops.min_by { |stop| stop.route_revenue(@phase, route.train) }
         end
 
         def check_distance(route, visits)
@@ -797,19 +833,59 @@ module Engine
           super
         end
 
+        def add_subsidy(corporation, hex)
+          return unless (subsidy = @subsidies_by_hex.delete(hex.coordinates))
+
+          hex.tile.icons.reject! { |icon| icon.name.include?('subsidy') }
+          return if NO_SUBSIDIES.include?(subsidy[:id])
+
+          subsidy_company = create_company_from_subsidy(subsidy)
+          assign_boomtown_subsidy(hex, corporation) if subsidy_company.id == 'S8'
+          subsidy_company.owner = corporation
+          corporation.companies << subsidy_company
+        end
+
         def create_company_from_subsidy(subsidy)
-          company = Engine::Company.new(
-            {
-              sym: subsidy['id'],
-              name: subsidy['name'],
-              desc: subsidy['desc'],
-              value: subsidy['value'] || 0,
-              abilities: subsidy['abilities'] || [],
-            }
-          )
+          subsidy_params = {
+            sym: subsidy[:id],
+            name: subsidy[:name],
+            desc: subsidy[:desc],
+            value: subsidy[:value] || 0,
+            abilities: subsidy[:abilities] || [],
+          }
+          company = Engine::Company.new(**subsidy_params)
           @companies << company
           update_cache(:companies)
           company
+        end
+
+        def assign_boomtown_subsidy(hex, corporation)
+          subsidy = company_by_id('S8')
+          subsidy.all_abilities.each do |ability|
+            ability.hexes << hex.id if ability.type == :tile_lay
+            ability.corporation = corporation.id if ability.type == :close
+          end
+        end
+
+        def apply_subsidy(corporation)
+          return unless (subsidy = corporation.companies.first)
+
+          case subsidy.id
+          when 'S9'
+            corporation.tokens << Engine::Token.new(corporation)
+            subsidy.close!
+          when 'S10'
+            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', sticky: true)
+            subsidy.close!
+          when 'S11'
+            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', sticky: true)
+            subsidy.close!
+          when 'S16'
+            if subsidy.abilities.first.hexes.empty?
+              @log << "#{subsidy.name} has NO RESOURCES and closes"
+              subsidy.close!
+            end
+          end
         end
       end
     end
