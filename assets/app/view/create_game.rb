@@ -337,14 +337,14 @@ module View
           id: 'async',
           type: 'radio',
           attrs: { name: 'is_async', checked: @is_async == true },
-          on: { click: -> { @is_async = !@is_async } }
+          on: { click: -> { store(:is_async, is_async, skip: true) } }
         ),
         render_input(
           'Live',
           id: 'live',
           type: 'radio',
           attrs: { name: 'is_async', checked: @is_async == false },
-          on: { click: -> { @is_async = !@is_async } }
+          on: { click: -> { store(:is_async, is_async, skip: true) } }
         ),
       ])
     end
