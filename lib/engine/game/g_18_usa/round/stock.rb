@@ -26,6 +26,14 @@ module Engine
             train_station = @game.company_by_id(@game.class::TRAIN_STATION_PRIVATE_NAME)
             train_station.close! if train_station&.owner&.corporation?
           end
+
+          def setup
+            @buy_sell_par_shares_step = @steps.find { |step| step.class.to_s.include?('BuySellParShares') }
+          end
+
+          def after_process_before_skip(action)
+            @buy_sell_par_shares_step.after_process_before_skip(action)
+          end
         end
       end
     end

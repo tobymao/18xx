@@ -48,18 +48,23 @@ module Engine
             super
           end
 
-          def win_bid(winner, _company)
+          def win_bid(winner, company)
+            corporation = winner.corporation
+            unless corporation.tokens.first.hex
+              @pending_winning_bid = { :winner => winner, :company => company }
+              return
+            end
+            @pending_winning_bid = nil
+
             super
 
             entity = winner.entity
-            corporation = winner.corporation
 
             # Corporation only gets share price * 2 in cash, not the full winning bid
             extra_cash = corporation.cash - (corporation.share_price.price * 2)
             corporation.spend(extra_cash, @game.bank) if extra_cash.positive?
 
-            subsidy = city_subsidy(corporation)
-            return unless subsidy
+            return unless (subsidy = city_subsidy(corporation))
 
             @game.log << "Subsidy contributes #{@game.format_currency(subsidy.value)}"
             @game.bank.spend(subsidy.value, entity)
@@ -137,6 +142,7 @@ module Engine
             return unless @corporation_size
 
             corporation = @winning_bid.corporation
+            return super
 
             corporation.companies.dup.each do |c|
               case c.name
@@ -157,6 +163,12 @@ module Engine
             end
 
             super
+          end
+
+          def after_process_before_skip(_action)
+            return unless @pending_winning_bid
+            
+            win_bid(@pending_winning_bid[:winner], @pending_winning_bid[:company])
           end
         end
       end
