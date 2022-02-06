@@ -56,12 +56,30 @@ module Engine
             @bc_connected = new_tile.paths.any? { |np| @game.bc_graph.connected_paths(entity)[np] }
             @sp_connected = new_tile.paths.any? { |np| @game.sp_graph.connected_paths(entity)[np] }
 
+            check_border_crossing(entity, new_tile)
+
             super
+          end
+
+          def check_border_crossing(entity, tile)
+            hex = tile.hex
+            tile.borders.dup.each do |border|
+              edge = border.edge
+              neighbor = hex.neighbors[edge]
+              next if !hex.targeting?(neighbor) || !neighbor.targeting?(hex)
+
+              @game.crossing_border(entity, tile) # check and potentially pay bonus
+
+              # remove border
+              tile.borders.delete(border)
+              neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
+            end
           end
 
           def tracker_available_hex(entity, hex)
             connected = hex_neighbors(entity, hex)
             return nil unless connected
+            return nil if hex.id == @game.class::T_HEX
 
             tile_lay = get_tile_lay(entity)
             return nil unless tile_lay

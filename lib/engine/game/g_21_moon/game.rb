@@ -76,6 +76,7 @@ module Engine
             train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow],
             operating_rounds: 2,
+            status: ['can_buy_companies'],
           },
           {
             name: '3',
@@ -83,6 +84,7 @@ module Engine
             train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: ['can_buy_companies'],
           },
           {
             name: '4',
@@ -90,6 +92,7 @@ module Engine
             train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: ['can_buy_companies'],
           },
           {
             name: '5',
@@ -97,6 +100,7 @@ module Engine
             train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
+            status: ['can_buy_companies'],
           },
           {
             name: '6',
@@ -104,6 +108,7 @@ module Engine
             train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
+            status: ['can_buy_companies'],
           },
           {
             name: '10',
@@ -111,6 +116,7 @@ module Engine
             train_limit: { BC: 2, SP: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
+            status: ['can_buy_companies'],
           },
         ].freeze
 
@@ -156,6 +162,10 @@ module Engine
           },
         ].freeze
 
+        ASSIGNMENT_TOKENS = {
+          'RL' => '/icons/21Moon/RL.svg',
+        }.freeze
+
         HOME_TOKEN_TIMING = :start
         MUST_BUY_TRAIN = :always
         SELL_BUY_ORDER = :sell_buy
@@ -176,8 +186,10 @@ module Engine
 
         LAST_OR = 11
         SP_HEX = 'E9'
+        SP_TILES = %w[X22 X23].freeze
         T_HEX = 'F8'
         T_BONUS = 30
+        T_TILE = 'X30'
         RIFT_BONUS = 60
         EW_BONUS = 100
         NE_HEXES = %w[K1 L2 L4].freeze
@@ -189,13 +201,16 @@ module Engine
         ICON_PREFIX = '21Moon/'
 
         ICON_REVENUES = {
-          'RL' => { yellow: 20, green: 20, brown: 20, gray: 20 },
           'BC' => { yellow: 30, green: 30, brown: 30, gray: 30 },
           'X' => { yellow: 20, green: 40, brown: 60, gray: 80 },
           'H' => { yellow: 30, green: 40, brown: 50, gray: 60 },
           'R' => { yellow: 20, green: 20, brown: 40, gray: 50 },
           'A' => { yellow: 40, green: 30, brown: 30, gray: 20 },
           'M' => { yellow: 10, green: 10, brown: 10, gray: 10 },
+        }.freeze
+
+        ASSIGNMENT_REVENUES = {
+          'RL' => { yellow: 20, green: 20, brown: 20, gray: 20 },
         }.freeze
 
         MINERAL_HEXES = %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10 H2 E5 G13].freeze
@@ -223,7 +238,7 @@ module Engine
           # randomize minerals
           #
           load_icons
-          MINERAL_HEXES.sort_by { rand }.map { |h| hex_by_id(h) }.each_with_index do |hex, idx|
+          self.class::MINERAL_HEXES.sort_by { rand }.map { |h| hex_by_id(h) }.each_with_index do |hex, idx|
             hex.tile.icons << case idx
                               when 0, 1, 2
                                 @icons['X'][:yellow]
@@ -258,11 +273,15 @@ module Engine
 
           # pick one corp to wait until SR3
           #
+          @reserved_corp = @corporations.min_by { rand }
+          @log << "#{@reserved_corp.full_name} (#{@reserved_corp.name}) is reserved until SR3"
 
           @train_base = {}
           @or = 0
           @three_or_round = false
           @end_bonuses = Hash.new { |h, k| h[k] = [] }
+          @crossed_rift = false
+          @sp_tiles = SP_TILES.map { |tn| @tiles.find { |t| t.name == tn } }
         end
 
         def transfer_share(share, new_owner)
@@ -289,9 +308,6 @@ module Engine
             when 'BC'
               @bc_icon = Part::Icon.new(ICON_PREFIX + 'BC', 'BC', false, false, false)
               %i[yellow green brown gray].each { |color| @icons[root][color] = @bc_icon }
-            when 'RL'
-              @rl_icon = Part::Icon.new(ICON_PREFIX + 'RL', 'RL', false, false, false)
-              %i[yellow green brown gray].each { |color| @icons[root][color] = @rl_icon }
             else
               %i[yellow green brown gray].each do |color|
                 full = root + '_' + color.to_s
@@ -332,13 +348,105 @@ module Engine
           @bc_graph
         end
 
+        def after_buy_company(player, company, _price)
+          super
+          return ols_start(player) if company.sym == 'OLS'
+        end
+
+        def after_sell_company(buyer, company, _price, _seller)
+          return ols_swap(buyer) if company.sym == 'OLS'
+          return unc_start(buyer) if company.sym == 'UNC'
+        end
+
+        def ols_start(player)
+          ols_minor = minor_by_id('OLS')
+          ols_minor.owner = player
+
+          @log << "#{player.name} must choose city for OLS token"
+          @round.pending_tokens << {
+            entity: ols_minor,
+            hexes: MINERAL_HEXES.map { |h| hex_by_id(h) },
+            token: ols_minor.find_token_by_type,
+          }
+          @round.clear_cache!
+        end
+
+        def ols_swap(buyer)
+          company = company_by_id('OLS')
+          old_token = minor_by_id('OLS').tokens.first
+          new_token = buyer.tokens.first.dup
+          buyer.tokens << new_token
+
+          old_token.swap!(new_token)
+          @log << "#{buyer.name} takes over OLS token in #{new_token.city.hex.id}"
+
+          company.close!
+          @log << "#{company.name} closes"
+        end
+
+        def unc_start(corp)
+          @round.pending_train_mod << {
+            entity: corp,
+          }
+          @round.clear_cache!
+        end
+
+        def add_to_depot(name, corp)
+          prototype = self.class::TRAINS.find { |e| e[:name] == name }
+          raise GameError, "Unable to find train #{name} in TRAINS" unless prototype
+
+          @depot.insert_train(Train.new(**prototype, index: 999), @depot.upcoming.index { |t| t.name == train.name })
+          update_cache(:trains)
+
+          @log << "#{corp.name} adds a #{name} transport to depot"
+        end
+
+        def remove_from_depot(name, corp)
+          train = @depot.upcoming.find { |t| t.name == name }
+          raise GameError, "Unable to find train #{name} in depot" unless train
+
+          @depot.forget_train(train)
+          @log << "#{corp.name} removes a #{name} transport from depot"
+        end
+
+        def crossing_border(entity, _tile)
+          raise GameError, 'Cannot cross Rift' unless entity.companies.find { |c| c.sym == 'SBC' }
+          return if @crossed_rift
+
+          @log << "#{entity.name} earns #{format_currency(self.class::RIFT_BONUS)} for crossing Rift"
+          @bank.spend(self.class::RIFT_BONUS, entity)
+          @crossed_rift = true
+        end
+
+        def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
+          return true if tile.name == T_TILE
+
+          phase_color_cache ||= @phase.tiles
+          phase_color_cache.include?(tile.color)
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return false if to.name == T_TILE && !selected_company
+
+          super
+        end
+
         def upgrades_to_correct_color?(from, to)
+          return true if to.name == T_TILE
+
           case from.color
           when :red, :gray
             to.color == :yellow
           else
             super
           end
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+          G21Moon::Step::OLSToken,
+          Engine::Step::WaterfallAuction,
+        ])
         end
 
         def new_corporate_round
@@ -349,26 +457,38 @@ module Engine
 
         def corporate_round
           G21Moon::Round::Corporate.new(self, [
+            G21Moon::Step::Exchange,
             G21Moon::Step::CorporateBuySellShares,
           ])
         end
 
         def stock_round
           Engine::Round::Stock.new(self, [
+            G21Moon::Step::Exchange,
             G21Moon::Step::TradeStock,
             G21Moon::Step::BuySellParShares,
           ])
         end
 
+        def new_stock_round
+          round = super
+          release_corp if @turn == 3
+          round
+        end
+
         def new_operating_round(round_num = 1)
           @or += 1
+
+          round = super
+          upgrade_space_port if @or == 6 || @or == 9
+          event_close_companies! if @or == 7
 
           if @or == 9
             @operating_rounds = 3
             @three_or_round = true
           end
 
-          super
+          round
         end
 
         def or_round_finished
@@ -379,11 +499,16 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            Engine::Step::BuyCompany,
+            Engine::Step::Assign,
+            G21Moon::Step::SpecialTrack,
+            G21Moon::Step::TrainMod,
             G21Moon::Step::Track,
             G21Moon::Step::Token,
             G21Moon::Step::Route,
             G21Moon::Step::Dividend,
             G21Moon::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -416,6 +541,22 @@ module Engine
         # Game will end directly after the end of OR 11
         def end_now?(_after)
           @or == LAST_OR
+        end
+
+        def release_corp
+          @log << "#{@reserved_corp&.full_name} is now in play"
+          @reserved_corp = nil
+        end
+
+        def upgrade_space_port
+          sp_hex = hex_by_id(SP_HEX)
+          old_tile = sp_hex.tile
+          new_tile = @sp_tiles.shift
+
+          new_tile.rotate!(old_tile.rotation)
+          update_tile_lists(new_tile, old_tile)
+          sp_hex.lay(new_tile)
+          @log << "Space port upgraded to #{format_currency(new_tile.cities.first.max_revenue)}"
         end
 
         # ignore minors
@@ -462,9 +603,9 @@ module Engine
 
         def icon_revenue(stop)
           tile = stop.tile
-          return 0 if tile.icons.empty?
 
-          tile.icons.sum { |i| ICON_REVENUES[icon_base(i)][tile.color] }
+          tile.icons.sum { |i| ICON_REVENUES[icon_base(i)][tile.color] } +
+            tile.hex.assignments.keys.sum { |k| ASSIGNMENT_REVENUES[k][tile.color] }
         end
 
         def revenue_for(route, stops)
@@ -626,6 +767,7 @@ module Engine
         end
 
         def status_str(corp)
+          return 'Not available until SR3' unless corporation_available?(corp)
           return if @end_bonuses[corp].empty?
 
           "End game bonus#{@end_bonuses[corp].one? ? '' : 'es'}: #{@end_bonuses[corp].join(',')}"
@@ -635,6 +777,36 @@ module Engine
           value = super
           value += shares.sum { |s| @end_bonuses[s.corporation].size * END_BONUS_VALUE } if @finished
           value
+        end
+
+        def entity_can_use_company?(entity, company)
+          entity == company.owner
+        end
+
+        def corporation_available?(corp)
+          corp != @reserved_corp
+        end
+
+        def can_par?(corporation, entity)
+          return false unless corporation_available?(corporation)
+
+          super
+        end
+
+        def upgrade_cost(tile, hex, entity, spender)
+          ability = entity.all_abilities.find do |a|
+            a.type == :tile_discount &&
+              (!a.hexes || a.hexes.include?(hex.name))
+          end
+
+          tile.upgrades.sum do |upgrade|
+            discount = ability && upgrade.terrains.uniq == [ability.terrain] ? upgrade.cost - ability.discount : 0
+
+            log_cost_discount(spender, ability, discount)
+
+            total_cost = upgrade.cost - discount
+            total_cost
+          end
         end
       end
     end

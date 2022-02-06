@@ -892,6 +892,8 @@ module Engine
         end
       end
 
+      def after_sell_company(_buyer, _company, _price, _seller); end
+
       def player_value(player)
         player.value
       end
