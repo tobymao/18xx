@@ -810,7 +810,7 @@ module Engine
           end
         end
 
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           return if route.train.name == 'Convert'
 
           super

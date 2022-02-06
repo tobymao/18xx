@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/dividend'
 require_relative '../../../step/half_pay'
 require_relative '../../g_1817/step/dividend'
 

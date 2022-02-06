@@ -70,6 +70,10 @@ module Engine
             super
             @game.update_end_bonuses(action.entity, action.routes)
           end
+
+          def available_hex(entity, hex)
+            @game.graph.reachable_hexes(entity)[hex]
+          end
         end
       end
     end
