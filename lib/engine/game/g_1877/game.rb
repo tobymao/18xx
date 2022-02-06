@@ -60,6 +60,24 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:60;path=a:0,b:_0;label=M',
           },
+          'X5' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;label=⛏',
+          },
+          'X6' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0;label=⛏',
+          },
+          'X7' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=⛏',
+          },
         }.freeze
 
         LOCATION_NAMES = {
