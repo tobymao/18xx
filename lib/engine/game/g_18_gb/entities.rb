@@ -213,6 +213,18 @@ module Engine
                 when: 'any',
                 choices: { close: 'Close' },
               },
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                hexes: ['C22'],
+                tiles: ['G33'],
+                discount: 50,
+                special: false,
+                reachable: true,
+                consume_tile_lay: true,
+                count: 1,
+              },
             ],
           },
           {
