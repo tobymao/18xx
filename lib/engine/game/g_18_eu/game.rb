@@ -18,7 +18,7 @@ module Engine
         include G18EU::Trains
         include CitiesPlusTownsRouteDistanceStr
 
-        attr_accessor :corporations_operated
+        attr_accessor :corporations_operated, :minor_exchange, :minor_exchange_priority
 
         EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true # if ebuying from depot, must buy cheapest train
@@ -108,7 +108,7 @@ module Engine
         end
 
         def init_round
-          Round::Auction.new(self, [G18EU::Step::ModifiedDutchAuction])
+          Engine::Round::Auction.new(self, [G18EU::Step::ModifiedDutchAuction])
         end
 
         def exchange_for_partial_presidency?
@@ -116,7 +116,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G18EU::Step::Bankrupt,
             G18EU::Step::Track,
             Engine::Step::Token,
@@ -130,7 +130,7 @@ module Engine
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18EU::Step::HomeToken,
             G18EU::Step::ReplaceToken,
@@ -139,9 +139,11 @@ module Engine
         end
 
         def new_minor_exchange_round
-          # TODO: Implement Minor Exchange Round
-          @minor_exchange = :done
-          new_stock_round
+          @log << '-- Minor Company Final Exchange --'
+          G18EU::Round::FinalExchange.new(self, [
+            G18EU::Step::ReplaceToken,
+            G18EU::Step::FinalExchange,
+          ])
         end
 
         # I don't like duplicating all of this just to add the minor exchange round, but
@@ -149,11 +151,13 @@ module Engine
         def next_round!
           @round =
             case @round
-            when Round::Stock
+            when G18EU::Round::FinalExchange
+              new_stock_round
+            when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -197,6 +201,7 @@ module Engine
           @log << '-- Event: Minor Exchange occurs before next Stock Round --'
 
           @minor_exchange = :triggered
+          @minor_exchange_priority = @round.current_operator.owner
         end
 
         def player_card_minors(player)
@@ -323,15 +328,17 @@ module Engine
         def exchange_corporations(exchange_ability)
           return super if !exchange_ability.owner.minor? || @loading
 
-          parts = graph.connected_nodes(exchange_ability.owner).keys
-          connected = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+          minor_tile = exchange_ability&.owner&.tokens&.first&.city&.tile
+          return [] unless minor_tile
 
-          minor_tile = exchange_ability.owner.tokens.first.city.tile
+          parts = graph.connected_nodes(exchange_ability.owner).keys
+          connected = parts.select(&:city?).flat_map { |city| city.tokens.compact.map(&:corporation) }
+
           colocated = corporations.select do |c|
             c.tokens.any? { |t| t.city&.tile == minor_tile }
           end
 
-          (connected + colocated).uniq
+          (connected + colocated).uniq.reject(&:minor?)
         end
 
         def after_par(corporation)
@@ -412,6 +419,19 @@ module Engine
 
         def can_go_bankrupt?(player, corporation)
           total_emr_buying_power(player, corporation) < min_depot_price(corporation)
+        end
+
+        def maybe_remove_duplicate_token!(tile)
+          tile.cities.each do |city|
+            prev = nil
+            city.tokens.compact.sort_by { |t| t.corporation.name }.each do |token|
+              if prev&.corporation == token.corporation
+                prev.remove!
+                @log << "#{token.corporation.name} redundant token removed from #{tile.hex.name}"
+              end
+              prev = token
+            end
+          end
         end
       end
     end
