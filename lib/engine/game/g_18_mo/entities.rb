@@ -74,7 +74,7 @@ module Engine
            name: 'Extra Green Tile',
            value: 40,
            revenue: 15,
-           desc: 'May lay an extra green tile on a connected city for free one time.',
+           desc: 'May lay an extra green tile on a connected city for free (including terrain) one time.',
            sym: 'EXG',
            color: nil,
            abilities: [{
@@ -138,7 +138,7 @@ module Engine
           {
             type: 'tile_lay',
             when: %w[owning_corp_or_turn],
-            hexes: %w[B6 C9 D6 D9 D12 E11 F8 F10 F14 G11 H8],
+            hexes: %w[B6 B8 C9 D6 C9 D12 E11 F8 F10 F14 G11 H8],
             tiles: ['X1'],
             owner_type: 'corporation',
             count: 1,
