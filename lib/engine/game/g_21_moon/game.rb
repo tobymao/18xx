@@ -186,7 +186,7 @@ module Engine
 
         LAST_OR = 11
         SP_HEX = 'E9'
-        SP_TILES = %w[X22 X23]
+        SP_TILES = %w[X22 X23].freeze
         T_HEX = 'F8'
         T_BONUS = 30
         T_TILE = 'X30'
@@ -273,6 +273,8 @@ module Engine
 
           # pick one corp to wait until SR3
           #
+          @reserved_corp = @corporations.min_by { rand }
+          @log << "#{@reserved_corp.full_name} (#{@reserved_corp.name}) is reserved until SR3"
 
           @train_base = {}
           @or = 0
@@ -407,14 +409,13 @@ module Engine
           @log << "#{corp.name} removes a #{name} transport from depot"
         end
 
-        def crossing_border(entity, tile)
-          if !entity.companies.find { |c| c.sym == 'SBC' }
-            raise GameError, "Cannot cross Rift"
-          elsif !@crossed_rift
-            @log << "#{entity.name} earns #{format_currency(self.class::RIFT_BONUS)} for crossing Rift"
-            @bank.spend(self.class::RIFT_BONUS, entity)
-            @crossed_rift = true
-          end
+        def crossing_border(entity, _tile)
+          raise GameError, 'Cannot cross Rift' unless entity.companies.find { |c| c.sym == 'SBC' }
+          return if @crossed_rift
+
+          @log << "#{entity.name} earns #{format_currency(self.class::RIFT_BONUS)} for crossing Rift"
+          @bank.spend(self.class::RIFT_BONUS, entity)
+          @crossed_rift = true
         end
 
         def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
@@ -446,7 +447,7 @@ module Engine
           G21Moon::Step::OLSToken,
           Engine::Step::WaterfallAuction,
         ])
-      end
+        end
 
         def new_corporate_round
           @log << "-- #{round_description('Corporate')} --"
@@ -469,9 +470,16 @@ module Engine
           ])
         end
 
+        def new_stock_round
+          round = super
+          release_corp if @turn == 3
+          round
+        end
+
         def new_operating_round(round_num = 1)
           @or += 1
 
+          round = super
           upgrade_space_port if @or == 6 || @or == 9
           event_close_companies! if @or == 7
 
@@ -480,7 +488,7 @@ module Engine
             @three_or_round = true
           end
 
-          super
+          round
         end
 
         def or_round_finished
@@ -500,7 +508,7 @@ module Engine
             G21Moon::Step::Route,
             G21Moon::Step::Dividend,
             G21Moon::Step::BuyTrain,
-            [Engine::Step::BuyCompany, {blocks: true}],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -535,6 +543,11 @@ module Engine
           @or == LAST_OR
         end
 
+        def release_corp
+          @log << "#{@reserved_corp&.full_name} is now in play"
+          @reserved_corp = nil
+        end
+
         def upgrade_space_port
           sp_hex = hex_by_id(SP_HEX)
           old_tile = sp_hex.tile
@@ -542,7 +555,8 @@ module Engine
 
           new_tile.rotate!(old_tile.rotation)
           update_tile_lists(new_tile, old_tile)
-          hex.lay(tile)
+          sp_hex.lay(new_tile)
+          @log << "Space port upgraded to #{format_currency(new_tile.cities.first.max_revenue)}"
         end
 
         # ignore minors
@@ -753,6 +767,7 @@ module Engine
         end
 
         def status_str(corp)
+          return 'Not available until SR3' unless corporation_available?(corp)
           return if @end_bonuses[corp].empty?
 
           "End game bonus#{@end_bonuses[corp].one? ? '' : 'es'}: #{@end_bonuses[corp].join(',')}"
@@ -766,6 +781,16 @@ module Engine
 
         def entity_can_use_company?(entity, company)
           entity == company.owner
+        end
+
+        def corporation_available?(corp)
+          corp != @reserved_corp
+        end
+
+        def can_par?(corporation, entity)
+          return false unless corporation_available?(corporation)
+
+          super
         end
 
         def upgrade_cost(tile, hex, entity, spender)

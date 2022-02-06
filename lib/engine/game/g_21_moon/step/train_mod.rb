@@ -44,7 +44,7 @@ module Engine
           end
 
           def choice_name
-            "UN Contract Action"
+            'UN Contract Action'
           end
 
           def choices
