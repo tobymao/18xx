@@ -539,6 +539,17 @@ module Engine
           tiles.select { |tile| tile.label&.to_s == corporation.name }
         end
 
+        def rust?(train, purchased_train)
+          train_symbols = if !purchased_train&.owner&.corporation?
+                            purchased_train.variants.values.map do |item|
+                              item[:name]
+                            end
+                          else
+                            [purchased_train.name]
+                          end
+          !(train.rusts_on & train_symbols).empty?
+        end
+
         def rust_trains!(train, entity)
           rusted_trains = []
           owners = Hash.new(0)
@@ -548,10 +559,7 @@ module Engine
           trains.each do |t|
             next if t.rusted
             next if t.rusts_on.nil? || t.rusts_on.none?
-
-            should_rust = !(t.rusts_on & train_symbol_to_compare).empty?
-            next unless should_rust
-            next unless rust?(t)
+            next unless rust?(t, train)
 
             rusted_trains << t.name
             owners[t.owner.name] += 1 if t.owner

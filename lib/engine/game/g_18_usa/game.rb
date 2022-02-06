@@ -13,6 +13,7 @@ module Engine
         include G18USA::Entities
         include G18USA::Map
 
+        attr_accessor :pending_rusting_event
         attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles,
                     :mexico_hexes
 
@@ -385,6 +386,9 @@ module Engine
             return from.color == :white && can_lay_resource_tile?(from, to, laying_entity.companies)
           end
 
+          # Metropolitan upgrades
+          return %w[X01 X02 X04 X06].include?(from.name) && tile_color_valid_for_phase?(to) if to.name == '592'
+
           # Brown home city upgrade only on first operation
           if !laying_entity.operated? &&
              to.color == :brown &&
@@ -542,7 +546,7 @@ module Engine
           end
         end
 
-        def or_round_finished
+        def export_train
           @recently_floated = []
           turn = "#{@turn}.#{@round.round_num}"
           case turn
@@ -584,9 +588,10 @@ module Engine
             end
           end
 
-          G1817::Round::Operating.new(self, [
+          G18USA::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
+            G18USA::Step::ObsoleteTrain,
             G18USA::Step::Loan,
             G18USA::Step::SpecialTrack,
             G18USA::Step::SpecialToken,
@@ -612,7 +617,6 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
-              or_round_finished
               # Store the share price of each corp to determine if they can be acted upon in the AR
               @stock_prices_start_merger = @corporations.to_h { |corp| [corp, corp.share_price] }
               @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
@@ -772,6 +776,19 @@ module Engine
 
         def pullman_train?(train)
           train.name == 'P'
+        end
+
+        def rust_trains!(train, entity)
+          return super unless p13_can_save_rusting_train?(train)
+
+          @pending_rusting_event = { train: train, entity: entity }
+        end
+
+        def p13_can_save_rusting_train?(purchased_train)
+          !@pending_rusting_event &&
+            (owner = company_by_id('P13')&.owner) &&
+            owner.corporation? &&
+            owner.trains.any? { |t| rust?(t, purchased_train) }
         end
 
         def float_corporation(corporation)
