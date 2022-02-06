@@ -1,5 +1,5 @@
 {
-  "status": "active",
+  "status": "finished",
   "actions": [
     {
       "type": "message",
@@ -13372,7 +13372,8 @@
         "FW_6",
         "FW_7"
       ],
-      "percent": 30
+      "percent": 30,
+      "skip": true
     },
     {
       "type": "buy_shares",
@@ -13383,24 +13384,98 @@
       "shares": [
         "SLSF_7"
       ],
-      "percent": 10
+      "percent": 10,
+      "skip": true
     },
     {
       "type": "pass",
       "entity": 3268,
       "entity_type": "player",
       "id": 911,
-      "created_at": 1644090023
+      "created_at": 1644090023,
+      "skip": true
     },
     {
       "type": "pass",
       "entity": 2385,
       "entity_type": "player",
       "id": 912,
-      "created_at": 1644090031
+      "created_at": 1644090031,
+      "skip": true
+    },
+    {
+      "type": "undo",
+      "entity": 2385,
+      "entity_type": "player",
+      "id": 913,
+      "created_at": 1644090194,
+      "skip": true
+    },
+    {
+      "type": "undo",
+      "entity": 2385,
+      "entity_type": "player",
+      "id": 914,
+      "created_at": 1644090203,
+      "skip": true
+    },
+    {
+      "type": "undo",
+      "entity": 3268,
+      "entity_type": "player",
+      "id": 915,
+      "created_at": 1644090209,
+      "skip": true
+    },
+    {
+      "type": "undo",
+      "entity": 5607,
+      "entity_type": "player",
+      "id": 916,
+      "created_at": 1644090216,
+      "skip": true
+    },
+    {
+      "type": "sell_shares",
+      "entity": 5607,
+      "entity_type": "player",
+      "id": 917,
+      "created_at": 1644090233,
+      "shares": [
+        "FW_5",
+        "FW_6",
+        "FW_7",
+        "FW_8"
+      ],
+      "percent": 40
+    },
+    {
+      "type": "buy_shares",
+      "entity": 5607,
+      "entity_type": "player",
+      "id": 918,
+      "created_at": 1644090246,
+      "shares": [
+        "SLSF_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": 3268,
+      "entity_type": "player",
+      "id": 919,
+      "created_at": 1644090248
+    },
+    {
+      "type": "end_game",
+      "entity": 2385,
+      "entity_type": "player",
+      "id": 920,
+      "created_at": 1644184861
     }
   ],
-  "id": "hs_czovwncd_40469",
+  "id": "hs_bxdhyhvm_40469",
   "players": [
     {
       "id": 3268,
@@ -13437,10 +13512,15 @@
   "acting": [
     2385
   ],
-  "result": {"Blobble":2561, "FrankG":4240, "Robeck":2346, "Roller":2346},
+  "result": {
+    "FrankG": 4253,
+    "Blobble": 2556,
+    "Robeck": 2346,
+    "Roller": 2321
+  },
   "loaded": true,
-  "created_at": "2022-02-05",
-  "updated_at": 1644090031,
+  "created_at": "2022-02-06",
+  "updated_at": 1644184861,
   "mode": "hotseat",
   "test_last_actions": 4
 }

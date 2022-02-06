@@ -1,5 +1,5 @@
 {
-  "status": "active",
+  "status": "finished",
   "actions": [
     {
       "type": "bid",
@@ -10866,9 +10866,16 @@
         "FW_8"
       ],
       "percent": 20
+    },
+    {
+      "type": "end_game",
+      "entity": "Secundus",
+      "entity_type": "player",
+      "id": 702,
+      "created_at": 1644184940
     }
   ],
-  "id": "hs_zbtzjbfv_1638406193",
+  "id": "hs_xlefzjjw_1638406193",
   "players": [
     {
       "name": "Primus"
@@ -10888,14 +10895,17 @@
     "id": 0,
     "name": "You"
   },
-  "created_at": "2022-02-05",
+  "created_at": "2022-02-06",
   "loaded": true,
-  "result": {"Primus":6837, "Secundus":6695},
+  "result": {
+    "Primus": 6837,
+    "Secundus": 6695
+  },
   "turn": 6,
   "round": "Stock Round",
   "acting": [
     "Secundus"
   ],
-  "updated_at": 1644094397,
-  "test_last_actions": 1
+  "updated_at": 1644184940,
+  "test_last_actions": 2
 }
