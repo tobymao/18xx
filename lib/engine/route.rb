@@ -273,8 +273,10 @@ module Engine
     def ordered_paths
       @ordered_paths ||= connection_data.flat_map do |c|
         cpaths = c[:chain][:paths]
+        next if cpaths.empty?
+
         cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
-      end
+      end.compact
     end
 
     def ordered_hexes
