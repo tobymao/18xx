@@ -61,9 +61,9 @@ module View
                                 "#{@game.format_currency(share_funds_allowed)}.")
           end
 
-          if @game.class :EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
+          if @game.class:EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
             children << h(:div, "#{player.name} may not sell more shares than is necessary "\
-                                'to buy the train that is purchased.')
+                                "to buy the train that is purchased.")
           end
         end
 
