@@ -79,6 +79,20 @@ module Engine
 
           @minor_exchange = nil
           @corporations_operated = []
+
+          # Place neutral tokens in the off board cities
+          neutral = Corporation.new(
+            sym: 'N',
+            name: 'Neutral',
+            logo: 'open_city',
+            simple_logo: 'open_city.alt',
+            tokens: [0, 0],
+          )
+          neutral.owner = @bank
+
+          neutral.tokens.each { |token| token.type = :neutral }
+
+          city_by_id('G2-0-0').place_token(neutral, neutral.next_token)
         end
 
         # this could be a useful function in depot itself
