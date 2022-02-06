@@ -186,6 +186,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             num: 6,
             price: 600,
+            available_on: '3',
           },
           {
             name: '8',
