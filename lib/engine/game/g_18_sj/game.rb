@@ -179,7 +179,9 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'full_cap' => ['Full Capitalization',
-                         'Unsold corporations becomes Full Capitalization and move shares to IPO'],
+                         'Unsold corporations becomes Full Capitalization and move shares to IPO. Partially sold, '\
+                         'not yet floated, corporations continue to be Incremental Capitalization the rest of the '\
+                         'game. (See rules, §12.13)'],
           'nationalization' => ['Nationalization check', 'The topmost corporation without trains are nationalized'],
         ).freeze
 
@@ -189,8 +191,10 @@ module Engine
             'New corporations will be capitalized for all 10 shares as they are sold',
           ],
           'fullcap' => [
-            'Full Cap',
-            'New corporations will be capitalized for 10 x par price when 60% of the IPO is sold',
+            'Incremental/Full Cap',
+            'Unsold corporations when first 5 train is sold will use Full Capitalization for the rest of the game. '\
+            'When this corporation is floated (60% sold) it receives 10 x par price as treasury. Remaining '\
+            "corporations still uses 'Incremental Cap' status.  (See rules, §12.13)",
           ],
         }.merge(Base::STATUS_TEXT).freeze
 
