@@ -14,6 +14,7 @@ module Engine
             end
 
             super
+            @game.place_token_on_upgrade(action)
           end
         end
       end

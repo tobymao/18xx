@@ -20,6 +20,11 @@ module Engine
 
             action.tile.icons.reject! { |icon| icon.name == @game.class::LSL_ICON }
           end
+
+          def process_lay_tile(action)
+            super
+            @game.place_token_on_upgrade(action)
+          end
         end
       end
     end
