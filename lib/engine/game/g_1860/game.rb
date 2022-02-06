@@ -1558,30 +1558,11 @@ module Engine
           visits[1..-2].any? { |node| node.city? && custom_blocks?(node, corporation) }
         end
 
-        # change all bankrupt flipped tokens to neutral
-        def flipped_to_neutral
-          @bankrupt_corps.each do |corp|
-            corp.tokens.each do |token|
-              token.type = :neutral if token.status == :flipped
-            end
-          end
-        end
-
-        # change all bankrupt neutral tokens to flipped
-        def neutral_to_flipped
-          @bankrupt_corps.each do |corp|
-            corp.tokens.each do |token|
-              token.type = :normal if token.status == :flipped
-            end
-          end
-        end
-
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           visits = route.visited_stops
           blocked = nil
 
           if visits.size > 2
-            corporation = route.corporation
             visits[1..-2].each do |node|
               next if !node.city? || !custom_blocks?(node, corporation)
               raise GameError, 'Route can only bypass one tokened-out city' if blocked
@@ -1590,16 +1571,8 @@ module Engine
             end
           end
 
-          paths_ = route.paths.uniq
-          token = blocked if blocked
-
-          flipped_to_neutral
-          if token.select(paths_, corporation: route.corporation).size != paths_.size
-            neutral_to_flipped
-            raise GameError, 'Route is not connected'
-          end
-
-          neutral_to_flipped
+          # no need to check whether cities are tokened out because of the above
+          super(route, nil)
 
           return unless blocked && route.routes.any? { |r| r != route && tokened_out?(r) }
 

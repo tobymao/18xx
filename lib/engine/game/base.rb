@@ -824,8 +824,9 @@ module Engine
       end
 
       # Before rusting, check if this train individual should rust.
-      def rust?(_train)
-        true
+      def rust?(train, purchased_train)
+        train.rusts_on == purchased_train.sym ||
+          (train.obsolete_on == purchased_train.sym && @depot.discarded.include?(train))
       end
 
       def shares
@@ -891,6 +892,8 @@ module Engine
           end
         end
       end
+
+      def after_sell_company(_buyer, _company, _price, _seller); end
 
       def player_value(player)
         player.value
@@ -1056,12 +1059,28 @@ module Engine
         self.class::SOLD_OUT_INCREASE
       end
 
-      def log_share_price(entity, from)
+      def log_share_price(entity, from, steps = nil)
         to = entity.share_price.price
         return unless from != to
 
+        jumps = ''
+        if steps
+          steps = share_jumps(steps)
+          jumps = " (#{steps} steps)" unless steps < 2
+        end
+
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                "to #{format_currency(to)}"
+                "to #{format_currency(to)}#{jumps}"
+      end
+
+      def share_jumps(steps)
+        return steps unless @stock_market.zigzag
+
+        if steps > 1
+          steps / 2
+        else
+          steps
+        end
       end
 
       def can_run_route?(entity)
@@ -1160,10 +1179,8 @@ module Engine
         end
       end
 
-      def check_connected(route, token)
-        paths_ = route.paths.uniq
-
-        return if token.select(paths_, corporation: route.corporation).size == paths_.size
+      def check_connected(route, corporation)
+        return if route.ordered_paths.each_cons(2).all? { |a, b| a.connects_to?(b, corporation) }
 
         raise GameError, 'Route is not connected'
       end
@@ -1833,10 +1850,7 @@ module Engine
 
         trains.each do |t|
           next if t.rusted
-
-          should_rust = t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
-          next unless should_rust
-          next unless rust?(t)
+          next unless rust?(t, train)
 
           rusted_trains << t.name
           owners[t.owner.name] += 1

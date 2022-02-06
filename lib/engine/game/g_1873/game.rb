@@ -1653,7 +1653,7 @@ module Engine
           route.visited_stops
         end
 
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           # special case: don't check on concession route(s)
           con_route = @corporation_info[train_owner(route.train)][:concession_routes].any? do |c_r|
             (route.connection_hexes.flatten & c_r).size == c_r.size

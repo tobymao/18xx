@@ -104,21 +104,28 @@ module Engine
         end
       end
 
-      def select(paths)
-        on = paths.to_h { |p| [p, 0] }
-
-        walk(on: on) do |path|
-          on[path] = 1 if on[path]
+      def connects_to?(other, corporation)
+        [@a, @b].each do |part|
+          if part.edge?
+            edge = part.num
+            if (neighbor = hex.neighbors[edge])
+              np_edge = hex.invert(edge)
+              return true if neighbor == other.hex && other.edges.any? { |e| e.num == np_edge }
+            end
+          elsif part.junction?
+            return true if other.junction == part
+          elsif other.nodes.include?(part) && !part.blocks?(corporation)
+            return true
+          end
         end
 
-        on.keys.select { |p| on[p] == 1 }
+        false
       end
 
       # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
       # jskip: An junction to ignore. May be useful on complex tiles
       # visited: a hashset of visited Paths. Used to avoid repeating track segments.
       # counter: a hash tracking edges and junctions to avoid reuse
-      # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
       # tile_type: if :lawson don't undo visited paths
       def walk(
@@ -127,7 +134,6 @@ module Engine
         visited: {},
         skip_paths: nil,
         counter: Hash.new(0),
-        on: nil,
         tile_type: :normal,
         skip_track: nil,
         &block
@@ -144,9 +150,7 @@ module Engine
 
         if @junction && @junction != jskip
           @junction.paths.each do |jp|
-            next if on && !on[jp]
-
-            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, tile_type: tile_type, &block)
+            jp.walk(jskip: @junction, visited: visited, counter: counter, tile_type: tile_type, &block)
           end
         end
 
@@ -160,11 +164,10 @@ module Engine
           np_edge = hex.invert(edge)
 
           neighbor.paths[np_edge].each do |np|
-            next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
             next if !@ignore_gauge_walk && !tracks_match?(np, dual_ok: true)
 
-            np.walk(skip: np_edge, visited: visited, counter: counter, on: on, skip_track: skip_track,
+            np.walk(skip: np_edge, visited: visited, counter: counter, skip_track: skip_track,
                     tile_type: tile_type, &block)
           end
 

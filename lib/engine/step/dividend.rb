@@ -155,6 +155,7 @@ module Engine
 
         prev = entity.share_price.price
 
+        right_times = 0
         Array(payout[:share_times]).zip(Array(payout[:share_direction])).each do |share_times, direction|
           share_times.times do
             case direction
@@ -162,6 +163,7 @@ module Engine
               @game.stock_market.move_left(entity)
             when :right
               @game.stock_market.move_right(entity)
+              right_times += 1
             when :up
               @game.stock_market.move_up(entity)
             when :down
@@ -169,7 +171,7 @@ module Engine
             end
           end
         end
-        @game.log_share_price(entity, prev)
+        @game.log_share_price(entity, prev, right_times)
       end
 
       def routes

@@ -26,20 +26,9 @@ module Engine
         false
       end
 
-      def select(paths, corporation: nil)
-        on = paths.to_h { |p| [p, 0] }
-
-        walk(on: on, corporation: corporation) do |path|
-          on[path] = 1 if on[path]
-        end
-
-        on.keys.select { |p| on[p] == 1 }
-      end
-
       # Explore the paths and nodes reachable from this node
       #
       # visited: a hashset of visited Nodes
-      # on: see Path::Walk
       # corporation: If set don't walk on adjacent nodes which are blocked for the passed corporation
       # visited_paths: a hashset of visited Paths
       # counter: a hash tracking edges and junctions to avoid reuse
@@ -49,7 +38,6 @@ module Engine
       # This method recursively bubbles up yielded values from nested Node::Walk and Path::Walk calls
       def walk(
         visited: {},
-        on: nil,
         corporation: nil,
         visited_paths: {},
         skip_paths: nil,
@@ -70,7 +58,6 @@ module Engine
             visited: visited_paths,
             skip_paths: skip_paths,
             counter: counter,
-            on: on,
             tile_type: tile_type,
           ) do |path, vp, ct|
             ret = yield path, vp, visited
@@ -84,7 +71,6 @@ module Engine
               next_node.walk(
                 visited: visited,
                 counter: ct,
-                on: on,
                 corporation: corporation,
                 visited_paths: vp,
                 skip_track: skip_track,
