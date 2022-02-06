@@ -849,15 +849,14 @@ module Engine
         end
 
         def create_company_from_subsidy(subsidy)
-          company = Engine::Company.new(
-            {
-              sym: subsidy[:id],
-              name: subsidy[:name],
-              desc: subsidy[:desc],
-              value: subsidy[:value] || 0,
-              abilities: subsidy[:abilities] || [],
-            }
-          )
+          subsidy_params = {
+            sym: subsidy[:id],
+            name: subsidy[:name],
+            desc: subsidy[:desc],
+            value: subsidy[:value] || 0,
+            abilities: subsidy[:abilities] || [],
+          }
+          company = Engine::Company.new(**subsidy_params)
           @companies << company
           update_cache(:companies)
           company
