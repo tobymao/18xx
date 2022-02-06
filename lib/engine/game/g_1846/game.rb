@@ -397,6 +397,9 @@ module Engine
           token = corporation.find_token_by_type
           hex = hex_by_id(hex_id)
           hex.tile.cities.first.place_token(corporation, token, check_tokenable: false)
+          icon = hex.tile.icons.find { |i| i.name == corporation.id }
+          hex.tile.icons.delete(icon) if icon
+
           @log << "#{corporation.id} places a token on #{hex_id} (#{hex.location_name}) as the city is green"
           @second_tokens_in_green.delete(hex_id)
         end
