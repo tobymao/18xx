@@ -39,6 +39,7 @@ module Engine
       return if !all && only_routes
 
       @ordered_paths = nil
+      @ordered_hexes = nil
       @distance_str = nil
       @distance = nil
       @hexes = nil
@@ -265,8 +266,8 @@ module Engine
       @game.check_overlap(@routes)
     end
 
-    def check_connected!(token)
-      @check_connected ||= @game.check_connected(self, token) || true
+    def check_connected!
+      @check_connected ||= @game.check_connected(self, corporation) || true
     end
 
     def ordered_paths
@@ -274,6 +275,10 @@ module Engine
         cpaths = c[:chain][:paths]
         cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
       end
+    end
+
+    def ordered_hexes
+      @ordered_hexes ||= ordered_paths.map(&:hex).chunk(&:itself).to_a.map(&:first)
     end
 
     def check_terminals!
@@ -316,7 +321,7 @@ module Engine
           check_cycles!
           check_distance!(visited)
           check_overlap!
-          check_connected!(token)
+          check_connected!
 
           @game.revenue_for(self, stops)
         end

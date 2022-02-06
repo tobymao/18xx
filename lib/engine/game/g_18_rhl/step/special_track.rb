@@ -11,13 +11,16 @@ module Engine
           include LayTileChecks
 
           def abilities(entity, **kwargs, &block)
-            return unless entity.company?
-            # Restrict private No2 and No4 to not be used in yellow phase
-            return if (@game.phase.name == '2' || @game.phase.name == '3') &&
-                     (entity == @game.konzession_essen_osterath ||
-                      entity == @game.trajektanstalt)
-            # Do not allow special tile lay after train buys (to avoid exploits)
-            return if @round.bought_trains.include?(@game.current_entity)
+            return if !entity.company? ||
+                      # Do not allow any tile lay if tokening has been used
+                      @round.tokened ||
+                      # Do not allow special tile lay after train buys (to avoid exploits)
+                      @round.bought_trains.include?(@game.current_entity) ||
+                      # Restrict private No2 and No4 (and No1 in Ratingen variant) to not be used in yellow phase
+                      (@game.phase.name == '2' &&
+                       (entity == @game.konzession_essen_osterath ||
+                        entity == @game.trajektanstalt ||
+                        entity == @game.angertalbahn))
 
             %i[tile_lay teleport].each do |type|
               ability = @game.abilities(
@@ -44,8 +47,19 @@ module Engine
             super
           end
 
+          def get_tile_lay(_entity)
+            # Base code caused a crash for 18Rhl so this solves it.
+            { lay: true, upgrade: true, cost: 0, upgrade_cost: 0, cannot_reuse_same_hex: false }
+          end
+
           def process_lay_tile(action)
+            if action.entity == @game.trajektanstalt && action.tile.color == :brown
+              # Private 4 can only be used to upgrade to green
+              raise GameError, "#{@game.trajektanstalt.name} cannot upgrade to brown tiles"
+            end
+
             ability = abilities(action.entity)
+
             super
 
             return unless ability.type == :teleport

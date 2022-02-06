@@ -50,6 +50,8 @@ module Engine
 
         GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, bank: :full_or }.freeze
 
+        MINOR_MARKET_SHARE_LIMIT = 40
+
         MARKET = [
           ['', '62', '68', '76', '84', '92', '100p', '110', '122', '134', '148', '170', '196', '225', '260e'],
           ['', '58', '64', '70', '78', '85p', '94', '102', '112', '124', '136', '150', '172', '198'],
@@ -404,7 +406,7 @@ module Engine
         end
 
         def unstarted_corporation_summary
-          unipoed = @corporations.reject(&:ipoed)
+          unipoed = (@corporations + @future_corporations).reject(&:ipoed)
           minor, major = unipoed.partition { |c| c.type == :minor }
           ["#{major.size} major", minor]
         end
@@ -500,6 +502,10 @@ module Engine
 
           @corporations = corporations
           @show_majors = false
+        end
+
+        def init_share_pool
+          G18Ireland::SharePool.new(self)
         end
 
         def rust(train)

@@ -11,7 +11,11 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'Gives priority in ISR. Closes at end of IAR when ISR priority determined.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -24,9 +28,12 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['GBN'],
+                corporations: ['GB'],
                 owner_type: 'player',
                 from: 'par',
+              },
+              {
+                type: 'no_buy',
               },
             ],
             color: nil,
@@ -41,9 +48,12 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['FN'],
+                corporations: ['FR'],
                 owner_type: 'player',
                 from: 'par',
+              },
+              {
+                type: 'no_buy',
               },
             ],
             color: nil,
@@ -58,9 +68,12 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['AHN'],
+                corporations: ['AHE'],
                 owner_type: 'player',
                 from: 'par',
+              },
+              {
+                type: 'no_buy',
               },
             ],
             color: nil,
@@ -75,9 +88,12 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['BN'],
+                corporations: ['BNL'],
                 owner_type: 'player',
                 from: 'par',
+              },
+              {
+                type: 'no_buy',
               },
             ],
             color: nil,
@@ -92,9 +108,12 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['SPN'],
+                corporations: ['ESP'],
                 owner_type: 'player',
                 from: 'par',
+              },
+              {
+                type: 'no_buy',
               },
             ],
             color: nil,
@@ -109,9 +128,12 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['SWN'],
+                corporations: ['CH'],
                 owner_type: 'player',
                 from: 'par',
+              },
+              {
+                type: 'no_buy',
               },
             ],
             color: nil,
@@ -132,7 +154,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -142,7 +168,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -152,7 +182,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -162,7 +196,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -172,7 +210,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -182,7 +224,11 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
           {
@@ -192,74 +238,78 @@ module Engine
             revenue: 0,
             desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
                   'action.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'no_buy',
+              },
+            ],
             color: nil,
           },
         ].freeze
 
         CORPORATIONS = [
           {
-            sym: 'GBN',
+            sym: 'GB',
             name: 'Great Britain National',
-            logo: '1866/GBN',
+            logo: '1866/GB',
             tokens: [],
             type: 'national',
             float_percent: 20,
             shares: [20, 20, 20, 20, 20],
             always_market_price: true,
-            coordinates: %w[F6 F6 F6 A3 D6 G3 E1 E3 G1 D2 F2 D4],
-            city: [0, 1, 2],
+            coordinates: %w[F6 F6 F6 F6 A3 D6 G3 E1 E3 G1 D2 F2 D4],
+            city: [0, 1, 2, 3],
             color: '#fde2c5',
             text_color: 'black',
             reservation_color: nil,
           },
           {
-            sym: 'FN',
+            sym: 'FR',
             name: 'France National',
-            logo: '1866/FN',
+            logo: '1866/FR',
             tokens: [],
             type: 'national',
             float_percent: 20,
             shares: [20, 20, 20, 20, 20],
             always_market_price: true,
-            coordinates: %w[J6 J6 J6 H8 I9 J10 K9 M9 O5 I1 I5 K1 K3 K13 N2 O7 P12 P10],
-            city: [0, 1, 2],
+            coordinates: %w[J6 J6 J6 J6 J6 J6 H8 I9 J10 K9 M9 O5 I1 I5 K1 K3 K13 N2 O7 P12 P10],
+            city: [0, 1, 2, 3, 4, 5],
             color: '#fffbcc',
             text_color: 'black',
             reservation_color: nil,
           },
           {
-            sym: 'AHN',
+            sym: 'AHE',
             name: 'Austro-Hungary National',
-            logo: '1866/AHN',
+            logo: '1866/AHE',
             tokens: [],
             type: 'national',
             float_percent: 20,
             shares: [20, 20, 20, 20, 20],
             always_market_price: true,
-            coordinates: %w[K25 L18 N22 O23 O21 J22 L24 M23 Q25],
+            coordinates: %w[K25 L18 L26 N22 N26 O23 O21 P26 J22 L24 M23 Q25],
             color: '#e2ceb6',
             text_color: 'black',
             reservation_color: nil,
           },
           {
-            sym: 'GN',
+            sym: 'DE',
             name: 'Germany National',
-            logo: '1866/GN',
+            logo: '1866/DE',
             tokens: [],
             type: 'national',
             float_percent: 20,
             shares: [20, 20, 20, 20, 20],
             always_market_price: true,
-            coordinates: %w[H14 F22 E25 E19 F18 E17 K19 I15 K15 I23 H20],
+            coordinates: %w[H14 H26 F22 E25 E19 F18 E17 K19 I15 K15 I23 H20],
             color: '#d0c1de',
             text_color: 'black',
             reservation_color: nil,
           },
           {
-            sym: 'IN',
+            sym: 'IT',
             name: 'Italy National',
-            logo: '1866/IN',
+            logo: '1866/IT',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -271,9 +321,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'BN',
+            sym: 'BNL',
             name: 'Benelux National',
-            logo: '1866/BN',
+            logo: '1866/BNL',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -285,23 +335,23 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'SPN',
+            sym: 'ESP',
             name: 'Spain National',
-            logo: '1866/SPN',
+            logo: '1866/ESP',
             tokens: [],
             type: 'national',
             float_percent: 20,
             shares: [20, 20, 20, 20, 20],
             always_market_price: true,
-            coordinates: %w[O1 T2 R4 U1],
+            coordinates: %w[O1 T2 R0 R4 U1],
             color: '#bea481',
             text_color: 'black',
             reservation_color: nil,
           },
           {
-            sym: 'SWN',
+            sym: 'CH',
             name: 'Switzerland National',
-            logo: '1866/SWN',
+            logo: '1866/CH',
             tokens: [],
             type: 'national',
             float_percent: 20,
@@ -313,24 +363,24 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'G1',
+            sym: 'PRU',
             name: 'Prussia Minor National',
-            logo: '1866/G1',
+            logo: '1866/PRU',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
             hide_shares: true,
             shares: [50, 50],
             always_market_price: true,
-            coordinates: %w[H14 F22 E25],
+            coordinates: %w[H14 H26 F22 E25],
             color: '#d0c1de',
             text_color: 'black',
             reservation_color: nil,
           },
           {
-            sym: 'G2',
+            sym: 'HAN',
             name: 'Hannover Minor National',
-            logo: '1866/G2',
+            logo: '1866/HAN',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -343,9 +393,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'G3',
+            sym: 'BAV',
             name: 'Bavaria Minor National',
-            logo: '1866/G3',
+            logo: '1866/BAV',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -358,9 +408,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'G4',
-            name: 'Wurttemburg Minor National',
-            logo: '1866/G4',
+            sym: 'WTB',
+            name: 'Württemberg Minor National',
+            logo: '1866/WTB',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -373,9 +423,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'G5',
+            sym: 'SAX',
             name: 'Saxony Minor National',
-            logo: '1866/G5',
+            logo: '1866/SAX',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -388,9 +438,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I1',
+            sym: 'K2S',
             name: 'Kgdm 2 Sicilies Minor National',
-            logo: '1866/I1',
+            logo: '1866/K2S',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -403,9 +453,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I2',
+            sym: 'SAR',
             name: 'Sardinia Minor National',
-            logo: '1866/I2',
+            logo: '1866/SAR',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -418,9 +468,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I3',
+            sym: 'LV',
             name: 'Lombardy-Venetia Minor National',
-            logo: '1866/I3',
+            logo: '1866/LV',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -433,9 +483,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I4',
+            sym: 'PAP',
             name: 'Papal States Minor National',
-            logo: '1866/I4',
+            logo: '1866/PAP',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -448,9 +498,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'I5',
+            sym: 'TUS',
             name: 'Tuscany Minor National',
-            logo: '1866/I5',
+            logo: '1866/TUS',
             tokens: [],
             type: 'minor_national',
             float_percent: 50,
@@ -555,14 +605,14 @@ module Engine
             float_percent: 40,
             shares: [40, 20, 20, 20],
             always_market_price: true,
-            coordinates: 'F22',
+            coordinates: 'E25',
             color: '#000000',
             text_color: 'white',
             reservation_color: nil,
           },
           {
             sym: 'BY',
-            name: 'Bayrische Staatsbahn',
+            name: 'Bayerische Staatsbahn',
             logo: '1866/BY',
             tokens: [0, 20, 40, 60, 80, 100],
             type: 'share_5',
@@ -625,7 +675,7 @@ module Engine
             float_percent: 40,
             shares: [40, 20, 20, 20],
             always_market_price: true,
-            coordinates: 'L24',
+            coordinates: 'K25',
             color: '#a3d49c',
             text_color: 'black',
             reservation_color: nil,
@@ -747,7 +797,23 @@ module Engine
             name: 'Red reservation',
             tokens: [],
             coordinates: %w[H26 L26 N26 P26 R0],
-            reservation_color: '#e20000',
+            reservation_color: nil,
+          },
+          {
+            sym: 'L',
+            name: 'London reservation',
+            tokens: [],
+            coordinates: 'F6',
+            city: 1,
+            reservation_color: '#cb7745',
+          },
+          {
+            sym: 'P',
+            name: 'Paris reservation',
+            tokens: [],
+            coordinates: %w[J6 J6 J6],
+            city: [0, 2, 5],
+            reservation_color: '#cb7745',
           },
         ].freeze
       end

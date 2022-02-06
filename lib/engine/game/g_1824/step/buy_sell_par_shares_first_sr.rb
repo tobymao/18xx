@@ -7,14 +7,8 @@ module Engine
     module G1824
       module Step
         class BuySellParSharesFirstSr < Engine::Step::BuySellParShares
-          def actions(_entity)
-            result = super
-            result << 'buy_company' unless result.empty?
-            result
-          end
-
           def can_buy_company?(_player, _company)
-            true
+            !bought?
           end
 
           def can_buy?(_entity, bundle)

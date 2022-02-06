@@ -30,6 +30,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        FIRST_OR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+
         MARKET = [
           %w[65y
              70
@@ -347,13 +349,15 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          revenue = super
+          super + hex_bonus_amount(route, stops)
+        end
 
-          abilities(route.corporation, :hexes_bonus) do |ability|
-            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
-          end
+        def revenue_str(route)
+          str = super
 
-          revenue
+          str += ' + New Orleans' if hex_bonus_amount(route, route.stops).positive?
+
+          str
         end
 
         def routes_revenue(routes)
@@ -417,7 +421,7 @@ module Engine
         def tile_lays(entity)
           return super unless @recently_floated.include?(entity)
 
-          [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+          FIRST_OR_TILE_LAYS
         end
 
         def add_free_train_and_close_company(corporation, company)
@@ -500,6 +504,15 @@ module Engine
           @log << "-- Event: #{rusted_trains.map(&:name).uniq} trains rust " \
                   "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
           @log << "Corporations salvage #{format_currency(salvage)} from each rusted train"
+        end
+
+        def hex_bonus_amount(route, stops)
+          hex_bonus_amount = 0
+          abilities(route.corporation, :hexes_bonus) do |ability|
+            hex_bonus_amount += ability.amount if stops.any? { |s| ability.hexes.include?(s.hex.id) }
+          end
+
+          hex_bonus_amount
         end
       end
     end

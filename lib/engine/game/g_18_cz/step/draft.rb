@@ -113,6 +113,12 @@ module Engine
 
             company.value
           end
+
+          def skip!
+            current_entity.pass!
+            @round.next_entity_index!
+            action_finalized
+          end
         end
       end
     end

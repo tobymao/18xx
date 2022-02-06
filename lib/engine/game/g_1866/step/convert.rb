@@ -30,7 +30,7 @@ module Engine
 
             choices = {}
             choices['0'] = 'Convert without buying any shares'
-            unless @game.game_end_corporation_operated?(entity)
+            if !@game.game_end_corporation_operated?(entity) && @game.player_debt(player).zero?
               (6 - share_count).times.each do |i|
                 index = i + 1
                 if player.cash >= (price * index) && (@game.num_certs(player) + index) <= @game.cert_limit
@@ -63,10 +63,7 @@ module Engine
 
             # Create 5 new shares
             shares = Array.new(5) { |i| Share.new(entity, percent: 10, index: i + 4) }
-            shares.each do |share|
-              entity.share_holders[entity] += share.percent
-              entity.shares_by_corporation[entity] << share
-            end
+            shares.each { |share| @game.add_new_share(share) }
             entity.type = :share_10
 
             # Buy the shares

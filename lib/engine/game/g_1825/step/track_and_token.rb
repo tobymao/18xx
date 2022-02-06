@@ -89,10 +89,13 @@ module Engine
             # handle deferred tile lay
             @game.place_home_token(entity) if @game.minor_deferred_token?(entity) && @game.can_place_home_token?(entity)
 
-            return unless (ability = @game.abilities(entity, :blocks_hexes))
+            return unless (abilities = @game.abilities(entity, :blocks_hexes))
 
             # if this corp laid a hex on its reserved hex, remove the ability
-            entity.abilities.delete(ability) if @game.hex_blocked_by_ability?(entity, ability, action.hex)
+            abilities = Array(abilities)
+            abilities.each do |ability|
+              entity.abilities.delete(ability) if @game.hex_blocked_by_ability?(entity, ability, action.hex)
+            end
           end
 
           def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)

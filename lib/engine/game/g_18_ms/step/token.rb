@@ -26,11 +26,11 @@ module Engine
             if @game.phase.name.to_i < 6
               route_bonus_given = true
               ability = Engine::Ability::HexBonus.new(
-              type: :hexes_bonus,
-              description: description,
-              hexes: [BONUS_HEX],
-              amount: route_bonus
-            )
+                type: :hexes_bonus,
+                description: description,
+                hexes: [BONUS_HEX],
+                amount: route_bonus
+              )
               entity.add_ability(ability)
             end
 

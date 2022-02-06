@@ -44,13 +44,12 @@ module Engine
 
           def available_hex(entity, hex)
             return connected_to_hex?(entity.owner, hex) && hex.tile.color == :red if entity.id == 'P6'
-            return super unless %w[P2 P22 P21].include?(entity&.id)
 
             valid = super
+            return valid unless %w[P2 P22 P21].include?(entity&.id)
 
-            valid &&= !(hex.id == 'I19' && @game.metro_new_orleans)
-            valid &&= !(!@game.bridge_city_hex?(hex.id) && !@game.class::COMPANY_TOWN_TILES.include?(hex.tile.name))
-            valid && @game.graph.reachable_hexes(entity.owner)[hex]
+            valid && !(hex.id == 'I19' && @game.metro_new_orleans) && (!hex.tile.cities.empty? || hex.tile.junction) &&
+              connected_to_hex?(entity.owner, hex)
           end
 
           def connected_to_hex?(entity, hex)

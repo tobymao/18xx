@@ -10,13 +10,13 @@ module Engine
           UNCHARTERED_TOKEN_COST = 40
 
           def actions(entity)
-            return [] unless @round.buy_tokens&.owner == entity
+            return [] unless @game.acting_for_entity(@round.buy_tokens) == entity
 
             %w[choose]
           end
 
           def active_entities
-            [@round.buy_tokens&.owner]
+            [@game.acting_for_entity(@round.buy_tokens)]
           end
 
           def active?
@@ -24,7 +24,7 @@ module Engine
           end
 
           def current_entity
-            @round.buy_tokens&.owner
+            @game.acting_for_entity(@round.buy_tokens)
           end
 
           def description

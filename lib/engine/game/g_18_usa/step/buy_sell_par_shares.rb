@@ -8,95 +8,77 @@ module Engine
       module Step
         class BuySellParShares < G1817::Step::BuySellParShares
           MIN_BID = 100
-          MAX_BID = 400
+          MAX_BID = 100_000
+          MAX_PAR_PRICE = 200
+
+          def auto_actions(entity)
+            return [Engine::Action::Pass.new(entity)] if @auctioning && max_bid(entity, @auctioning) < min_bid(@auctioning)
+
+            []
+          end
 
           def min_increment
             1
           end
 
-          def max_bid(entity, _corporation = nil)
-            return 0 if @game.num_certs(entity) >= @game.cert_limit
+          def must_bid_increment_multiple?
+            false
+          end
 
-            @game.bidding_power(entity)
+          def validate_bid(entity, corporation, bid)
+            max_bid = max_bid(entity, corporation)
+            raise GameError, "Invalid bid, maximum bidding power is #{max_bid}" if bid > max_bid
+          end
+
+          def max_bid(entity, corporation = nil)
+            super + (corporation&.tokens&.first&.used ? city_subsidy(corporation)&.value || 0 : max_city_subsidy)
+          end
+
+          def max_city_subsidy
+            @game.subsidies_by_hex.values.map { |s| s[:value] }.max || 0
           end
 
           def add_bid(action)
-            entity = action.entity
-            corporation = action.corporation
-            price = action.price
-
-            available_privates = entity.companies.sum(&:value)
-            max_bid_power = available_privates + entity.cash
-
-            raise GameError, "Invalid bid, maximum bidding power is #{max_bid_power}" if price > max_bid_power
-
-            if @auctioning
-              @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
-            else
-              @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
-              @round.last_to_act = action.entity
-              @round.current_actions.clear
-              @game.place_home_token(action.corporation)
+            unless @auctioning
+              bid = action.price
+              max_bid = @game.bidding_power(action.entity)
+              @round.needed_city_subsidy = bid - max_bid if bid > max_bid
             end
-            super(action)
 
-            resolve_bids
+            super
           end
 
           def win_bid(winner, _company)
-            @winning_bid = winner
-            entity = @winning_bid.entity
-            corporation = @winning_bid.corporation
-            price = @winning_bid.price
+            super
 
-            @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
+            entity = winner.entity
+            corporation = winner.corporation
 
-            par_price = price / 2
-            if par_price > 200
-              @log << "Par price is capped at #{@game.format_currency(200)}"
-              par_price = 200
-            end
+            # Corporation only gets share price * 2 in cash, not the full winning bid
+            extra_cash = corporation.cash - (corporation.share_price.price * 2)
+            corporation.spend(extra_cash, @game.bank) if extra_cash.positive?
 
-            share_price = @game.find_share_price(par_price)
+            subsidy = city_subsidy(corporation)
+            return unless subsidy
 
-            # Temporarily give the entity cash to buy the corporation PAR shares
-            @game.bank.spend(share_price.price * 2, entity)
-
-            action = Action::Par.new(entity, corporation: corporation, share_price: share_price)
-            process_par(action)
-
-            # Clear the corporation of 'share' cash
-            corporation.spend(corporation.cash, @game.bank)
-
-            @subsidy = find_bank_subsidy(corporation)
-            if @subsidy
-              @game.log << "Bank provides a #{@game.format_currency(@subsidy.value)} "\
-                           "subsidy to #{entity.name}"
-            end
-
-            transfer_subsidy_ownership(entity) if @subsidy
-
-            # Player spends cash to the *BANK* to start corporation, even if it forces them negative
-            # which they'll need to sort by adding companeis.
-            entity.spend(price, @game.bank, check_cash: false) # min bid is 100, max subsidy is 50; no if needed.
-
-            # The bank gives the corporation 2x par price
-            @game.bank.spend(share_price.price * 2, corporation)
-
-            @corporation_size = nil
-            size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
-
-            par_corporation if available_subsidiaries(winner.entity).none?
+            @game.log << "Subsidy contributes #{@game.format_currency(subsidy.value)}"
+            @game.bank.spend(subsidy.value, entity)
+            subsidy.close!
           end
 
-          def transfer_subsidy_ownership(to)
-            from = @subsidy.owner
-            @subsidy.owner = to
-            from.companies.delete(@subsidy)
-            to.companies << @subsidy
+          def par_price(bid)
+            par_price = super
+            [par_price, self.class::MAX_PAR_PRICE].min
           end
 
-          def find_bank_subsidy(corporation)
+          def transfer_subsidy_ownership(to, subsidy)
+            from = subsidy.owner
+            subsidy.owner = to
+            from.companies.delete(subsidy)
+            to.companies << subsidy
+          end
+
+          def city_subsidy(corporation)
             corporation.companies.find { |c| c.value.positive? }
           end
 
@@ -108,27 +90,14 @@ module Engine
           end
 
           def process_assign(action)
-            entity = action.entity
             company = action.target
             corporation = @winning_bid.corporation
-            raise GameError, 'Cannot use company in formation' unless available_subsidiaries(entity).include?(company)
+            price = @winning_bid.price
 
-            company.owner = corporation
-            entity.companies.delete(company)
-            corporation.companies << company
-            company_contribution = [company.value, corporation.cash].min
-            bank_contribution = company.value - company_contribution
-
-            # Pay the player for the company
-            corporation.spend(company_contribution, entity) if company_contribution.positive?
-            @game.bank.spend(bank_contribution, entity) if bank_contribution.positive?
-
-            @log << "#{company.name} used for forming #{corporation.name} "\
-                    "contributing #{@game.format_currency(company_contribution)} value"
-
-            @game.abilities(company, :additional_token) do |ability|
-              corporation.tokens << Engine::Token.new(corporation)
-              ability.use!
+            current_value = corporation.companies.sum(&:value)
+            if current_value + company.value > price
+              raise GameError, 'Total company contributions cannot exceed winning bid. ' \
+                               "#{@game.format_currency(price - current_value)} remaining."
             end
 
             if company.id == 'P29' && corporation.companies.any? { |c| c.name == 'No Subsidy' }
@@ -145,7 +114,13 @@ module Engine
               @game.graph.clear
             end
 
-            par_corporation if available_subsidiaries(entity).empty?
+            super
+
+            @game.bank.spend(corporation.cash.abs, corporation) if corporation.cash.negative?
+          end
+
+          def contribution_can_exceed_corporation_cash?
+            true
           end
 
           def handle_plus_ten(subsidy_company)
@@ -162,22 +137,17 @@ module Engine
             return unless @corporation_size
 
             corporation = @winning_bid.corporation
-            corporation.companies.dup.each { |c| c.close! if c.name == 'No Subsidy' }
-            corporation.companies.dup.each { |c| handle_plus_ten(c) if c.name == '+10' }
-            corporation.companies.dup.each { |c| handle_plus_ten_twenty(c) if c.name == '+10 / +20' }
 
-            # Close all unused value subsidies. Don't get greedy
-            corporation.owner.companies.dup.each do |c|
-              if c.value.positive? && c.id[0] == 's' # don't close the players privates!
-                @game.log << "#{corporation.owner.name} forfeits the #{@game.format_currency(c.value)} subsidy"
+            corporation.companies.dup.each do |c|
+              case c.name
+              when 'No Subsidy'
                 c.close!
+              when '+10'
+                handle_plus_ten(c)
+              when '+10 / +20'
+                handle_plus_ten_twenty(c)
               end
             end
-
-            @log << "#{corporation.name} starts with #{@game.format_currency(corporation.cash)} "\
-                    "and #{@corporation_size} shares"
-
-            try_buy_tokens(corporation)
 
             if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver
               @round.pending_tracks << {
@@ -186,9 +156,7 @@ module Engine
               }
             end
 
-            @auctioning = nil
-            @winning_bid = nil
-            pass!
+            super
           end
         end
       end

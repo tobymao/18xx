@@ -301,6 +301,16 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
+          'A18' => 'Prussia',
+          'A20' => 'Hannover',
+          'A22' => 'Bavaria',
+          'A24' => 'Wurttemburg',
+          'A26' => 'Saxony',
+          'B17' => 'Kgdm 2 Sicilies',
+          'B19' => 'Sardinia',
+          'B21' => 'Lombardy-Venetia',
+          'B23' => 'Papal States',
+          'B25' => 'Tuscany',
           'A3' => 'Scotland',
           'D2' => 'Liverpool',
           'D4' => 'Manchester',
@@ -384,6 +394,28 @@ module Engine
 
         HEXES = {
           white: {
+            # Explaination
+            ['A18'] =>
+              'frame=color:#d0c1de',
+            ['A20'] =>
+              'frame=color:#a764a9',
+            ['A22'] =>
+              'frame=color:#8781bf',
+            ['A24'] =>
+              'frame=color:#855fa8',
+            ['A26'] =>
+              'frame=color:#bd8dbf',
+            ['B17'] =>
+              'frame=color:#ffcfe5',
+            ['B19'] =>
+              'frame=color:#f41097',
+            ['B21'] =>
+              'frame=color:#ff7ffe,color2:#e2ceb6',
+            ['B23'] =>
+              'frame=color:#f26eaa',
+            ['B25'] =>
+              'frame=color:#f996c3',
+
             # Germany - Bavaria - I17 I19 J16 J18 J20 K17 K19 K21
             ['K19'] =>
               'city=revenue:0;frame=color:#8781bf',
@@ -415,7 +447,7 @@ module Engine
             ['F22'] =>
               'city=revenue:0;label=C;frame=color:#d0c1de',
             ['H14'] =>
-              'city=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#d0c1de',
+              'city=revenue:0;upgrade=cost:20,terrain:swamp;label=Y;frame=color:#d0c1de',
             %w[F20 G17 G21 G23 H16 H18 H24 I25] =>
               'frame=color:#d0c1de',
             ['G15'] =>
@@ -489,7 +521,7 @@ module Engine
             ['P16'] =>
               'town=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#f996c3',
 
-            # Italy - Lom-Venetia - M17 N14 N16 N18 N20 O17 P18
+            # Italy - Lombardy-Venetia - M17 N14 N16 N18 N20 O17 P18
             %w[N14 P18] =>
               'city=revenue:0;frame=color:#ff7ffe,color2:#e2ceb6',
             ['N18'] =>
@@ -666,21 +698,20 @@ module Engine
             # London
             ['F6'] =>
               'city=revenue:yellow_30|green_60|brown_90;path=a:0,b:_0;'\
-              'offboard=revenue:yellow_30|green_60|brown_90;path=a:1,b:_1;'\
+              'city=revenue:yellow_30|green_60|brown_90;path=a:1,b:_1;'\
               'city=revenue:yellow_30|green_60|brown_90;path=a:2,b:_2;'\
               'city=revenue:yellow_30|green_60|brown_90;path=a:3,b:_3;'\
-              'offboard=revenue:yellow_30|green_60|brown_90;path=a:1,b:_4;'\
               'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
               'label=L;frame=color:#fde2c5',
 
             # Paris
             ['J6'] =>
-              'offboard=revenue:yellow_30|green_50|brown_70;path=a:0,b:_0;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:0,b:_0;'\
               'city=revenue:yellow_30|green_50|brown_70;path=a:1,b:_1;'\
-              'offboard=revenue:yellow_30|green_50|brown_70;path=a:2,b:_2;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:2,b:_2;'\
               'city=revenue:yellow_30|green_50|brown_70;path=a:3,b:_3;'\
               'city=revenue:yellow_30|green_50|brown_70;path=a:4,b:_4;'\
-              'offboard=revenue:yellow_30|green_50|brown_70;path=a:5,b:_5;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:5,b:_5;'\
               'label=P;frame=color:#fffbcc',
           },
           gray: {
@@ -697,7 +728,7 @@ module Engine
               'frame=color:#e2ceb6',
             ['N26'] =>
               'city=revenue:yellow_20|green_40|brown_50|gray_60,slots:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-              'label=Y;frame=color:#e2ceb6',
+              'frame=color:#e2ceb6',
             ['J26'] =>
               'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;frame=color:#e2ceb6',
 

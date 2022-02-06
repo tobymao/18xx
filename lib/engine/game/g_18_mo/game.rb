@@ -48,6 +48,10 @@ module Engine
           { lay: true, upgrade: :not_if_upgraded, cost: 20 },
         ].freeze
 
+        def init_round
+          G18MO::Round::Draft.new(self, [G18MO::Step::DraftPurchase])
+        end
+
         def operating_round(round_num)
           @round_num = round_num
           G1846::Round::Operating.new(self, [
@@ -68,7 +72,6 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1846::Step::Assign,
             Engine::Step::Exchange,
             G1846::Step::BuySellParShares,
           ])
@@ -240,6 +243,10 @@ module Engine
 
         def num_pass_companies(_players)
           0
+        end
+
+        def block_for_steamboat?
+          false
         end
       end
     end

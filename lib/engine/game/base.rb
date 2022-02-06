@@ -231,8 +231,6 @@ module Engine
 
       ALLOW_TRAIN_BUY_FROM_OTHERS = true # Allows train buy from other corporations
 
-      MN_TRAIN_MUST_USE_TOKEN = true # when picking best M out of N stops, must one of the stops must be tokened
-
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
       TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
@@ -1060,12 +1058,22 @@ module Engine
         self.class::SOLD_OUT_INCREASE
       end
 
-      def log_share_price(entity, from)
+      def log_share_price(entity, from, steps = nil)
         to = entity.share_price.price
         return unless from != to
 
+        jumps = ''
+        if steps
+          steps = share_jumps(steps)
+          jumps = " (#{steps} steps)" unless steps < 2
+        end
+
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                "to #{format_currency(to)}"
+                "to #{format_currency(to)}#{jumps}"
+      end
+
+      def share_jumps(steps)
+        steps
       end
 
       def can_run_route?(entity)
@@ -1164,10 +1172,8 @@ module Engine
         end
       end
 
-      def check_connected(route, token)
-        paths_ = route.paths.uniq
-
-        return if token.select(paths_, corporation: route.corporation).size == paths_.size
+      def check_connected(route, corporation)
+        return if route.ordered_paths.each_cons(2).all? { |a, b| a.connects_to?(b, corporation) }
 
         raise GameError, 'Route is not connected'
       end
@@ -1239,7 +1245,7 @@ module Engine
           stops, revenue = visits.combination(num_stops.to_i).map do |stops|
             # Make sure this set of stops is legal
             # 1) At least one stop must have a token (if enabled)
-            next if self.class::MN_TRAIN_MUST_USE_TOKEN && stops.none? { |stop| stop.tokened_by?(route.corporation) }
+            next if train.requires_token && stops.none? { |stop| stop.tokened_by?(route.corporation) }
 
             # 2) We can't ask for more revenue centers of a type than are allowed
             types_used = Array.new(distance.size, 0) # how many slots of each row are filled

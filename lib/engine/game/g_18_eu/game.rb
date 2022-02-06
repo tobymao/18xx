@@ -20,10 +20,16 @@ module Engine
 
         attr_accessor :corporations_operated
 
+        EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true # if ebuying from depot, must buy cheapest train
+        EBUY_CAN_SELL_SHARES = true # true if a player can sell shares for ebuy
+
         HOME_TOKEN_TIMING = :par
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
         TOKENS_FEE = 100
+
+        GAME_END_CHECK = { bank: :full_or }.freeze # TODO: extreme edge case of one player remaining
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
             'minor_exchange' => [
@@ -102,15 +108,16 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             G18EU::Step::Dividend,
+            G18EU::Step::OptionalDiscardTrain,
             G18EU::Step::BuyTrain,
             G18EU::Step::IssueShares,
-            G18EU::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
           ], round_num: round_num)
         end
 
         def stock_round
           Round::Stock.new(self, [
-            G18EU::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
             G18EU::Step::HomeToken,
             G18EU::Step::ReplaceToken,
             G18EU::Step::BuySellParShares,
@@ -216,17 +223,23 @@ module Engine
           str = super
 
           bonus = revenue_for_red_to_red_bonus(route, route.stops)
-          str += " + R2R(#{bonus})" if bonus.positive
+          str += " + R2R(#{bonus})" if bonus.positive?
 
           str
         end
 
-        def emergency_issuable_cash(corporation)
-          emergency_issuable_bundles(corporation).max_by(&:num_shares)&.price || 0
+        def check_other(route)
+          city_hexes = route.stops.map do |stop|
+            next unless stop.city?
+
+            stop.tile.hex
+          end.compact
+
+          raise GameError, 'Cannot stop at Paris/Vienna/Berlin twice' if city_hexes.size != city_hexes.uniq.size
         end
 
-        def emergency_issuable_bundles(entity)
-          issuable_shares(entity)
+        def emergency_issuable_bundles(_entity)
+          []
         end
 
         def issuable_shares(entity)
@@ -253,6 +266,17 @@ module Engine
           return false unless owns_any_minor?(entity)
 
           super
+        end
+
+        def float_corporation(corporation)
+          super
+
+          return unless @phase.status.include?('normal_formation')
+
+          bundle = Engine::ShareBundle.new(corporation.treasury_shares)
+          @bank.spend(bundle.price, corporation)
+          @share_pool.transfer_shares(bundle, @share_pool)
+          @log << "#{corporation.name} places remaining shares on the Market for #{format_currency(bundle.price)}"
         end
 
         def all_free_hexes(corporation)
@@ -286,13 +310,94 @@ module Engine
           return super if !exchange_ability.owner.minor? || @loading
 
           parts = graph.connected_nodes(exchange_ability.owner).keys
-          parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+          connected = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+
+          minor_tile = exchange_ability.owner.tokens.first.city.tile
+          colocated = corporations.select do |c|
+            c.tokens.any? { |t| t.city&.tile == minor_tile }
+          end
+
+          (connected + colocated).uniq
         end
 
         def after_par(corporation)
           @log << "#{corporation.name} spends #{format_currency(TOKENS_FEE)} for four additional tokens"
 
           corporation.spend(TOKENS_FEE, @bank)
+        end
+
+        def check_overlap(routes)
+          super
+
+          pullman_stop = routes.find { |r| pullman?(r.train) }&.visited_stops&.first
+          return unless pullman_stop
+
+          raise GameError, 'Pullman cannot be run alone' if routes.one?
+
+          matching_stop = routes.find do |r|
+            next if pullman?(r.train)
+
+            r.visited_stops.include?(pullman_stop)
+          end
+
+          raise GameError, "Pullman must reuse another route's city or off-board" unless matching_stop
+        end
+
+        def check_route_token(route, token)
+          return if pullman?(route.train)
+
+          super
+        end
+
+        def check_connected(route, corporation)
+          return if pullman?(route.train)
+
+          super
+        end
+
+        def pullman?(train)
+          train.name == 'P'
+        end
+
+        def owns_pullman?(entity)
+          entity.trains.find { |t| pullman?(t) }
+        end
+
+        def rust_trains!(train, entity)
+          super
+
+          all_corporations.each do |c|
+            pullman = owns_pullman?(c)
+            next unless pullman
+
+            trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
+            next if trains > 1 && trains <= train_limit(c)
+
+            depot.reclaim_train(pullman)
+            @log << "#{c.name} is forced to discard pullman train"
+          end
+        end
+
+        def depot_trains(entity)
+          has_pullman = owns_pullman?(entity)
+          has_train = entity.trains.empty?
+          @depot.depot_trains.reject do |t|
+            pullman?(t) && (has_train || has_pullman)
+          end
+        end
+
+        def min_depot_train(entity)
+          depot_trains(entity).min_by(&:price)
+        end
+
+        def min_depot_price(entity)
+          return 0 unless (train = min_depot_train(entity))
+
+          train.variants.map { |_, v| v[:price] }.min
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          total_emr_buying_power(player, corporation) < min_depot_price(corporation)
         end
       end
     end

@@ -559,6 +559,10 @@ module Engine
           @stagecoach_token = nil
         end
 
+        def player_value(player)
+          super - player.shares_by_corporation.sum { |corp, _| player.num_shares_of(corp) * corp.loans.size * 5 }
+        end
+
         #
         # Stock round logic
         #
@@ -951,6 +955,11 @@ module Engine
           return false if entity.type == :minor
 
           super
+        end
+
+        def buy_train(operator, train, price = nil)
+          super
+          @round.active_train_loan = false if @round.respond_to?(:active_train_loan)
         end
 
         def init_loans

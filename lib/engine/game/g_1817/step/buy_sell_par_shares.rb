@@ -44,9 +44,11 @@ module Engine
             actions = super
             unless bought?
               actions << 'short' if can_short_any?(entity)
-              actions << 'bid' if max_bid(entity) >= MIN_BID
+              actions << 'bid' if max_bid(entity) >= self.class::MIN_BID
             end
-            actions << 'pass' if (actions.any? || any_corporate_actions?(entity)) && !actions.include?('pass')
+            if (actions.any? || any_corporate_actions?(entity)) && !actions.include?('pass') && !must_sell?(entity)
+              actions << 'pass'
+            end
             actions
           end
 
@@ -214,16 +216,7 @@ module Engine
             entity = action.entity
             corporation = action.corporation
             price = action.price
-
-            options = available_company_options(entity).map(&:sum)
-            if options.none? { |option| price >= option && price <= option + entity.cash }
-              valid_options = options.sort.uniq
-              .select { |o| o + entity.cash >= min_bid(corporation) }
-              .map { |o| @game.format_currency(o) }
-              .join(', ')
-              raise GameError, "Invalid bid, bids using privates include #{valid_options}"\
-                               " and can be supplemented with cash between $0 and #{@game.format_currency(entity.cash)}"
-            end
+            validate_bid(entity, corporation, price)
 
             if @auctioning
               @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
@@ -236,6 +229,18 @@ module Engine
             super(action)
 
             resolve_bids
+          end
+
+          def validate_bid(entity, corporation, bid)
+            options = available_company_options(entity).map(&:sum)
+            return unless options.none? { |option| bid >= option && bid <= option + entity.cash }
+
+            valid_options = options.sort.uniq
+              .select { |o| o + entity.cash >= min_bid(corporation) }
+              .map { |o| @game.format_currency(o) }
+              .join(', ')
+            raise GameError, "Invalid bid, bids using privates include #{valid_options}"\
+                             " and can be supplemented with cash between $0 and #{@game.format_currency(entity.cash)}"
           end
 
           def process_buy_shares(action)
@@ -307,7 +312,7 @@ module Engine
             corporation.companies << company
 
             # Pay the player for the company
-            corporation.spend(company.value, entity)
+            corporation.spend(company.value, entity, check_cash: !contribution_can_exceed_corporation_cash?)
 
             @log << "#{company.name} used for forming #{corporation.name} "\
                     "contributing #{@game.format_currency(company.value)} value"
@@ -318,6 +323,10 @@ module Engine
             end
 
             par_corporation if available_subsidiaries(entity).empty?
+          end
+
+          def contribution_can_exceed_corporation_cash?
+            false
           end
 
           def process_take_loan(action)
@@ -354,7 +363,7 @@ module Engine
 
             @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
 
-            par_price = price / 2
+            par_price = par_price(price)
 
             share_price = @game.find_share_price(par_price)
 
@@ -375,6 +384,10 @@ module Engine
             size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
 
             par_corporation if available_subsidiaries(winner.entity).none?
+          end
+
+          def par_price(bid)
+            bid / 2
           end
 
           def available_subsidiaries(entity)
@@ -400,7 +413,7 @@ module Engine
           end
 
           def min_bid(corporation)
-            return MIN_BID unless @auctioning
+            return self.class::MIN_BID unless @auctioning
 
             highest_bid(corporation).price + min_increment
           end
@@ -408,7 +421,7 @@ module Engine
           def max_bid(entity, _corporation = nil)
             return 0 if @game.num_certs(entity) >= @game.cert_limit
 
-            [MAX_BID, @game.bidding_power(entity)].min
+            [self.class::MAX_BID, @game.bidding_power(entity)].min
           end
 
           def ipo_via_par?(_entity)

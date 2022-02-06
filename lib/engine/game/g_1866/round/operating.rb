@@ -27,6 +27,16 @@ module Engine
             super
           end
 
+          def recalculate_order
+            index = @entity_index + 1
+            return unless index < @entities.size - 1
+
+            @entities[index..-1] = @entities[index..-1].sort
+            @entities_orginal = @entities.each_with_index.map do |c, idx|
+              idx < index ? @entities_orginal[idx] : map_corporation(c)
+            end
+          end
+
           def start_operating
             entity = @entities[@entity_index]
             if @game.major_national_corporation?(entity) && entity.num_player_shares.zero?
@@ -68,7 +78,7 @@ module Engine
             new_entities.each do |c|
               index = @entities_orginal.size
               @entities_orginal.each_with_index do |e, idx|
-                next if e[:type] == 'minor_national'
+                next if e[:type] == :minor_national
 
                 if @game.germany_or_italy_national?(c)
                   index = idx

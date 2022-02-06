@@ -36,7 +36,10 @@ module Engine
           end
 
           def auction_log(entity)
-            @game.log << "#{entity.name} is up for auction"
+            privates_left = @companies.sort_by(&:name).map { |c| c.name unless c.id == entity.id }.compact.join(', ')
+            privates_left_str = "In alphabetical order, these are left for auction #{privates_left}."
+            privates_left_str = 'Last one.' if privates_left.empty?
+            @game.log << "#{entity.name} is up for auction. #{privates_left_str}"
             auction_entity(entity)
           end
 
@@ -96,7 +99,11 @@ module Engine
 
           def remove_company(company)
             @companies.delete(company)
-            @log << "#{company.name} is removed from the game"
+            @log << if @game.class::NATIONAL_COMPANIES.include?(company.id)
+                      "#{company.name} closes. It will form in phase 5"
+                    else
+                      "#{company.name} closes and is removed from the game"
+                    end
           end
 
           def setup

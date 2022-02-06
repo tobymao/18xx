@@ -350,7 +350,6 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
         GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
         TRAIN_PRICE_MIN = 10
-        MN_TRAIN_MUST_USE_TOKEN = false
         IMPASSABLE_HEX_COLORS = %i[blue sepia red].freeze
         TILE_200 = '200'
 
@@ -654,7 +653,7 @@ module Engine
 
           # pre-allocate dummy trains used for tile 200
           @pass_thru = {}
-          DUMMY_TRAINS.each { |train| @pass_thru[train[:name]] = Train.new(**train, index: 999) }
+          DUMMY_TRAINS.each { |train| @pass_thru[train[:name]] = Train.new(**train, requires_token: false, index: 999) }
         end
 
         # cache all stock prices
@@ -1102,15 +1101,11 @@ module Engine
           raise NoToken, 'Route must contain token' if !token && !double_header?(route)
         end
 
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           # no need if distance is 2, avoids dealing with double-header route missing a token
           return if route.train.distance == 2
 
-          paths_ = route.paths.uniq
-
-          return if token.select(paths_, corporation: route.corporation).size == paths_.size
-
-          raise GameError, 'Route is not connected'
+          super
         end
 
         def compute_stops(route)
@@ -1175,6 +1170,10 @@ module Engine
           @log << "-- #{entity.name} is now bankrupt and will be removed from the game --"
           close_corporation(entity, quiet: true)
           entity.close!
+        end
+
+        def hex_blocked_by_ability?(_entity, abilities, hex)
+          Array(abilities).any? { |ability| ability.hexes.include?(hex.id) }
         end
 
         def action_processed(_action); end

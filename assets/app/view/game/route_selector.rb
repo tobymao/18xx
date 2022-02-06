@@ -259,6 +259,8 @@ module View
           @routes = router.compute(
             @game.current_entity,
             routes: @routes.reject { |r| r.paths.empty? },
+            path_timeout: setting_for(:path_timeout).to_i,
+            route_timeout: setting_for(:route_timeout).to_i,
           )
           store(:routes, @routes)
         end
