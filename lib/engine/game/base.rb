@@ -826,8 +826,9 @@ module Engine
       end
 
       # Before rusting, check if this train individual should rust.
-      def rust?(_train)
-        true
+      def rust?(train, purchased_train)
+        train.rusts_on == purchased_train.sym ||
+          (train.obsolete_on == purchased_train.sym && @depot.discarded.include?(train))
       end
 
       def shares
@@ -1835,10 +1836,7 @@ module Engine
 
         trains.each do |t|
           next if t.rusted
-
-          should_rust = t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
-          next unless should_rust
-          next unless rust?(t)
+          next unless rust?(t, train)
 
           rusted_trains << t.name
           owners[t.owner.name] += 1

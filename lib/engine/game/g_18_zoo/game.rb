@@ -1000,8 +1000,9 @@ module Engine
           @player_debts[player] += debt
         end
 
-        def rust?(train)
-          return super if depot.discarded.include?(train)
+        def rust?(train, purchased_train)
+          return false if purchased_train && !super
+          return true if depot.discarded.include?(train)
           return true if !train.owner || !train.owner.corporation?
           return true if @round.trains_for_bandage&.include?(train)
 

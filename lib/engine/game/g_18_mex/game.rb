@@ -1087,11 +1087,10 @@ module Engine
           major.close!
         end
 
-        def rust?(train)
-          return super unless @optional_rules&.include?(:delay_minor_close)
+        def rust?(train, _purchased_train)
+          return false if @optional_rules&.include?(:delay_minor_close) && train.name == '2' && train.owner.minor?
 
-          # Do not rust minor's 2 trains
-          !(train.name == '2' && train.owner.minor?)
+          super
         end
 
         def buy_first_5_train(player)

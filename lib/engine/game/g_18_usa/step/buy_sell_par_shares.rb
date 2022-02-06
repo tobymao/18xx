@@ -51,7 +51,7 @@ module Engine
           def win_bid(winner, company)
             corporation = winner.corporation
             unless corporation.tokens.first.hex
-              @pending_winning_bid = { :winner => winner, :company => company }
+              @pending_winning_bid = { winner: winner, company: company }
               return
             end
             @pending_winning_bid = nil
@@ -142,7 +142,6 @@ module Engine
             return unless @corporation_size
 
             corporation = @winning_bid.corporation
-            return super
 
             corporation.companies.dup.each do |c|
               case c.name
@@ -167,7 +166,7 @@ module Engine
 
           def after_process_before_skip(_action)
             return unless @pending_winning_bid
-            
+
             win_bid(@pending_winning_bid[:winner], @pending_winning_bid[:company])
           end
         end
