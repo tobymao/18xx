@@ -737,14 +737,13 @@ module Engine
               (RURAL_TILES & [visits.first.tile.name, visits.last.tile.name]).empty?
         end
 
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           return super unless @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
 
           visits = route.visited_stops
           blocked = nil
 
           if visits.size > 2
-            corporation = route.corporation
             visits[1..-2].each do |node|
               next if !node.city? || !node.blocks?(corporation)
               raise GameError, 'Route can only bypass one tokened-out city' if blocked
@@ -753,10 +752,8 @@ module Engine
             end
           end
 
-          paths_ = route.paths.uniq
-          token = blocked if blocked
-
-          return if token.select(paths_, corporation: route.corporation).size == paths_.size
+          # no need to check whether tokened out because of the above
+          super(route, nil)
 
           raise GameError, 'Route is not connected'
         end

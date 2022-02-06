@@ -266,8 +266,8 @@ module Engine
       @game.check_overlap(@routes)
     end
 
-    def check_connected!(token)
-      @check_connected ||= @game.check_connected(self, token) || true
+    def check_connected!
+      @check_connected ||= @game.check_connected(self, corporation) || true
     end
 
     def ordered_paths
@@ -321,7 +321,7 @@ module Engine
           check_cycles!
           check_distance!(visited)
           check_overlap!
-          check_connected!(token)
+          check_connected!
 
           @game.revenue_for(self, stops)
         end

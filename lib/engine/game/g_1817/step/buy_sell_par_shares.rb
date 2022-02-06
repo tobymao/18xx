@@ -46,7 +46,9 @@ module Engine
               actions << 'short' if can_short_any?(entity)
               actions << 'bid' if max_bid(entity) >= self.class::MIN_BID
             end
-            actions << 'pass' if (actions.any? || any_corporate_actions?(entity)) && !actions.include?('pass')
+            if (actions.any? || any_corporate_actions?(entity)) && !actions.include?('pass') && !must_sell?(entity)
+              actions << 'pass'
+            end
             actions
           end
 
