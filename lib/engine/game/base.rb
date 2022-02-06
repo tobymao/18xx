@@ -721,11 +721,11 @@ module Engine
             @round_history << current_action_id
           end
         end
-        #     rescue Engine::GameError => e
-        #       @raw_actions.pop
-        #      @actions.pop
-        #      @exception = e
-        #     @broken_action = action
+      rescue Engine::GameError => e
+        @raw_actions.pop
+        @actions.pop
+        @exception = e
+        @broken_action = action
       end
 
       def maybe_raise!
