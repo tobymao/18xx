@@ -89,11 +89,10 @@ module Engine
       @depot_trains = nil
     end
 
-    def insert_train(train)
-      idx = @upcoming.index { |t| t.name == train.name } || 0
+    def insert_train(train, index = 0)
       train.owner = self
       @trains << train
-      @upcoming.insert(idx, train)
+      @upcoming.insert(index, train)
       @depot_trains = nil
     end
 
