@@ -170,11 +170,24 @@ module Engine
         return if ability.hexes.size < 2
         return if !ability.start_count || ability.start_count < 2 || ability.start_count == ability.count
 
-        paths = ability.laid_hexes.flat_map do |hex_id|
-          @game.hex_by_id(hex_id).tile.paths
-        end.uniq
+        # check to see if at least one path on each laid tile connects to at least one path on one of the others
+        #
+        connected = {}
+        laid_hexes = ability.laid_hexes.map { |h| @game.hex_by_id(h) }
+        laid_hexes.each do |hex|
+          next if connected[hex]
 
-        raise GameError, 'Paths must be connected' if paths.size != paths[0].select(paths).size
+          laid_hexes.each do |other|
+            next if hex == other
+
+            if hex.tile.paths.any? { |a| other.tile.paths.any? { |b| a.connects_to?(b, nil) } }
+              connected[hex] = 1
+              connected[other] = 1
+            end
+          end
+        end
+
+        raise GameError, 'Paths must be connected' if connected.keys.size != laid_hexes.size
       end
     end
   end

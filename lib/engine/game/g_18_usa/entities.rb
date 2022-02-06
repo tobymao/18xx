@@ -236,6 +236,20 @@ module Engine
               },
             ],
           },
+          # P13
+          {
+            name: 'Pennsy Boneyard',
+            value: 60,
+            revenue: 0,
+            desc: 'Discard when the first 4, 6, or 8-train is purchased or exported to prevent one train from ' \
+                  'rusting. The train is instead treated as an obsolete train and will be discarded at the end ' \
+                  'of the corporation’s next Run Trains step. Obsolete trains may not be sold to another company ' \
+                  'and do not count against the company’s train limit. This ability may only be used on a train ' \
+                  'which is owned by the same company that owns Pennsy Boneyard. May not be used on 2+, 3+, or 4+ ' \
+                  'trains.',
+            sym: 'P13',
+            abilities: [], # Implemented in game class and a custom step
+          },
           # P14
           {
             name: 'Pyramid Scheme',

@@ -814,8 +814,8 @@ module Engine
           base_revenue
         end
 
-        def check_connected(route, token)
-          return if route.corporation.type == :city
+        def check_connected(route, corporation)
+          return if corporation.type == :city
 
           super
         end

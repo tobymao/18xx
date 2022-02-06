@@ -60,6 +60,24 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:60;path=a:0,b:_0;label=M',
           },
+          'X5' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;label=⛏️',
+          },
+          'X6' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0;label=⛏️',
+          },
+          'X7' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=⛏️',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -348,6 +366,24 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                     'Game ends 3 ORs after purchase/export'\
                                                                     ' of first 4 train']).freeze
+        MINE_HEXES = %w[B5 C4 D3 E2 F3 F5 G4 G6 H3 H5 I4].freeze
+
+        def no_mines?
+          @optional_rules.include?(:no_mines)
+        end
+
+        def setup
+          if no_mines?
+            @tiles.reject! { |t| %w[X5 X6 X7].include?(t.name) }
+            @all_tiles.reject! { |t| %w[X5 X6 X7].include?(t.name) }
+          else
+            MINE_HEXES.sort_by { rand }.take(2).each do |hex_id|
+              hex_by_id(hex_id).tile.label = '⛏️'
+            end
+          end
+          super
+        end
+
         def event_signal_end_game!
           @final_operating_rounds = 2
           game_end_check

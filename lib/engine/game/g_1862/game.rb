@@ -1770,6 +1770,10 @@ module Engine
           format_currency(train.names_to_prices.values[0])
         end
 
+        def rust?(train, purchased_train)
+          train.rusts_on == purchased_train.sym
+        end
+
         def rust_trains!(train, _entity)
           rusted_trains = []
           owners = Hash.new(0)
@@ -1782,10 +1786,7 @@ module Engine
 
           trains.each do |t|
             next if t.rusted || @deferred_rust.include?(t)
-
-            should_rust = t.rusts_on == train.sym
-            next unless should_rust
-            next unless rust?(t)
+            next unless rust?(t, train)
 
             rusted_trains << t.name
             owners[t.owner.name] += 1
