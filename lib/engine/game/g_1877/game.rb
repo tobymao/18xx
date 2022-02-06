@@ -366,6 +366,24 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
                                                                     'Game ends 3 ORs after purchase/export'\
                                                                     ' of first 4 train']).freeze
+        MINE_HEXES = %w[B5 C4 D3 E2 F3 F5 G4 G6 H3 H5 I4].freeze
+
+        def no_mines?
+          @optional_rules.include?(:no_mines)
+        end
+
+        def setup
+          if no_mines?
+            @tiles.dup.select { |t| %w[X5 X6 X7].include?(t.name) }.each { |t| @tiles.delete(t) }
+            @all_tiles.select { |t| %w[X5 X6 X7].include?(t.name) }.each { |t| @tiles.delete(t) }
+          else
+            MINE_HEXES.sort_by { rand }.take(2).each do |hex_id|
+              hex_by_id(hex_id).tile.labels << Engine::Part::Label.new('⛏️')
+            end
+          end
+          super
+        end
+
         def event_signal_end_game!
           @final_operating_rounds = 2
           game_end_check
