@@ -255,6 +255,10 @@ module Engine
           },
         ].freeze
 
+        def init_share_pool
+          SharePool.new(self, allow_president_sale: true)
+        end
+
         def init_scenario(optional_rules)
           num_players = @players.size
           two_east_west = optional_rules.include?(:two_player_ew)
@@ -299,8 +303,8 @@ module Engine
           @scenario['cert-limit']
         end
 
-        VALID_ABILITIES_OPEN = %i[blocks_hexes choose_ability].freeze
-        VALID_ABILITIES_CLOSED = %i[hex_bonus tile_lay].freeze
+        VALID_ABILITIES_OPEN = %i[blocks_hexes choose_ability reservation].freeze
+        VALID_ABILITIES_CLOSED = %i[hex_bonus reservation tile_lay token].freeze
 
         def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
           ability = super
@@ -468,6 +472,14 @@ module Engine
           player.cash + player_shares_value(player)
         end
 
+        def float_corporation(corporation)
+          super
+          return unless corporation.type == '10-share'
+
+          bundle = ShareBundle.new(corporation.shares_of(corporation))
+          @share_pool.transfer_shares(bundle, @share_pool)
+        end
+
         def place_home_token(corporation)
           return if corporation.tokens.first&.used
 
@@ -513,23 +525,49 @@ module Engine
           corporation = share.corporation
           corporation.share_holders[owner] += share.percent if owner
           owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
         end
 
-        def convert_to_ten_share(corporation)
+        def convert_to_ten_share(corporation, price_drops = 0)
+          # update corporation type and report conversion
           corporation.type = '10-share'
+          @log << "#{corporation.id} converts into a 10-share company"
 
+          # update existing shares to 10% shares
           original_shares = shares_for_corporation(corporation)
           corporation.share_holders.clear
-
           original_shares.each { |s| s.percent = 10 }
           original_shares.first.percent = 20
-          shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 5) }
-
           original_shares.each { |s| corporation.share_holders[s.owner] += s.percent }
 
+          # create new shares
+          owner = corporation.floated? ? @share_pool : corporation
+          shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4, owner: owner) }
           shares.each do |share|
             add_new_share(share)
           end
+
+          # create new tokens and remove reminder from charter
+          corporation.abilities.dup.each do |ability|
+            if ability.description.start_with?('Conversion tokens:')
+              ability.count.times { corporation.tokens << Engine::Token.new(corporation, price: 50) }
+              corporation.remove_ability(ability)
+            end
+          end
+
+          # update share price
+          unless price_drops.zero?
+            prev = corporation.share_price.price
+            price_drops.times { @stock_market.move_down(corporation) }
+            log_share_price(corporation, prev)
+          end
+
+          # add new capital
+          return unless corporation.floated?
+
+          capital = corporation.share_price.price * 5
+          @bank.spend(capital, corporation)
+          @log << "#{corporation.id} receives #{format_currency(capital)}"
         end
 
         def stock_round
@@ -631,6 +669,7 @@ module Engine
           Round::Operating.new(self, [
             G18GB::Step::SpecialChoose,
             Engine::Step::SpecialTrack,
+            G18GB::Step::SpecialToken,
             Engine::Step::HomeToken,
             G18GB::Step::TrackAndToken,
             Engine::Step::Route,
