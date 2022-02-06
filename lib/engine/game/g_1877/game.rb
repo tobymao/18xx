@@ -374,8 +374,8 @@ module Engine
 
         def setup
           if no_mines?
-            @tiles.dup.select { |t| %w[X5 X6 X7].include?(t.name) }.each { |t| @tiles.delete(t) }
-            @all_tiles.dup.select { |t| %w[X5 X6 X7].include?(t.name) }.each { |t| @all_tiles.delete(t) }
+            @tiles.reject! { |t| %w[X5 X6 X7].include?(t.name) }
+            @all_tiles.reject! { |t| %w[X5 X6 X7].include?(t.name) }
           else
             MINE_HEXES.sort_by { rand }.take(2).each do |hex_id|
               hex_by_id(hex_id).tile.label = '⛏️'
