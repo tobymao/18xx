@@ -279,7 +279,7 @@ module Engine
               abilities(corporation, :reservation) do |ability|
                 corporation.remove_ability(ability)
               end
-              place_second_token(corporation)
+              place_second_token(corporation, deferred: true)
             end
           end
           @log << "Privates in the game: #{@companies.reject { |c| c.name.include?('Pass') }.map(&:name).join(', ')}"
@@ -372,14 +372,18 @@ module Engine
           return if two_player_only && !two_player?
 
           hex_id = self.class::REMOVED_CORP_SECOND_TOKEN[corporation.id]
+          hex = hex_by_id(hex_id)
 
           if deferred
             # defer second token placement until green city upgrade.
             @second_tokens_in_green[hex_id] = corporation
+
+            # Unfortunately Icon always reapplies the ".svg"
+            logo_filename = corporation.logo[0...-4]
+            hex.tile.icons << Part::Icon.new("../#{logo_filename}", corporation.id.to_s)
             @log << "#{corporation.id} will place a token on #{hex_id} when it is upgraded to green"
           else
             token = corporation.find_token_by_type
-            hex = hex_by_id(hex_id)
             hex.tile.cities.first.place_token(corporation, token, check_tokenable: false)
             @log << "#{corporation.id} places a second token on #{hex_id} (#{hex.location_name})"
           end
