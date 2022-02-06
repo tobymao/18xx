@@ -878,25 +878,17 @@ module Engine
             corporation.tokens << Engine::Token.new(corporation)
             subsidy.close!
           when 'S10'
-            handle_plus_ten_subsidy(subsidy)
+            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', sticky: true)
+            subsidy.close!
           when 'S11'
-            handle_plus_ten_twenty_subsidy(subsidy)
+            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', sticky: true)
+            subsidy.close!
           when 'S16'
             if subsidy.abilities.first.hexes.empty?
               @log << "#{subsidy.name} has NO RESOURCES and closes"
               subsidy.close!
             end
           end
-        end
-
-        def handle_plus_ten_subsidy(subsidy)
-          subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', sticky: true)
-          subsidy.close!
-        end
-
-        def handle_plus_ten_twenty_subsidy(subsidy)
-          subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', sticky: true)
-          subsidy.close!
         end
       end
     end
