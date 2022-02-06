@@ -163,11 +163,12 @@ module Engine
                           hexes: %w[E12],
                           tiles: %w[1 2 55 56 69],
                           free: true,
-                          reachable: false,
+                          reachable: true,
                           special: true,
                           count: 1,
                           when: %w[owning_player_or_turn],
                           consume_tile_lay: false,
+                          closed_when_used_up: true,
                         }],
           },
           {
