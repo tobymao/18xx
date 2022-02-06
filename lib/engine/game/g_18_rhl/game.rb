@@ -214,7 +214,7 @@ module Engine
         def num_trains(train)
           return train[:num] unless train[:name] == '2'
 
-          optional_2_train ? 8 : 7
+          optional_2_train ? 7 : 6
         end
 
         def optional_2_train
