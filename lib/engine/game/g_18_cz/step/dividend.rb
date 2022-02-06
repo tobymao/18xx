@@ -14,8 +14,9 @@ module Engine
           def share_price_change(entity, revenue = 0)
             return { share_direction: :left, share_times: 2 } unless revenue.positive?
 
-            times = 2
-            times = 4 if entity.type == :large
+            max_moves = @game.maximum_share_price_change(entity)
+            times = (max_moves < 2 ? max_moves : 2)
+            times = (max_moves < 4 ? max_moves : 4) if entity.type == :large
             { share_direction: :right, share_times: times }
           end
 
