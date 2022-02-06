@@ -64,19 +64,19 @@ module Engine
           {
             'count' => 'unlimited',
             'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;label=⛏',
+            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;label=T',
           },
           'X6' =>
           {
             'count' => 'unlimited',
             'color' => 'green',
-            'code' => 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0;label=⛏',
+            'code' => 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0;label=T',
           },
           'X7' =>
           {
             'count' => 'unlimited',
             'color' => 'brown',
-            'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=⛏',
+            'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=T',
           },
         }.freeze
 
@@ -377,7 +377,7 @@ module Engine
             @tiles.dup.select { |t| %w[X5 X6 X7].include?(t.name) }.each { |t| @tiles.delete(t) }
           else
             MINE_HEXES.sort_by { rand }.take(2).each do |hex_id|
-              hex_by_id(hex_id).tile.labels << Engine::Part::Label.new('⛏️')
+              hex_by_id(hex_id).tile.labels << Engine::Part::Label.new('T️')
             end
           end
           super
