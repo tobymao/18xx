@@ -1071,7 +1071,13 @@ module Engine
       end
 
       def share_jumps(steps)
-        steps
+        return steps unless @stock_market.zigzag
+
+        if steps > 1
+          steps / 2
+        else
+          steps
+        end
       end
 
       def can_run_route?(entity)
