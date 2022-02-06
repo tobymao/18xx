@@ -106,4 +106,31 @@ module Engine
       expect(game.round.active_step).to be_instance_of(Engine::Step::Route)
     end
   end
+
+  # active-game tests: run all .ingame files found in spec/fixtures/,
+  # verify that the result and last "test_last_actions" actions match those in the JSON
+  Find.find(FIXTURES_DIR).select { |f| File.basename(f) =~ /.ingame/ }.each do |fixture|
+    game_title = File.basename(File.dirname(fixture))
+    filename = File.basename(fixture)
+    game_id = filename.split('.ingame').first
+    describe game_title do
+      context game_id do
+        it 'matches result exactly' do
+          data = JSON.parse(File.read(fixture))
+          result = data['result']
+          actions = data['actions']
+          test_last_actions = data['test_last_actions'].to_i
+          expect(test_last_actions).to be > 0
+
+          rungame = Engine::Game.load(data, strict: true).maybe_raise!
+          expect(rungame.result).to eq(result)
+
+          (1..test_last_actions).each do |index|
+            run_action = rungame.actions[rungame.actions.size - index].to_h
+            expect(run_action).to eq(actions[actions.size - index])
+          end
+        end
+      end
+    end
+  end
 end
