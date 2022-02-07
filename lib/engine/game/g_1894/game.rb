@@ -269,7 +269,7 @@ module Engine
 
         def setup
           @late_corporations, @corporations = @corporations.partition do |c|
-            %w[F1 F2 B1 B2].include? c.id
+            %w[F1 F2 B1 B2].include?(c.id)
           end
 
           @log << "-- Setting game up for #{@players.size} players --"
@@ -282,7 +282,7 @@ module Engine
 
           plm = corporations.find { |c| c.id == 'PLM' }
           paris_tiles_names = %w[X1 X4 X5 X7 X8]
-          paris_tiles = @all_tiles.filter { |t| paris_tiles_names.include? t.name }
+          paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
         end
 
@@ -322,11 +322,11 @@ module Engine
         end
 
         def pc_bonus(corp, stops)
-          corp.assigned?('PC') && stops.map(&:hex).find { |hex| hex.assigned?('PC') } ? 10 : 0
+          corp.assigned?('PC') && stops.any? { |s| s.hex.assigned?('PC') } ? 10 : 0
         end
 
         def est_le_sud_bonus(corp, stops)
-          corp.id == 'Est' && stops.map(&:hex).find { |hex| hex.id == 'I2' } ? 20 : 0
+          corp.id == 'Est' && stops.any? { |s| s.hex.id == 'I2' } ? 20 : 0
         end
 
         def ferry_marker_available?
@@ -336,7 +336,7 @@ module Engine
         def ferry_marker?(entity)
           return false unless entity.corporation?
 
-          ferry_markers(entity).any?
+          !ferry_markers(entity).empty?
         end
 
         def ferry_markers(entity)
@@ -364,7 +364,7 @@ module Engine
           @log << "#{entity.name} buys a ferry marker for $#{FERRY_MARKER_COST}"
 
           tile_icons = hex_by_id(ENGLAND_FERRY_SUPPLY).tile.icons
-          tile_icons.delete_at(tile_icons.find_index { |icon| icon.name == FERRY_MARKER_ICON })
+          tile_icons.reject! { |icon| icon.name == FERRY_MARKER_ICON }
 
           graph.clear
         end
@@ -392,7 +392,7 @@ module Engine
         def remove_extra_late_corporations
           return unless @players.size == 3
 
-          to_remove = @late_corporations.filter { |c| %w[F2 B2].include? c.id }
+          to_remove = @late_corporations.select { |c| %w[F2 B2].include?(c.id) }
           @late_corporations.delete(to_remove[0])
           @late_corporations.delete(to_remove[1])
           @log << 'Removing F2 and B2 late corporations'

@@ -6,7 +6,7 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           def legal_tile_rotation?(_entity, hex, tile)
-            if hex.id == @game.class::PARIS_HEX && _hex.tile.color == :green
+            if hex.id == @game.class::PARIS_HEX && hex.tile.color == :green
               return true if tile.rotation == hex.tile.rotation
             else
               super
@@ -14,7 +14,7 @@ module Engine
           end
 
           def update_token!(_action, _entity, tile, old_tile)
-            return unless old_tile.id == @game.class::PARIS_HEX && old_tile.paths.empty?
+            return if old_tile.id != @game.class::PARIS_HEX || !old_tile.paths.empty?
 
             token.move!(tile.cities[0])
             @game.graph.clear

@@ -17,7 +17,7 @@ module Engine
           end
 
           def route_includes_england?(routes)
-            routes.flat_map(&:connection_hexes).flatten.include?(Engine::Game::G1894::Game::ENGLAND_HEX)
+            routes.flat_map(&:connection_hexes).include?(Engine::Game::G1894::Game::ENGLAND_HEX)
           end
 
           def available_hex(entity, hex)
