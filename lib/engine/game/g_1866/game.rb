@@ -637,7 +637,8 @@ module Engine
                       SBB GL NRS ZPB MZA],
         }.freeze
 
-        attr_reader :game_end_triggered_corporation, :game_end_triggered_round
+        attr_reader :game_end_triggered_corporation, :game_end_triggered_round,
+                    :major_national_formed, :major_national_formed_round
 
         def action_processed(_action); end
 
@@ -1168,6 +1169,7 @@ module Engine
           @major_national_formed = {}
           @major_national_formed[self.class::GERMANY_NATIONAL] = false
           @major_national_formed[self.class::ITALY_NATIONAL] = false
+          @major_national_formed_round = {}
 
           # Setup the nationals graph
           @national_graph = Graph.new(self, home_as_token: true, no_blocking: true)
@@ -1515,6 +1517,7 @@ module Engine
 
           corporation.ipoed = true
           @major_national_formed[corporation.id] = true
+          @major_national_formed_round[corporation.id] = @round.round_num
           return unless corporation.id == self.class::ITALY_NATIONAL
 
           # Remove the coordinates for AHE in Lombardy-Venetia region

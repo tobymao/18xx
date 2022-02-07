@@ -84,6 +84,7 @@ module Engine
                   index = idx
                   break
                 end
+                next if major_national?(e) && major_national_formed?(e)
                 next if e[:price] > c.share_price.price
                 next if e[:price] == c.share_price.price && e[:row] <= c.share_price.coordinates[0]
 
@@ -95,6 +96,16 @@ module Engine
             end
 
             goto_entity!(find_entity)
+          end
+
+          def major_national_formed?(mapped_corporarion)
+            return false unless @game.major_national_formed[mapped_corporarion[:id]]
+
+            @game.major_national_formed_round[mapped_corporarion[:id]] == @round_num
+          end
+
+          def major_national?(mapped_corporarion)
+            mapped_corporarion[:id] == @game.class::GERMANY_NATIONAL || mapped_corporarion[:id] == @game.class::ITALY_NATIONAL
           end
 
           def map_corporation(corporation)
