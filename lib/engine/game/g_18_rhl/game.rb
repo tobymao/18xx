@@ -493,6 +493,10 @@ module Engine
           place_free_token(cce, 'I10', 1, silent: false)
         end
 
+        UPGRADES_TO_88 = %w[1 55].freeze
+        UPGRADES_TO_87 = %w[2 56].freeze
+        UPGRADE_TO_204 = '69'
+
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Osterath cannot be upgraded at all, and cannot be upgraded to in phase 5 or later
           return false if from.name == @osterath_tile&.name ||
@@ -506,6 +510,12 @@ module Engine
           # Handle Moers upgrades
           return to.name == '947' if from.color == :green && from.hex.name == 'D7'
           return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
+
+          # Handle 4-spokers
+          from_name = from.hex.tile.name
+          return to.name == '87' if UPGRADES_TO_87.include?(from_name)
+          return to.name == '88' if UPGRADES_TO_88.include?(from_name)
+          return to.name == '204' if from_name == UPGRADE_TO_204
 
           if optional_promotion_tiles
             # Essen can be upgraded to gray
