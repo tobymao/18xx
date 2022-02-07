@@ -267,6 +267,10 @@ module Engine
           two_player? && @optional_rules&.include?(:two_player_share_limit) ? { max_ownership_percent: 70 } : {}
         end
 
+        def all_corporations
+          minors + corporations
+        end
+
         def new_auction_round
           Round::Auction.new(self, [
             G18Scan::Step::CompanyPendingPar,
