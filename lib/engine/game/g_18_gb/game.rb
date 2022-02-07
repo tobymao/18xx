@@ -255,10 +255,6 @@ module Engine
           },
         ].freeze
 
-        def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
-        end
-
         def init_scenario(optional_rules)
           num_players = @players.size
           two_east_west = optional_rules.include?(:two_player_ew)

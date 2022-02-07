@@ -524,10 +524,6 @@ module Engine
           @max_tokens ||= @optional_rules&.include?(:eight_tokens) ? OPTIONAL_TOKENS : NORM_TOKENS
         end
 
-        def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
-        end
-
         def init_companies(players)
           clist = super
 

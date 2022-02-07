@@ -900,10 +900,6 @@ module Engine
           Bank.new(20_000, log: @log, check: false)
         end
 
-        def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
-        end
-
         def option_23p_map?
           @optional_rules&.include?(:two_player_map) || @optional_rules&.include?(:original_game)
         end
