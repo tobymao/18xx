@@ -11,6 +11,7 @@ module Engine
           include MinorExchange
 
           def actions(entity)
+            return [] if entity.corporation?
             return [] unless @round.players_history[entity].empty?
 
             actions = []
@@ -86,6 +87,8 @@ module Engine
           end
 
           def can_discard?(minor)
+            return true if @game.loading
+
             ability = @game.abilities(minor, :exchange)
             connected = @game.exchange_corporations(ability)
             return true if connected.empty?
