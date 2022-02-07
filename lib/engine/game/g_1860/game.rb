@@ -1082,6 +1082,13 @@ module Engine
           @corporations.select { |c| c.floated? && !nationalized?(c) }.sort
         end
 
+        def liquidity(player)
+          without_companies = super
+          return without_companies unless turn > 1
+
+          without_companies + player.companies.sum { |c| c.value - COMPANY_SALE_FEE }
+        end
+
         def place_home_token(corporation)
           # will this break the game?
           return if sr_after_southern
