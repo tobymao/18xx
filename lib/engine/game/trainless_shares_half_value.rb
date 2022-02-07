@@ -26,16 +26,8 @@ module TrainlessSharesHalfValue
     end
   end
 
-  def player_shares_value(player)
-    trainless_shares, train_shares = player.shares.partition { |s| s.corporation.trains.empty? }
-    train_shares.sum(&:price) + trainless_shares.sum { |s| (s.price / 2).to_i }
-  end
-
   def player_value(player)
-    player.cash + player_shares_value(player) + player.companies.sum(&:value)
-  end
-
-  def liquidity(player)
-    player.cash + player_shares_value(player)
+    trainless_shares, train_shares = player.shares.partition { |s| s.corporation.trains.empty? }
+    player.cash + train_shares.sum(&:price) + trainless_shares.sum { |s| (s.price / 2).to_i } + player.companies.sum(&:value)
   end
 end

@@ -949,6 +949,8 @@ module Engine
       end
 
       def value_for_dumpable(player, corporation)
+        return value_for_sellable(player, corporation) if self.class::PRESIDENT_SALES_TO_MARKET
+
         max_bundle = bundles_for_corporation(player, corporation)
           .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
           .max_by(&:price)
