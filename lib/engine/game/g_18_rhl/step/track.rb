@@ -16,6 +16,14 @@ module Engine
 
             super
           end
+
+          FOUR_SPOKERS_TO = %w[87 88 204].freeze
+
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            return if FOUR_SPOKERS_TO.include?(new_tile.name)
+
+            super
+          end
         end
       end
     end
