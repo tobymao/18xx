@@ -141,6 +141,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_per_10
         POOL_SHARE_DROP = :one
+        CERT_LIMIT_COUNTS_BANKRUPTED = true
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(phase_limited: 'Can only enter during phase 16',
                                               par: 'Yellow phase par',
