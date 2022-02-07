@@ -73,9 +73,13 @@ module View
           if user_in_game?(@user, @gdata)
             buttons << render_button('Leave', -> { leave_game(@gdata) })
           elsif players.size < @gdata['max_players']
-            buttons << render_button('Join', -> { join_game(@gdata) })
+            buttons << render_button(
+              @gdata['settings']['is_async'] ? 'Join Async' : 'Join Live',
+              -> { join_game(@gdata) },
+              { width: '3.4rem' }
+            )
           end
-          JOIN_YELLOW
+          @gdata['settings']['is_async'] ? JOIN_YELLOW : JOIN_BLUE
         when 'active'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
           acting?(@user) ? color_for(:your_turn) : ENTER_GREEN
@@ -138,10 +142,11 @@ module View
       ])
     end
 
-    def render_button(text, action)
+    def render_button(text, action, styles = {})
       props = {
         style: {
           **BUTTON_STYLE,
+          **styles,
         },
         on: {
           click: action,
