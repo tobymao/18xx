@@ -81,6 +81,21 @@ module Engine
                 when: 'any',
                 choices: { close: 'Close' },
               },
+              {
+                type: 'reservation',
+                hex: 'I14',
+                remove: '4+2',
+              },
+              {
+                type: 'token',
+                when: 'owning_player_track',
+                hexes: ['I14'],
+                teleport_price: 50,
+                count: 1,
+                extra_action: false,
+                from_owner: true,
+                special_only: true,
+              },
             ],
           },
           {
@@ -198,6 +213,18 @@ module Engine
                 when: 'any',
                 choices: { close: 'Close' },
               },
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                hexes: ['C22'],
+                tiles: ['G33'],
+                discount: 50,
+                special: false,
+                reachable: true,
+                consume_tile_lay: true,
+                count: 1,
+              },
             ],
           },
           {
@@ -219,6 +246,21 @@ module Engine
                 owner_type: 'player',
                 when: 'any',
                 choices: { close: 'Close' },
+              },
+              {
+                type: 'reservation',
+                hex: 'H9',
+                remove: '4+2',
+              },
+              {
+                type: 'token',
+                when: 'owning_player_track',
+                hexes: ['I14'],
+                teleport_price: 50,
+                count: 1,
+                extra_action: false,
+                from_owner: true,
+                special_only: true,
               },
             ],
           },
@@ -267,6 +309,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
           {
             sym: 'GER',
@@ -281,6 +331,15 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
+
           },
           {
             sym: 'GSWR',
@@ -295,6 +354,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
           {
             sym: 'GWR',
@@ -309,6 +376,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
           {
             sym: 'LNWR',
@@ -324,6 +399,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
           {
             sym: 'LSWR',
@@ -338,6 +421,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
           {
             sym: 'LYR',
@@ -352,6 +443,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
           {
             sym: 'MR',
@@ -366,6 +465,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
           {
             sym: 'MSLR',
@@ -380,6 +487,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
           {
             sym: 'NBR',
@@ -394,6 +509,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 1',
+                desc_detail: 'Receives 1 additional £50 token on the charter when converted to a 10-share company',
+                count: 1,
+              },
+            ],
           },
           {
             sym: 'NER',
@@ -408,6 +531,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
           {
             sym: 'SWR',
@@ -422,6 +553,14 @@ module Engine
             reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Conversion tokens: 2',
+                desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share company',
+                count: 2,
+              },
+            ],
           },
       ].freeze
       end

@@ -23,6 +23,16 @@ module Engine
           rungame = Engine::Game.load(data, strict: true).maybe_raise!
           expect(rungame.result).to eq(result)
           expect(rungame.finished).to eq(true)
+
+          # some fixtures want to test that the last N actions of the game replayed the same as in the fixture
+          test_last_actions = data['test_last_actions']
+          next unless test_last_actions
+
+          actions = data['actions']
+          (1..(test_last_actions.to_i)).each do |index|
+            run_action = rungame.actions[rungame.actions.size - index].to_h
+            expect(run_action).to eq(actions[actions.size - index])
+          end
         end
       end
     end

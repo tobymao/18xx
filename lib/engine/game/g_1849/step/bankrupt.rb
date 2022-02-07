@@ -38,8 +38,9 @@ module Engine
 
             @game.reorder_corps
 
-            # play continues if the player has any assets at all
-            return if !player.shares.empty? || !player.companies.empty?
+            # play continues if the player has any shares
+            # (per issue 3899, private companies are not considered)
+            return unless player.shares.empty?
 
             # player will be given option to leave game or take loan
             @game.loan_choice_player = player

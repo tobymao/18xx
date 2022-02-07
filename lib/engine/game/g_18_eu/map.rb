@@ -70,7 +70,7 @@ module Engine
             ['N5'] => 'offboard=revenue:yellow_20|brown_30;path=a:1,b:_0',
             ['A6'] => 'offboard=revenue:yellow_40|brown_70;path=a:0,b:_0;path=a:5,b:_0',
             ['G2'] =>
-                   'offboard=revenue:yellow_30|brown_50;path=a:1,b:_0;path=a:_0,b:5;'\
+                   'city=revenue:yellow_30|brown_50,loc:2;path=a:1,b:_0;path=a:_0,b:5;'\
                    'path=a:0,b:_0;path=a:_0,b:5;path=a:0,b:_0;path=a:_0,b:1',
             ['G22'] =>
                    'offboard=revenue:yellow_30|brown_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',

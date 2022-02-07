@@ -24,12 +24,15 @@ module Engine
         end
 
         def maybe_remove_token(minor, corporation)
+          return unless corporation
           return minor.tokens.first.remove! unless corporation.tokens.first&.used
 
           @round.pending_acquisition = { minor: minor, corporation: corporation }
         end
 
         def exchange_share(minor, corporation, source)
+          return unless corporation
+
           @game.log << "#{minor.owner.name} exchanges #{minor.name} for a "\
                        "10% share of #{corporation.name}"
 
