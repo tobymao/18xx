@@ -18,7 +18,7 @@ module View
     def render_notification
       message = <<~MESSAGE
         <p>Thanks to Joe B, the autorouter is now 1000x faster!</p>
-        <p><b>1893</b> is now in production. <b>18Rhl</b> is now in alpha.</p>
+        <p><b><a href='https://github.com/tobymao/18xx/wiki/18EU'>18EU</a> and 18Rhl</b> are now in alpha.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
