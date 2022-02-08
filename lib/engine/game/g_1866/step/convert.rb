@@ -30,7 +30,8 @@ module Engine
 
             choices = {}
             choices['0'] = 'Convert without buying any shares'
-            if !@game.game_end_corporation_operated?(entity) && @game.player_debt(player).zero?
+            if !@game.game_end_corporation_operated?(entity) && @game.player_debt(player).zero? &&
+              !@game.player_sold_shares[player][entity]
               (6 - share_count).times.each do |i|
                 index = i + 1
                 if player.cash >= (price * index) && (@game.num_certs(player) + index) <= @game.cert_limit
