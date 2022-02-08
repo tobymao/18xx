@@ -31,7 +31,7 @@ module Engine
             min_price: 1,
             max_price: 45,
             desc: 'When this private is bought by a company, the president of the company may choose to add or remove '\
-                  'a 3/4/5/6 transport to/from the depot. If a transport is added, it must be of the '\
+                  'a 3/4/5/6 train to/from the depot. If a train is added, it must be of the '\
                   'current phase or later.',
             abilities: [],
             color: nil,
@@ -56,7 +56,7 @@ module Engine
             revenue: 10,
             min_price: 1,
             max_price: 90,
-            desc: 'The owning corporation may place the +20 marker on a mineral or base camp hex. The +20 '\
+            desc: 'The owning corporation may place the +20 marker on a mineral or Home Base hex. The +20 '\
                   'token lasts until the end of the game.',
             abilities: [
               {

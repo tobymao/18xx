@@ -28,7 +28,7 @@ module Engine
         @last_to_act = nil
         @pass_order = []
 
-        @steps = (DEFAULT_STEPS + steps).map do |step, step_opts|
+        @steps = (self.class::DEFAULT_STEPS + steps).map do |step, step_opts|
           step_opts ||= {}
           step = step.new(@game, self, **step_opts)
           step.round_state.each do |key, value|

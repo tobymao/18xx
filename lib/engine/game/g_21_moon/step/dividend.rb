@@ -14,35 +14,35 @@ module Engine
           # this is always called, there are no dividend choices in 21Moon
           def skip!
             sp = @game.sp_revenue(routes)
-            bc = @game.bc_revenue(routes)
+            hb = @game.hb_revenue(routes)
             kind = if sp.zero?
                      'withhold'
-                   elsif bc.zero?
+                   elsif hb.zero?
                      'payout'
                    else
                      'half'
                    end
 
             current_entity.operating_history[[@game.turn, @round.round_num]] =
-              OperatingInfo.new(routes, @game.actions.last, sp + bc, @round.laid_hexes, dividend_kind: kind)
+              OperatingInfo.new(routes, @game.actions.last, sp + hb, @round.laid_hexes, dividend_kind: kind)
 
             process_dividend(Action::Dividend.new(current_entity, kind: kind))
           end
 
           def process_dividend(action)
             entity = action.entity
-            bc_revenue = @game.bc_revenue(routes)
+            hb_revenue = @game.hb_revenue(routes)
             sp_revenue = @game.sp_revenue(routes)
 
             payout = share_price_change(entity, sp_revenue)
 
             @round.routes = []
 
-            @log << "#{entity.name} withholds #{@game.format_currency(bc_revenue)}" if bc_revenue.positive?
+            @log << "#{entity.name} withholds #{@game.format_currency(hb_revenue)}" if hb_revenue.positive?
 
-            @log << "#{entity.name} does not run" if !sp_revenue.positive? && !bc_revenue.positive?
+            @log << "#{entity.name} does not run" if !sp_revenue.positive? && !hb_revenue.positive?
 
-            payout_corporation(bc_revenue, entity)
+            payout_corporation(hb_revenue, entity)
             payout_shares(entity, sp_revenue) if sp_revenue.positive?
 
             change_share_price(entity, payout)
