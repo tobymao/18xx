@@ -273,6 +273,12 @@ module Engine
           end
         end
 
+        def store_player_info
+          @players.each do |p|
+            p.history << G18MS::PlayerInfo.new(@round.class.short_name, turn, @round.round_num, player_value(p))
+          end
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Exchange,
