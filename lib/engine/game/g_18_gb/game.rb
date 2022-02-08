@@ -2,6 +2,7 @@
 
 require_relative '../base'
 require_relative '../cities_plus_towns_route_distance_str'
+require_relative '../trainless_shares_half_value'
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
@@ -16,6 +17,7 @@ module Engine
         include Entities
         include Map
         include Scenarios
+        include TrainlessSharesHalfValue
 
         GAME_END_CHECK = { final_train: :current_or, stock_market: :current_or }.freeze
 
@@ -255,10 +257,6 @@ module Engine
           },
         ].freeze
 
-        def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
-        end
-
         def init_scenario(optional_rules)
           num_players = @players.size
           two_east_west = optional_rules.include?(:two_player_ew)
@@ -435,41 +433,6 @@ module Engine
 
         def after_par(corporation)
           @lnwr_ipoed = true if corporation.id == 'LNWR'
-        end
-
-        def bundles_for_corporation(share_holder, corporation, shares: nil)
-          return [] unless corporation.ipoed
-
-          shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
-
-          shares.flat_map.with_index do |share, index|
-            bundle = shares.take(index + 1)
-            percent = bundle.sum(&:percent)
-            bundles = [Engine::ShareBundle.new(bundle, percent)]
-            if share.president
-              normal_percent = corporation.share_percent
-              difference = corporation.presidents_percent - normal_percent
-              num_partial_bundles = difference / normal_percent
-              (1..num_partial_bundles).each do |n|
-                bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
-              end
-            end
-            bundles.each { |b| b.share_price = (b.price_per_share / 2).to_i if corporation.trains.empty? }
-            bundles
-          end
-        end
-
-        def player_shares_value(player)
-          trainless_shares, train_shares = player.shares.partition { |s| s.corporation.trains.empty? }
-          train_shares.sum(&:price) + trainless_shares.sum { |s| (s.price / 2).to_i }
-        end
-
-        def player_value(player)
-          player.cash + player_shares_value(player) + player.companies.sum(&:value)
-        end
-
-        def liquidity(player)
-          player.cash + player_shares_value(player)
         end
 
         def float_corporation(corporation)
