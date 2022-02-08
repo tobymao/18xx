@@ -45,7 +45,7 @@ module Engine
               offboard_area = offboard_area_hexes(target)
               assigned_hex = offboard_area.find(&:location_name)
               token = owner.tokens.reject(&:used).first
-              
+
               assigned_hex.place_token(token)
               @game.p8_hexes = offboard_area
               @log << "#{owner.name} assigns token to #{location_name}"
