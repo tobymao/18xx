@@ -24,6 +24,10 @@ module Engine
             @log << "#{tokener} places a token on #{hex.name} (#{hex.location_name})"
             @log << "#{action.entity.name} Company closes"
             action.entity.close!
+
+            @game.hb_graph.clear
+            @game.sp_graph.clear
+            @game.graph.clear
           end
 
           def track_upgrade?(_from, _to, _hex)

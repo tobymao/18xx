@@ -13,7 +13,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :bc_graph, :sp_graph, :train_base
+        attr_reader :hb_graph, :sp_graph, :train_base
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -73,7 +73,7 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { BC: 2, SP: 2 },
+            train_limit: { HB: 2, SP: 2 },
             tiles: %i[yellow],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -81,7 +81,7 @@ module Engine
           {
             name: '3',
             on: '3',
-            train_limit: { BC: 2, SP: 2 },
+            train_limit: { HB: 2, SP: 2 },
             tiles: %i[yellow green],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -89,7 +89,7 @@ module Engine
           {
             name: '4',
             on: '4',
-            train_limit: { BC: 2, SP: 2 },
+            train_limit: { HB: 2, SP: 2 },
             tiles: %i[yellow green],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -97,7 +97,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { BC: 2, SP: 2 },
+            train_limit: { HB: 2, SP: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -105,7 +105,7 @@ module Engine
           {
             name: '6',
             on: '6',
-            train_limit: { BC: 2, SP: 2 },
+            train_limit: { HB: 2, SP: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -113,7 +113,7 @@ module Engine
           {
             name: '10',
             on: '10',
-            train_limit: { BC: 2, SP: 2 },
+            train_limit: { HB: 2, SP: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -201,7 +201,7 @@ module Engine
         ICON_PREFIX = '21Moon/'
 
         ICON_REVENUES = {
-          'BC' => { yellow: 30, green: 30, brown: 30, gray: 30 },
+          'HB' => { yellow: 30, green: 30, brown: 30, gray: 30 },
           'X' => { yellow: 20, green: 40, brown: 60, gray: 80 },
           'H' => { yellow: 30, green: 40, brown: 50, gray: 60 },
           'R' => { yellow: 20, green: 20, brown: 40, gray: 50 },
@@ -225,13 +225,13 @@ module Engine
 
         def setup
           # We need a total of three graphs:
-          # One from just BC (@bc_graph)
+          # One from just HB (@hb_graph)
           # One from just SP (@sp_graph)
           # One from both (@graph)
           #
-          # We always ignore non-BC non-SP tokens however
+          # We always ignore non-HB non-SP tokens however
           #
-          @bc_graph = Graph.new(self, check_tokens: true)
+          @hb_graph = Graph.new(self, check_tokens: true)
           @sp_graph = Graph.new(self, check_tokens: true)
           select_combined_graph
 
@@ -256,9 +256,10 @@ module Engine
           # pick one corp to wait until SR3
 
           # adjust parameters for majors to allow both IPO and treasury stock
-          # place BC and SP tokens
-          # place BC icon
+          # place HB and SP tokens
+          # place HB icon
           #
+          @sp_tokens = {}
           @corporations.each do |corp|
             corp.ipo_owner = @bank
             corp.share_holders.keys.each do |sh|
@@ -268,12 +269,14 @@ module Engine
             end
             place_home_token(corp)
             place_sp_token(corp)
-            hex_by_id(corp.coordinates).tile.icons << @bc_icon
+            hex_by_id(corp.coordinates).tile.icons << @hb_icon
           end
 
           # pick one corp to wait until SR3
           #
           @reserved_corp = @corporations.min_by { rand }
+          @reserved_corp.tokens[0].status = :flipped
+          @sp_tokens[@reserved_corp].status = :flipped
           @log << "#{@reserved_corp.full_name} (#{@reserved_corp.name}) is reserved until SR3"
 
           @train_base = {}
@@ -294,10 +297,10 @@ module Engine
         end
 
         def place_sp_token(corporation)
-          sp_token = corporation.tokens.first.dup
+          @sp_tokens[corporation] = corporation.tokens.first.dup
 
           sp_tile = hex_by_id(self.class::SP_HEX).tile
-          sp_tile.cities.first.place_token(corporation, sp_token)
+          sp_tile.cities.first.place_token(corporation, @sp_tokens[corporation])
           @log << "#{corporation.name} places a token on #{self.class::SP_HEX}"
         end
 
@@ -305,9 +308,9 @@ module Engine
           @icons = Hash.new { |h, k| h[k] = {} }
           ICON_REVENUES.keys.each do |root|
             case root
-            when 'BC'
-              @bc_icon = Part::Icon.new(ICON_PREFIX + 'BC', 'BC', false, false, false)
-              %i[yellow green brown gray].each { |color| @icons[root][color] = @bc_icon }
+            when 'HB'
+              @hb_icon = Part::Icon.new(ICON_PREFIX + 'HB', 'HB', false, false, false)
+              %i[yellow green brown gray].each { |color| @icons[root][color] = @hb_icon }
             else
               %i[yellow green brown gray].each do |color|
                 full = root + '_' + color.to_s
@@ -318,7 +321,7 @@ module Engine
         end
 
         def skip_token?(graph, corporation, city)
-          if graph == @bc_graph
+          if graph == @hb_graph
             city.hex.id != corporation.coordinates
           elsif graph == @sp_graph
             city.hex.id != self.class::SP_HEX
@@ -332,8 +335,8 @@ module Engine
           @selected_graph = @graph
         end
 
-        def select_bc_graph
-          @selected_graph = @bc_graph
+        def select_hb_graph
+          @selected_graph = @hb_graph
         end
 
         def select_sp_graph
@@ -345,7 +348,7 @@ module Engine
         end
 
         def token_graph_for_entity(_entity)
-          @bc_graph
+          @hb_graph
         end
 
         def after_buy_company(player, company, _price)
@@ -378,6 +381,9 @@ module Engine
           buyer.tokens << new_token
 
           old_token.swap!(new_token)
+          @graph.clear
+          @hb_graph.clear
+          @sp_graph.clear
           @log << "#{buyer.name} takes over OLS token in #{new_token.city.hex.id}"
 
           company.close!
@@ -395,10 +401,10 @@ module Engine
           prototype = self.class::TRAINS.find { |e| e[:name] == name }
           raise GameError, "Unable to find train #{name} in TRAINS" unless prototype
 
-          @depot.insert_train(Train.new(**prototype, index: 999), @depot.upcoming.index { |t| t.name == train.name })
+          @depot.insert_train(Train.new(**prototype, index: 999), @depot.upcoming.index { |t| t.name == name })
           update_cache(:trains)
 
-          @log << "#{corp.name} adds a #{name} transport to depot"
+          @log << "#{corp.name} adds a #{name} train to depot"
         end
 
         def remove_from_depot(name, corp)
@@ -406,7 +412,7 @@ module Engine
           raise GameError, "Unable to find train #{name} in depot" unless train
 
           @depot.forget_train(train)
-          @log << "#{corp.name} removes a #{name} transport from depot"
+          @log << "#{corp.name} removes a #{name} train from depot"
         end
 
         def crossing_border(entity, _tile)
@@ -435,7 +441,7 @@ module Engine
           return true if to.name == T_TILE
 
           case from.color
-          when :red, :gray
+          when :red, :gray, :gray60, :gray50
             to.color == :yellow
           else
             super
@@ -498,7 +504,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G21Moon::Step::Bankrupt,
             Engine::Step::BuyCompany,
             Engine::Step::Assign,
             G21Moon::Step::SpecialTrack,
@@ -517,8 +523,10 @@ module Engine
             case @round
             when Round::Corporate
               @operating_rounds = @phase.operating_rounds
+              clear_programmed_actions
               new_operating_round
             when Engine::Round::Stock
+              clear_programmed_actions
               reorder_players
               new_corporate_round
             when Engine::Round::Operating
@@ -545,6 +553,8 @@ module Engine
 
         def release_corp
           @log << "#{@reserved_corp&.full_name} is now in play"
+          @reserved_corp.tokens[0].status = nil # un-flip home token
+          @sp_tokens[@reserved_corp].status = nil # un-flip sp token
           @reserved_corp = nil
         end
 
@@ -625,8 +635,8 @@ module Engine
           corporations.reject(&:minor?).sort_by(&:name)
         end
 
-        def bc_trains(corporation)
-          corporation.trains.select { |t| @train_base[t] == :bc }
+        def hb_trains(corporation)
+          corporation.trains.select { |t| @train_base[t] == :hb }
         end
 
         def sp_trains(corporation)
@@ -634,12 +644,24 @@ module Engine
         end
 
         def route_trains(entity)
-          bc_trains(entity) + sp_trains(entity)
+          hb_trains(entity) + sp_trains(entity)
+        end
+
+        def hb_city?(node, corp)
+          return false if !node&.city? || !node&.hex || !corp&.corporation?
+
+          node.hex.id == corp.coordinates
+        end
+
+        def sp_city?(node)
+          return false if !node&.city? || !node&.hex
+
+          node.hex.id == SP_HEX
         end
 
         def visited_base?(entity, base, route)
-          (base == :sp && route.visited_stops.any? { |s| s.hex.id == SP_HEX }) ||
-            (base == :bc && route.visited_stops.any? { |s| s.hex.id != SP_HEX && s.city? && s.tokened_by?(entity) })
+          (base == :sp && route.visited_stops.any? { |s| sp_city?(s) }) ||
+            (base == :hb && route.visited_stops.any? { |s| hb_city?(s, entity) })
         end
 
         def intersects?(route_a, route_b)
@@ -665,12 +687,12 @@ module Engine
           routes_revenue(routes.select { |r| @train_base[r.train] == :sp })
         end
 
-        def bc_revenue(routes)
-          routes_revenue(routes.select { |r| @train_base[r.train] == :bc })
+        def hb_revenue(routes)
+          routes_revenue(routes.select { |r| @train_base[r.train] == :hb })
         end
 
         def submit_revenue_str(routes, _render_halts)
-          "#{format_revenue_currency(sp_revenue(routes))} (+#{format_revenue_currency(bc_revenue(routes))} Withhold)"
+          "#{format_revenue_currency(sp_revenue(routes))} (+#{format_revenue_currency(hb_revenue(routes))} Withhold)"
         end
 
         def assign_base(train, base)
@@ -681,11 +703,11 @@ module Engine
           if corporation.trains.empty?
             'None'
           else
-            bc = bc_trains(corporation)
+            hb = hb_trains(corporation)
             sp = sp_trains(corporation)
             str = ''
-            str += 'BC:' + bc.map(&:name).join(' ') unless bc.empty?
-            str += ' ' if !bc.empty? && !sp.empty?
+            str += 'HB:' + hb.map(&:name).join(' ') unless hb.empty?
+            str += ' ' if !hb.empty? && !sp.empty?
             str += 'SP:' + sp.map(&:name).join(' ') unless sp.empty?
             str
           end
@@ -807,6 +829,13 @@ module Engine
             total_cost = upgrade.cost - discount
             total_cost
           end
+        end
+
+        def highlight_token?(token)
+          return false unless token
+          return false unless (corporation = token.corporation)
+
+          hb_city?(token.city, corporation)
         end
       end
     end
