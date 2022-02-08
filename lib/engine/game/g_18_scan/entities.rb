@@ -123,6 +123,7 @@ module Engine
             name: 'Södra Stambanan',
             logo: '18_scan/1',
             simple_logo: '18_scan/1.alt',
+            type: 'minor',
             tokens: [0, 40],
             coordinates: 'G4',
             destination_coordinates: 'B11',
@@ -146,6 +147,7 @@ module Engine
             name: 'Nordvärsta Stambanan',
             logo: '18_scan/2',
             simple_logo: '18_scan/2.alt',
+            type: 'minor',
             tokens: [0, 40],
             coordinates: 'F11',
             city: 1,
@@ -170,6 +172,7 @@ module Engine
             name: 'Västra Stambanan',
             logo: '18_scan/3',
             simple_logo: '18_scan/3.alt',
+            type: 'minor',
             tokens: [0, 40],
             coordinates: 'F11',
             city: 0,
@@ -195,6 +198,7 @@ module Engine
           {
             sym: 'DSB',
             name: 'Danske Statsbaner',
+            type: 'major',
             logo: '18_scan/DSB',
             simple_logo: '18_scan/DSB.alt',
             float_percent: 20,
@@ -206,6 +210,7 @@ module Engine
           {
             sym: 'S&NJ',
             name: 'Sveriges & Norges Järnvägar',
+            type: 'major',
             logo: '18_scan/SNJ',
             simple_logo: '18_scan/SNJ.alt',
             float_percent: 20,
@@ -217,6 +222,7 @@ module Engine
           {
             sym: 'NSB',
             name: 'Norges Statsbaner',
+            type: 'major',
             logo: '18_scan/NSB',
             simple_logo: '18_scan/NSB.alt',
             float_percent: 20,
@@ -228,6 +234,7 @@ module Engine
           {
             sym: 'VR',
             name: 'Valtionraurariet',
+            type: 'major',
             logo: '18_scan/VR',
             simple_logo: '18_scan/VR.alt',
             float_percent: 20,
@@ -241,17 +248,11 @@ module Engine
             name: 'Statens Järnvägar',
             logo: '18_scan/SJ',
             simple_logo: '18_scan/SJ.alt',
+            type: 'national',
             float_percent: 50,
             floatable: false,
             tokens: [0, 100, 100, 100, 100, 100],
             color: '#3561AE',
-            abilities: [
-              {
-                type: 'train_limit',
-                description: '+1 train limit',
-                increase: 1,
-              },
-            ],
           },
         ].freeze
       end

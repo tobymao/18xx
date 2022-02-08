@@ -92,7 +92,7 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: 4,
+            train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
             operating_rounds: 2,
             status: %w[float_2],
@@ -100,7 +100,7 @@ module Engine
           {
             name: '3',
             on: '3',
-            train_limit: 4,
+            train_limit: { minor: 2, major: 4 },
             tiles: %w[yellow green],
             operating_rounds: 2,
             status: %w[float_3],
@@ -108,7 +108,7 @@ module Engine
           {
             name: '4',
             on: '4',
-            train_limit: 3,
+            train_limit: { minor: 2, major: 3 },
             tiles: %w[yellow green],
             operating_rounds: 2,
             status: %w[float_4],
@@ -116,7 +116,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: 2,
+            train_limit: { national: 3, major: 2 },
             tiles: %w[yellow green brown],
             operating_rounds: 2,
             status: %w[float_5 sj_can_float],
@@ -124,7 +124,7 @@ module Engine
           {
             name: '5E',
             on: '5E',
-            train_limit: 2,
+            train_limit: { national: 3, major: 2 },
             tiles: %w[yellow green brown],
             operating_rounds: 2,
             status: %w[float_5 sj_can_float],
@@ -132,7 +132,7 @@ module Engine
           {
             name: '4D',
             on: '4D',
-            train_limit: 2,
+            train_limit: { national: 3, major: 2 },
             tiles: %w[yellow green brown],
             operating_rounds: 2,
             status: %w[float_5 sj_can_float],
@@ -406,10 +406,6 @@ module Engine
           @minors.each { |minor| merge_and_close_minor(minor) }
 
           @log << "-- Event: #{sj.name} is formed --"
-        end
-
-        def train_limit(entity)
-          super + Array(abilities(entity, :train_limit)).sum(&:increase)
         end
 
         def sj_share_by_minor(name)
