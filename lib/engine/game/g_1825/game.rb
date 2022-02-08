@@ -584,10 +584,6 @@ module Engine
           certs_by_options[players.size]
         end
 
-        def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
-        end
-
         def setup
           @log << "Bank starts with #{format_currency(bank_by_options)}"
 
