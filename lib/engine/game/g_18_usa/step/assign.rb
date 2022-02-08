@@ -10,6 +10,7 @@ module Engine
           def process_assign(action)
             company = action.entity
             target = action.target
+            owner = company.owner
 
             unless (ability = @game.abilities(company, :assign_hexes))
               raise GameError,
@@ -28,22 +29,45 @@ module Engine
               ability.use!
               @log << "#{company.name} builds bridge on #{target.name}"
             when 'P6'
-              raise GameError, "#{target.name} not an offboard location" if target.tile.color != :red
-              if !@game.loading && !connected_to_hex?(company.owner, target)
-                raise GameError, "#{company.owner} not connected to #{target.name}"
-              end
+              validate_offboard_assignment(target, owner)
 
-              hexes = @game.mexico_hexes.include?(target) ? @game.mexico_hexes : [target]
+              hexes = offboard_area_hexes(target)
               location_name = hexes.find(&:location_name)&.location_name
               hexes.each { |hex| hex.tile.nodes.first.parse_revenue(@game.p6_offboard_revenue) }
-              @log << "#{company.owner.name} (#{company.id}) assigns 30/40/50/80 value token to #{location_name}"
+              @log << "#{owner.name} (#{company.id}) assigns 30/40/50/80 value token to #{location_name}"
               @log << "#{company.name} closes"
               company.close!
+            when 'P8'
+              raise GameError, "#{owner.name} has no available tokens" if owner.tokens.reject(&:used).empty?
+
+              validate_offboard_assignment(target, owner)
+
+              offboard_area = offboard_area_hexes(target)
+              assigned_hex = offboard_area.find(&:location_name)
+              token = owner.tokens.reject(&:used).first
+              
+              assigned_hex.place_token(token)
+              @game.p8_hexes = offboard_area
+              @log << "#{owner.name} assigns token to #{location_name}"
+
+              # Can only be assigned once
+              company.remove_ability(ability)
             end
           end
 
+          def validate_offboard_assignment(hex, corporation)
+            raise GameError, "#{hex.name} not an offboard location" if hex.tile.color != :red
+            raise GameError, "#{corporation.name} not connected to #{hex.name}" if !@game.loading &&
+                                                                                   !connected_to_hex?(corporation, hex)
+          end
+
+          def offboard_area_hexes(hex)
+            @game.mexico_hexes.include?(hex) ? @game.mexico_hexes : [hex]
+          end
+
           def available_hex(entity, hex)
-            return connected_to_hex?(entity.owner, hex) && hex.tile.color == :red if entity.id == 'P6'
+            return false if entity.id == 'P8' && entity.owner.tokens.reject(&:used).empty?
+            return connected_to_hex?(entity.owner, hex) && hex.tile.color == :red if %w[P6 P8].include?(entity.id)
 
             valid = super
             return valid unless %w[P2 P22 P21].include?(entity&.id)
@@ -53,7 +77,7 @@ module Engine
           end
 
           def connected_to_hex?(entity, hex)
-            @game.graph.connected_hexes(entity)[hex]
+            @game.graph.reachable_hexes(entity)[hex]
           end
         end
       end

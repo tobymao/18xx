@@ -159,6 +159,30 @@ module Engine
               # Built into game class
             ],
           },
+          # P8
+          {
+            name: 'Express Freight Service',
+            value: 40,
+            revenue: 0,
+            desc: 'Place an extra station marker from the owning company in one red area. The company receives +10 ' \
+                  'revenue for each train which runs to that red area for the remainder of the game. The station ' \
+                  'marker in the red area is not a normal station. It is only an indicator of which area the ' \
+                  'company receives the +10 revenue bonus. During a merger or acquisition, the station marker in ' \
+                  'the red area must be replaced by a station from the acquiring company if one is available. If ' \
+                  'during a merger or acquisition, the new company has more than 8 station markers (counting the ' \
+                  'station marker in the red area), the new company may choose to either keep or remove the station ' \
+                  'marker from the red area. If the station marker is removed during a M&A action the Express ' \
+                  'Freight Service private company is discarded.',
+            sym: 'P8',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'track',
+                owner_type: 'corporation',
+                hexes: [], # Connected offboards
+              },
+            ],
+          },
           # P9
           {
             name: 'Boomtown',
@@ -188,9 +212,7 @@ module Engine
             revenue: 0,
             desc: 'If this company starts in an unselected and unimproved metropolis, that city becomes a metropolis. '\
                   'All potential metropolises for this private are: '\
-                  'Atlanta, Chicago, Denver, Dallas-Fort Worth, Los Angeles, and New Orleans. ' \
-                  'Implementation limitation: Cannot be combined with Boomtown subsidy',
-            # TODO: fix limitation
+                  'Atlanta, Chicago, Denver, Dallas-Fort Worth, Los Angeles, and New Orleans.',
             sym: 'P10',
             abilities: [
               # Owning the private is the ability

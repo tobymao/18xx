@@ -364,8 +364,7 @@ module Engine
           cost = action.cost
 
           player.spend(cost, @bank) if cost.positive?
-          token.place(nil, hex: hex)
-          hex.tile.icons << Part::Icon.new("1868_wy/coal-#{@phase.name}")
+          hex.place_token(token, logo: "1868_wy/coal-#{@phase.name}")
 
           cost_str = cost.positive? ? " for #{format_currency(cost)}" : ''
           @log << "#{player.name} places a Development Token on #{hex.name}#{cost_str}"
