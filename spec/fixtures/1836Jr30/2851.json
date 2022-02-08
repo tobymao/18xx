@@ -22,7 +22,10 @@
   "max_players": 3,
   "title": "1836Jr30",
   "settings": {
-    "seed": 1.4607318533142025e+38
+    "seed": 1.4607318533142025e+38,
+    "optional_rules": [
+      "multiple_brown_from_ipo"
+    ]
   },
   "status": "finished",
   "turn": 7,
