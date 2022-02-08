@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'player_info'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
 require_relative '../cities_plus_towns_route_distance_str'
