@@ -11,6 +11,10 @@ module Engine
             'Place Old Landing Site Token'
           end
 
+          def active_entities
+            [pending_entity]
+          end
+
           def visible?
             true
           end
@@ -29,14 +33,6 @@ module Engine
 
           def token_cost_override(_entity, _cith_hex, _slot, _token)
             0
-          end
-
-          def context_entities
-            [pending_entity]
-          end
-
-          def active_context_entity
-            pending_entity
           end
         end
       end
