@@ -638,7 +638,7 @@ module Engine
         }.freeze
 
         attr_reader :game_end_triggered_corporation, :game_end_triggered_round,
-                    :major_national_formed, :major_national_formed_round
+                    :major_national_formed, :major_national_formed_round, :player_sold_shares
 
         def action_processed(_action); end
 
@@ -962,6 +962,7 @@ module Engine
         end
 
         def operating_round(round_num)
+          initialize_sold_shares
           @current_turn = "OR#{round_num}"
           @turn = round_num
           G1866::Round::Operating.new(self, [
@@ -1061,7 +1062,7 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          return [] if !entity.corporation? || !corporation?(entity)
+          return [] if !entity.corporation? || !corporation?(entity) || @player_sold_shares[entity.owner][entity]
 
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
@@ -1211,6 +1212,9 @@ module Engine
           # Give all players stock turn token and remove unused
           setup_stock_turn_token
 
+          # Initialize the sold shares variables
+          initialize_sold_shares
+
           @final_round = nil
           @game_end_three_rounds = nil
           @game_end_triggered_corporation = nil
@@ -1236,7 +1240,17 @@ module Engine
         def status_array(corporation)
           return if !corporation?(corporation) || !corporation.floated?
 
-          [["#{corporation.type == :share_5 ? '5' : '10'}-share corporation", 'bold']]
+          status = []
+          status << ["#{corporation.type == :share_5 ? '5' : '10'}-share corporation", 'bold']
+          status << ['Can not redeem', 'bold'] if @player_sold_shares[corporation.owner][corporation]
+          if game_end_triggered?
+            status << if game_end_corporation_operated?(corporation)
+                        ['No share actions', 'bold']
+                      else
+                        ['Last share actions', 'bold']
+                      end
+          end
+          status
         end
 
         def status_str(corporation)
@@ -1645,6 +1659,10 @@ module Engine
 
         def infrastructure_train?(train)
           self.class::INFRASTRUCTURE_TRAINS.include?(train.name)
+        end
+
+        def initialize_sold_shares
+          @player_sold_shares = Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = false } }
         end
 
         def interest_owed(entity)

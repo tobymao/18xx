@@ -10,11 +10,11 @@ module Engine
           def actions(entity)
             return ['choose_ability'] unless choices_ability(entity).empty?
             return [] if entity != current_entity || !current_entity.player?
-            return ['sell_shares'] if must_sell?(current_entity)
+            return %w[buy_shares sell_shares] if must_sell?(current_entity)
 
             player_debt = @game.player_debt(entity)
             actions = []
-            # Have to have buy shares, otherwise we dont show the stock page during the operating round
+            # Must have the buy_shares action, otherwise we dont show the stock page during a operating round
             actions << 'buy_shares'
             actions << 'par' if can_ipo_any?(entity) && player_debt.zero? && !@game.game_end_triggered?
             actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
@@ -54,6 +54,16 @@ module Engine
             unless player_debt.zero?
               raise GameError, "#{entity.name} can't buy any shares as long there is a loan "\
                                "(#{@game.format_currency(player_debt)})"
+            end
+            if must_sell?(entity)
+              if @game.num_certs(entity) > @game.cert_limit
+                raise GameError, "#{entity.name} is above cert limit, must sell shares before any other "\
+                                 'actions can be made'
+              else
+                sell_corporation = @game.corporations.find { |c| !c.holding_ok?(entity) }
+                raise GameError, "#{entity.name} must sell shares in #{sell_corporation.name}, before any other "\
+                                 'actions can be made'
+              end
             end
 
             corporation = action.bundle.corporation
@@ -99,6 +109,7 @@ module Engine
             previous_president = corporation.owner
             super
 
+            @game.player_sold_shares[action.entity][corporation] = true
             @round.recalculate_order
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
           end
