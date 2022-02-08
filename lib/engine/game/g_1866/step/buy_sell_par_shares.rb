@@ -33,19 +33,15 @@ module Engine
 
           def choices_ability(entity)
             return {} if !entity.company? || (entity.company? && !@game.stock_turn_token_company?(entity))
-
-            operator = entity.company? ? entity.owner : entity
-            if entity.company? && @game.stock_turn_token_company?(entity) &&
-              @game.num_certs(operator) >= @game.cert_limit
-              return {}
-            end
             return {} if @game.stock_turn_token_removed?(active_entities[0])
 
             choices = {}
+            operator = entity.company? ? entity.owner : entity
             valid_token = @game.stock_turn_token?(operator)
             token_permium = @game.stock_turn_token_premium?(operator)
-            if @game.player_debt(operator).zero? && !@game.game_end_triggered? && ((valid_token && @round.operating?) ||
-              (valid_token && !@round.operating? && !token_permium))
+            if @game.player_debt(operator).zero? && !@game.game_end_triggered? &&
+              ((valid_token && @round.operating?) || (valid_token && !@round.operating? && !token_permium)) &&
+              @game.num_certs(operator) < @game.cert_limit
               get_par_prices(operator).sort_by(&:price).each do |p|
                 par_str = @game.par_price_str(p)
                 choices[par_str] = par_str
