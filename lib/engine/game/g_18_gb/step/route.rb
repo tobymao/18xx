@@ -30,14 +30,6 @@ module Engine
             min_price = @game.depot.min_depot_price
             min_price.positive? && entity.cash >= min_price
           end
-
-          # def help
-          #   text = super
-
-          #   if @game.insolvent?(current_entity)
-          #     text += " #{current_entity.name} is Insolvent. It is running a train leased from the bank."
-          #   end
-          # end
         end
       end
     end
