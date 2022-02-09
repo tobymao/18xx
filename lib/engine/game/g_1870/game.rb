@@ -801,7 +801,11 @@ module Engine
           return false if to.name == '171K' && from.hex.name != 'B11'
           return false if to.name == '172L' && from.hex.name != 'C18'
           return false if to.name == '63' && (from.hex.name == 'B11' || from.hex.name == 'C18')
-          return %w[B11 C18 N17 J3 J5].include?(from.hex.name) if from.color == :green && to.name == '170'
+
+          if %w[B11 C18 N17 J3 J5].include?(from.hex.name)
+            return true if from.color == :green && to.name == '170'
+            return false if to.color == :yellow && to.cities.empty?
+          end
 
           super
         end
