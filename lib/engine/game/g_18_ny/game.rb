@@ -553,7 +553,7 @@ module Engine
         def close_corporation(corporation, quiet: false)
           super
           @loans += corporation.loans
-          corporation.loans = []
+          corporation.loans.clear
           return unless corporation.tokens.include?(@stagecoach_token)
 
           @log << 'Stagecoach token removed from play'
