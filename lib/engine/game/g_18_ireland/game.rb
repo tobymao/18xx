@@ -428,11 +428,14 @@ module Engine
         end
 
         def tile_uses_broad_rules?(old_tile, tile)
-          # Is this tile a 'broad' gauge lay or a 'narrow' gauge lay.
-          # Broad gauge lay is if any of the new exits broad gauge?
+          # Is this tile a 'broad' gauge lay (as opposed to a 'narrow' gauge lay)?
+          # A lay is broad gauge if all its exits are broad gauge (needed for #IR9),
+          # or if any new exits are broad gauge.
           old_paths = old_tile.paths
           new_tile_paths = tile.paths
-          new_tile_paths.all? { |path| path.track == :broad || old_paths.any? { |p| path <= p } }
+          return true if new_tile_paths.all? { |path| path.track == :broad }
+
+          new_tile_paths.any? { |path| path.track == :broad && old_paths.none? { |p| path <= p } }
         end
 
         def legal_tile_rotation?(entity, hex, tile)
