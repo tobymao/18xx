@@ -18,9 +18,7 @@ module Engine
             return [token, nil] unless special_ability
 
             corporation = token.corporation
-            if @game.token_graph_for_entity(corporation).reachable_hexes(corporation)[hex]
-              token.price = special_ability.price(token)
-            elsif special_ability.teleport_price
+            unless @game.token_graph_for_entity(corporation).reachable_hexes(corporation)[hex]
               token.price = special_ability.teleport_price
             end
 
