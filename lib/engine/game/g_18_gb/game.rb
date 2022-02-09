@@ -243,6 +243,7 @@ module Engine
               },
             ],
             price: 650,
+            available_on: '4X',
           },
           {
             name: '6X',
@@ -254,6 +255,7 @@ module Engine
               },
             ],
             price: 700,
+            available_on: '5X',
           },
         ].freeze
 
