@@ -49,6 +49,8 @@ module Engine
 
         TRACK_RESTRICTION = :restrictive
 
+        EBUY_OTHER_VALUE = false
+
         HOME_TOKEN_TIMING = :float
 
         DISCARDED_TRAINS = :remove
@@ -230,6 +232,11 @@ module Engine
                 'pay' => 4,
                 'visit' => 4,
               },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
             ],
             price: 550,
           },
@@ -240,6 +247,11 @@ module Engine
                 'nodes' => %w[city offboard],
                 'pay' => 5,
                 'visit' => 5,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
               },
             ],
             price: 650,
@@ -252,6 +264,11 @@ module Engine
                 'nodes' => %w[city offboard],
                 'pay' => 6,
                 'visit' => 6,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
               },
             ],
             price: 700,
@@ -375,7 +392,7 @@ module Engine
           @log << "Corporations available SR1: #{tier1.map(&:first).sort.join(', ')}"
           @log << "Corporations available SR2: #{tier2.map(&:first).sort.join(', ')}"
           @tiers = tiers
-
+          @insolvent_corps = []
           @train_bought = false
         end
 
@@ -435,6 +452,33 @@ module Engine
             # player doesn't own the LB so can start any except the LNWR
             corporation.id != 'LNWR'
           end
+        end
+
+        def insolvent?(corp)
+          @insolvent_corps.include?(corp)
+        end
+
+        def make_insolvent(corp)
+          return if insolvent?(corp)
+
+          @insolvent_corps << corp
+          @log << "#{corp.name} is now Insolvent"
+        end
+
+        def clear_insolvent(corp)
+          return unless insolvent?(corp)
+
+          @insolvent_corps.delete(corp)
+          @log << "#{corp.name} is no longer Insolvent"
+        end
+
+        def status_array(corp)
+          status = []
+          status << %w[10-share bold] if corp.type == '10-share'
+          status << %w[5-share bold] if corp.type == '5-share'
+          status << %w[Insolvent bold] if insolvent?(corp)
+          status << %w[Receivership bold] if corp.receivership?
+          status
         end
 
         def float_corporation(corporation)
@@ -587,9 +631,27 @@ module Engine
           tile.rotation.zero?
         end
 
+        def route_trains(entity)
+          return super unless insolvent?(entity)
+
+          [@depot.min_depot_train]
+        end
+
+        def express_train?(train)
+          train.name.end_with?('X')
+        end
+
+        def train_owner(train)
+          train.owner == @depot ? lessee : train.owner
+        end
+
+        def lessee
+          current_entity
+        end
+
         def revenue_bonuses(route, stops)
           stop_hexes = stops.map { |stop| stop.hex.name }
-          @companies.select { |co| co.owner == route.corporation.owner }.flat_map do |co|
+          @companies.select { |co| co.owner == route&.corporation&.owner }.flat_map do |co|
             if co.value.positive?
               []
             else
@@ -601,17 +663,26 @@ module Engine
         end
 
         def revenue_info(route, stops)
-          revenue_bonuses(route, stops) + estuary_bonuses(route) + compass_bonuses(route)
+          standard = revenue_bonuses(route, stops) + estuary_bonuses(route) + compass_bonuses(route)
+          return standard unless express_train?(route.train)
+
+          standard + distance_bonus(route, stops)
         end
 
         def revenue_for(route, stops)
           # count only unique hexes in determining revenue
-          stop_revenues = route.visited_stops.uniq { |s| s.hex.name }.map { |s| s.route_revenue(route.phase, route.train) }
+          stop_revenues = stops.uniq { |s| s.hex.name }.map { |s| s.route_revenue(route.phase, route.train) }
           stop_revenues.sum + revenue_info(route, stops).sum { |bonus| bonus[:revenue] }
         end
 
         def revenue_str(route)
-          super + revenue_info(route, route.stops).map { |bonus| "+(#{bonus[:description]})" }.join
+          route.stops.map { |s| s.hex.name }.join('-') + revenue_info(route, route.stops).map do |bonus|
+            if bonus[:description] == 'X'
+              "+#{format_currency(bonus[:revenue])}"
+            else
+              "+(#{bonus[:description]})"
+            end
+          end.join
         end
 
         def compass_points_on_route(route)
@@ -655,6 +726,22 @@ module Engine
           end.compact
         end
 
+        def distance_bonus(route, _stops)
+          return [] if route.chains.empty?
+
+          visited = route.visited_stops.reject { |stop| stop.hex.tile.cities.empty? && stop.hex.tile.offboards.empty? }
+          start = visited.first.hex
+          finish = visited.last.hex
+
+          [{ revenue: hex_crow_distance(start, finish) * 10, description: 'X' }]
+        end
+
+        def hex_crow_distance(start, finish)
+          dx = (start.x - finish.x).abs
+          dy = (start.y - finish.y).abs
+          dx + [0, (dy - dx) / 2].max
+        end
+
         def buy_train(operator, train, price = nil)
           @train_bought = true
           super
@@ -666,16 +753,16 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G18GB::Round::Operating.new(self, [
             G18GB::Step::SpecialChoose,
             Engine::Step::SpecialTrack,
             G18GB::Step::SpecialToken,
             Engine::Step::HomeToken,
             G18GB::Step::TrackAndToken,
-            Engine::Step::Route,
+            G18GB::Step::Route,
             G18GB::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18GB::Step::BuyTrain,
           ], round_num: round_num)
         end
 
