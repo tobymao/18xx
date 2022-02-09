@@ -791,7 +791,7 @@ module Engine
 
           (tile.exits & hex.tile.borders.select { |b| b.type == :water }.map(&:edge)).empty? &&
             hex.tile.partitions.all? do |partition|
-              if partition.restrict.nil? || (partition.restrict != '')
+              if partition.restrict != ''
                 # city and town river tiles restrict all paths to one partition
                 tile.paths.all? { |path| (path.exits - partition.inner).empty? || (path.exits - partition.outer).empty? }
               else
