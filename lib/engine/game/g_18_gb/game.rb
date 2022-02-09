@@ -585,30 +585,31 @@ module Engine
           tile.rotation.zero?
         end
 
-        def revenue_bonuses(corporation)
-          bonuses = {}
-          @companies.select { |co| co.owner == corporation.owner }.each do |company|
-            company.all_abilities.each do |ability|
-              next unless ability.type == :hex_bonus
-
-              ability.hexes.each { |hex| bonuses[hex] = ability.amount }
+        def revenue_bonuses(route, stops)
+          stop_hexes = stops.map { |stop| stop.hex.name }
+          @companies.select { |co| co.owner == route.corporation.owner }.flat_map do |co|
+            if co.value.positive?
+              []
+            else
+              co.abilities.select { |ab| ab.type == :hex_bonus }.flat_map do |ab|
+                ab.hexes.select { |h| stop_hexes.include?(h) }.map { |_| { revenue: ab.amount, description: co.sym } }
+              end
             end
           end
-          bonuses
         end
 
-        def revenue_for(route, _stops)
-          # first work out which unique hexes we visited
-          revenues = {}
-          route.visited_stops.each { |stop| revenues[stop.hex.name] = stop.route_revenue(route.phase, route.train) }
+        def revenue_info(route, stops)
+          revenue_bonuses(route, stops) + estuary_bonuses(route) + compass_bonuses(route)
+        end
 
-          # now check for bonuses from owner's companies
-          hex_bonuses = revenue_bonuses(route.corporation)
+        def revenue_for(route, stops)
+          # count only unique hexes in determining revenue
+          stop_revenues = route.visited_stops.uniq { |s| s.hex.name }.map { |s| s.route_revenue(route.phase, route.train) }
+          stop_revenues.sum + revenue_info(route, stops).sum { |bonus| bonus[:revenue] }
+        end
 
-          # total up revenue per hex and add on any estuary and NS and EW bonuses
-          revenues.sum { |hex, revenue| hex_bonuses[hex] ? (revenue + hex_bonuses[hex]) : revenue } +
-            estuary_bonuses(route) +
-            compass_bonuses(route)
+        def revenue_str(route)
+          super + revenue_info(route, route.stops).map { |bonus| "+(#{bonus[:description]})" }.join
         end
 
         def compass_points_on_route(route)
@@ -635,22 +636,21 @@ module Engine
         end
 
         def compass_bonuses(route)
+          bonuses = []
           points = compass_points_on_route(route)
-          ns = points.include?('N') && points.include?('S') ? ns_bonus : 0
-          ew = points.include?('E') && points.include?('W') ? ew_bonus : 0
-          ns + ew
+          bonuses << { revenue: ns_bonus, description: 'NS' } if points.include?('N') && points.include?('S')
+          bonuses << { revenue: ew_bonus, description: 'EW' } if points.include?('E') && points.include?('W')
+          bonuses
         end
 
         def estuary_bonuses(route)
-          route.ordered_paths.sum do |path|
+          route.ordered_paths.map do |path|
             if path.hex.coordinates == 'I4' && path.track == :dual
-              40
+              { revenue: 40, description: 'FT' }
             elsif path.hex.coordinates == 'C22' && path.track == :dual
-              30
-            else
-              0
+              { revenue: 30, description: 'S' }
             end
-          end
+          end.compact
         end
 
         def buy_train(operator, train, price = nil)
