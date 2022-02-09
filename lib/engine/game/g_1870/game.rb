@@ -517,11 +517,11 @@ module Engine
                    'city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port,sticky:1;'\
                    'partition=a:1-,b:3+,type:water,restrict:outer',
             ['D17'] =>
-                   'town=revenue:0;upgrade=cost:40,terrain:river;partition=a:4-,b:5+,type:water',
+                   'town=revenue:0;upgrade=cost:40,terrain:river;partition=a:4-,b:5+,type:water,restrict:outer',
             ['K14'] =>
                    'town=revenue:0;upgrade=cost:80,terrain:river;partition=a:0+,b:4-,type:water,restrict:outer',
             ['A16'] =>
-                   'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:river;partition=a:0-,b:3,type:water',
+                   'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:river;partition=a:0-,b:3,type:water,restrict:inner',
             ['O2'] => 'upgrade=cost:60,terrain:lake',
             %w[O4 O6 N9 N11 N13] => 'upgrade=cost:80,terrain:lake',
             ['N19'] =>
@@ -791,8 +791,12 @@ module Engine
 
           (tile.exits & hex.tile.borders.select { |b| b.type == :water }.map(&:edge)).empty? &&
             hex.tile.partitions.all? do |partition|
-              tile.paths.all? do |path|
-                (path.exits - partition.inner).empty? || (path.exits - partition.outer).empty?
+              if partition.restrict != ''
+                # city and town river tiles restrict all paths to one partition
+                tile.paths.all? { |path| (path.exits - partition.inner).empty? || (path.exits - partition.outer).empty? }
+              else
+                # non-city tile; no paths cross the partition, but there can be paths on both sides
+                tile.paths.empty? { |path| (path.exits - partition.inner).empty? != (path.exits - partition.outer).empty? }
               end
             end
         end
