@@ -28,6 +28,14 @@ module Engine
             @game.companies.select { |c| entity.owner == c.owner }.any? { |c| @game.abilities(c, :tile_lay) }
           end
 
+          def potential_tile_colors(entity, hex)
+            colors = super
+            return colors if colors.include?(:green)
+
+            colors << :green if @game.special_green_hexes(entity).include?(hex.coordinates)
+            colors
+          end
+
           def lay_tile_action(action)
             tile = action.tile
             tile_lay = get_tile_lay(action.entity)

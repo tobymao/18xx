@@ -307,7 +307,7 @@ module Engine
         def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
           ability = super
 
-          return ability unless entity.company?
+          return ability unless entity&.company?
           return unless ability
 
           valid = entity.value.positive? ? VALID_ABILITIES_OPEN : VALID_ABILITIES_CLOSED
@@ -512,7 +512,7 @@ module Engine
 
           # create new tokens and remove reminder from charter
           corporation.abilities.dup.each do |ability|
-            if ability.description.start_with?('Conversion tokens:')
+            if ability&.description&.start_with?('Conversion tokens:')
               ability.count.times { corporation.tokens << Engine::Token.new(corporation, price: 50) }
               corporation.remove_ability(ability)
             end
@@ -538,6 +538,41 @@ module Engine
             Engine::Step::HomeToken,
             G18GB::Step::BuySellParShares,
           ])
+        end
+
+        def special_green_hexes(corporation)
+          return {} unless corporation&.corporation?
+
+          corporation.abilities.flat_map { |a| a.type == :tile_lay ? a.hexes.map { |h| [h, a.tiles] } : [] }.to_h
+        end
+
+        def add_new_special_green_hex(corporation, hex_coords)
+          ability = {
+            type: 'tile_lay',
+            hexes: [hex_coords],
+            tiles: %w[G36 G37 G38],
+            cost: 0,
+            reachable: true,
+            consume_tile_lay: true,
+            description: "May place a green tile in #{hex_coords}",
+            desc_detail: "May place a green tile in #{hex_coords}, instead of the usual yellow tile, even before green tiles " \
+                         'are normally available',
+          }
+          corporation.add_ability(Engine::Ability::TileLay.new(**ability))
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          corporation = @round.current_entity
+          sgh = special_green_hexes(corporation)
+
+          if to.color == :green &&
+             sgh.include?(from.hex.coordinates) &&
+             sgh[from.hex.coordinates].include?(to.name) &&
+             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
+            return true
+          end
+
+          super
         end
 
         def upgrades_to_correct_color?(from, to)

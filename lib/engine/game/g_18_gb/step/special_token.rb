@@ -43,6 +43,7 @@ module Engine
               spender: current_entity,
             )
 
+            @game.add_new_special_green_hex(current_entity, hex.coordinates)
             teleport_complete if @round.teleported
           end
         end
