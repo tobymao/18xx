@@ -677,6 +677,11 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
+              # The normal export logic which plays nicely with privates exists in first_turn_housekeeping but it does not
+              #  work in the edgecase where there are 0 entities acting in an operating round - this exists to cover this
+              #  edge case. Since there are no corporatiosn, there is nobody who could use a private to save a train from
+              #  rusting prematurely so this is fine.
+              export_train if @round.entities.empty?
               # Store the share price of each corp to determine if they can be acted upon in the AR
               @stock_prices_start_merger = @corporations.to_h { |corp| [corp, corp.share_price] }
               @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
