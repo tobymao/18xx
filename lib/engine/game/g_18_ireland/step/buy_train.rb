@@ -41,7 +41,7 @@ module Engine
           def buyable_trains(entity)
             # Can't EMR if anything is affordable
             buyable = super
-            affordable = buyable.select { |t| t.price <= buying_power(entity) }
+            affordable = buyable.select { |t| !t.from_depot? || t.price <= buying_power(entity) }
             if affordable.any?
               affordable
             else
