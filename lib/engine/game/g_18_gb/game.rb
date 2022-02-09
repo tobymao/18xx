@@ -375,7 +375,7 @@ module Engine
           @log << "Corporations available SR1: #{tier1.map(&:first).sort.join(', ')}"
           @log << "Corporations available SR2: #{tier2.map(&:first).sort.join(', ')}"
           @tiers = tiers
-          @lnwr_ipoed = false
+
           @train_bought = false
         end
 
@@ -415,14 +415,18 @@ module Engine
           stock_market.par_prices
         end
 
+        def lnwr_ipoed?
+          @corporations.find { |corp| corp.id == 'LNWR' }&.ipoed
+        end
+
         def married_to_lnwr(player)
-          return false if @lnwr_ipoed
+          return false if lnwr_ipoed?
 
           @companies.any? { |co| co.owner == player && co.sym == 'LB' }
         end
 
         def can_par?(corporation, player)
-          return true if @lnwr_ipoed
+          return true if lnwr_ipoed?
 
           if married_to_lnwr(player)
             # player owns the LB so can only start the LNWR
@@ -431,10 +435,6 @@ module Engine
             # player doesn't own the LB so can start any except the LNWR
             corporation.id != 'LNWR'
           end
-        end
-
-        def after_par(corporation)
-          @lnwr_ipoed = true if corporation.id == 'LNWR'
         end
 
         def float_corporation(corporation)
