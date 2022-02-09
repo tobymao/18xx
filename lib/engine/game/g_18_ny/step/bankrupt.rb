@@ -38,7 +38,6 @@ module Engine
 
               @log << "-- #{corporation.name} enters receivership (it has no president) --"
               corporation.owner = @game.share_pool
-              @game.round.force_next_entity!
             end
 
             if player.companies.any?
@@ -62,6 +61,8 @@ module Engine
 
             @game.declare_bankrupt(player)
             player.cash = 0
+
+            @game.round.force_next_entity! if entity.corporation? && @round.skip_entity?(entity)
           end
         end
       end

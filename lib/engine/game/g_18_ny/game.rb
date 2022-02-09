@@ -552,6 +552,8 @@ module Engine
 
         def close_corporation(corporation, quiet: false)
           super
+          @loans += corporation.loans
+          corporation.loans.clear
           return unless corporation.tokens.include?(@stagecoach_token)
 
           @log << 'Stagecoach token removed from play'
@@ -988,7 +990,7 @@ module Engine
         end
 
         def interest_owed(entity)
-          interest_paid[entity] || interest_owed_for_loans(entity.loans.size)
+          interest_owed_for_loans(entity.loans.size)
         end
 
         def maximum_loans(entity)
