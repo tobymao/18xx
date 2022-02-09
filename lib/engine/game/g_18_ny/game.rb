@@ -125,14 +125,14 @@ module Engine
           {
             name: '5DE',
             on: '5DE',
-            train_limit: { major: 2 },
+            train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
           {
             name: 'D',
             on: 'D',
-            train_limit: { major: 2 },
+            train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },
