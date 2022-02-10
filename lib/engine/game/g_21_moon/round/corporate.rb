@@ -16,7 +16,7 @@ module Engine
           end
 
           def select_entities
-            @game.corporations.reject(&:closed?).select(&:ipoed).sort.reverse
+            @game.corporations.reject(&:closed?).select(&:ipoed).sort
           end
 
           def setup
@@ -27,7 +27,6 @@ module Engine
             return if @entity_index == @entities.size - 1
 
             next_entity_index!
-            reorder_entities!
 
             @steps.each(&:unpass!)
             @steps.each(&:setup)

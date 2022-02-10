@@ -18,8 +18,7 @@ module Engine
             desc: 'When buying the private, a player must immediately place the black “SD” token on any '\
                   'mineral resource hex on the board in which the black “SD” token blocks an SD spot. '\
                   'A player owning OLS can sell it to corporation for 1 credit. When sold to a corporation, '\
-                  'the black SD token will be replaced by a token from the owning corporation. '\
-                  'The buyer of the OLS automatically gets last place in SR 1 turn order.',
+                  'the black SD token will be replaced by a token from the owning corporation.',
             abilities: [],
             color: nil,
           },
@@ -73,7 +72,7 @@ module Engine
             name: 'Terminal',
             sym: 'T',
             value: 80,
-            revenue: 10,
+            revenue: 20,
             min_price: 1,
             max_price: 120,
             desc: 'The owning corporation may teleport place the T tile, then may place its cheapest supply '\
@@ -145,7 +144,7 @@ module Engine
             logo: '21Moon/ME',
             coordinates: 'C7',
             color: 'gray',
-            text_color: 'black',
+            text_color: 'white',
             tokens: [0, 25, 50, 75],
             float_percent: 50,
             max_ownership_percent: 50,
@@ -191,9 +190,9 @@ module Engine
             treasury_as_holding: true,
           },
           {
-            sym: 'IC',
-            name: 'Intergalactic Corporation',
-            logo: '21Moon/IC',
+            sym: 'IPI',
+            name: 'Interplanetary Industries',
+            logo: '21Moon/IPI',
             coordinates: 'I11',
             color: 'purple',
             tokens: [0, 25, 50, 75],

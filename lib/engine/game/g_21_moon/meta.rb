@@ -18,7 +18,7 @@ module Engine
         GAME_RULES_URL = 'https://lookout-spiele.de/upload/en_1830re.html_Rules_1830-RE_EN.pdf'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/21Moon'
 
-        PLAYER_RANGE = [3, 5].freeze
+        PLAYER_RANGE = [2, 5].freeze
         OPTIONAL_RULES = [].freeze
       end
     end

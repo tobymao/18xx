@@ -129,6 +129,10 @@ module Engine
           def corporate_buy_text(_share)
             'Trade for'
           end
+
+          def must_sell?(entity)
+            @game.num_certs(entity) > @game.cert_limit
+          end
         end
       end
     end
