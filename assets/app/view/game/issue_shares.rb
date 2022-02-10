@@ -42,7 +42,7 @@ module View
                 share_price: bundle.share_price,
               ))
             end
-    
+
             # confirm if redeeming from a different player
             if (bundle.owner != @game.bank) && (bundle.owner != @game.current_entity)
               check_consent(bundle.owner, process_redeem)
