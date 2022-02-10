@@ -735,7 +735,7 @@ module Engine
                 G18USA::Step::ReduceTokens,
                 Engine::Step::DiscardTrain,
                 G1817::Step::PostConversion,
-                G1817::Step::PostConversionLoans,
+                G18USA::Step::PostConversionLoans,
                 G18USA::Step::Conversion,
               ], round_num: @round.round_num)
             when G1817::Round::Merger
