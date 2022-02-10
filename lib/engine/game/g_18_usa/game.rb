@@ -680,16 +680,29 @@ module Engine
           'Scrap'
         end
 
+        def use_1840_style_merger_round_scrap_trains?
+          false
+        end
+
+        # owner is the alleged corporation scrapping a pullman
+        def scrap_train_by_corporation(action, _owner)
+          entity = action.entity
+          raise GameError, "#{entity.name} cannot scrap a train now" unless entity == current_entity
+
+          train = action.train
+          raise GameError, "#{entity.name} cannot scrap a #{train.name} train" unless pullman_train?(train)
+
+          scrap_train(train)
+        end
+
         # owner is the alleged owner of the company scrapping a pullman
         def scrap_train_by_owner(action, _owner)
           entity = action.entity
           raise GameError, "#{entity.name} cannot scrap a train now" unless entity&.owner == current_entity
 
           train = action.train
-          raise GameError, "#{entity.name} cannot scrap a #{train.name} train" unless train.name == 'P'
+          raise GameError, "#{entity.name} cannot scrap a #{train.name} train" unless pullman_train?(train)
 
-          @bank.spend(pullman_scrap_value, entity)
-          @log << "#{entity.name} scraps a pullman for #{format_currency(pullman_scrap_value)}"
           scrap_train(train)
         end
 
@@ -723,7 +736,7 @@ module Engine
                 Engine::Step::DiscardTrain,
                 G1817::Step::PostConversion,
                 G1817::Step::PostConversionLoans,
-                G1817::Step::Conversion,
+                G18USA::Step::Conversion,
               ], round_num: @round.round_num)
             when G1817::Round::Merger
               @log << "-- #{round_description('Acquisition', @round.round_num)} --"

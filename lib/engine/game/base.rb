@@ -2775,6 +2775,12 @@ module Engine
       def show_map_legend?
         false
       end
+
+      # This is a bit of a hack to get around how 1840 and 18USA have different and incompatible opinions on what the
+      #  option to use the scrap_trains action in a merger round means
+      def use_1840_style_merger_round_scrap_trains?
+        true
+      end
     end
   end
 end

@@ -49,6 +49,7 @@ module View
           buttons = []
           buttons << render_convert(entity) if actions.include?('convert')
           buttons << h(Loans, corporation: entity) if (%w[take_loan payoff_loan] & actions).any?
+          buttons << h(ScrapTrains, corporation: entity) if actions.include?('scrap_train')
 
           corps_actionable = (%w[assign merge] & actions).any?
           buttons << render_offer(entity, auctioning_corporation) if actions.include?('assign')
