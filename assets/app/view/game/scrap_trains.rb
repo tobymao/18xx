@@ -6,9 +6,11 @@ module View
   module Game
     class ScrapTrains < Snabberb::Component
       include Actionable
+      needs :corporation, default: nil
 
       def render
-        @corporation = @game.round.active_step.current_entity
+        # If @corporation is set then this ScrapTrains is attached to a Corporation card (such as in a stock round action, 18USA)
+        @corporation ||= @game.round.active_step.current_entity
         step = @game.round.active_step
 
         scrappable_trains = step.scrappable_trains(@corporation)

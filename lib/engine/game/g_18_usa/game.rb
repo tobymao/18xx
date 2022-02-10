@@ -668,6 +668,38 @@ module Engine
           ], round_num: round_num)
         end
 
+        def pullman_scrap_value
+          50
+        end
+
+        def scrap_info
+          "Scrap for #{format_currency(pullman_scrap_value)}"
+        end
+
+        def scrap_button_text
+          'Scrap'
+        end
+
+        # owner is the alleged owner of the company scrapping a pullman
+        def scrap_train_by_owner(action, _owner)
+          entity = action.entity
+          raise GameError, "#{entity.name} cannot scrap a train now" unless entity&.owner == current_entity
+
+          train = action.train
+          raise GameError, "#{entity.name} cannot scrap a #{train.name} train" unless train.name == 'P'
+
+          @bank.spend(pullman_scrap_value, entity)
+          @log << "#{entity.name} scraps a pullman for #{format_currency(pullman_scrap_value)}"
+          scrap_train(train)
+        end
+
+        # Do error checking before calling this.
+        def scrap_train(train)
+          @bank.spend(pullman_scrap_value, train.owner)
+          @log << "#{train.owner.name} scraps a pullman for #{format_currency(pullman_scrap_value)}"
+          @depot.reclaim_train(train)
+        end
+
         def next_round!
           clear_interest_paid
           @round =
