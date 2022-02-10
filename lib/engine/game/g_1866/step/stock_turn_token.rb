@@ -131,7 +131,7 @@ module Engine
               @game.sell_stock_turn_token(entity)
               player = entity.owner
               st_company = player.companies.find { |c| @game.stock_turn_token_company?(c) }
-              st_company.name = @game.stock_turn_token_name(player)
+              @game.stock_turn_token_name!(st_company)
               return
             end
 

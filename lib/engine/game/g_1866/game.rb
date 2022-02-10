@@ -943,6 +943,7 @@ module Engine
               reorder_players_isr!
               stock_round_isr
             end
+          update_stock_turn_token_names
         end
 
         def new_auction_round
@@ -1879,9 +1880,9 @@ module Engine
           return unless premium_token
 
           @stock_turn_token_premium_count[player] -= 1
-          player_cash = @round.round_num * 5
-          @log << "#{player.name} gives all players #{format_currency(player_cash)}"
-          @players.each { |p| player.spend(player_cash, p) unless player == p }
+          extra_cash = stock_turn_token_premium_price
+          @log << "#{player.name} pays an extra #{format_currency(extra_cash)} to the bank for the premium token"
+          player.spend(extra_cash, @bank)
 
           @depot.export!
         end
@@ -1973,7 +1974,7 @@ module Engine
           # Give each player a stock turn company
           @players.each_with_index do |player, index|
             company = @companies.find { |c| c.id == "#{self.class::STOCK_TURN_TOKEN_PREFIX}#{index + 1}" }
-            company.name = stock_turn_token_name(player)
+            stock_turn_token_name!(company)
             company.owner = player
             player.companies << company
           end
@@ -2022,14 +2023,26 @@ module Engine
           @stock_turn_token_count[player].positive? || @stock_turn_token_premium_count[player].positive?
         end
 
-        def stock_turn_token_name(player)
-          return 'ST token (ENDGAME)' if game_end_triggered?
+        def stock_turn_token_name!(company)
+          player = company.owner
+          name = if game_end_triggered?
+                   'ST token (ENDGAME)'
+                 else
+                   "ST token (#{@stock_turn_token_count[player]} / #{@stock_turn_token_premium_count[player]}P)"
+                 end
 
-          "ST token (#{@stock_turn_token_count[player]} / #{@stock_turn_token_premium_count[player]}P)"
+          company.name = name
+          company.desc = 'Premium stock turn tokens costs stock market price + '\
+                         "#{format_currency(stock_turn_token_premium_price)}. Choose a stock market value to buy a token, "\
+                         'alternative choose sell. T = Top row, M = Middle row and B = Bottom row.'
         end
 
         def stock_turn_token_premium?(player)
           @stock_turn_token_count[player].zero?
+        end
+
+        def stock_turn_token_premium_price
+          @round.round_num * 20
         end
 
         def stock_turn_token_remove!
@@ -2092,6 +2105,13 @@ module Engine
 
             neighbor.neighbors[neighbor.neighbor_direction(hex)] = hex
             hex.neighbors[direction] = neighbor
+          end
+        end
+
+        def update_stock_turn_token_names
+          @players.each do |player|
+            st_company = player.companies.find { |c| stock_turn_token_company?(c) }
+            stock_turn_token_name!(st_company)
           end
         end
 
