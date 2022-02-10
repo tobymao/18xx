@@ -2,6 +2,7 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative '../trainless_shares_half_value'
 require_relative '../../distance_graph'
 
 module Engine
@@ -9,6 +10,7 @@ module Engine
     module G1860
       class Game < Game::Base
         include_meta(G1860::Meta)
+        include TrainlessSharesHalfValue
 
         attr_reader :nationalization, :sr_after_southern, :distance_graph
 
@@ -900,10 +902,6 @@ module Engine
           Bank.new(20_000, log: @log, check: false)
         end
 
-        def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
-        end
-
         def option_23p_map?
           @optional_rules&.include?(:two_player_map) || @optional_rules&.include?(:original_game)
         end
@@ -1080,20 +1078,11 @@ module Engine
           @bank.break! if !@nationalization && bank_cash.negative?
         end
 
-        def player_value(player)
-          player.cash +
-            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
-            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }
-            .sum { |s| (s.price / 2).to_i } + player.companies.sum(&:value)
-        end
-
         def liquidity(player)
-          company_value = turn > 1 ? player.companies.sum { |c| c.value - COMPANY_SALE_FEE } : 0
+          without_companies = super
+          return without_companies unless turn > 1
 
-          player.cash +
-            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
-            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }
-            .sum { |s| (s.price / 2).to_i } + company_value
+          without_companies + player.companies.sum { |c| c.value - COMPANY_SALE_FEE }
         end
 
         def operating_order
@@ -1368,28 +1357,6 @@ module Engine
 
         def corporation_available?(entity)
           entity.corporation? && can_ipo?(entity)
-        end
-
-        def bundles_for_corporation(share_holder, corporation, shares: nil)
-          return [] unless corporation.ipoed
-
-          shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
-
-          shares.flat_map.with_index do |share, index|
-            bundle = shares.take(index + 1)
-            percent = bundle.sum(&:percent)
-            bundles = [Engine::ShareBundle.new(bundle, percent)]
-            if share.president
-              normal_percent = corporation.share_percent
-              difference = corporation.presidents_percent - normal_percent
-              num_partial_bundles = difference / normal_percent
-              (1..num_partial_bundles).each do |n|
-                bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
-              end
-            end
-            bundles.each { |b| b.share_price = (b.price_per_share / 2).to_i if corporation.trains.empty? }
-            bundles
-          end
         end
 
         def selling_movement?(corporation)

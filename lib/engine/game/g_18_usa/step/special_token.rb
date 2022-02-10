@@ -29,7 +29,7 @@ module Engine
           def ability(entity)
             return unless entity&.company?
 
-            @game.abilities(entity, :token, when: '%current_step%')
+            @game.abilities(entity, :token, time: '%current_step%')
           end
         end
       end

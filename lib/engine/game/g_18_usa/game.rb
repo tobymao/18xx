@@ -13,7 +13,7 @@ module Engine
         include G18USA::Entities
         include G18USA::Map
 
-        attr_accessor :pending_rusting_event
+        attr_accessor :pending_rusting_event, :p8_hexes
         attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles,
                     :mexico_hexes
 
@@ -226,6 +226,7 @@ module Engine
           @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           metro_hexes = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro_hexes.each { |metro_hex| convert_potential_metro(hex_by_id(metro_hex)) }
+          @p8_hexes = []
 
           setup_train_roster
 
@@ -666,7 +667,7 @@ module Engine
             when G1817::Round::Merger
               @log << "-- #{round_description('Acquisition', @round.round_num)} --"
               G1817::Round::Acquisition.new(self, [
-                Engine::Step::ReduceTokens,
+                G18USA::Step::ReduceTokens,
                 G1817::Step::Bankrupt,
                 G1817::Step::CashCrisis,
                 Engine::Step::DiscardTrain,
@@ -729,6 +730,7 @@ module Engine
           if stop_hexes.find { |hex| hex.tile.icons.find { |icon| icon.name == 'plus_ten_twenty' } }
             revenue += @phase.tiles.include?(:brown) ? 20 : 10
           end
+          revenue += 10 if company_by_id('P8').owner == corporation && !(stop_hexes & @p8_hexes).empty?
 
           if corporation.companies.include?(company_by_id('P17'))
             stop_hex_ids = stop_hexes.map(&:id)
@@ -875,10 +877,10 @@ module Engine
             corporation.tokens << Engine::Token.new(corporation)
             subsidy.close!
           when 'S10'
-            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', sticky: true)
+            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', 'plus_ten', true)
             subsidy.close!
           when 'S11'
-            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', sticky: true)
+            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', 'plus_ten_twenty', true)
             subsidy.close!
           when 'S16'
             if subsidy.abilities.first.hexes.empty?

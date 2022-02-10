@@ -16,6 +16,7 @@ module Engine
       @city = nil
       @hex = nil
       @status = nil
+      @location_type = nil
     end
 
     def destroy!
@@ -24,35 +25,61 @@ module Engine
     end
 
     def remove!
-      @city&.tokens&.map! { |t| t == self ? nil : t }
-      @city&.extra_tokens&.delete(self)
+      case @location_type
+      when :city
+        @city&.tokens&.map! { |t| t == self ? nil : t }
+        @city&.extra_tokens&.delete(self)
+      when :hex
+        @hex.remove_token(self)
+      end
       @city = nil
       @hex = nil
       @used = false
       @extra = false
+      @location_type = nil
     end
 
     def swap!(other_token, check_tokenable: true, free: true)
       city = @city
+      hex = @hex
       extra = @extra
+      location_type = @location_type
       remove!
       corporation = other_token.corporation
 
-      return if !extra && check_tokenable && !city.tokenable?(corporation, free: free, tokens: [other_token])
+      return if !extra && check_tokenable && location_type == :city && !city.tokenable?(corporation, free: free,
+                                                                                                     tokens: [other_token])
 
-      city.place_token(corporation, other_token, free: free, check_tokenable: check_tokenable, extra_slot: extra)
+      case location_type
+      when :city
+        city.place_token(corporation, other_token, free: free, check_tokenable: check_tokenable, extra_slot: extra)
+      when :hex
+        hex.place_token(other_token)
+      end
     end
 
-    def move!(new_city)
+    def move!(new_location)
       remove!
 
-      new_city.place_token(@corporation, self, free: true)
+      case new_location
+      when Engine::Part::City
+        new_location.place_token(@corporation, self, free: true)
+      when Engine::Part::Hex
+        new_location.place_token(self)
+      end
     end
 
-    def place(city, hex: nil, extra: nil)
+    def place(location, extra: nil)
       @used = true
-      @city = city
-      @hex = hex || city.hex
+      case location
+      when Engine::Part::City
+        @location_type = :city
+        @city = location
+        @hex = location&.hex
+      when Engine::Hex
+        @location_type = :hex
+        @hex = location
+      end
       @extra = extra
     end
   end
