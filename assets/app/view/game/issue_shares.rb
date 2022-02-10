@@ -35,11 +35,20 @@ module View
       def render_shares(description, shares, action)
         shares = shares.map do |bundle|
           render_button(bundle) do
-            process_action(action.new(
-              @entity,
-              shares: bundle.shares,
-              share_price: bundle.share_price,
-            ))
+            process_redeem = lambda do
+              process_action(action.new(
+                @entity,
+                shares: bundle.shares,
+                share_price: bundle.share_price,
+              ))
+            end
+    
+            # confirm if redeeming from a different player
+            if (bundle.owner != @game.bank) && (bundle.owner != @game.current_entity)
+              check_consent(bundle.owner, process_redeem)
+            else
+              process_redeem.call
+            end
           end
         end
 
