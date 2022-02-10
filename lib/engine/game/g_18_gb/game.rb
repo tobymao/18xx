@@ -49,6 +49,8 @@ module Engine
 
         TRACK_RESTRICTION = :restrictive
 
+        EBUY_OTHER_VALUE = false
+
         HOME_TOKEN_TIMING = :float
 
         DISCARDED_TRAINS = :remove
@@ -230,6 +232,11 @@ module Engine
                 'pay' => 4,
                 'visit' => 4,
               },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
             ],
             price: 550,
           },
@@ -241,8 +248,14 @@ module Engine
                 'pay' => 5,
                 'visit' => 5,
               },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
             ],
             price: 650,
+            available_on: '4X',
           },
           {
             name: '6X',
@@ -252,8 +265,14 @@ module Engine
                 'pay' => 6,
                 'visit' => 6,
               },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
             ],
             price: 700,
+            available_on: '5X',
           },
         ].freeze
 
@@ -307,7 +326,7 @@ module Engine
         def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
           ability = super
 
-          return ability unless entity.company?
+          return ability unless entity&.company?
           return unless ability
 
           valid = entity.value.positive? ? VALID_ABILITIES_OPEN : VALID_ABILITIES_CLOSED
@@ -373,7 +392,7 @@ module Engine
           @log << "Corporations available SR1: #{tier1.map(&:first).sort.join(', ')}"
           @log << "Corporations available SR2: #{tier2.map(&:first).sort.join(', ')}"
           @tiers = tiers
-          @lnwr_ipoed = false
+          @insolvent_corps = []
           @train_bought = false
         end
 
@@ -413,14 +432,18 @@ module Engine
           stock_market.par_prices
         end
 
+        def lnwr_ipoed?
+          @corporations.find { |corp| corp.id == 'LNWR' }&.ipoed
+        end
+
         def married_to_lnwr(player)
-          return false if @lnwr_ipoed
+          return false if lnwr_ipoed?
 
           @companies.any? { |co| co.owner == player && co.sym == 'LB' }
         end
 
         def can_par?(corporation, player)
-          return true if @lnwr_ipoed
+          return true if lnwr_ipoed?
 
           if married_to_lnwr(player)
             # player owns the LB so can only start the LNWR
@@ -431,8 +454,31 @@ module Engine
           end
         end
 
-        def after_par(corporation)
-          @lnwr_ipoed = true if corporation.id == 'LNWR'
+        def insolvent?(corp)
+          @insolvent_corps.include?(corp)
+        end
+
+        def make_insolvent(corp)
+          return if insolvent?(corp)
+
+          @insolvent_corps << corp
+          @log << "#{corp.name} is now Insolvent"
+        end
+
+        def clear_insolvent(corp)
+          return unless insolvent?(corp)
+
+          @insolvent_corps.delete(corp)
+          @log << "#{corp.name} is no longer Insolvent"
+        end
+
+        def status_array(corp)
+          status = []
+          status << %w[10-share bold] if corp.type == '10-share'
+          status << %w[5-share bold] if corp.type == '5-share'
+          status << %w[Insolvent bold] if insolvent?(corp)
+          status << %w[Receivership bold] if corp.receivership?
+          status
         end
 
         def float_corporation(corporation)
@@ -512,7 +558,7 @@ module Engine
 
           # create new tokens and remove reminder from charter
           corporation.abilities.dup.each do |ability|
-            if ability.description.start_with?('Conversion tokens:')
+            if ability&.description&.start_with?('Conversion tokens:')
               ability.count.times { corporation.tokens << Engine::Token.new(corporation, price: 50) }
               corporation.remove_ability(ability)
             end
@@ -540,6 +586,41 @@ module Engine
           ])
         end
 
+        def special_green_hexes(corporation)
+          return {} unless corporation&.corporation?
+
+          corporation.abilities.flat_map { |a| a.type == :tile_lay ? a.hexes.map { |h| [h, a.tiles] } : [] }.to_h
+        end
+
+        def add_new_special_green_hex(corporation, hex_coords)
+          ability = {
+            type: 'tile_lay',
+            hexes: [hex_coords],
+            tiles: %w[G36 G37 G38],
+            cost: 0,
+            reachable: true,
+            consume_tile_lay: true,
+            description: "May place a green tile in #{hex_coords}",
+            desc_detail: "May place a green tile in #{hex_coords}, instead of the usual yellow tile, even before green tiles " \
+                         'are normally available',
+          }
+          corporation.add_ability(Engine::Ability::TileLay.new(**ability))
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          corporation = @round.current_entity
+          sgh = special_green_hexes(corporation)
+
+          if to.color == :green &&
+             sgh.include?(from.hex.coordinates) &&
+             sgh[from.hex.coordinates].include?(to.name) &&
+             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
+            return true
+          end
+
+          super
+        end
+
         def upgrades_to_correct_color?(from, to)
           (from.color == to.color && from.color == :blue) || super
         end
@@ -550,30 +631,58 @@ module Engine
           tile.rotation.zero?
         end
 
-        def revenue_bonuses(corporation)
-          bonuses = {}
-          @companies.select { |co| co.owner == corporation.owner }.each do |company|
-            company.all_abilities.each do |ability|
-              next unless ability.type == :hex_bonus
+        def route_trains(entity)
+          return super unless insolvent?(entity)
 
-              ability.hexes.each { |hex| bonuses[hex] = ability.amount }
-            end
-          end
-          bonuses
+          [@depot.min_depot_train]
         end
 
-        def revenue_for(route, _stops)
-          # first work out which unique hexes we visited
-          revenues = {}
-          route.visited_stops.each { |stop| revenues[stop.hex.name] = stop.route_revenue(route.phase, route.train) }
+        def express_train?(train)
+          train.name.end_with?('X')
+        end
 
-          # now check for bonuses from owner's companies
-          hex_bonuses = revenue_bonuses(route.corporation)
+        def train_owner(train)
+          train.owner == @depot ? lessee : train.owner
+        end
 
-          # total up revenue per hex and add on any estuary and NS and EW bonuses
-          revenues.sum { |hex, revenue| hex_bonuses[hex] ? (revenue + hex_bonuses[hex]) : revenue } +
-            estuary_bonuses(route) +
-            compass_bonuses(route)
+        def lessee
+          current_entity
+        end
+
+        def revenue_bonuses(route, stops)
+          stop_hexes = stops.map { |stop| stop.hex.name }
+          @companies.select { |co| co.owner == route&.corporation&.owner }.flat_map do |co|
+            if co.value.positive?
+              []
+            else
+              co.abilities.select { |ab| ab.type == :hex_bonus }.flat_map do |ab|
+                ab.hexes.select { |h| stop_hexes.include?(h) }.map { |_| { revenue: ab.amount, description: co.sym } }
+              end
+            end
+          end
+        end
+
+        def revenue_info(route, stops)
+          standard = revenue_bonuses(route, stops) + estuary_bonuses(route) + compass_bonuses(route)
+          return standard unless express_train?(route.train)
+
+          standard + distance_bonus(route, stops)
+        end
+
+        def revenue_for(route, stops)
+          # count only unique hexes in determining revenue
+          stop_revenues = stops.uniq { |s| s.hex.name }.map { |s| s.route_revenue(route.phase, route.train) }
+          stop_revenues.sum + revenue_info(route, stops).sum { |bonus| bonus[:revenue] }
+        end
+
+        def revenue_str(route)
+          route.stops.map { |s| s.hex.name }.join('-') + revenue_info(route, route.stops).map do |bonus|
+            if bonus[:description] == 'X'
+              "+#{format_currency(bonus[:revenue])}"
+            else
+              "+(#{bonus[:description]})"
+            end
+          end.join
         end
 
         def compass_points_on_route(route)
@@ -600,22 +709,37 @@ module Engine
         end
 
         def compass_bonuses(route)
+          bonuses = []
           points = compass_points_on_route(route)
-          ns = points.include?('N') && points.include?('S') ? ns_bonus : 0
-          ew = points.include?('E') && points.include?('W') ? ew_bonus : 0
-          ns + ew
+          bonuses << { revenue: ns_bonus, description: 'NS' } if points.include?('N') && points.include?('S')
+          bonuses << { revenue: ew_bonus, description: 'EW' } if points.include?('E') && points.include?('W')
+          bonuses
         end
 
         def estuary_bonuses(route)
-          route.ordered_paths.sum do |path|
+          route.ordered_paths.map do |path|
             if path.hex.coordinates == 'I4' && path.track == :dual
-              40
+              { revenue: 40, description: 'FT' }
             elsif path.hex.coordinates == 'C22' && path.track == :dual
-              30
-            else
-              0
+              { revenue: 30, description: 'S' }
             end
-          end
+          end.compact
+        end
+
+        def distance_bonus(route, _stops)
+          return [] if route.chains.empty?
+
+          visited = route.visited_stops.reject { |stop| stop.hex.tile.cities.empty? && stop.hex.tile.offboards.empty? }
+          start = visited.first.hex
+          finish = visited.last.hex
+
+          [{ revenue: hex_crow_distance(start, finish) * 10, description: 'X' }]
+        end
+
+        def hex_crow_distance(start, finish)
+          dx = (start.x - finish.x).abs
+          dy = (start.y - finish.y).abs
+          dx + [0, (dy - dx) / 2].max
         end
 
         def buy_train(operator, train, price = nil)
@@ -629,16 +753,16 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G18GB::Round::Operating.new(self, [
             G18GB::Step::SpecialChoose,
             Engine::Step::SpecialTrack,
             G18GB::Step::SpecialToken,
             Engine::Step::HomeToken,
             G18GB::Step::TrackAndToken,
-            Engine::Step::Route,
+            G18GB::Step::Route,
             G18GB::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18GB::Step::BuyTrain,
           ], round_num: round_num)
         end
 

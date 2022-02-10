@@ -15,6 +15,7 @@ module Engine
           def actions(entity)
             actions = []
             return actions if entity != current_entity
+            return [] if entity.receivership? || @game.insolvent?(entity)
 
             actions << 'lay_tile' if can_lay_tile?(entity)
             actions << 'place_token' if can_place_token?(entity)
@@ -26,6 +27,14 @@ module Engine
             return false unless entity == current_entity
 
             @game.companies.select { |c| entity.owner == c.owner }.any? { |c| @game.abilities(c, :tile_lay) }
+          end
+
+          def potential_tile_colors(entity, hex)
+            colors = super
+            return colors if colors.include?(:green)
+
+            colors << :green if @game.special_green_hexes(entity).include?(hex.coordinates)
+            colors
           end
 
           def lay_tile_action(action)
