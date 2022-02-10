@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/buy_train'
+require_relative '../../../step/base'
+require_relative '../../../step/train'
 
 module Engine
   module Game
     module G18USA
       module Step
-        class BuyPullman < Engine::Step::BuyTrain
+        class BuyPullman < Engine::Step::Base
+          include Engine::Step::Train
           def actions(entity)
             return [] if entity != current_entity
 
@@ -24,6 +26,21 @@ module Engine
 
           def pass_description
             'Skip (Pullman)'
+          end
+
+          def process_buy_train(action)
+            check_spend(action)
+            buy_train_action(action)
+            pass! if !can_buy_train?(action.entity) && pass_if_cannot_buy_train?(action.entity)
+          end
+
+          def check_spend(action)
+            return if action.train.price <= buying_power(action.entity)
+
+            raise GameError, "#{action.entity.name} may not spend "\
+                             "#{@game.format_currency(action.price)} on "\
+                             "#{action.train.owner.name}'s #{action.train.name} "\
+                             "train; may only spend #{@game.format_currency(buying_power(action.entity))}."
           end
 
           def buyable_trains(entity)
