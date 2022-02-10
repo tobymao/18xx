@@ -1974,8 +1974,8 @@ module Engine
           # Give each player a stock turn company
           @players.each_with_index do |player, index|
             company = @companies.find { |c| c.id == "#{self.class::STOCK_TURN_TOKEN_PREFIX}#{index + 1}" }
-            stock_turn_token_name!(company)
             company.owner = player
+            stock_turn_token_name!(company)
             player.companies << company
           end
 
