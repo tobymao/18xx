@@ -660,6 +660,7 @@ module Engine
             G18USA::Step::DenverTrack,
             G18USA::Step::Track,
             G18USA::Step::Token,
+            G18USA::Step::BuyPullman,
             G18USA::Step::Route,
             G18USA::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -834,6 +835,11 @@ module Engine
 
           corporation = route.corporation
           visits[1..-2].find { |node| node.city? && node.blocks?(corporation) }
+        end
+
+        def pullmans_available?
+          # Pullmans are available in phase 5, using the availability of brown track as an easy signal of this
+          @phase.tiles.include?(:brown)
         end
 
         def route_trains(entity)
