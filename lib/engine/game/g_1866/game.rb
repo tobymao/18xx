@@ -645,18 +645,6 @@ module Engine
 
         def action_processed(_action); end
 
-        def buy_train(operator, train, price = nil)
-          super
-
-          train = @depot.upcoming.first
-          return if local_train?(train)
-
-          next_train = @depot.upcoming[1]
-          return if train.name == next_train.name
-
-          @depot.reclaim_train(train)
-        end
-
         def can_par?(corporation, parrer)
           return false if corporation.id == self.class::GERMANY_NATIONAL && corporation_by_id('PRU').owner != parrer
           return false if corporation.id == self.class::ITALY_NATIONAL && corporation_by_id('K2S').owner != parrer
@@ -902,6 +890,16 @@ module Engine
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
+        def init_train_handler
+          trains = self.class::TRAINS.flat_map do |train|
+            Array.new((train[:num] || num_trains(train))) do |index|
+              Train.new(**train, index: index)
+            end
+          end
+
+          G1866::Depot.new(trains, self)
+        end
+
         def interest_rate
           20
         end
@@ -1127,6 +1125,10 @@ module Engine
 
         def route_trains(entity)
           entity.runnable_trains.reject { |t| infrastructure_train?(t) }
+        end
+
+        def rust?(train, purchased_train)
+          super || (train.obsolete_on == purchased_train.sym && @depot.upcoming.include?(train))
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
@@ -1632,7 +1634,7 @@ module Engine
               next if !stop || (!stop.city? && !stop.offboard?)
 
               palace_car_revenue += 10
-              next if !stop.city? && !stop.tokened_by?(entity)
+              next if !stop.city? || !stop.tokened_by?(entity)
 
               stop_base_revenue = stop.route_base_revenue(phase, train)
               transist_hub_revenue = stop_base_revenue if stop_base_revenue > transist_hub_revenue
