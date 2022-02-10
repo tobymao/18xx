@@ -2033,8 +2033,8 @@ module Engine
 
           company.name = name
           company.desc = 'Premium stock turn tokens costs stock market price + '\
-                         "#{format_currency(stock_turn_token_premium_price)}. Choose a stock market value to buy a token, "\
-                         'alternative choose sell. T = Top row, M = Middle row and B = Bottom row.'
+                         "#{format_currency(stock_turn_token_premium_price)}. "\
+                         'T = Top row, M = Middle row and B = Bottom row.'
         end
 
         def stock_turn_token_premium?(player)
