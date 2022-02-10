@@ -793,13 +793,6 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'R',
-            name: 'Red reservation',
-            tokens: [],
-            coordinates: %w[H26 L26 N26 P26 R0],
-            reservation_color: nil,
-          },
-          {
             sym: 'L',
             name: 'London reservation',
             tokens: [],

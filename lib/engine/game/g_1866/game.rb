@@ -1163,8 +1163,8 @@ module Engine
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
-          @red_reservation_entity = corporation_by_id('R')
-          @corporations.delete(@red_reservation_entity)
+          # @red_reservation_entity = corporation_by_id('R')
+          # @corporations.delete(@red_reservation_entity)
 
           @london_reservation_entity = corporation_by_id('L')
           @corporations.delete(@london_reservation_entity)
