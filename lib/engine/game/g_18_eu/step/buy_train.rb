@@ -20,7 +20,34 @@ module Engine
             []
           end
 
-          # TODO: Limit to 1 Pullman, Require other train for Pullman
+          def buyable_trains(entity)
+            depot_trains = @game.depot_trains(entity)
+
+            if entity.cash < @game.min_depot_price(entity) && ebuy_offer_only_cheapest_depot_train?
+              depot_trains = [@game.min_depot_train(entity)]
+            end
+
+            # if a player sold shares, they cannot buy over
+            other_trains = if @last_share_sold_price && entity.cash.zero?
+                             []
+                           else
+                             @depot.other_trains(entity).reject { |t| @game.pullman?(t) }
+                           end
+
+            depot_trains + other_trains
+          end
+
+          def cheapest_train_price(corporation)
+            @game.min_depot_price(corporation)
+          end
+
+          def check_for_cheapest_train(_train)
+            true
+          end
+
+          def needed_cash(_entity)
+            cheapest_train_price(current_entity)
+          end
         end
       end
     end

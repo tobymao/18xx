@@ -11,6 +11,12 @@ module Engine
             []
           end
 
+          def description
+            'Issue/Sell then Buy Shares'
+          end
+
+          def auto_actions(_entity); end
+
           def can_sell_any?(entity)
             can_issue?(entity) || super
           end
@@ -34,12 +40,24 @@ module Engine
 
           def can_buy?(entity, bundle)
             return unless bundle
+
             # can't buy from own IPO
             return if entity == bundle.corporation && bundle.owner == bundle.corporation.ipo_owner
+
             # can't buy from other corporations
             return if bundle.owner.corporation?
 
             super
+          end
+
+          # FIXME: move to common location
+          def can_buy_any_from_ipo?(entity)
+            @game.corporations.each do |corporation|
+              next unless corporation.ipoed
+              return true if can_buy_shares?(entity, corporation.ipo_shares)
+            end
+
+            false
           end
 
           # FIXME: move to common location
@@ -90,6 +108,7 @@ module Engine
             @game.float_corporation(corp) if corp.floatable && floated != corp.floated?
 
             track_action(action, corp)
+            @round.players_sold[corp][corp] = :now
           end
 
           def share_str(bundle)

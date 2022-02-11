@@ -4,17 +4,20 @@
 # This module is used in classes that need to support
 # swapping of shares.
 module SwapBuySell
-  # Check if it is possible to buy an NdM IPO or Pool share of 10%
-  # when player swaps in a 5% share.
-  def swap_buy(player, corporation, ipo_or_pool_share)
-    return if @game.ndm != corporation || ipo_or_pool_share.percent != 10
+  # Check if it is possible to buy an NdM share of 10%
+  # when player swaps in a 5% share and return the share to be swapped in.
+  def swap_buy(player, corporation, share)
+    return if @game.ndm != corporation || share.percent != 10
+
+    # Must be in pool, not IPO (rule 3.2.c(5))
+    return unless @game.share_pool.shares_by_corporation[corporation].include?(share)
 
     swap_share = player.shares_of(corporation).find { |s| s.percent == 5 }
     return unless swap_share
 
     # If we were allowed to buy another 5% then swap is OK.
     # We test that a reduced buy of 5% would be allowed.
-    can_buy?(player, bundle_reduced_five_percent([ipo_or_pool_share])) ? swap_share : nil
+    can_buy?(player, bundle_reduced_five_percent([share])) ? swap_share : nil
   end
 
   # Check if it is possible to sell an NdM bundle if player swap 5% share from pool

@@ -326,10 +326,6 @@ module Engine
           end
         end
 
-        def init_share_pool
-          SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET)
-        end
-
         def setup
           @saved_tiles = @tiles.dup
 
@@ -810,7 +806,7 @@ module Engine
           end
         end
 
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           return if route.train.name == 'Convert'
 
           super

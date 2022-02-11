@@ -196,7 +196,8 @@ module Engine
 
         HEXES = {
           white: {
-            %w[B14 F4 F24 G7 G11 H24 K21] => '',
+            %w[B14 F4 F24 G7 G11 H24] => '',
+            %w[K21] => '',
             %w[B16 B24 C15 C19 D24 E23 F2 F14 F16 F18 F22 G3 G5 G15 G23 H16 H22 I15 I17 J16] =>
               'upgrade=cost:60,terrain:mountain',
             %w[B18 G17] => 'upgrade=cost:120,terrain:mountain',
@@ -327,7 +328,7 @@ module Engine
 
         SECOND_EDITION_HEXES = {
           white: {
-            %w[K19] => 'town=revenue:0;border=edge:1,type:water,cost:80',
+            %w[K19] => 'town=revenue:0;border=edge:1,type:water,cost:80;border=edge:4,type:water,cost:80',
             %w[K21] => 'city=revenue:0;upgrade=cost:80,terrain:water;border=edge:1,type:water,cost:80',
           },
           red: {

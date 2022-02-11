@@ -70,7 +70,7 @@ module View
             children << h(BuyCompanyFromOtherPlayer, game: @game)
           end
           children << render_bank
-          children << h(StockMarket, game: @game, show_bank: false)
+          children << h(StockMarket, game: @game, show_bank: true)
 
           h(:div, children)
         end
@@ -375,13 +375,10 @@ module View
           children = []
           props = {
             style: {
-              display: 'flex',
-              flexDirection: 'row',
               marginBottom: '1rem',
             },
           }
-          children << h(:div, [h(Bank, game: @game)].compact)
-          children << h(:div, [h(TrainSchedule, game: @game)])
+          children << h(TrainSchedule, game: @game)
           h(:div, props, children)
         end
       end

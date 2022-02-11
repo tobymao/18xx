@@ -111,7 +111,7 @@ module Engine
         end
 
         def place_second_token(corporation, **_kwargs)
-          super(corporation, two_player_only: false, cheater: false)
+          super(corporation, two_player_only: false, deferred: false)
         end
 
         def init_round

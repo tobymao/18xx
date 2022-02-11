@@ -227,7 +227,7 @@ module Engine
               'path=a:0,b:5',
             ['E34'] =>
               'city=revenue:yellow_30|green_40|brown_30|gray_10,slots:2,loc:0;path=a:3,b:_0;'\
-              'path=a:4,b:_0,terminal:1;path=a:5,b:_0',
+              'path=a:4,b:_0,terminal:1,ignore:1;path=a:5,b:_0',
             ['E38'] =>
               'path=a:1,b:4,a_lane:2.0;path=a:1,b:5,a_lane:2.1;border=edge:3,type:impassable',
             ['F23'] =>
@@ -237,8 +237,8 @@ module Engine
             %w[E40 F29 F31] =>
               'path=a:2,b:4,a_lane:2.0;path=a:2,b:5,a_lane:2.1',
             ['F33'] =>
-              'city=revenue:yellow_20|green_40|brown_30|gray_10,slots:2,loc:4;path=a:1,b:_0;path=a:2,b:_0,terminal:1;'\
-              'path=a:5,b:_0',
+              'city=revenue:yellow_20|green_40|brown_30|gray_10,slots:2,loc:4;path=a:1,b:_0;'\
+              'path=a:2,b:_0,terminal:1,ignore:1;path=a:5,b:_0',
             ['H17'] =>
               'city=revenue:yellow_40|green_50|brown_60|gray_70,slots:2;path=a:0,b:_0,terminal:1',
             ['K16'] =>

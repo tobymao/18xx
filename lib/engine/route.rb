@@ -4,7 +4,7 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_accessor :halts, :routes
+    attr_accessor :halts, :routes, :bitfield
     attr_reader :last_node, :phase, :train, :abilities
 
     def initialize(game, phase, train, **opts)
@@ -27,6 +27,8 @@ module Engine
       @last_node = nil
       @last_offboard = []
       @stops = nil
+
+      @bitfield = opts[:bitfield] # array of ints used only by auto-routing algorithm
     end
 
     def clear_cache!(all: false, only_routes: false)
@@ -37,6 +39,7 @@ module Engine
       return if !all && only_routes
 
       @ordered_paths = nil
+      @ordered_hexes = nil
       @distance_str = nil
       @distance = nil
       @hexes = nil
@@ -253,7 +256,7 @@ module Engine
       connection_data.each do |c|
         right = c[:right]
         cycles[c[:left]] = true
-        raise GameError, "Cannot use #{right.hex.name} (#{right.inspect}) twice" if cycles[right]
+        raise ReusesCity, "Cannot use #{right.hex.name} (#{right.inspect}) twice" if cycles[right]
 
         cycles[right] = true
       end
@@ -263,15 +266,21 @@ module Engine
       @game.check_overlap(@routes)
     end
 
-    def check_connected!(token)
-      @check_connected ||= @game.check_connected(self, token) || true
+    def check_connected!
+      @check_connected ||= @game.check_connected(self, corporation) || true
     end
 
     def ordered_paths
       @ordered_paths ||= connection_data.flat_map do |c|
         cpaths = c[:chain][:paths]
+        next if cpaths.empty?
+
         cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
-      end
+      end.compact
+    end
+
+    def ordered_hexes
+      @ordered_hexes ||= ordered_paths.map(&:hex).chunk(&:itself).to_a.map(&:first)
     end
 
     def check_terminals!
@@ -300,7 +309,7 @@ module Engine
       @revenue ||=
         begin
           visited = visited_stops
-          raise GameError, 'Route must have at least 2 stops' if !connection_data.empty? && visited.size < 2 && !@train.local?
+          raise RouteTooShort, 'Route must have at least 2 stops' if !connection_data.empty? && visited.size < 2 && !@train.local?
 
           token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) }
           @game.check_route_token(self, token)
@@ -314,7 +323,7 @@ module Engine
           check_cycles!
           check_distance!(visited)
           check_overlap!
-          check_connected!(token)
+          check_connected!
 
           @game.revenue_for(self, stops)
         end

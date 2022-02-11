@@ -7,9 +7,30 @@ module Engine
     module G1866
       module Step
         class Track < Engine::Step::Track
+          def actions(entity)
+            return [] if @game.game_end_triggered_last_round?
+
+            super
+          end
+
           def available_hex(entity, hex)
-            return nil if @game.national_corporation?(entity) && !@game.hex_within_national_region?(entity, hex)
-            return nil if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
+            if @game.national_corporation?(entity)
+              return nil unless @game.hex_within_national_region?(entity, hex)
+
+              check_neighbors = hex.tile.cities.size.positive?
+              check_neighbors ||= hex_neighbors(entity, hex)&.any? do |e|
+                hex.neighbors[e].tile.color == :blue || @game.hex_within_national_region?(entity, hex.neighbors[e])
+              end
+              return nil unless check_neighbors
+
+            elsif @game.corporation?(entity)
+              return nil unless @game.hex_operating_rights?(entity, hex)
+
+              check_neighbors = hex_neighbors(entity, hex)&.any? do |e|
+                hex.neighbors[e].tile.color == :blue || @game.hex_operating_rights?(entity, hex.neighbors[e])
+              end
+              return nil unless check_neighbors
+            end
 
             super
           end
@@ -48,6 +69,15 @@ module Engine
             super
           end
 
+          def log_skip(entity)
+            if @game.game_end_triggered_last_round?
+              @log << "Last round, #{entity.name} may not lay any track"
+              return
+            end
+
+            super
+          end
+
           def process_lay_tile(action)
             entity = action.entity
             hex = action.hex
@@ -61,7 +91,18 @@ module Engine
             # Special case for the B tiles
             action.tile.label = 'B' if action.hex.tile.label.to_s == 'B'
 
+            # Special case for London
+            if hex.name == @game.class::LONDON_HEX && hex.tile.color == :brown && action.tile.color == :gray
+              hex.tile.cities[1].remove_all_reservations!
+            end
+
+            # Special case for Paris
+            if hex.name == @game.class::PARIS_HEX && hex.tile.color == :brown && action.tile.color == :gray
+              [0, 2, 5].each { |city| hex.tile.cities[city].remove_all_reservations! }
+            end
+
             super
+            @game.after_lay_tile(entity)
           end
 
           def round_state

@@ -849,7 +849,7 @@ module Engine
         end
 
         def unstarted_corporation_summary
-          unipoed = @corporations.reject(&:ipoed)
+          unipoed = (@corporations + @future_corporations).reject(&:ipoed)
           minor = unipoed.select { |c| c.type == :minor }
           major = unipoed.select { |c| c.type == :major }
           ["#{major.size} major", [@national] + minor]

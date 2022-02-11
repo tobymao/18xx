@@ -13,7 +13,8 @@ module View
         }
 
         children = @game.players.map { |p| h(Player, player: p, game: @game) }
-        children.unshift(h(Bank, game: @game)) if @game.round.active_step.respond_to?(:seed_money)
+        active_step = @game.round.active_step
+        children.unshift(h(Bank, game: @game)) if active_step.respond_to?(:seed_money) && active_step.seed_money
         h('div.players', props, children.compact)
       end
     end

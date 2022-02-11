@@ -65,6 +65,9 @@ module Lib
       purple: '#A79ECD',
       orange: '#FFA500',
       sepia: '#6b4b35',
+      gray60: '#96989d',
+      gray50: '#7b7d84',
+      gray40: '#626569',
     }.freeze
 
     def self.points(scale: 1.0)

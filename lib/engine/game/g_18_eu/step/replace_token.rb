@@ -30,6 +30,8 @@ module Engine
           end
 
           def active_entities
+            return [] unless pending_acquisition
+
             [pending_corporation.owner]
           end
 
@@ -87,6 +89,7 @@ module Engine
             action.city.exchange_token(new_token)
 
             @game.log << "#{pending_corporation.name} replaces #{pending_minor.name} token on #{action.city.hex.name}"
+            @game.maybe_remove_duplicate_token!(action.city.tile)
 
             close!(pending_minor)
           end

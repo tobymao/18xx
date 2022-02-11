@@ -30,6 +30,10 @@ module Engine
             to.color != :yellow || to.label.to_s == 'N'
           end
 
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            super unless @game.adding_town?(old_tile, new_tile)
+          end
+
           def update_tile_lists(tile, old_tile)
             raise GameError, 'tile already laid' unless @game.tiles.include?(tile)
 

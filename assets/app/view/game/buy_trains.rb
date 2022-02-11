@@ -60,6 +60,11 @@ module View
             children << h(:div, "#{player.name} may continue to sell shares until raising up to "\
                                 "#{@game.format_currency(share_funds_allowed)}.")
           end
+
+          if @game.class::EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
+            children << h(:div, "#{player.name} may not sell more shares than is necessary "\
+                                'to buy the train that is purchased.')
+          end
         end
 
         must_take_loan = @step.must_take_loan?(@corporation) if @step.respond_to?(:must_take_loan?)

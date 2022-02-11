@@ -231,8 +231,6 @@ module Engine
 
       ALLOW_TRAIN_BUY_FROM_OTHERS = true # Allows train buy from other corporations
 
-      MN_TRAIN_MUST_USE_TOKEN = true # when picking best M out of N stops, must one of the stops must be tokened
-
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
       TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
@@ -826,8 +824,9 @@ module Engine
       end
 
       # Before rusting, check if this train individual should rust.
-      def rust?(_train)
-        true
+      def rust?(train, purchased_train)
+        train.rusts_on == purchased_train.sym ||
+          (train.obsolete_on == purchased_train.sym && @depot.discarded.include?(train))
       end
 
       def shares
@@ -861,6 +860,17 @@ module Engine
         format_currency(val)
       end
 
+      def routes_subsidy(_routes)
+        0
+      end
+
+      def submit_revenue_str(routes, show_subsidy)
+        revenue_str = format_revenue_currency(routes_revenue(routes))
+        subsidy = routes_subsidy(routes)
+        subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (subsidy)" : ''
+        revenue_str + subsidy_str
+      end
+
       def purchasable_companies(entity = nil)
         @companies.select do |company|
           company.owner&.player? && entity != company.owner && !abilities(company, :no_buy)
@@ -882,6 +892,8 @@ module Engine
           end
         end
       end
+
+      def after_sell_company(_buyer, _company, _price, _seller); end
 
       def player_value(player)
         player.value
@@ -937,6 +949,8 @@ module Engine
       end
 
       def value_for_dumpable(player, corporation)
+        return value_for_sellable(player, corporation) if self.class::PRESIDENT_SALES_TO_MARKET
+
         max_bundle = bundles_for_corporation(player, corporation)
           .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
           .max_by(&:price)
@@ -1047,12 +1061,28 @@ module Engine
         self.class::SOLD_OUT_INCREASE
       end
 
-      def log_share_price(entity, from)
+      def log_share_price(entity, from, steps = nil)
         to = entity.share_price.price
         return unless from != to
 
+        jumps = ''
+        if steps
+          steps = share_jumps(steps)
+          jumps = " (#{steps} steps)" unless steps < 2
+        end
+
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                "to #{format_currency(to)}"
+                "to #{format_currency(to)}#{jumps}"
+      end
+
+      def share_jumps(steps)
+        return steps unless @stock_market.zigzag
+
+        if steps > 1
+          steps / 2
+        else
+          steps
+        end
       end
 
       def can_run_route?(entity)
@@ -1116,7 +1146,7 @@ module Engine
       end
 
       def check_route_token(_route, token)
-        raise GameError, 'Route must contain token' unless token
+        raise NoToken, 'Route must contain token' unless token
       end
 
       def check_overlap(routes)
@@ -1151,10 +1181,8 @@ module Engine
         end
       end
 
-      def check_connected(route, token)
-        paths_ = route.paths.uniq
-
-        return if token.select(paths_, corporation: route.corporation).size == paths_.size
+      def check_connected(route, corporation)
+        return if route.ordered_paths.each_cons(2).all? { |a, b| a.connects_to?(b, corporation) }
 
         raise GameError, 'Route is not connected'
       end
@@ -1164,7 +1192,7 @@ module Engine
         distance = train.distance
         if distance.is_a?(Numeric)
           route_distance = visits.sum(&:visit_cost)
-          raise GameError, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
+          raise RouteTooLong, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
 
           return
         end
@@ -1196,7 +1224,7 @@ module Engine
             break unless num.positive?
           end
 
-          raise GameError, 'Route has too many stops' if num.positive?
+          raise RouteTooLong, 'Route has too many stops' if num.positive?
         end
       end
 
@@ -1226,7 +1254,7 @@ module Engine
           stops, revenue = visits.combination(num_stops.to_i).map do |stops|
             # Make sure this set of stops is legal
             # 1) At least one stop must have a token (if enabled)
-            next if self.class::MN_TRAIN_MUST_USE_TOKEN && stops.none? { |stop| stop.tokened_by?(route.corporation) }
+            next if train.requires_token && stops.none? { |stop| stop.tokened_by?(route.corporation) }
 
             # 2) We can't ask for more revenue centers of a type than are allowed
             types_used = Array.new(distance.size, 0) # how many slots of each row are filled
@@ -1824,10 +1852,7 @@ module Engine
 
         trains.each do |t|
           next if t.rusted
-
-          should_rust = t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
-          next unless should_rust
-          next unless rust?(t)
+          next unless rust?(t, train)
 
           rusted_trains << t.name
           owners[t.owner.name] += 1
@@ -2172,7 +2197,7 @@ module Engine
       end
 
       def init_share_pool
-        SharePool.new(self)
+        SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET)
       end
 
       def connect_hexes

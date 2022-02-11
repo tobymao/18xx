@@ -23,9 +23,11 @@ module Engine
       end
 
       def selling_minimum_shares?(bundle)
+        # True if next smaller bundle is insufficient
         seller = bundle.owner
-        total_cash = bundle.price + available_cash(seller)
-        total_cash < needed_cash(seller) + bundle.price_per_share
+        additional_cash_needed = needed_cash(seller) - available_cash(seller)
+        next_smaller_bundle_price = bundle.price - bundle.shares.map(&:price).min
+        next_smaller_bundle_price < additional_cash_needed
       end
 
       def sellable_bundle?(bundle)

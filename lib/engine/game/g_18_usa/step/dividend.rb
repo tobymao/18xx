@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/dividend'
 require_relative '../../../step/half_pay'
 require_relative '../../g_1817/step/dividend'
 
@@ -18,9 +17,9 @@ module Engine
 
             return { share_direction: :left, share_times: 1 } unless revenue.positive?
 
-            times = 1 if revenue >= price * 0.5
+            times = 1 if revenue >= (price * 0.5).floor
             times = 2 if revenue >= price * 1
-            times = 3 if revenue >= price * 1.5
+            times = 3 if revenue >= (price * 1.5).floor
             times = 4 if revenue >= price * 2
             if times&.positive?
               { share_direction: :right, share_times: times }

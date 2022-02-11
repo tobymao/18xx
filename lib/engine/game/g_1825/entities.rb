@@ -542,6 +542,8 @@ module Engine
             lnwr = corps.find { |corp| corp[:sym] == 'LNWR' }
             lnwr[:tokens] = [0, 0, 40, 100, 100, 100, 100]
             lnwr[:coordinates] = %w[T16 Q11]
+            midland = corps.find { |corp| corp[:sym] == 'MR' }
+            midland[:abilities] << { type: 'blocks_hexes', owner_type: nil, hexes: ['R14'] }
           end
           add_entities(corps, UNIT3_CORPORATIONS) if @units[3]
           add_entities(corps, R1_CORPORATIONS) if @regionals[1]

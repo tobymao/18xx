@@ -19,6 +19,7 @@ module Engine
 
           def available_hex(entity, hex)
             return false unless entity.id == 'P20'
+            return false if @game.class::COMPANY_TOWN_TILES.include?(hex.tile.name)
 
             corporation = entity.owner
             hex.tile.cities.any? { |c| c.available_slots.zero? && !c.tokened_by?(corporation) } &&
@@ -28,7 +29,7 @@ module Engine
           def ability(entity)
             return unless entity&.company?
 
-            @game.abilities(entity, :token, when: '%current_step%')
+            @game.abilities(entity, :token, time: '%current_step%')
           end
         end
       end

@@ -27,8 +27,6 @@ module Engine
                         black: '#000',
                         white: '#ffffff')
 
-        GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
-
         BANKRUPTCY_ALLOWED = false
 
         CURRENCY_FORMAT_STR = '£%d'
@@ -1086,6 +1084,8 @@ module Engine
         end
 
         def setup
+          @game_end_reason = nil
+
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
 
@@ -1854,6 +1854,17 @@ module Engine
 
         def must_remove_town?(entity)
           entity.id == self.class::COMPANY_MTONR
+        end
+
+        def game_end_check
+          # Once the game end has been determined, it's set in stone
+          @game_end_reason ||= compute_game_end
+        end
+
+        def compute_game_end
+          return [:bank, @round.is_a?(Round::Operating) ? :full_or : :current_or] if @bank.broken?
+
+          return %i[stock_market current_or] if @stock_market.max_reached?
         end
 
         private

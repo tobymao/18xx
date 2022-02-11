@@ -47,9 +47,14 @@ module Engine
             return unless bundle&.buyable
             return unless bundle == price_protection
 
+            have_cert_room = if bundle.corporation.counts_for_limit
+                               @game.num_certs(entity, price_protecting: true) + bundle.num_shares <= @game.cert_limit
+                             else
+                               true # can price protect yellow/green/brown even if over cert limit
+                             end
             entity.cash >= bundle.price &&
               !@round.players_sold[entity][bundle.corporation] &&
-              @game.num_certs(entity) + bundle.num_shares <= @game.cert_limit
+              have_cert_room
           end
 
           def process_buy_shares(action)

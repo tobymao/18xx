@@ -8,27 +8,41 @@ module Engine
       module MinorExchange
         include Engine::Step::ShareBuying
 
-        def merge_minor!(minor, corporation)
+        def merge_minor!(minor, corporation, source)
           maybe_remove_token(minor, corporation)
 
-          transfer_treasury(minor, corporation)
-          transfer_trains(minor, corporation)
+          if source == corporation
+            transfer_treasury(minor, corporation)
+            transfer_trains(minor, corporation)
+          else
+            transfer_treasury(minor, @game.bank)
+            transfer_trains(minor, @game.depot)
+          end
 
           @game.close_corporation(minor, quiet: false) unless @round.pending_acquisition
           minor.close! unless @round.pending_acquisition
         end
 
         def maybe_remove_token(minor, corporation)
+          return unless corporation
           return minor.tokens.first.remove! unless corporation.tokens.first&.used
 
           @round.pending_acquisition = { minor: minor, corporation: corporation }
         end
 
-        def exchange_share(minor, corporation)
+        def exchange_share(minor, corporation, source)
+          return unless corporation
+
           @game.log << "#{minor.owner.name} exchanges #{minor.name} for a "\
                        "10% share of #{corporation.name}"
 
-          buy_shares(minor.owner, corporation.ipo_shares.first.to_bundle, exchange: true)
+          bundle = if source == corporation
+                     corporation.treasury_shares.first.to_bundle
+                   else
+                     @game.share_pool.shares_of(corporation).first.to_bundle
+                   end
+
+          buy_shares(minor.owner, bundle, exchange: true)
         end
 
         def transfer_treasury(source, destination)
@@ -43,7 +57,15 @@ module Engine
         def transfer_trains(source, destination)
           return unless source.trains.any?
 
-          transferred = @game.transfer(:trains, source, destination)
+          transferred = []
+          if destination == @game.depot
+            source.trains.dup.each do |train|
+              @game.depot.reclaim_train(train)
+              transferred << train
+            end
+          else
+            transferred = @game.transfer(:trains, source, destination)
+          end
 
           @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')}"\
                        " train#{transferred.one? ? '' : 's'} from #{source.name}"

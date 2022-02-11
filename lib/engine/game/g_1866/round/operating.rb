@@ -22,6 +22,21 @@ module Engine
             entity.close! if @game.stock_turn_token_removed?(entity)
           end
 
+          def next_entity!
+            after_operating(@entities[@entity_index])
+            super
+          end
+
+          def recalculate_order
+            index = @entity_index + 1
+            return unless index < @entities.size - 1
+
+            @entities[index..-1] = @entities[index..-1].sort
+            @entities_orginal = @entities.each_with_index.map do |c, idx|
+              idx < index ? @entities_orginal[idx] : map_corporation(c)
+            end
+          end
+
           def start_operating
             entity = @entities[@entity_index]
             if @game.major_national_corporation?(entity) && entity.num_player_shares.zero?
@@ -43,6 +58,15 @@ module Engine
             end
           end
 
+          def after_operating(entity)
+            if !entity.corporation? || !@game.corporation?(entity) || !@game.game_end_triggered? ||
+              (@game.game_end_triggered_corporation == entity && @game.game_end_triggered_round == @round_num)
+              return
+            end
+
+            @game.game_end_corporation_operated(entity)
+          end
+
           def check_operating_order!
             # When we are forcing the next entity to operate, make sure the operating order is correct first
             new_entities = select_entities.reject do |c|
@@ -54,12 +78,13 @@ module Engine
             new_entities.each do |c|
               index = @entities_orginal.size
               @entities_orginal.each_with_index do |e, idx|
-                next if e[:type] == 'minor_national'
+                next if e[:type] == :minor_national
 
                 if @game.germany_or_italy_national?(c)
                   index = idx
                   break
                 end
+                next if major_national?(e) && major_national_formed?(e)
                 next if e[:price] > c.share_price.price
                 next if e[:price] == c.share_price.price && e[:row] <= c.share_price.coordinates[0]
 
@@ -71,6 +96,16 @@ module Engine
             end
 
             goto_entity!(find_entity)
+          end
+
+          def major_national_formed?(mapped_corporarion)
+            return false unless @game.major_national_formed[mapped_corporarion[:id]]
+
+            @game.major_national_formed_round[mapped_corporarion[:id]] == @round_num
+          end
+
+          def major_national?(mapped_corporarion)
+            mapped_corporarion[:id] == @game.class::GERMANY_NATIONAL || mapped_corporarion[:id] == @game.class::ITALY_NATIONAL
           end
 
           def map_corporation(corporation)

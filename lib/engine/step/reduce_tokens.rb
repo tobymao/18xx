@@ -60,8 +60,8 @@ module Engine
       def available_hex(entity, hex)
         return false unless entity == surviving
 
-        surviving_token = entity.tokens.find { |t| t.used && t.city.hex == hex }
-        acquired_token = others_tokens(acquired_corps).find { |t| t.used && t.city.hex == hex }
+        surviving_token = entity.tokens.find { |t| t.used && t.city && t.hex == hex }
+        acquired_token = others_tokens(acquired_corps).find { |t| t.used && t.city && t.hex == hex }
 
         # Force user to clear up the NY tile first, then choose the others
         if tokens_in_same_hex(entity, acquired_corps)
