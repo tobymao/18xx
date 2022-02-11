@@ -219,14 +219,13 @@ module Engine
             ],
           },
           # P11
-          # TODO Do you have to pay the $20 to upgrade non-city track to the next phase color?
-          #      Or does it only apply if you lay two upgrades?
           {
             name: 'Pettibone & Mulliken',
             value: 40,
             revenue: 0,
-            desc: 'May upgrade non-city track one color higher than currently allowed. '\
-                  ' May make an extra non-city track upgrade (instead of yellow tile lay) per OR when paying $20',
+            desc: 'The corporation may upgrade two track tiles when paying $20 to perform two track operations. ' \
+                  'Only one upgrade may be a city. The corporation may upgrade non-city track to a color one higher ' \
+                  'than the current phase normally allows'
             sym: 'P11',
             abilities: [
               # Built into track class
@@ -282,7 +281,7 @@ module Engine
             abilities: [],
           },
           # P15
-          # TODO there are edge cases where you may want to pay back the land grant first. Consider making a choice ability.
+          # TODO Make a choice ability
           {
             name: 'Western Land Grant',
             value: 60,
