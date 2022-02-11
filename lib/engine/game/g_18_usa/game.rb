@@ -623,7 +623,7 @@ module Engine
           @interest_fixed = nil
 
           G18USA::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G18USA::Step::DiscardTrain,
             G18USA::Step::DenverTrack,
             G18USA::Step::HomeToken,
             G18USA::Step::BuySellParShares,
@@ -663,7 +663,7 @@ module Engine
             G18USA::Step::BuyPullman,
             G18USA::Step::Route,
             G18USA::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G18USA::Step::DiscardTrain,
             G18USA::Step::BuyTrain,
           ], round_num: round_num)
         end
@@ -684,6 +684,12 @@ module Engine
           false
         end
 
+        def crowded_corps
+          @crowded_corps ||= (corporations).select do |c|
+            trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
+            trains > train_limit(c) || c.trains.count { |t| pullman_train?(t) } > 1
+          end
+        end
         # owner is the alleged corporation scrapping a pullman
         def scrap_train_by_corporation(action, _owner)
           entity = action.entity
@@ -733,7 +739,7 @@ module Engine
               @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
               G1817::Round::Merger.new(self, [
                 G18USA::Step::ReduceTokens,
-                Engine::Step::DiscardTrain,
+                G18USA::Step::DiscardTrain,
                 G1817::Step::PostConversion,
                 G18USA::Step::PostConversionLoans,
                 G18USA::Step::Conversion,
@@ -744,7 +750,7 @@ module Engine
                 G18USA::Step::ReduceTokens,
                 G1817::Step::Bankrupt,
                 G1817::Step::CashCrisis,
-                Engine::Step::DiscardTrain,
+                G18USA::Step::DiscardTrain,
                 G18USA::Step::Acquire,
               ], round_num: @round.round_num)
             when G1817::Round::Acquisition
