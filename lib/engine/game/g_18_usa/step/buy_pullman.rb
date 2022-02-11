@@ -2,13 +2,14 @@
 
 require_relative '../../../step/base'
 require_relative '../../../step/train'
-
+require_relative 'scrap_train_module'
 module Engine
   module Game
     module G18USA
       module Step
         class BuyPullman < Engine::Step::Base
           include Engine::Step::Train
+          include ScrapTrainModule # Why would you scrap a pullman so you can buy a pullman!?
           def actions(entity)
             return [] if entity != current_entity
 

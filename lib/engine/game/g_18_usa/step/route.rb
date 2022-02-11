@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/route'
+require_relative 'scrap_train_module'
 module Engine
   module Game
     module G18USA
       module Step
         class Route < Engine::Step::Route
+          include ScrapTrainModule
           def actions(entity)
             return [] if !entity.operator? || @game.route_trains(entity).empty? || !@game.can_run_route?(entity)
 

@@ -653,6 +653,7 @@ module Engine
             G1817::Step::CashCrisis,
             G18USA::Step::ObsoleteTrain,
             G18USA::Step::Loan,
+            G18USA::Step::ScrapTrain,
             G18USA::Step::SpecialTrack,
             G18USA::Step::SpecialToken,
             G18USA::Step::SpecialBuyTrain,
@@ -685,11 +686,12 @@ module Engine
         end
 
         def crowded_corps
-          @crowded_corps ||= (corporations).select do |c|
+          @crowded_corps ||= corporations.select do |c|
             trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
             trains > train_limit(c) || c.trains.count { |t| pullman_train?(t) } > 1
           end
         end
+
         # owner is the alleged corporation scrapping a pullman
         def scrap_train_by_corporation(action, _owner)
           entity = action.entity

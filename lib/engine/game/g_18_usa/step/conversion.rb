@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require_relative '../../g_1817/step/conversion'
-
+require_relative 'scrap_train_module'
 module Engine
   module Game
     module G18USA
       module Step
         class Conversion < G1817::Step::Conversion
+          include ScrapTrainModule
           def actions(entity)
             actions = super
             actions << 'scrap_train' if entity.corporation? && entity.trains.any? { |t| @game.pullman_train?(t) } &&
@@ -19,18 +20,6 @@ module Engine
             return false unless entity.owned_by?(current_entity)
 
             entity.trains.find { |t| @game.pullman_train?(t) }
-          end
-
-          def scrappable_trains(entity)
-            entity.trains.select { |t| t.name == 'P' }
-          end
-
-          def scrap_info(_)
-            @game.scrap_info
-          end
-
-          def scrap_button_text(_)
-            @game.scrap_button_text
           end
 
           def process_scrap_train(action)

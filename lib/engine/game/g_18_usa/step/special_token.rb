@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_token'
+require_relative 'scrap_train_module'
 
 module Engine
   module Game
     module G18USA
       module Step
         class SpecialToken < Engine::Step::SpecialToken
+          include ScrapTrainModule
           def process_place_token(action)
             super
 

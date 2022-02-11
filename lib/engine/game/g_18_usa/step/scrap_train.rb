@@ -1,18 +1,31 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/discard_train'
+require_relative '../../../step/base'
 require_relative 'scrap_train_module'
 module Engine
   module Game
     module G18USA
       module Step
-        class DiscardTrain < Engine::Step::DiscardTrain
+        class ScrapTrain < Engine::Step::Base
           include ScrapTrainModule
           def actions(entity)
-            actions = super
-            actions << 'scrap_train' if entity.corporation? && entity.trains.any? { |t| @game.pullman_train?(t) } &&
-                !actions.empty?
+            actions = []
+            actions << 'scrap_train' if entity == current_entity && entity.corporation? &&
+                entity.trains.any? { |t| @game.pullman_train?(t) }
+            actions << 'pass' if blocks?
             actions
+          end
+
+          def blocks?
+            @round.paid_loans[current_entity] && can_scrap_train?(current_entity)
+          end
+
+          def description
+            'Scrap Pullman'
+          end
+
+          def pass_description
+            'Skip Scrap Pullman'
           end
 
           def can_scrap_train?(entity)
@@ -25,12 +38,6 @@ module Engine
           def process_scrap_train(action)
             @corporate_action = action
             @game.scrap_train_by_corporation(action, current_entity)
-          end
-
-          def trains(corporation)
-            return super unless corporation.trains.count { |t| @game.pullman_train?(t) } > 1
-
-            corporation.trains.select { |t| @game.pullman_train?(t) }
           end
         end
       end

@@ -361,7 +361,6 @@ module Engine
           end
 
           def finalize_acquisition(acquired_corp)
-            puts 'finalized'
             # Step 10
             @round.cash_crisis_player =
               if acquired_corp.owner == @game.share_pool

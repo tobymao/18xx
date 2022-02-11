@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require_relative '../../g_1817/step/buy_train'
+require_relative 'scrap_train_module'
 
 module Engine
   module Game
     module G18USA
       module Step
         class BuyTrain < G1817::Step::BuyTrain
+          include ScrapTrainModule
           def should_buy_train?(entity)
             :liquidation if entity.trains.reject { |t| @game.pullman_train?(t) }.empty?
           end

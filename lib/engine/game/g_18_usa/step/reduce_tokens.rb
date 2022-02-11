@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/reduce_tokens'
-
+require_relative 'scrap_train_module'
 module Engine
   module Game
     module G18USA
       module Step
         class ReduceTokens < Engine::Step::ReduceTokens
+          include ScrapTrainModule
           def actions(entity)
             actions = super.dup
             actions << 'choose' if !actions.empty? && owns_p8?(entity)

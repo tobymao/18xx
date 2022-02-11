@@ -39,7 +39,7 @@ module View
             h(:div, trains),
           ])
         end
-        overflow << h(ScrapTrains, corporation: @current_entity) if current_entity_actions.include?('discard_train')
+        overflow << h(ScrapTrains, corporation: @current_entity) if current_entity_actions.include?('scrap_train')
         overflow << h(Map, game: @game) if @game.round.is_a?(Engine::Round::Operating)
 
         h(:div, [

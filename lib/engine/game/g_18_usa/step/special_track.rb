@@ -2,6 +2,7 @@
 
 require_relative '../../../step/special_track'
 require_relative 'resource_track'
+require_relative 'scrap_train_module'
 
 module Engine
   module Game
@@ -9,6 +10,7 @@ module Engine
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
           include ResourceTrack
+          include ScrapTrainModule
 
           def actions(entity)
             return [] if entity&.id == 'P16' && !@game.phase.tiles.include?(:brown)

@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_buy_train'
-
+require_relative 'scrap_train_module'
 module Engine
   module Game
     module G18USA
       module Step
         class SpecialBuyTrain < Engine::Step::SpecialBuyTrain
+          include ScrapTrainModule
           def must_buy_train?(_entity)
             false
           end

@@ -3,6 +3,7 @@
 require_relative '../../../step/track'
 require_relative '../../../step/upgrade_track_max_exits'
 require_relative 'resource_track'
+require_relative 'scrap_train_module'
 
 module Engine
   module Game
@@ -11,6 +12,7 @@ module Engine
         class Track < Engine::Step::Track
           include Engine::Step::UpgradeTrackMaxExits
           include ResourceTrack
+          include ScrapTrainModule
 
           def can_lay_tile?(entity)
             super || can_place_token_with_p20?(entity) || can_assign_p6?(entity)
