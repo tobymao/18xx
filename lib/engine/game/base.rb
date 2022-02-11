@@ -2781,6 +2781,12 @@ module Engine
       def use_1840_style_merger_round_scrap_trains?
         true
       end
+
+      # If true, instead of doing a relatively big view with a header and corporation context for scrapping trains, only a
+      # button [{scrap}] will be displayed, where {scrap} is taken from the current step's scrap_info(train) method
+      def use_compact_scrap_trains_view
+        false
+      end
     end
   end
 end

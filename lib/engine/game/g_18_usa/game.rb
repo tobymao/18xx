@@ -674,11 +674,15 @@ module Engine
         end
 
         def scrap_info
-          "Scrap for #{format_currency(pullman_scrap_value)}"
+          "Scrap Pullman for #{format_currency(pullman_scrap_value)}"
         end
 
         def scrap_button_text
-          'Scrap'
+          'Scrap Pullman'
+        end
+
+        def use_compact_scrap_trains_view
+          true
         end
 
         def use_1840_style_merger_round_scrap_trains?

@@ -9,7 +9,6 @@ module View
       needs :corporation, default: nil
 
       def render
-        # If @corporation is set then this ScrapTrains is attached to a Corporation card (such as in a stock round action, 18USA)
         @corporation ||= @game.round.active_step.current_entity
         step = @game.round.active_step
 
@@ -24,11 +23,13 @@ module View
             alignItems: 'center',
           },
         }
-
-        h(:div, [
-          h(:h3, 'Trains to Scrap'),
-          h(:div, div_props, scrap_trains(scrappable_trains)),
-        ])
+        if @game.use_compact_scrap_trains_view
+          h(:div, scrap_trains(scrappable_trains))
+        else
+          h(:div,
+            [h(:h3, 'Trains to Scrap'),
+             h(:div, div_props, scrap_trains(scrappable_trains))])
+        end
       end
 
       def scrap_trains(scrappable_trains)
@@ -40,11 +41,14 @@ module View
               train: train,
             ))
           end
-
-          [h(:div, train.name),
-           h('div.nowrap', train.owner.name),
-           h('div.right', step.scrap_info(train)),
-           h('button.no_margin', { on: { click: scrap } }, step.scrap_button_text(train))]
+          if @game.use_compact_scrap_trains_view
+            h(:button, { on: { click: scrap } }, step.scrap_info(train))
+          else
+            [h(:div, train.name),
+             h('div.nowrap', train.owner.name),
+             h('div.right', step.scrap_info(train)),
+             h('button.no_margin', { on: { click: scrap } }, step.scrap_button_text(train))]
+          end
         end
       end
     end
