@@ -298,10 +298,10 @@ module Engine
           'J7' => 'Berwick',
           'J11' => 'Newcastle',
           'J13' => 'Middlesbrough',
-          'J17' => 'Hull',
           'J25' => 'Ipswich',
           'J27' => 'Harwich',
           'K0' => 'Aberdeen',
+          'K16' => 'Hull',
           'K18' => 'Grimsby',
           'K22' => 'Norwich',
           'L1' => 'Arbroath',
@@ -358,12 +358,15 @@ module Engine
             ['G26'] => 'offboard=revenue:yellow_30|green_40|blue_50|brown_60|gray_70;path=a:1,b:_0;path=a:2,b:_0;' \
                        'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:18_gb/south;icon=image:18_gb/east',
             ['I0'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:0,b:_0;icon=image:18_gb/north',
-            ['J17'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:5,b:0',
+            ['J17'] => 'offboard=revenue:yellow_20|blue_40|gray_50,hide:1;path=a:3,b:_0;'\
+                       'offboard=revenue:yellow_20|blue_20|gray_20,hide:1;path=a:0,b:_1;'\
+                       'border=edge:5;border=edge:4;partition=a:2,b:5,type:divider',
             ['J27'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south;' \
                        'icon=image:18_gb/east',
             ['K0'] => 'offboard=revenue:yellow_30|blue_40|gray_50;path=a:0,b:_0;path=a:5,b:_0;icon=image:18_gb/north;' \
                       'icon=image:18_gb/east',
-            ['K18'] => 'offboard=revenue:yellow_20|blue_20|gray_20;path=a:2,b:_0',
+            ['K16'] => 'offboard=revenue:yellow_20|blue_40|gray_50;border=edge:1',
+            ['K18'] => 'offboard=revenue:yellow_20|blue_20|gray_20;border=edge:2',
             ['K22'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;icon=image:18_gb/east',
           },
           gray: {
@@ -431,12 +434,15 @@ module Engine
             ['G26'] => 'offboard=revenue:yellow_30|green_40|blue_50|brown_60|gray_70;path=a:1,b:_0;path=a:2,b:_0;' \
                        'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:18_gb/south;icon=image:18_gb/east',
             ['I0'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:0,b:_0;icon=image:18_gb/north',
-            ['J17'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:5,b:0',
+            ['J17'] => 'offboard=revenue:yellow_20|blue_40|gray_50,hide:1;path=a:3,b:_0;'\
+                       'offboard=revenue:yellow_20|blue_20|gray_20,hide:1;path=a:0,b:_1;'\
+                       'border=edge:5;border=edge:4;partition=a:2,b:5,type:divider',
             ['J27'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south;' \
                        'icon=image:18_gb/east',
             ['K0'] => 'offboard=revenue:yellow_30|blue_40|gray_50;path=a:0,b:_0;path=a:5,b:_0;icon=image:18_gb/north;' \
                       'icon=image:18_gb/east',
-            ['K18'] => 'offboard=revenue:yellow_20|blue_20|gray_20;path=a:2,b:_0',
+            ['K16'] => 'offboard=revenue:yellow_20|blue_40|gray_50;border=edge:1',
+            ['K18'] => 'offboard=revenue:yellow_20|blue_20|gray_20;border=edge:2',
             ['K22'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;icon=image:18_gb/east',
           },
           gray: {
@@ -500,10 +506,13 @@ module Engine
             ['H9'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;icon=image:18_gb/north',
             ['J11'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;' \
                        'icon=image:18_gb/north',
-            ['J17'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:5,b:0',
+            ['J17'] => 'offboard=revenue:yellow_20|blue_40|gray_50,hide:1;path=a:3,b:_0;'\
+                       'offboard=revenue:yellow_20|blue_20|gray_20,hide:1;path=a:0,b:_1;'\
+                       'border=edge:5;border=edge:4;partition=a:2,b:5,type:divider',
             ['J27'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south;' \
                        'icon=image:18_gb/east',
-            ['K18'] => 'offboard=revenue:yellow_20|blue_20|gray_20;path=a:2,b:_0',
+            ['K16'] => 'offboard=revenue:yellow_20|blue_40|gray_50;border=edge:1',
+            ['K18'] => 'offboard=revenue:yellow_20|blue_20|gray_20;border=edge:2',
             ['K22'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:0,b:_0;path=a:1,b:_0;icon=image:18_gb/east',
           },
           gray: {
