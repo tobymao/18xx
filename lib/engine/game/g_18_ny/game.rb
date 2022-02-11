@@ -565,6 +565,11 @@ module Engine
           super - player.shares_by_corporation.sum { |corp, _| player.num_shares_of(corp) * corp.loans.size * 5 }
         end
 
+        def bank_sort(corporations)
+          minors, corps = corporations.partition { |c| c.type == :minor }
+          minors.sort_by { |m| m.name.to_i } + super(corps)
+        end
+
         #
         # Stock round logic
         #
@@ -1325,12 +1330,16 @@ module Engine
 
         def liquidate_remaining_minors
           active_minors.each do |minor|
-            owner = minor.owner
-            @stock_market.move_left(minor)
-            liquidation_price = minor.share_price.price * 2
-            @log << "#{minor.name} is liquidated and #{owner.name} receives #{format_currency(liquidation_price)} " \
-                    'in compensation from the bank'
-            @bank.spend(liquidation_price, owner)
+            if minor.receivership?
+              @log << "#{minor.name} is liquidated"
+            else
+              owner = minor.owner
+              @stock_market.move_left(minor)
+              liquidation_price = minor.share_price.price * 2
+              @log << "#{minor.name} is liquidated and #{owner.name} receives #{format_currency(liquidation_price)} " \
+                      'in compensation from the bank'
+              @bank.spend(liquidation_price, owner)
+            end
             close_corporation(minor, quiet: true)
             minor.close!
           end
