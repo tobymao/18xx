@@ -7,9 +7,11 @@ module Engine
     module G1840
       module Step
         class ReassignTrains < Engine::Step::Base
-          ACTIONS = %w[reassign_trains pass].freeze
+          ACTIONS = %w[reassign_trains].freeze
 
           def actions(entity)
+            return [] unless entity == current_entity
+
             minor_corps = @game.corporate_card_minors(entity)
             if minor_corps.size.zero? ||
               (minor_corps.size == 1 && !minor_corps.first.trains.empty? && entity.trains.empty?)
@@ -17,10 +19,6 @@ module Engine
             end
 
             ACTIONS
-          end
-
-          def pass_description
-            @acted ? 'Done (Reassign)' : 'Skip (Reassign)'
           end
 
           def description
@@ -71,7 +69,16 @@ module Engine
                     "#{invalid_tram_corp.full_name} cannot be assigned more than one train"
             end
 
-            @log << "#{entity.owner.name} reassignes trains: #{reassignments.join(', ')}" unless reassignments.empty?
+            if entity.trains.length.positive? && @game.tram_owned_by_corporation[entity].any? { |item| item.trains.length.zero? }
+              raise GameError,
+                    'All tram lines need to have one train'
+            end
+            @log << if reassignments.empty?
+                      "#{entity.owner.name} does not reassign any trains"
+                    else
+                      "#{entity.owner.name} reassignes trains: #{reassignments.join(', ')}"
+                    end
+            pass!
           end
 
           def trains(entity)
