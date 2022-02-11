@@ -304,7 +304,7 @@ module Engine
           'A18' => 'Prussia',
           'A20' => 'Hannover',
           'A22' => 'Bavaria',
-          'A24' => 'Wurttemburg',
+          'A24' => 'Württemberg',
           'A26' => 'Saxony',
           'B17' => 'Kgdm 2 Sicilies',
           'B19' => 'Sardinia',
