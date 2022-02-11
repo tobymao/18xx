@@ -11,7 +11,7 @@ module Engine
         COMPANIES = [
           # P1
           {
-            name: 'Lehigh Coal Mine Co.',
+            name: 'P1 - Lehigh Coal Mine Co.',
             value: 30,
             revenue: 0,
             desc: 'Comes with one coal mine marker. When placing a yellow '\
@@ -37,7 +37,7 @@ module Engine
           },
           # P2
           {
-            name: 'Fox Bridge Works',
+            name: 'P2 - Fox Bridge Works',
             value: 40,
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
@@ -63,7 +63,7 @@ module Engine
           },
           # P3
           {
-            name: 'Reece Oil and Gas',
+            name: 'P3 - Reece Oil and Gas',
             value: 30,
             revenue: 0,
             desc: 'Comes with one oil marker. When placing a yellow '\
@@ -89,7 +89,7 @@ module Engine
           },
           # P4
           {
-            name: 'Hendrickson Iron',
+            name: 'P4 - Hendrickson Iron',
             value: 40,
             revenue: 0,
             desc: 'Comes with one ore marker. When placing a yellow '\
@@ -116,7 +116,7 @@ module Engine
           },
           # P5
           {
-            name: 'Nobel\'s Blasting Powder',
+            name: 'P5 - Nobel\'s Blasting Powder',
             value: 30,
             revenue: 0,
             desc: '$15 discount on mountains. No money is refunded if combined with the ability of another private that also '\
@@ -133,7 +133,7 @@ module Engine
           },
           # P6
           {
-            name: 'Import/Export Hub',
+            name: 'P6 - Import/Export Hub',
             value: 30,
             revenue: 0,
             desc: 'Discard during a corporation\'s lay or upgrade track step to replace one red area value token with the ' \
@@ -150,7 +150,7 @@ module Engine
           },
           # P7
           {
-            name: 'Track Engineers',
+            name: 'P7 - Track Engineers',
             value: 40,
             revenue: 0,
             desc: 'May lay two extra yellow tiles instead of one when paying $20.',
@@ -161,7 +161,7 @@ module Engine
           },
           # P8
           {
-            name: 'Express Freight Service',
+            name: 'P8 - Express Freight Service',
             value: 40,
             revenue: 0,
             desc: 'Place an extra station marker from the owning company in one red area. The company receives +10 ' \
@@ -185,7 +185,7 @@ module Engine
           },
           # P9
           {
-            name: 'Boomtown',
+            name: 'P9 - Boomtown',
             value: 40,
             revenue: 0,
             desc: "Discard during the owning corporation's lay or upgrade track step to upgrade a yellow non-metropolis city "\
@@ -207,7 +207,7 @@ module Engine
           },
           # P10
           {
-            name: 'Carnegie Steel Company',
+            name: 'P10 - Carnegie Steel Company',
             value: 40,
             revenue: 0,
             desc: 'If this company starts in an unselected and unimproved metropolis, that city becomes a metropolis. '\
@@ -219,14 +219,13 @@ module Engine
             ],
           },
           # P11
-          # TODO Do you have to pay the $20 to upgrade non-city track to the next phase color?
-          #      Or does it only apply if you lay two upgrades?
           {
-            name: 'Pettibone & Mulliken',
+            name: 'P11 - Pettibone & Mulliken',
             value: 40,
             revenue: 0,
-            desc: 'May upgrade non-city track one color higher than currently allowed. '\
-                  ' May make an extra non-city track upgrade (instead of yellow tile lay) per OR when paying $20',
+            desc: 'The corporation may upgrade two track tiles when paying $20 to perform two track operations. ' \
+                  'Only one upgrade may be a city. The corporation may upgrade non-city track to a color one higher ' \
+                  'than the current phase normally allows',
             sym: 'P11',
             abilities: [
               # Built into track class
@@ -234,7 +233,7 @@ module Engine
           },
           # P12
           {
-            name: 'Standard Oil Co.',
+            name: 'P12 - Standard Oil Co.',
             value: 60,
             revenue: 0,
             desc: 'Comes with two oil markers. When placing a yellow '\
@@ -260,7 +259,7 @@ module Engine
           },
           # P13
           {
-            name: 'Pennsy Boneyard',
+            name: 'P13 - Pennsy Boneyard',
             value: 60,
             revenue: 0,
             desc: 'Discard when the first 4, 6, or 8-train is purchased or exported to prevent one train from ' \
@@ -274,7 +273,7 @@ module Engine
           },
           # P14
           {
-            name: 'Pyramid Scheme',
+            name: 'P14 - Pyramid Scheme',
             value: 60,
             revenue: 0,
             desc: 'This company has no special ability.',
@@ -282,9 +281,9 @@ module Engine
             abilities: [],
           },
           # P15
-          # TODO there are edge cases where you may want to pay back the land grant first. Consider making a choice ability.
+          # TODO Make a choice ability
           {
-            name: 'Western Land Grant',
+            name: 'P15 - Western Land Grant',
             value: 60,
             revenue: 0,
             desc: 'The owning corporation may take one extra loan at a fixed $5 per round interest rate. ' \
@@ -294,7 +293,7 @@ module Engine
           },
           # P16 Regional Headquarters
           {
-            name: 'Regional Headquarters',
+            name: 'P16 - Regional Headquarters',
             value: 60,
             revenue: 0,
             desc: 'Regional Headquarters may be used to upgrade a green or brown non-metropolis city after phase 5 begins. ' \
@@ -317,7 +316,7 @@ module Engine
           },
           # P17
           {
-            name: 'Great Northern Railway',
+            name: 'P17 - Great Northern Railway',
             value: 60,
             revenue: 0,
             desc: 'One extra yellow lay per turn on the hexes marked with railroad track icons on the map '\
@@ -340,7 +339,7 @@ module Engine
           },
           # P18
           {
-            name: 'Peabody Coal Company',
+            name: 'P18 - Peabody Coal Company',
             value: 60,
             revenue: 0,
             desc: 'Comes with two coal mine markers. When placing a yellow '\
@@ -366,7 +365,7 @@ module Engine
           },
           # P19
           {
-            name: 'Union Switch & Signal',
+            name: 'P19 - Union Switch & Signal',
             value: 80,
             revenue: 0,
             desc: 'One train per turn may attach the Switcher to skip over a city (even a blocked city)',
@@ -377,7 +376,7 @@ module Engine
           },
           # P20
           {
-            name: 'Suem & Wynn Law Firm',
+            name: 'P20 - Suem & Wynn Law Firm',
             value: 80,
             revenue: 0,
             desc: 'Discard during the lay or upgrade track step to place an available station token into any city ' \
@@ -398,7 +397,7 @@ module Engine
           },
           # P21
           {
-            name: 'Keystone Bridge Co.',
+            name: 'P21 - Keystone Bridge Co.',
             value: 80,
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
@@ -437,7 +436,7 @@ module Engine
           },
           # P22
           {
-            name: 'American Bridge Company',
+            name: 'P22 - American Bridge Company',
             value: 80,
             revenue: 0,
             desc: 'Comes with two $10 bridge tokens that may be placed by the owning '\
@@ -463,7 +462,7 @@ module Engine
           },
           # P23
           {
-            name: 'Bailey Yard',
+            name: 'P23 - Bailey Yard',
             value: 80,
             revenue: 0,
             desc: 'Provides an additional station marker for the owning corp, awarded at time of purchase',
@@ -478,7 +477,7 @@ module Engine
           },
           # P24
           {
-            name: 'Anaconda Copper',
+            name: 'P24 - Anaconda Copper',
             value: 90,
             revenue: 0,
             desc: 'Comes with two ore markers. When placing a yellow '\
@@ -505,7 +504,7 @@ module Engine
           },
           # P25
           {
-            name: 'American Locomotive Co.',
+            name: 'P25 - American Locomotive Co.',
             value: 90,
             revenue: 0,
             desc: 'The owning corporation receives a 10% discount on all trains from the bank. During the owning company’s ' \
@@ -527,7 +526,7 @@ module Engine
           },
           # P26
           {
-            name: 'Rural Junction',
+            name: 'P26 - Rural Junction',
             value: 90,
             revenue: 0,
             desc: 'Comes with three rural junction tiles. Rural junctions can be placed in empty city hexes and fulfill the '\
@@ -552,7 +551,7 @@ module Engine
           },
           # P27
           {
-            name: 'Company Town',
+            name: 'P27 - Company Town',
             value: 90,
             revenue: 0,
             desc: 'Comes with 3 company town tiles, only one of which may be played. The owning corporation may place one '\
@@ -578,7 +577,7 @@ module Engine
           },
           # P28
           {
-            name: 'Consolidation Coal Co.',
+            name: 'P28 - Consolidation Coal Co.',
             value: 90,
             revenue: 0,
             desc: 'Comes with three coal mine markers. When placing a yellow '\
@@ -604,7 +603,7 @@ module Engine
           },
           # P29
           {
-            name: 'Bankrupt Railroad',
+            name: 'P29 - Bankrupt Railroad',
             value: 120,
             revenue: 0,
             desc: 'If this company starts in a city with a No Subsidy tile it immediately takes a free 2-train which it may '\
@@ -616,7 +615,7 @@ module Engine
           },
           # P30
           {
-            name: 'Double Heading',
+            name: 'P3 - Double Heading',
             value: 120,
             revenue: 0,
             desc: 'Each turn one non-permanent train may attach the Extender to run to one extra city',
