@@ -478,6 +478,10 @@ module Engine
 
           revenue
         end
+
+        def multiple_buy_only_from_market?
+          !optional_rules&.include?(:multiple_brown_from_ipo)
+        end
       end
     end
   end

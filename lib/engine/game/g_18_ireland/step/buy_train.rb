@@ -38,6 +38,17 @@ module Engine
             super
           end
 
+          def buyable_trains(entity)
+            # Can't EMR if anything is affordable
+            buyable = super
+            affordable = buyable.select { |t| !t.from_depot? || t.price <= buying_power(entity) }
+            if affordable.any?
+              affordable
+            else
+              buyable
+            end
+          end
+
           def spend_minmax(entity, train)
             # @todo: I think the lack of the from_depot check is a bug in many games
             # but needs more detailed analysis

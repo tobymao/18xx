@@ -127,7 +127,7 @@ module Engine
         COMPANIES = [
             {
               name: 'Prater',
-              sym: 'Prater',
+              sym: 'PR',
               value: 10,
               revenue: 5,
               desc: 'Increase income by 20 if tram route runs to or through D28',
@@ -143,7 +143,7 @@ module Engine
             },
             {
               name: 'Karlskirche',
-              sym: 'Karlskirche',
+              sym: 'KK',
               value: 20,
               revenue: 10,
               desc: 'Increase income by 20 if tram route runs to or through E21 (when red tile is placed)',
@@ -159,7 +159,7 @@ module Engine
             },
             {
               name: 'Schloss Belvedere',
-              sym: 'Schloss Belvedere',
+              sym: 'SB',
               value: 30,
               revenue: 15,
               desc: 'Increase income by 20 if tram route runs to or through H22',
@@ -175,7 +175,7 @@ module Engine
             },
             {
               name: 'Hofburg',
-              sym: 'Hofburg',
+              sym: 'HB',
               value: 40,
               revenue: 20,
               desc: 'Increase income by 20 if tram route runs to or through E19 (when red tile is placed)',
@@ -191,7 +191,7 @@ module Engine
             },
             {
               name: 'Stephansdom',
-              sym: 'Stephansdom',
+              sym: 'SD',
               value: 50,
               revenue: 25,
               desc: 'Increase income by 20 if tram route runs to or through D20 (when red tile is placed)',
@@ -207,7 +207,7 @@ module Engine
             },
             {
               name: 'Schloss Schönbrunn',
-              sym: 'Schloss Schönbrunn',
+              sym: 'SSB',
               value: 60,
               revenue: 30,
               desc: 'Increase income by 20 if tram route runs to or through K7',

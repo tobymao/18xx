@@ -7,18 +7,17 @@ module Engine
     module G18USA
       module Round
         class Operating < G1817::Round::Operating
-          def after_process(action)
-            # Keep track of last_player for Cash Crisis
-            entity = @entities[@entity_index]
-            @cash_crisis_player = entity.player
-            pay_interest!(entity)
-
-            if !active_step && entity.operator? && entity.trains.reject { |t| @game.pullman_train?(t) }.empty?
-              @log << "#{entity.name} has no trains and liquidates"
-              @game.liquidate!(entity)
-            end
-
+          def setup
             super
+            @train_export_triggered = false
+          end
+
+          def after_process(action)
+            super
+            return if !finished? || @train_export_triggered
+
+            @game.export_train
+            @train_export_triggered = true
           end
         end
       end

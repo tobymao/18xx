@@ -89,6 +89,13 @@ module Engine
       @depot_trains = nil
     end
 
+    def insert_train(train, index = 0)
+      train.owner = self
+      @trains << train
+      @upcoming.insert(index, train)
+      @depot_trains = nil
+    end
+
     def depot_trains(clear: false)
       @depot_trains = nil if clear
       @depot_trains ||= [

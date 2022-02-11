@@ -51,6 +51,10 @@ module Engine
         @game.class::MIN_BID_INCREMENT
       end
 
+      def must_bid_increment_multiple?
+        @game.class::MUST_BID_INCREMENT_MULTIPLE
+      end
+
       def setup_auction
         @bids = Hash.new { |h, k| h[k] = [] }
       end
@@ -97,7 +101,7 @@ module Engine
         price = bid.price
         min = min_bid(company)
         raise GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
-        if @game.class::MUST_BID_INCREMENT_MULTIPLE && ((price - min) % @game.class::MIN_BID_INCREMENT).nonzero?
+        if must_bid_increment_multiple? && ((price - min) % @game.class::MIN_BID_INCREMENT).nonzero?
           raise GameError, "Must increase bid by a multiple of #{@game.class::MIN_BID_INCREMENT}"
         end
         if price > max_bid(entity, company)
@@ -115,7 +119,7 @@ module Engine
         price = bid.price
         min = min_bid(company)
         raise GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
-        if @game.class::MUST_BID_INCREMENT_MULTIPLE && ((price - min) % @game.class::MIN_BID_INCREMENT).nonzero?
+        if must_bid_increment_multiple? && ((price - min) % @game.class::MIN_BID_INCREMENT).nonzero?
           raise GameError, "Must increase bid by a multiple of #{@game.class::MIN_BID_INCREMENT}"
         end
         if price > max_bid(entity, company)

@@ -13,13 +13,13 @@ module Engine
             return actions unless entity.corporation?
             return [] if entity.receivership?
 
-            if must_buy_train?(entity)
+            if must_buy_train?(entity) || @round.active_train_loan
               actions.delete('pass')
               actions << 'buy_train'
             end
             actions << 'scrap_train' unless scrappable_trains(entity).empty?
             actions << 'take_loan' if can_take_loan?(entity)
-            actions << 'pass' if !actions.empty? && !must_buy_train?(entity)
+            actions << 'pass' if !actions.empty? && !must_buy_train?(entity) && !@round.active_train_loan
             actions.uniq
           end
 
@@ -52,17 +52,25 @@ module Engine
           end
 
           def ebuy_offer_only_cheapest_depot_train?
-            @loan_taken
+            @round.active_train_loan
           end
 
           def needed_cash(_entity)
-            @loan_taken ? @depot.min_depot_price : @depot.max_depot_price
+            @round.active_train_loan ? @depot.min_depot_price : @depot.max_depot_price
+          end
+
+          def round_state
+            super.merge(
+              {
+                active_train_loan: false,
+              }
+            )
           end
 
           def setup
             super
             @train_salvaged = false
-            @loan_taken = false
+            @round.active_train_loan = false
           end
 
           def can_issue_shares?(entity)
@@ -95,14 +103,14 @@ module Engine
 
           def process_buy_train(action)
             train = action.train
-            check_for_cheapest_train(train) if train.from_depot? && @loan_taken
+            check_for_cheapest_train(train) if train.from_depot? && @round.active_train_loan
 
             super
           end
 
           def process_take_loan(action)
             @game.take_loan(action.entity)
-            @loan_taken = true
+            @round.active_train_loan = true
           end
 
           def process_scrap_train(action)

@@ -59,7 +59,6 @@ module Engine
             name: '2',
             rusts_on: '4',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                       { 'nodes' => ['offboard'], 'pay' => 2 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 100,
             num: 15,
@@ -68,17 +67,14 @@ module Engine
             name: '3',
             rusts_on: '6',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                       { 'nodes' => ['offboard'], 'pay' => 2 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 200,
             num: 5,
           },
-          { name: 'P', distance: 99, price: 100, num: 5 },
           {
             name: '4',
             rusts_on: '8',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                       { 'nodes' => ['offboard'], 'pay' => 2 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 300,
             num: 4,
@@ -86,7 +82,6 @@ module Engine
           {
             name: '5',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                       { 'nodes' => ['offboard'], 'pay' => 2 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             events: [{ 'type' => 'minor_exchange' }],
             price: 500,
@@ -95,7 +90,6 @@ module Engine
           {
             name: '6',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
-                       { 'nodes' => ['offboard'], 'pay' => 2 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 600,
             num: 2,
@@ -103,10 +97,18 @@ module Engine
           {
             name: '8',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
-                       { 'nodes' => ['offboard'], 'pay' => 2 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
             num: 99,
+          },
+          {
+            name: 'P',
+            available_on: '3',
+            requires_token: false,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 1, 'visit' => 1 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 0 }],
+            price: 100,
+            num: 5,
           },
         ].freeze
       end

@@ -6,11 +6,11 @@ module Engine
       def tokens_in_same_hex(surviving, others)
         # Are there tokens in the same hex?
         # Most will be released by remove_duplicate_tokens, but NY style tiles need to be solved by the user
-        (surviving.tokens.map { |t| t.city&.hex } & others_tokens(others).map { |t| t.city&.hex }).any?
+        (surviving.tokens.map(&:hex) & others_tokens(others).map(&:hex)).any?
       end
 
       def tokens_above_limits?(surviving, others)
-        tokens = surviving.tokens.map { |t| t.city&.hex }.compact
+        tokens = surviving.tokens.map(&:hex).compact
 
         tokens.uniq.size != tokens.size ||
         tokens_in_same_hex(surviving, others) ||
@@ -30,7 +30,7 @@ module Engine
         others = others_tokens(others).map(&:city).compact
         surviving.tokens.each do |token|
           city = token.city
-          token.remove! if others.include?(city)
+          token.remove! if city && others.include?(city)
         end
       end
 
@@ -48,13 +48,13 @@ module Engine
 
         tokens = others_tokens(others).map do |token|
           new_token = Engine::Token.new(surviving, price: price_for_new_token)
-          if token.city
+          if token.hex
             used << new_token
             token.swap!(new_token, check_tokenable: check_tokenable)
           else
             unused << new_token
           end
-          new_token.city&.hex&.id
+          new_token.hex&.id
         end
 
         raise GameError, 'Used token above limit' if used.size > @game.class::LIMIT_TOKENS_AFTER_MERGER

@@ -7,7 +7,7 @@ module Engine
     include Assignable
 
     attr_accessor :x, :y, :ignore_for_axes, :location_name
-    attr_reader :coordinates, :empty, :layout, :neighbors, :all_neighbors, :tile, :original_tile
+    attr_reader :coordinates, :empty, :layout, :neighbors, :all_neighbors, :tile, :original_tile, :tokens
 
     DIRECTIONS = {
       flat: {
@@ -78,6 +78,7 @@ module Engine
       @activations = []
       @empty = empty
       @ignore_for_axes = false
+      @tokens = []
     end
 
     def id
@@ -241,6 +242,19 @@ module Engine
       else
         dx + [0, (dy - dx) / 2].max
       end
+    end
+
+    def place_token(token, logo: nil)
+      token.place(self)
+      @tokens << token
+      icon = Part::Icon.new('', token.corporation.id, true)
+      icon.image = logo || token.corporation.logo
+      @tile.icons << icon
+    end
+
+    def remove_token(token)
+      @tile.icons.delete(@tile.icons.find { |_name| token.corporation.id })
+      @tokens.delete(token)
     end
 
     def inspect

@@ -14,6 +14,7 @@ module Engine
           def setup
             @paid_loans = {}
             @game.payout_companies
+            (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or!)
             after_setup
           end
 
@@ -23,7 +24,7 @@ module Engine
             @cash_crisis_player = entity.player
             pay_interest!(entity)
 
-            if !active_step && entity.operator? && entity.trains.empty?
+            if !active_step && entity.operator? && entity.trains.reject { |t| @game.pullman_train?(t) }.empty?
               @log << "#{entity.name} has no trains and liquidates"
               @game.liquidate!(entity)
             end

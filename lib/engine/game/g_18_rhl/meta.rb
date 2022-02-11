@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
         GAME_SUBTITLE = 'Rhineland'
         GAME_DESIGNER = 'Wolfram Janich'
@@ -22,7 +22,7 @@ module Engine
           {
             sym: :optional_2_train,
             short_name: 'Optional 2-Train',
-            desc: 'Add an 8th 2-train',
+            desc: 'Add a 7th 2-train',
           },
           {
             sym: :lower_starting_capital,

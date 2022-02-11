@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'player_info'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
 require_relative '../cities_plus_towns_route_distance_str'
@@ -29,6 +30,8 @@ module Engine
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
+
+        FIRST_OR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
         MARKET = [
           %w[65y
@@ -175,14 +178,6 @@ module Engine
         HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
         COMPANY_1_AND_2 = %w[AGS BS].freeze
 
-        def p1_company
-          @p1_company ||= company_by_id('AGS')
-        end
-
-        def p2_company
-          @p2_company ||= company_by_id('BS')
-        end
-
         def chattanooga_hex
           @chattanooga_hex ||= @hexes.find { |h| h.name == 'B12' }
         end
@@ -279,6 +274,12 @@ module Engine
           end
         end
 
+        def store_player_info
+          @players.each do |p|
+            p.history << G18MS::PlayerInfo.new(@round.class.short_name, turn, @round.round_num, player_value(p))
+          end
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Exchange,
@@ -355,13 +356,15 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          revenue = super
+          super + hex_bonus_amount(route, stops)
+        end
 
-          abilities(route.corporation, :hexes_bonus) do |ability|
-            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
-          end
+        def revenue_str(route)
+          str = super
 
-          revenue
+          str += ' + New Orleans' if hex_bonus_amount(route, route.stops).positive?
+
+          str
         end
 
         def routes_revenue(routes)
@@ -425,7 +428,7 @@ module Engine
         def tile_lays(entity)
           return super unless @recently_floated.include?(entity)
 
-          [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+          FIRST_OR_TILE_LAYS
         end
 
         def add_free_train_and_close_company(corporation, company)
@@ -508,6 +511,15 @@ module Engine
           @log << "-- Event: #{rusted_trains.map(&:name).uniq} trains rust " \
                   "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
           @log << "Corporations salvage #{format_currency(salvage)} from each rusted train"
+        end
+
+        def hex_bonus_amount(route, stops)
+          hex_bonus_amount = 0
+          abilities(route.corporation, :hexes_bonus) do |ability|
+            hex_bonus_amount += ability.amount if stops.any? { |s| ability.hexes.include?(s.hex.id) }
+          end
+
+          hex_bonus_amount
         end
       end
     end

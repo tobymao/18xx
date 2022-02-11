@@ -24,7 +24,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
-                tiles: %w[7coal 8coal 9coal],
+                tiles: [RESOURCE_LABELS[:coal]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -34,10 +34,8 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'white',
           },
           # P2
-          # TODO: Make it work as a combo with P27
           {
             name: 'Fox Bridge Works',
             value: 40,
@@ -54,17 +52,14 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
-              # TODO: Not NO if a metropolis, Yes, Company town if on river
-              # TODO must be reachable
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
             ],
-            color: 'white',
           },
           # P3
           {
@@ -82,7 +77,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
-                tiles: %w[7oil 8oil 9oil],
+                tiles: [RESOURCE_LABELS[:oil]],
                 when: 'track',
                 reachable: true,
                 consume_tile_lay: true,
@@ -91,7 +86,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'white',
           },
           # P4
           {
@@ -109,7 +103,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: ORE_HEXES,
-                tiles: %w[7ore 8ore10 9ore10],
+                tiles: [RESOURCE_LABELS[:ore]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -119,7 +113,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'white',
           },
           # P5
           {
@@ -137,7 +130,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: 'blue',
           },
           # P6
           {
@@ -155,7 +147,6 @@ module Engine
                 hexes: [], # Connected offboards
               },
             ],
-            color: 'blue',
           },
           # P7
           {
@@ -167,7 +158,30 @@ module Engine
             abilities: [
               # Built into game class
             ],
-            color: 'cyan',
+          },
+          # P8
+          {
+            name: 'Express Freight Service',
+            value: 40,
+            revenue: 0,
+            desc: 'Place an extra station marker from the owning company in one red area. The company receives +10 ' \
+                  'revenue for each train which runs to that red area for the remainder of the game. The station ' \
+                  'marker in the red area is not a normal station. It is only an indicator of which area the ' \
+                  'company receives the +10 revenue bonus. During a merger or acquisition, the station marker in ' \
+                  'the red area must be replaced by a station from the acquiring company if one is available. If ' \
+                  'during a merger or acquisition, the new company has more than 8 station markers (counting the ' \
+                  'station marker in the red area), the new company may choose to either keep or remove the station ' \
+                  'marker from the red area. If the station marker is removed during a M&A action the Express ' \
+                  'Freight Service private company is discarded.',
+            sym: 'P8',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'track',
+                owner_type: 'corporation',
+                hexes: [], # Connected offboards
+              },
+            ],
           },
           # P9
           {
@@ -181,7 +195,6 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                free: true,
                 when: 'track',
                 owner_type: 'corporation',
                 reachable: true,
@@ -191,7 +204,6 @@ module Engine
                 tiles: %w[14 15 619],
               },
             ],
-            color: 'cyan',
           },
           # P10
           {
@@ -200,14 +212,11 @@ module Engine
             revenue: 0,
             desc: 'If this company starts in an unselected and unimproved metropolis, that city becomes a metropolis. '\
                   'All potential metropolises for this private are: '\
-                  'Atlanta, Chicago, Denver, Dallas-Fort Worth, Los Angeles, and New Orleans. ' \
-                  'Implementation limitation: Cannot be combined with Boomtown subsidy',
-            # TODO: fix limitation
+                  'Atlanta, Chicago, Denver, Dallas-Fort Worth, Los Angeles, and New Orleans.',
             sym: 'P10',
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'cyan',
           },
           # P11
           # TODO Do you have to pay the $20 to upgrade non-city track to the next phase color?
@@ -222,7 +231,6 @@ module Engine
             abilities: [
               # Built into track class
             ],
-            color: 'cyan',
           },
           # P12
           {
@@ -240,7 +248,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: OIL_HEXES,
-                tiles: %w[7oil 8oil 9oil],
+                tiles: [RESOURCE_LABELS[:oil]],
                 when: 'track',
                 reachable: true,
                 consume_tile_lay: true,
@@ -249,7 +257,20 @@ module Engine
                 count: 2,
               },
             ],
-            color: 'green',
+          },
+          # P13
+          {
+            name: 'Pennsy Boneyard',
+            value: 60,
+            revenue: 0,
+            desc: 'Discard when the first 4, 6, or 8-train is purchased or exported to prevent one train from ' \
+                  'rusting. The train is instead treated as an obsolete train and will be discarded at the end ' \
+                  'of the corporation’s next Run Trains step. Obsolete trains may not be sold to another company ' \
+                  'and do not count against the company’s train limit. This ability may only be used on a train ' \
+                  'which is owned by the same company that owns Pennsy Boneyard. May not be used on 2+, 3+, or 4+ ' \
+                  'trains.',
+            sym: 'P13',
+            abilities: [], # Implemented in game class and a custom step
           },
           # P14
           {
@@ -259,7 +280,6 @@ module Engine
             desc: 'This company has no special ability.',
             sym: 'P14',
             abilities: [],
-            color: 'green',
           },
           # P15
           # TODO there are edge cases where you may want to pay back the land grant first. Consider making a choice ability.
@@ -271,7 +291,6 @@ module Engine
                   'All other rules regarding loans are followed as normal.',
             sym: 'P15',
             abilities: [], # Implemented in game class
-            color: 'green',
           },
           # P16 Regional Headquarters
           {
@@ -295,7 +314,6 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: 'green',
           },
           # P17
           {
@@ -311,6 +329,7 @@ module Engine
                 type: 'tile_lay',
                 when: 'track',
                 owner_type: 'corporation',
+                reachable: true,
                 hexes: %w[B4 B6 B8 B10 B12 B14 B16 B18 C19 D20],
                 tiles: YELLOW_PLAIN_TRACK_TILES + PLAIN_YELLOW_CITY_TILES,
                 free: true,
@@ -318,7 +337,6 @@ module Engine
                 count_per_or: 1,
               },
             ],
-            color: 'green',
           },
           # P18
           {
@@ -335,7 +353,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
-                tiles: %w[7coal 8coal 9coal],
+                tiles: [RESOURCE_LABELS[:coal]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -345,7 +363,6 @@ module Engine
                 count: 2,
               },
             ],
-            color: 'green',
           },
           # P19
           {
@@ -357,7 +374,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'yellow',
           },
           # P20
           {
@@ -379,10 +395,8 @@ module Engine
               special_only: true,
               cheater: 0,
             ],
-            color: 'yellow',
           },
           # P21
-          # TODO: Make it work as a combo with P27
           {
             name: 'Keystone Bridge Co.',
             value: 80,
@@ -401,10 +415,9 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
-              # TODO: same as other bridge company
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -412,7 +425,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: (COAL_HEXES + ORE_HEXES).uniq,
-                tiles: %w[7coal 8coal 9coal 7ore10 8ore10 9ore10],
+                tiles: [RESOURCE_LABELS[:coal], RESOURCE_LABELS[:ore]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -421,7 +434,6 @@ module Engine
                 count: 1,
               },
             ],
-            color: 'yellow',
           },
           # P22
           {
@@ -440,16 +452,14 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
               },
-              # TODO: same as other bridge companies
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
             ],
-            color: 'yellow',
           },
           # P23
           {
@@ -465,7 +475,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: 'yellow',
           },
           # P24
           {
@@ -483,7 +492,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: ORE_HEXES,
-                tiles: %w[7ore10 8ore10 9ore10],
+                tiles: [RESOURCE_LABELS[:ore]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -493,7 +502,6 @@ module Engine
                 count: 2,
               },
             ],
-            color: 'orange',
           },
           # P25
           {
@@ -516,7 +524,6 @@ module Engine
                 on_phase: '6',
               },
             ],
-            color: 'orange',
           },
           # P26
           {
@@ -533,7 +540,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: CITY_HEXES,
-                tiles: %w[X07 X08 X09],
+                tiles: RURAL_TILES,
                 reachable: true,
                 when: 'track',
                 consume_tile_lay: true,
@@ -542,7 +549,6 @@ module Engine
                 count: 3,
               },
             ],
-            color: 'orange',
           },
           # P27
           {
@@ -569,7 +575,6 @@ module Engine
                 tiles: COMPANY_TOWN_TILES,
               },
             ],
-            color: 'orange',
           },
           # P28
           {
@@ -586,7 +591,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: COAL_HEXES,
-                tiles: %w[7coal 8coal 9coal],
+                tiles: [RESOURCE_LABELS[:coal]],
                 when: 'track',
                 reachable: true,
                 discount: 15,
@@ -596,7 +601,6 @@ module Engine
                 count: 3,
               },
             ],
-            color: 'orange',
           },
           # P29
           {
@@ -609,7 +613,6 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'red',
           },
           # P30
           {
@@ -621,9 +624,10 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: 'red',
           },
         ].freeze
+
+        NO_SUBSIDIES = %w[S1 S2 S3 S4 S5 S6 S7].freeze
 
         SUBSIDIES = [
           # Temporarily commenting out the first two subsidies to guarantee all "interesting" subsidies
@@ -634,7 +638,7 @@ module Engine
           # id: 'S1',
           # name: 'No Subsidy',
           # desc: 'No effect',
-          # value: nil,
+          # value: 0,
           # },
           # {
           # icon: 'subsidy_none',
@@ -642,7 +646,7 @@ module Engine
           # id: 'S2',
           # name: 'No Subsidy'
           # desc: 'No effect',
-          # value: nil,
+          # value: 0,
           # },
           {
             icon: 'subsidy_none',
@@ -650,7 +654,7 @@ module Engine
             id: 'S3',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -658,7 +662,7 @@ module Engine
             id: 'S4',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -666,7 +670,7 @@ module Engine
             id: 'S5',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -674,7 +678,7 @@ module Engine
             id: 'S6',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_none',
@@ -682,14 +686,13 @@ module Engine
             id: 'S7',
             name: 'No Subsidy',
             desc: 'No effect',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_boomtown',
             abilities: [
               {
                 type: 'tile_lay',
-                free: true,
                 when: 'track',
                 owner_type: 'corporation',
                 closed_when_used_up: true,
@@ -707,17 +710,23 @@ module Engine
             name: 'Boomtown Subsidy',
             desc: 'On it\'s first operating turn, this corporation may upgrade its home to green as a free action. This does '\
                   'not count as an additional track placement and does not incur any cost for doing so',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_free_station',
-            abilities: [],
+            abilities: [
+              {
+                type: 'additional_token',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
             id: 'S9',
             name: 'Free Station',
             desc: 'The free station is a special token (which counts toward the 8 token limit) that can be placed in any city '\
                   'the corporation can trace a legal route to, even if no open station circle is currently available in the '\
                   'city. If a open station circle becomes available later, the token will immediately fill the opening',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_plus_ten',
@@ -725,7 +734,7 @@ module Engine
             id: 'S10',
             name: '+10',
             desc: 'This corporation\'s home city is worth $10 for the rest of the game',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_plus_ten_twenty',
@@ -734,7 +743,7 @@ module Engine
             name: '+10 / +20',
             desc: 'This corporation\'s home city is worth $10 until phase 5, after which it is worth '\
                   ' $20 more for the rest of the game',
-            value: nil,
+            value: 0,
           },
           {
             icon: 'subsidy_thirty',
@@ -770,279 +779,289 @@ module Engine
           },
           {
             icon: 'subsidy_resource',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: [], # Added during setup
+                tiles: [], # Added during setup
+                when: 'track',
+                reachable: true,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 1,
+              },
+            ],
             id: 'S16',
             name: 'Resource Subsidy',
-            desc: 'PLACEHOLDER DESCRIPTION',
-            value: nil,
+            desc: '', # Added during setup
+            value: 0,
           },
         ].freeze
 
         CORPORATIONS = [
           {
             float_percent: 20,
-            sym: 'A&S',
-            name: 'Alton & Southern Railway',
-            logo: '1817/AS',
-            simple_logo: '1817/AS.alt',
+            sym: 'ATSF',
+            name: 'Atchison, Topeka, and Santa Fe',
+            logo: '18_usa/ATSF',
+            simple_logo: '18_usa/ATSF.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#ee3e80',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'A&A',
-            name: 'Arcade and Attica',
-            logo: '1817/AA',
-            simple_logo: '1817/AA.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#904098',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'Belt',
-            name: 'Belt Railway of Chicago',
-            logo: '1817/Belt',
-            simple_logo: '1817/Belt.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            text_color: 'black',
-            color: '#f2a847',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'Bess',
-            name: 'Bessemer and Lake Erie Railroad',
-            logo: '1817/Bess',
-            simple_logo: '1817/Bess.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#16190e',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'B&A',
-            name: 'Boston and Albany Railroad',
-            logo: '1817/BA',
-            simple_logo: '1817/BA.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#ef4223',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'DL&W',
-            name: 'Delaware, Lackawanna and Western Railroad',
-            logo: '1817/DLW',
-            simple_logo: '1817/DLW.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#984573',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'J',
-            name: 'Elgin, Joliet and Eastern Railway',
-            logo: '1817/J',
-            simple_logo: '1817/J.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            text_color: 'black',
-            color: '#bedb86',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'GT',
-            name: 'Grand Trunk Western Railroad',
-            logo: '1817/GT',
-            simple_logo: '1817/GT.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#e48329',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'H',
-            name: 'Housatonic Railroad',
-            logo: '1817/H',
-            simple_logo: '1817/H.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            text_color: 'black',
-            color: '#bedef3',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'ME',
-            name: 'Morristown and Erie Railway',
-            logo: '1817/ME',
-            simple_logo: '1817/ME.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#ffdea8',
+            color: '#7090c9',
             text_color: 'black',
             reservation_color: nil,
           },
           {
             float_percent: 20,
-            sym: 'NYOW',
-            name: 'New York, Ontario and Western Railway',
-            logo: '1817/W',
-            simple_logo: '1817/W.alt',
+            sym: 'B&O',
+            name: 'Baltimore and Ohio Railroad',
+            logo: '18_usa/BO',
+            simple_logo: '18_usa/BO.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#0095da',
+            color: '#025aaa',
             reservation_color: nil,
           },
           {
             float_percent: 20,
-            sym: 'NYSW',
-            name: 'New York, Susquehanna and Western Railway',
-            logo: '1817/S',
-            simple_logo: '1817/S.alt',
+            sym: 'C&O',
+            name: 'Chesapeake and Ohio',
+            logo: '18_usa/CO',
+            simple_logo: '18_usa/CO.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#fff36b',
+            color: '#ADD8E6',
             text_color: 'black',
             reservation_color: nil,
           },
           {
             float_percent: 20,
-            sym: 'PSNR',
-            name: 'Pittsburgh, Shawmut and Northern Railroad',
-            logo: '1817/PSNR',
-            simple_logo: '1817/PSNR.alt',
+            sym: 'DRG',
+            name: 'Denver and Rio Grande',
+            logo: '18_usa/DRG',
+            simple_logo: '18_usa/DRG.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#0a884b',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'PLE',
-            name: 'Pittsburgh and Lake Erie Railroad',
-            logo: '1817/PLE',
-            simple_logo: '1817/PLE.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#00afad',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'PW',
-            name: 'Providence and Worcester Railroad',
-            logo: '1817/PW',
-            simple_logo: '1817/PW.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
+            color: :gold,
             text_color: 'black',
-            color: '#bec8cc',
             reservation_color: nil,
           },
           {
             float_percent: 20,
-            sym: 'R',
-            name: 'Rutland Railroad',
-            logo: '1817/R',
-            simple_logo: '1817/R.alt',
+            sym: 'GN',
+            name: 'Great Northern Railway',
+            logo: '18_usa/GN',
+            simple_logo: '18_usa/GR.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#165633',
+            color: 'LightSkyBlue',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'IC',
+            name: 'Illinois Central Railroad',
+            logo: '18_usa/IC',
+            simple_logo: '18_usa/IC.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: '#32763f',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'KCS',
+            name: 'Kansas City Southern Railroad',
+            logo: '18_usa/KCS',
+            simple_logo: '18_usa/KCS.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: 'Red',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'MILW',
+            name: 'Milwaukee Road',
+            logo: '18_usa/MILW',
+            simple_logo: '18_usa/MILW.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: 'LightGray',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'MKT',
+            name: 'Missouri-Kansas-Texas Railroad',
+            logo: '18_usa/MKT',
+            simple_logo: '18_usa/MKT.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: '#018471',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'MP',
+            name: 'Missouri Pacific Railroad',
+            logo: '18_usa/MP',
+            simple_logo: '18_usa/MP.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: '#5b4545',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'NYC',
+            name: 'New York Central Railroad',
+            logo: '18_usa/NYC',
+            simple_logo: '18_usa/NYC.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: '#110a0c',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'N&W',
+            name: 'Norfolk and Western Railway',
+            logo: '18_usa/NW',
+            simple_logo: '18_usa/NW.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: 'DarkRed',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'NP',
+            name: 'Northern Pacific Railway',
+            logo: '18_usa/NP',
+            simple_logo: '18_usa/NP.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: 'Black',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'PRR',
+            name: 'Pennsylvania Railroad',
+            logo: '18_usa/PRR',
+            simple_logo: '18_usa/PRR.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: '#32763f',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'SP',
+            name: 'Southern Pacific Railroad',
+            logo: '18_usa/SP',
+            simple_logo: '18_usa/SP.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: '#f48221',
             reservation_color: nil,
           },
           {
             float_percent: 20,
             sym: 'SR',
-            name: 'Strasburg Railroad',
-            logo: '1817/SR',
-            simple_logo: '1817/SR.alt',
+            name: 'Southern Railway',
+            logo: '18_usa/SR',
+            simple_logo: '18_usa/SR.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#e31f21',
+            color: 'MediumSeaGreen',
             reservation_color: nil,
           },
           {
             float_percent: 20,
-            sym: 'UR',
-            name: 'Union Railroad',
-            logo: '1817/UR',
-            simple_logo: '1817/UR.alt',
+            sym: 'SLSF',
+            name: 'St. Louis-San Francisco Railway',
+            logo: '18_usa/SLSF',
+            simple_logo: '18_usa/SLSF.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#003d84',
+            color: '#d02020',
             reservation_color: nil,
           },
           {
             float_percent: 20,
-            sym: 'WT',
-            name: 'Warren & Trumbull Railroad',
-            logo: '1817/WT',
-            simple_logo: '1817/WT.alt',
+            sym: 'TP',
+            name: 'Texas and Pacific Railway',
+            logo: '18_usa/TP',
+            simple_logo: '18_usa/TP.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#e96f2c',
+            color: '#37383a',
             reservation_color: nil,
           },
           {
             float_percent: 20,
-            sym: 'WC',
-            name: 'West Chester Railroad',
-            logo: '1817/WC',
-            simple_logo: '1817/WC.alt',
+            sym: 'UP',
+            name: 'Union Pacific Railroad',
+            logo: '18_usa/UP',
+            simple_logo: '18_usa/UP.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#984d2d',
+            color: '#ffffeb',
+            text_color: 'black',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'WP',
+            name: 'Western Pacific Railroad',
+            logo: '18_usa/WP',
+            simple_logo: '18_usa/WP.alt',
+            shares: [100],
+            max_ownership_percent: 100,
+            tokens: [0],
+            always_market_price: true,
+            color: 'Brown',
             reservation_color: nil,
           },
         ].freeze

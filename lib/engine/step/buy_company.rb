@@ -89,6 +89,7 @@ module Engine
         pay(entity, owner, price, company)
 
         log_later.each { |l| @log << l }
+        @game.after_sell_company(entity, company, price, owner)
       end
 
       def assignable_corporations(_company = nil)

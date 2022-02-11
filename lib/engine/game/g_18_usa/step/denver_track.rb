@@ -2,7 +2,6 @@
 
 require_relative '../../../step/base'
 require_relative '../../../step/tracker'
-require_relative '../../../step/tokener'
 
 module Engine
   module Game
@@ -10,13 +9,10 @@ module Engine
       module Step
         class DenverTrack < Engine::Step::Base
           include Engine::Step::Tracker
-          include Engine::Step::Tokener
           ACTIONS = %w[lay_tile].freeze
-          ALL_ACTIONS = %w[pass lay_tile].freeze
 
           def actions(entity)
             return [] unless entity == pending_entity
-            return ALL_ACTIONS unless any_tiles?(entity)
 
             ACTIONS
           end
@@ -58,12 +54,6 @@ module Engine
 
           def any_tiles?(_entity)
             pending_track[:hexes].first
-          end
-
-          def process_pass(action)
-            log_pass(action.entity)
-            @round.pending_tracks.shift
-            pass!
           end
 
           def process_lay_tile(action)

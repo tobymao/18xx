@@ -17,8 +17,8 @@ module Engine
             []
           end
 
-          def buyable_trains(_entity)
-            @game.buyable_infrastructure
+          def buyable_trains(entity)
+            @game.buyable_infrastructure.reject { |i| entity.trains.any? { |t| i.name == t.name } }
           end
 
           def buying_power(entity)

@@ -22,6 +22,15 @@ module Engine
 
           include SwapBuySell
 
+          def can_buy_any?(entity)
+            return true if super
+
+            # If all we can do is swap, ensure we're given the opportunity for it
+            ndm = @game.ndm
+            valid_pool_shares = @game.share_pool.shares_by_corporation[ndm].select { |s| s.percent == 10 }
+            return true if !valid_pool_shares.empty? && swap_buy(entity, ndm, valid_pool_shares[0])
+          end
+
           private
 
           def attempt_ndm_action_on_unavailable?(bundle)

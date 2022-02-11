@@ -59,6 +59,27 @@ module Engine
             num: 20,
           },
         ].freeze
+
+        def init_round_finished
+          super
+
+          # put tokens out for remaining minors
+          @corporations.select { |c| c.type == :minor }.reject(&:floated?).each do |minor|
+            token = minor.find_token_by_type
+            place_home_token(minor)
+            token.status = :flipped
+            @log << "#{minor.name} token is flipped"
+          end
+        end
+
+        def place_home_token(corporation)
+          super
+
+          return if corporation.type != :minor || !corporation.tokens.first.status
+
+          corporation.tokens.first.status = nil
+          @log << "#{corporation.name} token is flipped back"
+        end
       end
     end
   end

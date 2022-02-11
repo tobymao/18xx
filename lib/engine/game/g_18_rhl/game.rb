@@ -1,14 +1,19 @@
 # frozen_string_literal: true
 
-require_relative '../base'
+require_relative 'entities'
+require_relative 'map'
 require_relative 'meta'
+require_relative '../base'
+require_relative '../cities_plus_towns_route_distance_str'
 require_relative '../stubs_are_restricted'
-
 module Engine
   module Game
     module G18Rhl
       class Game < Game::Base
         include_meta(G18Rhl::Meta)
+        include Entities
+        include Map
+        include CitiesPlusTownsRouteDistanceStr
 
         attr_reader :osterath_tile
 
@@ -45,304 +50,6 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_tile_block' => ['Remove tile block', 'Hex E12 can now be upgraded to yellow'],
         ).freeze
-
-        TILES = {
-          '1' => 2,
-          '2' => 1,
-          '3' => 2,
-          '4' => 3,
-          '5' => 1,
-          '6' => 1,
-          '7' => 2,
-          '8' => 9,
-          '9' => 9,
-          '15' => 3,
-          '16' => 1,
-          '18' => 1,
-          '19' => 1,
-          '20' => 1,
-          '23' => 2,
-          '24' => 2,
-          '25' => 2,
-          '26' => 1,
-          '27' => 1,
-          '28' => 1,
-          '29' => 1,
-          '30' => 1,
-          '31' => 1,
-          '39' => 1,
-          '40' => 1,
-          '41' => 1,
-          '42' => 1,
-          '43' => 1,
-          '44' => 1,
-          '45' => 1,
-          '46' => 1,
-          '47' => 1,
-          '55' => 2,
-          '56' => 2,
-          '57' => 1,
-          '58' => 3,
-          '69' => 2,
-          '70' => 1,
-          '87' => 2,
-          '141' => 2,
-          '142' => 2,
-          '143' => 1,
-          '144' => 1,
-          '201' => 1,
-          '202' => 1,
-          '204' => 1,
-          '216' => 3,
-          '916' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_1;path=a:1,b:_0;path=a:3,b:_1;path=a:4,b:_0;'\
-                      'label=OO',
-          },
-          '917' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;'\
-                      'label=OO',
-          },
-          '918' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;'\
-                      'label=OO',
-          },
-          '919' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_1;path=a:5,b:_1;'\
-                      'label=OO',
-          },
-          '920' =>
-          {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_1;path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_0;'\
-                      'label=OO',
-          },
-          '921' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D;'\
-                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
-          },
-          '922' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D;'\
-                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
-          },
-          '923' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=K;'\
-                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
-          },
-          '924' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=K;'\
-                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
-          },
-          '925' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DU;'\
-                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
-          },
-          '926' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DU;'\
-                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
-          },
-          '927' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=D;upgrade=cost:50,terrain:river',
-          },
-          '928' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;label=K;upgrade=cost:50,terrain:river',
-          },
-          '929' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=DU;upgrade=cost:50,terrain:river',
-          },
-          '930' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;upgrade=cost:30,terrain:mountain;label=AC',
-          },
-          '931' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;label=AC',
-          },
-          '932' =>
-          {
-            'count' => 2,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=D/DU/K',
-          },
-          '932V' =>
-          {
-            'count' => 2,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=D/K',
-          },
-          '933' =>
-          {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
-          },
-          '934' =>
-          {
-            'count' => 3,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;label=Y',
-          },
-          '935' =>
-          {
-            'count' => 1,
-            'color' => 'orange',
-            'code' => 'city=revenue:20,loc:center;town=revenue:10,loc:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;'\
-                      'path=a:_1,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Osterath',
-          },
-          '937' =>
-          {
-            'count' => 3,
-            'color' => 'yellow',
-            'code' => 'city=revenue:20;city=revenue:20;path=a:0,b:_0;path=a:4,b:_1;label=OO',
-          },
-          '938' =>
-          {
-            'count' => 2,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_1;label=OO',
-          },
-          '941' =>
-          {
-            'count' => 2,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;path=a:5,b:_1;label=OO',
-          },
-          '942' =>
-          {
-            'count' => 2,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:_1;label=OO',
-          },
-          '947' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=Moers',
-          },
-          '948' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
-                      'label=OO',
-          },
-          '949' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3,loc:center;town=revenue:20,loc:4;path=a:0,b:_0;path=a:1,b:_0;'\
-                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DU',
-          },
-          '950' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:30,slots:2,loc:center;town=revenue:10,loc:4;path=a:0,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Moers',
-          },
-          '1910' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:10,loc:4;path=a:0,b:2;path=a:0,b:_0;path=a:2,b:_0;label=Ratingen',
-          },
-          '1911' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:20,loc:4;path=a:0,b:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=Ratingen',
-          },
-          'Essen' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3,loc:center;town=revenue:20,loc:4;path=a:0,b:_0;path=a:1,b:_0;'\
-                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Essen',
-          },
-        }.freeze
-
-        LOCATION_NAMES = {
-          'A2' => 'Nimwegen',
-          'A6' => 'Arnheim',
-          'A14' => 'Hamburg Münster',
-          'B9' => 'Wesel',
-          'B15' => 'Berlin Minden',
-          'C2' => 'Boxtel',
-          'C12' => 'Herne Gelsenkirchen',
-          'C14' => 'Östliches Ruhrgebiet',
-          'D7' => 'Moers',
-          'D9' => 'Duisburg',
-          'D11' => 'Oberhausen Mülheim',
-          'D13' => 'Essen',
-          'E2' => 'Venio',
-          'E6' => 'Krefeld',
-          'E12' => 'Ratingen',
-          'F9' => 'Neuss Düsseldorf',
-          'F13' => 'Elberfeld Barmen',
-          'G2' => 'Roermond',
-          'G6' => 'M-Gladbach Rheydt',
-          'G12' => 'Remshcheid Solingen',
-          'I10' => 'Köln Deutz',
-          'K2' => 'Aachen',
-          'K6' => 'Düren',
-          'K10' => 'Bonn',
-          'J1' => 'Maastrict',
-          'J15' => 'Siegerland',
-          'L1' => 'Liege',
-          'L11' => 'Basel',
-          'L13' => 'Frankfurt',
-        }.freeze
 
         MARKET = [%w[75
                      80
@@ -479,6 +186,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             num: 6,
             price: 600,
+            available_on: '5',
           },
           {
             name: '8',
@@ -489,326 +197,6 @@ module Engine
             available_on: '6',
           },
         ].freeze
-
-        CORPORATIONS = [
-          {
-            float_percent: 50,
-            name: 'Aachen-Düsseldorf-Ruhrorter E.',
-            sym: 'ADR',
-            tokens: [0, 60, 80],
-            logo: '18_rhl/ADR',
-            simple_logo: '18_rhl/ADR.alt',
-            color: :green,
-            coordinates: 'K2',
-            always_market_price: true,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Bergisch-Märkische Eisenbahngesell.',
-            sym: 'BME',
-            float_percent: 50,
-            tokens: [0, 60, 80, 100],
-            logo: '18_rhl/BME',
-            simple_logo: '18_rhl/BME.alt',
-            color: :brown,
-            coordinates: 'F13',
-            city: 1,
-            always_market_price: true,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Cöln-Mindener Eisenbahngesellschaft',
-            sym: 'CME',
-            float_percent: 50,
-            tokens: [0, 60, 80, 100],
-            color: '#CD5C5C',
-            logo: '18_rhl/CME',
-            simple_logo: '18_rhl/CME.alt',
-            coordinates: 'I10',
-            city: 2,
-            always_market_price: true,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Düsseldorf Elberfelder Eisenbahn',
-            sym: 'DEE',
-            float_percent: 50,
-            tokens: [0, 60],
-            logo: '18_rhl/DEE',
-            simple_logo: '18_rhl/DEE.alt',
-            color: :yellow,
-            text_color: :black,
-            coordinates: 'F9',
-            city: 1,
-            always_market_price: true,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Krefeld-Kempener Eisenbahn',
-            sym: 'KKK',
-            float_percent: 60,
-            tokens: [0, 60],
-            # The 2nd share decided share percentage for shares
-            shares: [20, 10, 20, 20, 10, 10, 10],
-            logo: '18_rhl/KKK',
-            simple_logo: '18_rhl/KKK.alt',
-            color: :orange,
-            text_color: :black,
-            coordinates: 'D7',
-            abilities: [
-              {
-                type: 'base',
-                description: 'Two double (20%) certificates',
-                desc_detail: 'The first two (non-president) shares sold from IPO are double (20%) certificates',
-              },
-            ],
-            always_market_price: true,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Gladbach-Venloer Eisenbahn',
-            sym: 'GVE',
-            float_percent: 50,
-            tokens: [0, 60],
-            logo: '18_rhl/GVE',
-            simple_logo: '18_rhl/GVE.alt',
-            color: :gray,
-            coordinates: 'G6',
-            city: 1,
-            always_market_price: true,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Cöln-Crefelder Eisenbahn',
-            sym: 'CCE',
-            float_percent: 50,
-            tokens: [0, 0, 80],
-            color: :blue,
-            logo: '18_rhl/CCE',
-            simple_logo: '18_rhl/CCE.alt',
-            coordinates: %w[E6 I10],
-            city: 1,
-            abilities: [
-              {
-                type: 'base',
-                description: 'Two home stations (Köln & Krefeld)',
-              },
-            ],
-            always_market_price: true,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Rheinische Eisenbahngesellschaft',
-            sym: 'RhE',
-            float_percent: 50,
-            tokens: [0, 60, 80, 100],
-            color: :purple,
-            logo: '18_rhl/RhE',
-            simple_logo: '18_rhl/RhE.alt',
-            coordinates: 'I10',
-            city: 0,
-            abilities: [
-              {
-                type: 'base',
-                description: 'Special par/float rules',
-                desc_detail: "When the president's share is acquired (via private No. 6) 3 10% shares are moved "\
-                             "from IPO to the Market. When RhE floats it receives only the value of the president's "\
-                             "share, and the initial value of the 3 shares moved when parring will be paid to RhE's "\
-                             'treasury as soon as there is a track link from Köln to Aachen via Düren.',
-              },
-            ],
-            always_market_price: true,
-            max_ownership_percent: 100,
-          },
-        ].freeze
-
-        COMPANIES = [
-          {
-            sym: 'PWB',
-            name: 'No. 1 Prinz Wilhelm-Bahn',
-            value: 20,
-            revenue: 5,
-            desc: 'Blocks Hex E14. As director of a corporation the owner may place the first tile on this hex. '\
-                  'An upgrade follows the normal track building rules. If there is still no tile on hex E14 after the '\
-                  'purchase of the first 5 train, the blocking by the PWB ends.',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[E14] }],
-          },
-          {
-            sym: 'ATB',
-            name: 'No. 1 Angertalbahn',
-            value: 20,
-            revenue: 5,
-            desc: 'When acting as a director of a corporation the owner may place a tile on hex E12 for free during '\
-                  'the green phase. The placement of this tile is in addition to the normal tile placement of the '\
-                  'corporation. However the corporation needs an unblocked track link from one of its stations to '\
-                  'the hex E12. This action closes the "Angertalhabn".',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[E12] },
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'player',
-                          hexes: %w[E12],
-                          tiles: %w[1 2 55 56 69],
-                          free: true,
-                          reachable: false,
-                          special: true,
-                          count: 1,
-                          when: %w[track owning_player_or_turn],
-                        }],
-          },
-          {
-            sym: 'KEO',
-            name: 'No. 2 Konzession Essen-Osterath',
-            value: 30,
-            revenue: 0,
-            desc: 'With the beginning of the green phase the special function can be used. As director of a '\
-                  'corporation the owner may lay the orange tile #935 on hex E8 regardless whether there is a tile '\
-                  'on that hex or not. Directly after the tile placement the operating corporation may place a '\
-                  'station token for free on that hex (the director must use the station token with the lowest '\
-                  'cost). If the corporation places this station token it is the only station token the corporation '\
-                  'may place in that Operating Round. When the corporation does not place the station token, any '\
-                  'other corporation may place a station marker on hex E8 according to the normal rules. If the '\
-                  'corporation places the station token in hex E8 during a later Operating Round it has to pay for '\
-                  'the station token. After the purchase of the first 5-train the tile #935 may no longer be laid. '\
-                  'After the placement of the station marker the corporation may not place a tile even when it has '\
-                  'not used its normal tile lay (placing a station token is always the step after the tile lay!).',
-            abilities: [
-              {
-                type: 'teleport',
-                owner_type: 'player',
-                tiles: %w[935],
-                hexes: %w[E8],
-                count: 1,
-                when: %w[track owning_player_or_turn],
-              },
-            ],
-          },
-          {
-            sym: 'Szl',
-            name: 'No. 3 Seilzyganlage',
-            value: 50,
-            revenue: 15,
-            desc: 'As director of a corporation the owner may place a tile on a mountain hex for free during the '\
-                  "corporation's track building phase. This tile placement is in addition to the corporation's normal "\
-                  "tile lay and there need not be a link to the corporation's network. This function can only be used "\
-                  'once during the game.',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'player',
-                hexes: %w[D13 E12 E14 F11 F13 G12 G14 H13 I12 I14 J13 K2 K12],
-                tiles: %w[1 2 3 4 5 6 7 8 9 23 24 25 30 55 56 57 58 69 930 934 937],
-                free: true,
-                reachable: false,
-                count: 1,
-                when: %w[track owning_player_or_turn],
-              },
-            ],
-          },
-          {
-            sym: 'Tjt',
-            name: 'No. 4 Trajektanstalt',
-            value: 80,
-            revenue: 20,
-            desc: 'As director of a corporation the owner may upgrade *one* of the yellow hexes of '\
-                  'Köln / Düsseldorf / Duisburg for free. This tile placement is in addition to the '\
-                  "corporation's normal tile lay. The corporation may place a station token there in the same OR "\
-                  "by paying the appropriate costs. There need not be a link to the corporation's network. "\
-                  'If the station marker is not placed in the same Operating Round but later, the corporation '\
-                  'must have a track connection to that hex. After the placement of the station token the '\
-                  'corporation may not place a tile even when it has not used its normal tile lay (placing a '\
-                  'station marker is always the step after the tile lay!).',
-            abilities: [
-              {
-                type: 'teleport',
-                owner_type: 'player',
-                tiles: %w[921 922 923 924 925 926],
-                hexes: %w[D9 F9 I10],
-                count: 1,
-                when: %w[track owning_player_or_turn],
-              },
-            ],
-          },
-          {
-            sym: 'NLK',
-            name: 'No. 5 Niederrheinische Licht- und Kraftwerke',
-            value: 120,
-            revenue: 25,
-            abilities: [{ type: 'shares', shares: 'GVE_1' },
-                        # block_partition has no effect, except it makes it possible to show Rhine in hex D9, F9 and I10
-                        # (the three Rhine Metropolis hexes). When upgrading these hexes to green the partition is removed.
-                        {
-                          type: 'blocks_partition',
-                          partition_type: 'water',
-                        }],
-            desc: 'The player who purchased the Niederrheinische Licht- und Kraftwerke immediately receives a 10% '\
-                  'share of the GVE for free. In order to float the GVE only 40% of the GVE needs to be sold from the '\
-                  'Initial Offering.',
-          },
-          {
-            sym: 'RhE',
-            name: "No. 6 Director's Certificate of Rheinischen Eisenbahngesellschaft",
-            value: 140,
-            revenue: 0,
-            abilities: [
-              { type: 'shares', shares: 'RhE_0' },
-              { type: 'close', when: 'par', corporation: 'RhE' },
-            ],
-            desc: 'The player who purchased this must immediately set the starting value for the RhE. '\
-                  'Three 10% shares of the RhE will be placed in the Bank Pool. The Bank will pay the par '\
-                  'value of the three 10% shares to the RhE treasury as soon as there is a track link from '\
-                  'Köln to Aachen via Düren.',
-          },
-        ].freeze
-
-        LAYOUT = :pointy
-
-        AXES = { x: :number, y: :letter }.freeze
-
-        EASTERN_RUHR_CONNECTION_CHECK = %w[C12 D13 E14].freeze
-
-        EASTERN_RUHR_HEXES = %w[C14 D15].freeze
-
-        NIMWEGEN_ARNHEIM_OFFBOARD_HEXES = %(A4 A6).freeze
-
-        OSTERATH_POTENTIAL_TILE_UPGRADES_FROM = %w[1 2 55 56 69].freeze
-
-        OUT_TOKENED_HEXES = %w[A14 B15 C2].freeze
-
-        RATINGEN_HEX = 'E12'
-
-        RGE_HEXES = %w[A4 A6 L11 L13].freeze
-
-        RHINE_METROPOLIS_HEXES = %w[D9 F9 I10].freeze
-
-        SOUTHERN_OFFBOARD_HEXES = %w[L1 L11 L13].freeze
-
-        def aachen_hex
-          @aachen_hex ||= hex_by_id('K2')
-        end
-
-        def cologne_hex
-          @cologne_hex ||= hex_by_id('I10')
-        end
-
-        def duren_hex
-          @duren_hex ||= hex_by_id('K6')
-        end
-
-        def duisburg_hex
-          @duisburg_hex ||= hex_by_id('D9')
-        end
-
-        def dusseldorf_hex
-          @dusseldorf_hex ||= hex_by_id('F9')
-        end
-
-        def roermund_hex
-          @roermund_hex ||= hex_by_id('G2')
-        end
-
-        def yellow_block_hex
-          @yellow_block_hex ||= hex_by_id(RATINGEN_HEX)
-        end
 
         def game_trains
           trains = self.class::TRAINS
@@ -826,7 +214,7 @@ module Engine
         def num_trains(train)
           return train[:num] unless train[:name] == '2'
 
-          optional_2_train ? 8 : 7
+          optional_2_train ? 7 : 6
         end
 
         def optional_2_train
@@ -845,31 +233,6 @@ module Engine
           @optional_rules&.include?(:ratingen_variant)
         end
 
-        def optional_hexes
-          base_map
-        end
-
-        def game_companies
-          # Private 1 is different in base game and in Ratingen Variant
-          all = self.class::COMPANIES
-          return all.reject { |c| c[:sym] == 'ATB' } unless optional_ratingen_variant
-
-          all.reject { |c| c[:sym] == 'PWB' }
-        end
-
-        def optional_tiles
-          remove_tiles(%w[Essen-0 949-0 950-0 932V-0 932V-1]) unless optional_promotion_tiles
-          remove_tiles(%w[932-0 932-1]) if optional_promotion_tiles
-          remove_tiles(%w[1910-0 1911-0]) unless optional_ratingen_variant
-        end
-
-        def remove_tiles(tiles)
-          tiles.each do |ot|
-            @tiles.reject! { |t| t.id == ot }
-            @all_tiles.reject! { |t| t.id == ot }
-          end
-        end
-
         def init_starting_cash(players, bank)
           cash = optional_lower_starting_capital ? self.class::LOWER_STARTING_CASH : self.class::STARTING_CASH
           cash = cash[players.size]
@@ -877,6 +240,13 @@ module Engine
           players.each do |player|
             bank.spend(cash, player)
           end
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G18Rhl::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
         end
 
         def stock_round
@@ -891,8 +261,8 @@ module Engine
           G18Rhl::Round::Operating.new(self, [
             G18Rhl::Step::Bankrupt,
             Engine::Step::HomeToken,
-            G18Rhl::Step::SpecialToken, # Must be before any track lay (due to private No. 4)
             G18Rhl::Step::SpecialTrack,
+            G18Rhl::Step::SpecialToken, # Must be before regular track lay (due to private No. 4)
             G18Rhl::Step::Track,
             G18Rhl::Step::RheBonusCheck,
             Engine::Step::Token,
@@ -970,6 +340,10 @@ module Engine
           @trajektanstalt ||= company_by_id('Tjt')
         end
 
+        def rhe_company
+          @rhe_company ||= company_by_id('RhE')
+        end
+
         def setup
           kkk.shares[2].double_cert = true
           kkk.shares[3].double_cert = true
@@ -979,6 +353,7 @@ module Engine
           @newly_floated = []
 
           @essen_tile ||= @tiles.find { |t| t.name == 'Essen' } if optional_promotion_tiles
+          @moers_tile_brown ||= @tiles.find { |t| t.name == '947' }
           @moers_tile_gray ||= @tiles.find { |t| t.name == '950' } if optional_promotion_tiles
           @d_k_tile ||= @tiles.find { |t| t.name == '932V' } if optional_promotion_tiles
           @d_du_k_tile ||= @tiles.find { |t| t.name == '932' } unless optional_promotion_tiles
@@ -986,6 +361,9 @@ module Engine
           @osterath_tile ||= @tiles.find { |t| t.name == '935' }
 
           @variable_placement = (rand % 9) + 1
+
+          # Add Koal to Moers upgrade tile - will be sticky
+          @moers_tile_brown.icons << Part::Icon.new('../logos/18_rhl/K')
 
           # Put out K tokens
           @k = Corporation.new(
@@ -1019,15 +397,27 @@ module Engine
 
         include StubsAreRestricted
 
-        def after_buy_company(player, company, _price)
+        def after_buy_company(player, company, price)
           super
 
           return unless company.id == 'RhE'
 
+          @rhe_winning_bid = price
           @log << "Move 3 #{rhe.name} 10% shares to market"
           rhe.shares[1..3].each do |s|
             @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
           end
+        end
+
+        def after_par(corporation)
+          return unless corporation == rhe
+
+          @bank.spend(@rhe_winning_bid, rhe)
+          @log << "#{rhe.name} receives the winning bid of #{format_currency(@rhe_winning_bid)}
+                  from #{rhe_company.name}"
+
+          rhe_company.close!
+          @log << "#{rhe_company.name} closes"
         end
 
         def float_corporation(corporation)
@@ -1052,7 +442,13 @@ module Engine
           if corporation == rhe
             @aachen_duren_cologne_link_bonus = rhe.par_price.price * 3
             delayed = format_currency(@aachen_duren_cologne_link_bonus)
-            @log << "#{rhe.name} will receive #{delayed} when there is a link from Köln to Aachen via Düren"
+            @log << "#{rhe.name} will receive #{delayed} when there is a link from Köln to Aachen via Düren (KDA link)"
+            ability = abilities(rhe, :base)
+            ability.description = "When KDA link created: treasury +#{format_currency(@aachen_duren_cologne_link_bonus)}"
+            ability.desc_detail = 'The first time it is possible to go from Köln to Aachen via Düren the 3 times PAR '\
+                                  "value of RhE (#{format_currency(@aachen_duren_cologne_link_bonus)}) will be added "\
+                                  '̈́to the treasury of RhE. '\
+                                  'Note: The link check ignores blocking tokens, available trains and length of route.'
           else
             @bank.spend(corporation.par_price.price * paid_to_treasury, corporation)
             @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
@@ -1101,6 +497,10 @@ module Engine
           place_free_token(cce, 'I10', 1, silent: false)
         end
 
+        UPGRADES_TO_88 = %w[1 55].freeze
+        UPGRADES_TO_87 = %w[2 56].freeze
+        UPGRADE_TO_204 = '69'
+
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Osterath cannot be upgraded at all, and cannot be upgraded to in phase 5 or later
           return false if from.name == @osterath_tile&.name ||
@@ -1114,6 +514,12 @@ module Engine
           # Handle Moers upgrades
           return to.name == '947' if from.color == :green && from.hex.name == 'D7'
           return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
+
+          # Handle 4-spokers
+          from_name = from.hex.tile.name
+          return to.name == '87' if UPGRADES_TO_87.include?(from_name)
+          return to.name == '88' if UPGRADES_TO_88.include?(from_name)
+          return to.name == '204' if from_name == UPGRADE_TO_204
 
           if optional_promotion_tiles
             # Essen can be upgraded to gray
@@ -1278,6 +684,7 @@ module Engine
           @log << "#{rhe.name} adds #{format_currency(@aachen_duren_cologne_link_bonus)} to its treasury"
           @bank.spend(@aachen_duren_cologne_link_bonus, rhe)
           @aachen_duren_cologne_link_bonus = 0
+          rhe.remove_ability(abilities(rhe, :base))
         end
 
         def eastern_ruhr_connection_check(hex)
@@ -1314,100 +721,6 @@ module Engine
         end
 
         private
-
-        def base_map
-          e10_configuration = 'border=edge:1,type:impassable,color:blue'
-          e12_configuration = 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:mountain'
-          if optional_ratingen_variant
-            e10_configuration += ';stub=edge:0;stub=edge:2;city=revenue:0'
-            e12_configuration += ';stub=edge:1;icon=image:1893/green_hex;icon=image:18_rhl/white_wooden_cube,sticky:1'
-          end
-          {
-            red: {
-              ['A2'] => 'offboard=revenue:yellow_40|brown_60,hide:1,groups:NorthWest',
-              ['A4'] => 'offboard=revenue:yellow_40|brown_60,groups:NorthWest;path=a:0,b:_0,terminal:1;'\
-                        'border=edge:4,type:impassable,color:blue;icon=image:18_rhl/RGE',
-              ['A6'] => 'offboard=revenue:yellow_40|brown_60,groups:NorthWest;path=a:5,b:_0,terminal:1;'\
-                        'border=edge:0,type:impassable,color:blue;border=edge:1,type:impassable,color:blue;icon=image:18_rhl/RGE',
-              ['A14'] => 'city=revenue:yellow_40|brown_60;path=a:0,b:_0,terminal:1',
-              ['B15'] => 'city=revenue:yellow_50|brown_80;path=a:1,b:_0,terminal:1',
-              ['C2'] => 'city=revenue:yellow_10|brown_30;path=a:4,b:_0,terminal:1',
-              ['C14'] => 'city=revenue:10;city=revenue:10;path=a:0,b:_0,terminal:1;path=a:1,b:_1,terminal:1;'\
-                         'icon=image:18_rhl/ERh',
-              ['D15'] => 'city=revenue:10;city=revenue:10;path=a:0,b:_0,terminal:1;path=a:1,b:_1,terminal:1;'\
-                         'label=+10/link;icon=image:18_rhl/ERh',
-              ['E2'] => 'city=revenue:yellow_20|brown_40;path=a:3,b:_0;path=a:5,b:_0',
-              ['G2'] => 'city=revenue:yellow_10|brown_20,groups:Roermond;path=a:4,b:_0,terminal:1',
-              ['H1'] => 'offboard=revenue:yellow_10|brown_20,hide:1,groups:Roermond;icon=image:18_rhl/ERh',
-              ['J1'] => 'offboard=revenue:yellow_10|brown_30;path=a:5,b:_0,terminal:1',
-              ['L1'] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0,terminal:1',
-              %w[L3 L5 L7] => '',
-              ['L9'] => 'town=revenue:10;path=a:2,b:_0;path=a:3,b:_0',
-              ['L11'] => 'offboard=revenue:yellow_30|brown_70;border=edge:3,type:impassable,color:blue;'\
-                         'border=edge:4,type:impassable,color:blue;path=a:2,b:_0;icon=image:18_rhl/RGE',
-              ['L13'] => 'offboard=revenue:yellow_30|brown_60;border=edge:1,type:impassable,color:blue;path=a:2,b:_0;'\
-                         'icon=image:18_rhl/RGE',
-            },
-            gray: {
-              %w[A8 A10 A12 B1 D1 F1] => '',
-              %w[F15 H15] => 'path=a:0,b:2',
-              ['I4'] => 'path=a:0,b:3',
-              ['J15'] => 'city=revenue:yellow_20|brown_40,loc:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                         'icon=image:../logos/18_rhl/S',
-              ['K14'] => 'path=a:1,b:3',
-            },
-            white: {
-              ['B5'] => 'border=edge:3,type:impassable,color:blue;border=edge:4,type:impassable,color:blue',
-              ['B7'] => 'border=edge:0,type:impassable,color:blue;border=edge:1,type:impassable,color:blue;'\
-                        'border=edge:5,type:impassable,color:blue',
-              ['B9'] => 'city=revenue:0;border=edge:0,type:water',
-              %w[B11 D3 D5 E4 F3 F7 G4 G8 H3 H5 H7 I2 I8 J5 J7 K8] => '',
-              %w[B13 E8 F5 J3] => 'town=revenue:0;town=revenue:0',
-              %w[C4 I6 K4] => 'town=revenue:0',
-              ['C6'] => 'town=revenue:0;border=edge:3,type:impassable,color:blue',
-              ['C8'] => 'stub=edge:3;upgrade=cost:30,terrain:water;border=edge:2,type:impassable,color:blue;'\
-                        'border=edge:3,type:water;border=edge:4,type:impassable,color:blue',
-              ['C10'] => 'town=revenue:0;town=revenue:0;border=edge:1,type:impassable,color:blue',
-              %w[C12 D11] => 'city=revenue:0;city=revenue:0;label=OO',
-              ['D13'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain;label=Y',
-              ['E6'] => 'city=revenue:0;label=Y',
-              ['E8'] => 'town=revenue:0;town=revenue:0;border=edge:4,type:impassable,color:blue',
-              ['E10'] => e10_configuration,
-              ['E12'] => e12_configuration,
-              %w[E14 J13] => 'upgrade=cost:30,terrain:mountain',
-              %w[F11 G14 H13] => 'upgrade=cost:60,terrain:mountain',
-              ['G10'] => 'town=revenue:0;town=revenue:0;border=edge:0,type:impassable,color:blue;'\
-                         'border=edge:1,type:impassable,color:blue',
-              ['G12'] => 'city=revenue:0;city=revenue:10;upgrade=cost:30,terrain:mountain;path=a:4,b:_1;label=OO',
-              ['H9'] => 'town=revenue:0;border=edge:3,type:impassable,color:blue;border=edge:4,type:impassable,color:blue',
-              ['H11'] => 'border=edge:1,type:impassable,color:blue',
-              ['I12'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
-              ['J11'] => 'border=edge:0,type:impassable,color:blue;border=edge:1,type:impassable,color:blue',
-              ['K10'] => 'city=revenue:0;border=edge:3,type:impassable,color:blue;border=edge:4,type:impassable,color:blue',
-              ['K12'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:0,type:impassable,color:blue;'\
-                         'border=edge:1,type:impassable,color:blue',
-              %w[G8 J9] => 'border=edge:4,type:impassable,color:blue',
-            },
-            yellow: {
-              ['B3'] => 'path=a:3,b:5',
-              ['D9'] => 'city=revenue:20;city=revenue:30;city=revenue:30;upgrade=cost:30,terrain:water;path=a:0,b:_0;'\
-                        'path=a:3,b:_1;path=a:5,b:_2;label=DU;partition=a:0,b:3,type:water',
-              ['F9'] => 'city=revenue:20;city=revenue:30,loc:3.5;city=revenue:30;upgrade=cost:30,terrain:water;path=a:0,b:_0;'\
-                        'path=a:4,b:_1;path=a:5,b:_2;label=D;partition=a:0,b:3,type:water',
-              ['F13'] => 'city=revenue:30;city=revenue:30;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;'\
-                         'path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=Y',
-              ['G6'] => 'city=revenue:20;city=revenue:20;path=a:0,b:_0;path=a:2,b:_1;label=OO',
-              ['I10'] => 'city=revenue:30;city=revenue:30;city=revenue:20;upgrade=cost:30,terrain:water;'\
-                         'path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;label=K;partition=a:0,b:3,type:water',
-              ['I14'] => 'upgrade=cost:60,terrain:mountain;path=a:3,b:5',
-              ['K2'] => 'city=revenue:20;upgrade=cost:30,terrain:mountain;path=a:3,b:_0;path=a:4,b:_0;label=AC',
-              ['K6'] => 'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0',
-            },
-            green: {
-              ['D7'] => 'city=revenue:0;icon=image:../logos/18_rhl/K',
-            },
-          }
-        end
 
         def variable_coal_mine
           case @variable_placement

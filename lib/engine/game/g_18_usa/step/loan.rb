@@ -1,29 +1,24 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
-require_relative '../../g_1817/step/dividend'
+require_relative '../../g_1817/step/loan'
 
 module Engine
   module Game
     module G18USA
       module Step
         class Loan < G1817::Step::Loan
-          def process_payoff_loan(action)
-            entity = action.entity
-            loan = action.loan
-            amount = loan.amount
-            raise GameError, "Loan doesn't belong to that entity" unless entity.loans.include?(loan)
+          def can_payoff?(entity)
+            super && !@loan_taken
+          end
 
-            @log << "#{entity.name} pays off a loan for #{@game.format_currency(amount)}"
-            entity.spend(amount, @game.bank)
+          def process_take_loan(action)
+            super
+            @loan_taken = true
+          end
 
-            entity.loans.delete(loan)
-            @game.loans << loan
-
-            price = entity.share_price.price
-            @game.stock_market.move_right(entity)
-            @game.stock_market.move_right(entity)
-            @game.log_share_price(entity, price)
+          def setup
+            super
+            @loan_taken = false
           end
         end
       end
