@@ -400,7 +400,7 @@ module Engine
 
       return [] if candidates.empty?
 
-      return candidates[0] if candidates.length == 1
+      return candidates[0] if candidates.size == 1
 
       # If we're reconstructing a route with multiple ways to satisfy
       # the connection data (e.g., 457--464, IR7--8), prefer ones that
