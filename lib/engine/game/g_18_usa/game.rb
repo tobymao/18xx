@@ -745,7 +745,7 @@ module Engine
                 G1817::Step::Bankrupt,
                 G1817::Step::CashCrisis,
                 Engine::Step::DiscardTrain,
-                G1817::Step::Acquire,
+                G18USA::Step::Acquire,
               ], round_num: @round.round_num)
             when G1817::Round::Acquisition
               if @round.round_num < @operating_rounds

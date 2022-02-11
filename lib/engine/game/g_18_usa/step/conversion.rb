@@ -9,7 +9,8 @@ module Engine
         class Conversion < G1817::Step::Conversion
           def actions(entity)
             actions = super
-            actions << 'scrap_train' if entity.trains.any? { |t| @game.pullman_train?(t) } && !actions.empty?
+            actions << 'scrap_train' if entity.corporation? && entity.trains.any? { |t| @game.pullman_train?(t) } &&
+                !actions.empty?
             actions
           end
 
