@@ -565,6 +565,11 @@ module Engine
           super - player.shares_by_corporation.sum { |corp, _| player.num_shares_of(corp) * corp.loans.size * 5 }
         end
 
+        def bank_sort(corporations)
+          minors, corps = corporations.partition { |c| c.type == :minor }
+          minors.sort_by { |m| m.name.to_i } + super(corps)
+        end
+
         #
         # Stock round logic
         #
