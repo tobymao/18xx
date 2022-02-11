@@ -22,7 +22,7 @@ module Engine
 
             if mandatory_merge?(entity)
               actions << Engine::Action::Merge.new(entity, corporation: entity)
-            elsif !connected?(entity) || !owner_can_afford?(entity) || !share_available?
+            elsif !can_merge?(entity)
               actions << Engine::Action::Pass.new(entity)
             end
 
@@ -75,10 +75,15 @@ module Engine
           end
 
           def mandatory_merge?(entity)
+            return false unless can_merge?(entity)
             return true if %w[1 2].include?(entity.id)
-            return true if @round.round_num == 2 && connected?(entity) && owner_can_afford?(entity) && share_available?
+            return true if @round.round_num == 2
 
             false
+          end
+
+          def can_merge?(entity)
+            !entity.receivership? && connected?(entity) && owner_can_afford?(entity) && share_available?
           end
 
           def connected?(entity)
@@ -111,7 +116,9 @@ module Engine
           def process_pass(action)
             entity = action.entity
 
-            msg = if !connected?(entity)
+            msg = if entity.receivership?
+                    "#{entity.name} is in receivership and is not allowed to merge into #{merge_target.name}"
+                  elsif !connected?(entity)
                     "#{entity.name} is not connected to Albany and is not allowed to merge into #{merge_target.name}"
                   elsif !owner_can_afford?(entity)
                     "#{entity.owner.name} cannot spend #{@game.format_currency(@game.nyc_merger_cost(entity) * -1)} " \

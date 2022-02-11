@@ -1325,12 +1325,16 @@ module Engine
 
         def liquidate_remaining_minors
           active_minors.each do |minor|
-            owner = minor.owner
-            @stock_market.move_left(minor)
-            liquidation_price = minor.share_price.price * 2
-            @log << "#{minor.name} is liquidated and #{owner.name} receives #{format_currency(liquidation_price)} " \
-                    'in compensation from the bank'
-            @bank.spend(liquidation_price, owner)
+            if minor.receivership?
+              @log << "#{minor.name} is liquidated"
+            else
+              owner = minor.owner
+              @stock_market.move_left(minor)
+              liquidation_price = minor.share_price.price * 2
+              @log << "#{minor.name} is liquidated and #{owner.name} receives #{format_currency(liquidation_price)} " \
+                      'in compensation from the bank'
+              @bank.spend(liquidation_price, owner)
+            end
             close_corporation(minor, quiet: true)
             minor.close!
           end
