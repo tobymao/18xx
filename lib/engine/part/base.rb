@@ -13,6 +13,10 @@ module Engine
         @id ||= "#{tile.id}-#{index}"
       end
 
+      def full_id
+        "#{hex.id} #{id}"
+      end
+
       def hex
         @tile&.hex
       end

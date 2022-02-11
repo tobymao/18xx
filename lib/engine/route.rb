@@ -20,6 +20,7 @@ module Engine
       @subsidy = opts[:subsidy]
       @halts = opts[:halts]
       @abilities = opts[:abilities]
+      @saved_nodes = opts[:nodes] # node.full_id for every node in the route
       @local_length = @game.local_length
 
       @node_chains = {}
@@ -46,6 +47,7 @@ module Engine
       @paths = nil
       @stops = nil
       @subsidy = nil
+      @saved_nodes = nil
       @visited_stops = nil
       @check_connected = nil
       @check_distance = nil
@@ -83,6 +85,10 @@ module Engine
 
     def chains
       connection_data&.map { |c| c[:chain] }
+    end
+
+    def nodes
+      chains.flat_map { |c| c['nodes'] }.uniq.compact
     end
 
     def next_chain(node, chain, other)
@@ -380,6 +386,7 @@ module Engine
     def find_pairwise_chain(chains_a, chains_b, other_paths)
       chains_a = chains_a.select { |a| (a[:paths] & other_paths).empty? }
       chains_b = chains_b.select { |b| (b[:paths] & other_paths).empty? }
+      candidates = []
       chains_a.each do |a|
         chains_b.each do |b|
           next if (middle = (a[:nodes] & b[:nodes])).empty?
@@ -387,11 +394,24 @@ module Engine
 
           left = (a[:nodes] - middle)[0]
           right = (b[:nodes] - middle)[0]
-          return [a, b, left, right, middle[0]]
+          candidates.append([a, b, left, right, middle[0]])
         end
       end
 
-      []
+      return [] if candidates.empty?
+
+      return candidates[0] if candidates.length == 1
+
+      # If we're reconstructing a route with multiple ways to satisfy
+      # the connection data (e.g., 457--464, IR7--8), prefer ones that
+      # pass through the nodes associated with it.
+      if @saved_nodes
+        candidates.each do |a, b, left, right, middle|
+          return [a, b, left, right, middle] if [left, right, middle].all? { |n| @saved_nodes.include?(n.full_id) }
+        end
+      end
+
+      candidates[0]
     end
 
     def find_matching_chains(hex_ids)

@@ -47,10 +47,16 @@ module View
         return [] unless last_run
 
         halts = operating[operating.keys.max]&.halts
+        nodes = operating[operating.keys.max]&.nodes
         routes = []
         last_run.each do |train, connection_hexes|
-          routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connection_hexes,
-                                                                 routes: routes, num_halts: halts[train])
+          routes << Engine::Route.new(@game,
+                                      @game.phase,
+                                      train,
+                                      connection_hexes: connection_hexes,
+                                      routes: routes,
+                                      num_halts: halts[train],
+                                      nodes: nodes[train])
         end
 
         routes
