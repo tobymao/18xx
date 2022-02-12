@@ -37,7 +37,7 @@ module Engine
             entity = @entities[@entity_index]
             @current_operator = entity
             @current_operator_acted = false
-            @log << "#{@game.acting_for_entity(entity).name} operates #{entity.name}" unless finished?
+            @log << "#{@game.acting_for_entity(entity).name} performs corporate actions for #{entity.name}" unless finished?
             skip_steps
             next_entity! if finished?
           end

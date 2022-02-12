@@ -38,7 +38,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '₡%d'
         BANK_CASH = 12_000
-        CERT_LIMIT = { 2 => 15, 3 => 15, 4 => 12, 5 => 10 }.freeze
+        CERT_LIMIT = { 2 => 18, 3 => 15, 4 => 12, 5 => 10 }.freeze
         STARTING_CASH = { 2 => 600, 3 => 540, 4 => 410, 5 => 340 }.freeze
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false
@@ -185,6 +185,7 @@ module Engine
           { lay: true, upgrade: true },
         ].freeze
 
+        MAX_OWNERSHIP_2P = 60
         LAST_OR = 11
         SP_HEX = 'E9'
         SP_TILES = %w[X22 X23].freeze
@@ -198,6 +199,7 @@ module Engine
         NW_HEXES = %w[A3 A5 B2].freeze
         SW_HEXES = %w[B14 C15].freeze
         END_BONUS_VALUE = 50
+        END_BONUS_COUNT = 4
 
         ICON_PREFIX = '21Moon/'
 
@@ -254,15 +256,15 @@ module Engine
                               end
           end
 
-          # pick one corp to wait until SR3
-
           # adjust parameters for majors to allow both IPO and treasury stock
+          # change percentatge for 2P
           # place LB and SP tokens
           # place LB icon
           #
           @sp_tokens = {}
           @corporations.each do |corp|
             corp.ipo_owner = @bank
+            corp.max_ownership_percent = MAX_OWNERSHIP_2P if @players.size == 2
             corp.share_holders.keys.each do |sh|
               next if sh == @bank
 
@@ -284,6 +286,12 @@ module Engine
           @or = 0
           @three_or_round = false
           @end_bonuses = Hash.new { |h, k| h[k] = [] }
+          @bonuses_left = {
+            'NE' => END_BONUS_COUNT,
+            'NW' => END_BONUS_COUNT,
+            'SE' => END_BONUS_COUNT,
+            'SW' => END_BONUS_COUNT,
+          }
           @crossed_rift = false
           @sp_tiles = SP_TILES.map { |tn| @tiles.find { |t| t.name == tn } }
         end
@@ -349,7 +357,7 @@ module Engine
         end
 
         def token_graph_for_entity(_entity)
-          @lb_graph
+          @graph
         end
 
         def after_buy_company(player, company, _price)
@@ -442,7 +450,7 @@ module Engine
           return true if to.name == T_TILE
 
           case from.color
-          when :red, :gray, :gray60, :gray50
+          when :salmon, :gray, :gray60, :gray50
             to.color == :yellow
           else
             super
@@ -470,7 +478,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G21Moon::Round::Stock.new(self, [
             G21Moon::Step::Exchange,
             G21Moon::Step::TradeStock,
             G21Moon::Step::BuySellParShares,
@@ -525,6 +533,7 @@ module Engine
             when Round::Corporate
               @operating_rounds = @phase.operating_rounds
               clear_programmed_actions
+              corporate_round_finished
               new_operating_round
             when Engine::Round::Stock
               clear_programmed_actions
@@ -545,6 +554,30 @@ module Engine
               reorder_players
               new_stock_round
             end
+        end
+
+        def corporate_round_finished
+          @corporations.select { |c| c.floated? && c.type != :minor }.sort.each do |corp|
+            prev = corp.share_price.price
+
+            @stock_market.move_up(corp) if sold_out?(corp) && sold_out_increase?(corp)
+            pool_share_drop = self.class::POOL_SHARE_DROP
+            price_drops =
+              if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
+                0
+              elsif pool_share_drop == :one
+                1
+              else
+                shares_in_pool
+              end
+            price_drops.times { @stock_market.move_down(corp) }
+
+            log_share_price(corp, prev)
+          end
+        end
+
+        def sold_out?(corporation)
+          corporation.share_holders.select { |s_h, _| s_h.player? || s_h.corporation? }.values.sum == 100
         end
 
         # Game will end directly after the end of OR 11
@@ -719,8 +752,8 @@ module Engine
         end
 
         def update_end_bonuses(corp, routes)
-          offboards = {}
           routes.each do |r|
+            offboards = {}
             r.hexes.each do |h|
               hid = h.id
               offboards['NE'] = true if NE_HEXES.include?(hid)
@@ -728,12 +761,16 @@ module Engine
               offboards['NW'] = true if NW_HEXES.include?(hid)
               offboards['SW'] = true if SW_HEXES.include?(hid)
             end
-          end
 
-          offboards.keys.each do |k|
-            unless @end_bonuses[corp].include?(k)
-              @end_bonuses[corp] << k
-              @log << "#{corp.name} receives '#{k}' end game bonus token"
+            next unless (offboards['NE'] || offboards['SE']) && (offboards['NW'] || offboards['SW'])
+
+            offboards.keys.each do |bonus|
+              next if @end_bonuses[corp].include?(bonus)
+              next unless @bonuses_left[bonus].positive?
+
+              @end_bonuses[corp] << bonus
+              @bonuses_left[bonus] -= 1
+              @log << "#{corp.name} receives '#{bonus}' end game bonus token"
             end
           end
         end
@@ -797,9 +834,31 @@ module Engine
         end
 
         def player_value(player)
-          value = super
-          value += shares.sum { |s| @end_bonuses[s.corporation].size * END_BONUS_VALUE } if @finished
-          value
+          super + end_game_bonus_value(player)
+        end
+
+        def end_game_bonus_value(player)
+          return 0 unless @finished
+
+          player.shares.sum { |s| @end_bonuses[s.corporation].size * (s.percent / 10) * END_BONUS_VALUE }
+        end
+
+        def end_game!
+          super
+
+          @log << 'End of game bonus tokens:'
+          @corporations.reject(&:closed?).each do |c|
+            next if @end_bonuses[c].empty?
+
+            cnt = @end_bonuses[c].size
+            @log << "#{c.name} - #{cnt} bonus token#{cnt > 1 ? 's' : ''} (#{format_currency(cnt * END_BONUS_VALUE)} per share)"
+          end
+          bstring = @players.reject(&:bankrupt).map do |p|
+            next unless end_game_bonus_value(p).positive?
+
+            "#{p.name} (#{format_currency(end_game_bonus_value(p))})"
+          end.uniq.join(', ')
+          @log << "Total bonuses: #{bstring}" unless bstring.empty?
         end
 
         def entity_can_use_company?(entity, company)
