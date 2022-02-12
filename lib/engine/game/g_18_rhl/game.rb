@@ -4,7 +4,6 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative '../base'
-require_relative '../cities_plus_towns_route_distance_str'
 require_relative '../stubs_are_restricted'
 module Engine
   module Game
@@ -13,7 +12,6 @@ module Engine
         include_meta(G18Rhl::Meta)
         include Entities
         include Map
-        include CitiesPlusTownsRouteDistanceStr
 
         attr_reader :osterath_tile
 
@@ -624,7 +622,7 @@ module Engine
 
           return super unless route.train.name == '8'
 
-          if visits.none? { |v| RGE_HEXES.include?(v.hex.name) }
+          if !rge_terminus?(visits.first) && !rge_terminus?(visits.last)
             raise GameError, 'Route for 8 trains must begin/end in an RGE hex'
           end
 
@@ -650,6 +648,14 @@ module Engine
           revenue_info(route, stops).map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
 
           str
+        end
+
+        def route_distance_str(route)
+          towns = route.visited_stops.count(&:town?)
+          cities = route_distance(route) - towns
+          return towns.zero? ? cities.to_s : "#{cities}+#{towns}" unless route.train.name == '8'
+
+          cities > 8 ? "8(+#{cities - 8})" : cities.to_s
         end
 
         def revenue_info(route, stops)
@@ -913,16 +919,21 @@ module Engine
 
         def rheingold_express_bonus(route, stops)
           bonus = { revenue: 0 }
-          return bonus unless route.train.name == '8'
+          return bonus if route.train.name != '8' ||
+                          !stops.first || !rge_terminus?(stops.first) ||
+                          !stops.last || !rge_terminus?(stops.last)
 
           # Double any Rhine Metropolis cities visited
+          doubles = 0
           stops.each do |s|
             next unless RHINE_METROPOLIS_HEXES.include?(s.hex.name)
 
+            doubles += 1
             bonus[:revenue] += s.route_revenue(route.phase, route.train)
           end
+          return bonus unless doubles.positive?
 
-          bonus[:description] = 'RGE'
+          bonus[:description] = 'RGE' + (doubles > 1 ? "x#{doubles}" : '')
           bonus
         end
 
@@ -957,6 +968,12 @@ module Engine
 
         def trajekts_used?(hex_name, route)
           route.chains.any? { |c| western_edge_used?(hex_name, c) && eastern_edge_used?(hex_name, c) }
+        end
+
+        def rge_terminus?(visited_node)
+          return false unless visited_node
+
+          RGE_HEXES.include?(visited_node.hex.name)
         end
 
         def western_edge_used?(hex_name, chain)
