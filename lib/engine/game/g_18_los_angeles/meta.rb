@@ -23,7 +23,7 @@ module Engine
         GAME_TITLE = '18 Los Angeles 2'
         # GAME_DISPLAY_TITLE = '18 Los Angeles'
         GAME_SUBTITLE = 'Railroading in the City of Angels'
-        GAME_ALIASES = ['18LA 2'].freeze
+        GAME_ALIASES = ['18LA'].freeze
         # GAME_VARIANTS = [
         #   {
         #     sym: :first_ed,
