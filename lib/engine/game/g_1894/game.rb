@@ -242,6 +242,9 @@ module Engine
         PARIS_HEX = 'G4'
         SQG_HEX = 'G10'
 
+        AMIENS_HEX = 'E6'
+        AMIENS_TILE = 'X3'
+
         def stock_round
           G1894::Round::Stock.new(self, [
             G1894::Step::BuySellParShares,
