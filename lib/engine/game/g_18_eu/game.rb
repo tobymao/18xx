@@ -326,7 +326,8 @@ module Engine
         end
 
         def exchange_corporations(exchange_ability)
-          return super if !exchange_ability.owner.minor? || @loading
+          return corporations if @loading
+          return super unless exchange_ability.owner.minor?
 
           minor_tile = exchange_ability&.owner&.tokens&.first&.city&.tile
           return [] unless minor_tile

@@ -25,6 +25,7 @@ module Engine
             subsidy: route['subsidy'],
             halts: route['halts'],
             abilities: route['abilities'],
+            nodes: route['nodes'],
           }.select { |_, v| v }
 
           routes << Route.new(
@@ -50,6 +51,7 @@ module Engine
             'subsidy' => route.subsidy,
             'halts' => route.halts,
             'abilities' => route.abilities,
+            'nodes' => route.nodes.map(&:full_id),
           }.select { |_, v| v }
         end
 

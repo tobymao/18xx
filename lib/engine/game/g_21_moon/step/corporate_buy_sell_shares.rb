@@ -11,6 +11,12 @@ module Engine
             []
           end
 
+          def description
+            'Issue/Sell then Buy Shares'
+          end
+
+          def auto_actions(_entity); end
+
           def can_sell_any?(entity)
             can_issue?(entity) || super
           end

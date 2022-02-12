@@ -31,9 +31,14 @@ module Engine
             allowed_to_pass(entity) ? ACTIONS : ['bid']
           end
 
+          def auction_restaged?
+            @companies.any? { |company| company.discount.positive? }
+          end
+
           def allowed_to_pass(entity)
             winning_bids = @companies.map { |company| highest_bid(company) }.select { |bid| bid }
             return true if winning_bids.size == @companies.size
+            return true if auction_restaged?
 
             winning_bids.count { |bid| bid.entity == entity } >= @required_bids
           end
@@ -73,7 +78,7 @@ module Engine
 
               # item is now free, so next player must bid on it
               @round.next_entity_index!
-              @log << "#{current_entity.name} is forced to bid 0 on #{company_name}"
+              @log << "#{current_entity.name} is forced to bid 0 on #{company.name}"
               @bids[company] = [ForcedBid.new(current_entity, price: 0, company: company)]
             end
             entities.each(&:unpass!)

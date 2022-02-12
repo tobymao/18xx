@@ -40,7 +40,7 @@ module Engine
           end
 
           def description
-            'Add or Remove Depot Transport'
+            'Add or Remove Depot Train'
           end
 
           def choice_name
@@ -61,8 +61,8 @@ module Engine
             add_trains.delete('10')
 
             choice_list = []
-            add_trains.each { |t| choice_list << ["+#{t}", "Add a #{t} transport"] }
-            remove_trains.each { |t| choice_list << ["-#{t}", "Remove a #{t} transport"] }
+            add_trains.each { |t| choice_list << ["+#{t}", "Add a #{t} train"] }
+            remove_trains.each { |t| choice_list << ["-#{t}", "Remove a #{t} train"] }
 
             choice_list.to_h
           end

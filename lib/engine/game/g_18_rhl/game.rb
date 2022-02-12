@@ -353,6 +353,7 @@ module Engine
           @newly_floated = []
 
           @essen_tile ||= @tiles.find { |t| t.name == 'Essen' } if optional_promotion_tiles
+          @moers_tile_brown ||= @tiles.find { |t| t.name == '947' }
           @moers_tile_gray ||= @tiles.find { |t| t.name == '950' } if optional_promotion_tiles
           @d_k_tile ||= @tiles.find { |t| t.name == '932V' } if optional_promotion_tiles
           @d_du_k_tile ||= @tiles.find { |t| t.name == '932' } unless optional_promotion_tiles
@@ -360,6 +361,9 @@ module Engine
           @osterath_tile ||= @tiles.find { |t| t.name == '935' }
 
           @variable_placement = (rand % 9) + 1
+
+          # Add Koal to Moers upgrade tile - will be sticky
+          @moers_tile_brown.icons << Part::Icon.new('../logos/18_rhl/K')
 
           # Put out K tokens
           @k = Corporation.new(

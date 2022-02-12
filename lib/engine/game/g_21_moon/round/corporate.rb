@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../../round/operating'
+require_relative '../../../round/stock'
 
 module Engine
   module Game
@@ -16,7 +16,7 @@ module Engine
           end
 
           def select_entities
-            @game.corporations.reject(&:closed?).select(&:ipoed).sort.reverse
+            @game.corporations.reject(&:closed?).select(&:ipoed).sort
           end
 
           def setup
@@ -27,7 +27,6 @@ module Engine
             return if @entity_index == @entities.size - 1
 
             next_entity_index!
-            reorder_entities!
 
             @steps.each(&:unpass!)
             @steps.each(&:setup)
@@ -38,7 +37,7 @@ module Engine
             entity = @entities[@entity_index]
             @current_operator = entity
             @current_operator_acted = false
-            @log << "#{@game.acting_for_entity(entity).name} operates #{entity.name}" unless finished?
+            @log << "#{@game.acting_for_entity(entity).name} performs corporate actions for #{entity.name}" unless finished?
             skip_steps
             next_entity! if finished?
           end

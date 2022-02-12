@@ -12,7 +12,7 @@ module Engine
 
             @game.graph.clear
             @game.sp_graph.clear
-            @game.bc_graph.clear
+            @game.lb_graph.clear
           end
         end
       end

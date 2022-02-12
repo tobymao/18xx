@@ -565,7 +565,7 @@ module Engine
           'FR' => %w[H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
                      M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13],
           'GB' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
-          'ESP' => %w[O1 P2 P4 Q1 Q3 Q5 R0 R2 R4 S1 S3 T2 U1],
+          'ESP' => %w[O1 P0 P2 P4 Q1 Q3 Q5 R0 R2 R4 S1 S3 T0 T2 U1],
           'CH' => %w[L12 L14 L16 M13 M15],
           'DE' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25 D18 E15 E17
                      E19 E21 F16 F18 I17 I19 J16 J18 J20 K17 K19 K21 I13 I15 J14 K15 H20 H22 I21 I23],
@@ -637,7 +637,8 @@ module Engine
                       SBB GL NRS ZPB MZA],
         }.freeze
 
-        attr_reader :game_end_triggered_corporation, :game_end_triggered_round
+        attr_reader :game_end_triggered_corporation, :game_end_triggered_round,
+                    :major_national_formed, :major_national_formed_round, :player_sold_shares
 
         def action_processed(_action); end
 
@@ -961,6 +962,7 @@ module Engine
         end
 
         def operating_round(round_num)
+          initialize_sold_shares
           @current_turn = "OR#{round_num}"
           @turn = round_num
           G1866::Round::Operating.new(self, [
@@ -1060,7 +1062,7 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          return [] if !entity.corporation? || !corporation?(entity)
+          return [] if !entity.corporation? || !corporation?(entity) || @player_sold_shares[entity.owner][entity]
 
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
@@ -1168,6 +1170,7 @@ module Engine
           @major_national_formed = {}
           @major_national_formed[self.class::GERMANY_NATIONAL] = false
           @major_national_formed[self.class::ITALY_NATIONAL] = false
+          @major_national_formed_round = {}
 
           # Setup the nationals graph
           @national_graph = Graph.new(self, home_as_token: true, no_blocking: true)
@@ -1209,6 +1212,9 @@ module Engine
           # Give all players stock turn token and remove unused
           setup_stock_turn_token
 
+          # Initialize the sold shares variables
+          initialize_sold_shares
+
           @final_round = nil
           @game_end_three_rounds = nil
           @game_end_triggered_corporation = nil
@@ -1234,7 +1240,17 @@ module Engine
         def status_array(corporation)
           return if !corporation?(corporation) || !corporation.floated?
 
-          [["#{corporation.type == :share_5 ? '5' : '10'}-share corporation", 'bold']]
+          status = []
+          status << ["#{corporation.type == :share_5 ? '5' : '10'}-share corporation", 'bold']
+          status << ['Can not redeem', 'bold'] if @player_sold_shares[corporation.owner][corporation]
+          if game_end_triggered?
+            status << if game_end_corporation_operated?(corporation)
+                        ['No share actions', 'bold']
+                      else
+                        ['Last share actions', 'bold']
+                      end
+          end
+          status
         end
 
         def status_str(corporation)
@@ -1515,6 +1531,7 @@ module Engine
 
           corporation.ipoed = true
           @major_national_formed[corporation.id] = true
+          @major_national_formed_round[corporation.id] = @round.round_num
           return unless corporation.id == self.class::ITALY_NATIONAL
 
           # Remove the coordinates for AHE in Lombardy-Venetia region
@@ -1642,6 +1659,10 @@ module Engine
 
         def infrastructure_train?(train)
           self.class::INFRASTRUCTURE_TRAINS.include?(train.name)
+        end
+
+        def initialize_sold_shares
+          @player_sold_shares = Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = false } }
         end
 
         def interest_owed(entity)

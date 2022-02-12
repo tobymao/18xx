@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'player_info'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
 require_relative '../cities_plus_towns_route_distance_str'
@@ -270,6 +271,12 @@ module Engine
             message += ' - 4+ trains rust after OR 8' if @or > 6 && @or <= 8
             message += " - Game end after OR #{@last_or}" if @or > 8
             "#{name} Round #{@or} (of #{@last_or})#{message}"
+          end
+        end
+
+        def store_player_info
+          @players.each do |p|
+            p.history << G18MS::PlayerInfo.new(@round.class.short_name, turn, @round.round_num, player_value(p))
           end
         end
 
