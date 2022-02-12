@@ -284,7 +284,7 @@ module View
     def active_player
       @game_data[:mode] != :hotseat &&
         !cursor &&
-        @game.current_entity.player.id == @user['id']
+        @game.current_entity.player.id == @user&.dig('id')
     end
 
     def menu
