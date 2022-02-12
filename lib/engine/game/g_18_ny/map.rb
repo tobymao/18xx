@@ -240,8 +240,8 @@ module Engine
             %w[D2] => 'city=revenue:0;upgrade=cost:80,terrain:water',
             %w[D4] => 'city=revenue:0;icon=image:18_ny/canal',
             %w[D14] => 'city=revenue:0;icon=image:18_ny/canal',
-            %w[D8] => 'city=revenue:0;border=edge:1,type:water,cost:60;icon=image:18_ny/canal',
-            %w[D12] => 'city=revenue:0;border=edge:3,type:impassable;icon=image:18_ny/canal',
+            %w[D8] => 'label=R;city=revenue:0;border=edge:1,type:water,cost:60;icon=image:18_ny/canal',
+            %w[D12] => 'label=S;city=revenue:0;border=edge:3,type:impassable;icon=image:18_ny/canal',
             %w[E5] => 'city=revenue:0;border=edge:4,type:water,cost:60',
             %w[E11] => 'city=revenue:0;border=edge:0,type:impassable;border=edge:1,type:impassable',
             %w[E15] => 'city=revenue:0;border=edge:3,type:water,cost:40;icon=image:18_ny/canal',
@@ -252,10 +252,10 @@ module Engine
             %w[J18] => 'city=revenue:0',
             %w[H20] => 'city=revenue:0;border=edge:0,type:water,cost:80;border=edge:1,type:water,cost:80;' \
                        'border=edge:2,type:water,cost:80',
-            %w[K19] => 'city=revenue:0;upgrade=cost:80,terrain:water',
+            %w[K19] => 'label=Br;city=revenue:0;upgrade=cost:80,terrain:water',
           },
           yellow: {
-            %w[E3] => 'city=revenue:20,slots:2;border=edge:1,type:water,cost:80;path=a:2,b:_0;path=a:3,b:_0;' \
+            %w[E3] => 'label=Bu;city=revenue:20,slots:2;border=edge:1,type:water,cost:80;path=a:2,b:_0;path=a:3,b:_0;' \
                       'path=a:4,b:_0',
             %w[F20] => 'label=A;city=revenue:40;upgrade=cost:80,terrain:water;path=a:0,b:_0;path=a:2,b:_0',
             %w[J20] => 'label=N;city=revenue:50;upgrade=cost:80,terrain:water;path=a:3,b:_0',
