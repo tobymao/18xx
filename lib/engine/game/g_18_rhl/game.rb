@@ -265,7 +265,7 @@ module Engine
             G18Rhl::Step::SpecialToken, # Must be before regular track lay (due to private No. 4)
             G18Rhl::Step::Track,
             G18Rhl::Step::RheBonusCheck,
-            Engine::Step::Token,
+            G18Rhl::Step::Token,
             Engine::Step::Route,
             G18Rhl::Step::Dividend,
             Engine::Step::DiscardTrain,

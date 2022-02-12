@@ -12,6 +12,7 @@ module Engine
 
           def abilities(entity, **kwargs, &block)
             return if !entity.company? ||
+                      entity.receivership? ||
                       # Do not allow any tile lay if tokening has been used
                       @round.tokened ||
                       # Do not allow special tile lay after train buys (to avoid exploits)
