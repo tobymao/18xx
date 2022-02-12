@@ -572,6 +572,16 @@ module Engine
           @_shares[share.id] = share
         end
 
+        def emergency_convert_bundles(corporation)
+          return [] if corporation.trains.any?
+          return [] if corporation.cash >= @depot.min_depot_price
+
+          shares = (1..5).map { |i| Engine::Share.new(corporation, percent: 20, index: 4 + i) }
+          bundle = Engine::ShareBundle.new(shares)
+          bundle.share_price = stock_market.find_share_price(corporation, [:left] * 3).price
+          [bundle]
+        end
+
         def convert_to_ten_share(corporation, price_drops = 0)
           # update corporation type and report conversion
           corporation.type = '10-share'

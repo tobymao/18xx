@@ -9,10 +9,29 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
             return [] if entity.receivership? && entity.trains.any?
-            return [] if entity != current_entity || buyable_trains(entity).empty?
-            return %w[buy_train] if must_buy_train?(entity)
+            return [] if entity != current_entity
 
-            super
+            actions = []
+            actions << 'sell_shares' if entity.trains.empty? && can_convert?(entity)
+            actions << 'buy_train' if can_buy_train?(entity)
+            actions << 'pass' unless actions.empty? || must_buy_train?(entity)
+            actions
+          end
+
+          def can_convert?(corporation)
+            corporation&.type == '5-share'
+          end
+
+          def issuable_shares(entity)
+            return [] unless entity.corporation?
+
+            @game.emergency_convert_bundles(entity)
+          end
+
+          def process_sell_shares(action)
+            return unless action.entity.corporation? && can_convert?(action.entity)
+
+            @game.convert_to_ten_share(action.entity, 3)
           end
 
           def president_may_contribute?
