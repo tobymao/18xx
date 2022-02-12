@@ -51,6 +51,7 @@ module Engine
 
           def choices_ability(company)
             return {} unless company.company?
+            return {} unless @game.turn > 1
 
             ability = @game.abilities(company, :choose_ability)
             return {} unless ability
