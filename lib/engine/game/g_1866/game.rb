@@ -196,7 +196,8 @@ module Engine
                   },
                 ],
                 price: 100,
-                obsolete_on: '4',
+                obsolete_on: nil,
+                rusts_on: '4',
               },
             ],
             events: [
@@ -219,9 +220,9 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
+            num: 6,
             price: 200,
-            obsolete_on: '6',
+            rusts_on: '6',
             events: [
               {
                 'type' => 'green_ferries',
@@ -247,7 +248,7 @@ module Engine
             ],
             num: 5,
             price: 300,
-            obsolete_on: '8',
+            rusts_on: '8',
             events: [
               {
                 'type' => 'infrastructure_m',
@@ -268,9 +269,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
+            num: 4,
             price: 450,
-            obsolete_on: '10',
             events: [
               {
                 'type' => 'brown_ferries',
@@ -296,7 +296,6 @@ module Engine
                 ],
                 multiplier: 2,
                 price: 450,
-                obsolete_on: '10',
               },
             ],
           },
@@ -314,7 +313,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
+            num: 3,
             price: 600,
             variants: [
               {
@@ -350,8 +349,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
-            price: 800,
+            num: 2,
+            price: 750,
             variants: [
               {
                 name: '5E',
@@ -368,7 +367,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 800,
+                price: 750,
               },
             ],
           },
@@ -387,7 +386,7 @@ module Engine
               },
             ],
             num: 20,
-            price: 1000,
+            price: 900,
             variants: [
               {
                 name: '6E',
@@ -404,7 +403,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 1000,
+                price: 900,
               },
             ],
           },
@@ -418,19 +417,19 @@ module Engine
           {
             name: 'P',
             distance: 99,
-            num: 6,
+            num: 4,
             price: 80,
           },
           {
             name: 'H',
             distance: 99,
-            num: 6,
+            num: 4,
             price: 120,
           },
           {
             name: 'M',
             distance: 99,
-            num: 6,
+            num: 4,
             price: 160,
           },
         ].freeze
@@ -519,7 +518,7 @@ module Engine
           '10' => 40,
         }.freeze
 
-        INFRASTRUCTURE_COUNT = 6
+        INFRASTRUCTURE_COUNT = 4
         INFRASTRUCTURE_TRAINS = %w[H P M].freeze
         INFRASTRUCTURE_HUB = 'H'
         INFRASTRUCTURE_PALACE = 'P'
@@ -585,7 +584,11 @@ module Engine
 
         NATIONAL_PREPRINTED_TILES = %w[AHE DE ESP].freeze
 
-        NATIONAL_TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+        MINOR_NATIONAL_TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+        NATIONAL_TILE_LAYS = [
+          { lay: true, upgrade: true, cost: 0 },
+          { lay: true, upgrade: true, cost: 0 },
+        ].freeze
         TILE_LAYS = [
           { lay: true, upgrade: true, cost: 0 },
           { lay: true, upgrade: true, cost: 10 },
@@ -890,16 +893,6 @@ module Engine
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
-        def init_train_handler
-          trains = self.class::TRAINS.flat_map do |train|
-            Array.new((train[:num] || num_trains(train))) do |index|
-              Train.new(**train, index: index)
-            end
-          end
-
-          G1866::Depot.new(trains, self)
-        end
-
         def interest_rate
           20
         end
@@ -1128,10 +1121,6 @@ module Engine
           entity.runnable_trains.reject { |t| infrastructure_train?(t) }
         end
 
-        def rust?(train, purchased_train)
-          super || (train.obsolete_on == purchased_train.sym && @depot.upcoming.include?(train))
-        end
-
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
           price = corporation.share_price.price
@@ -1264,7 +1253,8 @@ module Engine
         end
 
         def tile_lays(entity)
-          return self.class::NATIONAL_TILE_LAYS if national_corporation?(entity)
+          return self.class::MINOR_NATIONAL_TILE_LAYS if minor_national_corporation?(entity)
+          return self.class::NATIONAL_TILE_LAYS if major_national_corporation?(entity)
 
           self.class::TILE_LAYS
         end
