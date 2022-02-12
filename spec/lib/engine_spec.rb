@@ -37,7 +37,8 @@ module Engine
       G1889 => ['1889', 'Shikoku', 'Shikoku 1889', 'History of Shikoku Railways'],
       G18Chesapeake => %w[18Chesapeake Chessie],
       G18ChesapeakeOffTheRails => ['ChesapeakeOTR', 'OTR', '18Chesapeake: Off the Rails'],
-      G18LosAngeles => ['18 Los Angeles', '18LosAngeles', '18LA'],
+      G18LosAngeles1 => ['18 Los Angeles', '18LosAngeles', '18LA'],
+      G18LosAngeles => ['18 Los Angeles 2', '18LosAngeles2', '18LA2'],
     }.each do |game_module, fuzzy_titles|
       expected_title = game_module.const_get('Meta').title
 
