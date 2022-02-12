@@ -778,9 +778,9 @@ module Engine
         def timeline
           @timeline ||= [
             'SR 3: 7th corporation becomes available',
-            'OR 3.1: Space Port upgraded to 30c',
+            "OR 3.1: Space Port upgraded to #{format_currency(30)}",
             'OR 4.1: Remaining private companies close',
-            'OR 5.1: Space Port upgraded to 40c',
+            "OR 5.1: Space Port upgraded to #{format_currency(40)}",
             'Game ends after OR 5.3',
           ].freeze
           @timeline
