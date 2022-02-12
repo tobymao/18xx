@@ -233,7 +233,7 @@ module View
       end
 
       row_styles = { style: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between' } }
-      pill_styles = { style: { background: 'darkred', borderRadius: '30px', padding: '0px 5px' } }
+      pill_styles = { style: { background: '#c62033', borderRadius: '30px', padding: '0px 5px', color: 'white' } }
       id_row = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
       id_row << h(:div, pill_styles, 'Live') if !@gdata['settings']['is_async'] && !@gdata['settings']['is_async'].nil?
       children = [h(:div, row_styles, id_row)]
