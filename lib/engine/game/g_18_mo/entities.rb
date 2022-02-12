@@ -13,7 +13,7 @@ module Engine
            desc: 'Starts with $60 in treasury, a 2 train, and a token in Hannibal (H6) or St. Joseph (C5). In ORs, '\
                  'this is the first minor to operate. Splits revenue evenly with owner. Buyer '\
                  'pays an extra $80 ("debt").',
-           sym: 'MS',
+           sym: 'HSJ',
            color: nil,
          },
          {
@@ -24,7 +24,7 @@ module Engine
            desc: 'Starts with $40 in treasury, a 2 train, and a token in Salem (H12). In '\
                  'ORs, this is the second minor to operate. Splits revenue evenly with owner. '\
                  'Buyer pays an extra $60 ("debt").',
-           sym: 'BIG4',
+           sym: 'SSL',
            color: nil,
          },
          {
@@ -385,7 +385,7 @@ module Engine
 
         MINORS = [
           {
-            sym: 'MS',
+            sym: 'HSJ',
             name: 'Hannibal and St. Joseph Railroad',
             logo: '18_mo/HSJ',
             simple_logo: '18_mo/HSJ.alt',
@@ -395,7 +395,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'BIG4',
+            sym: 'SSL',
             name: 'St. Louis, Salem and Little Rock',
             logo: '18_mo/SSL',
             simple_logo: '18_mo/SSL.alt',
