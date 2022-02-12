@@ -80,12 +80,15 @@ module Engine
           ['Start with 60% sold', 'New corporations float once 60% of their shares have been sold'],
           'float_10_share' =>
           ['Start as 10-share', 'New corporations are 10-share corporations (that float at 60%)'],
+          'remove_unstarted' =>
+          ['Remove unstarted corps', 'Unstarted corporations are removed along with one 6X train each'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'bonus_20_20' => ['NS £20, EW £20', 'North-South bonus £20, East-West bonus £20'],
           'bonus_20_30' => ['NS £20, EW £30', 'North-South bonus £20, East-West bonus £30'],
           'bonus_20_40' => ['NS £20, EW £40', 'North-South bonus £20, East-West bonus £40'],
+          'only_pres_drop' => ['Only pres. sales drop', 'Only sales by corporation presidents drop the share price'],
         ).freeze
 
         PHASES = [
@@ -141,7 +144,7 @@ module Engine
             on: '6X',
             train_limit: 2,
             tiles: %i[yellow green blue brown gray],
-            status: ['bonus_20_40'],
+            status: %w[bonus_20_40 only_pres_drop],
             operating_rounds: 2,
           },
         ].freeze
@@ -272,6 +275,11 @@ module Engine
               },
             ],
             price: 700,
+            events: [
+              {
+                'type' => 'remove_unstarted',
+              },
+            ],
             available_on: '5X',
           },
         ].freeze
@@ -406,6 +414,20 @@ module Engine
           @corporations.reject(&:floated?).each { |c| convert_to_ten_share(c) }
         end
 
+        def event_remove_unstarted!
+          @log << '-- Event: Unstarted corporations are removed --'
+          remove_trains = @depot.trains.select { |t| t.name == '6X' }
+          @corporations.reject(&:floated?).each do |corporation|
+            close_corporation(corporation, quiet: true)
+            if (train = remove_trains.pop)
+              @depot.remove_train(train)
+              @log << "#{corporation.id} closes, removing a 6X train"
+            else
+              @log << "#{corporation.id} closes"
+            end
+          end
+        end
+
         def sorted_corporations
           ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
           ipoed.sort + others
@@ -452,6 +474,19 @@ module Engine
             # player doesn't own the LB so can start any except the LNWR
             corporation.id != 'LNWR'
           end
+        end
+
+        def non_president_sales_drop_price?
+          !@phase.status.include?('only_pres_drop')
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          corporation = bundle.corporation
+          price = corporation.share_price.price
+          was_president = corporation.president?(bundle.owner)
+          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
+          bundle.num_shares.times { @stock_market.move_down(corporation) } if non_president_sales_drop_price? || was_president
+          log_share_price(corporation, price)
         end
 
         def insolvent?(corp)
