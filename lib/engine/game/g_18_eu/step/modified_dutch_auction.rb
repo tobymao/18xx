@@ -15,6 +15,23 @@ module Engine
             'Modified Dutch Auction for Minors'
           end
 
+          def pass_description
+            return super unless @auctioning
+            return 'Pass (Bid)' unless @bids[@auctioning].none?
+
+            @current_reduction.positive? ? 'Decline (Buy)' : 'Decline (Bid)'
+          end
+
+          def log_pass(entity)
+            return super unless @auctioning
+
+            @log << "#{entity.name} #{@bids[@auctioning].none? ? 'declines' : 'passes on'} #{@auctioning.name}"
+          end
+
+          def bid_str(_entity)
+            @bids[@auctioning].none? && @current_reduction.positive? ? 'Buy' : 'Place Bid'
+          end
+
           def actions(entity)
             return [] if available.empty?
             return [] unless entity == current_entity
@@ -50,7 +67,6 @@ module Engine
             return unless @auctioning
 
             entity = action.entity
-
             pass_auction(entity)
 
             if entities.all?(&:passed?)
@@ -64,8 +80,8 @@ module Engine
 
           def pass_auction(entity)
             entity.pass!
-
-            super
+            log_pass(entity)
+            remove_from_auction(entity) unless @bids[@auctioning].none?
           end
 
           def next_entity!
@@ -117,7 +133,7 @@ module Engine
             @auction_triggerer = bid.entity
             target = bid_target(bid)
 
-            @game.log << "#{@auction_triggerer.name} selects #{target.name} for auction with no initial bid."
+            @log << "#{@auction_triggerer.name} selects #{target.name} for auction with no initial bid."
             auction_entity(target)
           end
 
@@ -130,7 +146,7 @@ module Engine
           def reduce_price
             @current_reduction += @reduction_step
 
-            @game.log << "#{@auctioning.name} is now offered for #{@game.format_currency(min_bid(@auctioning))}"
+            @log << "#{@auctioning.name} is now offered for #{@game.format_currency(min_bid(@auctioning))}"
           end
 
           def assign_target(bidder, target)
@@ -167,6 +183,7 @@ module Engine
             target = bid_target(bid)
             @auction_triggerer ||= bid.entity
             auction_entity(target) unless @auctioning
+            entities.each(&:unpass!) if @bids[@auctioning].none?
 
             super
 
