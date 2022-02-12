@@ -95,6 +95,10 @@ module Engine
             [share_price]
           end
 
+          def log_pass(entity)
+            @log << "#{entity.name} passes" if @round.current_actions.empty?
+          end
+
           def log_skip(entity)
             if @round.stock? && @round.player_passed[entity]
               @log << "#{entity.name} have passed and is out of the ISR"

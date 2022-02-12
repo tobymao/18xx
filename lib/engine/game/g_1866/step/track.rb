@@ -89,7 +89,11 @@ module Engine
             end
 
             # Special case for the B tiles
-            action.tile.label = 'B' if action.hex.tile.label.to_s == 'B'
+            b_tile = nil
+            if hex.tile.label.to_s == 'B'
+              action.tile.label = 'B'
+              b_tile = hex.tile if hex.tile.color == :yellow && action.tile.color == :green
+            end
 
             # Special case for London
             if hex.name == @game.class::LONDON_HEX && hex.tile.color == :brown && action.tile.color == :gray
@@ -102,6 +106,7 @@ module Engine
             end
 
             super
+            b_tile.label = nil if b_tile
             @game.after_lay_tile(entity)
           end
 

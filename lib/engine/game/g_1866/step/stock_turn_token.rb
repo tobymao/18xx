@@ -38,10 +38,6 @@ module Engine
             'Stock Turn Token'
           end
 
-          def log_pass(entity)
-            @log << "#{entity.name} passes" if @round.current_actions.empty?
-          end
-
           def log_skip(entity)
             return unless @game.stock_turn_corporation?(entity)
 
