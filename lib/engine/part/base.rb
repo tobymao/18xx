@@ -14,7 +14,7 @@ module Engine
       end
 
       def full_id
-        "#{hex.id}-#{tile.name}-#{index}"
+        "#{hex&.id}-#{tile.name}-#{index}"
       end
 
       def hex
