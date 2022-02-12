@@ -13,7 +13,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :hb_graph, :sp_graph, :train_base
+        attr_reader :lb_graph, :sp_graph, :train_base
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -38,14 +38,15 @@ module Engine
 
         CURRENCY_FORMAT_STR = '₡%d'
         BANK_CASH = 12_000
-        CERT_LIMIT = { 3 => 15, 4 => 12, 5 => 10 }.freeze
-        STARTING_CASH = { 3 => 540, 4 => 410, 5 => 340 }.freeze
+        CERT_LIMIT = { 2 => 18, 3 => 15, 4 => 12, 5 => 10 }.freeze
+        STARTING_CASH = { 2 => 600, 3 => 540, 4 => 410, 5 => 340 }.freeze
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_block
         SOLD_OUT_INCREASE = true
         POOL_SHARE_DROP = :one
         IMPASSABLE_HEX_COLORS = %i[purple orange].freeze
+        TRACK_RESTRICTION = :city_permissive
 
         MARKET = [
           ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '330', '360', '395', '430'],
@@ -73,7 +74,7 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { HB: 2, SP: 2 },
+            train_limit: { LB: 2, SP: 2 },
             tiles: %i[yellow],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -81,7 +82,7 @@ module Engine
           {
             name: '3',
             on: '3',
-            train_limit: { HB: 2, SP: 2 },
+            train_limit: { LB: 2, SP: 2 },
             tiles: %i[yellow green],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -89,7 +90,7 @@ module Engine
           {
             name: '4',
             on: '4',
-            train_limit: { HB: 2, SP: 2 },
+            train_limit: { LB: 2, SP: 2 },
             tiles: %i[yellow green],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -97,7 +98,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { HB: 2, SP: 2 },
+            train_limit: { LB: 2, SP: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -105,7 +106,7 @@ module Engine
           {
             name: '6',
             on: '6',
-            train_limit: { HB: 2, SP: 2 },
+            train_limit: { LB: 2, SP: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -113,7 +114,7 @@ module Engine
           {
             name: '10',
             on: '10',
-            train_limit: { HB: 2, SP: 2 },
+            train_limit: { LB: 2, SP: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
             status: ['can_buy_companies'],
@@ -184,6 +185,7 @@ module Engine
           { lay: true, upgrade: true },
         ].freeze
 
+        MAX_OWNERSHIP_2P = 60
         LAST_OR = 11
         SP_HEX = 'E9'
         SP_TILES = %w[X22 X23].freeze
@@ -197,11 +199,12 @@ module Engine
         NW_HEXES = %w[A3 A5 B2].freeze
         SW_HEXES = %w[B14 C15].freeze
         END_BONUS_VALUE = 50
+        END_BONUS_COUNT = 4
 
         ICON_PREFIX = '21Moon/'
 
         ICON_REVENUES = {
-          'HB' => { yellow: 30, green: 30, brown: 30, gray: 30 },
+          'LB' => { yellow: 30, green: 30, brown: 30, gray: 30 },
           'X' => { yellow: 20, green: 40, brown: 60, gray: 80 },
           'H' => { yellow: 30, green: 40, brown: 50, gray: 60 },
           'R' => { yellow: 20, green: 20, brown: 40, gray: 50 },
@@ -225,13 +228,13 @@ module Engine
 
         def setup
           # We need a total of three graphs:
-          # One from just HB (@hb_graph)
+          # One from just LB (@lb_graph)
           # One from just SP (@sp_graph)
           # One from both (@graph)
           #
-          # We always ignore non-HB non-SP tokens however
+          # We always ignore non-LB non-SP tokens however
           #
-          @hb_graph = Graph.new(self, check_tokens: true)
+          @lb_graph = Graph.new(self, check_tokens: true)
           @sp_graph = Graph.new(self, check_tokens: true)
           select_combined_graph
 
@@ -253,15 +256,15 @@ module Engine
                               end
           end
 
-          # pick one corp to wait until SR3
-
           # adjust parameters for majors to allow both IPO and treasury stock
-          # place HB and SP tokens
-          # place HB icon
+          # change percentatge for 2P
+          # place LB and SP tokens
+          # place LB icon
           #
           @sp_tokens = {}
           @corporations.each do |corp|
             corp.ipo_owner = @bank
+            corp.max_ownership_percent = MAX_OWNERSHIP_2P if @players.size == 2
             corp.share_holders.keys.each do |sh|
               next if sh == @bank
 
@@ -269,7 +272,7 @@ module Engine
             end
             place_home_token(corp)
             place_sp_token(corp)
-            hex_by_id(corp.coordinates).tile.icons << @hb_icon
+            hex_by_id(corp.coordinates).tile.icons << @lb_icon
           end
 
           # pick one corp to wait until SR3
@@ -283,6 +286,12 @@ module Engine
           @or = 0
           @three_or_round = false
           @end_bonuses = Hash.new { |h, k| h[k] = [] }
+          @bonuses_left = {
+            'NE' => END_BONUS_COUNT,
+            'NW' => END_BONUS_COUNT,
+            'SE' => END_BONUS_COUNT,
+            'SW' => END_BONUS_COUNT,
+          }
           @crossed_rift = false
           @sp_tiles = SP_TILES.map { |tn| @tiles.find { |t| t.name == tn } }
         end
@@ -308,9 +317,9 @@ module Engine
           @icons = Hash.new { |h, k| h[k] = {} }
           ICON_REVENUES.keys.each do |root|
             case root
-            when 'HB'
-              @hb_icon = Part::Icon.new(ICON_PREFIX + 'HB', 'HB', false, false, false)
-              %i[yellow green brown gray].each { |color| @icons[root][color] = @hb_icon }
+            when 'LB'
+              @lb_icon = Part::Icon.new(ICON_PREFIX + 'LB', 'LB', false, false, false)
+              %i[yellow green brown gray].each { |color| @icons[root][color] = @lb_icon }
             else
               %i[yellow green brown gray].each do |color|
                 full = root + '_' + color.to_s
@@ -321,7 +330,7 @@ module Engine
         end
 
         def skip_token?(graph, corporation, city)
-          if graph == @hb_graph
+          if graph == @lb_graph
             city.hex.id != corporation.coordinates
           elsif graph == @sp_graph
             city.hex.id != self.class::SP_HEX
@@ -335,8 +344,8 @@ module Engine
           @selected_graph = @graph
         end
 
-        def select_hb_graph
-          @selected_graph = @hb_graph
+        def select_lb_graph
+          @selected_graph = @lb_graph
         end
 
         def select_sp_graph
@@ -348,7 +357,7 @@ module Engine
         end
 
         def token_graph_for_entity(_entity)
-          @hb_graph
+          @graph
         end
 
         def after_buy_company(player, company, _price)
@@ -382,7 +391,7 @@ module Engine
 
           old_token.swap!(new_token)
           @graph.clear
-          @hb_graph.clear
+          @lb_graph.clear
           @sp_graph.clear
           @log << "#{buyer.name} takes over OLS token in #{new_token.city.hex.id}"
 
@@ -441,7 +450,7 @@ module Engine
           return true if to.name == T_TILE
 
           case from.color
-          when :red, :gray, :gray60, :gray50
+          when :salmon, :gray, :gray60, :gray50
             to.color == :yellow
           else
             super
@@ -469,7 +478,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G21Moon::Round::Stock.new(self, [
             G21Moon::Step::Exchange,
             G21Moon::Step::TradeStock,
             G21Moon::Step::BuySellParShares,
@@ -486,7 +495,7 @@ module Engine
           @or += 1
 
           round = super
-          upgrade_space_port if @or == 6 || @or == 9
+          upgrade_space_port if @or == 5 || @or == 9
           event_close_companies! if @or == 7
 
           if @or == 9
@@ -524,6 +533,7 @@ module Engine
             when Round::Corporate
               @operating_rounds = @phase.operating_rounds
               clear_programmed_actions
+              corporate_round_finished
               new_operating_round
             when Engine::Round::Stock
               clear_programmed_actions
@@ -544,6 +554,30 @@ module Engine
               reorder_players
               new_stock_round
             end
+        end
+
+        def corporate_round_finished
+          @corporations.select { |c| c.floated? && c.type != :minor }.sort.each do |corp|
+            prev = corp.share_price.price
+
+            @stock_market.move_up(corp) if sold_out?(corp) && sold_out_increase?(corp)
+            pool_share_drop = self.class::POOL_SHARE_DROP
+            price_drops =
+              if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
+                0
+              elsif pool_share_drop == :one
+                1
+              else
+                shares_in_pool
+              end
+            price_drops.times { @stock_market.move_down(corp) }
+
+            log_share_price(corp, prev)
+          end
+        end
+
+        def sold_out?(corporation)
+          corporation.share_holders.select { |s_h, _| s_h.player? || s_h.corporation? }.values.sum == 100
         end
 
         # Game will end directly after the end of OR 11
@@ -635,8 +669,8 @@ module Engine
           corporations.reject(&:minor?).sort_by(&:name)
         end
 
-        def hb_trains(corporation)
-          corporation.trains.select { |t| @train_base[t] == :hb }
+        def lb_trains(corporation)
+          corporation.trains.select { |t| @train_base[t] == :lb }
         end
 
         def sp_trains(corporation)
@@ -644,10 +678,10 @@ module Engine
         end
 
         def route_trains(entity)
-          hb_trains(entity) + sp_trains(entity)
+          lb_trains(entity) + sp_trains(entity)
         end
 
-        def hb_city?(node, corp)
+        def lb_city?(node, corp)
           return false if !node&.city? || !node&.hex || !corp&.corporation?
 
           node.hex.id == corp.coordinates
@@ -661,7 +695,7 @@ module Engine
 
         def visited_base?(entity, base, route)
           (base == :sp && route.visited_stops.any? { |s| sp_city?(s) }) ||
-            (base == :hb && route.visited_stops.any? { |s| hb_city?(s, entity) })
+            (base == :lb && route.visited_stops.any? { |s| lb_city?(s, entity) })
         end
 
         def intersects?(route_a, route_b)
@@ -687,12 +721,12 @@ module Engine
           routes_revenue(routes.select { |r| @train_base[r.train] == :sp })
         end
 
-        def hb_revenue(routes)
-          routes_revenue(routes.select { |r| @train_base[r.train] == :hb })
+        def lb_revenue(routes)
+          routes_revenue(routes.select { |r| @train_base[r.train] == :lb })
         end
 
         def submit_revenue_str(routes, _render_halts)
-          "#{format_revenue_currency(sp_revenue(routes))} (+#{format_revenue_currency(hb_revenue(routes))} Withhold)"
+          "#{format_revenue_currency(sp_revenue(routes))} (+#{format_revenue_currency(lb_revenue(routes))} Withhold)"
         end
 
         def assign_base(train, base)
@@ -703,11 +737,11 @@ module Engine
           if corporation.trains.empty?
             'None'
           else
-            hb = hb_trains(corporation)
+            lb = lb_trains(corporation)
             sp = sp_trains(corporation)
             str = ''
-            str += 'HB:' + hb.map(&:name).join(' ') unless hb.empty?
-            str += ' ' if !hb.empty? && !sp.empty?
+            str += 'LB:' + lb.map(&:name).join(' ') unless lb.empty?
+            str += ' ' if !lb.empty? && !sp.empty?
             str += 'SP:' + sp.map(&:name).join(' ') unless sp.empty?
             str
           end
@@ -718,8 +752,8 @@ module Engine
         end
 
         def update_end_bonuses(corp, routes)
-          offboards = {}
           routes.each do |r|
+            offboards = {}
             r.hexes.each do |h|
               hid = h.id
               offboards['NE'] = true if NE_HEXES.include?(hid)
@@ -727,12 +761,16 @@ module Engine
               offboards['NW'] = true if NW_HEXES.include?(hid)
               offboards['SW'] = true if SW_HEXES.include?(hid)
             end
-          end
 
-          offboards.keys.each do |k|
-            unless @end_bonuses[corp].include?(k)
-              @end_bonuses[corp] << k
-              @log << "#{corp.name} receives '#{k}' end game bonus token"
+            next unless (offboards['NE'] || offboards['SE']) && (offboards['NW'] || offboards['SW'])
+
+            offboards.keys.each do |bonus|
+              next if @end_bonuses[corp].include?(bonus)
+              next unless @bonuses_left[bonus].positive?
+
+              @end_bonuses[corp] << bonus
+              @bonuses_left[bonus] -= 1
+              @log << "#{corp.name} receives '#{bonus}' end game bonus token"
             end
           end
         end
@@ -740,9 +778,9 @@ module Engine
         def timeline
           @timeline ||= [
             'SR 3: 7th corporation becomes available',
-            'OR 3.2: Space Port upgraded to 30c',
+            "OR 3.1: Space Port upgraded to #{format_currency(30)}",
             'OR 4.1: Remaining private companies close',
-            'OR 5.1: Space Port upgraded to 40c',
+            "OR 5.1: Space Port upgraded to #{format_currency(40)}",
             'Game ends after OR 5.3',
           ].freeze
           @timeline
@@ -796,9 +834,31 @@ module Engine
         end
 
         def player_value(player)
-          value = super
-          value += shares.sum { |s| @end_bonuses[s.corporation].size * END_BONUS_VALUE } if @finished
-          value
+          super + end_game_bonus_value(player)
+        end
+
+        def end_game_bonus_value(player)
+          return 0 unless @finished
+
+          player.shares.sum { |s| @end_bonuses[s.corporation].size * (s.percent / 10) * END_BONUS_VALUE }
+        end
+
+        def end_game!
+          super
+
+          @log << 'End of game bonus tokens:'
+          @corporations.reject(&:closed?).each do |c|
+            next if @end_bonuses[c].empty?
+
+            cnt = @end_bonuses[c].size
+            @log << "#{c.name} - #{cnt} bonus token#{cnt > 1 ? 's' : ''} (#{format_currency(cnt * END_BONUS_VALUE)} per share)"
+          end
+          bstring = @players.reject(&:bankrupt).map do |p|
+            next unless end_game_bonus_value(p).positive?
+
+            "#{p.name} (#{format_currency(end_game_bonus_value(p))})"
+          end.uniq.join(', ')
+          @log << "Total bonuses: #{bstring}" unless bstring.empty?
         end
 
         def entity_can_use_company?(entity, company)
@@ -835,7 +895,7 @@ module Engine
           return false unless token
           return false unless (corporation = token.corporation)
 
-          hb_city?(token.city, corporation)
+          lb_city?(token.city, corporation)
         end
       end
     end

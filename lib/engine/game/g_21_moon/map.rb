@@ -53,9 +53,9 @@ module Engine
           # Green
           '19' => 1,
           '20' => 1,
-          '23' => 1,
-          '24' => 1,
-          '25' => 1,
+          '23' => 3,
+          '24' => 3,
+          '25' => 2,
           '26' => 1,
           '27' => 1,
           '28' => 1,
@@ -273,10 +273,10 @@ module Engine
         # rubocop:enable Layout/LineLength
 
         LOCATION_NAMES = {
-          'A3' => 'Space Station',
-          'B14' => 'Tourism Colony',
-          'L2' => 'Solar Farm',
-          'M13' => 'Water Farm',
+          'A3' => 'Helium-3 Mine',
+          'B14' => 'Water Farm',
+          'L2' => 'Research Station',
+          'M13' => 'Tourism Colony',
           'F8' => 'Terminal',
         }.freeze
 
@@ -300,7 +300,7 @@ module Engine
             %w[B8 B10 D4 D6 E3 E11 E13 G9 I3 K7 K11] => 'upgrade=cost:40,terrain:mountain',
             %w[F6] => 'upgrade=cost:40,terrain:mountain;border=edge:4,type:divider',
           },
-          red: {
+          salmon: {
             %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10] => 'city=revenue:0;upgrade=cost:20,terrain:mountain',
             %w[H2] => 'city=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:1,type:divider;border=edge:2,type:divider',
             %w[E5 G13] => 'city=revenue:0;city=revenue:0;upgrade=cost:20,terrain:mountain;label=OO',

@@ -10,9 +10,9 @@ module Engine
           def setup
             super
 
-            # start with allowing track to either SP or HB
+            # start with allowing track to either SP or LB
             @game.select_combined_graph
-            @hb_connected = false
+            @lb_connected = false
             @sp_connected = false
           end
 
@@ -33,13 +33,13 @@ module Engine
           def process_lay_tile(action)
             @game.graph.clear
             @game.sp_graph.clear
-            @game.hb_graph.clear
+            @game.lb_graph.clear
             lay_tile_action(action)
 
-            if @hb_connected && !@sp_connected
+            if @lb_connected && !@sp_connected
               @game.select_sp_graph
-            elsif !@hb_connected && @sp_connected
-              @game.select_hb_graph
+            elsif !@lb_connected && @sp_connected
+              @game.select_lb_graph
             else
               @game.select_combined_graph # normal case when loading
             end
@@ -50,10 +50,10 @@ module Engine
             @game.select_combined_graph
           end
 
-          # this is where we see whether the track extends from HB, SP or both
+          # this is where we see whether the track extends from LB, SP or both
           #
           def check_track_restrictions!(entity, old_tile, new_tile)
-            @hb_connected = new_tile.paths.any? { |np| @game.hb_graph.connected_paths(entity)[np] }
+            @lb_connected = new_tile.paths.any? { |np| @game.lb_graph.connected_paths(entity)[np] }
             @sp_connected = new_tile.paths.any? { |np| @game.sp_graph.connected_paths(entity)[np] }
 
             check_border_crossing(entity, new_tile)
