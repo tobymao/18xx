@@ -359,6 +359,13 @@ module Engine
           company.value = 0
         end
 
+        def close_company_in_hex(hex)
+          @companies.each do |company|
+            block = abilities(company, :blocks_hexes)
+            close_company(company) if block.hexes.include?(hex.coordinates)
+          end
+        end
+
         def game_companies
           scenario_comps = @scenario['companies']
           self.class::COMPANIES.select { |comp| scenario_comps.include?(comp['sym']) }
@@ -619,6 +626,10 @@ module Engine
             Engine::Step::HomeToken,
             G18GB::Step::BuySellParShares,
           ])
+        end
+
+        def hex_blocked_by_ability?(_entity, ability, hex)
+          phase.tiles.include?(:blue) ? false : super
         end
 
         def special_green_hexes(corporation)
