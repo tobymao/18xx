@@ -27,17 +27,25 @@ module Engine
             [token, special_ability]
           end
 
+          def switch_for_expensive_token(token)
+            return token unless token.price.zero?
+            return token unless current_entity.tokens.size > 1
+
+            current_entity.tokens.max_by(&:price)
+          end
+
           def process_place_token(action)
             hex = action.city.hex
             city_string = hex.tile.cities.size > 1 ? " city #{action.city.index}" : ''
             raise GameError, "Cannot place token on #{hex.name}#{city_string}" unless available_hex(action.entity, hex)
 
+            token = switch_for_expensive_token(action.token)
             action.city.remove_reservation!(action.entity)
 
             place_token(
               action.entity,
               action.city,
-              action.token,
+              token,
               connected: false,
               special_ability: ability(action.entity),
               spender: current_entity,
