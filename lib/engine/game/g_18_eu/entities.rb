@@ -102,6 +102,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
             {
               type: 'exchange',
@@ -120,6 +121,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -144,6 +146,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -168,6 +171,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -187,6 +191,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -206,6 +211,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -225,6 +231,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -249,6 +256,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -268,6 +276,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -287,6 +296,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -311,6 +321,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -330,6 +341,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -349,6 +361,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -368,6 +381,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -387,6 +401,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',

@@ -46,7 +46,10 @@ module View
         }.freeze
 
         def render_part
-          color = (@reservation&.corporation? && @reservation&.reservation_color) || 'white'
+          color = ((@reservation&.corporation? || @reservation&.minor?) &&
+                    @reservation&.reservation_color) ||
+                    'white'
+
           radius = @radius
           show_player_colors = setting_for(:show_player_colors, @game)
           if show_player_colors && (owner = @token&.corporation&.owner) && @game.players.include?(owner)

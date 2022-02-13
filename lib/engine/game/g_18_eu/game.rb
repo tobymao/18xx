@@ -29,6 +29,8 @@ module Engine
         MUST_BID_INCREMENT_MULTIPLE = true
         TOKENS_FEE = 100
 
+        BIDDING_BOX_MINOR_COLOR = '#c6e9af'
+
         GAME_END_CHECK = { bank: :full_or }.freeze # TODO: extreme edge case of one player remaining
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -68,9 +70,6 @@ module Engine
           @minors.each do |minor|
             train = @depot.upcoming[0]
             buy_train(minor, train, :free)
-            hex = hex_by_id(minor.coordinates)
-            city = minor.city.to_i || 0
-            hex.tile.cities[city].place_token(minor, minor.next_token, free: true)
           end
 
           add_optional_train('3') if @optional_rules&.include?(:extra_three_train)
@@ -105,6 +104,10 @@ module Engine
 
         def ipo_name(_entity = nil)
           'Treasury'
+        end
+
+        def reservation_corporations
+          minors
         end
 
         def init_round
@@ -433,6 +436,10 @@ module Engine
               prev = token
             end
           end
+        end
+
+        def mark_auctioning(minor)
+          minor.reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
         end
       end
     end

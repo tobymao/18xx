@@ -142,6 +142,7 @@ module Engine
           def selection_bid(bid)
             @auction_triggerer = bid.entity
             target = bid_target(bid)
+            @game.mark_auctioning(target)
 
             @log << "#{@auction_triggerer.name} selects #{target.name} for auction with no initial bid."
             auction_entity(target)
@@ -195,6 +196,7 @@ module Engine
 
           def add_bid(bid)
             target = bid_target(bid)
+            @game.mark_auctioning(target) unless @auction_triggerer
             @auction_triggerer ||= bid.entity
             auction_entity(target) unless @auctioning
             entities.each(&:unpass!) if @bids[@auctioning].none?
@@ -219,6 +221,10 @@ module Engine
             bidder.spend(price, @game.bank) if price.positive?
             @log << "#{bidder.name} wins the auction for #{target.name} "\
                     "with a bid of #{@game.format_currency(price)}"
+
+            hex = @game.hex_by_id(target.coordinates)
+            city = target.city.to_i || 0
+            hex.tile.cities[city].place_token(target, target.next_token, free: true)
           end
 
           def all_passed!
