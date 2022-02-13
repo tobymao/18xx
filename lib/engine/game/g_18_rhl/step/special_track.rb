@@ -68,14 +68,12 @@ module Engine
             if action.tile == @game.osterath_tile
               # Set location name to Osterath to make the name appear when tokening city in tile
               @game.osterath_tile.hex.location_name = 'Osterath'
+            elsif @game.current_entity.tokens.find { |t| t.hex == action.hex }
+              # Hex already has token so disable special token ability
+              teleport_possible = false
             else
-              if @game.current_entity.tokens.find { |t| t.hex == action.hex }
-                # Hex already has token so disable special token ability
-                teleport_possible = false
-              else
-                # Restrict special token to the actual hex upgraded.
-                ability.hexes = [action.hex.name]
-              end
+              # Restrict special token to the actual upgraded hex.
+              ability.hexes = [action.hex.name]
             end
 
             if teleport_possible
