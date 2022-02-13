@@ -498,26 +498,34 @@ module Engine
         UPGRADES_TO_88 = %w[1 55].freeze
         UPGRADES_TO_87 = %w[2 56].freeze
         UPGRADE_TO_204 = '69'
+        UPGRADES_FROM_3 = %w[141 142 143].freeze
+        UPGRADES_FROM_4 = %w[141 142].freeze
+        UPGRADES_FROM_58 = %w[141 142 143 144].freeze
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Osterath cannot be upgraded at all, and cannot be upgraded to in phase 5 or later
           return false if from.name == @osterath_tile&.name ||
-                          (to.name == @osterath_tile&.name && @phase.name.to_i >= 5)
+          (to.name == @osterath_tile&.name && @phase.name.to_i >= 5)
 
           # Private No. 2 allows Osterath tile to be put on E8 regardless
           return true if from.hex.name == 'E8' &&
-                         to.name == @osterath_tile&.name &&
-                         selected_company == konzession_essen_osterath
+          to.name == @osterath_tile&.name &&
+          selected_company == konzession_essen_osterath
 
           # Handle Moers upgrades
           return to.name == '947' if from.color == :green && from.hex.name == 'D7'
           return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
 
+          # Handle 3-spokers
+          return UPGRADES_FROM_3.include?(to.name) if from.name == '3'
+          return UPGRADES_FROM_4.include?(to.name) if from.name == '4'
+          return UPGRADES_FROM_58.include?(to.name) if from.name == '58'
+          return false if UPGRADES_FROM_58.include?(from.name)
+
           # Handle 4-spokers
-          from_name = from.hex.tile.name
-          return to.name == '87' if UPGRADES_TO_87.include?(from_name)
-          return to.name == '88' if UPGRADES_TO_88.include?(from_name)
-          return to.name == '204' if from_name == UPGRADE_TO_204
+          return to.name == '87' if UPGRADES_TO_87.include?(from.name)
+          return to.name == '88' if UPGRADES_TO_88.include?(from.name)
+          return to.name == '204' if from.name == UPGRADE_TO_204
 
           if optional_promotion_tiles
             # Essen can be upgraded to gray
