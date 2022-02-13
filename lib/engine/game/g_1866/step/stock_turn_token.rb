@@ -67,6 +67,7 @@ module Engine
             super
 
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
+            check_graph_clear(corporation)
             change_market
             @round.force_next_entity!
           end
@@ -82,6 +83,7 @@ module Engine
           def process_par(action)
             super
 
+            check_graph_clear(action.corporation)
             change_market
             @round.force_next_entity!
           end
@@ -105,6 +107,7 @@ module Engine
             previous_president = corporation.owner
             super
 
+            check_graph_clear(corporation)
             @game.player_sold_shares[action.entity][corporation] = true
             @round.recalculate_order
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
@@ -116,6 +119,12 @@ module Engine
 
           def redeemable_shares(_entity)
             []
+          end
+
+          def check_graph_clear(corporation)
+            return unless @game.national_corporation?(corporation)
+
+            @game.graph.clear
           end
 
           def change_market

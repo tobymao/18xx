@@ -14,23 +14,8 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            if @game.national_corporation?(entity)
-              return nil unless @game.hex_within_national_region?(entity, hex)
-
-              check_neighbors = hex.tile.cities.size.positive?
-              check_neighbors ||= hex_neighbors(entity, hex)&.any? do |e|
-                hex.neighbors[e].tile.color == :blue || @game.hex_within_national_region?(entity, hex.neighbors[e])
-              end
-              return nil unless check_neighbors
-
-            elsif @game.corporation?(entity)
-              return nil unless @game.hex_operating_rights?(entity, hex)
-
-              check_neighbors = hex_neighbors(entity, hex)&.any? do |e|
-                hex.neighbors[e].tile.color == :blue || @game.hex_operating_rights?(entity, hex.neighbors[e])
-              end
-              return nil unless check_neighbors
-            end
+            return nil if @game.national_corporation?(entity) && !@game.hex_within_national_region?(entity, hex)
+            return nil if @game.corporation?(entity) && !@game.hex_operating_rights?(entity, hex)
 
             super
           end
@@ -42,9 +27,8 @@ module Engine
           def can_lay_tile?(entity)
             action = get_tile_lay(entity)
             return false unless action
-            return true if @game.national_corporation?(entity)
 
-            !entity.tokens.empty? && (buying_power(entity) >= action[:cost]) && (action[:lay] || action[:upgrade])
+            (buying_power(entity) >= action[:cost]) && (action[:lay] || action[:upgrade])
           end
 
           def get_tile_lay(entity)

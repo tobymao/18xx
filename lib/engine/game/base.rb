@@ -1381,6 +1381,10 @@ module Engine
         @graph
       end
 
+      def graph_skip_paths(_entity)
+        nil
+      end
+
       def upgrade_cost(tile, hex, entity, spender)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&

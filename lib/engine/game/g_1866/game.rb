@@ -59,11 +59,11 @@ module Engine
 
         MARKET = [
           %w[0c 10 20 30 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
-             200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630em 680e],
+             200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[0c 10 20 30 40 45 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
-             200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630em 680e],
+             200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[0c 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
-             200pxzw 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630em 680e],
+             200pxzw 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[120P 100P 75P 75P 75P 120P 80P 80P 80P 50P],
         ].freeze
 
@@ -164,7 +164,7 @@ module Engine
 
         TRAINS = [
           {
-            name: 'L',
+            name: 'L+',
             distance: [
               {
                 'nodes' => ['city'],
@@ -270,7 +270,7 @@ module Engine
               },
             ],
             num: 4,
-            price: 450,
+            price: 500,
             events: [
               {
                 'type' => 'brown_ferries',
@@ -295,7 +295,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 450,
+                price: 500,
               },
             ],
           },
@@ -350,7 +350,7 @@ module Engine
               },
             ],
             num: 2,
-            price: 750,
+            price: 800,
             variants: [
               {
                 name: '5E',
@@ -367,7 +367,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 750,
+                price: 800,
               },
             ],
           },
@@ -386,7 +386,7 @@ module Engine
               },
             ],
             num: 20,
-            price: 900,
+            price: 1000,
             variants: [
               {
                 name: '6E',
@@ -403,7 +403,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 900,
+                price: 1000,
               },
             ],
           },
@@ -417,20 +417,20 @@ module Engine
           {
             name: 'P',
             distance: 99,
-            num: 4,
-            price: 80,
+            num: 5,
+            price: 100,
           },
           {
             name: 'H',
             distance: 99,
-            num: 4,
+            num: 5,
             price: 120,
           },
           {
             name: 'M',
             distance: 99,
-            num: 4,
-            price: 160,
+            num: 5,
+            price: 200,
           },
         ].freeze
 
@@ -518,13 +518,13 @@ module Engine
           '10' => 40,
         }.freeze
 
-        INFRASTRUCTURE_COUNT = 4
+        INFRASTRUCTURE_COUNT = 5
         INFRASTRUCTURE_TRAINS = %w[H P M].freeze
         INFRASTRUCTURE_HUB = 'H'
         INFRASTRUCTURE_PALACE = 'P'
         INFRASTRUCTURE_MAIL = 'M'
 
-        LOCAL_TRAIN = 'L'
+        LOCAL_TRAIN = 'L+'
 
         LONDON_HEX = 'F6'
         LONDON_TILE = 'L1'
@@ -556,22 +556,22 @@ module Engine
           'WTB' => %w[I13 I15 J14 K15],
           'SAX' => %w[H20 H22 I21 I23],
           'K2S' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19],
-          'SAR' => %w[N12 O13 O15 S13 T12],
+          'SAR' => %w[N12 O13 O15 P14 Q15 R14 S13 T12],
           'LV' => %w[M17 N14 N16 N18 N20 O17 P18],
           'PAP' => %w[Q19 R18 R20 S19],
           'TUS' => %w[P16 Q17],
           'AHE' => %w[J22 J24 J26 K23 K25 L18 L20 L22 L24 L26 M19 M21 M23 M25 N22 N24 N26 O21 O23 O25
-                      P22 P24 P26 Q23 Q25 R24],
-          'BNL' => %w[E13 F10 F12 F14 G9 G11 G13 H10 H12 I11],
-          'FR' => %w[H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
-                     M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13],
-          'GB' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
+                      P22 P24 P26 Q23 Q25 R24 S25],
+          'BNL' => %w[E13 F8 F10 F12 F14 G9 G11 G13 H10 H12 I11],
+          'FR' => %w[G7 H4 H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
+                     M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13 R12],
+          'GB' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 F8 G1 G3 G5 G7 H4],
           'ESP' => %w[O1 P0 P2 P4 Q1 Q3 Q5 R0 R2 R4 S1 S3 T0 T2 U1],
           'CH' => %w[L12 L14 L16 M13 M15],
           'DE' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25 D18 E15 E17
                      E19 E21 F16 F18 I17 I19 J16 J18 J20 K17 K19 K21 I13 I15 J14 K15 H20 H22 I21 I23],
-          'IT' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19 N12 O13 O15 S13 T12 M17 N14 N16 N18 N20 O17 P18
-                     Q19 R18 R20 S19 P16 Q17],
+          'IT' => %w[R12 S21 S23 S25 T20 T22 T24 U21 V18 V20 W19 N12 O13 O15 P14 Q15 R14 S13 S15 S17 T12 T14 T16 T18 M17
+                     N14 N16 N18 N20 O17 P18 Q19 R18 R20 S19 P16 Q17],
         }.freeze
 
         # Only need up to phase 5, all national concessions are forced to convert in phase 5
@@ -587,7 +587,7 @@ module Engine
         MINOR_NATIONAL_TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
         NATIONAL_TILE_LAYS = [
           { lay: true, upgrade: true, cost: 0 },
-          { lay: true, upgrade: true, cost: 0 },
+          { lay: :not_if_upgraded, upgrade: false, cost: 0 },
         ].freeze
         TILE_LAYS = [
           { lay: true, upgrade: true, cost: 0 },
@@ -635,7 +635,7 @@ module Engine
         }.freeze
 
         STOCK_TURN_TOKEN_PREFIX = 'ST'
-        STOCK_TURN_TOKEN_END_GAME = 680
+        STOCK_TURN_TOKEN_END_GAME = 600
 
         # Corporations which will be able to float on which turn
         TURN_CORPORATIONS = {
@@ -861,6 +861,16 @@ module Engine
           national_corporation?(entity) ? @national_graph : @graph
         end
 
+        def graph_skip_paths(entity)
+          skip_paths = {}
+          @hexes.each do |hex|
+            add_skip_paths = (national_corporation?(entity) && !hex_within_national_region?(entity, hex)) ||
+              (corporation?(entity) && !hex_operating_rights?(entity, hex))
+            hex.tile.paths.each { |path| skip_paths[path] = true } if add_skip_paths
+          end
+          skip_paths.empty? ? nil : skip_paths
+        end
+
         def init_companies(_players)
           # Must do the randomize here, since the companies is duped in the setup of the auction
           super.sort_by { rand }
@@ -983,7 +993,7 @@ module Engine
 
         def or_round_finished
           # Export all L/2 trains at the end of OR2
-          @depot.export_all!('L') if @round.round_num == 2 && local_train?(@depot.upcoming.first)
+          @depot.export_all!(self.class::LOCAL_TRAIN) if @round.round_num == 2 && local_train?(@depot.upcoming.first)
           stock_turn_token_remove!
         end
 
@@ -1261,9 +1271,9 @@ module Engine
 
         def timeline
           [
-            'OR2: When OR2 is complete all remaining L/2 are exported.',
-            'Trains: After the 4th train in each phase, all trains of the next phase will be available for purchase.',
-            'Nationals tile lay: 1 track, 1 yellow or 1 upgrade.',
+            'OR2: When OR2 is complete all remaining L+/2 are exported.',
+            'Minor nationals tile lay: 1 yellow or 1 upgrade. No costs involved.',
+            'Nationals tile lay: 2 yellow or 1 upgrade. No costs involved.',
             "Corporations tile lay: 4 tracks, first is free, second cost #{format_currency(10)}, "\
             "third cost #{format_currency(20)} and fourth cost #{format_currency(30)}. "\
             "With a total of #{format_currency(60)} if all four is used.",
@@ -1476,6 +1486,7 @@ module Engine
           forced_formation_major(corporation_by_id(self.class::GERMANY_NATIONAL), %w[PRU HAN BAV WTB SAX])
           forced_formation_national(corporation_by_id('GB'))
 
+          @graph.clear
           @round.check_operating_order!
         end
 
