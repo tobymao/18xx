@@ -505,8 +505,10 @@ module Engine
           return super unless corporation == cce
           return if corporation.tokens.first&.used == true
 
-          place_free_token(cce, 'E6', 0, silent: false)
-          place_free_token(cce, 'I10', 1, silent: false)
+          cce.coordinates.each_with_index do |coordinate, index|
+            place_free_token(cce, coordinate, index, silent: false)
+          end
+          cce.coordinates = [cce.coordinates.first]
         end
 
         UPGRADES_TO_88 = %w[1 55].freeze

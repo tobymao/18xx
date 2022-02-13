@@ -65,15 +65,31 @@ module Engine
 
             return unless ability.type == :teleport
 
-            @round.teleported = @game.current_entity
+            teleport_possible = true
+            if action.tile == @game.osterath_tile
+              # Set location name to Osterath to make the name appear when tokening city in tile
+              @game.osterath_tile.hex.location_name = 'Osterath'
+            elsif @game.current_entity.tokens.find { |t| t.hex == action.hex }
+              # Hex already has token so disable special token ability
+              teleport_possible = false
+            else
+              # Restrict special token to the actual upgraded hex.
+              ability.hexes = [action.hex.name]
+            end
 
-            # Need to keep track of ability that triggered teleport
-            # as the ability does not belong to current entity, but to
-            # player owned ability.
-            @round.teleport_ability = ability
+            if teleport_possible
+              @round.teleported = @game.current_entity
 
-            # Set location name to Osterath to make the name appear when tokening city in tile
-            @game.osterath_tile.hex.location_name = 'Osterath' if action.tile == @game.osterath_tile
+              # Need to keep track of ability that triggered teleport
+              # as the ability does not belong to current entity, but to
+              # player owned ability.
+              @round.teleport_ability = ability
+            else
+              # When removing token teleport we need to remove @round.teleported
+              # as otherwise blocks? (can_token_after_teleport?) crashes
+              @round.teleported = nil
+              action.entity.remove_ability(ability)
+            end
           end
 
           # Private 3 (Sailzuganlage) has all possible tiles, that can be played in all
