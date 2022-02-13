@@ -323,7 +323,7 @@ module Engine
 
         RHINE_METROPOLIS_HEXES = %w[D9 F9 I10].freeze
 
-        SOUTHERN_OFFBOARD_HEXES = %w[L1 L11 L13].freeze
+        BASEL_FRANKFURT_OFFBOARD_HEXES = %w[L11 L13].freeze
 
         def aachen_hex
           @aachen_hex ||= hex_by_id('K2')

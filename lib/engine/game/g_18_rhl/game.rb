@@ -618,8 +618,8 @@ module Engine
             raise GameError, 'A route cannot both begin and end at the Nimwegen and Arnheim off-board hexes'
           end
 
-          if visits.count { |v| SOUTHERN_OFFBOARD_HEXES.include?(v.hex.name) } > 1
-            raise GameError, 'A route cannot both begin and end at the Southern off-board hexes'
+          if visits.count { |v| BASEL_FRANKFURT_OFFBOARD_HEXES.include?(v.hex.name) } > 1
+            raise GameError, 'A route cannot both begin and end at the Basel and Frankfurt off-board hexes'
           end
 
           return super unless route.train.name == '8'
