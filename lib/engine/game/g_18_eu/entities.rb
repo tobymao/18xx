@@ -127,6 +127,11 @@ module Engine
                 owner_type: 'player',
                 from: %w[ipo market],
               },
+              {
+                type: 'blocks_hexes',
+                owner_type: nil,
+                hexes: ['C8'],
+              },
             ],
           },
           {
@@ -145,6 +150,11 @@ module Engine
                 corporations: %w[BNR DR FS RBSR RPR AIRS SNCF GSR],
                 owner_type: 'player',
                 from: %w[ipo market],
+              },
+              {
+                type: 'blocks_hexes',
+                owner_type: nil,
+                hexes: ['B11'],
               },
             ],
           },
@@ -222,6 +232,11 @@ module Engine
                 owner_type: 'player',
                 from: %w[ipo market],
               },
+              {
+                type: 'blocks_hexes',
+                owner_type: nil,
+                hexes: ['I6'],
+              },
             ],
           },
           {
@@ -278,6 +293,11 @@ module Engine
                 corporations: %w[BNR DR FS RBSR RPR AIRS SNCF GSR],
                 owner_type: 'player',
                 from: %w[ipo market],
+              },
+              {
+                type: 'blocks_hexes',
+                owner_type: nil,
+                hexes: %w[F19 F21],
               },
             ],
           },
