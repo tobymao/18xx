@@ -810,7 +810,7 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: '#7090c9',
-            text_color: 'black',
+            text_color: 'White',
             reservation_color: nil,
           },
           {
@@ -850,8 +850,8 @@ module Engine
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: :gold,
-            text_color: 'black',
+            color: 'Sienna',
+            text_color: 'White',
             reservation_color: nil,
           },
           {
@@ -865,6 +865,7 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: 'LightSkyBlue',
+            text_color: 'Black',
             reservation_color: nil,
           },
           {
@@ -903,7 +904,8 @@ module Engine
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: 'LightGray',
+            color: 'Gray',
+            text_color: 'White',
             reservation_color: nil,
           },
           {
@@ -929,7 +931,7 @@ module Engine
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#5b4545',
+            color: 'Indigo',
             reservation_color: nil,
           },
           {
@@ -981,7 +983,8 @@ module Engine
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#32763f',
+            color: 'YellowGreen',
+            text_color: 'Black',
             reservation_color: nil,
           },
           {
@@ -1007,7 +1010,7 @@ module Engine
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: 'MediumSeaGreen',
+            color: 'ForestGreen',
             reservation_color: nil,
           },
           {
@@ -1033,7 +1036,7 @@ module Engine
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#37383a',
+            color: 'Purple',
             reservation_color: nil,
           },
           {
@@ -1046,7 +1049,7 @@ module Engine
             max_ownership_percent: 100,
             tokens: [0],
             always_market_price: true,
-            color: '#ffffeb',
+            color: 'Gold',
             text_color: 'black',
             reservation_color: nil,
           },
