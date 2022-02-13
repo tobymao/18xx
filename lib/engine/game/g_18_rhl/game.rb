@@ -308,8 +308,8 @@ module Engine
           @cce_corporation ||= corporation_by_id('CCE')
         end
 
-        def kkk
-          @kkk_corporation ||= corporation_by_id('KKK')
+        def keg
+          @keg_corporation ||= corporation_by_id('KEG')
         end
 
         def rhe
@@ -345,8 +345,8 @@ module Engine
         end
 
         def setup
-          kkk.shares[2].double_cert = true
-          kkk.shares[3].double_cert = true
+          keg.shares[2].double_cert = true
+          keg.shares[3].double_cert = true
 
           @aachen_duren_cologne_link_bonus = 0
           @eastern_ruhr_connections = []
@@ -437,7 +437,7 @@ module Engine
 
           # For floats before phase 5, corporation receives par price for all shares sold from IPO to players.
           # The remaining shares end up in Treasury, and corporation becomes incremental.
-          paid_to_treasury = corporation == kkk ? 6 : 5
+          paid_to_treasury = corporation == keg ? 6 : 5
 
           if corporation == rhe
             @aachen_duren_cologne_link_bonus = rhe.par_price.price * 3
