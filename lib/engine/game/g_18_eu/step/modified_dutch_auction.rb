@@ -24,8 +24,13 @@ module Engine
 
           def log_pass(entity)
             return super unless @auctioning
+            return log_cant_afford(entity) unless can_afford?(entity)
 
             @log << "#{entity.name} #{@bids[@auctioning].none? ? 'declines' : 'passes on'} #{@auctioning.name}"
+          end
+
+          def log_cant_afford(entity)
+            @log << "#{entity.name} cannot afford #{@auctioning.name}"
           end
 
           def bid_str(_entity)
@@ -69,11 +74,7 @@ module Engine
             entity = action.entity
             pass_auction(entity)
 
-            if entities.all?(&:passed?)
-              all_passed!
-              force_purchase(@auction_triggerer, @auctioning) if min_bid(@auctioning).zero?
-              return
-            end
+            return all_passed! if entities.all?(&:passed?)
 
             next_entity! if @auctioning
           end
@@ -87,7 +88,16 @@ module Engine
           def next_entity!
             @round.next_entity_index!
             entity = entities[entity_index]
-            next_entity! if entity&.passed?
+            return next_entity! if entity&.passed?
+            return unless @auctioning
+
+            unless can_afford?(entity)
+              pass_auction(entity)
+
+              return all_passed! if entities.all?(&:passed?)
+
+              next_entity!
+            end
           end
 
           def process_bid(action)
@@ -142,6 +152,10 @@ module Engine
           end
 
           protected
+
+          def can_afford?(entity)
+            entity.cash >= min_bid(@auctioning)
+          end
 
           def reduce_price
             @current_reduction += @reduction_step
@@ -212,6 +226,7 @@ module Engine
             reduce_price
             entities.each(&:unpass!)
             next_entity!
+            force_purchase(@auction_triggerer, @auctioning) if min_bid(@auctioning).zero?
           end
 
           def resolve_bids
