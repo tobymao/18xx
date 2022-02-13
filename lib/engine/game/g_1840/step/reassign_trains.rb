@@ -69,7 +69,7 @@ module Engine
                     "#{invalid_tram_corp.full_name} cannot be assigned more than one train"
             end
 
-            if entity.trains.size.positive? && !@game.tram_owned_by_corporation[entity].empty? { |item| item.trains.size.zero? }
+            if entity.trains.size.positive? && !@game.tram_owned_by_corporation[entity].empty? { |item| item.trains.empty? }
               raise GameError,
                     'All tram lines need to have one train'
             end
