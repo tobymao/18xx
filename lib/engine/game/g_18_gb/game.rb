@@ -573,10 +573,10 @@ module Engine
         end
 
         def emergency_convert_bundles(corporation)
-          return [] if corporation.trains.any?
+          return [] unless corporation.trains.empty?
           return [] if corporation.cash >= @depot.min_depot_price
 
-          shares = (1..5).map { |i| Engine::Share.new(corporation, percent: 20, index: 4 + i) }
+          shares = (0..4).map { |i| Engine::Share.new(corporation, percent: 20, index: 4 + i) }
           bundle = Engine::ShareBundle.new(shares)
           bundle.share_price = stock_market.find_share_price(corporation, [:left] * 3).price
           [bundle]

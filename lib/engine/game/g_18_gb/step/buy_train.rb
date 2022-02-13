@@ -14,7 +14,7 @@ module Engine
             actions = []
             actions << 'sell_shares' if entity.trains.empty? && can_convert?(entity)
             actions << 'buy_train' if can_buy_train?(entity)
-            actions << 'pass' unless actions.empty? || must_buy_train?(entity)
+            actions << 'pass' if !actions.empty? && !must_buy_train?(entity)
             actions
           end
 
