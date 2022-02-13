@@ -235,7 +235,9 @@ module View
       row_styles = { style: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between' } }
       pill_styles = { style: { background: '#c62033', borderRadius: '30px', padding: '0px 5px', color: 'white' } }
       id_row = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
-      id_row << h(:div, pill_styles, 'Live') if !@gdata['settings']['is_async'] && !@gdata['settings']['is_async'].nil?
+      if @gdata['status'] != 'finished' && !@gdata['settings']['is_async'] && !@gdata['settings']['is_async'].nil?
+        id_row << h(:div, pill_styles, 'Live')
+      end
       children = [h(:div, row_styles, id_row)]
       if @gdata['status'] == 'new'
         children << h(:div, [h(:i, 'Invite only game')]) if @gdata.dig('settings', 'unlisted')
