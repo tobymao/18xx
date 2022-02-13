@@ -90,14 +90,12 @@ module Engine
             entity = entities[entity_index]
             return next_entity! if entity&.passed?
             return unless @auctioning
+            return if can_afford?(entity)
 
-            unless can_afford?(entity)
-              pass_auction(entity)
+            pass_auction(entity)
+            return all_passed! if entities.all?(&:passed?)
 
-              return all_passed! if entities.all?(&:passed?)
-
-              next_entity!
-            end
+            next_entity!
           end
 
           def process_bid(action)

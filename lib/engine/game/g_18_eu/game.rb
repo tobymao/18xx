@@ -99,7 +99,7 @@ module Engine
           modified_trains = @depot.trains.select { |t| t.name == type }
           new_train = modified_trains.first.clone
           new_train.index = modified_trains.size
-          @depot.insert_train(new_train,new_train.index)
+          @depot.insert_train(new_train, new_train.index)
         end
 
         def ipo_name(_entity = nil)
