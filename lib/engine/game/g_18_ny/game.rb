@@ -56,6 +56,10 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
 
+        SYMBOL_ON_PLAIN_YELLOW = %w[D8 D12 J20]
+        SYMBOL_ON_PLAIN_GREEN = %w[E3 K19 D12]
+        SYMBOL_ON_PLAIN_BROWN = %w[E3]
+
         # Two lays with one being an upgrade. Tile lays cost 20
         TILE_COST = 20
         TILE_LAYS = [
@@ -717,12 +721,23 @@ module Engine
         end
 
         def upgrades_to_correct_label?(from, to)
+          # handle lays of a plain tile over a hex/tile with a label
+          case to.color
+          when :yellow
+            return true if SYMBOL_ON_PLAIN_YELLOW.include?(from.hex.name)
+          when :green
+            return true if SYMBOL_ON_PLAIN_GREEN.include?(from.hex.name)
+          when :brown
+            return true if SYMBOL_ON_PLAIN_BROWN.include?(from.hex.name)
+          end
+
           # Handle hexes that change from standard tiles to special city tiles
           case from.hex.location_name
           when 'Buffalo'
             return true if to.name == 'X35'
             return false if to.color == :gray
           when 'Rochester'
+            return true if to.color == :yellow
             return true if to.name == 'X13'
             return false if to.color == :green
           when 'Syracuse'
