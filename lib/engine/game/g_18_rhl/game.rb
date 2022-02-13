@@ -95,13 +95,27 @@ module Engine
                   %w[55 60 65 70],
                   %w[50 55 60]].freeze
 
+        STATUS_TEXT = {
+          'incremental' => [
+            'Incremental Cap',
+            'Newly floated corporations used incremental capitalization for all shares sold during the whole game. '\
+            'These corporation also get a one time stock price bump up one step if parring at less than 100. Unsold '\
+            'shares moved to Treasury.',
+          ],
+          'fullcap' => [
+            'Full Cap',
+            'Newly floated corporations use 100% capitalization when floated, and no one time stock price bump. '\
+            'Not yet sold shares moved to Market.',
+          ],
+        }.merge(Base::STATUS_TEXT).freeze
+
         PHASES = [
           {
             name: '2',
             on: '2',
             train_limit: 4,
             tiles: [:yellow],
-            status: [],
+            status: %w[incremental],
             operating_rounds: 1,
           },
           {
@@ -109,7 +123,7 @@ module Engine
             on: '3',
             train_limit: 4,
             tiles: %i[yellow green],
-            status: [],
+            status: %w[incremental],
             operating_rounds: 2,
           },
           {
@@ -117,7 +131,7 @@ module Engine
             on: '4',
             train_limit: 3,
             tiles: %i[yellow green],
-            status: [],
+            status: %w[incremental],
             operating_rounds: 2,
           },
           {
@@ -125,7 +139,7 @@ module Engine
             on: '5',
             train_limit: 2,
             tiles: %i[yellow green brown],
-            status: [],
+            status: %w[fullcap],
             operating_rounds: 3,
           },
           {
@@ -133,7 +147,7 @@ module Engine
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown],
-            status: [],
+            status: %w[fullcap],
             operating_rounds: 3,
           },
           {
@@ -141,7 +155,7 @@ module Engine
             on: '8',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: [],
+            status: %w[fullcap],
             operating_rounds: 3,
           },
         ].freeze
