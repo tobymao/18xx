@@ -12,7 +12,7 @@ module Engine
             return [] if entity != current_entity
 
             actions = []
-            actions << 'sell_shares' if entity.trains.empty? && can_convert?(entity)
+            actions << 'choose' if can_convert?(entity)
             actions << 'buy_train' if can_buy_train?(entity)
             actions << 'pass' if !actions.empty? && !must_buy_train?(entity)
             actions
@@ -26,19 +26,31 @@ module Engine
           end
 
           def can_convert?(corporation)
-            corporation&.type == '5-share'
+            return false unless corporation&.corporation?
+
+            corporation.type == '5-share' && corporation.trains.empty? && corporation.cash < @game.depot.min_depot_price
           end
 
-          def issuable_shares(entity)
-            return [] unless entity.corporation?
-
-            @game.emergency_convert_bundles(entity)
+          def choice_available?(entity)
+            can_convert?(entity)
           end
 
-          def process_sell_shares(action)
+          def choice_name
+            'Convert'
+          end
+
+          def choices
+            return {} unless can_convert?(current_entity)
+
+            capital_str = @game.format_currency(@game.emergency_convert_capital(current_entity))
+            { "convert_#{current_entity.id}" => "Convert to 10-share (#{capital_str})" }
+          end
+
+          def process_choose(action)
             return unless action.entity.corporation? && can_convert?(action.entity)
 
             @game.convert_to_ten_share(action.entity, 3)
+            @round.emergency_converted = true
           end
 
           def president_may_contribute?
