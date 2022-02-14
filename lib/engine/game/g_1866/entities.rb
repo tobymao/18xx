@@ -152,8 +152,8 @@ module Engine
             sym: 'ST1',
             value: 0,
             revenue: 0,
-            desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
-                  'action.',
+            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
+                  'M = Middle row and B = Bottom row.',
             abilities: [
               {
                 type: 'no_buy',
@@ -166,8 +166,8 @@ module Engine
             sym: 'ST2',
             value: 0,
             revenue: 0,
-            desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
-                  'action.',
+            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
+                  'M = Middle row and B = Bottom row.',
             abilities: [
               {
                 type: 'no_buy',
@@ -180,8 +180,8 @@ module Engine
             sym: 'ST3',
             value: 0,
             revenue: 0,
-            desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
-                  'action.',
+            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
+                  'M = Middle row and B = Bottom row.',
             abilities: [
               {
                 type: 'no_buy',
@@ -194,8 +194,8 @@ module Engine
             sym: 'ST4',
             value: 0,
             revenue: 0,
-            desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
-                  'action.',
+            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
+                  'M = Middle row and B = Bottom row.',
             abilities: [
               {
                 type: 'no_buy',
@@ -208,8 +208,8 @@ module Engine
             sym: 'ST5',
             value: 0,
             revenue: 0,
-            desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
-                  'action.',
+            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
+                  'M = Middle row and B = Bottom row.',
             abilities: [
               {
                 type: 'no_buy',
@@ -222,8 +222,8 @@ module Engine
             sym: 'ST6',
             value: 0,
             revenue: 0,
-            desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
-                  'action.',
+            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
+                  'M = Middle row and B = Bottom row.',
             abilities: [
               {
                 type: 'no_buy',
@@ -236,8 +236,8 @@ module Engine
             sym: 'ST7',
             value: 0,
             revenue: 0,
-            desc: 'Give the player the ability to purchase Stock turn tokens during ISR and as a Stock turn token '\
-                  'action.',
+            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
+                  'M = Middle row and B = Bottom row.',
             abilities: [
               {
                 type: 'no_buy',
@@ -790,13 +790,6 @@ module Engine
             coordinates: 'U1',
             color: '#fef2c9',
             text_color: 'black',
-            reservation_color: nil,
-          },
-          {
-            sym: 'R',
-            name: 'Red reservation',
-            tokens: [],
-            coordinates: %w[H26 L26 N26 P26 R0],
             reservation_color: nil,
           },
           {
