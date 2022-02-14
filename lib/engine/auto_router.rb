@@ -20,7 +20,8 @@ module Engine
       connections = {}
       trains = @game.route_trains(corporation)
 
-      nodes = @game.graph.connected_nodes(corporation).keys.sort_by do |node|
+      graph = @game.graph_for_entity(corporation)
+      nodes = graph.connected_nodes(corporation).keys.sort_by do |node|
         revenue = trains
           .map { |train| node.route_revenue(@game.phase, train) }
           .max
@@ -59,8 +60,8 @@ module Engine
         node_now = Time.now
 
         node_abort = false
-
-        node.walk(corporation: corporation, skip_paths: skip_paths) do |_, vp|
+        walk_corporation = graph.no_blocking? ? nil : corporation
+        node.walk(corporation: walk_corporation, skip_paths: skip_paths) do |_, vp|
           if node_abort || Time.now - node_now > node_timeout
             path_walk_timed_out = true
             node_abort = true

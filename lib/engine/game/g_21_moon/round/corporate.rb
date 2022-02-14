@@ -50,6 +50,10 @@ module Engine
           def finished?
             !active_step
           end
+
+          def show_auto?
+            false
+          end
         end
       end
     end

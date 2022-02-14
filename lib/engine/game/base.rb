@@ -1381,6 +1381,10 @@ module Engine
         @graph
       end
 
+      def graph_skip_paths(_entity)
+        nil
+      end
+
       def upgrade_cost(tile, hex, entity, spender)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
@@ -1457,6 +1461,9 @@ module Engine
         # - TODO: account for games that allow double dits to upgrade to one town
         return false if from.towns.size != to.towns.size
         return false if !from.label && from.cities.size != to.cities.size
+
+        # but don't permit a labelled city to be downgraded to 0 cities.
+        return false if from.label && !from.cities.empty? && to.cities.empty?
 
         # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
         return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
@@ -2038,7 +2045,7 @@ module Engine
 
       def init_hexes(companies, corporations)
         blockers = {}
-        (companies + corporations).each do |company|
+        (companies + minors + corporations).each do |company|
           abilities(company, :blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
@@ -2758,6 +2765,10 @@ module Engine
       end
 
       def train_power?
+        false
+      end
+
+      def show_map_legend?
         false
       end
     end

@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :production
         PROTOTYPE = true
 
         GAME_SUBTITLE = 'Let There Be Rail (version 0.8)'

@@ -48,7 +48,7 @@ module Engine
             @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays half" if kind == 'half'
 
             withhold = payout[:corporation] - subsidy
-            if withhold.positive? && !@game.minor_national_corporation?(entity)
+            if withhold.positive? && !@game.national_corporation?(entity)
               @log << "#{entity.name} withholds #{@game.format_currency(withhold)}"
             elsif payout[:per_share].zero?
               @log << "#{entity.name} does not run"
@@ -76,7 +76,7 @@ module Engine
 
             @round.routes = []
             log_run_payout(entity, kind, revenue, subsidy, action, payout)
-            payout_corporation(payout[:corporation], entity)
+            payout_corporation(payout[:corporation], entity) unless @game.national_corporation?(entity)
             payout_shares(entity, revenue + subsidy - payout[:corporation]) if payout[:per_share].positive?
             change_share_price(entity, payout)
 
@@ -93,7 +93,7 @@ module Engine
 
             process_dividend(Action::Dividend.new(
               entity,
-              kind: 'payout',
+              kind: @game.major_national_corporation?(entity) ? 'half' : 'payout',
             ))
           end
 

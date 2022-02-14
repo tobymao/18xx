@@ -359,6 +359,13 @@ module Engine
           company.value = 0
         end
 
+        def close_company_in_hex(hex)
+          @companies.each do |company|
+            block = abilities(company, :blocks_hexes)
+            close_company(company) if block.hexes.include?(hex.coordinates)
+          end
+        end
+
         def game_companies
           scenario_comps = @scenario['companies']
           self.class::COMPANIES.select { |comp| scenario_comps.include?(comp['sym']) }
@@ -572,6 +579,16 @@ module Engine
           @_shares[share.id] = share
         end
 
+        def emergency_convert_bundles(corporation)
+          return [] unless corporation.trains.empty?
+          return [] if corporation.cash >= @depot.min_depot_price
+
+          shares = (0..4).map { |i| Engine::Share.new(corporation, percent: 20, index: 4 + i) }
+          bundle = Engine::ShareBundle.new(shares)
+          bundle.share_price = stock_market.find_share_price(corporation, [:left] * 3).price
+          [bundle]
+        end
+
         def convert_to_ten_share(corporation, price_drops = 0)
           # update corporation type and report conversion
           corporation.type = '10-share'
@@ -619,6 +636,10 @@ module Engine
             Engine::Step::HomeToken,
             G18GB::Step::BuySellParShares,
           ])
+        end
+
+        def hex_blocked_by_ability?(_entity, ability, hex)
+          phase.tiles.include?(:blue) ? false : super
         end
 
         def special_green_hexes(corporation)

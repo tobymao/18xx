@@ -21,7 +21,7 @@ module Engine
 
             if entity.receivership? && entity.trains.empty? && @game.can_run_route?(entity) && !can_afford_depot_train?(entity)
               @game.make_insolvent(entity)
-            elsif @game.insolvent?(entity) && can_afford_dept_train?(entity)
+            elsif @game.insolvent?(entity) && can_afford_depot_train?(entity)
               @game.clear_insolvent(entity)
             end
           end
