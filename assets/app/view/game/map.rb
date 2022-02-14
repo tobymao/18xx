@@ -133,7 +133,10 @@ module View
           },
         }
 
-        h(:div, { style: { marginBottom: '1rem' } }, [h(:div, props, children), h(MapControls)])
+        map_elements = [h(:div, props, children), h(MapControls)]
+        map_elements << render_legend if @game.show_map_legend?
+
+        h(:div, { style: { marginBottom: '1rem' } }, map_elements)
       end
 
       def map_x
@@ -184,6 +187,38 @@ module View
 
       def map_zoom
         Lib::Storage['map_zoom'] || 1
+      end
+
+      def render_legend
+        table_props, header, *chart = @game.map_legend
+
+        head = header.map do |cell|
+          item = cell[:text] || h(:image, { attrs: { href: cell[:image] } })
+          if cell[:props]
+            h(:th, cell[:props], item)
+          else
+            h(:th, item)
+          end
+        end
+
+        rows = chart.map do |r|
+          columns = r.map do |cell|
+            item = cell[:text] || [h(:img, { attrs: { src: cell[:image], height: cell[:image_height] } })]
+            if cell[:props]
+              h(:td, cell[:props], item)
+            else
+              h(:td, item)
+            end
+          end
+          h(:tr, columns)
+        end
+
+        h(:table, table_props, [
+          h(:thead, [
+            h(:tr, head),
+          ]),
+          h(:tbody, rows),
+        ])
       end
     end
   end
