@@ -450,7 +450,14 @@ module Engine
             return PLAIN_GREEN_CITY_TILES.include?(to.name)
           end
 
+          return false if from.color == :white && to.color != :yellow && !can_upgrade_track?(laying_entity)
+
           super
+        end
+
+        def can_upgrade_track?(entity)
+          step = @round.active_step
+          step.respond_to?(:get_tile_lay) ? step.get_tile_lay(entity)[:upgrade] : true
         end
 
         def ore_upgrade?(from, to)
@@ -475,12 +482,6 @@ module Engine
           end
 
           super
-        end
-
-        def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
-          colors = phase_color_cache || @phase.tiles
-          colors.include?(tile.color) ||
-            (tile.color == :brown && colors.include?(:green)) || (tile.color == :gray && colors.include?(:brown))
         end
 
         def upgrade_cost(tile, hex, entity, spender)

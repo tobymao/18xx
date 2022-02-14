@@ -11,8 +11,8 @@ module Engine
           include LayTileChecks
 
           def actions(entity)
-            # Do not allow any tile lay if tokening has been used
-            return [] if @round.tokened
+            # Do not allow any tile lay if tokening has been used, or if receivership
+            return [] if @round.tokened || entity.receivership?
 
             super
           end

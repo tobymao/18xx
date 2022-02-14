@@ -32,7 +32,7 @@ module Engine
 
           def owns_p11?(entity)
             @p11 ||= @game.company_by_id('P11')
-            entity.companies.include?(@p11)
+            @p11&.owner == entity
           end
 
           def get_tile_lay(entity)

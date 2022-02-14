@@ -89,15 +89,10 @@ module Engine
           def can_discard?(minor)
             return true if @game.loading
 
-            ability = @game.abilities(minor, :exchange)
-            connected = @game.exchange_corporations(ability)
+            connected = connected_corporations(minor)
             return true if connected.empty?
 
             connected.any? { |c| !exchange?(c) }
-          end
-
-          def exchange?(corporation)
-            corporation.available_share || @game.share_pool.shares_by_corporation[corporation]&.first
           end
 
           def can_gain?(_entity, bundle, exchange: false)

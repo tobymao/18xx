@@ -73,13 +73,9 @@ module View
           if user_in_game?(@user, @gdata)
             buttons << render_button('Leave', -> { leave_game(@gdata) })
           elsif players.size < @gdata['max_players']
-            buttons << render_button(
-              @gdata['settings']['is_async'] ? 'Join Async' : 'Join Live',
-              -> { join_game(@gdata) },
-              { width: '3.4rem' }
-            )
+            buttons << render_button('Join', -> { join_game(@gdata) })
           end
-          @gdata['settings']['is_async'] ? JOIN_YELLOW : JOIN_BLUE
+          JOIN_YELLOW
         when 'active'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
           acting?(@user) ? color_for(:your_turn) : ENTER_GREEN
@@ -142,11 +138,10 @@ module View
       ])
     end
 
-    def render_button(text, action, styles = {})
+    def render_button(text, action)
       props = {
         style: {
           **BUTTON_STYLE,
-          **styles,
         },
         on: {
           click: action,
@@ -237,7 +232,13 @@ module View
         elm
       end
 
-      children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
+      row_styles = { style: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between' } }
+      pill_styles = { style: { background: '#c62033', borderRadius: '30px', padding: '0px 5px', color: 'white' } }
+      id_row = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
+      if @gdata['status'] != 'finished' && !@gdata['settings']['is_async'] && !@gdata['settings']['is_async'].nil?
+        id_row << h(:div, pill_styles, 'Live')
+      end
+      children = [h(:div, row_styles, id_row)]
       if @gdata['status'] == 'new'
         children << h(:div, [h(:i, 'Invite only game')]) if @gdata.dig('settings', 'unlisted')
         children << h(:div, [h(:i, ['Auto Routing', auto_route_whats_this])]) if @gdata.dig('settings', 'auto_routing')

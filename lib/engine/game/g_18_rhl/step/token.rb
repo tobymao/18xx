@@ -4,15 +4,14 @@ require_relative '../../../step/token'
 
 module Engine
   module Game
-    module G21Moon
+    module G18Rhl
       module Step
         class Token < Engine::Step::Token
-          def process_place_token(action)
-            super
+          def actions(entity)
+            # Do not allow any token if receivership
+            return [] if entity.receivership?
 
-            @game.graph.clear
-            @game.sp_graph.clear
-            @game.lb_graph.clear
+            super
           end
         end
       end

@@ -1381,6 +1381,10 @@ module Engine
         @graph
       end
 
+      def graph_skip_paths(_entity)
+        nil
+      end
+
       def upgrade_cost(tile, hex, entity, spender)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
@@ -2038,7 +2042,7 @@ module Engine
 
       def init_hexes(companies, corporations)
         blockers = {}
-        (companies + corporations).each do |company|
+        (companies + minors + corporations).each do |company|
           abilities(company, :blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
@@ -2758,6 +2762,10 @@ module Engine
       end
 
       def train_power?
+        false
+      end
+
+      def show_map_legend?
         false
       end
     end

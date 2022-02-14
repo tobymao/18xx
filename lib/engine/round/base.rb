@@ -188,6 +188,10 @@ module Engine
         false
       end
 
+      def show_auto?
+        false
+      end
+
       private
 
       def skip_steps

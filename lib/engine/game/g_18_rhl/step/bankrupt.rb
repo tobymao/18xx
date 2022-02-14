@@ -70,15 +70,18 @@ module Engine
 
             return unless corp.owner == @game.share_pool
 
+            remaining = corp.cash
             cheapest = @game.depot.min_depot_train
-            price = cheapest.price
+            price = cheapest.price - remaining - president_contribution
             source = cheapest.owner.name
-            @log << "#{corp.name} receives a #{cheapest.name} train from #{source}, using previous president's "\
-                    "#{format(president_contribution)}, the Bank paying the rest"
+            @log << "#{corp.name} buys a #{cheapest.name} train for #{cheapest.price} from #{source}, "\
+                    "using previous president's cash of #{format(president_contribution)}, the treasury "\
+                    "of #{format(remaining)} and the Bank paying the remaining #{format(price)}"
+            corp.spend(remaining, @game.bank)
             @game.buy_train(corp, cheapest, :free)
             @game.phase.buying_train!(corp, cheapest)
             fee = 100
-            bank_loan = price - corp.cash - president_contribution + fee
+            bank_loan = price + fee
             corp.spend(bank_loan, @game.bank, check_cash: false)
             @log << "#{corp.name} need to borrow #{format(bank_loan)} from the Bank, including the #{format(fee)} fee"
           end

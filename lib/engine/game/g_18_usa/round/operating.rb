@@ -12,12 +12,15 @@ module Engine
             @train_export_triggered = false
           end
 
-          def after_process(action)
-            super
-            return if !finished? || @train_export_triggered
+          def finished?
+            return false unless super
 
-            @game.export_train
-            @train_export_triggered = true
+            unless @train_export_triggered
+              @game.export_train
+              @train_export_triggered = true
+            end
+
+            true
           end
         end
       end

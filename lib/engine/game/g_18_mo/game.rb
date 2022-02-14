@@ -57,6 +57,7 @@ module Engine
           G1846::Round::Operating.new(self, [
             G1846::Step::Bankrupt,
             Engine::Step::SpecialToken,
+            Engine::Step::SpecialTrack,
             G1846::Step::BuyCompany,
             G1846::Step::IssueShares,
             G1846::Step::TrackAndToken,

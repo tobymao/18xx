@@ -138,6 +138,12 @@ module Engine
 
             @round.pending_trades.shift
           end
+
+          def share_flags(shares)
+            return if shares.empty?
+            return 'T' if shares.all? { |s| @round.traded_shares[s] }
+            return 't' if shares.any? { |s| @round.traded_shares[s] }
+          end
         end
       end
     end

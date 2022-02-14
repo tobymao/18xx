@@ -12,13 +12,13 @@ module Engine
         PROTOTYPE = true
 
         GAME_SUBTITLE = nil
-        GAME_DESIGNER = 'Jonas Jones'
+        GAME_DESIGNER = 'Jonas Jones and Scott Petersen'
         GAME_LOCATION = 'The Moon'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://lookout-spiele.de/upload/en_1830re.html_Rules_1830-RE_EN.pdf'
+        GAME_RULES_URL = 'https://docs.google.com/document/d/1MZvnXckp2bGI7sHy8lAdKJ0tJ-tQi9BNpfmfax3pGHw'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/21Moon'
 
-        PLAYER_RANGE = [3, 5].freeze
+        PLAYER_RANGE = [2, 5].freeze
         OPTIONAL_RULES = [].freeze
       end
     end

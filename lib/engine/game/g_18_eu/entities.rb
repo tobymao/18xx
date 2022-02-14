@@ -102,6 +102,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
             {
               type: 'exchange',
@@ -120,12 +121,18 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
                 corporations: %w[BNR DR FS RBSR RPR AIRS SNCF GSR],
                 owner_type: 'player',
                 from: %w[ipo market],
+              },
+              {
+                type: 'blocks_hexes',
+                owner_type: nil,
+                hexes: ['C8'],
               },
             ],
           },
@@ -139,12 +146,18 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
                 corporations: %w[BNR DR FS RBSR RPR AIRS SNCF GSR],
                 owner_type: 'player',
                 from: %w[ipo market],
+              },
+              {
+                type: 'blocks_hexes',
+                owner_type: nil,
+                hexes: ['B11'],
               },
             ],
           },
@@ -158,6 +171,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -177,6 +191,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -190,12 +205,13 @@ module Engine
             sym: '6',
             name: 'Kaiser-Ferdinand-Nordbahn',
             coordinates: 'K14',
-            city: 0,
+            city: 1,
             logo: '18_eu/6',
             simple_logo: '18_eu/6.alt',
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -215,12 +231,18 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
                 corporations: %w[BNR DR FS RBSR RPR AIRS SNCF GSR],
                 owner_type: 'player',
                 from: %w[ipo market],
+              },
+              {
+                type: 'blocks_hexes',
+                owner_type: nil,
+                hexes: ['I6'],
               },
             ],
           },
@@ -234,6 +256,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -253,6 +276,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -272,6 +296,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -279,18 +304,24 @@ module Engine
                 owner_type: 'player',
                 from: %w[ipo market],
               },
+              {
+                type: 'blocks_hexes',
+                owner_type: nil,
+                hexes: %w[F19 F21],
+              },
             ],
           },
           {
             sym: '11',
             name: 'Südbahn',
             coordinates: 'K14',
-            city: 1,
+            city: 0,
             logo: '18_eu/11',
             simple_logo: '18_eu/11.alt',
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -310,6 +341,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -329,6 +361,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -348,6 +381,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -367,6 +401,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',

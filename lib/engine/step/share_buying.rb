@@ -6,25 +6,33 @@ module Engine
   module Step
     module ShareBuying
       def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
-        raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" if
-            !can_buy?(entity, shares.to_bundle) && !swap
+        check_legal_buy(entity,
+                        shares,
+                        exchange: exchange,
+                        swap: swap,
+                        allow_president_change: allow_president_change)
 
         @game.share_pool.buy_shares(entity,
                                     shares,
                                     exchange: exchange,
                                     swap: swap,
                                     allow_president_change: allow_president_change)
-        corporation = shares.corporation
+
+        maybe_place_home_token(shares.corporation)
+      end
+
+      def check_legal_buy(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
+        raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" if
+            !can_buy?(entity, shares.to_bundle) && !swap
+      end
+
+      def maybe_place_home_token(corporation)
         if (@game.class::HOME_TOKEN_TIMING == :float && corporation.floated?) ||
             (@game.class::HOME_TOKEN_TIMING == :par && corporation.ipoed)
           @game.place_home_token(corporation)
         end
       end
 
-      # Returns if a share can be gained by an entity respecting the cert limit
-      # This works irrespective of if that player has sold this round
-      # such as in 1889 for exchanging Dougo
-      #
       def can_gain?(entity, bundle, exchange: false)
         return if !bundle || !entity
 
