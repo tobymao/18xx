@@ -332,6 +332,8 @@ module Engine
         VALID_ABILITIES_CLOSED = %i[hex_bonus reservation tile_lay token].freeze
 
         def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
+          return if entity&.player?
+
           ability = super
 
           return ability unless entity&.company?
@@ -436,8 +438,14 @@ module Engine
         end
 
         def sorted_corporations
-          ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
-          ipoed.sort + others
+          case @round
+          when Engine::Round::Stock
+            ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
+            return ipoed.sort + others
+          when Engine::Round::Operating
+            return [@round.current_operator]
+          end
+          []
         end
 
         def required_bids_to_pass
@@ -813,6 +821,7 @@ module Engine
             G18GB::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18GB::Step::BuyTrain,
+            G18GB::Step::EMRShareBuying,
           ], round_num: round_num)
         end
 
