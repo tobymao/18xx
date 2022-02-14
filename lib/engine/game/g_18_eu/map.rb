@@ -77,9 +77,9 @@ module Engine
           },
           blue: {
             ['D1'] =>
-                     'offboard=revenue:10,visit_cost:0,route:optional;path=a:0,b:_0;icon=image:port;',
+                     'town=revenue:10,route:optional;path=a:0,b:_0;icon=image:port;',
             %w[B21 E22 I20] =>
-            'offboard=revenue:10,visit_cost:0,route:optional;path=a:3,b:_0;icon=image:port;',
+            'town=revenue:10,route:optional;path=a:3,b:_0;icon=image:port;',
           },
           yellow: {
             ['A10'] =>

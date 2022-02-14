@@ -8,6 +8,15 @@ module Engine
       module MinorExchange
         include Engine::Step::ShareBuying
 
+        def connected_corporations(minor)
+          ability = @game.abilities(minor, :exchange)
+          @game.exchange_corporations(ability)
+        end
+
+        def exchange?(corporation)
+          corporation.available_share || @game.share_pool.shares_by_corporation[corporation]&.first
+        end
+
         def merge_minor!(minor, corporation, source)
           maybe_remove_token(minor, corporation)
 

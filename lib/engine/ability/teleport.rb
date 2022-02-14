@@ -5,7 +5,8 @@ require_relative 'base'
 module Engine
   module Ability
     class Teleport < Base
-      attr_reader :hexes, :tiles, :cost, :free_tile_lay
+      attr_reader :tiles, :cost, :free_tile_lay
+      attr_accessor :hexes
 
       def setup(hexes:, tiles:, cost: nil, free_tile_lay: false)
         @hexes = hexes

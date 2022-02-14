@@ -10,9 +10,9 @@ module Engine
           def can_buy?(entity, bundle)
             return false unless super
 
-            # For KKK the 2 first non president certificates sold need to be 20% ones
-            kkk = @game.kkk
-            bundle.corporation != kkk || kkk.floated? || !kkk.ipoed || bundle.percent == 20
+            # For KEG the 2 first non president certificates sold need to be 20% ones
+            keg = @game.keg
+            bundle.corporation != keg || keg.floated? || !keg.ipoed || bundle.percent == 20
           end
         end
       end

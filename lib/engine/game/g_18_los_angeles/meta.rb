@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :production
+        DEV_STAGE = :prealpha
         DEPENDS_ON = '1846'
 
         GAME_DESIGNER = 'Anthony Fryer'
@@ -20,9 +20,17 @@ module Engine
           '1846 Rules' =>
                 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
         }.freeze
-        GAME_TITLE = '18 Los Angeles'
+        GAME_TITLE = '18 Los Angeles 2'
+        # GAME_DISPLAY_TITLE = '18 Los Angeles'
         GAME_SUBTITLE = 'Railroading in the City of Angels'
         GAME_ALIASES = ['18LA'].freeze
+        # GAME_VARIANTS = [
+        #   {
+        #     sym: :first_ed,
+        #     name: '1st Edition',
+        #     title: '18 Los Angeles',
+        #   },
+        # ].freeze
 
         PLAYER_RANGE = [2, 5].freeze
         OPTIONAL_RULES = [
