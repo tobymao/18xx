@@ -13,7 +13,7 @@ module Engine
            desc: 'Starts with $60 in treasury, a 2 train, and a token in Hannibal (H6) or St. Joseph (C5). In ORs, '\
                  'this is the first minor to operate. Splits revenue evenly with owner. Buyer '\
                  'pays an extra $80 ("debt").',
-           sym: 'MS',
+           sym: 'HSJ',
            color: nil,
          },
          {
@@ -24,7 +24,7 @@ module Engine
            desc: 'Starts with $40 in treasury, a 2 train, and a token in Salem (H12). In '\
                  'ORs, this is the second minor to operate. Splits revenue evenly with owner. '\
                  'Buyer pays an extra $60 ("debt").',
-           sym: 'BIG4',
+           sym: 'SSL',
            color: nil,
          },
          {
@@ -74,7 +74,7 @@ module Engine
            name: 'Extra Green Tile',
            value: 40,
            revenue: 15,
-           desc: 'May lay an extra green tile on a connected city for free one time.',
+           desc: 'May lay an extra green tile on a connected city for free (including terrain) one time.',
            sym: 'EXG',
            color: nil,
            abilities: [{
@@ -138,7 +138,7 @@ module Engine
           {
             type: 'tile_lay',
             when: %w[owning_corp_or_turn],
-            hexes: %w[B6 C9 D6 D9 D12 E11 F8 F10 F14 G11 H8],
+            hexes: %w[B6 B8 C9 D6 C9 D12 E11 F8 F10 F14 G11 H8],
             tiles: ['X1'],
             owner_type: 'corporation',
             count: 1,
@@ -385,7 +385,7 @@ module Engine
 
         MINORS = [
           {
-            sym: 'MS',
+            sym: 'HSJ',
             name: 'Hannibal and St. Joseph Railroad',
             logo: '18_mo/HSJ',
             simple_logo: '18_mo/HSJ.alt',
@@ -395,7 +395,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'BIG4',
+            sym: 'SSL',
             name: 'St. Louis, Salem and Little Rock',
             logo: '18_mo/SSL',
             simple_logo: '18_mo/SSL.alt',

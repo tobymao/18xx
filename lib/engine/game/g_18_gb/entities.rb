@@ -101,8 +101,8 @@ module Engine
           },
           {
             name: 'Stockton & Darlington',
-            value: 45,
-            revenue: 15,
+            value: 35,
+            revenue: 12,
             desc: 'The SD gives a bonus of £10 for Middlesbrough (J13). The owner of the SD may use this bonus for any trains ' \
                   'owned by Companies that they control, from the time that the SD closes until the end of the game.',
             sym: 'SD',
@@ -193,7 +193,7 @@ module Engine
           {
             name: 'Taff Vale',
             value: 60,
-            revenue: 20,
+            revenue: 25,
             desc: 'The TV allows a company to waive the cost of laying the Severn Tunnel tile - the blue estuary tile marked ' \
                   '"S" - in hex C22. This follows the usual rules for upgrades, so the game must be in an appropriate phase, ' \
                   'some part of the new track on the new tile must form part of a route for the company, and the company must ' \

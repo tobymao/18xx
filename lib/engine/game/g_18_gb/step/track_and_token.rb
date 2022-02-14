@@ -43,6 +43,7 @@ module Engine
             raise GameError, 'Cannot lay a city tile now' if !tile.cities.empty? && @laid_city
 
             lay_tile(action, extra_cost: tile_lay[:cost])
+            @game.close_company_in_hex(action.hex)
             @laid_city = true unless action.tile.cities.empty?
             @round.num_laid_track += 1
             @round.laid_hexes << action.hex

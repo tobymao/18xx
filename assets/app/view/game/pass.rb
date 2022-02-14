@@ -13,7 +13,7 @@ module View
         children = []
         if @actions.include?('pass')
           children << h(PassButton)
-          children << h(PassAutoButton) if @game.round.stock? && @game.active_players_id.include?(@user&.dig('id'))
+          children << h(PassAutoButton) if @game.round.show_auto? && @game.active_players_id.include?(@user&.dig('id'))
         end
         h(:div, children.compact)
       end

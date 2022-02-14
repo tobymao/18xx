@@ -129,6 +129,36 @@ module Engine
           def corporate_buy_text(_share)
             'Trade for'
           end
+
+          def must_sell?(entity)
+            @game.num_certs(entity) > @game.cert_limit
+          end
+
+          def share_flags(shares)
+            return if shares.empty?
+            return 'T' if shares.all? { |s| @round.traded_shares[s] }
+            return 't' if shares.any? { |s| @round.traded_shares[s] }
+          end
+
+          def pool_shares(corporation)
+            @game.share_pool.shares_by_corporation[corporation].group_by(&:percent).values
+                           .map { |shares| best_to_buy(shares) }.sort_by(&:percent).reverse
+          end
+
+          # first try to return an untraded share, then any
+          def best_to_buy(shares)
+            untraded = shares.find { |s| !@round.traded_shares[s] }
+            return untraded if untraded
+
+            shares.first
+          end
+
+          # Bias toward selling traded shares first
+          def sellable_bundles(seller, corp)
+            shares = seller.shares_of(corp).sort_by { |s| [s.president ? 1 : 0, @round.traded_shares[s] ? 0 : 1] }
+            bundles = @game.all_bundles_for_corporation(seller, corp, shares: shares)
+            bundles.select { |bundle| can_sell?(seller, bundle) }
+          end
         end
       end
     end

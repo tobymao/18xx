@@ -75,7 +75,7 @@ module Engine
             par_type = @game.phase_par_type(corp)
             par_prices = @game.par_prices_sorted.select do |p|
               extra = if corp.nil? && entity.player? && @game.stock_turn_token_premium?(entity)
-                        @round.round_num * (@game.players.size - 1) * 5
+                        @game.stock_turn_token_premium_price
                       else
                         0
                       end
@@ -95,6 +95,10 @@ module Engine
             [share_price]
           end
 
+          def log_pass(entity)
+            @log << "#{entity.name} passes" if @round.current_actions.empty?
+          end
+
           def log_skip(entity)
             if @round.stock? && @round.player_passed[entity]
               @log << "#{entity.name} have passed and is out of the ISR"
@@ -108,7 +112,7 @@ module Engine
             choice = action.choice
             if choice == 'SELL'
               @game.sell_stock_turn_token(active_entities[0])
-              entity.name = @game.stock_turn_token_name(entity.owner)
+              @game.stock_turn_token_name!(entity)
               track_action(action, entity.owner)
             else
               share_price = nil
@@ -119,7 +123,7 @@ module Engine
               end
               if share_price
                 @game.purchase_stock_turn_token(entity.owner, share_price)
-                entity.name = @game.stock_turn_token_name(entity.owner)
+                @game.stock_turn_token_name!(entity)
                 track_action(action, entity.owner)
                 log_pass(entity.owner)
                 pass!

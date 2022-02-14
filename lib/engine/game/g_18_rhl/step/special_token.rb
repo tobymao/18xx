@@ -9,7 +9,7 @@ module Engine
         class SpecialToken < Engine::Step::SpecialToken
           def ability(entity)
             return unless entity
-            return if entity != @round.teleported || !entity.corporation?
+            return if entity != @round.teleported || !entity.corporation? || entity.receivership?
 
             # As the ability is player owned instead of owned by current entity
             # we have saved it when doing teleport, and now we return it.

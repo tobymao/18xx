@@ -25,7 +25,7 @@ module Engine
             @log << "#{action.entity.name} Company closes"
             action.entity.close!
 
-            @game.hb_graph.clear
+            @game.lb_graph.clear
             @game.sp_graph.clear
             @game.graph.clear
           end
