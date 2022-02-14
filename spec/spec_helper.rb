@@ -14,3 +14,4 @@ RSpec.configure do |config|
 end
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), 'fixtures')
+AUTOROUTE_FIXTURES_DIR = File.join(File.dirname(__FILE__), 'auto_router_fixtures')
