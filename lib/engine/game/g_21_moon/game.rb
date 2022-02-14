@@ -875,6 +875,12 @@ module Engine
           super
         end
 
+        def sellable_bundles(player, corporation)
+          return super unless @round.active_step.respond_to?(:sellable_bundles)
+
+          @round.active_step.sellable_bundles(player, corporation)
+        end
+
         def upgrade_cost(tile, hex, entity, spender)
           ability = entity.all_abilities.find do |a|
             a.type == :tile_discount &&
@@ -896,6 +902,67 @@ module Engine
           return false unless (corporation = token.corporation)
 
           lb_city?(token.city, corporation)
+        end
+
+        def show_map_legend?
+          true
+        end
+
+        def map_legend
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            # header
+            [
+              { text: 'Tile Color:', props: { style: { border: '1px solid' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: '#fde900' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: '#71bf44' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: '#cb7745' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: '#bcbdc0' } } },
+            ],
+            # body
+            [
+              { text: 'Source-X', props: { style: { color: 'white', backgroundColor: 'black' } } },
+              { text: '20', props: { style: { border: '1px solid' } } },
+              { text: '40', props: { style: { border: '1px solid' } } },
+              { text: '60', props: { style: { border: '1px solid' } } },
+              { text: '80', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Helium-3', props: { style: { border: '1px solid', backgroundColor: 'red' } } },
+              { text: '30', props: { style: { border: '1px solid' } } },
+              { text: '40', props: { style: { border: '1px solid' } } },
+              { text: '50', props: { style: { border: '1px solid' } } },
+              { text: '60', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Regolith', props: { style: { border: '1px solid', backgroundColor: 'orange' } } },
+              { text: '20', props: { style: { border: '1px solid' } } },
+              { text: '20', props: { style: { border: '1px solid' } } },
+              { text: '40', props: { style: { border: '1px solid' } } },
+              { text: '50', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Armacolite', props: { style: { border: '1px solid', backgroundColor: 'yellow' } } },
+              { text: '40', props: { style: { border: '1px solid' } } },
+              { text: '30', props: { style: { border: '1px solid' } } },
+              { text: '30', props: { style: { border: '1px solid' } } },
+              { text: '20', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Magnetite', props: { style: { border: '1px solid' } } },
+              { text: '10', props: { style: { border: '1px solid' } } },
+              { text: '10', props: { style: { border: '1px solid' } } },
+              { text: '10', props: { style: { border: '1px solid' } } },
+              { text: '10', props: { style: { border: '1px solid' } } },
+            ],
+          ]
         end
       end
     end

@@ -2760,6 +2760,10 @@ module Engine
       def train_power?
         false
       end
+
+      def show_map_legend?
+        false
+      end
     end
   end
 end

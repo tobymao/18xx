@@ -313,15 +313,17 @@ module View
       end
 
       def entities_rows(entities)
+        step = @game.round.active_step
         entity_info = entities.map do |entity|
           [
             entity,
             @corporation.president?(entity),
             entity.num_shares_of(@corporation, ceil: false),
-            @game.round.active_step&.did_sell?(@corporation, entity),
-            @game.round.active_step&.last_acted_upon?(@corporation, entity),
+            step&.did_sell?(@corporation, entity),
+            step&.last_acted_upon?(@corporation, entity),
             !@corporation.holding_ok?(entity, 1),
             entity.shares_of(@corporation).count(&:double_cert),
+            step.respond_to?(:share_flags) && step&.share_flags(entity.shares_of(@corporation)),
           ]
         end
 
@@ -334,8 +336,8 @@ module View
         entity_info
         .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
         .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
-        .map do |entity, president, num_shares, did_sell, last_acted_upon, at_limit, double_certs|
-          flags = (president ? '*' : '') + ('d' * double_certs) + (at_limit ? 'L' : '')
+        .map do |entity, president, num_shares, did_sell, last_acted_upon, at_limit, double_certs, other_flags|
+          flags = (president ? '*' : '') + ('d' * double_certs) + (at_limit ? 'L' : '') + (other_flags || '')
 
           type = entity.player? ? 'tr.player' : 'tr.corp'
           type += '.bold' if last_acted_upon
@@ -414,8 +416,10 @@ module View
         if player_rows.any? || @corporation.num_market_shares.positive?
           at_limit = @game.share_pool.bank_at_limit?(@corporation)
           double_certs = @game.share_pool.shares_of(@corporation).count(&:double_cert)
+          step = @game.round.active_step
+          other_flags = step.respond_to?(:share_flags) && step&.share_flags(@game.share_pool.shares_of(@corporation))
 
-          flags = (@corporation.receivership? ? '*' : '') + ('d' * double_certs) + (at_limit ? 'L' : '')
+          flags = (@corporation.receivership? ? '*' : '') + ('d' * double_certs) + (at_limit ? 'L' : '') + (other_flags || '')
 
           pool_rows << h('tr.market', market_tr_props, [
             h('td.left', 'Market'),
