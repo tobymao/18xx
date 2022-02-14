@@ -60,6 +60,10 @@ module Engine
       @tokens[corporation]
     end
 
+    def no_blocking?
+      @no_blocking
+    end
+
     def tokenable_cities(corporation)
       # A list of all tokenable cities per corporation
       return @tokenable_cities[corporation] if @tokenable_cities.key?(corporation)
