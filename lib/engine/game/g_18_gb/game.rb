@@ -362,7 +362,7 @@ module Engine
         def close_company_in_hex(hex)
           @companies.each do |company|
             block = abilities(company, :blocks_hexes)
-            close_company(company) if block.hexes.include?(hex.coordinates)
+            close_company(company) if block&.hexes&.include?(hex.coordinates)
           end
         end
 
