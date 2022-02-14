@@ -10,7 +10,7 @@ module Engine
            value: 60,
            discount: -80,
            revenue: 0,
-           desc: 'Starts with $60 in treasury, a 2 train, and a token in Hannibal (H6) or St. Joseph (C5). In ORs, '\
+           desc: 'Starts with $60 in treasury, a 2 train, and a token in Hannibal (H6). In ORs, '\
                  'this is the first minor to operate. Splits revenue evenly with owner. Buyer '\
                  'pays an extra $80 ("debt").',
            sym: 'HSJ',
@@ -388,7 +388,6 @@ module Engine
             sym: 'HSJ',
             name: 'Hannibal and St. Joseph Railroad',
             logo: '18_mo/HSJ',
-            simple_logo: '18_mo/HSJ.alt',
             tokens: [0],
             coordinates: 'H6',
             color: 'pink',
@@ -398,7 +397,6 @@ module Engine
             sym: 'SSL',
             name: 'St. Louis, Salem and Little Rock',
             logo: '18_mo/SSL',
-            simple_logo: '18_mo/SSL.alt',
             tokens: [0],
             coordinates: 'H12',
             color: 'cyan',
