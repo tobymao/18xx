@@ -34,6 +34,7 @@ module Engine
           def get_tile_lay(entity)
             action = super
             return unless action
+            return action if @game.national_corporation?(entity)
 
             action[:upgrade] = @round.num_upgraded_track < @game.class::TILE_LAYS_UPGRADE[@game.phase.name]
             action

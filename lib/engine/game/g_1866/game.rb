@@ -1282,7 +1282,7 @@ module Engine
             'same tile.',
             'Corporations tile lay phase 8: 4 tracks, max 3 upgrades. Can be done in any order. Can upgrade the same '\
             'tile.',
-            'Corporations tile lay phase 9: 4 tracks, max 4 upgrades. Can be done in any order. Can upgrade the same '\
+            'Corporations tile lay phase 10: 4 tracks, max 4 upgrades. Can be done in any order. Can upgrade the same '\
             'tile.',
           ]
         end
