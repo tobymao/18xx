@@ -18,6 +18,13 @@ module Engine
             actions
           end
 
+          def help
+            return super unless can_convert?(current_entity)
+
+            "#{current_entity.id} may choose to convert to a 10-share corporation, dropping 3 steps in price and issuing 5 new "\
+              "shares to the market. As president, #{current_entity.owner.name} will then be permitted to purchase one share."
+          end
+
           def can_convert?(corporation)
             corporation&.type == '5-share'
           end
