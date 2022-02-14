@@ -197,9 +197,9 @@ module Engine
           red: {
             ['A2'] => 'offboard=revenue:yellow_40|brown_60,hide:1,groups:Ireland;path=a:0,b:_0;border=edge:4',
             ['A4'] => 'offboard=revenue:yellow_40|brown_60,groups:Ireland;path=a:0,b:_0;border=edge:1',
-            ['C16'] => 'offboard=revenue:yellow_10|brown_50,groups:Netherlands;'\
+            ['C16'] => 'offboard=revenue:yellow_20|brown_50,groups:Netherlands;'\
                        'path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;border=edge:4',
-            ['C18'] => 'offboard=revenue:yellow_10|brown_50,hide:1,groups:Netherdlands;path=a:0,b:_0;border=edge:1',
+            ['C18'] => 'offboard=revenue:yellow_20|brown_50,hide:1,groups:Netherdlands;path=a:0,b:_0;border=edge:1',
             ['I2'] => 'offboard=revenue:30;label=Est +20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             ['I18'] => 'offboard=revenue:0,hide:1;label=x2;path=a:1,b:_0;path=a:2,b:_00',
           },
