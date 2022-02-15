@@ -119,6 +119,14 @@ module Engine
           },
         ].freeze
 
+        def game_phases
+          phases = self.class::PHASES
+          return phases unless @optional_rules.include?(:seventeen_trains)
+
+          phases = phases.dup
+          phases.reject { |p| %w[3+ 4+].include?(p[:name]) }
+        end
+
         # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
         EVENTS_TEXT = {
           'upgrade_oil' => [
@@ -144,6 +152,12 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   },
                   { name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }].freeze
+
+        def game_trains
+          return G1817::Game::TRAINS if @optional_rules.include?(:seventeen_trains)
+
+          self.class::TRAINS
+        end
 
         # Does not include guaranteed metropolis New York City
         POTENTIAL_METROPOLIS_HEX_IDS = %w[D20 E11 G3 H14 H22 I19].freeze
@@ -578,6 +592,8 @@ module Engine
         end
 
         def timeline
+          return super if @optional_rules.include?(:seventeen_trains)
+
           @timeline = [
             'End of SR 1: All unused subsidies are removed from the map',
             'End of OR 1.1: All unsold 2 trains are exported.',
@@ -599,6 +615,8 @@ module Engine
         end
 
         def export_train
+          return or_round_finished if @optional_rules.include?(:seventeen_trains)
+
           @recently_floated = []
           turn = "#{@turn}.#{@round.round_num}"
           case turn
