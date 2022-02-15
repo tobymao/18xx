@@ -35,6 +35,16 @@ module Engine
             false
           end
 
+          def log_pass(entity)
+            return if bought?
+
+            @log << "#{entity.name} declines buying a share of #{@round.current_operator.id} after conversion"
+          end
+
+          def pass!
+            @passed = true
+          end
+
           def description
             'Optionally buy a share after conversion'
           end
