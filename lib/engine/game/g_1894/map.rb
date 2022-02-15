@@ -59,7 +59,7 @@ module Engine
           'X3' => {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:10;path=a:0,b:_0;path=a:4,b:_0;label=A',
+            'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=A',
           },
           'X4' => {
             'count' => 1,
@@ -129,12 +129,12 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
-          'A2' => 'Ireland',
+          'A4' => 'Ireland',
           'A10' => 'England',
           'B3' => 'Le Havre',
           'B9' => 'Calais',
           'B11' => 'Dunkerque',
-          'C18' => 'Netherlands',
+          'C16' => 'Netherlands',
           'D1' => 'Évreux',
           'D3' => 'Rouen',
           'D11' => 'Lille',
@@ -156,7 +156,7 @@ module Engine
 
         HEXES = {
           white: {
-            %w[C4 D7 D9 E2 E8 E18 F1 F3 F7 F9 F17 G8 H1 H3 H11 I10 I12] => '',
+            %w[C4 D7 D9 E2 E8 E18 F1 F3 F7 F9 F17 G8 H1 H3 H11 I4 I10 I12] => '',
             %w[B1 B7 C2 C8 C10 D5 E4 G6 H5 H9] => 'upgrade=cost:60,terrain:water',
             %w[B3 B9 B11 D3 D15 E6 E10 E16 G10 H17] => 'city=revenue:0',
             ['B13'] => 'border=edge:5,type:mountain',
@@ -195,11 +195,11 @@ module Engine
             ['I16'] => 'path=a:1,b:4;path=a:1,b:2;',
           },
           red: {
-            ['A2'] => 'offboard=revenue:yellow_40|brown_60,groups:Ireland;path=a:0,b:_0;border=edge:4',
-            ['A4'] => 'offboard=revenue:yellow_40|brown_60,hide:1,groups:Ireland;path=a:0,b:_0;border=edge:1',
-            ['C16'] => 'offboard=revenue:yellow_30|brown_50,hide:1,groups:Netherlands;'\
+            ['A2'] => 'offboard=revenue:yellow_40|brown_60,hide:1,groups:Ireland;path=a:0,b:_0;border=edge:4',
+            ['A4'] => 'offboard=revenue:yellow_40|brown_60,groups:Ireland;path=a:0,b:_0;border=edge:1',
+            ['C16'] => 'offboard=revenue:yellow_20|brown_50,groups:Netherlands;'\
                        'path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;border=edge:4',
-            ['C18'] => 'offboard=revenue:yellow_30|brown_50,groups:Netherdlands;path=a:0,b:_0;border=edge:1',
+            ['C18'] => 'offboard=revenue:yellow_20|brown_50,hide:1,groups:Netherdlands;path=a:0,b:_0;border=edge:1',
             ['I2'] => 'offboard=revenue:30;label=Est +20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             ['I18'] => 'offboard=revenue:0,hide:1;label=x2;path=a:1,b:_0;path=a:2,b:_00',
           },
