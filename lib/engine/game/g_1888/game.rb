@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
+require_relative '../company_price_50_to_150_percent'
 
 module Engine
   module Game
@@ -12,6 +13,7 @@ module Engine
         include_meta(G1888::Meta)
         include Entities
         include Map
+        include CompanyPrice50To150Percent
 
         register_colors(green: '#237333',
                         red: '#d81e3e',
@@ -24,6 +26,7 @@ module Engine
         CURRENCY_FORMAT_STR = '¥%d'
 
         BANK_CASH = 10_000
+        SMALL_BANK_CASH = 9_000
 
         CERT_LIMIT = { 2 => 20, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
@@ -175,15 +178,15 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         EBUY_OTHER_VALUE = false
 
-        def setup_company_price_50_to_150_percent
-          @companies.each do |company|
-            company.min_price = (company.value * 0.5).ceil
-            company.max_price = (company.value * 1.5).floor
-          end
-        end
-
         def setup
           setup_company_price_50_to_150_percent
+          @corporations.each { |c| c.float_percent = 60 } if @optional_rules&.include?(:small_bank)
+        end
+
+        def init_bank
+          cash = @optional_rules&.include?(:small_bank) ? self.class::SMALL_BANK_CASH : self.class::BANK_CASH
+
+          Bank.new(cash, log: @log)
         end
 
         def yanda
