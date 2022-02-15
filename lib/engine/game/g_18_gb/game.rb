@@ -441,11 +441,12 @@ module Engine
           case @round
           when Engine::Round::Stock
             ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
-            return ipoed.sort + others
+            ipoed.sort + others
           when Engine::Round::Operating
-            return [@round.current_operator]
+            [@round.current_operator]
+          else
+            []
           end
-          []
         end
 
         def required_bids_to_pass
