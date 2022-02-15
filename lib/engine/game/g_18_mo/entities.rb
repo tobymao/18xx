@@ -132,7 +132,8 @@ module Engine
            name: 'Ranch Tile',
            value: 50,
            revenue: 15,
-           desc: 'May lay the X1 ranch tile on any empty plain hex adjacent to a Z lettered city.',
+           desc: 'May lay the X1 ranch tile on any empty plain hex adjacent to a Z lettered city  '\
+                 '(requires route to the hex).',
            sym: 'RT',
            abilities: [
           {
