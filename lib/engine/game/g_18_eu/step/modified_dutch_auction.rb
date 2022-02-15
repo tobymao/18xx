@@ -189,6 +189,7 @@ module Engine
             bidder.spend(price, @game.bank) if price.positive?
             @log << "#{bidder.name} purchases #{target.name} for #{@game.format_currency(price)}"
 
+            place_initial_token(target)
             reset_auction(bidder, target)
           end
 
@@ -220,9 +221,7 @@ module Engine
             @log << "#{bidder.name} wins the auction for #{target.name} "\
                     "with a bid of #{@game.format_currency(price)}"
 
-            hex = @game.hex_by_id(target.coordinates)
-            city = target.city.to_i || 0
-            hex.tile.cities[city].place_token(target, target.next_token, free: true)
+            place_initial_token(target)
           end
 
           def all_passed!
@@ -257,6 +256,12 @@ module Engine
             @round.goto_entity!(@auction_triggerer)
             @auction_triggerer = nil
             next_entity!
+          end
+
+          def place_initial_token(minor)
+            hex = @game.hex_by_id(minor.coordinates)
+            city_index = minor.city.to_i
+            hex.tile.cities[city_index].place_token(minor, minor.next_token, free: true)
           end
         end
       end
