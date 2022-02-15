@@ -119,6 +119,13 @@ module Engine
           },
         ].freeze
 
+        def game_phases
+          phases = self.class::PHASES
+          return phases unless @optional_rules.include?(:seventeen_trains)
+
+          phases.reject { |p| %w[3+ 4+].include?(p[:name]) }
+        end
+
         # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
         EVENTS_TEXT = {
           'upgrade_oil' => [
@@ -144,6 +151,12 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   },
                   { name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }].freeze
+
+        def game_trains
+          return G1817::Game::TRAINS if @optional_rules.include?(:seventeen_trains)
+
+          self.class::TRAINS
+        end
 
         # Does not include guaranteed metropolis New York City
         POTENTIAL_METROPOLIS_HEX_IDS = %w[D20 E11 G3 H14 H22 I19].freeze
@@ -230,6 +243,7 @@ module Engine
 
           setup_train_roster
 
+          randomize_privates
           @subsidies = SUBSIDIES.dup
           setup_resource_subsidy
           randomize_subsidies
@@ -255,6 +269,7 @@ module Engine
         end
 
         def setup_train_roster
+          return if @optional_rules.include?(:seventeen_trains)
           return if @players.size >= 5
 
           to_remove = %w[2+ 4 5 6]
@@ -287,6 +302,19 @@ module Engine
           end
         end
 
+        def randomize_privates
+          always_in = %w[P1 P2 P3 P4]
+          always_in << 'P10' if @players.size >= 5
+          num_kept = { 30 => 1, 40 => 2, 60 => 3, 80 => 2, 90 => 2, 120 => 1 }
+
+          to_remove = @companies.reject { |c| always_in.include?(c.id) }.group_by(&:value).flat_map do |val, companies|
+            companies.sort_by { rand }.take(companies.size - num_kept[val])
+          end
+
+          @log << "Removing #{to_remove.map(&:name).join(', ')}"
+          to_remove.each(&:close!)
+        end
+
         def setup_resource_subsidy
           subsidy = @subsidies.find { |s| s[:id] == 'S16' }
           ability = subsidy[:abilities][0].dup
@@ -294,20 +322,20 @@ module Engine
 
           resources = []
           if company_by_id('P24').closed?
-            ability.hexes += ORE_HEXES
-            ability.tiles += RESOURCE_LABELS[:ore]
-            ability.discount = 15
+            ability[:hexes] += ORE_HEXES
+            ability[:tiles] << RESOURCE_LABELS[:ore]
+            ability[:discount] = 15
             resources << 'ore'
           end
           if company_by_id('P12').closed?
-            ability.hexes += OIL_HEXES
-            ability.tiles += RESOURCE_LABELS[:oil]
+            ability[:hexes] += OIL_HEXES
+            ability[:tiles] << RESOURCE_LABELS[:oil]
             resources << 'oil'
           end
           if company_by_id('P18').closed? || company_by_id('P28').closed?
-            ability.hexes += COAL_HEXES
-            ability.tiles += RESOURCE_LABELS[:coal]
-            ability.discount = 15
+            ability[:hexes] += COAL_HEXES
+            ability[:tiles] << RESOURCE_LABELS[:coal]
+            ability[:discount] = 15
             resources << 'coal'
           end
           resources << 'NO RESOURCES' if resources.empty?
@@ -564,6 +592,8 @@ module Engine
         end
 
         def timeline
+          return super if @optional_rules.include?(:seventeen_trains)
+
           @timeline = [
             'End of SR 1: All unused subsidies are removed from the map',
             'End of OR 1.1: All unsold 2 trains are exported.',
@@ -585,6 +615,8 @@ module Engine
         end
 
         def export_train
+          return or_round_finished if @optional_rules.include?(:seventeen_trains)
+
           @recently_floated = []
           turn = "#{@turn}.#{@round.round_num}"
           case turn
