@@ -527,7 +527,11 @@ module Engine
     end
 
     def reframe!(color1, color2 = nil)
-      @frame = Engine::Part::Frame.new(color1, color2)
+      @frame = color1.nil? ? nil : Engine::Part::Frame.new(color1, color2)
+    end
+
+    def restripe!(color)
+      @stripes = color.nil? ? nil : Part::Stripes.new(color)
     end
 
     def available_slot?

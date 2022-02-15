@@ -47,7 +47,10 @@ module Engine
             tile_frame = old_tile.frame
             super
 
+            old_tile.reframe!(nil)
             hex.tile.reframe!(tile_frame.color, tile_frame.color2) if tile_frame
+            tile.restripe!(nil) if tile.label.to_s == 'C' && tile.color == :yellow
+            old_tile.restripe!(:gray) if old_tile.label.to_s == 'C' && old_tile.color == :yellow && tile.color == :green
             @round.num_upgraded_track += 1 if track_upgrade?(old_tile, tile, action.hex)
           end
 
