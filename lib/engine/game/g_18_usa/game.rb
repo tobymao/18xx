@@ -230,6 +230,7 @@ module Engine
 
           setup_train_roster
 
+          randomize_privates
           @subsidies = SUBSIDIES.dup
           setup_resource_subsidy
           randomize_subsidies
@@ -287,6 +288,19 @@ module Engine
           end
         end
 
+        def randomize_privates
+          always_in = %w[P1 P2 P3 P4]
+          always_in += 'P10' if @players.size >= 5
+          num_kept = { 30 => 1, 40 => 2, 60 => 3, 80 => 2, 90 => 2, 120 => 1 }
+
+          to_remove = @companies.reject { |c| always_in.include?(c.id) }.group_by(&:value).flat_map do |val, companies|
+            companies.sort_by { rand }.take(companies.size - num_kept[val])
+          end
+
+          @log << "Removing #{to_remove.map(&:name).join(', ')}"
+          to_remove.each(&:close!)
+        end
+
         def setup_resource_subsidy
           subsidy = @subsidies.find { |s| s[:id] == 'S16' }
           ability = subsidy[:abilities][0].dup
@@ -294,20 +308,20 @@ module Engine
 
           resources = []
           if company_by_id('P24').closed?
-            ability.hexes += ORE_HEXES
-            ability.tiles += RESOURCE_LABELS[:ore]
-            ability.discount = 15
+            ability[:hexes] += ORE_HEXES
+            ability[:tiles] << RESOURCE_LABELS[:ore]
+            ability[:discount] = 15
             resources << 'ore'
           end
           if company_by_id('P12').closed?
-            ability.hexes += OIL_HEXES
-            ability.tiles += RESOURCE_LABELS[:oil]
+            ability[:hexes] += OIL_HEXES
+            ability[:tiles] << RESOURCE_LABELS[:oil]
             resources << 'oil'
           end
           if company_by_id('P18').closed? || company_by_id('P28').closed?
-            ability.hexes += COAL_HEXES
-            ability.tiles += RESOURCE_LABELS[:coal]
-            ability.discount = 15
+            ability[:hexes] += COAL_HEXES
+            ability[:tiles] << RESOURCE_LABELS[:coal]
+            ability[:discount] = 15
             resources << 'coal'
           end
           resources << 'NO RESOURCES' if resources.empty?
