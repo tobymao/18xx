@@ -332,6 +332,8 @@ module Engine
         VALID_ABILITIES_CLOSED = %i[hex_bonus reservation tile_lay token].freeze
 
         def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
+          return if entity&.player?
+
           ability = super
 
           return ability unless entity&.company?
@@ -362,7 +364,7 @@ module Engine
         def close_company_in_hex(hex)
           @companies.each do |company|
             block = abilities(company, :blocks_hexes)
-            close_company(company) if block.hexes.include?(hex.coordinates)
+            close_company(company) if block&.hexes&.include?(hex.coordinates)
           end
         end
 
@@ -436,8 +438,15 @@ module Engine
         end
 
         def sorted_corporations
-          ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
-          ipoed.sort + others
+          case @round
+          when Engine::Round::Stock
+            ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
+            ipoed.sort + others
+          when Engine::Round::Operating
+            [@round.current_operator]
+          else
+            []
+          end
         end
 
         def required_bids_to_pass
@@ -579,14 +588,8 @@ module Engine
           @_shares[share.id] = share
         end
 
-        def emergency_convert_bundles(corporation)
-          return [] unless corporation.trains.empty?
-          return [] if corporation.cash >= @depot.min_depot_price
-
-          shares = (0..4).map { |i| Engine::Share.new(corporation, percent: 20, index: 4 + i) }
-          bundle = Engine::ShareBundle.new(shares)
-          bundle.share_price = stock_market.find_share_price(corporation, [:left] * 3).price
-          [bundle]
+        def emergency_convert_capital(corporation)
+          5 * stock_market.find_share_price(corporation, [:left] * 3).price
         end
 
         def convert_to_ten_share(corporation, price_drops = 0)
@@ -819,6 +822,7 @@ module Engine
             G18GB::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18GB::Step::BuyTrain,
+            G18GB::Step::EMRShareBuying,
           ], round_num: round_num)
         end
 
