@@ -42,9 +42,12 @@ module Engine
 
           def lay_tile_action(action, entity: nil, spender: nil)
             tile = action.tile
-            old_tile = action.hex.tile
+            hex = action.hex
+            old_tile = hex.tile
+            tile_frame = old_tile.frame
             super
 
+            hex.tile.reframe!(tile_frame.color, tile_frame.color2) if tile_frame
             @round.num_upgraded_track += 1 if track_upgrade?(old_tile, tile, action.hex)
           end
 
