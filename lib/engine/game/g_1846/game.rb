@@ -617,7 +617,7 @@ module Engine
           @minors.dup.each { |minor| close_corporation(minor) }
           remove_icons(self.class::LSL_HEXES, self.class::ABILITY_ICONS[lake_shore_line.id]) if lake_shore_line
           remove_icons(self.class::LITTLE_MIAMI_HEXES, self.class::ABILITY_ICONS[little_miami.id]) if little_miami
-          remove_steamboat_markers! unless steamboat.owned_by_corporation?
+          remove_steamboat_markers! if steamboat && !steamboat.owned_by_corporation?
           super
         end
 
