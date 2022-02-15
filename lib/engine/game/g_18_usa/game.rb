@@ -123,7 +123,6 @@ module Engine
           phases = self.class::PHASES
           return phases unless @optional_rules.include?(:seventeen_trains)
 
-          phases = phases.dup
           phases.reject { |p| %w[3+ 4+].include?(p[:name]) }
         end
 
@@ -270,6 +269,7 @@ module Engine
         end
 
         def setup_train_roster
+          return if @optional_rules.include?(:seventeen_trains)
           return if @players.size >= 5
 
           to_remove = %w[2+ 4 5 6]
