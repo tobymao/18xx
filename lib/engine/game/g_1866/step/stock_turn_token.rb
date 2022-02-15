@@ -153,7 +153,8 @@ module Engine
             current_price = entity.share_price.price
             times.times { @game.stock_market.move_right(entity) }
             @log << "#{current_entity.name}'s stock turn token price changes from "\
-                    "#{@game.format_currency(current_price)} to #{@game.format_currency(entity.share_price.price)}"
+                    "#{@game.format_currency(current_price)} to #{@game.format_currency(entity.share_price.price)}"\
+                    "#{times > 1 ? " (#{times} steps)" : ''}"
           end
         end
       end
