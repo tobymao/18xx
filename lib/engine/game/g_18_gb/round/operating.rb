@@ -11,6 +11,14 @@ module Engine
     module G18GB
       module Round
         class Operating < Engine::Round::Operating
+          attr_accessor :emergency_converted
+
+          def start_operating
+            super
+
+            @emergency_converted = false
+          end
+
           def after_process(action)
             entity = @entities[@entity_index]
 
