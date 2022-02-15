@@ -72,8 +72,7 @@ module Engine
             @game.log << "#{entity.name} places a hotel on #{hex.name} for #{@game.format_currency(cost)}"
             entity.spend(cost, @game.bank)
 
-            token.place(nil, hex: hex)
-            hex.tile.icons << Part::Icon.new("../logos/18_fl/#{entity.id}")
+            hex.place_token(token)
             pass!
           end
 

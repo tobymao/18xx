@@ -18,7 +18,7 @@ module Engine
 
           def buyable_trains(entity)
             # Can't buy trains from other corporations if the operating corporation took a loan this turn
-            return super if !@took_loan && @game.phase.status.include?('can_buy_trains')
+            return reject_infrastructure_train(super) if !@took_loan && @game.phase.status.include?('can_buy_trains')
 
             super.select(&:from_depot?)
           end
@@ -29,19 +29,20 @@ module Engine
             false
           end
 
+          def spend_minmax(entity, train)
+            train_corp = train.owner
+            min = 1
+            max = buying_power(entity)
+            min = train.price if train_corp.corporation? && @game.corporation?(train_corp) && !train_corp.loans.empty?
+            max = train.price unless entity.loans.empty?
+
+            [min, max]
+          end
+
           def log_skip(entity)
             return if @game.national_corporation?(entity)
 
             @log << "#{entity.name} skips buy trains"
-          end
-
-          def must_buy_at_face_value?(train, entity)
-            train_corp = train.owner
-            if train_corp.corporation? && @game.corporation?(train_corp) && (entity.loans.any? || train_corp.loans.any?)
-              return true
-            end
-
-            face_value_ability?(entity) || face_value_ability?(train.owner)
           end
 
           def process_buy_train(action)
@@ -57,6 +58,13 @@ module Engine
             end
 
             super
+          end
+
+          def process_sell_shares(action)
+            super
+
+            entity = action.entity
+            @game.player_sold_shares[entity.owner][entity] = true
           end
 
           def process_take_loan(action)
@@ -81,6 +89,10 @@ module Engine
             @game.take_player_loan(entity, difference)
             @log << "#{entity.name} takes a loan of #{@game.format_currency(difference)} with "\
                     "#{@game.format_currency(@game.player_loan_interest(difference))} in interest"
+          end
+
+          def reject_infrastructure_train(trains)
+            trains.reject { |t| @game.infrastructure_train?(t) }
           end
         end
       end

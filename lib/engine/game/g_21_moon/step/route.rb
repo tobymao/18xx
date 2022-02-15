@@ -35,10 +35,10 @@ module Engine
 
             base = @game.train_base[train]
 
-            raise GameError, 'No room to move train' if base == :sp && @game.bc_trains(corp).size > 1
-            raise GameError, 'No room to move train' if base == :bc && @game.sp_trains(corp).size > 1
+            raise GameError, 'No room to move train' if base == :sp && @game.lb_trains(corp).size > 1
+            raise GameError, 'No room to move train' if base == :lb && @game.sp_trains(corp).size > 1
 
-            new_base = (base == :sp ? :bc : :sp)
+            new_base = (base == :sp ? :lb : :sp)
 
             @log << "#{corp.name} transfers #{@game.train_name(train)} to #{new_base.to_s.upcase}"
             @game.assign_base(train, new_base)
@@ -54,13 +54,13 @@ module Engine
             choice_list = []
             corp = current_entity
             if @game.sp_trains(corp).size < 2
-              @game.bc_trains(corp).uniq(&:name).each do |t|
+              @game.lb_trains(corp).uniq(&:name).each do |t|
                 choice_list << [corp.trains.index(t).to_s, "Transfer #{t.name} to SP"]
               end
             end
-            if @game.bc_trains(corp).size < 2
+            if @game.lb_trains(corp).size < 2
               @game.sp_trains(corp).uniq(&:name).each do |t|
-                choice_list << [corp.trains.index(t).to_s, "Transfer #{t.name} to BC"]
+                choice_list << [corp.trains.index(t).to_s, "Transfer #{t.name} to LB"]
               end
             end
             choice_list.to_h
@@ -69,6 +69,10 @@ module Engine
           def process_run_routes(action)
             super
             @game.update_end_bonuses(action.entity, action.routes)
+          end
+
+          def available_hex(entity, hex)
+            @game.graph.reachable_hexes(entity)[hex]
           end
         end
       end

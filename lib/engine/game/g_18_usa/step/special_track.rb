@@ -17,11 +17,7 @@ module Engine
           end
 
           def hex_neighbors(entity, hex)
-            # See 1817 and reinsert pittsburgh check for handling metros
-            return false unless (ability = abilities(entity))
-
             hexes = ability.hexes
-            return hex.neighbors.keys if hexes.include?(hex.id) && !ability.reachable
             return if hexes&.any? && !hexes&.include?(hex.id)
 
             # When actually laying track entity will be the corp.

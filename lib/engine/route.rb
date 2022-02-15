@@ -20,6 +20,7 @@ module Engine
       @subsidy = opts[:subsidy]
       @halts = opts[:halts]
       @abilities = opts[:abilities]
+      @saved_nodes = opts[:nodes] # node.full_id for every node in the route
       @local_length = @game.local_length
 
       @node_chains = {}
@@ -39,12 +40,14 @@ module Engine
       return if !all && only_routes
 
       @ordered_paths = nil
+      @ordered_hexes = nil
       @distance_str = nil
       @distance = nil
       @hexes = nil
       @paths = nil
       @stops = nil
       @subsidy = nil
+      @saved_nodes = nil
       @visited_stops = nil
       @check_connected = nil
       @check_distance = nil
@@ -82,6 +85,10 @@ module Engine
 
     def chains
       connection_data&.map { |c| c[:chain] }
+    end
+
+    def nodes
+      chains.flat_map { |c| c['nodes'] }.uniq.compact
     end
 
     def next_chain(node, chain, other)
@@ -265,15 +272,21 @@ module Engine
       @game.check_overlap(@routes)
     end
 
-    def check_connected!(token)
-      @check_connected ||= @game.check_connected(self, token) || true
+    def check_connected!
+      @check_connected ||= @game.check_connected(self, corporation) || true
     end
 
     def ordered_paths
       @ordered_paths ||= connection_data.flat_map do |c|
         cpaths = c[:chain][:paths]
+        next if cpaths.empty?
+
         cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
-      end
+      end.compact
+    end
+
+    def ordered_hexes
+      @ordered_hexes ||= ordered_paths.map(&:hex).chunk(&:itself).to_a.map(&:first)
     end
 
     def check_terminals!
@@ -298,7 +311,7 @@ module Engine
       @game.check_other(self)
     end
 
-    def revenue
+    def revenue(suppress_check_other: false)
       @revenue ||=
         begin
           visited = visited_stops
@@ -312,11 +325,11 @@ module Engine
           end
 
           check_terminals!
-          check_other!
+          check_other! unless suppress_check_other
           check_cycles!
           check_distance!(visited)
           check_overlap!
-          check_connected!(token)
+          check_connected!
 
           @game.revenue_for(self, stops)
         end
@@ -373,6 +386,7 @@ module Engine
     def find_pairwise_chain(chains_a, chains_b, other_paths)
       chains_a = chains_a.select { |a| (a[:paths] & other_paths).empty? }
       chains_b = chains_b.select { |b| (b[:paths] & other_paths).empty? }
+      candidates = []
       chains_a.each do |a|
         chains_b.each do |b|
           next if (middle = (a[:nodes] & b[:nodes])).empty?
@@ -380,11 +394,24 @@ module Engine
 
           left = (a[:nodes] - middle)[0]
           right = (b[:nodes] - middle)[0]
-          return [a, b, left, right, middle[0]]
+          candidates.append([a, b, left, right, middle[0]])
         end
       end
 
-      []
+      return [] if candidates.empty?
+
+      return candidates[0] if candidates.size == 1
+
+      # If we're reconstructing a route with multiple ways to satisfy
+      # the connection data (e.g., 457--464, IR7--8), prefer ones that
+      # pass through the nodes associated with it.
+      if @saved_nodes
+        candidates.each do |a, b, left, right, middle|
+          return [a, b, left, right, middle] if [left, right, middle].all? { |n| @saved_nodes.include?(n.full_id) }
+        end
+      end
+
+      candidates[0]
     end
 
     def find_matching_chains(hex_ids)

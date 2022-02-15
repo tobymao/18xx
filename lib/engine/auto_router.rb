@@ -13,14 +13,15 @@ module Engine
 
     def compute(corporation, **opts)
       static = opts[:routes] || []
-      path_timeout = opts[:path_timeout] || 20
-      route_timeout = opts[:route_timeout] || 20
+      path_timeout = opts[:path_timeout] || 30
+      route_timeout = opts[:route_timeout] || 10
       route_limit = opts[:route_limit] || 10_000
 
       connections = {}
       trains = @game.route_trains(corporation)
 
-      nodes = @game.graph.connected_nodes(corporation).keys.sort_by do |node|
+      graph = @game.graph_for_entity(corporation)
+      nodes = graph.connected_nodes(corporation).keys.sort_by do |node|
         revenue = trains
           .map { |train| node.route_revenue(@game.phase, train) }
           .max
@@ -31,11 +32,7 @@ module Engine
         ]
       end
 
-      # Add a per-node timeout to ensure we don't spend ALL time on first node's paths in huge maps,
-      # which can cause all train routes to conflict with each other
-      node_timeout = path_timeout / nodes.size
       path_walk_timed_out = false
-
       now = Time.now
 
       skip_paths = static.flat_map(&:paths).to_h { |path| [path, true] }
@@ -47,9 +44,6 @@ module Engine
       hexside_bits = Hash.new { |h, k| h[k] = 0 }     # map of hexside_id to bit number
       @next_hexside_bit = 0
 
-      path_abort = Hash.new { |h, k| h[k] } # map of train to path_abort flag for that train
-      trains.each { |train| path_abort[train] = false } # populate the hash keys with company's trains
-
       nodes.each do |node|
         if Time.now - now > path_timeout
           puts 'Path timeout reached'
@@ -59,23 +53,9 @@ module Engine
           puts "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}"
         end
 
-        node_now = Time.now
-
-        node_abort = false
-
-        node.walk(corporation: corporation, skip_paths: skip_paths) do |_, vp|
-          next :abort if node_abort
-
+        walk_corporation = graph.no_blocking? ? nil : corporation
+        node.walk(corporation: walk_corporation, skip_paths: skip_paths) do |_, vp|
           paths = vp.keys
-
-          if Time.now - node_now > node_timeout
-            # TODO: this is not a complete node.walk abort, find somthing more than :abort but less than break.
-            # Or wait til node.walk speed is improved and this may become less important
-            path_walk_timed_out = true
-            node_abort = true
-            next :abort
-          end
-
           chains = []
           chain = []
           left = nil
@@ -125,45 +105,35 @@ module Engine
             { left: c[:nodes][0], right: c[:nodes][1], chain: c }
           end
 
+          connection = connections[id]
+
           # each train has opportunity to vote to abort a branch of this node's path-walk tree
-          path_abort.each { |train, _| path_abort[train] = false }
-          abort = nil
+          path_abort = trains.to_h { |train| [train, true] }
 
           # build a test route for each train, use route.revenue to check for errors, keep the good ones
-          trains.each do |train|
-            bitfield = bitfield_from_connection(connections[id], hexside_bits)
+          trains.each  do |train|
             route = Engine::Route.new(
               @game,
               @game.phase,
               train,
-              connection_data: connections[id],
-              bitfield: bitfield,
+              connection_data: connection,
+              bitfield: bitfield_from_connection(connection, hexside_bits),
             )
-
-            route.revenue # raises various errors if bad route
+            route.revenue(suppress_check_other: true) # defer route-collection checks til later
             train_routes[train] << route
-
-          # These all result in the route not being added to train_routes[train],
-          # but the nature of the error determines how to continue or terminate processing of the path walk
           rescue RouteTooLong
             # ignore for this train, and abort walking this path if ignored for all trains
-            path_abort[train] = true
-            abort = :abort if path_abort.values.all?
-          rescue NoToken, RouteTooShort
-            # keep extending this connection set
+            path_abort.delete(train)
           rescue ReusesCity
-            abort = :abort
-          rescue GameError => e
-            puts e
+            path_abort.clear
+          rescue NoToken, RouteTooShort, GameError # rubocop:disable Lint/SuppressedException
           end
-          abort
+
+          next :abort if path_abort.empty?
         end
-        puts ' Node timeout reached' if node_abort
       end
 
       # Check that there are no duplicate hexside bits (algorithm error)
-      mismatch = hexside_bits.size - hexside_bits.uniq.size
-      puts "  ERROR: hexside_bits contains #{mismatch} duplicate bits" if mismatch != 0
       puts "Evaluated #{connections.size} paths, found #{@next_hexside_bit} unique hexsides, and found valid routes "\
            "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
 
@@ -183,9 +153,14 @@ module Engine
       puts "Finding route combos of best #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} "\
            "routes with depth #{limit}"
 
+      now = Time.now
       possibilities = js_evaluate_combos(sorted_routes, route_timeout)
 
-      @flash&.call('Auto route selection failed to complete (timeout)') if path_walk_timed_out || (Time.now - now > route_timeout)
+      if path_walk_timed_out
+        @flash&.call('Auto route path walk failed to complete (PATH TIMEOUT)')
+      elsif Time.now - now > route_timeout
+        @flash&.call('Auto route selection failed to complete (ROUTE TIMEOUT)')
+      end
 
       # final sanity check on best combos: recompute each route.revenue in case it needs to reject a combo
       max_routes = possibilities.max_by do |routes|
@@ -283,130 +258,157 @@ module Engine
       conflicts = 0
       now = Time.now
 
-      %x(
-      let possibilities = []
-      let combos = []
-      let counter = 0
-      let max_revenue = 0
-      let js_now = Date.now()
-      let js_route_timeout = _route_timeout * 1000
+      %x{
+        let possibilities = []
+        let combos = []
+        let counter = 0
+        let max_revenue = 0
+        let js_now = Date.now()
+        let js_route_timeout = _route_timeout * 1000
 
-      // marshal Opal objects to js for faster/easier access
-      const js_sorted_routes = []
-      let limit = 1
-      Opal.send(_rb_sorted_routes, 'each', [], function(rb_routes) {
-        let js_routes = []
-        limit *= rb_routes.length
-        Opal.send(rb_routes, 'each', [], function(rb_route)
-        {
-          js_routes.push( { route: rb_route, bitfield: rb_route.bitfield, revenue: rb_route.revenue } )
+        // marshal Opal objects to js for faster/easier access
+        const js_sorted_routes = []
+        let limit = 1
+        Opal.send(_rb_sorted_routes, 'each', [], function(rb_routes) {
+          let js_routes = []
+          limit *= rb_routes.length
+          Opal.send(rb_routes, 'each', [], function(rb_route)
+          {
+            js_routes.push( { route: rb_route, bitfield: rb_route.bitfield, revenue: rb_route.revenue } )
+          })
+          js_sorted_routes.push(js_routes)
         })
-        js_sorted_routes.push(js_routes)
-      })
-      let old_limit = limit
+        let old_limit = limit
 
-      // init combos with first train's routes
-      for (r=0; r < js_sorted_routes[0].length; r++) {
-        const route = js_sorted_routes[0][r]
-        counter += 1
-        combo = { revenue: route.revenue, routes: [route] }
-        combos.push(combo)
-        possibilities_count += 1
+        // init combos with first train's routes
+        for (r=0; r < js_sorted_routes[0].length; r++) {
+          const route = js_sorted_routes[0][r]
+          counter += 1
+          combo = { revenue: route.revenue, routes: [route] }
+          combos.push(combo) // save combo for later extension even if not yet a valid combo
 
-        // accumulate best-value combos, or start over if found a bigger best
-        if (combo.revenue >= max_revenue) {
-          if (combo.revenue > max_revenue) {
-            possibilities = []
-            max_revenue = combo.revenue
-          }
-          possibilities.push(combo)
-        }
-      }
+          if (is_valid_combo(combo))
+          {
+            possibilities_count += 1
 
-      continue_looking = true
-      // generate combos with remaining trains' routes
-      for (train=1; continue_looking && (train < js_sorted_routes.length); train++) {
-        // Recompute limit, since by 3rd train it will start going down as invalid combos are excluded from the test set
-        // revised limit = combos.length * remaining train route lengths
-        limit = combos.length
-        for (var remaining=train; remaining < js_sorted_routes.length; remaining++)
-          limit *= js_sorted_routes[remaining].length
-        if (limit != old_limit) {
-          console.log("  adjusting depth to " + limit + " because first " +
-                      train + " trains only had " + combos.length + " valid combos")
-          old_limit = limit
-        }
-
-        let new_combos = []
-        for (rt=0; continue_looking && (rt < js_sorted_routes[train].length); rt++) {
-          const route = js_sorted_routes[train][rt]
-          for (c=0; c < combos.length; c++) {
-            const combo = combos[c]
-            counter += 1
-            if ((counter % 1_000_000) == 0) {
-              console.log(counter + " / " + limit)
-              if (Date.now() - js_now > js_route_timeout) {
-                console.log("Route timeout reached")
-                continue_looking = false
-                break
+            // accumulate best-value combos, or start over if found a bigger best
+            if (combo.revenue >= max_revenue) {
+              if (combo.revenue > max_revenue) {
+                possibilities = []
+                max_revenue = combo.revenue
               }
+              possibilities.push(combo)
             }
+          }
+        }
 
-            if (js_route_bitfield_conflicts(combo, route))
-              conflicts += 1
-            else {
-              possibilities_count += 1
-              // copy the combo, add the route
-              const newcombo = { revenue: combo.revenue, routes: [...combo.routes] }
-              newcombo.routes.push(route)
-              newcombo.revenue += route.revenue
-              new_combos.push(newcombo)
+        continue_looking = true
+        // generate combos with remaining trains' routes
+        for (let train=1; continue_looking && (train < js_sorted_routes.length); train++) {
+          // Recompute limit, since by 3rd train it will start going down as invalid combos are excluded from the test set
+          // revised limit = combos.length * remaining train route lengths
+          limit = combos.length
+          for (let remaining=train; remaining < js_sorted_routes.length; remaining++)
+            limit *= js_sorted_routes[remaining].length
+          if (limit != old_limit) {
+            console.log("  adjusting depth to " + limit + " because first " +
+                        train + " trains only had " + combos.length + " valid combos")
+            old_limit = limit
+          }
 
-              // accumulate best-value combos, or start over if found a bigger best
-              if (newcombo.revenue >= max_revenue) {
-                if (newcombo.revenue > max_revenue) {
-                  possibilities = []
-                  max_revenue = newcombo.revenue
+          let new_combos = []
+          for (let rt=0; continue_looking && (rt < js_sorted_routes[train].length); rt++) {
+            const route = js_sorted_routes[train][rt]
+            for (let c=0; c < combos.length; c++) {
+              const combo = combos[c]
+              counter += 1
+              if ((counter % 1_000_000) == 0) {
+                console.log(counter + " / " + limit)
+                if (Date.now() - js_now > js_route_timeout) {
+                  console.log("Route timeout reached")
+                  continue_looking = false
+                  break
                 }
-                possibilities.push(newcombo)
+              }
+
+              if (js_route_bitfield_conflicts(combo, route))
+                conflicts += 1
+              else {
+                // copy the combo, add the route
+                let newcombo = { revenue: combo.revenue, routes: [...combo.routes] }
+                newcombo.routes.push(route)
+                newcombo.revenue += route.revenue
+                new_combos.push(newcombo) // save newcombo for later extension even if not yet a valid combo
+
+                if (is_valid_combo(newcombo)) {
+                  possibilities_count += 1
+
+                  // accumulate best-value combos, or start over if found a bigger best
+                  if (newcombo.revenue >= max_revenue) {
+                    if (newcombo.revenue > max_revenue) {
+                      possibilities = []
+                      max_revenue = newcombo.revenue
+                    }
+                    possibilities.push(newcombo)
+                  }
+                }
               }
             }
           }
+          new_combos.forEach((combo, n) => { combos.push(combo) })
         }
-        new_combos.forEach((combo, n) => { combos.push(combo) })
-      }
 
-      // marshall best combos back to Opal
-      for (p=0; p < possibilities.length; p++) {
-        const combo = possibilities[p]
-        let rb_routes = []
-        for (route of combo.routes) {
-          rb_routes['$<<'](route.route)
+        // marshall best combos back to Opal
+        for (let p=0; p < possibilities.length; p++) {
+          const combo = possibilities[p]
+          let rb_routes = []
+          for (route of combo.routes) {
+            rb_routes['$<<'](route.route)
+          }
+          rb_possibilities['$<<'](rb_routes)
         }
-        rb_possibilities['$<<'](rb_routes)
       }
-      )
 
       puts "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} "\
            "conflicting combos in: #{Time.now - now}"
       rb_possibilities
     end
 
-    %x(
-    function js_route_bitfield_conflicts(combo, testroute)
-    {
-      for (cr of combo.routes) {
-        // each route has 1 or more ints in bitfield array
-        // only test up to the shorter size, since bits beyond that obviously don't conflict
-        let index = Math.min(cr.bitfield.length, testroute.bitfield.length) - 1;
-        while (index >= 0) {
-          if ((cr.bitfield[index] & testroute.bitfield[index]) != 0)
-            return true
-          index -= 1
+    %x{
+      // do final combo validation using game-specific checks driven by
+      // route.check_other! that was skipped when building routes
+      function is_valid_combo(cb) {
+        // temporarily marshall back to opal since we need to call the opal route.check_other!
+        let rb_rts = []
+        for (let rt of cb.routes) {
+          rt.route['$routes='](rb_rts) // allows route.check_other! to process all routes
+          rb_rts['$<<'](rt.route)
+        }
+
+        // Run route.check_other! for the full combo, to see if game- and action-specific rules are followed.
+        // Eg. 1870 destination runs should reject combos that don't have a route from home to destination city
+        try {
+          cb.routes[0].route['$check_other!']() // throws if bad combo
+          return true
+        }
+        catch (err) {
+          return false
         }
       }
-      return false
+
+      function js_route_bitfield_conflicts(combo, testroute) {
+        for (let cr of combo.routes) {
+          // each route has 1 or more ints in bitfield array
+          // only test up to the shorter size, since bits beyond that obviously don't conflict
+          let index = Math.min(cr.bitfield.length, testroute.bitfield.length) - 1;
+          while (index >= 0) {
+            if ((cr.bitfield[index] & testroute.bitfield[index]) != 0)
+              return true
+            index -= 1
+          }
+        }
+        return false
+      }
     }
-    )
   end
 end

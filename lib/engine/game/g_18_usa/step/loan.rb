@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
-require_relative '../../g_1817/step/dividend'
+require_relative '../../g_1817/step/loan'
 
 module Engine
   module Game

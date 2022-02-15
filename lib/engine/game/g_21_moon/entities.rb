@@ -13,11 +13,12 @@ module Engine
             sym: 'OLS',
             value: 30,
             revenue: 0,
+            min_price: 1,
+            max_price: 1,
             desc: 'When buying the private, a player must immediately place the black “SD” token on any '\
                   'mineral resource hex on the board in which the black “SD” token blocks an SD spot. '\
                   'A player owning OLS can sell it to corporation for 1 credit. When sold to a corporation, '\
-                  'the black SD token will be replaced by a token from the owning corporation. '\
-                  'The buyer of the OLS automatically gets last place in SR 1 turn order.',
+                  'the black SD token will be replaced by a token from the owning corporation.',
             abilities: [],
             color: nil,
           },
@@ -26,8 +27,10 @@ module Engine
             sym: 'UNC',
             value: 30,
             revenue: 5,
-            desc: 'When this private is bought by a company, the president of the company may choose to add '\
-                  'a 3/4/5/6 transport to the pile of new transports. If a transport is added, it must be of the '\
+            min_price: 1,
+            max_price: 45,
+            desc: 'When this private is bought by a company, the president of the company may choose to add or remove '\
+                  'a 3/4/5/6 train to/from the depot. If a train is added, it must be of the '\
                   'current phase or later.',
             abilities: [],
             color: nil,
@@ -37,6 +40,8 @@ module Engine
             sym: 'SBC',
             value: 40,
             revenue: 10,
+            min_price: 1,
+            max_price: 60,
             desc: 'The corporation owning the SBC can build and upgrade road tiles crossing the rift. '\
                   'The owning company receives a bonus of 60 credits after the connection across the rift is '\
                   'made for the first time.',
@@ -48,7 +53,9 @@ module Engine
             sym: 'RL',
             value: 60,
             revenue: 10,
-            desc: 'The owning corporation may place the +20 marker on a mineral or base camp hex. The +20 '\
+            min_price: 1,
+            max_price: 90,
+            desc: 'The owning corporation may place the +20 marker on a mineral or Home Base hex. The +20 '\
                   'token lasts until the end of the game.',
             abilities: [
               {
@@ -65,7 +72,9 @@ module Engine
             name: 'Terminal',
             sym: 'T',
             value: 80,
-            revenue: 10,
+            revenue: 20,
+            min_price: 1,
+            max_price: 120,
             desc: 'The owning corporation may teleport place the T tile, then may place its cheapest supply '\
                   'depot on it. This closes the private company',
             abilities: [
@@ -83,11 +92,36 @@ module Engine
             sym: 'TC',
             value: 100,
             revenue: 15,
+            min_price: 1,
+            max_price: 150,
             desc: 'The owning player or corporation may take one share from the pool for free (may be '\
                   'used once per game, cannot be used in first stock round). In addition, mountain terrain is '\
                   'discounted to 10 cost when owned by a corporation',
-            abilities: [],
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: 'any',
+                from: 'market',
+                count: 1,
+              },
+              {
+                type: 'tile_discount',
+                discount: 10,
+                terrain: 'mountain',
+                owner_type: 'corporation',
+              },
+            ],
             color: nil,
+          },
+        ].freeze
+
+        MINORS = [
+          {
+            sym: 'OLS',
+            name: 'Old Landing Site',
+            logo: '21Moon/OLS',
+            color: 'black',
+            tokens: [0],
           },
         ].freeze
 
@@ -98,7 +132,7 @@ module Engine
             logo: '21Moon/MV',
             coordinates: 'D12',
             color: 'brown',
-            tokens: [0, 25, 50, 75],
+            tokens: [0, 25, 50],
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
@@ -110,8 +144,8 @@ module Engine
             logo: '21Moon/ME',
             coordinates: 'C7',
             color: 'gray',
-            text_color: 'black',
-            tokens: [0, 25, 50, 75],
+            text_color: 'white',
+            tokens: [0, 25, 50],
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
@@ -124,7 +158,7 @@ module Engine
             coordinates: 'D2',
             color: 'skyblue',
             text_color: 'black',
-            tokens: [0, 25, 50, 75],
+            tokens: [0, 25, 50, 75, 100],
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
@@ -149,16 +183,16 @@ module Engine
             coordinates: 'I5',
             color: 'tan',
             text_color: 'black',
-            tokens: [0, 25, 50, 75],
+            tokens: [0, 25, 50, 75, 100],
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,
             treasury_as_holding: true,
           },
           {
-            sym: 'IC',
-            name: 'Intergalactic Corporation',
-            logo: '21Moon/IC',
+            sym: 'IPI',
+            name: 'Interplanetary Industries',
+            logo: '21Moon/IPI',
             coordinates: 'I11',
             color: 'purple',
             tokens: [0, 25, 50, 75],
@@ -174,7 +208,7 @@ module Engine
             coordinates: 'K9',
             color: 'violet',
             text_color: 'black',
-            tokens: [0, 25, 50, 75],
+            tokens: [0, 25, 50, 75, 100],
             float_percent: 50,
             max_ownership_percent: 50,
             always_market_price: true,

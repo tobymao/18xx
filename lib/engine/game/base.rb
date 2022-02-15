@@ -824,8 +824,9 @@ module Engine
       end
 
       # Before rusting, check if this train individual should rust.
-      def rust?(_train)
-        true
+      def rust?(train, purchased_train)
+        train.rusts_on == purchased_train.sym ||
+          (train.obsolete_on == purchased_train.sym && @depot.discarded.include?(train))
       end
 
       def shares
@@ -892,6 +893,8 @@ module Engine
         end
       end
 
+      def after_sell_company(_buyer, _company, _price, _seller); end
+
       def player_value(player)
         player.value
       end
@@ -946,6 +949,8 @@ module Engine
       end
 
       def value_for_dumpable(player, corporation)
+        return value_for_sellable(player, corporation) if self.class::PRESIDENT_SALES_TO_MARKET
+
         max_bundle = bundles_for_corporation(player, corporation)
           .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
           .max_by(&:price)
@@ -1056,12 +1061,28 @@ module Engine
         self.class::SOLD_OUT_INCREASE
       end
 
-      def log_share_price(entity, from)
+      def log_share_price(entity, from, steps = nil)
         to = entity.share_price.price
         return unless from != to
 
+        jumps = ''
+        if steps
+          steps = share_jumps(steps)
+          jumps = " (#{steps} steps)" unless steps < 2
+        end
+
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                "to #{format_currency(to)}"
+                "to #{format_currency(to)}#{jumps}"
+      end
+
+      def share_jumps(steps)
+        return steps unless @stock_market.zigzag
+
+        if steps > 1
+          steps / 2
+        else
+          steps
+        end
       end
 
       def can_run_route?(entity)
@@ -1160,10 +1181,8 @@ module Engine
         end
       end
 
-      def check_connected(route, token)
-        paths_ = route.paths.uniq
-
-        return if token.select(paths_, corporation: route.corporation).size == paths_.size
+      def check_connected(route, corporation)
+        return if route.ordered_paths.each_cons(2).all? { |a, b| a.connects_to?(b, corporation) }
 
         raise GameError, 'Route is not connected'
       end
@@ -1362,6 +1381,10 @@ module Engine
         @graph
       end
 
+      def graph_skip_paths(_entity)
+        nil
+      end
+
       def upgrade_cost(tile, hex, entity, spender)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
@@ -1438,6 +1461,9 @@ module Engine
         # - TODO: account for games that allow double dits to upgrade to one town
         return false if from.towns.size != to.towns.size
         return false if !from.label && from.cities.size != to.cities.size
+
+        # but don't permit a labelled city to be downgraded to 0 cities.
+        return false if from.label && !from.cities.empty? && to.cities.empty?
 
         # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
         return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
@@ -1833,10 +1859,7 @@ module Engine
 
         trains.each do |t|
           next if t.rusted
-
-          should_rust = t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
-          next unless should_rust
-          next unless rust?(t)
+          next unless rust?(t, train)
 
           rusted_trains << t.name
           owners[t.owner.name] += 1
@@ -2022,7 +2045,7 @@ module Engine
 
       def init_hexes(companies, corporations)
         blockers = {}
-        (companies + corporations).each do |company|
+        (companies + minors + corporations).each do |company|
           abilities(company, :blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
@@ -2181,7 +2204,7 @@ module Engine
       end
 
       def init_share_pool
-        SharePool.new(self)
+        SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET)
       end
 
       def connect_hexes
@@ -2742,6 +2765,10 @@ module Engine
       end
 
       def train_power?
+        false
+      end
+
+      def show_map_legend?
         false
       end
     end

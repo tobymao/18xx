@@ -15,6 +15,14 @@ module Engine
 
             super
           end
+
+          def update_token!(_action, _entity, tile, old_tile)
+            super
+
+            return if old_tile.cities.size == 1 || tile.color != :brown
+
+            @game.maybe_remove_duplicate_token!(tile)
+          end
         end
       end
     end

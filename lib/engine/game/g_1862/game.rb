@@ -2,6 +2,7 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative '../trainless_shares_half_value'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'round/parliament'
@@ -28,6 +29,7 @@ module Engine
         include_meta(G1862::Meta)
         include Entities
         include Map
+        include TrainlessSharesHalfValue
 
         attr_accessor :chartered, :base_tiles, :deferred_rust, :skip_round, :permits, :lner, :london_nodes
 
@@ -420,6 +422,7 @@ module Engine
         HOME_TOKEN_TIMING = :operate
         SELL_AFTER = :any_time
         SELL_BUY_ORDER = :sell_buy
+        PRESIDENT_SALES_TO_MARKET = true
         MARKET_SHARE_LIMIT = 100
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
@@ -522,10 +525,6 @@ module Engine
 
         def max_tokens
           @max_tokens ||= @optional_rules&.include?(:eight_tokens) ? OPTIONAL_TOKENS : NORM_TOKENS
-        end
-
-        def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
         end
 
         def init_companies(players)
@@ -785,7 +784,7 @@ module Engine
             raise GameError, 'Player missing charter' if @chartered[corporation]
 
             @round.buy_tokens = corporation
-            @log << "#{corporation.name} (#{corporation.owner.name}) must buy tokens"
+            @log << "#{corporation.name} (#{acting_for_entity(corporation).name}) must buy tokens"
             @round.clear_cache!
             return
           end
@@ -957,7 +956,7 @@ module Engine
         # breaking ties with closest to priority deal
         def acting_for_entity(entity)
           return entity if entity.player?
-          return entity.owner if entity.owner.player?
+          return entity.owner if entity.owner&.player?
 
           @players.max_by { |h| h.shares_of(entity).sum(&:percent) }
         end
@@ -1185,28 +1184,6 @@ module Engine
           return [] if shares.empty?
 
           [Engine::ShareBundle.new(shares)]
-        end
-
-        def bundles_for_corporation(share_holder, corporation, shares: nil)
-          return [] unless corporation.ipoed
-
-          shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
-
-          shares.flat_map.with_index do |share, index|
-            bundle_shares = shares.take(index + 1)
-            percent = bundle_shares.sum(&:percent)
-            bundles = [Engine::ShareBundle.new(bundle_shares, percent)]
-            if share.president
-              normal_percent = corporation.share_percent
-              difference = corporation.presidents_percent - normal_percent
-              num_partial_bundles = difference / normal_percent
-              (1..num_partial_bundles).each do |n|
-                bundles.insert(0, Engine::ShareBundle.new(bundle_shares, percent - (normal_percent * n)))
-              end
-            end
-            bundles.each { |b| b.share_price = (b.price_per_share / 2).to_i if corporation.trains.empty? }
-            bundles
-          end
         end
 
         def selling_movement?(corporation)
@@ -1770,6 +1747,10 @@ module Engine
           format_currency(train.names_to_prices.values[0])
         end
 
+        def rust?(train, purchased_train)
+          train.rusts_on == purchased_train.sym
+        end
+
         def rust_trains!(train, _entity)
           rusted_trains = []
           owners = Hash.new(0)
@@ -1782,10 +1763,7 @@ module Engine
 
           trains.each do |t|
             next if t.rusted || @deferred_rust.include?(t)
-
-            should_rust = t.rusts_on == train.sym
-            next unless should_rust
-            next unless rust?(t)
+            next unless rust?(t, train)
 
             rusted_trains << t.name
             owners[t.owner.name] += 1
@@ -2368,15 +2346,6 @@ module Engine
 
         def separate_treasury?
           true
-        end
-
-        def player_value(player)
-          halfprice_shares, reg_shares = player.shares.partition { |s| s.corporation.trains.empty? }
-          player.cash + reg_shares.sum(&:price) + halfprice_shares.sum { |s| (s.price / 2).to_i }
-        end
-
-        def liquidity(player)
-          player_value(player)
         end
 
         def decorate_marker(icon)

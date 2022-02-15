@@ -141,6 +141,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_per_10
         POOL_SHARE_DROP = :one
+        CERT_LIMIT_COUNTS_BANKRUPTED = true
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(phase_limited: 'Can only enter during phase 16',
                                               par: 'Yellow phase par',
@@ -385,16 +386,18 @@ module Engine
           @log << 'AFG now has a token spot available and can be opened in the next stock round.'
         end
 
-        def remove_rsa(corporation)
+        def remove_rsa_abilities(corporation)
           rsa = company_by_id('RSA')
-          ability = rsa.all_abilities.find { |abil| abil.type == :shares }
-          return unless ability && ability.shares.first.corporation == corporation
 
-          rsa.remove_ability(ability)
+          share_ability = rsa.all_abilities.find { |abil| abil.type == :shares }
+          rsa.remove_ability(share_ability) if share_ability && share_ability.shares.first.corporation == corporation
+
+          close_ability = rsa.all_abilities.find { |abil| abil.type == :close }
+          rsa.remove_ability(close_ability) if close_ability && close_ability.corporation == corporation.name
         end
 
         def close_corporation(corporation, quiet: false)
-          remove_rsa(corporation)
+          remove_rsa_abilities(corporation)
           super
           corporation.close!
           corporation = reset_corporation(corporation)

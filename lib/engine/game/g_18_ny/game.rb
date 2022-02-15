@@ -125,14 +125,14 @@ module Engine
           {
             name: '5DE',
             on: '5DE',
-            train_limit: { major: 2 },
+            train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
           {
             name: 'D',
             on: 'D',
-            train_limit: { major: 2 },
+            train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },
@@ -552,11 +552,22 @@ module Engine
 
         def close_corporation(corporation, quiet: false)
           super
+          @loans += corporation.loans
+          corporation.loans.clear
           return unless corporation.tokens.include?(@stagecoach_token)
 
           @log << 'Stagecoach token removed from play'
           @stagecoach_token.destroy!
           @stagecoach_token = nil
+        end
+
+        def player_value(player)
+          super - player.shares_by_corporation.sum { |corp, _| player.num_shares_of(corp) * corp.loans.size * 5 }
+        end
+
+        def bank_sort(corporations)
+          minors, corps = corporations.partition { |c| c.type == :minor }
+          minors.sort_by { |m| m.name.to_i } + super(corps)
         end
 
         #
@@ -953,6 +964,11 @@ module Engine
           super
         end
 
+        def buy_train(operator, train, price = nil)
+          super
+          @round.active_train_loan = false if @round.respond_to?(:active_train_loan)
+        end
+
         def init_loans
           @loan_value = 50
           # 11 minors * 2, 8 majors * 10
@@ -979,7 +995,7 @@ module Engine
         end
 
         def interest_owed(entity)
-          interest_paid[entity] || interest_owed_for_loans(entity.loans.size)
+          interest_owed_for_loans(entity.loans.size)
         end
 
         def maximum_loans(entity)
@@ -1314,12 +1330,16 @@ module Engine
 
         def liquidate_remaining_minors
           active_minors.each do |minor|
-            owner = minor.owner
-            @stock_market.move_left(minor)
-            liquidation_price = minor.share_price.price * 2
-            @log << "#{minor.name} is liquidated and #{owner.name} receives #{format_currency(liquidation_price)} " \
-                    'in compensation from the bank'
-            @bank.spend(liquidation_price, owner)
+            if minor.receivership?
+              @log << "#{minor.name} is liquidated"
+            else
+              owner = minor.owner
+              @stock_market.move_left(minor)
+              liquidation_price = minor.share_price.price * 2
+              @log << "#{minor.name} is liquidated and #{owner.name} receives #{format_currency(liquidation_price)} " \
+                      'in compensation from the bank'
+              @bank.spend(liquidation_price, owner)
+            end
             close_corporation(minor, quiet: true)
             minor.close!
           end

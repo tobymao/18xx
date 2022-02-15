@@ -58,14 +58,14 @@ module Engine
             max_ownership_percent: 100,
           },
           {
-            name: 'Krefeld-Kempener Eisenbahn',
-            sym: 'KKK',
+            name: 'Krefelder Eisenbahngesellschaft',
+            sym: 'KEG',
             float_percent: 60,
             tokens: [0, 60],
             # The 2nd share decided share percentage for shares
             shares: [20, 10, 20, 20, 10, 10, 10],
-            logo: '18_rhl/KKK',
-            simple_logo: '18_rhl/KKK.alt',
+            logo: '18_rhl/KEG',
+            simple_logo: '18_rhl/KEG.alt',
             color: :orange,
             text_color: :black,
             coordinates: 'D7',
@@ -163,10 +163,12 @@ module Engine
                           hexes: %w[E12],
                           tiles: %w[1 2 55 56 69],
                           free: true,
-                          reachable: false,
+                          reachable: true,
                           special: true,
                           count: 1,
                           when: %w[owning_player_or_turn],
+                          consume_tile_lay: false,
+                          closed_when_used_up: true,
                         }],
           },
           {
@@ -174,17 +176,14 @@ module Engine
             name: 'No. 2 Konzession Essen-Osterath',
             value: 30,
             revenue: 0,
-            desc: 'With the beginning of the green phase the special function can be used. As director of a '\
+            desc: 'With the beginning of the green phase this special function can be used. As director of a '\
                   'corporation the owner may lay the orange tile #935 on hex E8 regardless whether there is a tile '\
-                  'on that hex or not. Directly after the tile placement the operating corporation may place a '\
-                  'station token for free on that hex (the director must use the station token with the lowest '\
-                  'cost). If the corporation places this station token it is the only station token the corporation '\
-                  'may place in that Operating Round. When the corporation does not place the station token, any '\
-                  'other corporation may place a station marker on hex E8 according to the normal rules. If the '\
-                  'corporation places the station token in hex E8 during a later Operating Round it has to pay for '\
-                  'the station token. After the purchase of the first 5-train the tile #935 may no longer be laid. '\
-                  'After the placement of the station marker the corporation may not place a tile even when it has '\
-                  'not used its normal tile lay (placing a station token is always the step after the tile lay!).',
+                  'on that hex or not. Directly after this tile placement the operating corporation may directly '\
+                  'place a station token for free on that hex (the cheapest available token will be used. '\
+                  "This tile placement of is in addition to corporation's normal tile lay. There need not be a link "\
+                  "to the corporation's network. If the token is placed as part of this ability no further tile "\
+                  'lays or upgrades are allowed in this turn. After the purchase of the first 5-train the #935 tile '\
+                  'may no longer be laid.',
             abilities: [
               {
                 type: 'teleport',
@@ -193,6 +192,7 @@ module Engine
                 hexes: %w[E8],
                 count: 1,
                 when: %w[owning_player_or_turn],
+                free_tile_lay: true,
               },
             ],
           },
@@ -215,6 +215,7 @@ module Engine
                 reachable: false,
                 count: 1,
                 when: %w[owning_player_or_turn],
+                consume_tile_lay: false,
               },
             ],
           },
@@ -227,12 +228,10 @@ module Engine
                   'Köln / Düsseldorf / Duisburg for free. This tile placement is in addition to the '\
                   "corporation's normal tile lay. The corporation may place a station token there in the same OR "\
                   "by paying the appropriate costs. There need not be a link to the corporation's network. "\
-                  'If the station marker is not placed in the same Operating Round but later, the corporation '\
-                  'must have a track connection to that hex. After the placement of the station token the '\
-                  'corporation may not place a tile even when it has not used its normal tile lay (placing a '\
-                  'station marker is always the step after the tile lay!). Note! Token can only be used '\
-                  'together with the upgrade to green and not as a token-only action. If all applicable hexes '\
-                  'are green the special ability is no longer usable.',
+                  'If the token is placed as part of this ability no further tile lays or upgrades are '\
+                  'allowed in this turn. Note! Token can only be used together with the upgrade to green '\
+                  'and not as a token-only action. If no applicable hexes are yellow the special ability '\
+                  'is no longer usable.',
             abilities: [
               {
                 type: 'teleport',
@@ -241,6 +240,7 @@ module Engine
                 hexes: %w[D9 F9 I10],
                 count: 1,
                 when: %w[owning_player_or_turn],
+                free_tile_lay: true,
               },
             ],
           },
@@ -270,9 +270,9 @@ module Engine
               { type: 'close', when: 'par', corporation: 'RhE' },
             ],
             desc: 'The player who purchased this must immediately set the par value for the RhE. The par '\
-                  'can only be 70M, 75M or 80M. The money RhE receives for the presidency will be the winning'\
+                  'can only be 70M, 75M or 80M. The money RhE receives for the presidency will be the winning '\
                   'bid. Three 10% shares of the RhE will be placed in the Bank Pool. The Bank will delay paying '\
-                  'the par value of theese three 10% shares to the RhE treasury until there is a track link from '\
+                  'the par value of these three 10% shares to the RhE treasury until there is a track link from '\
                   'Köln to Aachen via Düren (cannot be blocked by non-RhE station tokens).',
           },
         ].freeze
@@ -281,8 +281,8 @@ module Engine
           @cce_corporation ||= corporation_by_id('CCE')
         end
 
-        def kkk
-          @kkk_corporation ||= corporation_by_id('KKK')
+        def keg
+          @keg_corporation ||= corporation_by_id('KEG')
         end
 
         def rhe

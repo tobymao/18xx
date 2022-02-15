@@ -584,10 +584,6 @@ module Engine
           certs_by_options[players.size]
         end
 
-        def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
-        end
-
         def setup
           @log << "Bank starts with #{format_currency(bank_by_options)}"
 
@@ -1101,15 +1097,11 @@ module Engine
           raise NoToken, 'Route must contain token' if !token && !double_header?(route)
         end
 
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           # no need if distance is 2, avoids dealing with double-header route missing a token
           return if route.train.distance == 2
 
-          paths_ = route.paths.uniq
-
-          return if token.select(paths_, corporation: route.corporation).size == paths_.size
-
-          raise GameError, 'Route is not connected'
+          super
         end
 
         def compute_stops(route)
@@ -1174,6 +1166,10 @@ module Engine
           @log << "-- #{entity.name} is now bankrupt and will be removed from the game --"
           close_corporation(entity, quiet: true)
           entity.close!
+        end
+
+        def hex_blocked_by_ability?(_entity, abilities, hex)
+          Array(abilities).any? { |ability| ability.hexes.include?(hex.id) }
         end
 
         def action_processed(_action); end

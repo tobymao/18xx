@@ -10,11 +10,11 @@ module Engine
           def actions(entity)
             return ['choose_ability'] unless choices_ability(entity).empty?
             return [] if entity != current_entity || !current_entity.player?
-            return ['sell_shares'] if must_sell?(current_entity)
+            return %w[buy_shares sell_shares] if must_sell?(current_entity)
 
             player_debt = @game.player_debt(entity)
             actions = []
-            # Have to have buy shares, otherwise we dont show the stock page during the operating round
+            # Must have the buy_shares action, otherwise we dont show the stock page during a operating round
             actions << 'buy_shares'
             actions << 'par' if can_ipo_any?(entity) && player_debt.zero? && !@game.game_end_triggered?
             actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
@@ -38,10 +38,6 @@ module Engine
             'Stock Turn Token'
           end
 
-          def log_pass(entity)
-            @log << "#{entity.name} passes" if @round.current_actions.empty?
-          end
-
           def log_skip(entity)
             return unless @game.stock_turn_corporation?(entity)
 
@@ -55,12 +51,23 @@ module Engine
               raise GameError, "#{entity.name} can't buy any shares as long there is a loan "\
                                "(#{@game.format_currency(player_debt)})"
             end
+            if must_sell?(entity)
+              if @game.num_certs(entity) > @game.cert_limit
+                raise GameError, "#{entity.name} is above cert limit, must sell shares before any other "\
+                                 'actions can be made'
+              else
+                sell_corporation = @game.corporations.find { |c| !c.holding_ok?(entity) }
+                raise GameError, "#{entity.name} must sell shares in #{sell_corporation.name}, before any other "\
+                                 'actions can be made'
+              end
+            end
 
             corporation = action.bundle.corporation
             previous_president = corporation.owner
             super
 
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
+            check_graph_clear(corporation)
             change_market
             @round.force_next_entity!
           end
@@ -76,6 +83,7 @@ module Engine
           def process_par(action)
             super
 
+            check_graph_clear(action.corporation)
             change_market
             @round.force_next_entity!
           end
@@ -99,6 +107,9 @@ module Engine
             previous_president = corporation.owner
             super
 
+            check_graph_clear(corporation)
+            @game.player_sold_shares[action.entity][corporation] = true
+            @round.recalculate_order
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
           end
 
@@ -110,6 +121,12 @@ module Engine
             []
           end
 
+          def check_graph_clear(corporation)
+            return unless @game.national_corporation?(corporation)
+
+            @game.graph.clear
+          end
+
           def change_market
             entity = active_entities[0]
             return if @game.stock_turn_token_removed?(entity)
@@ -119,7 +136,7 @@ module Engine
               @game.sell_stock_turn_token(entity)
               player = entity.owner
               st_company = player.companies.find { |c| @game.stock_turn_token_company?(c) }
-              st_company.name = @game.stock_turn_token_name(player)
+              @game.stock_turn_token_name!(st_company)
               return
             end
 

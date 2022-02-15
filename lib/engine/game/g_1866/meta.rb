@@ -13,7 +13,7 @@ module Engine
 
         GAME_SUBTITLE = 'Railways of Europe'
         GAME_DESIGNER = 'Simon Cutforth'
-        GAME_INFO_URL = 'https://google.com'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1866'
         GAME_LOCATION = 'Western Europe'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://google.com'

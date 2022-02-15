@@ -21,6 +21,10 @@ module Engine
             1
           end
 
+          def must_bid_increment_multiple?
+            false
+          end
+
           def validate_bid(entity, corporation, bid)
             max_bid = max_bid(entity, corporation)
             raise GameError, "Invalid bid, maximum bidding power is #{max_bid}" if bid > max_bid
@@ -38,24 +42,29 @@ module Engine
             unless @auctioning
               bid = action.price
               max_bid = @game.bidding_power(action.entity)
-              @round.needed_city_subsidy = bid - max_bid if bid > max_bid
+              @round.minimum_city_subsidy = bid - max_bid if bid > max_bid
             end
 
             super
           end
 
-          def win_bid(winner, _company)
+          def win_bid(winner, company)
+            corporation = winner.corporation
+            unless corporation.tokens.first.hex
+              @pending_winning_bid = { winner: winner, company: company }
+              return
+            end
+            @pending_winning_bid = nil
+
             super
 
             entity = winner.entity
-            corporation = winner.corporation
 
             # Corporation only gets share price * 2 in cash, not the full winning bid
             extra_cash = corporation.cash - (corporation.share_price.price * 2)
             corporation.spend(extra_cash, @game.bank) if extra_cash.positive?
 
-            subsidy = city_subsidy(corporation)
-            return unless subsidy
+            return unless (subsidy = city_subsidy(corporation))
 
             @game.log << "Subsidy contributes #{@game.format_currency(subsidy.value)}"
             @game.bank.spend(subsidy.value, entity)
@@ -65,13 +74,6 @@ module Engine
           def par_price(bid)
             par_price = super
             [par_price, self.class::MAX_PAR_PRICE].min
-          end
-
-          def transfer_subsidy_ownership(to, subsidy)
-            from = subsidy.owner
-            subsidy.owner = to
-            from.companies.delete(subsidy)
-            to.companies << subsidy
           end
 
           def city_subsidy(corporation)
@@ -119,31 +121,11 @@ module Engine
             true
           end
 
-          def handle_plus_ten(subsidy_company)
-            subsidy_company.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', sticky: true)
-            subsidy_company.close!
-          end
-
-          def handle_plus_ten_twenty(subsidy_company)
-            subsidy_company.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', sticky: true)
-            subsidy_company.close!
-          end
-
           def par_corporation
             return unless @corporation_size
 
             corporation = @winning_bid.corporation
-
-            corporation.companies.dup.each do |c|
-              case c.name
-              when 'No Subsidy'
-                c.close!
-              when '+10'
-                handle_plus_ten(c)
-              when '+10 / +20'
-                handle_plus_ten_twenty(c)
-              end
-            end
+            @game.apply_subsidy(corporation)
 
             if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver
               @round.pending_tracks << {
@@ -153,6 +135,12 @@ module Engine
             end
 
             super
+          end
+
+          def after_process_before_skip(_action)
+            return unless @pending_winning_bid
+
+            win_bid(@pending_winning_bid[:winner], @pending_winning_bid[:company])
           end
         end
       end

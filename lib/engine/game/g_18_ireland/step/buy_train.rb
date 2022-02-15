@@ -38,6 +38,19 @@ module Engine
             super
           end
 
+          def buyable_trains(entity)
+            # Can't EMR if anything is affordable
+            buyable = super
+            # Cross-purchased trains are always affordable if there is any money at all available
+            affordable = buyable.select { |t| (!t.from_depot? && entity.cash.positive?) || t.price <= buying_power(entity) }
+            # Only allow unaffordable trains if nothing affordable is in the depot
+            if affordable.any?(&:from_depot?)
+              affordable
+            else
+              buyable
+            end
+          end
+
           def spend_minmax(entity, train)
             # @todo: I think the lack of the from_depot check is a bug in many games
             # but needs more detailed analysis

@@ -35,41 +35,51 @@ module Engine
           end
 
           def can_trade_any?(entity)
+            return false unless can_trade_for_share_from?(entity)
+
             @game.corporations.each do |corporation|
               next unless corporation.ipoed
-              return true if can_trade_shares?(entity,
-                                               corporation.corporate_shares) && can_trade_for_share_from?(entity, corporation)
+              next unless corporation.owner == entity
+
+              return true if can_trade_shares?(entity, corporation.corporate_shares)
             end
 
             false
           end
 
           def can_trade_shares?(entity, shares)
-            return if shares.empty?
+            return if shares.empty? || bought?
+            return if shares.all? { |s| @round.traded_shares[s] }
 
             !@round.players_sold[entity][shares.first.corporation]
           end
 
-          def can_trade_for_share_from?(entity, owner)
-            @game.corporations.reject { |c| c == owner }.any? do |corporation|
-              bundles = @game.bundles_for_corporation(entity, corporation)
-              bundles.any? { |bundle| can_sell?(entity, bundle) }
+          def can_trade_for_share_from?(entity)
+            @game.corporations.any? do |corporation|
+              bundles = tradeable_bundles(entity, corporation)
+              bundles.any? { |bundle| can_dump?(entity, bundle) }
             end
           end
 
+          def tradeable_bundles(player, corporation)
+            shares = player.shares_of(corporation).reject { |s| @round.traded_shares[s] }
+            @game.all_bundles_for_corporation(player, corporation, shares: shares)
+          end
+
           def can_buy?(entity, bundle)
-            return can_trade?(entity, bundle) if bundle&.owner&.corporation?
+            return can_get_in_trade?(entity, bundle) if bundle&.owner&.corporation?
 
             super
           end
 
-          def can_trade?(entity, bundle)
+          def can_get_in_trade?(entity, bundle)
             return unless bundle&.buyable
-
-            corporation = bundle.corporation
-            return unless can_trade_for_share_from?(entity, corporation)
+            return if @round.traded_shares[bundle.shares[0]]
+            return unless bundle.owner.owner == entity
+            return unless can_trade_for_share_from?(entity)
 
             # ignore holding percent limit on trades
+            corporation = bundle.corporation
             !@round.players_sold[entity][corporation]
           end
 
@@ -118,6 +128,36 @@ module Engine
 
           def corporate_buy_text(_share)
             'Trade for'
+          end
+
+          def must_sell?(entity)
+            @game.num_certs(entity) > @game.cert_limit
+          end
+
+          def share_flags(shares)
+            return if shares.empty?
+            return 'T' if shares.all? { |s| @round.traded_shares[s] }
+            return 't' if shares.any? { |s| @round.traded_shares[s] }
+          end
+
+          def pool_shares(corporation)
+            @game.share_pool.shares_by_corporation[corporation].group_by(&:percent).values
+                           .map { |shares| best_to_buy(shares) }.sort_by(&:percent).reverse
+          end
+
+          # first try to return an untraded share, then any
+          def best_to_buy(shares)
+            untraded = shares.find { |s| !@round.traded_shares[s] }
+            return untraded if untraded
+
+            shares.first
+          end
+
+          # Bias toward selling traded shares first
+          def sellable_bundles(seller, corp)
+            shares = seller.shares_of(corp).sort_by { |s| [s.president ? 1 : 0, @round.traded_shares[s] ? 0 : 1] }
+            bundles = @game.all_bundles_for_corporation(seller, corp, shares: shares)
+            bundles.select { |bundle| can_sell?(seller, bundle) }
           end
         end
       end

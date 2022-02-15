@@ -13,6 +13,7 @@ module Engine
         include G18USA::Entities
         include G18USA::Map
 
+        attr_accessor :pending_rusting_event, :p8_hexes
         attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles,
                     :mexico_hexes
 
@@ -118,6 +119,13 @@ module Engine
           },
         ].freeze
 
+        def game_phases
+          phases = self.class::PHASES
+          return phases unless @optional_rules.include?(:seventeen_trains)
+
+          phases.reject { |p| %w[3+ 4+].include?(p[:name]) }
+        end
+
         # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
         EVENTS_TEXT = {
           'upgrade_oil' => [
@@ -143,6 +151,12 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   },
                   { name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }].freeze
+
+        def game_trains
+          return G1817::Game::TRAINS if @optional_rules.include?(:seventeen_trains)
+
+          self.class::TRAINS
+        end
 
         # Does not include guaranteed metropolis New York City
         POTENTIAL_METROPOLIS_HEX_IDS = %w[D20 E11 G3 H14 H22 I19].freeze
@@ -216,17 +230,22 @@ module Engine
 
           setup_company_tiles
 
-          @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           @jump_graph = Graph.new(self, no_blocking: true)
 
           @oil_value = 10
 
           @recently_floated = []
 
+          @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
           metro_hexes = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro_hexes.each { |metro_hex| convert_potential_metro(hex_by_id(metro_hex)) }
+          @p8_hexes = []
 
           setup_train_roster
+
+          randomize_privates
+          @subsidies = SUBSIDIES.dup
+          setup_resource_subsidy
           randomize_subsidies
         end
 
@@ -250,6 +269,7 @@ module Engine
         end
 
         def setup_train_roster
+          return if @optional_rules.include?(:seventeen_trains)
           return if @players.size >= 5
 
           to_remove = %w[2+ 4 5 6]
@@ -282,8 +302,54 @@ module Engine
           end
         end
 
+        def randomize_privates
+          always_in = %w[P1 P2 P3 P4]
+          always_in << 'P10' if @players.size >= 5
+          num_kept = { 30 => 1, 40 => 2, 60 => 3, 80 => 2, 90 => 2, 120 => 1 }
+
+          to_remove = @companies.reject { |c| always_in.include?(c.id) }.group_by(&:value).flat_map do |val, companies|
+            companies.sort_by { rand }.take(companies.size - num_kept[val])
+          end
+
+          @log << "Removing #{to_remove.map(&:name).join(', ')}"
+          to_remove.each(&:close!)
+        end
+
+        def setup_resource_subsidy
+          subsidy = @subsidies.find { |s| s[:id] == 'S16' }
+          ability = subsidy[:abilities][0].dup
+          subsidy[:abilities][0] = ability
+
+          resources = []
+          if company_by_id('P24').closed?
+            ability[:hexes] += ORE_HEXES
+            ability[:tiles] << RESOURCE_LABELS[:ore]
+            ability[:discount] = 15
+            resources << 'ore'
+          end
+          if company_by_id('P12').closed?
+            ability[:hexes] += OIL_HEXES
+            ability[:tiles] << RESOURCE_LABELS[:oil]
+            resources << 'oil'
+          end
+          if company_by_id('P18').closed? || company_by_id('P28').closed?
+            ability[:hexes] += COAL_HEXES
+            ability[:tiles] << RESOURCE_LABELS[:coal]
+            ability[:discount] = 15
+            resources << 'coal'
+          end
+          resources << 'NO RESOURCES' if resources.empty?
+
+          subsidy[:description] =
+            "The corporation can place its choice of one of the following resources: #{resources.join(', ')}. " \
+            'Placing a track and the resource token from the Resource Subsidy is a free extra ' \
+            'track lay in addition to the normal track placements.'
+
+          @log << "Resource subsidy includes #{resources.join(', ')}"
+        end
+
         def randomize_subsidies
-          randomized_subsidies = SUBSIDIES.sort_by { rand }.take(SUBSIDIZED_HEXES.size)
+          randomized_subsidies = @subsidies.sort_by { rand }.take(SUBSIDIZED_HEXES.size)
           @subsidies_by_hex = {}
           SUBSIDIZED_HEXES.zip(randomized_subsidies).each do |hex_id, subsidy|
             hex = hex_by_id(hex_id)
@@ -385,6 +451,9 @@ module Engine
             return from.color == :white && can_lay_resource_tile?(from, to, laying_entity.companies)
           end
 
+          # Metropolitan upgrades
+          return %w[X01 X02 X04 X06].include?(from.name) && tile_color_valid_for_phase?(to) if to.name == '592'
+
           # Brown home city upgrade only on first operation
           if !laying_entity.operated? &&
              to.color == :brown &&
@@ -409,7 +478,14 @@ module Engine
             return PLAIN_GREEN_CITY_TILES.include?(to.name)
           end
 
+          return false if from.color == :white && to.color != :yellow && !can_upgrade_track?(laying_entity)
+
           super
+        end
+
+        def can_upgrade_track?(entity)
+          step = @round.active_step
+          step.respond_to?(:get_tile_lay) ? step.get_tile_lay(entity)[:upgrade] : true
         end
 
         def ore_upgrade?(from, to)
@@ -436,15 +512,9 @@ module Engine
           super
         end
 
-        def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
-          colors = phase_color_cache || @phase.tiles
-          colors.include?(tile.color) ||
-            (tile.color == :brown && colors.include?(:green)) || (tile.color == :gray && colors.include?(:brown))
-        end
-
         def upgrade_cost(tile, hex, entity, spender)
           cost = super
-          return cost if !resource_tile?(tile) || tile.color != :white
+          return cost if !resource_tile?(hex.tile) || tile.color != :white
 
           corp = entity.corporation ? entity : entity.owner
           ability = abilities_to_lay_resource_tile(hex, hex.tile, corp.companies).values.find do |a|
@@ -522,14 +592,16 @@ module Engine
         end
 
         def timeline
+          return super if @optional_rules.include?(:seventeen_trains)
+
           @timeline = [
-            'After SR 1 all unused subsidies are removed from the map',
-            'After OR 1.1 all unsold 2 trains are exported.',
-            'After OR 1.2 all unsold 2+ trains are exported.',
-            'After OR 2.1 no trains are exported',
-            'After OR 2.2 all unsold 3 trains are exported',
-            'After OR 3.1 and further ORs the next available train will be exported '\
-            '(removed, triggering phase change as if purchased)',
+            'End of SR 1: All unused subsidies are removed from the map',
+            'End of OR 1.1: All unsold 2 trains are exported.',
+            'End of OR 1.2: All unsold 2+ trains are exported.',
+            'End of OR 2.1: No trains are exported',
+            'End of OR 2.2: All unsold 3 trains are exported',
+            'End of each subsequent OR: The next available train is exported', \
+            '*Exported trains are removed from the game and can trigger phase changes as if purchased',
           ].freeze
         end
 
@@ -542,7 +614,9 @@ module Engine
           end
         end
 
-        def or_round_finished
+        def export_train
+          return or_round_finished if @optional_rules.include?(:seventeen_trains)
+
           @recently_floated = []
           turn = "#{@turn}.#{@round.round_num}"
           case turn
@@ -584,9 +658,10 @@ module Engine
             end
           end
 
-          G1817::Round::Operating.new(self, [
+          G18USA::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
+            G18USA::Step::ObsoleteTrain,
             G18USA::Step::Loan,
             G18USA::Step::SpecialTrack,
             G18USA::Step::SpecialToken,
@@ -612,7 +687,6 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
-              or_round_finished
               # Store the share price of each corp to determine if they can be acted upon in the AR
               @stock_prices_start_merger = @corporations.to_h { |corp| [corp, corp.share_price] }
               @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
@@ -626,7 +700,7 @@ module Engine
             when G1817::Round::Merger
               @log << "-- #{round_description('Acquisition', @round.round_num)} --"
               G1817::Round::Acquisition.new(self, [
-                Engine::Step::ReduceTokens,
+                G18USA::Step::ReduceTokens,
                 G1817::Step::Bankrupt,
                 G1817::Step::CashCrisis,
                 Engine::Step::DiscardTrain,
@@ -652,6 +726,18 @@ module Engine
         GNR_HALF_BONUS_HEXES = %w[B8 B14].freeze
 
         def revenue_for(route, stops)
+          duplicates = route.ordered_hexes.group_by(&:itself).select { |_, nodes| nodes.size > 1 }.keys
+          if duplicates.find { |hex| resource_tile?(hex.tile) }
+            raise GameError, 'Cannot pass through resource tiles more than once'
+          end
+          if duplicates.find { |hex| RURAL_TILES.include?(hex.tile.name) }
+            raise GameError, 'Cannot pass through Rural Junction tiles more than once'
+          end
+
+          if route.routes.count { |r| !(r.stops.map { |s| s.hex.id } & MEXICO_HEXES).empty? } > 2
+            raise GameError, 'No more than two trains can run to Mexico'
+          end
+
           stop_hexes = stops.map(&:hex)
           revenue = super
 
@@ -677,6 +763,7 @@ module Engine
           if stop_hexes.find { |hex| hex.tile.icons.find { |icon| icon.name == 'plus_ten_twenty' } }
             revenue += @phase.tiles.include?(:brown) ? 20 : 10
           end
+          revenue += 10 if company_by_id('P8').owner == corporation && !(stop_hexes & @p8_hexes).empty?
 
           if corporation.companies.include?(company_by_id('P17'))
             stop_hex_ids = stop_hexes.map(&:id)
@@ -712,11 +799,11 @@ module Engine
           our_tokened_stops = counted_stops.select { |stop| stop&.tokened_by?(route.train.owner) }
 
           # Skip the worst stop if enough tokened stops
-          return counted_stops.min_by { |stop| stop.route_revenue(@game.phase, route.train) } if our_tokened_stops.size > 1
+          return counted_stops.min_by { |stop| stop.route_revenue(@phase, route.train) } if our_tokened_stops.size > 1
 
           # Otherwise skip the worst untokened stop
           untokened_stops = counted_stops.reject { |stop| stop&.tokened_by(route.train.owner) }
-          untokened_stops.min_by { |stop| stop.route_revenue(@game.phase, route.train) }
+          untokened_stops.min_by { |stop| stop.route_revenue(@phase, route.train) }
         end
 
         def check_distance(route, visits)
@@ -725,14 +812,13 @@ module Engine
               (RURAL_TILES & [visits.first.tile.name, visits.last.tile.name]).empty?
         end
 
-        def check_connected(route, token)
+        def check_connected(route, corporation)
           return super unless @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
 
           visits = route.visited_stops
           blocked = nil
 
           if visits.size > 2
-            corporation = route.corporation
             visits[1..-2].each do |node|
               next if !node.city? || !node.blocks?(corporation)
               raise GameError, 'Route can only bypass one tokened-out city' if blocked
@@ -741,10 +827,8 @@ module Engine
             end
           end
 
-          paths_ = route.paths.uniq
-          token = blocked if blocked
-
-          return if token.select(paths_, corporation: route.corporation).size == paths_.size
+          # no need to check whether tokened out because of the above
+          super(route, nil)
 
           raise GameError, 'Route is not connected'
         end
@@ -765,25 +849,78 @@ module Engine
           train.name == 'P'
         end
 
+        def rust_trains!(train, entity)
+          return super unless p13_can_save_rusting_train?(train)
+
+          @pending_rusting_event = { train: train, entity: entity }
+        end
+
+        def p13_can_save_rusting_train?(purchased_train)
+          !@pending_rusting_event &&
+            (owner = company_by_id('P13')&.owner) &&
+            owner.corporation? &&
+            owner.trains.any? { |t| rust?(t, purchased_train) }
+        end
+
         def float_corporation(corporation)
           @recently_floated << corporation
 
           super
         end
 
+        def add_subsidy(corporation, hex)
+          return unless (subsidy = @subsidies_by_hex.delete(hex.coordinates))
+
+          hex.tile.icons.reject! { |icon| icon.name.include?('subsidy') }
+          return if NO_SUBSIDIES.include?(subsidy[:id])
+
+          subsidy_company = create_company_from_subsidy(subsidy)
+          assign_boomtown_subsidy(hex, corporation) if subsidy_company.id == 'S8'
+          subsidy_company.owner = corporation
+          corporation.companies << subsidy_company
+        end
+
         def create_company_from_subsidy(subsidy)
-          company = Engine::Company.new(
-            {
-              sym: subsidy['id'],
-              name: subsidy['name'],
-              desc: subsidy['desc'],
-              value: subsidy['value'] || 0,
-              abilities: subsidy['abilities'] || [],
-            }
-          )
+          subsidy_params = {
+            sym: subsidy[:id],
+            name: subsidy[:name],
+            desc: subsidy[:desc],
+            value: subsidy[:value] || 0,
+            abilities: subsidy[:abilities] || [],
+          }
+          company = Engine::Company.new(**subsidy_params)
           @companies << company
           update_cache(:companies)
           company
+        end
+
+        def assign_boomtown_subsidy(hex, corporation)
+          subsidy = company_by_id('S8')
+          subsidy.all_abilities.each do |ability|
+            ability.hexes << hex.id if ability.type == :tile_lay
+            ability.corporation = corporation.id if ability.type == :close
+          end
+        end
+
+        def apply_subsidy(corporation)
+          return unless (subsidy = corporation.companies.first)
+
+          case subsidy.id
+          when 'S9'
+            corporation.tokens << Engine::Token.new(corporation)
+            subsidy.close!
+          when 'S10'
+            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', 'plus_ten', true)
+            subsidy.close!
+          when 'S11'
+            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', 'plus_ten_twenty', true)
+            subsidy.close!
+          when 'S16'
+            if subsidy.abilities.first.hexes.empty?
+              @log << "#{subsidy.name} has NO RESOURCES and closes"
+              subsidy.close!
+            end
+          end
         end
       end
     end

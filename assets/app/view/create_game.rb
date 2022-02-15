@@ -20,6 +20,7 @@ module View
     needs :title, default: nil
     needs :production, default: nil
     needs :optional_rules, default: [], store: true
+    needs :is_async, default: true, store: true
 
     def render_content
       @label_style = { display: 'block' }
@@ -32,6 +33,7 @@ module View
       case @mode
       when :multi
         inputs << h(:label, { style: @label_style }, 'Game Options')
+        inputs << render_game_type
         inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
                                                    container_style: { paddingLeft: '0.5rem' })
         inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
@@ -326,6 +328,25 @@ module View
         attrs: { name: 'mode_options', checked: @mode == mode },
         on: { click: click_handler },
       )]
+    end
+
+    def render_game_type
+      h(:div, { style: { padding: '0.5rem' } }, [
+        render_input(
+          'Async',
+          id: 'async',
+          type: 'radio',
+          attrs: { name: 'is_async', checked: @is_async == true },
+          on: { click: -> { store(:is_async, is_async, skip: true) } }
+        ),
+        render_input(
+          'Live',
+          id: 'live',
+          type: 'radio',
+          attrs: { name: 'is_async', checked: @is_async == false },
+          on: { click: -> { store(:is_async, is_async, skip: true) } }
+        ),
+      ])
     end
 
     def submit

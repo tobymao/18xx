@@ -33,6 +33,7 @@ module View
         return [] if @abilities&.any?
 
         halts = operating[operating.keys.max]&.halts
+        nodes = operating[operating.keys.max]&.nodes
         last_run.map do |train, connection_hexes|
           next unless trains.include?(train)
 
@@ -44,6 +45,7 @@ module View
             connection_hexes: connection_hexes,
             routes: @routes,
             halts: halts[train],
+            nodes: nodes[train],
           )
         end.compact
       end
@@ -259,6 +261,8 @@ module View
           @routes = router.compute(
             @game.current_entity,
             routes: @routes.reject { |r| r.paths.empty? },
+            path_timeout: setting_for(:path_timeout).to_i,
+            route_timeout: setting_for(:route_timeout).to_i,
           )
           store(:routes, @routes)
         end

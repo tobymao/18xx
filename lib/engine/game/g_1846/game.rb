@@ -15,6 +15,8 @@ module Engine
         include Map
         include CompanyPriceUpToFace
 
+        attr_accessor :second_tokens_in_green
+
         register_colors(red: '#d1232a',
                         orange: '#f58121',
                         black: '#110a0c',
@@ -246,6 +248,7 @@ module Engine
 
         def setup
           @turn = setup_turn
+          @second_tokens_in_green = {}
 
           # When creating a game the game will not have enough to start
           return unless @players.size.between?(*self.class::PLAYER_RANGE)
@@ -276,7 +279,7 @@ module Engine
               abilities(corporation, :reservation) do |ability|
                 corporation.remove_ability(ability)
               end
-              place_second_token(corporation)
+              place_second_token(corporation, deferred: true)
             end
           end
           @log << "Privates in the game: #{@companies.reject { |c| c.name.include?('Pass') }.map(&:name).join(', ')}"
@@ -365,13 +368,40 @@ module Engine
           two_player? ? [NORTH_GROUP, SOUTH_GROUP] : [GREEN_GROUP]
         end
 
-        def place_second_token(corporation, two_player_only: true, cheater: 1)
+        def place_second_token(corporation, two_player_only: true, deferred: true)
           return if two_player_only && !two_player?
 
           hex_id = self.class::REMOVED_CORP_SECOND_TOKEN[corporation.id]
+          hex = hex_by_id(hex_id)
+
+          if deferred
+            # defer second token placement until green city upgrade.
+            @second_tokens_in_green[hex_id] = corporation
+
+            # Unfortunately Icon always reapplies the ".svg"
+            logo_filename = corporation.logo[0...-4]
+            hex.tile.icons << Part::Icon.new("../#{logo_filename}", corporation.id.to_s)
+            @log << "#{corporation.id} will place a token on #{hex_id} when it is upgraded to green"
+          else
+            token = corporation.find_token_by_type
+            hex.tile.cities.first.place_token(corporation, token, check_tokenable: false)
+            @log << "#{corporation.id} places a second token on #{hex_id} (#{hex.location_name})"
+          end
+        end
+
+        def place_token_on_upgrade(action)
+          hex_id = action.tile.hex.id
+          return unless action.tile.color == 'green' && @second_tokens_in_green.include?(hex_id)
+
+          corporation = @second_tokens_in_green[hex_id]
           token = corporation.find_token_by_type
-          hex_by_id(hex_id).tile.cities.first.place_token(corporation, token, check_tokenable: false, cheater: cheater)
-          @log << "#{corporation.id} places a token on #{hex_id} (#{hex_by_id(hex_id).location_name})"
+          hex = hex_by_id(hex_id)
+          hex.tile.cities.first.place_token(corporation, token, check_tokenable: false)
+          icon = hex.tile.icons.find { |i| i.name == corporation.id }
+          hex.tile.icons.delete(icon) if icon
+
+          @log << "#{corporation.id} places a token on #{hex_id} (#{hex.location_name}) as the city is green"
+          @second_tokens_in_green.delete(hex_id)
         end
 
         def num_trains(train)
@@ -587,7 +617,7 @@ module Engine
           @minors.dup.each { |minor| close_corporation(minor) }
           remove_icons(self.class::LSL_HEXES, self.class::ABILITY_ICONS[lake_shore_line.id]) if lake_shore_line
           remove_icons(self.class::LITTLE_MIAMI_HEXES, self.class::ABILITY_ICONS[little_miami.id]) if little_miami
-          remove_steamboat_markers! unless steamboat.owned_by_corporation?
+          remove_steamboat_markers! if steamboat && !steamboat.owned_by_corporation?
           super
         end
 

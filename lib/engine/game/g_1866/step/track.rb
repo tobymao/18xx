@@ -27,9 +27,8 @@ module Engine
           def can_lay_tile?(entity)
             action = get_tile_lay(entity)
             return false unless action
-            return true if @game.national_corporation?(entity)
 
-            !entity.tokens.empty? && (buying_power(entity) >= action[:cost]) && (action[:lay] || action[:upgrade])
+            (buying_power(entity) >= action[:cost]) && (action[:lay] || action[:upgrade])
           end
 
           def get_tile_lay(entity)
@@ -74,9 +73,25 @@ module Engine
             end
 
             # Special case for the B tiles
-            action.tile.label = 'B' if action.hex.tile.label.to_s == 'B'
+            b_tile = nil
+            if hex.tile.label.to_s == 'B'
+              action.tile.label = 'B'
+              b_tile = hex.tile if hex.tile.color == :yellow && action.tile.color == :green
+            end
+
+            # Special case for London
+            if hex.name == @game.class::LONDON_HEX && hex.tile.color == :brown && action.tile.color == :gray
+              hex.tile.cities[1].remove_all_reservations!
+            end
+
+            # Special case for Paris
+            if hex.name == @game.class::PARIS_HEX && hex.tile.color == :brown && action.tile.color == :gray
+              [0, 2, 5].each { |city| hex.tile.cities[city].remove_all_reservations! }
+            end
 
             super
+            b_tile.label = nil if b_tile
+            @game.after_lay_tile(entity)
           end
 
           def round_state

@@ -304,7 +304,7 @@ module Engine
           'A18' => 'Prussia',
           'A20' => 'Hannover',
           'A22' => 'Bavaria',
-          'A24' => 'Wurttemburg',
+          'A24' => 'Württemberg',
           'A26' => 'Saxony',
           'B17' => 'Kgdm 2 Sicilies',
           'B19' => 'Sardinia',
@@ -396,130 +396,130 @@ module Engine
           white: {
             # Explaination
             ['A18'] =>
-              'frame=color:#d0c1de',
+              'frame=color:#d9cde4',
             ['A20'] =>
-              'frame=color:#a764a9',
+              'frame=color:#a386be',
             ['A22'] =>
-              'frame=color:#8781bf',
+              'frame=color:#b8a2cd',
             ['A24'] =>
-              'frame=color:#855fa8',
+              'frame=color:#8e6aae',
             ['A26'] =>
-              'frame=color:#bd8dbf',
+              'frame=color:#78539a',
             ['B17'] =>
-              'frame=color:#ffcfe5',
+              'frame=color:#ffd8fe',
             ['B19'] =>
-              'frame=color:#f41097',
+              'frame=color:#ff62fa',
             ['B21'] =>
               'frame=color:#ff7ffe,color2:#e2ceb6',
             ['B23'] =>
-              'frame=color:#f26eaa',
+              'frame=color:#ff33f9',
             ['B25'] =>
-              'frame=color:#f996c3',
+              'frame=color:#ffa8fc',
 
             # Germany - Bavaria - I17 I19 J16 J18 J20 K17 K19 K21
             ['K19'] =>
-              'city=revenue:0;frame=color:#8781bf',
+              'city=revenue:0;frame=color:#b8a2cd',
             %w[I17 I19 J20 K17] =>
-              'frame=color:#8781bf',
+              'frame=color:#b8a2cd',
             ['J16'] =>
-              'town=revenue:0;frame=color:#8781bf',
+              'town=revenue:0;frame=color:#b8a2cd',
             ['J18'] =>
-              'town=revenue:0;town=revenue:0;frame=color:#8781bf',
+              'town=revenue:0;town=revenue:0;frame=color:#b8a2cd',
             ['K21'] =>
               'town=revenue:0;upgrade=cost:20,terrain:swamp;'\
-              'frame=color:#8781bf',
+              'frame=color:#b8a2cd',
 
             # Germany - Hannover - D18 E15 E17 E19 E21 F16 F18
             ['E19'] =>
-              'city=revenue:0;frame=color:#a764a9',
+              'city=revenue:0;frame=color:#a386be',
             ['F18'] =>
-              'city=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#a764a9',
+              'city=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#a386be',
             ['E17'] =>
-              'city=revenue:0;upgrade=cost:40,terrain:swamp;icon=image:1866/port,sticky:1;frame=color:#a764a9',
+              'city=revenue:0;upgrade=cost:40,terrain:swamp;icon=image:1866/port,sticky:1;frame=color:#a386be',
             %w[E21 F16] =>
-              'frame=color:#a764a9',
+              'frame=color:#a386be',
             %w[D18 E15] =>
-              'town=revenue:0;frame=color:#a764a9',
+              'town=revenue:0;frame=color:#a386be',
 
             # Germany - Prussia - E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25
             ['E25'] =>
-              'city=revenue:0;icon=image:1866/port,sticky:1;frame=color:#d0c1de',
+              'city=revenue:0;icon=image:1866/port,sticky:1;frame=color:#d9cde4',
             ['F22'] =>
-              'city=revenue:0;label=C;frame=color:#d0c1de',
+              'city=revenue:0;label=C;frame=color:#d9cde4',
             ['H14'] =>
-              'city=revenue:0;upgrade=cost:20,terrain:swamp;label=Y;frame=color:#d0c1de',
+              'city=revenue:0;upgrade=cost:20,terrain:swamp;label=Y;frame=color:#d9cde4',
             %w[F20 G17 G21 G23 H16 H18 H24 I25] =>
-              'frame=color:#d0c1de',
+              'frame=color:#d9cde4',
             ['G15'] =>
-              'town=revenue:0;town=revenue:0;frame=color:#d0c1de',
+              'town=revenue:0;town=revenue:0;frame=color:#d9cde4',
             ['G19'] =>
-              'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#d0c1de',
+              'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#d9cde4',
             ['F24'] =>
-              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#d0c1de',
+              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#d9cde4',
             %w[E23 G25] =>
-              'upgrade=cost:20,terrain:swamp;frame=color:#d0c1de',
+              'upgrade=cost:20,terrain:swamp;frame=color:#d9cde4',
 
             # Germany - Saxony - H20 H22 I21 I23
             ['I23'] =>
-              'city=revenue:0;frame=color:#bd8dbf',
+              'city=revenue:0;frame=color:#78539a',
             ['H20'] =>
-              'city=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#bd8dbf',
+              'city=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#78539a',
             ['I21'] =>
-              'frame=color:#bd8dbf',
+              'frame=color:#78539a',
             ['H22'] =>
-              'town=revenue:0;frame=color:#bd8dbf',
+              'town=revenue:0;frame=color:#78539a',
 
             # Germany - Wurttemburg - I13 I15 J14 K15
             ['I15'] =>
-              'city=revenue:0;frame=color:#855fa8',
+              'city=revenue:0;frame=color:#8e6aae',
             ['K15'] =>
-              'city=revenue:0;upgrade=cost:60,terrain:hill;label=Y;frame=color:#855fa8',
+              'city=revenue:0;upgrade=cost:60,terrain:hill;label=Y;frame=color:#8e6aae',
             ['J14'] =>
-              'frame=color:#855fa8',
+              'frame=color:#8e6aae',
             ['I13'] =>
-              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#855fa8',
+              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#8e6aae',
 
             # Italy - Kgdm 2 Sicilies - S21 S23 T20 T22 T24 U21 V18 V20 W19
             ['S23'] =>
-              'city=revenue:0;border=edge:3,type:impassable;border=edge:4,type:impassable;label=Y;frame=color:#ffcfe5',
+              'city=revenue:0;border=edge:3,type:impassable;border=edge:4,type:impassable;label=Y;frame=color:#ffd8fe',
             ['T20'] =>
-              'city=revenue:0;icon=image:1866/port,sticky:1;frame=color:#ffcfe5',
+              'city=revenue:0;icon=image:1866/port,sticky:1;frame=color:#ffd8fe',
             ['V18'] =>
-              'city=revenue:0;icon=image:1866/port,sticky:1;frame=color:#ffcfe5',
+              'city=revenue:0;icon=image:1866/port,sticky:1;frame=color:#ffd8fe',
             ['V20'] =>
-              'city=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#ffcfe5',
+              'city=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#ffd8fe',
             ['T22'] =>
-              'frame=color:#ffcfe5',
+              'frame=color:#ffd8fe',
             ['T24'] =>
-              'town=revenue:0;border=edge:3,type:impassable;frame=color:#ffcfe5',
+              'town=revenue:0;border=edge:3,type:impassable;frame=color:#ffd8fe',
             %w[S21 U21 W19] =>
-              'town=revenue:0;frame=color:#ffcfe5',
+              'town=revenue:0;frame=color:#ffd8fe',
 
             # Italy - Papal States - Q19 R18 R20 S19
             ['R18'] =>
-              'city=revenue:0;label=C;frame=color:#f26eaa',
+              'city=revenue:0;label=C;frame=color:#ff33f9',
             ['Q19'] =>
-              'city=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#f26eaa',
+              'city=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#ff33f9',
             ['R20'] =>
-              'town=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#f26eaa',
+              'town=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#ff33f9',
             ['S19'] =>
-              'upgrade=cost:60,terrain:hill;frame=color:#f26eaa',
+              'upgrade=cost:60,terrain:hill;frame=color:#ff33f9',
 
             # Italy - Sardinia - N12 O13 O15 S13 T12
             %w[N12 O13] =>
-              'city=revenue:0;frame=color:#f41097',
+              'city=revenue:0;frame=color:#ff62fa',
             ['T12'] =>
-              'city=revenue:0;label=Y;icon=image:1866/port,sticky:1;frame=color:#f41097',
+              'city=revenue:0;label=Y;icon=image:1866/port,sticky:1;frame=color:#ff62fa',
             ['S13'] =>
-              'frame=color:#f41097',
+              'frame=color:#ff62fa',
             ['O15'] =>
-              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#f41097',
+              'town=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#ff62fa',
 
             # Italy - Tuscany - P16 Q17
             ['Q17'] =>
-              'city=revenue:0;frame=color:#f996c3',
+              'city=revenue:0;frame=color:#ffa8fc',
             ['P16'] =>
-              'town=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#f996c3',
+              'town=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#ffa8fc',
 
             # Italy - Lombardy-Venetia - M17 N14 N16 N18 N20 O17 P18
             %w[N14 P18] =>
@@ -698,30 +698,29 @@ module Engine
             # London
             ['F6'] =>
               'city=revenue:yellow_30|green_60|brown_90;path=a:0,b:_0;'\
-              'offboard=revenue:yellow_30|green_60|brown_90;path=a:1,b:_1;'\
+              'city=revenue:yellow_30|green_60|brown_90;path=a:1,b:_1;'\
               'city=revenue:yellow_30|green_60|brown_90;path=a:2,b:_2;'\
               'city=revenue:yellow_30|green_60|brown_90;path=a:3,b:_3;'\
-              'offboard=revenue:yellow_30|green_60|brown_90;path=a:1,b:_4;'\
               'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
               'label=L;frame=color:#fde2c5',
 
             # Paris
             ['J6'] =>
-              'offboard=revenue:yellow_30|green_50|brown_70;path=a:0,b:_0;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:0,b:_0;'\
               'city=revenue:yellow_30|green_50|brown_70;path=a:1,b:_1;'\
-              'offboard=revenue:yellow_30|green_50|brown_70;path=a:2,b:_2;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:2,b:_2;'\
               'city=revenue:yellow_30|green_50|brown_70;path=a:3,b:_3;'\
               'city=revenue:yellow_30|green_50|brown_70;path=a:4,b:_4;'\
-              'offboard=revenue:yellow_30|green_50|brown_70;path=a:5,b:_5;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:5,b:_5;'\
               'label=P;frame=color:#fffbcc',
           },
           gray: {
             # Germany - Prussia
             ['F26'] =>
-              'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;frame=color:#d0c1de',
+              'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;frame=color:#d9cde4',
             ['H26'] =>
               'city=revenue:yellow_20|green_30|brown_40|gray_50,slots:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-              'frame=color:#d0c1de',
+              'frame=color:#d9cde4',
 
             # Astro-Hungary
             %w[L26 P26] =>
@@ -729,7 +728,7 @@ module Engine
               'frame=color:#e2ceb6',
             ['N26'] =>
               'city=revenue:yellow_20|green_40|brown_50|gray_60,slots:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-              'label=Y;frame=color:#e2ceb6',
+              'frame=color:#e2ceb6',
             ['J26'] =>
               'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;frame=color:#e2ceb6',
 

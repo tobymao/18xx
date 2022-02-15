@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative '../base'
 require_relative '../stubs_are_restricted'
-
 module Engine
   module Game
     module G18Rhl
@@ -96,13 +95,27 @@ module Engine
                   %w[55 60 65 70],
                   %w[50 55 60]].freeze
 
+        STATUS_TEXT = {
+          'incremental' => [
+            'Incremental Cap',
+            'Newly floated corporations used incremental capitalization for all shares sold during the whole game. '\
+            'These corporation also get a one time stock price bump up one step if parring at less than 100. Unsold '\
+            'shares moved to Treasury.',
+          ],
+          'fullcap' => [
+            'Full Cap',
+            'Newly floated corporations use 100% capitalization when floated, and no one time stock price bump. '\
+            'Not yet sold shares moved to Market.',
+          ],
+        }.merge(Base::STATUS_TEXT).freeze
+
         PHASES = [
           {
             name: '2',
             on: '2',
             train_limit: 4,
             tiles: [:yellow],
-            status: [],
+            status: %w[incremental],
             operating_rounds: 1,
           },
           {
@@ -110,7 +123,7 @@ module Engine
             on: '3',
             train_limit: 4,
             tiles: %i[yellow green],
-            status: [],
+            status: %w[incremental],
             operating_rounds: 2,
           },
           {
@@ -118,7 +131,7 @@ module Engine
             on: '4',
             train_limit: 3,
             tiles: %i[yellow green],
-            status: [],
+            status: %w[incremental],
             operating_rounds: 2,
           },
           {
@@ -126,7 +139,7 @@ module Engine
             on: '5',
             train_limit: 2,
             tiles: %i[yellow green brown],
-            status: [],
+            status: %w[fullcap],
             operating_rounds: 3,
           },
           {
@@ -134,7 +147,7 @@ module Engine
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown],
-            status: [],
+            status: %w[fullcap],
             operating_rounds: 3,
           },
           {
@@ -142,7 +155,7 @@ module Engine
             on: '8',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: [],
+            status: %w[fullcap],
             operating_rounds: 3,
           },
         ].freeze
@@ -185,6 +198,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             num: 6,
             price: 600,
+            available_on: '5',
           },
           {
             name: '8',
@@ -212,7 +226,7 @@ module Engine
         def num_trains(train)
           return train[:num] unless train[:name] == '2'
 
-          optional_2_train ? 8 : 7
+          optional_2_train ? 7 : 6
         end
 
         def optional_2_train
@@ -259,11 +273,11 @@ module Engine
           G18Rhl::Round::Operating.new(self, [
             G18Rhl::Step::Bankrupt,
             Engine::Step::HomeToken,
-            G18Rhl::Step::SpecialToken, # Must be before any track lay (due to private No. 4)
             G18Rhl::Step::SpecialTrack,
+            G18Rhl::Step::SpecialToken, # Must be before regular track lay (due to private No. 4)
             G18Rhl::Step::Track,
             G18Rhl::Step::RheBonusCheck,
-            Engine::Step::Token,
+            G18Rhl::Step::Token,
             Engine::Step::Route,
             G18Rhl::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -306,8 +320,8 @@ module Engine
           @cce_corporation ||= corporation_by_id('CCE')
         end
 
-        def kkk
-          @kkk_corporation ||= corporation_by_id('KKK')
+        def keg
+          @keg_corporation ||= corporation_by_id('KEG')
         end
 
         def rhe
@@ -343,14 +357,15 @@ module Engine
         end
 
         def setup
-          kkk.shares[2].double_cert = true
-          kkk.shares[3].double_cert = true
+          keg.shares[2].double_cert = true
+          keg.shares[3].double_cert = true
 
           @aachen_duren_cologne_link_bonus = 0
           @eastern_ruhr_connections = []
           @newly_floated = []
 
           @essen_tile ||= @tiles.find { |t| t.name == 'Essen' } if optional_promotion_tiles
+          @moers_tile_brown ||= @tiles.find { |t| t.name == '947' }
           @moers_tile_gray ||= @tiles.find { |t| t.name == '950' } if optional_promotion_tiles
           @d_k_tile ||= @tiles.find { |t| t.name == '932V' } if optional_promotion_tiles
           @d_du_k_tile ||= @tiles.find { |t| t.name == '932' } unless optional_promotion_tiles
@@ -358,6 +373,9 @@ module Engine
           @osterath_tile ||= @tiles.find { |t| t.name == '935' }
 
           @variable_placement = (rand % 9) + 1
+
+          # Add Koal to Moers upgrade tile - will be sticky
+          @moers_tile_brown.icons << Part::Icon.new('../logos/18_rhl/K')
 
           # Put out K tokens
           @k = Corporation.new(
@@ -431,12 +449,18 @@ module Engine
 
           # For floats before phase 5, corporation receives par price for all shares sold from IPO to players.
           # The remaining shares end up in Treasury, and corporation becomes incremental.
-          paid_to_treasury = corporation == kkk ? 6 : 5
+          paid_to_treasury = corporation == keg ? 6 : 5
 
           if corporation == rhe
             @aachen_duren_cologne_link_bonus = rhe.par_price.price * 3
             delayed = format_currency(@aachen_duren_cologne_link_bonus)
-            @log << "#{rhe.name} will receive #{delayed} when there is a link from Köln to Aachen via Düren"
+            @log << "#{rhe.name} will receive #{delayed} when there is a link from Köln to Aachen via Düren (KDA link)"
+            ability = abilities(rhe, :base)
+            ability.description = "When KDA link created: treasury +#{format_currency(@aachen_duren_cologne_link_bonus)}"
+            ability.desc_detail = 'The first time it is possible to go from Köln to Aachen via Düren the 3 times PAR '\
+                                  "value of RhE (#{format_currency(@aachen_duren_cologne_link_bonus)}) will be added "\
+                                  '̈́to the treasury of RhE. '\
+                                  'Note: The link check ignores blocking tokens, available trains and length of route.'
           else
             @bank.spend(corporation.par_price.price * paid_to_treasury, corporation)
             @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
@@ -481,33 +505,56 @@ module Engine
           return super unless corporation == cce
           return if corporation.tokens.first&.used == true
 
-          place_free_token(cce, 'E6', 0, silent: false)
-          place_free_token(cce, 'I10', 1, silent: false)
+          cce.coordinates.each_with_index do |coordinate, index|
+            place_free_token(cce, coordinate, index, silent: false)
+          end
+          cce.coordinates = [cce.coordinates.first]
         end
+
+        UPGRADES_TO_88 = %w[1 55].freeze
+        UPGRADES_TO_87 = %w[2 56].freeze
+        UPGRADE_TO_204 = '69'
+        UPGRADES_FROM_3 = %w[141 142 143].freeze
+        UPGRADES_FROM_4 = %w[141 142].freeze
+        UPGRADES_FROM_58 = %w[141 142 143 144].freeze
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Osterath cannot be upgraded at all, and cannot be upgraded to in phase 5 or later
           return false if from.name == @osterath_tile&.name ||
-                          (to.name == @osterath_tile&.name && @phase.name.to_i >= 5)
+          (to.name == @osterath_tile&.name && @phase.name.to_i >= 5)
 
           # Private No. 2 allows Osterath tile to be put on E8 regardless
           return true if from.hex.name == 'E8' &&
-                         to.name == @osterath_tile&.name &&
-                         selected_company == konzession_essen_osterath
+          to.name == @osterath_tile&.name &&
+          selected_company == konzession_essen_osterath
 
           # Handle Moers upgrades
           return to.name == '947' if from.color == :green && from.hex.name == 'D7'
           return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
 
+          # Handle 3-spokers
+          return UPGRADES_FROM_3.include?(to.name) if from.name == '3'
+          return UPGRADES_FROM_4.include?(to.name) if from.name == '4'
+          return UPGRADES_FROM_58.include?(to.name) if from.name == '58'
+          return false if UPGRADES_FROM_58.include?(from.name)
+
+          # Handle 4-spokers
+          return to.name == '87' if UPGRADES_TO_87.include?(from.name)
+          return to.name == '88' if UPGRADES_TO_88.include?(from.name)
+          return to.name == '204' if from.name == UPGRADE_TO_204
+
           if optional_promotion_tiles
             # Essen can be upgraded to gray
             return to.name == 'Essen' if from.color == :brown && from.name == '216'
 
-            # Dusseldorf and Cologne can be upgraded to gray 950
-            return to.name == '950' if from.color == :brown && %w[F9 I10].include?(from.hex.name)
+            # Dusseldorf and Cologne can be upgraded to gray 932V
+            return to.name == '932V' if from.color == :brown && %w[F9 I10].include?(from.hex.name)
+
+            # Moers can be upgraded to gray 950
+            return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
 
             # Duisburg can be upgraded to gray 929
-            return to.name == '929' if from.color == :brown && from.hex.name == 'D9'
+            return to.name == '949' if from.color == :brown && from.hex.name == 'D9'
           elsif from.color == :brown && %w[D9 F9 I10].include?(from.hex.name)
             return to.name == '932'
           end
@@ -596,13 +643,13 @@ module Engine
             raise GameError, 'A route cannot both begin and end at the Nimwegen and Arnheim off-board hexes'
           end
 
-          if visits.count { |v| SOUTHERN_OFFBOARD_HEXES.include?(v.hex.name) } > 1
-            raise GameError, 'A route cannot both begin and end at the Southern off-board hexes'
+          if visits.count { |v| BASEL_FRANKFURT_OFFBOARD_HEXES.include?(v.hex.name) } > 1
+            raise GameError, 'A route cannot both begin and end at the Basel and Frankfurt off-board hexes'
           end
 
           return super unless route.train.name == '8'
 
-          if visits.none? { |v| RGE_HEXES.include?(v.hex.name) }
+          if !rge_terminus?(visits.first) && !rge_terminus?(visits.last)
             raise GameError, 'Route for 8 trains must begin/end in an RGE hex'
           end
 
@@ -628,6 +675,14 @@ module Engine
           revenue_info(route, stops).map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
 
           str
+        end
+
+        def route_distance_str(route)
+          towns = route.visited_stops.count(&:town?)
+          cities = route_distance(route) - towns
+          return towns.zero? ? cities.to_s : "#{cities}+#{towns}" unless route.train.name == '8'
+
+          cities > 8 ? "8(+#{cities - 8})" : cities.to_s
         end
 
         def revenue_info(route, stops)
@@ -662,6 +717,7 @@ module Engine
           @log << "#{rhe.name} adds #{format_currency(@aachen_duren_cologne_link_bonus)} to its treasury"
           @bank.spend(@aachen_duren_cologne_link_bonus, rhe)
           @aachen_duren_cologne_link_bonus = 0
+          rhe.remove_ability(abilities(rhe, :base))
         end
 
         def eastern_ruhr_connection_check(hex)
@@ -890,16 +946,21 @@ module Engine
 
         def rheingold_express_bonus(route, stops)
           bonus = { revenue: 0 }
-          return bonus unless route.train.name == '8'
+          return bonus if route.train.name != '8' ||
+                          !stops.first || !rge_terminus?(stops.first) ||
+                          !stops.last || !rge_terminus?(stops.last)
 
           # Double any Rhine Metropolis cities visited
+          doubles = 0
           stops.each do |s|
             next unless RHINE_METROPOLIS_HEXES.include?(s.hex.name)
 
+            doubles += 1
             bonus[:revenue] += s.route_revenue(route.phase, route.train)
           end
+          return bonus unless doubles.positive?
 
-          bonus[:description] = 'RGE'
+          bonus[:description] = 'RGE' + (doubles > 1 ? "x#{doubles}" : '')
           bonus
         end
 
@@ -934,6 +995,12 @@ module Engine
 
         def trajekts_used?(hex_name, route)
           route.chains.any? { |c| western_edge_used?(hex_name, c) && eastern_edge_used?(hex_name, c) }
+        end
+
+        def rge_terminus?(visited_node)
+          return false unless visited_node
+
+          RGE_HEXES.include?(visited_node.hex.name)
         end
 
         def western_edge_used?(hex_name, chain)

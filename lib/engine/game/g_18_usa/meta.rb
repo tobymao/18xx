@@ -23,6 +23,13 @@ module Engine
         GAME_TITLE = '18USA'
 
         PLAYER_RANGE = [2, 7].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :seventeen_trains,
+            short_name: '1817 trains',
+            desc: 'Use 1817 trains and export rules',
+          },
+        ].freeze
       end
     end
   end
