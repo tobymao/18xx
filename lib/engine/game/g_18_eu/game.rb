@@ -31,7 +31,8 @@ module Engine
 
         BIDDING_BOX_MINOR_COLOR = '#c6e9af'
 
-        GAME_END_CHECK = { bank: :full_or }.freeze # TODO: extreme edge case of one player remaining
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
             'minor_exchange' => [
