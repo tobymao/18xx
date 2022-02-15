@@ -21,8 +21,8 @@ module Engine
                            end
 
             # if the current corporation is also destinating, it must run first
-            i = corporations.find_index(@round.current_operator)
-            corporations = [@round.current_operator] + (corporations - [@round.current_operator]) if !i.nil? && i.positive?
+            i = corporations.index(@round.current_operator)
+            corporations = [@round.current_operator] + (corporations - [@round.current_operator]) if i&.positive?
 
             [Engine::Action::DestinationConnection.new(
               entity,
