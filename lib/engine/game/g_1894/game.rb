@@ -242,6 +242,11 @@ module Engine
         PARIS_HEX = 'G4'
         SQG_HEX = 'G10'
 
+        AMIENS_HEX = 'E6'
+        AMIENS_TILE = 'X3'
+
+        GREEN_CITY_TILES = %w[14 15 619].freeze
+
         def stock_round
           G1894::Round::Stock.new(self, [
             G1894::Step::BuySellParShares,
@@ -312,6 +317,13 @@ module Engine
 
         def init_round_finished
           @players.rotate!(@round.entity_index)
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return to.name == AMIENS_TILE if from.hex.name == AMIENS_HEX && from.color == :white
+          return GREEN_CITY_TILES.include?(to.name) if from.hex.name == AMIENS_HEX && from.color == :yellow
+
+          super
         end
 
         def revenue_for(route, stops)
