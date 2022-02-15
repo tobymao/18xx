@@ -496,6 +496,10 @@ module Engine
           !@phase.status.include?('only_pres_drop')
         end
 
+        def num_certs(entity)
+          entity.shares.sum(&:cert_size)
+        end
+
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
           price = corporation.share_price.price
@@ -592,10 +596,14 @@ module Engine
           5 * stock_market.find_share_price(corporation, [:left] * 3).price
         end
 
-        def convert_to_ten_share(corporation, price_drops = 0)
+        def convert_to_ten_share(corporation, price_drops = 0, blame_president = false)
           # update corporation type and report conversion
           corporation.type = '10-share'
-          @log << "#{corporation.id} converts into a 10-share company"
+          @log << (if blame_president
+                     "#{corporation.owner.name} converts #{corporation.id} into a 10-share corporation"
+                   else
+                     "#{corporation.id} converts into a 10-share corporation"
+                   end)
 
           # update existing shares to 10% shares
           original_shares = shares_for_corporation(corporation)
