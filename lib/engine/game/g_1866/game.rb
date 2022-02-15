@@ -1350,6 +1350,10 @@ module Engine
           super
         end
 
+        def all_corporation_token_rights(player)
+          player.shares_by_corporation.each { |c, _| corporation_token_rights!(c) if corporation?(c) && c.president?(player) }
+        end
+
         def after_lay_tile(corporation)
           @graph.clear if national_corporation?(corporation)
           @national_graph.clear if corporation?(corporation)
