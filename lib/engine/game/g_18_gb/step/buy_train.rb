@@ -60,15 +60,19 @@ module Engine
             depot_trains = [] if entity.cash < @depot.min_depot_price
 
             other_trains = @depot.other_trains(entity)
-            other_trains = [] if entity.cash.zero?
+            other_trains = [] if entity.cash.zero? || must_buy_new_train?(entity)
             other_trains.reject! { |t| illegal_train_buy?(entity, t) }
 
             depot_trains + other_trains
           end
 
+          def must_buy_new_train?(entity)
+            must_buy_train?(entity) && @round.emergency_converted
+          end
+
           def must_buy_train?(entity)
-            cheapest = @game.depot.min_depot_price
-            entity.trains.empty? && cheapest.positive? && entity.cash > cheapest
+            mandatory = @game.depot.max_depot_price
+            entity.trains.empty? && mandatory.positive? && entity.cash >= mandatory
           end
         end
       end
