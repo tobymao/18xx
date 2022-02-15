@@ -32,11 +32,7 @@ module Engine
         ]
       end
 
-      # Add a per-node timeout to ensure we don't spend ALL time on first node's paths in huge maps,
-      # which can cause all train routes to conflict with each other
-      node_timeout = path_timeout / nodes.size
       path_walk_timed_out = false
-
       now = Time.now
 
       skip_paths = static.flat_map(&:paths).to_h { |path| [path, true] }
@@ -57,17 +53,8 @@ module Engine
           puts "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}"
         end
 
-        node_now = Time.now
-
-        node_abort = false
         walk_corporation = graph.no_blocking? ? nil : corporation
         node.walk(corporation: walk_corporation, skip_paths: skip_paths) do |_, vp|
-          if node_abort || Time.now - node_now > node_timeout
-            path_walk_timed_out = true
-            node_abort = true
-            next :abort
-          end
-
           paths = vp.keys
           chains = []
           chain = []
@@ -132,7 +119,7 @@ module Engine
               connection_data: connection,
               bitfield: bitfield_from_connection(connection, hexside_bits),
             )
-            route.revenue
+            route.revenue(suppress_check_other: true) # defer route-collection checks til later
             train_routes[train] << route
           rescue RouteTooLong
             # ignore for this train, and abort walking this path if ignored for all trains
@@ -298,26 +285,30 @@ module Engine
           const route = js_sorted_routes[0][r]
           counter += 1
           combo = { revenue: route.revenue, routes: [route] }
-          combos.push(combo)
-          possibilities_count += 1
+          combos.push(combo) // save combo for later extension even if not yet a valid combo
 
-          // accumulate best-value combos, or start over if found a bigger best
-          if (combo.revenue >= max_revenue) {
-            if (combo.revenue > max_revenue) {
-              possibilities = []
-              max_revenue = combo.revenue
+          if (is_valid_combo(combo))
+          {
+            possibilities_count += 1
+
+            // accumulate best-value combos, or start over if found a bigger best
+            if (combo.revenue >= max_revenue) {
+              if (combo.revenue > max_revenue) {
+                possibilities = []
+                max_revenue = combo.revenue
+              }
+              possibilities.push(combo)
             }
-            possibilities.push(combo)
           }
         }
 
         continue_looking = true
         // generate combos with remaining trains' routes
-        for (train=1; continue_looking && (train < js_sorted_routes.length); train++) {
+        for (let train=1; continue_looking && (train < js_sorted_routes.length); train++) {
           // Recompute limit, since by 3rd train it will start going down as invalid combos are excluded from the test set
           // revised limit = combos.length * remaining train route lengths
           limit = combos.length
-          for (var remaining=train; remaining < js_sorted_routes.length; remaining++)
+          for (let remaining=train; remaining < js_sorted_routes.length; remaining++)
             limit *= js_sorted_routes[remaining].length
           if (limit != old_limit) {
             console.log("  adjusting depth to " + limit + " because first " +
@@ -326,9 +317,9 @@ module Engine
           }
 
           let new_combos = []
-          for (rt=0; continue_looking && (rt < js_sorted_routes[train].length); rt++) {
+          for (let rt=0; continue_looking && (rt < js_sorted_routes[train].length); rt++) {
             const route = js_sorted_routes[train][rt]
-            for (c=0; c < combos.length; c++) {
+            for (let c=0; c < combos.length; c++) {
               const combo = combos[c]
               counter += 1
               if ((counter % 1_000_000) == 0) {
@@ -343,20 +334,23 @@ module Engine
               if (js_route_bitfield_conflicts(combo, route))
                 conflicts += 1
               else {
-                possibilities_count += 1
                 // copy the combo, add the route
-                const newcombo = { revenue: combo.revenue, routes: [...combo.routes] }
+                let newcombo = { revenue: combo.revenue, routes: [...combo.routes] }
                 newcombo.routes.push(route)
                 newcombo.revenue += route.revenue
-                new_combos.push(newcombo)
+                new_combos.push(newcombo) // save newcombo for later extension even if not yet a valid combo
 
-                // accumulate best-value combos, or start over if found a bigger best
-                if (newcombo.revenue >= max_revenue) {
-                  if (newcombo.revenue > max_revenue) {
-                    possibilities = []
-                    max_revenue = newcombo.revenue
+                if (is_valid_combo(newcombo)) {
+                  possibilities_count += 1
+
+                  // accumulate best-value combos, or start over if found a bigger best
+                  if (newcombo.revenue >= max_revenue) {
+                    if (newcombo.revenue > max_revenue) {
+                      possibilities = []
+                      max_revenue = newcombo.revenue
+                    }
+                    possibilities.push(newcombo)
                   }
-                  possibilities.push(newcombo)
                 }
               }
             }
@@ -365,7 +359,7 @@ module Engine
         }
 
         // marshall best combos back to Opal
-        for (p=0; p < possibilities.length; p++) {
+        for (let p=0; p < possibilities.length; p++) {
           const combo = possibilities[p]
           let rb_routes = []
           for (route of combo.routes) {
@@ -381,8 +375,29 @@ module Engine
     end
 
     %x{
+      // do final combo validation using game-specific checks driven by
+      // route.check_other! that was skipped when building routes
+      function is_valid_combo(cb) {
+        // temporarily marshall back to opal since we need to call the opal route.check_other!
+        let rb_rts = []
+        for (let rt of cb.routes) {
+          rt.route['$routes='](rb_rts) // allows route.check_other! to process all routes
+          rb_rts['$<<'](rt.route)
+        }
+
+        // Run route.check_other! for the full combo, to see if game- and action-specific rules are followed.
+        // Eg. 1870 destination runs should reject combos that don't have a route from home to destination city
+        try {
+          cb.routes[0].route['$check_other!']() // throws if bad combo
+          return true
+        }
+        catch (err) {
+          return false
+        }
+      }
+
       function js_route_bitfield_conflicts(combo, testroute) {
-        for (cr of combo.routes) {
+        for (let cr of combo.routes) {
           // each route has 1 or more ints in bitfield array
           // only test up to the shorter size, since bits beyond that obviously don't conflict
           let index = Math.min(cr.bitfield.length, testroute.bitfield.length) - 1;

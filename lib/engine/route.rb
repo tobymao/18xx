@@ -311,7 +311,7 @@ module Engine
       @game.check_other(self)
     end
 
-    def revenue
+    def revenue(suppress_check_other: false)
       @revenue ||=
         begin
           visited = visited_stops
@@ -325,7 +325,7 @@ module Engine
           end
 
           check_terminals!
-          check_other!
+          check_other! unless suppress_check_other
           check_cycles!
           check_distance!(visited)
           check_overlap!
