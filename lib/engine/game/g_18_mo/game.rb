@@ -189,7 +189,6 @@ module Engine
               },
             ],
             events: [
-              { 'type' => 'remove_markers' },
               { 'type' => 'remove_reservations' },
             ],
           },
