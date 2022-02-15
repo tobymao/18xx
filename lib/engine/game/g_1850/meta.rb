@@ -12,7 +12,6 @@ module Engine
 
         DEV_STAGE = :prealpha
         DEPENDS_ON = '1870'
-
         GAME_TITLE = '1850'
         GAME_SUBTITLE = 'The MidWest'
         GAME_DESIGNER = 'Bill Dixon'
