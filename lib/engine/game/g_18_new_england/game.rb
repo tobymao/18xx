@@ -452,7 +452,7 @@ module Engine
         end
 
         def operating_order
-          @corporations.reject(&:minor?).select(&:floated?).sort.partition { |c| c.type == :minor }.flatten
+          @corporations.reject { |c| c.minor? || c.closed? }.select(&:floated?).sort.partition { |c| c.type == :minor }.flatten
         end
 
         def bank_sort(corporations)
