@@ -157,7 +157,7 @@ module Engine
             type: 'train_discount',
             discount: 60,
             owner_type: 'corporation',
-            trains: ['2', '4', '5', '4a', '5a', '3/5', '4/6'],
+            trains: ['2Y', '3Y', '3G', '4G', '5', '6'],
             count: 1,
             closed_when_used_up: true,
             when: 'buying_train',
