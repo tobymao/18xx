@@ -34,6 +34,7 @@ module Engine
           def get_tile_lay(entity)
             action = super
             return unless action
+            return action if @game.national_corporation?(entity)
 
             action[:upgrade] = @round.num_upgraded_track < @game.class::TILE_LAYS_UPGRADE[@game.phase.name]
             action
@@ -41,9 +42,15 @@ module Engine
 
           def lay_tile_action(action, entity: nil, spender: nil)
             tile = action.tile
-            old_tile = action.hex.tile
+            hex = action.hex
+            old_tile = hex.tile
+            tile_frame = old_tile.frame
             super
 
+            old_tile.reframe!(nil)
+            hex.tile.reframe!(tile_frame.color, tile_frame.color2) if tile_frame
+            tile.restripe!(nil) if tile.label.to_s == 'C' && tile.color == :yellow
+            old_tile.restripe!(:gray) if old_tile.label.to_s == 'C' && old_tile.color == :yellow && tile.color == :green
             @round.num_upgraded_track += 1 if track_upgrade?(old_tile, tile, action.hex)
           end
 

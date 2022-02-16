@@ -1282,7 +1282,7 @@ module Engine
             'same tile.',
             'Corporations tile lay phase 8: 4 tracks, max 3 upgrades. Can be done in any order. Can upgrade the same '\
             'tile.',
-            'Corporations tile lay phase 9: 4 tracks, max 4 upgrades. Can be done in any order. Can upgrade the same '\
+            'Corporations tile lay phase 10: 4 tracks, max 4 upgrades. Can be done in any order. Can upgrade the same '\
             'tile.',
           ]
         end
@@ -1348,6 +1348,10 @@ module Engine
           return true if from.label.to_s == 'B' && from.color == :white && (to.name == '5' || to.name == '6')
 
           super
+        end
+
+        def all_corporation_token_rights(player)
+          player.shares_by_corporation.each { |c, _| corporation_token_rights!(c) if corporation?(c) && c.president?(player) }
         end
 
         def after_lay_tile(corporation)

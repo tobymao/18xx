@@ -78,7 +78,6 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            # TODO: See 1817 and reinsert pittsburgh check for handling metros
             return true if tile.name == 'X23'
 
             super

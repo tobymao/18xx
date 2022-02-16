@@ -103,6 +103,7 @@ module Engine
           end
 
           def process_sell_shares(action)
+            entity = current_entity
             corporation = action.bundle.corporation
             previous_president = corporation.owner
             super
@@ -111,6 +112,7 @@ module Engine
             @game.player_sold_shares[action.entity][corporation] = true
             @round.recalculate_order
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
+            @game.all_corporation_token_rights(entity) if @game.national_corporation?(corporation)
           end
 
           def issuable_shares(_entity)
@@ -151,7 +153,8 @@ module Engine
             current_price = entity.share_price.price
             times.times { @game.stock_market.move_right(entity) }
             @log << "#{current_entity.name}'s stock turn token price changes from "\
-                    "#{@game.format_currency(current_price)} to #{@game.format_currency(entity.share_price.price)}"
+                    "#{@game.format_currency(current_price)} to #{@game.format_currency(entity.share_price.price)}"\
+                    "#{times > 1 ? " (#{times} steps)" : ''}"
           end
         end
       end
