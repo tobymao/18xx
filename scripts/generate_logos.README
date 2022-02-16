@@ -1,16 +1,18 @@
 README generate_logos.rb
 
-This script uses the attributes in the entities folder to generate svg logos. It generates them in the simple_token style, but may be used as primary tokens where a primary token is not available.
+This script uses the attributes in the entities to generate svg logos. It generates them in the simple_token style, but may be used as primary tokens where a primary token is not available.
 
 To use the script, first add paths to the logos in the entities. Review another game with tokens and/or simple tokens for an example. Add a new folder in public/logos for the new game if there is not one already.
 
-Run development docker container. In a terminal window, enter the following to get a Ruby prompt:
+Run the development docker container. In a terminal window, enter the following to get a Ruby prompt:
 
 docker-compose exec rack rake dev_irb
 
 Then in Ruby, enter (for 1849, for example):
 
-require_relative('scripts/generate_logos') and then generate_logos('1849', simple=true, overwrite=false, minors=false)
+require_relative('scripts/generate_logos')
+
+generate_logos('1849', simple=true, overwrite=false, minors=false)
 
 Usage:
 simple=true is for alt-logos if you have proper SVG logos, whereas simple=false (or leave simple out altogether) will generate the main logos
