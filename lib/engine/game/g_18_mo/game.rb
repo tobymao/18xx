@@ -51,7 +51,7 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_reservations' => ['Remove Reservations', 'Remove reserved token slots for corporations']
         ).freeze
-        
+
         def init_round
           G18MO::Round::Draft.new(self, [G18MO::Step::DraftPurchase])
         end
