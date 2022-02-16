@@ -214,7 +214,7 @@ module Engine
                   train[:rusts_on] = '4DE'
                 when '5DE'
                   train[:name] = '4DE'
-                  train[:distance] = (train[:distance].dup)[0]['pay'] = 4
+                  train[:distance][0]['pay'] = 4
                 end
                 train
               end
