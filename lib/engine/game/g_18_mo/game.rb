@@ -47,7 +47,7 @@ module Engine
           { lay: true, upgrade: true },
           { lay: true, upgrade: :not_if_upgraded, cost: 20 },
         ].freeze
-        TILE_COST = 20
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_reservations' => ['Remove Reservations', 'Remove reserved token slots for corporations']
         ).freeze
