@@ -62,7 +62,7 @@ module Engine
           def process_choose(action)
             _action, corporation_id = action.choice.split('_')
             corporation = @game.corporations.find { |c| c.id == corporation_id }
-            @game.convert_to_ten_share(corporation, 2)
+            @game.convert_to_ten_share(corporation, 2, true)
             @round.current_actions << action
           end
 

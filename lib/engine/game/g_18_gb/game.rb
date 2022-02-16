@@ -496,6 +496,10 @@ module Engine
           !@phase.status.include?('only_pres_drop')
         end
 
+        def num_certs(entity)
+          entity.shares.sum(&:cert_size)
+        end
+
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
           price = corporation.share_price.price
@@ -592,10 +596,14 @@ module Engine
           5 * stock_market.find_share_price(corporation, [:left] * 3).price
         end
 
-        def convert_to_ten_share(corporation, price_drops = 0)
+        def convert_to_ten_share(corporation, price_drops = 0, blame_president = false)
           # update corporation type and report conversion
           corporation.type = '10-share'
-          @log << "#{corporation.id} converts into a 10-share company"
+          @log << (if blame_president
+                     "#{corporation.owner.name} converts #{corporation.id} into a 10-share corporation"
+                   else
+                     "#{corporation.id} converts into a 10-share corporation"
+                   end)
 
           # update existing shares to 10% shares
           original_shares = shares_for_corporation(corporation)
@@ -744,13 +752,8 @@ module Engine
           end.join
         end
 
-        def compass_points_on_route(route)
-          hexes = route.ordered_paths.map { |path| path.hex.coordinates }
-          @scenario['compass-hexes'].select do |_compass, compasshexes|
-            hexes.any? do |coords|
-              compasshexes.include?(coords)
-            end
-          end.map(&:first)
+        def compass_points_in_network(network_hexes)
+          @scenario['compass-hexes'].reject { |_compass, compass_hexes| (network_hexes & compass_hexes).empty? }.map(&:first)
         end
 
         def ns_bonus
@@ -767,9 +770,47 @@ module Engine
           end
         end
 
+        def routes_intersect(first, second)
+          !(first.visited_stops & second.visited_stops).empty?
+        end
+
+        def route_sets_intersect(first, second)
+          first.any? { |a| second.any? { |b| routes_intersect(a, b) } }
+        end
+
+        def combine_route_sets(sets)
+          # simplify overlapping route sets by combining them where possible
+          overlapped = []
+
+          sets.combination(2).select { |first, second| route_sets_intersect(first, second) }.each do |first, second|
+            overlapped << second
+            second.each { |route| first << route }
+          end
+
+          sets.reject { |set| overlapped.include?(set) }
+        end
+
+        def route_sets(routes)
+          sets = routes.map { |route| [route] }
+          return [] if sets.empty?
+
+          prev_length = 0
+          while sets.size != prev_length
+            prev_length = sets.size
+            sets = combine_route_sets(sets)
+          end
+          sets
+        end
+
         def compass_bonuses(route)
           bonuses = []
-          points = compass_points_on_route(route)
+          return bonuses if route.chains.empty?
+
+          route_set = route_sets(route.routes).find { |set| set.include?(route) } || []
+          return bonuses unless route == route_set.first # apply bonus to the first route in the set
+
+          hexes = route_set.flat_map { |r| r.ordered_paths.map { |path| path.hex.coordinates } }
+          points = compass_points_in_network(hexes)
           bonuses << { revenue: ns_bonus, description: 'NS' } if points.include?('N') && points.include?('S')
           bonuses << { revenue: ew_bonus, description: 'EW' } if points.include?('E') && points.include?('W')
           bonuses

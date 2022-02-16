@@ -12,7 +12,7 @@ module Engine
             return [] if entity != current_entity
 
             actions = []
-            actions << 'choose' if can_convert?(entity)
+            actions << 'convert' if can_convert?(entity)
             actions << 'buy_train' if can_buy_train?(entity)
             actions << 'pass' if !actions.empty? && !must_buy_train?(entity)
             actions
@@ -31,22 +31,12 @@ module Engine
             corporation.type == '5-share' && corporation.trains.empty? && corporation.cash < @game.depot.min_depot_price
           end
 
-          def choice_available?(entity)
-            can_convert?(entity)
-          end
-
-          def choice_name
-            'Convert'
-          end
-
-          def choices
-            return {} unless can_convert?(current_entity)
-
+          def convert_text
             capital_str = @game.format_currency(@game.emergency_convert_capital(current_entity))
-            { "convert_#{current_entity.id}" => "Convert to 10-share (#{capital_str})" }
+            "Convert to 10-share (#{capital_str})"
           end
 
-          def process_choose(action)
+          def process_convert(action)
             return unless action.entity.corporation? && can_convert?(action.entity)
 
             @game.convert_to_ten_share(action.entity, 3)
@@ -70,15 +60,19 @@ module Engine
             depot_trains = [] if entity.cash < @depot.min_depot_price
 
             other_trains = @depot.other_trains(entity)
-            other_trains = [] if entity.cash.zero?
+            other_trains = [] if entity.cash.zero? || must_buy_new_train?(entity)
             other_trains.reject! { |t| illegal_train_buy?(entity, t) }
 
             depot_trains + other_trains
           end
 
+          def must_buy_new_train?(entity)
+            must_buy_train?(entity) && @round.emergency_converted
+          end
+
           def must_buy_train?(entity)
-            cheapest = @game.depot.min_depot_price
-            entity.trains.empty? && cheapest.positive? && entity.cash > cheapest
+            mandatory = @game.depot.max_depot_price
+            entity.trains.empty? && mandatory.positive? && entity.cash >= mandatory
           end
         end
       end
