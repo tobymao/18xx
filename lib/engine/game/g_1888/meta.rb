@@ -18,6 +18,13 @@ module Engine
         GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1888'
 
         PLAYER_RANGE = [2, 6].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :small_bank,
+            short_name: 'Smaller Bank, 60% float',
+            desc: 'Use bank of ¥9000, require 60% to float',
+          },
+        ].freeze
       end
     end
   end
