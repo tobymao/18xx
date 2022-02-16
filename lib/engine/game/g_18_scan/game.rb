@@ -369,6 +369,18 @@ module Engine
           str
         end
 
+        def check_connected(route, corporation)
+          super(route, corporation)
+
+          route.visited_stops.each do |node|
+            # Cannot rely on offboard? because all of them are cities
+            next unless node.tile.color == :red && node.city?
+            next if node.tokened_by?(corporation)
+
+            raise GameError, 'Can only run to tokened offboards'
+          end
+        end
+
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Y cities are same as plain in yellow
           return to.name == '5' if from.color == :white && from.label.to_s == 'Y'
