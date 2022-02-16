@@ -127,7 +127,7 @@ module Engine
             corporation = @winning_bid.corporation
             @game.apply_subsidy(corporation)
 
-            if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver
+            if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver && @game.hex_by_id('E11').tile.name == 'X04s'
               @round.pending_tracks << {
                 entity: corporation,
                 hexes: [corporation.tokens.first.hex],

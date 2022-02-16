@@ -97,6 +97,12 @@ module Engine
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DFW',
           },
+          'X04s' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DEN',
+            'hidden' => true,
+          },
           'X04' => {
             'count' => 1,
             'color' => 'yellow',

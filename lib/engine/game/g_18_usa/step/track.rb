@@ -103,7 +103,7 @@ module Engine
 
             super(action, extra_cost: extra_cost, entity: entity, spender: spender)
 
-            if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
+            if @game.metro_denver && @game.hex_by_id('E11').tile.name == 'X04s' &&
                 hex.neighbors.any? { |exit, h| hex.tile.exits.include?(exit) && h.name == 'E11' }
               @round.pending_tracks << { entity: entity, hexes: [@game.hex_by_id('E11')] }
             end

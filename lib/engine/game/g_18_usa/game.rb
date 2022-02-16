@@ -288,7 +288,7 @@ module Engine
           when 'H14'
             hex.lay(@tiles.find { |t| t.name == 'X03' })
           when 'E11'
-            # TODO: add metropolis icon like a subsidy
+            hex.lay(@tiles.find { |t| t.name == 'X04s' })
             @metro_denver = true
           when 'G3'
             hex.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
@@ -450,6 +450,9 @@ module Engine
           if to.color == :yellow && resource_tile?(to)
             return from.color == :white && can_lay_resource_tile?(from, to, laying_entity.companies)
           end
+
+          # Workaround to allow Denver tile orientation to change after placement
+          return to.name == 'X04' if from.name == 'X04s'
 
           # Metropolitan upgrades
           return %w[X01 X02 X04 X06].include?(from.name) && tile_color_valid_for_phase?(to) if to.name == '592'
@@ -667,8 +670,8 @@ module Engine
             G18USA::Step::SpecialToken,
             G18USA::Step::SpecialBuyTrain,
             G18USA::Step::Assign,
-            G18USA::Step::Track,
             G18USA::Step::DenverTrack,
+            G18USA::Step::Track,
             G18USA::Step::Token,
             G18USA::Step::Route,
             G18USA::Step::Dividend,
