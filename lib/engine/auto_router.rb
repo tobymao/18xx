@@ -98,7 +98,7 @@ module Engine
 
           # a 1-city Local train will have no chains but will have a left; route.revenue will reject if not valid for game
           if chains.empty?
-            next if left.nil?
+            next unless left
 
             chains << { nodes: [left, nil], paths: [] }
           end
