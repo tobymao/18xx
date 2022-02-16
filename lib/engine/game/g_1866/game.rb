@@ -1542,7 +1542,7 @@ module Engine
           end
 
           # Move the rest of the shares into the market
-          corporation_shares = corporation.shares_of(corporation)
+          corporation_shares = corporation.shares_of(corporation).select(&:buyable)
           @share_pool.transfer_shares(ShareBundle.new(corporation_shares), @share_pool) unless corporation_shares.empty?
 
           corporation.ipoed = true
@@ -1576,7 +1576,7 @@ module Engine
           corporation.ipoed = true
 
           # Move the rest of the shares into the market
-          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
+          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation).select(&:buyable)), @share_pool)
 
           # Close the concession
           corporation.par_via_exchange.close!
@@ -1959,8 +1959,10 @@ module Engine
         end
 
         def setup_nationals
-          @corporations.select { |c| c.type == :national }.each do |national|
-            national.shares.each { |share| share.buyable = false if share.index > 4 }
+          @corporations.each do |corporation|
+            next unless major_national_corporation?(corporation)
+
+            corporation.shares.each { |share| share.buyable = false if share.index > 4 }
           end
         end
 
