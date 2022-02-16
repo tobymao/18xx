@@ -168,7 +168,7 @@ module Engine
          {
            name: 'Mountain Construction Company',
            value: 60,
-           revenue: 10,
+           revenue: 0,
            desc: 'Owner receives $20 whenever a tile is laid on a mountain hex. Never closes.',
            sym: 'MCC',
            abilities: [
