@@ -96,7 +96,12 @@ module Engine
             assign.call(a, b) if a || b
           end
 
-          next if chains.empty?
+          # a 1-city Local train will have no chains but will have a left; route.revenue will reject if not valid for game
+          if chains.empty?
+            next if left.nil?
+
+            chains << { nodes: [left, nil], paths: [] }
+          end
 
           id = chains.flat_map { |c| c[:paths] }.sort!
           next if connections[id]
@@ -192,8 +197,11 @@ module Engine
         paths = conn[:chain][:paths]
         if paths.size == 1 # special case for tiny intra-tile path like in 18NewEngland (issue #6890)
           hexside_left = paths[0].nodes[0].id
-          hexside_right = paths[0].nodes[1].id
-          check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
+          check_edge_and_set(bitfield, hexside_left, hexside_bits)
+          if paths[0].nodes.size > 1 # local trains may not have a second node
+            hexside_right = paths[0].nodes[1].id
+            check_edge_and_set(bitfield, hexside_right, hexside_bits)
+          end
         else
           (paths.size - 1).times do |index|
             # hand-optimized ruby gives faster opal code

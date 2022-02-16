@@ -231,7 +231,7 @@ module Engine
     end
 
     def visited_stops
-      @visited_stops ||= connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq
+      @visited_stops ||= connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact
     end
 
     def stops
