@@ -18,7 +18,7 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = {
           '1846 Rules' => 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
-          '1852: Missouri Rules Differences' => 'https://github.com/tobymao/18xx/wiki/18MO:-Missouri',
+          '1852: Missouri Rules Differences' => 'https://github.com/tobymao/18xx/wiki/1852:-Missouri',
           'Playtest Forum (BoardGameGeek, best place to discuss)' => 'https://boardgamegeek.com/thread/2814828/1852-missouri-playtesting',
           'Submit Direct Feedback (AAG Contact Form)' => 'https://all-aboardgames.com/pages/order-questions',
         }.freeze
