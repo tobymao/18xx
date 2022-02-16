@@ -6,7 +6,7 @@ module Engine
   module Game
     module G18Scan
       module Step
-        class BuyTrain < Engine::Step::BuyTrain
+        class BuyTrain < Engine::Step::BuySingleTrainOfType
           def can_entity_buy_train?
             true
           end
