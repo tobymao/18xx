@@ -28,6 +28,19 @@ module Engine
               !(new_exits & hex_neighbors(entity, hex)).empty? &&
               old_exits_are_preserved(old_paths, new_paths)
           end
+
+          # preserve label on Y cities because they use unlabeled yellow tiles
+          def process_lay_tile(action)
+            old_tile = action.hex.tile
+
+            super
+
+            return unless old_tile.label.to_s == 'Y'
+
+            old_tile.label = nil if old_tile.color == :yellow
+
+            action.tile.label = 'Y' if action.tile.color == :yellow
+          end
         end
       end
     end
