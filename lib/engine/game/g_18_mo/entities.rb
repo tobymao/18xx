@@ -138,7 +138,7 @@ module Engine
           {
             type: 'tile_lay',
             when: %w[owning_corp_or_turn],
-            hexes: %w[B6 B8 C9 D6 C9 D12 E11 F8 F10 F14 G11 H8],
+            hexes: %w[B6 B8 C9 D6 C9 D12 D14 E11 F8 F10 F12 F14 G11 H8],
             tiles: ['X1'],
             owner_type: 'corporation',
             count: 1,
@@ -157,7 +157,7 @@ module Engine
             type: 'train_discount',
             discount: 60,
             owner_type: 'corporation',
-            trains: ['2', '4', '5', '4a', '5a', '3/5', '4/6'],
+            trains: %w[2Y 3Y 3G 4G 3E 5 6],
             count: 1,
             closed_when_used_up: true,
             when: 'buying_train',
@@ -168,7 +168,7 @@ module Engine
          {
            name: 'Mountain Construction Company',
            value: 60,
-           revenue: 10,
+           revenue: 0,
            desc: 'Owner receives $20 whenever a tile is laid on a mountain hex. Never closes.',
            sym: 'MCC',
            abilities: [
