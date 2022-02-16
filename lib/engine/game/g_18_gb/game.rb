@@ -883,6 +883,15 @@ module Engine
         def or_round_finished
           depot.export! unless @train_bought
         end
+
+        def end_now?(after)
+          if @round.is_a?(round_end) && @depot.upcoming.size == 1 && !@train_bought
+            @depot.export!
+            return true
+          end
+
+          super
+        end
       end
     end
   end
