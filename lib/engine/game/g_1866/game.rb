@@ -911,6 +911,10 @@ module Engine
           'Treasury'
         end
 
+        def ipo_reserved_name(_entity = nil)
+          'Reserved'
+        end
+
         def issuable_shares(entity)
           return [] if !entity.corporation? || !corporation?(entity) || entity.num_ipo_shares.zero?
 
@@ -1211,6 +1215,9 @@ module Engine
 
           # Randomize and setup the corporations
           setup_corporations
+
+          # Set up the national shares
+          setup_nationals
 
           # Give all players stock turn token and remove unused
           setup_stock_turn_token
@@ -1949,6 +1956,12 @@ module Engine
           end
 
           @game_end_corporation_operated = Hash.new { |h, k| h[k] = false }
+        end
+
+        def setup_nationals
+          @corporations.select { |c| c.type == :national }.each do |national|
+            national.shares.each { |share| share.buyable = false if share.index > 4 }
+          end
         end
 
         def sell_stock_turn_token(corporation)

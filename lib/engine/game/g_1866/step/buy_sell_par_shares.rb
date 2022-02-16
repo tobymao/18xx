@@ -144,7 +144,7 @@ module Engine
               share = corporation.ipo_shares.first
 
               # Move all to the market
-              bundle = ShareBundle.new(corporation.shares_of(corporation))
+              bundle = ShareBundle.new(corporation.shares_of(corporation).select(&:buyable))
               @game.share_pool.transfer_shares(bundle, @game.share_pool)
 
               # Buy the share from the bank
