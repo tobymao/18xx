@@ -26,6 +26,8 @@ module Engine
 
         CAPITALIZATION = :incremental
 
+        MUST_SELL_IN_BLOCKS = true
+
         SELL_AFTER = :operate
 
         SELL_BUY_ORDER = :sell_buy
