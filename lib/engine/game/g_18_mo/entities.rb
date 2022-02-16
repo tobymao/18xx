@@ -150,7 +150,7 @@ module Engine
            name: 'Train Discount',
            value: 40,
            revenue: 15,
-           desc: 'Close to receive a $60 discount on a train. Closes when the power has been used.',
+           desc: 'Receive a $60 discount on a new train. Closes after use.',
            sym: 'TD',
            abilities: [
           {
