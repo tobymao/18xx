@@ -753,11 +753,7 @@ module Engine
         end
 
         def compass_points_in_network(network_hexes)
-          @scenario['compass-hexes'].select do |_compass, compasshexes|
-            network_hexes.any? do |coords|
-              compasshexes.include?(coords)
-            end
-          end.map(&:first)
+          @scenario['compass-hexes'].reject { |_compass, compass_hexes| (network_hexes & compass_hexes).empty? }.map(&:first)
         end
 
         def ns_bonus
