@@ -36,7 +36,7 @@ module Engine
                 # after dividend (withheld, as above) for a receivership corporation in insolvency, it reaches train buying
 
                 # if the corporation is 5-share and cannot afford the cheapest train available, it will first convert to 10-share
-                @game.convert_to_ten_share(entity, 3) if entity.type == '5-share' && entity.cash < @game.depot.min_depot_price
+                @game.convert_to_ten_share(entity, 3) if entity.type == :'5-share' && entity.cash < @game.depot.min_depot_price
 
                 # now the corporation buys the most expensive train that it can afford
                 affordable_trains = @game.depot.depot_trains.select { |train| train.price < entity.cash }

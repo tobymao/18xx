@@ -28,7 +28,7 @@ module Engine
           def can_convert?(corporation)
             return false unless corporation&.corporation?
 
-            corporation.type == '5-share' && corporation.trains.empty? && corporation.cash < @game.depot.min_depot_price
+            corporation.type == :'5-share' && corporation.trains.empty? && corporation.cash < @game.depot.min_depot_price
           end
 
           def convert_text

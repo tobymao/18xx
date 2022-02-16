@@ -7,6 +7,16 @@ require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'scenarios'
+require_relative 'round/operating'
+require_relative 'step/buy_sell_par_shares'
+require_relative 'step/buy_train'
+require_relative 'step/dividend'
+require_relative 'step/emr_share_buying'
+require_relative 'step/route'
+require_relative 'step/special_choose'
+require_relative 'step/special_token'
+require_relative 'step/track_and_token'
+require_relative 'step/waterfall_auction'
 
 module Engine
   module Game
@@ -18,6 +28,9 @@ module Engine
         include Map
         include Scenarios
         include TrainlessSharesHalfValue
+
+        attr_reader :scenario
+        attr_accessor :train_bought
 
         GAME_END_CHECK = { final_train: :current_or, stock_market: :current_or }.freeze
 
@@ -370,12 +383,12 @@ module Engine
 
         def game_companies
           scenario_comps = @scenario['companies']
-          self.class::COMPANIES.select { |comp| scenario_comps.include?(comp['sym']) }
+          self.class::COMPANIES.select { |comp| scenario_comps.include?(comp[:sym]) }
         end
 
         def game_corporations
           scenario_corps = @scenario['corporations'] + @scenario['corporation-extra'].sort_by { rand }.take(1)
-          self.class::CORPORATIONS.select { |corp| scenario_corps.include?(corp['sym']) }
+          self.class::CORPORATIONS.select { |corp| scenario_corps.include?(corp[:sym]) }
         end
 
         def game_tiles
@@ -529,8 +542,8 @@ module Engine
 
         def status_array(corp)
           status = []
-          status << %w[10-share bold] if corp.type == '10-share'
-          status << %w[5-share bold] if corp.type == '5-share'
+          status << %w[10-share bold] if corp.type == :'10-share'
+          status << %w[5-share bold] if corp.type == :'5-share'
           status << %w[Insolvent bold] if insolvent?(corp)
           status << %w[Receivership bold] if corp.receivership?
           status
@@ -538,7 +551,7 @@ module Engine
 
         def float_corporation(corporation)
           super
-          return unless corporation.type == '10-share'
+          return unless corporation.type == :'10-share'
 
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
@@ -598,7 +611,7 @@ module Engine
 
         def convert_to_ten_share(corporation, price_drops = 0, blame_president = false)
           # update corporation type and report conversion
-          corporation.type = '10-share'
+          corporation.type = :'10-share'
           @log << (if blame_president
                      "#{corporation.owner.name} converts #{corporation.id} into a 10-share corporation"
                    else
