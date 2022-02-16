@@ -114,7 +114,7 @@ module Engine
           end
 
           def can_convert?(player, corporation)
-            corporation&.type == '5-share' && corporation&.president?(player) && corporation&.operated?
+            corporation&.type == :'5-share' && corporation&.president?(player) && corporation&.operated?
           end
 
           def can_sell?(entity, bundle)
