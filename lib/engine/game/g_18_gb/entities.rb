@@ -9,8 +9,8 @@ module Engine
             name: 'London & Birmingham',
             value: 40,
             revenue: 10,
-            desc: "The owner of the L&B has priority for starting the LNWR. No other player may buy the Director's " \
-                  'Certificate of the LNWR, and the owner of the London & Birmingham may not buy shares in any other company' \
+            desc: "The owner of the LB has priority for starting the LNWR. No other player may buy the Director's " \
+                  'Certificate of the LNWR, and the owner of the London & Birmingham may not buy shares in any other company ' \
                   "until they have purchased the LNWR Director's Certificate.",
             sym: 'LB',
             color: nil,
@@ -32,9 +32,9 @@ module Engine
             name: 'Arbroath & Forfar',
             value: 30,
             revenue: 10,
-            desc: 'The Arbroath & Forfar allows a company to take an extra tile lay action to lay or upgrade a tile in Perth ' \
-                  '(I2). The owner of the AF may use this ability once per game, after the AF has closed, for any company ' \
-                  'which they control. A tile placed in Perth as a nomral tile lay does not close the AF.',
+            desc: 'The Arbroath & Forfar allows a company to take an extra tile action to lay or upgrade a tile in Perth (I2). '\
+                  'The owner of the AF may use this ability once per game, after the AF has closed, for any company which they '\
+                  'control. A tile placed in Perth as a normal tile lay does not close the AF.',
             sym: 'AF',
             color: nil,
             abilities: [
@@ -104,7 +104,7 @@ module Engine
             value: 35,
             revenue: 12,
             desc: 'The SD gives a bonus of £10 for Middlesbrough (J13). The owner of the SD may use this bonus for any trains ' \
-                  'owned by Companies that they control, from the time that the SD closes until the end of the game.',
+                  'owned by companies that they control, from the time that the SD closes until the end of the game.',
             sym: 'SD',
             color: nil,
             abilities: [
@@ -133,7 +133,7 @@ module Engine
             value: 45,
             revenue: 15,
             desc: 'The LM gives a bonus of £10 for Liverpool (E14). The owner of the LM may use this bonus for any trains run ' \
-                  'by Companies that they control, from the time that the LM closes until the end of the game.',
+                  'by companies that they control, from the time that the LM closes until the end of the game.',
             sym: 'LM',
             color: nil,
             abilities: [
@@ -161,9 +161,8 @@ module Engine
             name: 'Leicester & Swannington',
             value: 30,
             revenue: 10,
-            desc: 'The LS allows a company to take an extra tile lay action to lay or upgrade a tile in Leicester (H21). The ' \
-                  'owner of the LS may use this ability once per game, after the LS has closed, for any company which they ' \
-                  'control.',
+            desc: 'The LS allows a company to take an extra tile action to lay or upgrade a tile in Leicester (H21). The owner '\
+                  'of the LS may use this ability once per game, after the LS has closed, for any company which they control.',
             sym: 'LS',
             color: nil,
             abilities: [
@@ -271,7 +270,7 @@ module Engine
             value: 30,
             revenue: 10,
             desc: 'The CH gives a bonus income of £20 for Holyhead (C14). The owner of the CH may use this bonus for any ' \
-                  'trains run by Companies that they control, from the time that the CH closes until the end of the game.',
+                  'trains run by companies that they control, from the time that the CH closes until the end of the game.',
             sym: 'CH',
             color: nil,
             abilities: [
