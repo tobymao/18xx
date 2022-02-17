@@ -634,6 +634,8 @@ module Engine
           'IT' => %w[SSFL IFT SFAI],
         }.freeze
 
+        SHARE_PRICE_SUFFIX = ['T', 'M', 'B', ''].freeze
+
         STOCK_TURN_TOKEN_PREFIX = 'ST'
         STOCK_TURN_TOKEN_END_GAME = 600
 
@@ -1002,18 +1004,7 @@ module Engine
         end
 
         def par_price_str(share_price)
-          row, = share_price.coordinates
-          row_str = case row
-                    when 0
-                      'T'
-                    when 1
-                      'M'
-                    when 2
-                      'B'
-                    else
-                      ''
-                    end
-          "#{format_currency(share_price.price)}#{row_str}"
+          "#{format_currency(share_price.price)}#{share_price_suffix(share_price)}"
         end
 
         def payout_companies
@@ -1137,7 +1128,7 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          before_share_price = corporation.share_price
           was_president = corporation.president?(bundle.owner) || bundle.owner == corporation
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           if was_president
@@ -1145,7 +1136,7 @@ module Engine
           else
             bundle.num_shares.times { @stock_market.move_down(corporation) }
           end
-          log_share_price(corporation, price)
+          log_share_price_row(corporation, before_share_price)
         end
 
         def setup
@@ -1697,6 +1688,18 @@ module Engine
           entity&.loans&.size || 0
         end
 
+        def log_share_price_row(entity, from_share_price)
+          from_suffix = share_price_suffix(from_share_price)
+          to_suffix = share_price_suffix(entity.share_price)
+          from_price = from_share_price.price
+          to_price = entity.share_price.price
+          return if from_price == to_price && from_suffix == to_suffix
+
+          from = "#{format_currency(from_price)}#{from_suffix == to_suffix ? '' : from_suffix}"
+          to = "#{format_currency(to_price)}#{from_suffix == to_suffix ? '' : to_suffix}"
+          @log << "#{entity.name}'s share price changes from #{from} to #{to}"
+        end
+
         def germany_or_italy_national?(corporation)
           return false unless corporation
 
@@ -1773,10 +1776,9 @@ module Engine
           entity.loans.delete(loan)
           @loans << loan
 
-          current_price = entity.share_price.price
+          before_share_price = entity.share_price
           @stock_market.move_up(entity)
-          @log << "#{entity.name}'s share price changes from " \
-                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+          log_share_price_row(entity, before_share_price)
         end
 
         def payoff_player_loan(player)
@@ -2004,6 +2006,11 @@ module Engine
           end
         end
 
+        def share_price_suffix(share_price)
+          row, = share_price.coordinates
+          self.class::SHARE_PRICE_SUFFIX[row]
+        end
+
         def starting_stock_turn_tokens
           player_size = @players.size
           case player_size
@@ -2082,10 +2089,9 @@ module Engine
           entity.loans << loan
           @loans.delete(loan)
 
-          current_price = entity.share_price.price
+          before_share_price = entity.share_price
           @stock_market.move_down(entity)
-          @log << "#{entity.name}'s share price changes from " \
-                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+          log_share_price_row(entity, before_share_price)
         end
 
         def take_player_loan(player, loan)
