@@ -186,6 +186,7 @@ module Engine
             sym: 'ATSF',
             name: 'Atchison, Topeka and Santa Fe Railway',
             logo: '18_mo/ATSF',
+            simple_logo: '18_mo/ATSF.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -214,6 +215,7 @@ module Engine
             sym: 'CBQ',
             name: 'Chicago, Burlington and Quincy Railroad',
             logo: '18_mo/CBQ',
+            simple_logo: '18_mo/CBQ.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -242,6 +244,7 @@ module Engine
             sym: 'MKT',
             name: 'Missouri–Kansas–Texas Railroad',
             logo: '18_mo/MKT',
+            simple_logo: '18_mo/MKT.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -270,6 +273,7 @@ module Engine
             sym: 'MP',
             name: 'Missouri Pacific Railroad',
             logo: '18_mo/MP',
+            simple_logo: '18_mo/MP.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -299,6 +303,7 @@ module Engine
             sym: 'RI',
             name: 'Chicago, Rock Island & Pacific Railroad',
             logo: '18_mo/RI',
+            simple_logo: '18_mo/RI.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -327,6 +332,7 @@ module Engine
             sym: 'SLSF',
             name: 'St. Louis–San Francisco Railway',
             logo: '18_mo/SLSF',
+            simple_logo: '18_mo/SLSF.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -356,6 +362,7 @@ module Engine
             sym: 'SSW',
             name: 'St. Louis Southwestern Railway',
             logo: '18_mo/SSW',
+            simple_logo: '18_mo/SSW.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -388,6 +395,7 @@ module Engine
             sym: 'HSJ',
             name: 'Hannibal and St. Joseph Railroad',
             logo: '18_mo/HSJ',
+            simple_logo: '18_mo/HSJ.alt',
             tokens: [0],
             coordinates: 'H6',
             color: 'pink',
@@ -397,6 +405,7 @@ module Engine
             sym: 'SSL',
             name: 'St. Louis, Salem and Little Rock',
             logo: '18_mo/SSL',
+            simple_logo: '18_mo/SSL.alt',
             tokens: [0],
             coordinates: 'H12',
             color: 'cyan',
