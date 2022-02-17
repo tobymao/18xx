@@ -576,10 +576,10 @@ module Engine
 
         # Only need up to phase 5, all national concessions are forced to convert in phase 5
         NATIONAL_PHASE_PAR_TYPES = {
-          'L/2' => :par_1,
-          '3' => :par_2,
-          '4' => :par_2,
-          '5' => :par_3,
+          'L/2' => :par,
+          '3' => :par_1,
+          '4' => :par_1,
+          '5' => :par_2,
         }.freeze
 
         NATIONAL_PREPRINTED_TILES = %w[AHE DE ESP].freeze
