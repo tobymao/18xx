@@ -714,7 +714,7 @@ module Engine
 
           raise GameError, "Must visit #{base.to_s.upcase}" unless other_route
 
-          raise GameError, "Must visit #{base.to_s.upcase} or intersect with a route that does"
+          raise GameError, "Must visit #{base.to_s.upcase} or intersect with another #{base.to_s.upcase} route that does"
         end
 
         def sp_revenue(routes)
@@ -845,6 +845,11 @@ module Engine
 
         def end_game!
           super
+
+          if @end_bonuses.empty?
+            @log << 'No end of game bonuses'
+            return
+          end
 
           @log << 'End of game bonus tokens:'
           @corporations.reject(&:closed?).each do |c|
