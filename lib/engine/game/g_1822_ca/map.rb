@@ -414,7 +414,7 @@ module Engine
             ['O13'] =>
               'border=edge:1,type:impassable',
 
-            %w[C9 D12 D16 F8 F10 H8 H16 I11 I17 J16 K9 K13 K17 L8 L10 L16 M9 M17 N16 O15
+            %w[C9 D12 D16 F8 F10 H8 H16 I11 I17 J16 K9 K13 K17 L8 L10 L16 M9 M17 O15
                P14 Q7 S15 U11 W9 Y17 Z10 Z26 AA9 AD18 AE17 AG3 AK5 AL2 AM5 AP6] =>
               'town=revenue:0',
             %w[G13 I15] =>
@@ -455,10 +455,10 @@ module Engine
               'city=revenue:20,slots:2;city=revenue:20;path=a:0,b:_0;upgrade=cost:20;'\
               'label=M;border=edge:4,type:water,cost:20;border=edge:5,type:water,cost:20',
             ['AG15'] =>
-              'city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_0,b:_1;'\
+              'city=revenue:20,loc:center;town=revenue:10,loc:4;path=a:_0,b:_1;'\
               'border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:20',
             ['AH8'] =>
-              'city=revenue:10;city=revenue:0;city=revenue:0;path=a:1,b:_0;'\
+              'city=revenue:10;city=revenue:0,loc:3.5;city=revenue:0,loc:5;path=a:1,b:_0;'\
               'border=edge:0,type:water,cost:20;border=edge:4,type:water,cost:20;'\
               'border=edge:5,type:water,cost:20',
             ['AN6'] =>
