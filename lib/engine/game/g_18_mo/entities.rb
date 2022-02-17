@@ -74,7 +74,7 @@ module Engine
            name: 'Extra Green Tile',
            value: 40,
            revenue: 15,
-           desc: 'May lay an extra green tile on a connected city for free (including terrain) one time.',
+           desc: 'May lay an extra green tile on a connected (non-StL) city for free (including terrain) one time.',
            sym: 'EXG',
            color: nil,
            abilities: [{
