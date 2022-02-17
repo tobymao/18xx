@@ -64,13 +64,6 @@ module Engine
             'code' =>
             'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:5,b:_1;label=OO',
           },
-          'mtog3' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' =>
-            'city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_1;path=a:3,b:_1;label=OO',
-          },
           'mtog4' =>
           {
             'count' => 1,
