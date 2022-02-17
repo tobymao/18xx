@@ -90,5 +90,17 @@ module View
 
       h(:button, props, text)
     end
+
+    def render_checkbox(label, id, form, checked)
+      render_input(
+        label,
+        id: id,
+        type: 'checkbox',
+        inputs: form,
+        attrs: {
+          checked: checked,
+        }
+      )
+    end
   end
 end

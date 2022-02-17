@@ -119,6 +119,10 @@ module Engine
           false
         end
 
+        def available_programmed_actions
+          super << Action::ProgramAuctionBid
+        end
+
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             G18EU::Step::Bankrupt,

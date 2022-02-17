@@ -296,6 +296,10 @@ module Engine
 
           corporation.remove_ability(ability)
         end
+
+        def available_programmed_actions
+          super << Action::ProgramAuctionBid
+        end
       end
     end
   end
