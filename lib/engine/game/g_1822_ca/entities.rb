@@ -6,7 +6,7 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'P1-BEC (5-Train)',
+            name: 'P1-MLW (5-Train)',
             sym: 'P1',
             value: 0,
             revenue: 5,
@@ -19,32 +19,24 @@ module Engine
             color: nil,
           },
           {
-            name: 'P2-MtonR (Remove Town)',
+            name: 'P2-RS&C (Perm. L Train)',
             sym: 'P2',
             value: 0,
-            revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. Allows the owning company to place a plain yellow '\
-                  'track tile directly on an undeveloped small station hex location or upgrade a small station tile '\
-                  'of one colour to a plain track tile of the next colour. This closes the company and counts as '\
-                  'the company’s normal track laying step. All other normal track laying restrictions apply. Once '\
-                  'acquired, the private company pays its revenue to the owning company until the power is '\
-                  'exercised and the company is closed.',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                when: 'track',
-                count: 1,
-                reachable: true,
-                closed_when_used_up: true,
-                hexes: [],
-                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
-              },
-            ],
+            revenue: 0,
+            desc: 'MAJOR/MINOR, Phase 1. Permanent L-Train. An L-train cannot be sold to another company. It does '\
+                  'not count as a train for the purposes of mandatory train ownership. It does not count against '\
+                  'train ownership limit. A company cannot own both a permanent L-train and a permanent 2-train. '\
+                  'Dividends can be separated from other trains and may be split, paid in full, or retained. If a '\
+                  'company runs a permanent L-train and pays a dividend (split or full), but retains its dividend '\
+                  'from other train operations this still counts as a normal dividend for stock price movement '\
+                  'purposes. Vice-versa, if a company pays a dividend (split or full) with its other trains, but '\
+                  'retains the dividend from the permanent L, this also still counts as a normal dividend for stock '\
+                  'price movement purposes. Does not close.',
+            abilities: [],
             color: nil,
           },
           {
-            name: 'P3-S&HR (Permanent 2T)',
+            name: 'P3-TLW (Permanent 2T)',
             sym: 'P3',
             value: 0,
             revenue: 0,
@@ -62,7 +54,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P4-SDR (Permanent 2T)',
+            name: 'P4-CoD (Permanent 2T)',
             sym: 'P4',
             value: 0,
             revenue: 0,
@@ -80,202 +72,48 @@ module Engine
             color: nil,
           },
           {
-            name: 'P5-LC&DR (English Channel)',
+            name: 'P5-PCCo (Pullman)',
             sym: 'P5',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. English Channel. The owning company may place an exchange station token on the '\
-                  'map, free of charge, in a token space in the English Channel. The company does not need to be '\
-                  'able to trace a route to the English Channel to use this property (i.e. any company can use this '\
-                  'power to place a token in the English Channel). If no token spaces are available, but a space '\
-                  'could be created by upgrading the English Channel track then this power may be used to place a '\
-                  'token and upgrade the track simultaneously. This counts as the acquiring company’s tile lay '\
-                  'action and incurs the usual costs for doing so. Alternatively, it can move an exchange station '\
-                  'token to the available station token section on its company charter.',
-            abilities: [
-              {
-                type: 'teleport',
-                owner_type: 'corporation',
-                hexes: ['P43'],
-                tiles: %w[X9 X15],
-              },
-              {
-                type: 'token',
-                owner_type: 'corporation',
-                hexes: ['P43'],
-                price: 0,
-                teleport_price: 0,
-                count: 1,
-                extra_action: true,
-              },
-            ],
+            desc: 'MAJOR, Phase 5. Pullman. A “Pullman” carriage train that can be added to another train '\
+                  'owned by the company. It converts the train into a + train. Does not count against train limit '\
+                  'and does not count as a train for the purposes of train ownership. Can’t be sold to another '\
+                  'company. Does not close. May include a maximum of [2 × the train size] number of towns.',
+            abilities: [],
             color: nil,
           },
           {
-            name: 'P6-L&SR (Mail Contract)',
+            name: 'P6-FCW (Pullman)',
             sym: 'P6',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income into its '\
-                  'treasury equal to one half of the base value of the start and end stations from one of the '\
-                  'trains operated. Doubled values (for E trains or destination tokens) do not count. The company '\
-                  'is not required to maximise the dividend from its run if it wishes to maximise its revenue from '\
-                  'the mail contract by stopping at a large city and not running beyond it to include small '\
-                  'stations. Does not close.',
+            desc: 'MAJOR, Phase 5. Pullman. A “Pullman” carriage train that can be added to another train '\
+                  'owned by the company. It converts the train into a + train. Does not count against train limit '\
+                  'and does not count as a train for the purposes of train ownership. Can’t be sold to another '\
+                  'company. Does not close. May include a maximum of [2 × the train size] number of towns.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P7-S&BR (Mail Contract)',
+            name: 'P7-TSE (Double Cash)',
             sym: 'P7',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income into its '\
-                  'treasury equal to one half of the base value of the start and end stations from one of the '\
-                  'trains operated. Doubled values (for E trains or destination tokens) do not count. The company '\
-                  'is not required to maximise the dividend from its run if it wishes to maximise its revenue from '\
-                  'the mail contract by stopping at a large city and not running beyond it to include small '\
-                  'stations. Does not close.',
-            abilities: [],
-            color: nil,
-          },
-          {
-            name: 'P8-E&GR (Hill Discount)',
-            sym: 'P8',
-            value: 0,
-            revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Mountain/Hill Discount. Either: The acquiring company receives a discount '\
-                  'token that can be used to pay the full cost of a single track tile lay on a rough terrain, hill '\
-                  'or mountain hex. This closes the company. Or: The acquiring company rejects the token and '\
-                  'receives a £20 discount off the cost of all hill and mountain terrain (i.e. NOT off the cost of '\
-                  'rough terrain). The private company does not close. Closes if free token taken when acquired. '\
-                  'Otherwise, flips when acquired and does not close.',
-            abilities: [],
-            color: nil,
-          },
-          {
-            name: 'P9-M&GNR (Double Cash)',
-            sym: 'P9',
-            value: 0,
-            revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Declare 2x Cash Holding. If held by a player, the holding player may '\
+            desc: 'MAJOR, Phase 3. Declare 2x Cash Holding. If held by a player, the holding player may '\
                   'declare double their actual cash holding at the end of a stock round to determine player turn '\
                   'order in the next stock round. If held by a company it pays revenue of '\
-                  '£20 (green)/£40 (brown)/£60 (grey). Does not close.',
+                  '$20 (green)/$40 (brown)/$60 (grey). Does not close.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P10-G&SWR (River Discount)',
-            sym: 'P10',
-            value: 0,
-            revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. River/Estuary Discount. The acquiring company receives two discount tokens '\
-                  'each of which can be used to pay the cost for one track lay over an estuary crossing. They can '\
-                  'be used on the same or different tile lays. Use of the second token closes the company. In '\
-                  'addition, until the company closes it provides a discount of £10 against the cost of all river '\
-                  'terrain (excluding estuary crossings).',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                when: 'track',
-                count: 2,
-                reachable: true,
-                closed_when_used_up: true,
-                hexes: [],
-                tiles: [],
-              },
-              {
-                type: 'tile_discount',
-                owner_type: 'corporation',
-                discount: 10,
-                terrain: 'swamp',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P11-B&ER (Adv. Tile Lay)',
-            sym: 'P11',
-            value: 0,
-            revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Advanced Tile Lay. The owning company may lay one plain or small station '\
-                  'track upgrade using the next colour of track to be available, before it is actually made '\
-                  'available by phase progression. The normal rules for progression of track lay must be followed '\
-                  '(i.e. grey upgrades brown upgrades green upgrades yellow) it is not possible to skip a colour '\
-                  'using this private. All other normal track laying restrictions apply. This is in place of its '\
-                  'normal track lay action. Once acquired, the private company pays its revenue to the owning '\
-                  'company until the power is exercised and the company closes.',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                when: 'track',
-                count: 1,
-                reachable: true,
-                closed_when_used_up: true,
-                hexes: [],
-                tiles: %w[80 81 82 83 544 545 546 60 169 141 142 143 144 767 768 769 X17],
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P12-L&SR (Extra Tile Lay)',
-            sym: 'P12',
-            value: 0,
-            revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Extra Tile Lay. The owning company may lay an additional yellow tile (or '\
-                  'two for major companies), or make one additional tile upgrade in its track laying step. The '\
-                  'upgrade can be to a tile laid in its normal tile laying step. All other normal track laying '\
-                  'restrictions apply. Once acquired, the private company pays its revenue to the owning company '\
-                  'until the power is exercised and the company closes.',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                when: 'track',
-                count: 2,
-                reachable: true,
-                closed_when_used_up: true,
-                hexes: [],
-                tiles: [],
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P13-YN&BR (Pullman)',
-            sym: 'P13',
-            value: 0,
-            revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 5. Pullman. A “Pullman” carriage train that can be added to another train '\
-                  'owned by the company. It converts the train into a + train. Does not count against train limit '\
-                  'and does not count as a train for the purposes of train ownership. Can’t be sold to another '\
-                  'company. Does not close.',
-            abilities: [],
-            color: nil,
-          },
-          {
-            name: 'P14-K&TR (Pullman)',
-            sym: 'P14',
-            value: 0,
-            revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 5. Pullman. A “Pullman” carriage train that can be added to another train '\
-                  'owned by the company. It converts the train into a + train. Does not count against train limit '\
-                  'and does not count as a train for the purposes of train ownership. Can’t be sold to another '\
-                  'company. Does not close.',
-            abilities: [],
-            color: nil,
-          },
-          {
-            name: 'P15-HR (£10x Phase)',
-            sym: 'P15',
+            name: 'P8-HR ($10x Phase)',
+            sym: 'P8',
             value: 0,
             revenue: 0,
-            desc: 'MAJOR/MINOR, Phase 2. £10x Phase. Pays revenue of £10 x phase number to the player, and pays '\
-                  'treasury credits of £10 x phase number to the private company. This credit is retained on the '\
+            desc: 'MAJOR/MINOR, Phase 2. $10x Phase. Pays revenue of $10 x phase number to the player, and pays '\
+                  'treasury credits of $10 x phase number to the private company. This credit is retained on the '\
                   'private company charter. When acquired, the acquiring company receives this treasury money and '\
                   'this private company closes. If not acquired beforehand, this company closes at the start of '\
                   'Phase 7 and all treasury credits are returned to the bank.',
@@ -283,13 +121,40 @@ module Engine
             color: nil,
           },
           {
-            name: 'P16-TH (Tax Haven)',
-            sym: 'P16',
+            name: 'P9-GMA ($5x Phase)',
+            sym: 'P9',
+            value: 0,
+            revenue: 0,
+            desc: 'MAJOR/MINOR, Phase 2. $5x Phase. Pays revenue of $5 x phase number to the player, and pays '\
+                  'treasury credits of $5 x phase number to the private company. This credit is retained on the '\
+                  'private company charter. When acquired, the acquiring company receives this treasury money and '\
+                  'this private company closes. If not acquired beforehand, this company closes at the start of '\
+                  'Phase 7 and all treasury credits are returned to the bank.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P10-MSWCR (Winnipeg Token)',
+            sym: 'P10',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Winnipeg Station. The owning company may place an exchange station token on the '\
+                  'map, free of charge, in a token space in Winnipeg. The company does NOT need to be able to trace '\
+                  'a route to the station in Winnipeg. Token must be specifically conjoined to one of the five '\
+                  'Station slots. Pays company $10 until used. The company does not need to be able to trace a route '\
+                  'to Winnipeg to use this property (i.e. any company can use this power to place a token in the '\
+                  'Winnipeg hex).',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P11-TSE (RRSP)',
+            sym: 'P11',
             value: 0,
             revenue: 0,
             desc: 'CAN NOT BE ACQUIRED. Tax Haven. As a stock round action, under the direction and funded by the '\
                   'owning player, the off-shore Tax Haven may purchase an available share certificate and place it '\
-                  'onto P16’s charter. The certificate is not counted for determining directorship of a company. '\
+                  'onto P7’s charter. The certificate is not counted for determining directorship of a company. '\
                   'The share held in the tax haven does NOT count against the 60% share limit for purchasing '\
                   'shares. If at 60% (or more) in hand in a company, a player can still purchase an additional '\
                   'share in that company and place it in the tax haven. Similarly, if a player holds 50% of a '\
@@ -304,106 +169,349 @@ module Engine
             color: nil,
           },
           {
-            name: 'P17-LUR (Move Card)',
-            sym: 'P17',
+            name: 'P12-SirSF (Adv. Tile Lay)',
+            sym: 'P12',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 2. Move Card. Allows the director of the owning company to select one concession, '\
-                  'private company, or minor company from the relevant stack of certificates, excluding those items '\
-                  'currently in the bidding boxes, and move it to the top or the bottom of the stack. Closes when '\
-                  'the power is exercised.',
+            desc: 'MAJOR/MINOR, Phase 1. Advanced Tile Lay. The owning company may lay one plain or town '\
+                  'track upgrade using the next colour of track to be available, before it is actually made '\
+                  'available by phase progression. The normal rules for progression of track lay must be followed '\
+                  '(i.e. grey upgrades brown upgrades green upgrades yellow) it is not possible to skip a colour '\
+                  'using this private. All other normal track laying restrictions apply. This is in place of its '\
+                  'normal track lay action. Once acquired, the private company pays its revenue to the owning '\
+                  'company until the power is exercised and the company closes. May be used in conjunction with '\
+                  'P29 and/or P30 as part of the same tile placement step.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P18-C&HPR (Station Swap)',
+            name: 'P13-JRB (Sawmill)',
+            sym: 'P13',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Sawmill Bonus. Close this company to place a +$10 (closed) or +$20 (open to '\
+                  'all) token in a town or city. Token placement is restricted and may not be placed in a grey '\
+                  'pre-printed hex nor any labeled city (A, B, L, M, O, Q, T, W, Y). The placing company does not '\
+                  'have to have a route to the city where the token is placed. The token increases the value of the '\
+                  'revenue center by the indicated amount when running a train there. If the token is “open” then '\
+                  'all companies receive the +20 bonus; if “closed” only the owning company receives the +10 bonus. '\
+                  'Destination runs and E-trains both double the value of this token. A company may only include the '\
+                  'token bonus to the run of one train per operating round. A town with a sawmill may not be removed '\
+                  'by P29 or P30.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P14-SM&HUR (Toronto Upgrade)',
+            sym: 'P14',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR/MINOR, Phase 1. Free Toronto Upgrades. Owner pays no upgrade fee or terrain costs for the '\
+                  'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
+                  'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
+                  'only. The company upgrading the city must be connected to it in order to exercise the private company.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P15-PPJR (Ottawa Upgrade)',
+            sym: 'P15',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR/MINOR, Phase 1. Free Ottawa Upgrades. Owner pays no upgrade fee or terrain costs for the '\
+                  'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
+                  'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
+                  'only. The company upgrading the city must be connected to it in order to exercise the private company.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P16-SER (Montreal Upgrade)',
+            sym: 'P16',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR/MINOR, Phase 1. Free Montreal Upgrades. Owner pays no upgrade fee or terrain costs for the '\
+                  'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
+                  'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
+                  'only. The company upgrading the city must be connected to it in order to exercise the private company.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P17-QRR (Quebec Upgrade)',
+            sym: 'P17',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR/MINOR, Phase 1. Free Quebec Upgrades. Owner pays no upgrade fee or terrain costs for the '\
+                  'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
+                  'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
+                  'only. The company upgrading the city must be connected to it in order to exercise the private company.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P18-W&PAR (Winnipeg Upgrade)',
             sym: 'P18',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 5. Station Marker Swap. Allows the owning company to move a token from the exchange '\
+            desc: 'MAJOR/MINOR, Phase 1. Free Winnipeg Upgrades. Owner pays no upgrade fee or terrain costs for the '\
+                  'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
+                  'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
+                  'only. The company upgrading the city must be connected to it in order to exercise the private company.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P19-CP (Crowsnest Pass)',
+            sym: 'P19',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Crowsnest Pass Tile. Allows the owning company to place a tile into the Crowsnest '\
+                  'Pass (CP) and ignore the terrain fee. This tile placement counts as the company’s full track '\
+                  'laying step. Closed when used. The CP hex is not reserved; any company may pay to lay a tile '\
+                  'there irrespective of the ownership of P19.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P20-CP (Yellowhead Pass)',
+            sym: 'P20',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Yellowhead Pass Tile. Allows the owning company to place a tile into the Yellowhead '\
+                  'Pass (YP) and ignore the terrain fee. This tile placement counts as the company’s full track '\
+                  'laying step. Closed when used. The YP hex is not reserved; any company may pay to lay a tile '\
+                  'there irrespective of the ownership of P20.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P21-NatDrm (National Dream)',
+            sym: 'P21',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. 3-Tile Grant. The owning company may close this company to place three yellow '\
+                  'tiles in addition to its normal track lay. The owning company’s normal track lay and each of '\
+                  'the three extra yellow tile lays may be done in any order. These lays are exempt from terrain '\
+                  'fees, but may not be used to build on hexes with mountainous terrain ($120) or in Montreal, '\
+                  'Ottawa, Quebec, Toronto or Winnipeg.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P22-NM (National Mail Contract)',
+            sym: 'P22',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Large mail Contract. After running trains, the owning company receives income into '\
+                  'its treasury equal to one half of the base value of the start and end stations from one of the '\
+                  'trains operated. Doubled values (for E trains or destination tokens) do not count. The company '\
+                  'is not required to maximise the dividend from its run if it wishes to maximise its revenue from '\
+                  'the mail contract by stopping at a large city and not running beyond it to include towns. A company '\
+                  'may own multiple Large Mail Contracts, but may only use one per train. Does not close.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P23-NM (National Mail Contract)',
+            sym: 'P23',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Large mail Contract. After running trains, the owning company receives income into '\
+                  'its treasury equal to one half of the base value of the start and end stations from one of the '\
+                  'trains operated. Doubled values (for E trains or destination tokens) do not count. The company '\
+                  'is not required to maximise the dividend from its run if it wishes to maximise its revenue from '\
+                  'the mail contract by stopping at a large city and not running beyond it to include towns. A company '\
+                  'may own multiple Large Mail Contracts, but may only use one per train. Does not close.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P24-RM (Regional Mail Contract)',
+            sym: 'P24',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Samll mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
+                  '/$40 (grey) to the treasury of the company. The company must operate a train to claim the mail '\
+                  'income. Does not close.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P25-RM (Regional Mail Contract)',
+            sym: 'P25',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Samll mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
+                  '/$40 (grey) to the treasury of the company. The company must operate a train to claim the mail '\
+                  'income. Does not close.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P26-SWP (Grain Train)',
+            sym: 'P26',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Grain Train. A grain train can be added to a train owned by the company. It '\
+                  'converts the train into a grain train, which can deliver grain from the grain elevators to a '\
+                  'port city. Does not count against the train limit and does not count as a train for the purposes '\
+                  'of train ownership. Does not close. Cannot be sold to another company. Adds $10 to company revenue '\
+                  'for each grain elevator on the run. Does not count the town revenue. Towns with grain elevators '\
+                  'do not count as stops. Runs may extend beyond the start and end city. If the route route run by '\
+                  'the grain train includes at least one grain elevator and a port city, the port city adds $20 to '\
+                  'the run revenue.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P27-AWP (Grain Train)',
+            sym: 'P27',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR, Phase 3. Grain Train. A grain train can be added to a train owned by the company. It '\
+                  'converts the train into a grain train, which can deliver grain from the grain elevators to a '\
+                  'port city. Does not count against the train limit and does not count as a train for the purposes '\
+                  'of train ownership. Does not close. Cannot be sold to another company. Adds $10 to company revenue '\
+                  'for each grain elevator on the run. Does not count the town revenue. Towns with grain elevators '\
+                  'do not count as stops. Runs may extend beyond the start and end city. If the route route run by '\
+                  'the grain train includes at least one grain elevator and a port city, the port city adds $20 to '\
+                  'the run revenue.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P28-GSR (Station Swap)',
+            sym: 'P28',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR/MINOR, Phase 3. Station Marker Swap. Allows the owning company to move a token from the exchange '\
                   'token area of its charter to the available token area, or vice versa. This company closes when '\
                   'its power is exercised.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P19-AEC (Perm. L Train)',
-            sym: 'P19',
-            value: 0,
-            revenue: 0,
-            desc: 'MAJOR/MINOR, Phase 1. Permanent L-Train. An L-train cannot be sold to another company. It does '\
-                  'not count as a train for the purposes of mandatory train ownership. It does not count against '\
-                  'train ownership limit. A company cannot own both a permanent L-train and a permanent 2-train. '\
-                  'Dividends can be separated from other trains and may be split, paid in full, or retained. If a '\
-                  'company runs a permanent L-train and pays a dividend (split or full), but retains its dividend '\
-                  'from other train operations this still counts as a normal dividend for stock price movement '\
-                  'purposes. Vice-versa, if a company pays a dividend (split or full) with its other trains, but '\
-                  'retains the dividend from the permanent L, this also still counts as a normal dividend for stock '\
-                  'price movement purposes. Does not close.',
-            abilities: [],
-            color: nil,
-          },
-          {
-            name: 'P20-C&WR (£5x Phase)',
-            sym: 'P20',
-            value: 0,
-            revenue: 0,
-            desc: 'MAJOR/MINOR, Phase 3. £5x Phase. Pays revenue of £5 x phase number to the player, and pays '\
-                  'treasury credits of £5 x phase number to the private company. This credit is retained on the '\
-                  'private company charter. When acquired, the acquiring company receives this treasury money and '\
-                  'this private company closes. If not acquired beforehand, this company closes at the start of '\
-                  'Phase 7 and all treasury credits are returned to the bank.',
-            abilities: [],
-            color: nil,
-          },
-          {
-            name: 'P21-HSBC (Grimsby/Hull Bridge)',
-            sym: 'P21',
+            name: 'P29-CMH (Remove Town)',
+            sym: 'P29',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Grimsby/Hull Bridge. Allows the owning company to lay yellow tiles in '\
-                  'Grimsby and / or Hull, forming a direct track connection between the two cities over the '\
-                  'Humber estuary. If one of the cities already has a yellow tile in place, then if used in phase 3 '\
-                  'or later, one of the tile lays may be a green upgrade. No terrain costs apply for these tile '\
-                  'lays. These tile lays count as the normal track laying phase for the operating company. The '\
-                  'owning company must have a token in Hull or Grimsby to use this power. Closes when its power is '\
-                  'exercised.',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                when: 'track',
-                count: 2,
-                free: true,
-                reachable: true,
-                closed_when_used_up: true,
-                hexes: %w[N21 N23],
-                tiles: %w[5 6 57 15],
-              },
-            ],
+            desc: 'MAJOR/MINOR, Phase 1. Remove Single Town. Allows the owning company to place a plain yellow track '\
+                  'tile directly on an undeveloped single town hex location or upgrade a single town tile of one '\
+                  'colour to a plain track tile of the next colour. This closes the company and counts as the '\
+                  'company’s normal track laying step. All other normal track laying restrictions apply. Once '\
+                  'acquired, the private company pays its revenue to the owning company until the power is exercised '\
+                  'and the company is closed. May be used in conjunction with P12 and/or P30 as part of the same tile '\
+                  'placement step. May not be used to remove a town with a sawmill token (P13).',
+            abilities: [],
             color: nil,
           },
           {
-            name: 'CONCESSION: LNWR',
+            name: 'P30-WCvH (Remove Town)',
+            sym: 'P30',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR/MINOR, Phase 1. Remove Single Town. Allows the owning company to place a plain yellow track '\
+                  'tile directly on an undeveloped single town hex location or upgrade a single town tile of one '\
+                  'colour to a plain track tile of the next colour. This closes the company and counts as the '\
+                  'company’s normal track laying step. All other normal track laying restrictions apply. Once '\
+                  'acquired, the private company pays its revenue to the owning company until the power is exercised '\
+                  'and the company is closed. May be used in conjunction with P12 and/or P30 as part of the same tile '\
+                  'placement step. May not be used to remove a town with a sawmill token (P13).',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'CONCESSION: CNoR',
             sym: 'C1',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and converts into the LNWR’s 10% director certificate. LNWR may also put '\
-                  'its destination token into Manchester when converted.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the CNoR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['LNWR'],
+                corporations: ['CNoR'],
                 owner_type: 'player',
                 from: 'par',
               },
             ],
-            color: '#000',
+            color: '#9fce63',
+            text_color: 'black',
+          },
+          {
+            name: 'CONCESSION: CPR',
+            sym: 'C2',
+            value: 100,
+            revenue: 10,
+            desc: 'Has a face value of £100 and converts into the CPR’s 10% director certificate. CPR may also put '\
+                  'its destination token into Vancouver when converted.',
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['CPR'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
+            color: '#ed242a',
+            text_color: 'white',
+          },
+          {
+            name: 'CONCESSION: GNWR',
+            sym: 'C3',
+            value: 100,
+            revenue: 10,
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the GNWR director’s '\
+                  'certificate.',
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['GNWR'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
+            color: '#8dd8f8',
+            text_color: 'black',
+          },
+          {
+            name: 'CONCESSION: GT',
+            sym: 'C4',
+            value: 100,
+            revenue: 10,
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the GT director’s '\
+                  'certificate.',
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['GT'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
+            color: '#000000',
+            text_color: 'white',
+          },
+          {
+            name: 'CONCESSION: GTP',
+            sym: 'C5',
+            value: 100,
+            revenue: 10,
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the GTP director’s certificate.',
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['GTP'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
+            color: '#f47d20',
             text_color: 'white',
           },
           {
             name: 'CONCESSION: GWR',
-            sym: 'C2',
+            sym: 'C6',
             value: 100,
             revenue: 10,
             desc: 'Has a face value of £100 and contributes £100 to conversion into the GWR director’s certificate.',
@@ -415,145 +523,75 @@ module Engine
                 from: 'par',
               },
             ],
-            color: '#165016',
+            color: '#395aa8',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: LBSCR',
-            sym: 'C3',
-            value: 100,
-            revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the LBSCR director’s '\
-                  'certificate.',
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['LBSCR'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-            color: '#cccc00',
-            text_color: 'white',
-          },
-          {
-            name: 'CONCESSION: SECR',
-            sym: 'C4',
-            value: 100,
-            revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the SECR director’s '\
-                  'certificate.',
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['SECR'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-            color: '#ff7f2a',
-            text_color: 'white',
-          },
-          {
-            name: 'CONCESSION: CR',
-            sym: 'C5',
-            value: 100,
-            revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the CR director’s certificate.',
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['CR'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-            color: '#5555ff',
-            text_color: 'white',
-          },
-          {
-            name: 'CONCESSION: MR',
-            sym: 'C6',
-            value: 100,
-            revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the MR director’s certificate.',
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['MR'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-            color: '#ff2a2a',
-            text_color: 'white',
-          },
-          {
-            name: 'CONCESSION: LYR',
+            name: 'CONCESSION: ICR',
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the LYR director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the ICR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['LYR'],
+                corporations: ['ICR'],
                 owner_type: 'player',
                 from: 'par',
               },
             ],
-            color: '#5a2ca0',
-            text_color: 'white',
+            color: '#eee91e',
+            text_color: 'black',
           },
           {
-            name: 'CONCESSION: NBR',
+            name: 'CONCESSION: NTR',
             sym: 'C8',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the NBR director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the NTR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['NBR'],
+                corporations: ['NTR'],
                 owner_type: 'player',
                 from: 'par',
               },
             ],
-            color: '#a05a2c',
+            color: '#9a6733',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: SWR',
+            name: 'CONCESSION: PGE',
             sym: 'C9',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the SWR director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the PGE director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['SWR'],
+                corporations: ['PGE'],
                 owner_type: 'player',
                 from: 'par',
               },
             ],
-            color: '#999999',
+            color: '#199d4a',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: NER',
+            name: 'CONCESSION: QMOO',
             sym: 'C10',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the NER director’s certificate.',
+            desc: 'Has a face value of £100 and contributes £100 to conversion into the QMOO director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['NER'],
+                corporations: ['QMOO'],
                 owner_type: 'player',
                 from: 'par',
               },
             ],
-            color: '#aade87',
+            color: '#7f3881',
             text_color: 'white',
           },
           {
@@ -611,7 +649,7 @@ module Engine
             sym: 'M6',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is AG15.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is AG13.',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -952,7 +990,7 @@ module Engine
             hide_shares: true,
             shares: [100],
             max_ownership_percent: 100,
-            coordinates: 'AG15',
+            coordinates: 'AG13',
             color: '#ffffff',
             text_color: 'black',
             reservation_color: nil,
@@ -1346,160 +1384,153 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'LNWR',
-            name: 'London and North Western Railway',
-            logo: '1822/LNWR',
+            sym: 'CNoR',
+            name: 'Canadian Northern Railway',
+            logo: '1822_ca/CNoR',
+            tokens: [0, 100],
+            type: 'major',
+            float_percent: 20,
+            always_market_price: true,
+            coordinates: 'N16',
+            city: 0,
+            color: '#9fce63',
+            text_color: 'black',
+            reservation_color: nil,
+            destination_coordinates: 'C15',
+            destination_icon: '1822_ca/CNoR_DEST',
+          },
+          {
+            sym: 'CPR',
+            name: 'Canadian Pacific Railway',
+            logo: '1822_ca/CPR',
             tokens: [0, 100],
             type: 'major',
             float_percent: 10,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             always_market_price: true,
-            coordinates: 'M38',
-            city: 3,
-            color: '#000',
+            coordinates: 'AF12',
+            city: 1,
+            color: '#ed242a',
             reservation_color: nil,
-            destination_coordinates: 'I22',
-            destination_icon: '1822/LNWR_DEST',
+            destination_coordinates: 'C15',
+            destination_icon: '1822_ca/CPR_DEST',
+          },
+          {
+            sym: 'GNWR',
+            name: 'Great North West Railway',
+            logo: '1822_ca/GNWR',
+            tokens: [0, 100],
+            type: 'major',
+            float_percent: 20,
+            always_market_price: true,
+            coordinates: 'R16',
+            color: '#8dd8f8',
+            text_color: 'black',
+            reservation_color: nil,
+            destination_coordinates: 'N16',
+            destination_icon: '1822_ca/GNWR_DEST',
+          },
+          {
+            sym: 'GT',
+            name: 'Grand Trunk Railway',
+            logo: '1822_ca/GT',
+            tokens: [0, 100],
+            type: 'major',
+            float_percent: 20,
+            always_market_price: true,
+            coordinates: 'AC21',
+            city: 1,
+            color: '#000000',
+            reservation_color: nil,
+            destination_coordinates: 'AF12',
+            destination_icon: '1822_ca/GT_DEST',
+          },
+          {
+            sym: 'GTP',
+            name: 'Caledonian Railway',
+            logo: '1822_ca/GTP',
+            tokens: [0, 100],
+            type: 'major',
+            float_percent: 20,
+            always_market_price: true,
+            coordinates: 'N16',
+            city: 0,
+            color: '#f47d20',
+            reservation_color: nil,
+            destination_coordinates: 'A7',
+            destination_icon: '1822_ca/GTP_DEST',
           },
           {
             sym: 'GWR',
             name: 'Great Western Railway',
-            logo: '1822/GWR',
+            logo: '1822_ca/GWR',
             tokens: [0, 100],
             type: 'major',
             float_percent: 20,
             always_market_price: true,
-            coordinates: 'M38',
+            coordinates: 'AB24',
+            color: '#395aa8',
+            reservation_color: nil,
+            destination_coordinates: 'Z28',
+            destination_icon: '1822_ca/GWR_DEST',
+          },
+          {
+            sym: 'ICR',
+            name: 'Intercolonial Railway',
+            logo: '1822_ca/ICR',
+            tokens: [0, 100],
+            type: 'major',
+            float_percent: 20,
+            always_market_price: true,
+            coordinates: 'AP4',
+            color: '#eee91e',
+            text_color: 'black',
+            reservation_color: nil,
+            destination_coordinates: 'AH8',
+            destination_icon: '1822_ca/ICR_DEST',
+          },
+          {
+            sym: 'NTR',
+            name: 'National Transcontinental Railway',
+            logo: '1822_ca/NTR',
+            tokens: [0, 100],
+            type: 'major',
+            float_percent: 20,
+            always_market_price: true,
+            coordinates: 'AO3',
+            color: '#9a6733',
+            reservation_color: nil,
+            destination_coordinates: 'N16',
+            destination_icon: '1822_ca/NTR_DEST',
+          },
+          {
+            sym: 'PGE',
+            name: 'Pacific Great Eastern Railway',
+            logo: '1822_ca/PGE',
+            tokens: [0, 100],
+            type: 'major',
+            float_percent: 20,
+            always_market_price: true,
+            coordinates: 'C15',
+            color: '#199d4a',
+            reservation_color: nil,
+            destination_coordinates: 'D10',
+            destination_icon: '1822_ca/PGE_DEST',
+          },
+          {
+            sym: 'QMOO',
+            name: 'Quebec, Montreal, Ottawa and Occidental Railway',
+            logo: '1822_ca/QMOO',
+            tokens: [0, 100],
+            type: 'major',
+            float_percent: 20,
+            always_market_price: true,
+            coordinates: 'AH8',
             city: 1,
-            color: '#165016',
+            color: '#7f3881',
             reservation_color: nil,
-            destination_coordinates: 'G36',
-            destination_icon: '1822/GWR_DEST',
-          },
-          {
-            sym: 'LBSCR',
-            name: 'London, Brighton and South Coast Railway',
-            logo: '1822/LBSCR',
-            tokens: [0, 100],
-            type: 'major',
-            float_percent: 20,
-            always_market_price: true,
-            coordinates: 'M38',
-            city: 0,
-            color: '#cccc00',
-            text_color: 'black',
-            reservation_color: nil,
-            destination_coordinates: 'M42',
-            destination_icon: '1822/LBSCR_DEST',
-          },
-          {
-            sym: 'SECR',
-            name: 'South Eastern & Chatham Railway',
-            logo: '1822/SECR',
-            tokens: [0, 100],
-            type: 'major',
-            float_percent: 20,
-            always_market_price: true,
-            coordinates: 'M38',
-            city: 5,
-            abilities: [
-              {
-                type: 'token',
-                description: 'Token in English Channel for free',
-                hexes: ['P43'],
-                count: 1,
-                price: 0,
-              },
-            ],
-            color: '#ff7f2a',
-            reservation_color: nil,
-            destination_coordinates: 'P41',
-            destination_icon: '1822/SECR_DEST',
-          },
-          {
-            sym: 'CR',
-            name: 'Caledonian Railway',
-            logo: '1822/CR',
-            tokens: [0, 100],
-            type: 'major',
-            float_percent: 20,
-            always_market_price: true,
-            coordinates: 'E6',
-            color: '#5555ff',
-            reservation_color: nil,
-            destination_coordinates: 'G12',
-            destination_icon: '1822/CR_DEST',
-          },
-          {
-            sym: 'MR',
-            name: 'Midland Railway',
-            logo: '1822/MR',
-            tokens: [0, 100],
-            type: 'major',
-            float_percent: 20,
-            always_market_price: true,
-            coordinates: 'J29',
-            color: '#ff2a2a',
-            reservation_color: nil,
-            destination_coordinates: 'L19',
-            destination_icon: '1822/MR_DEST',
-          },
-          {
-            sym: 'LYR',
-            name: 'Lancashire & Yorkshire Railway',
-            logo: '1822/LYR',
-            tokens: [0, 100],
-            type: 'major',
-            float_percent: 20,
-            always_market_price: true,
-            coordinates: 'G22',
-            color: '#5a2ca0',
-            reservation_color: nil,
-            destination_coordinates: 'I22',
-            destination_icon: '1822/LYR_DEST',
-          },
-          {
-            sym: 'NBR',
-            name: 'North British Railway',
-            logo: '1822/NBR',
-            tokens: [0, 100],
-            type: 'major',
-            float_percent: 20,
-            always_market_price: true,
-            coordinates: 'H5',
-            color: '#a05a2c',
-            reservation_color: nil,
-            destination_coordinates: 'H1',
-            destination_icon: '1822/NBR_DEST',
-          },
-          {
-            sym: 'SWR',
-            name: 'South Wales Railway',
-            logo: '1822/SWR',
-            tokens: [0, 100],
-            type: 'major',
-            float_percent: 20,
-            always_market_price: true,
-            coordinates: 'H33',
-            color: '#999999',
-            text_color: 'black',
-            reservation_color: nil,
-            destination_coordinates: 'C34',
-            destination_icon: '1822/SWR_DEST',
-          },
-          {
-            sym: 'NER',
-            name: 'North Eastern Railway',
-            logo: '1822/NER',
-            tokens: [0, 100],
-            type: 'major',
-            float_percent: 20,
-            always_market_price: true,
-            coordinates: 'L19',
-            color: '#aade87',
-            reservation_color: nil,
-            destination_coordinates: 'H5',
-            destination_icon: '1822/NER_DEST',
+            destination_coordinates: 'AA15',
+            destination_icon: '1822_ca/QMOO_DEST',
           },
         ].freeze
       end

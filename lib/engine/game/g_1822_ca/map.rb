@@ -5,167 +5,53 @@ module Engine
     module G1822CA
       module Map
         TILES = {
-          '1' => 1,
-          '2' => 1,
+          '1' => 2,
+          '2' => 2,
           '3' => 6,
-          '4' => 6,
+          '4' => 12,
           '5' => 6,
-          '6' => 8,
+          '6' => 6,
           '7' => 'unlimited',
           '8' => 'unlimited',
           '9' => 'unlimited',
-          '55' => 1,
-          '56' => 1,
+          '55' => 2,
+          '56' => 2,
           '57' => 6,
-          '58' => 6,
-          '69' => 1,
+          '58' => 12,
+          '69' => 2,
+          '201' => 4,
+          '202' => 4,
+          '621' => 4,
+          '630' => 2,
+          '631' => 2,
+          '632' => 2,
+          '633' => 2,
           '14' => 6,
           '15' => 6,
           '80' => 6,
           '81' => 6,
           '82' => 8,
           '83' => 8,
-          '141' => 4,
-          '142' => 4,
-          '143' => 4,
-          '144' => 4,
-          '207' => 2,
-          '208' => 1,
+          '141' => 6,
+          '142' => 6,
+          '143' => 6,
+          '144' => 6,
+          '207' => 3,
+          '208' => 3,
           '619' => 6,
-          '622' => 1,
-          '63' => 8,
-          '544' => 6,
-          '545' => 6,
+          '622' => 3,
+          '63' => 6,
+          '216' => 5,
+          '448' => 4,
+          '544' => 7,
+          '545' => 7,
           '546' => 8,
-          '611' => 4,
+          '767' => 5,
+          '768' => 5,
+          '769' => 5,
+          '902' => 2,
           '60' => 2,
-          'X20' =>
-            {
-              'count' => 1,
-              'color' => 'yellow',
-              'code' =>
-                'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;'\
-                'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;'\
-                'upgrade=cost:20;label=L',
-            },
-          '405' =>
-            {
-              'count' => 3,
-              'color' => 'green',
-              'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
-            },
-          'X1' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:30,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
-            },
-          'X2' =>
-            {
-              'count' => 2,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                'path=a:4,b:_0;label=BM',
-            },
-          'X3' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:30,slots:2;path=a:1,b:_0;path=a:4,b:_0;label=S',
-            },
-          'X4' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;upgrade=cost:100;label=EC',
-            },
-          'X21' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;'\
-                'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;'\
-                'upgrade=cost:20;label=L',
-            },
-          '768' =>
-            {
-              'count' => 4,
-              'color' => 'brown',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-            },
-          '767' =>
-            {
-              'count' => 4,
-              'color' => 'brown',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
-            },
-          '769' =>
-            {
-              'count' => 6,
-              'color' => 'brown',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            },
-          'X5' =>
-            {
-              'count' => 3,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                'path=a:4,b:_0;label=Y',
-            },
-          'X6' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:40,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
-            },
-          'X7' =>
-            {
-              'count' => 2,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                'path=a:5,b:_0;label=BM',
-            },
-          'X8' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:40,slots:2;path=a:1,b:_0;path=a:4,b:_0;label=S',
-            },
-          'X9' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:0,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:100;label=EC',
-            },
-          'X10' =>
-            {
-              'count' => 3,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
-            },
-          'X22' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;'\
-                'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;'\
-                'upgrade=cost:20;label=L',
-            },
+          '903' => 2,
           '169' =>
             {
               'count' => 2,
@@ -173,79 +59,382 @@ module Engine
               'code' =>
                 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             },
-          'X11' =>
-            {
-              'count' => 2,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
-            },
-          'X12' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:60,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
-            },
-          'X13' =>
-            {
-              'count' => 2,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                'path=a:5,b:_0;label=BM',
-            },
-          'X14' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:60,slots:3;path=a:1,b:_0;path=a:4,b:_0;label=S',
-            },
-          'X15' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:0,slots:3;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0,lanes:2;label=EC',
-            },
-          'X16' =>
-            {
-              'count' => 2,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
-            },
-          'X17' =>
-            {
-              'count' => 2,
-              'color' => 'gray',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            },
-          'X18' =>
-            {
-              'count' => 2,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            },
-          'X19' =>
+          '455' =>
             {
               'count' => 4,
               'color' => 'gray',
               'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                'path=a:5,b:_0',
+                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             },
-          'X23' =>
+          '512' =>
+            {
+              'count' => 7,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y',
+            },
+          'X1' =>
+            {
+              'count' => 3,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+            },
+          'A1' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:40,slots:2;path=a:1,b:_0,lanes:2;path=a:3,b:_0;path=a:4,b:_0;label=A',
+            },
+          'A2' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:50,slots:2;path=a:1,b:_0,lanes:2;path=a:3,b:_0;path=a:4,b:_0;label=A',
+            },
+          'A3' =>
             {
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;'\
-                'city=revenue:100;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;'\
-                'path=a:5,b:_5;label=L',
+                'city=revenue:60,slots:2;path=a:1,b:_0,lanes:2;path=a:3,b:_0;path=a:4,b:_0;label=A',
+            },
+          'B1' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:40,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                'path=a:4,b:_0,lanes:2;label=B',
+            },
+          'B2' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:50,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                'path=a:4,b:_0,lanes:2;label=B',
+            },
+          'B3' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:60,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                'path=a:4,b:_0,lanes:2;label=B',
+            },
+          'M1' =>
+            {
+              'count' => 1,
+              'color' => 'yellow',
+              'code' =>
+                'city=revenue:30;city=revenue:30,slots:2;path=a:0,b:_1;path=a:1,b:_1;'\
+                'path=a:2,b:_0;path=a:3,b:_0;label=M;upgrade=cost:40',
+            },
+          'M2' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:40;city=revenue:40,slots:2;path=a:0,b:_1;path=a:1,b:_1;'\
+                'path=a:5,b:_1;path=a:2,b:_0;path=a:3,b:_0;label=M;upgrade=cost:60',
+            },
+          'M3' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:30,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;label=M;upgrade=cost:60',
+            },
+          'M4' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:60;city=revenue:60,slots:2;path=a:0,b:_1;path=a:1,b:_1;'\
+                'path=a:5,b:_1;path=a:2,b:_0;path=a:3,b:_0;label=M;upgrade=cost:80',
+            },
+          'M5' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M;upgrade=cost:60',
+            },
+          'M6' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:40,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M;upgrade=cost:60',
+            },
+          'M7' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:4,b:_0;path=a:5,b:_0;label=M',
+            },
+          'M8' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M',
+            },
+          'O1' =>
+            {
+              'count' => 1,
+              'color' => 'yellow',
+              'code' =>
+                'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:1,b:_1;'\
+                'path=a:4,b:_1;path=a:5,b:_0;label=O;upgrade=cost:40',
+            },
+          'O2' =>
+            {
+              'count' => 1,
+              'color' => 'yellow',
+              'code' =>
+                'city=revenue:20,slots:2;path=a:1,b:_0;path=a:5,b:_0;label=O;'\
+                'upgrade=cost:40',
+            },
+          'O3' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;'\
+                'path=a:4,b:_1;path=a:5,b:_0;label=O;upgrade=cost:60',
+            },
+          'O4' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;'\
+                'path=a:5,b:_0;label=O;upgrade=cost:60',
+            },
+          'O5' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:50;city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_1;'\
+                'path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_0;label=O;upgrade=cost:60',
+            },
+          'O6' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                  'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                  'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O;upgrade=cost:60',
+            },
+          'O7' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                  'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                  'path=a:4,b:_0;path=a:5,b:_0;label=O',
+            },
+          'O8' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                  'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                  'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
+            },
+          'Q1' =>
+            {
+              'count' => 1,
+              'color' => 'yellow',
+              'code' =>
+                'city=revenue:30,slots:2;city=revenue:20;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:4,b:_1;label=Q;upgrade=cost:40',
+            },
+          'Q2' =>
+            {
+              'count' => 1,
+              'color' => 'yellow',
+              'code' =>
+                'city=revenue:20;city=revenue:20;city=revenue:20;path=a:1,b:_0;'\
+                'path=a:2,b:_1;path=a:4,b:_2;label=Q;upgrade=cost:40',
+            },
+          'Q3' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:40,slots:2;city=revenue:40;path=a:0,b:_1;path=a:1,b:_0;'\
+                'path=a:2,b:_0;path=a:4,b:_1;label=Q;upgrade=cost:60',
+            },
+          'Q4' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:30,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:4,b:_0;label=Q;upgrade=cost:60',
+            },
+          'Q5' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:50,slots:2;city=revenue:50;path=a:0,b:_1;path=a:1,b:_0;'\
+                'path=a:2,b:_0;path=a:4,b:_1;path=a:5,b:_1;label=Q;upgrade=cost:80',
+            },
+          'Q6' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Q;upgrade=cost:80',
+            },
+          'Q7' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:4,b:_0;path=a:5,b:_0;label=Q',
+            },
+          'Q8' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Q',
+            },
+          'T1' =>
+            {
+              'count' => 1,
+              'color' => 'yellow',
+              'code' =>
+                'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_1;'\
+                'label=T;upgrade=cost:40',
+            },
+          'T2' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:50;city=revenue:50;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_1;path=a:4,b:_1;label=T;upgrade=cost:60',
+            },
+          'T3' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                  'city=revenue:40;city=revenue:40;path=a:1,b:_1;path=a:2,b:_0;'\
+                  'path=a:3,b:_0;path=a:4,b:_1;label=T;upgrade=cost:60',
+            },
+          'T4' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                  'city=revenue:70,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                  'path=a:4,b:_0;label=T;upgrade=cost:80',
+            },
+          'T5' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                  'city=revenue:50,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                  'path=a:4,b:_0;label=T;upgrade=cost:80',
+            },
+          'T6' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                  'city=revenue:90,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                  'path=a:4,b:_0;label=T',
+            },
+          'T7' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                  'city=revenue:70,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                  'path=a:4,b:_0;label=T',
+            },
+          'W1' =>
+            {
+              'count' => 1,
+              'color' => 'yellow',
+              'code' =>
+                'city=revenue:30,slots:2;city=revenue:30;city=revenue:30;city=revenue:30;'\
+                'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;'\
+                'label=W;upgrade=cost:40',
+            },
+          'W2' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:50,slots:2;city=revenue:50,slots:2;city=revenue:50;'\
+                'path=a:0,b:_2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;'\
+                'path=a:5,b:_2;label=W;upgrade=cost:60',
+            },
+          'W3' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' =>
+                'city=revenue:40,slots:2;city=revenue:40,slots:3;path=a:0,b:_1;'\
+                'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_1;'\
+                'label=W;upgrade=cost:60',
+            },
+          'W4' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:70,slots:2;city=revenue:70,slots:2;city=revenue:70,slots:2;'\
+                'path=a:0,b:_2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;'\
+                'path=a:5,b:_2;label=W;upgrade=cost:80',
+            },
+          'W5' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' =>
+                'city=revenue:50,slots:6;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=W;',
+            },
+          'W6' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:90,slots:2;city=revenue:90,slots:2;city=revenue:90,slots:2;'\
+                'path=a:0,b:_2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;'\
+                'path=a:5,b:_2;label=W',
+            },
+          'W7' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:70,slots:6;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=W;',
             },
         }.freeze
 
