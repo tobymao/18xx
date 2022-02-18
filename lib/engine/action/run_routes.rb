@@ -51,7 +51,7 @@ module Engine
             'subsidy' => route.subsidy,
             'halts' => route.halts,
             'abilities' => route.abilities,
-            'nodes' => route.nodes.map(&:full_id),
+            'nodes' => route.nodes.map(&:signature),
           }.select { |_, v| v }
         end
 

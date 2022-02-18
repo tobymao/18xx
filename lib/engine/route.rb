@@ -20,7 +20,7 @@ module Engine
       @subsidy = opts[:subsidy]
       @halts = opts[:halts]
       @abilities = opts[:abilities]
-      @saved_nodes = opts[:nodes] # node.full_id for every node in the route
+      @saved_nodes = opts[:nodes] # node.signature for every node in the route
       @local_length = @game.local_length
 
       @node_chains = {}
@@ -34,6 +34,7 @@ module Engine
 
     def clear_cache!(all: false, only_routes: false)
       @connection_hexes = nil if all
+      @saved_nodes = nil if all
       @revenue = nil
       @revenue_str = nil
 
@@ -47,7 +48,6 @@ module Engine
       @paths = nil
       @stops = nil
       @subsidy = nil
-      @saved_nodes = nil
       @visited_stops = nil
       @check_connected = nil
       @check_distance = nil
@@ -407,7 +407,7 @@ module Engine
       # pass through the nodes associated with it.
       if @saved_nodes
         candidates.each do |a, b, left, right, middle|
-          return [a, b, left, right, middle] if [left, right, middle].all? { |n| @saved_nodes.include?(n.full_id) }
+          return [a, b, left, right, middle] if [left, right, middle].all? { |n| @saved_nodes.include?(n.signature) }
         end
       end
 

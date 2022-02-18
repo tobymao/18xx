@@ -10,7 +10,7 @@ module Engine
       # Convert the route into connection hexes as upgrades may break the representation
       @routes = runs.to_h { |run| [run.train, run.connection_hexes] }
       @halts = runs.to_h { |run| [run.train, run.halts] }
-      @nodes = runs.to_h { |run| [run.train, run.nodes.map(&:full_id)] }
+      @nodes = runs.to_h { |run| [run.train, run.nodes.map(&:signature)] }
       @revenue = revenue
       @dividend = dividend
       @laid_hexes = laid_hexes
