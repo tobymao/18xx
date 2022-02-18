@@ -315,7 +315,7 @@ module Engine
         end
 
         def mine_included(route)
-          route.corporation.assigned?(mine.id) && route.hexes.find { |h| h.id == 'A20' }
+          route.corporation.assigned?(mine.id) && route.hexes.any? { |h| h.id == 'A20' }
         end
 
         def ferry
@@ -323,7 +323,7 @@ module Engine
         end
 
         def ferry_included(route)
-          route.corporation.assigned?(ferry.id) && route.hexes.find { |h| h.id == 'L7' }
+          route.corporation.assigned?(ferry.id) && route.hexes.any? { |h| h.id == 'L7' }
         end
 
         def float_percent
@@ -374,10 +374,9 @@ module Engine
 
           route.visited_stops.each do |node|
             # Cannot rely on offboard? because all of them are cities
-            next unless node.tile.color == :red && node.city?
-            next if node.tokened_by?(corporation)
-
-            raise GameError, 'Can only run to tokened offboards'
+            if node.tile.color == :red && node.city? && !node.tokened_by?(corporation)
+              raise GameError, 'Can only run to tokened offboards'
+            end
           end
         end
 
@@ -451,7 +450,7 @@ module Engine
           @share_pool.buy_shares(minor.player, share, exchange: :free, exchange_price: 0)
 
           # Transfer tokens
-          minor.tokens.each do |token|
+          minor.tokens.dup.each do |token|
             if !token.hex || token.hex.tile.cities.any? { |c| c.tokened_by?(sj) }
               token.remove!
             else
