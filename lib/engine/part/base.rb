@@ -13,7 +13,7 @@ module Engine
         @id ||= "#{tile.id}-#{index}"
       end
 
-      def partial_id
+      def signature
         "#{hex&.id}-#{index}"
       end
 

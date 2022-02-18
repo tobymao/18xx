@@ -20,7 +20,7 @@ module Engine
       @subsidy = opts[:subsidy]
       @halts = opts[:halts]
       @abilities = opts[:abilities]
-      @saved_nodes = opts[:nodes] # node.partial_id for every node in the route
+      @saved_nodes = opts[:nodes] # node.signature for every node in the route
       @local_length = @game.local_length
 
       @node_chains = {}
@@ -407,7 +407,7 @@ module Engine
       # pass through the nodes associated with it.
       if @saved_nodes
         candidates.each do |a, b, left, right, middle|
-          return [a, b, left, right, middle] if [left, right, middle].all? { |n| @saved_nodes.include?(n.partial_id) }
+          return [a, b, left, right, middle] if [left, right, middle].all? { |n| @saved_nodes.include?(n.signature) }
         end
       end
 
