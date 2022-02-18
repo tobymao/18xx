@@ -87,13 +87,28 @@ module Engine
             { corporation: subsidy, per_share: payout_per_share(entity, revenue) }
           end
 
+          def payout_shares(entity, revenue)
+            per_share = payout_per_share(entity, revenue)
+
+            payouts = {}
+            (@game.players + @game.corporations).each do |payee|
+              payout_entity(entity, payee, per_share, payouts) if !payee.corporation? || !@game.national_corporation?(payee)
+            end
+
+            receivers = payouts
+                          .sort_by { |_r, c| -c }
+                          .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+            log_payout_shares(entity, revenue, per_share, receivers)
+          end
+
           def skip!
             entity = current_entity
             return super unless @game.national_corporation?(entity)
 
             process_dividend(Action::Dividend.new(
               entity,
-              kind: @game.major_national_corporation?(entity) ? 'half' : 'payout',
+              kind: 'payout',
             ))
           end
 

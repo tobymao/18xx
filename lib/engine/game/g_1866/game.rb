@@ -576,10 +576,10 @@ module Engine
 
         # Only need up to phase 5, all national concessions are forced to convert in phase 5
         NATIONAL_PHASE_PAR_TYPES = {
-          'L/2' => :par_1,
-          '3' => :par_2,
-          '4' => :par_2,
-          '5' => :par_3,
+          'L/2' => :par,
+          '3' => :par_1,
+          '4' => :par_1,
+          '5' => :par_2,
         }.freeze
 
         NATIONAL_PREPRINTED_TILES = %w[AHE DE ESP].freeze
@@ -633,6 +633,8 @@ module Engine
           'AHE' => %w[SB BH FNR],
           'IT' => %w[SSFL IFT SFAI],
         }.freeze
+
+        SHARE_PRICE_SUFFIX = ['T', 'M', 'B', ''].freeze
 
         STOCK_TURN_TOKEN_PREFIX = 'ST'
         STOCK_TURN_TOKEN_END_GAME = 600
@@ -911,6 +913,10 @@ module Engine
           'Treasury'
         end
 
+        def ipo_reserved_name(_entity = nil)
+          'Reserved'
+        end
+
         def issuable_shares(entity)
           return [] if !entity.corporation? || !corporation?(entity) || entity.num_ipo_shares.zero?
 
@@ -998,18 +1004,7 @@ module Engine
         end
 
         def par_price_str(share_price)
-          row, = share_price.coordinates
-          row_str = case row
-                    when 0
-                      'T'
-                    when 1
-                      'M'
-                    when 2
-                      'B'
-                    else
-                      ''
-                    end
-          "#{format_currency(share_price.price)}#{row_str}"
+          "#{format_currency(share_price.price)}#{share_price_suffix(share_price)}"
         end
 
         def payout_companies
@@ -1133,7 +1128,7 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          before_share_price = corporation.share_price
           was_president = corporation.president?(bundle.owner) || bundle.owner == corporation
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           if was_president
@@ -1141,7 +1136,7 @@ module Engine
           else
             bundle.num_shares.times { @stock_market.move_down(corporation) }
           end
-          log_share_price(corporation, price)
+          log_share_price_row(corporation, before_share_price)
         end
 
         def setup
@@ -1211,6 +1206,9 @@ module Engine
 
           # Randomize and setup the corporations
           setup_corporations
+
+          # Set up the national shares
+          setup_nationals
 
           # Give all players stock turn token and remove unused
           setup_stock_turn_token
@@ -1535,7 +1533,7 @@ module Engine
           end
 
           # Move the rest of the shares into the market
-          corporation_shares = corporation.shares_of(corporation)
+          corporation_shares = corporation.shares_of(corporation).select(&:buyable)
           @share_pool.transfer_shares(ShareBundle.new(corporation_shares), @share_pool) unless corporation_shares.empty?
 
           corporation.ipoed = true
@@ -1569,7 +1567,7 @@ module Engine
           corporation.ipoed = true
 
           # Move the rest of the shares into the market
-          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
+          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation).select(&:buyable)), @share_pool)
 
           # Close the concession
           corporation.par_via_exchange.close!
@@ -1690,6 +1688,18 @@ module Engine
           entity&.loans&.size || 0
         end
 
+        def log_share_price_row(entity, from_share_price)
+          from_suffix = share_price_suffix(from_share_price)
+          to_suffix = share_price_suffix(entity.share_price)
+          from_price = from_share_price.price
+          to_price = entity.share_price.price
+          return if from_price == to_price && from_suffix == to_suffix
+
+          from = "#{format_currency(from_price)}#{from_suffix == to_suffix ? '' : from_suffix}"
+          to = "#{format_currency(to_price)}#{from_suffix == to_suffix ? '' : to_suffix}"
+          @log << "#{entity.name}'s share price changes from #{from} to #{to}"
+        end
+
         def germany_or_italy_national?(corporation)
           return false unless corporation
 
@@ -1766,10 +1776,9 @@ module Engine
           entity.loans.delete(loan)
           @loans << loan
 
-          current_price = entity.share_price.price
+          before_share_price = entity.share_price
           @stock_market.move_up(entity)
-          @log << "#{entity.name}'s share price changes from " \
-                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+          log_share_price_row(entity, before_share_price)
         end
 
         def payoff_player_loan(player)
@@ -1951,6 +1960,14 @@ module Engine
           @game_end_corporation_operated = Hash.new { |h, k| h[k] = false }
         end
 
+        def setup_nationals
+          @corporations.each do |corporation|
+            next unless major_national_corporation?(corporation)
+
+            corporation.shares.each { |share| share.buyable = false if share.index > 4 }
+          end
+        end
+
         def sell_stock_turn_token(corporation)
           player = corporation.owner
           price = corporation.share_price.price
@@ -1987,6 +2004,11 @@ module Engine
 
             @companies.delete(company)
           end
+        end
+
+        def share_price_suffix(share_price)
+          row, = share_price.coordinates
+          self.class::SHARE_PRICE_SUFFIX[row]
         end
 
         def starting_stock_turn_tokens
@@ -2067,10 +2089,9 @@ module Engine
           entity.loans << loan
           @loans.delete(loan)
 
-          current_price = entity.share_price.price
+          before_share_price = entity.share_price
           @stock_market.move_down(entity)
-          @log << "#{entity.name}'s share price changes from " \
-                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+          log_share_price_row(entity, before_share_price)
         end
 
         def take_player_loan(player, loan)
