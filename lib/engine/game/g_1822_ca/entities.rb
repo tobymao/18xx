@@ -901,7 +901,7 @@ module Engine
           {
             sym: '1',
             name: 'Dominion Atlantic Railway',
-            logo: '1822CA/1',
+            logo: '1822_ca/1',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -917,7 +917,7 @@ module Engine
           {
             sym: '2',
             name: 'European & North American Railway',
-            logo: '1822CA/2',
+            logo: '1822_ca/2',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -933,7 +933,7 @@ module Engine
           {
             sym: '3',
             name: 'Quebec & New Brunswick Railway',
-            logo: '1822CA/3',
+            logo: '1822_ca/3',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -949,7 +949,7 @@ module Engine
           {
             sym: '4',
             name: 'Quebec Central Railway',
-            logo: '1822CA/4',
+            logo: '1822_ca/4',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -965,7 +965,7 @@ module Engine
           {
             sym: '5',
             name: 'North Shore Railway',
-            logo: '1822CA/5',
+            logo: '1822_ca/5',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -982,7 +982,7 @@ module Engine
           {
             sym: '6',
             name: 'Champlain & St Lawrence Railroad',
-            logo: '1822CA/6',
+            logo: '1822_ca/6',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -998,7 +998,7 @@ module Engine
           {
             sym: '7',
             name: 'Montreal & Lachine Railway',
-            logo: '1822CA/7',
+            logo: '1822_ca/7',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1015,7 +1015,7 @@ module Engine
           {
             sym: '8',
             name: 'Bytown & Prescott Railway',
-            logo: '1822CA/8',
+            logo: '1822_ca/8',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1032,7 +1032,7 @@ module Engine
           {
             sym: '9',
             name: 'Canada Atlantic Railway',
-            logo: '1822CA/9',
+            logo: '1822_ca/9',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1049,7 +1049,7 @@ module Engine
           {
             sym: '10',
             name: 'Midland Railway',
-            logo: '1822CA/10',
+            logo: '1822_ca/10',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1065,7 +1065,7 @@ module Engine
           {
             sym: '11',
             name: 'Canada Southern Railway',
-            logo: '1822CA/11',
+            logo: '1822_ca/11',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1081,7 +1081,7 @@ module Engine
           {
             sym: '12',
             name: 'Toronto, Hamilton & Buffalo Railway',
-            logo: '1822CA/12',
+            logo: '1822_ca/12',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1098,7 +1098,7 @@ module Engine
           {
             sym: '13',
             name: 'Ontario & Quebec Railway',
-            logo: '1822CA/13',
+            logo: '1822_ca/13',
             tokens: [20],
             type: 'minor',
             always_market_price: true,
@@ -1113,7 +1113,7 @@ module Engine
           {
             sym: '14',
             name: 'London & Port Stanley Railway',
-            logo: '1822CA/14',
+            logo: '1822_ca/14',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1129,7 +1129,7 @@ module Engine
           {
             sym: '15',
             name: 'Lake Nipissing & James’ Bay Railway',
-            logo: '1822CA/15',
+            logo: '1822_ca/15',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1145,7 +1145,7 @@ module Engine
           {
             sym: '16',
             name: 'Windsor, Chatham & London Railway',
-            logo: '1822CA/16',
+            logo: '1822_ca/16',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1161,7 +1161,7 @@ module Engine
           {
             sym: '17',
             name: 'Canada Central Railway',
-            logo: '1822CA/17',
+            logo: '1822_ca/17',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1177,7 +1177,7 @@ module Engine
           {
             sym: '18',
             name: 'Ontario & Abitibi Railway',
-            logo: '1822CA/18',
+            logo: '1822_ca/18',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1193,7 +1193,7 @@ module Engine
           {
             sym: '19',
             name: 'Algoma Central Railway',
-            logo: '1822CA/19',
+            logo: '1822_ca/19',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1209,7 +1209,7 @@ module Engine
           {
             sym: '20',
             name: 'Port Arthur, Duluth & Western Railway',
-            logo: '1822CA/20',
+            logo: '1822_ca/20',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1225,7 +1225,7 @@ module Engine
           {
             sym: '21',
             name: 'Winnipeg & Atlantic Railway',
-            logo: '1822CA/21',
+            logo: '1822_ca/21',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1242,7 +1242,7 @@ module Engine
           {
             sym: '22',
             name: 'Winnipeg & Hudson’s Bay Railway',
-            logo: '1822CA/22',
+            logo: '1822_ca/22',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1258,7 +1258,7 @@ module Engine
           {
             sym: '23',
             name: 'Prince Albert & North Saskatchewan Railway',
-            logo: '1822CA/23',
+            logo: '1822_ca/23',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1274,7 +1274,7 @@ module Engine
           {
             sym: '24',
             name: 'Saskatoon & Northern Railway',
-            logo: '1822CA/24',
+            logo: '1822_ca/24',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1290,7 +1290,7 @@ module Engine
           {
             sym: '25',
             name: 'Northern Empire Railway',
-            logo: '1822CA/25',
+            logo: '1822_ca/25',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1306,7 +1306,7 @@ module Engine
           {
             sym: '26',
             name: 'Calgary & Fort McMurray Railway',
-            logo: '1822CA/26',
+            logo: '1822_ca/26',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1322,7 +1322,7 @@ module Engine
           {
             sym: '27',
             name: 'Athabaska Northern Railway',
-            logo: '1822CA/27',
+            logo: '1822_ca/27',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1338,7 +1338,7 @@ module Engine
           {
             sym: '28',
             name: 'Kamloops & Yellow Head Pass Railway',
-            logo: '1822CA/28',
+            logo: '1822_ca/28',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1354,7 +1354,7 @@ module Engine
           {
             sym: '29',
             name: 'Kootenay, Cariboo & Pacific Railway',
-            logo: '1822CA/29',
+            logo: '1822_ca/29',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1370,7 +1370,7 @@ module Engine
           {
             sym: '30',
             name: 'Pacific Northern & Omineca Railway',
-            logo: '1822CA/30',
+            logo: '1822_ca/30',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
