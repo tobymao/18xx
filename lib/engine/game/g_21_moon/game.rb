@@ -886,6 +886,33 @@ module Engine
           @round.active_step.sellable_bundles(player, corporation)
         end
 
+        def emergency_issuable_cash(corporation)
+          emergency_issuable_bundles(corporation).group_by(&:corporation).sum do |_corp, bundles|
+            bundles.max_by(&:num_shares)&.price || 0
+          end
+        end
+
+        def emergency_issuable_bundles(entity)
+          return [] if entity.trains.any?
+          return [] unless @depot.min_depot_train
+
+          min_train_price = @depot.min_depot_price
+          return [] if entity.cash >= min_train_price
+
+          @corporations.flat_map do |corp|
+            bundles = bundles_for_corporation(entity, corp)
+            bundles.select! { |b| @share_pool.fit_in_bank?(b) }
+
+            # Cannot issue more shares than needed to buy the train from the bank
+            train_buying_bundles = bundles.select { |b| (entity.cash + b.price) >= min_train_price }
+            if train_buying_bundles.size > 1
+              excess_bundles = train_buying_bundles[1..-1]
+              bundles -= excess_bundles
+            end
+            bundles
+          end.compact
+        end
+
         def upgrade_cost(tile, hex, entity, spender)
           ability = entity.all_abilities.find do |a|
             a.type == :tile_discount &&

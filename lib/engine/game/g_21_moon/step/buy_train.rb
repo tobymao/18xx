@@ -9,9 +9,64 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           MAX_BY_BASE = 2
 
+          def actions(entity)
+            return [] if entity.receivership?
+
+            if entity == current_entity.owner
+              return can_issue?(current_entity) ? [] : %w[sell_shares]
+            end
+
+            return [] unless entity.corporation?
+
+            if must_buy_train?(entity)
+              actions_ = %w[buy_train]
+              actions_ << 'sell_shares' if can_issue?(entity)
+              actions_
+            elsif can_buy_train?(entity)
+              %w[buy_train pass]
+            else
+              []
+            end
+          end
+
+          # "issue" is a misnomer - it refers to any shares in a corp's treasury
+          def can_issue?(entity)
+            return false unless entity.corporation?
+
+            issuable_shares(entity).any?
+          end
+
+          def issuable_shares(entity)
+            return [] unless entity.corporation?
+
+            @game.emergency_issuable_bundles(entity)
+          end
+
           def setup
             super
             @destination_bases = []
+          end
+
+          def process_sell_shares(action)
+            return issue_shares(action) if action.entity.corporation?
+
+            if can_issue?(@round.current_entity)
+              raise GameError, 'President may not sell shares while corporation can sell treasury shares.'
+            end
+
+            super
+          end
+
+          def issue_shares(action)
+            corporation = action.entity
+            bundle = action.bundle
+
+            issuable = issuable_shares(corporation)
+            bundle_index = issuable.index(bundle)
+
+            raise GameError, "#{corporation.name} cannot sell share bundle: #{bundle.shares}" unless bundle_index
+
+            @game.sell_shares_and_change_price(bundle)
           end
 
           def process_buy_train(action)
@@ -49,6 +104,22 @@ module Engine
             options << { slot: 0, text: 'Local Base' } if room_for_lb?(corp)
             options << { slot: 1, text: 'Space Port Base' } if room_for_sp?(corp)
             options
+          end
+
+          def issue_text(_entity)
+            'Emergency Corporate Sales:'
+          end
+
+          def issue_verb(_entity)
+            'sell'
+          end
+
+          def must_issue_before_ebuy?(entity)
+            can_issue?(entity)
+          end
+
+          def issue_corp_name(bundle)
+            bundle.corporation.name
           end
         end
       end
