@@ -396,7 +396,9 @@ module Engine
         // Run route.check_other! for the full combo, to see if game- and action-specific rules are followed.
         // Eg. 1870 destination runs should reject combos that don't have a route from home to destination city
         try {
-          cb.routes[0].route['$check_other!']() // throws if bad combo
+          for (let rt of cb.routes) {
+            rt.route['$check_other!']() // throws if bad combo
+          }
           return true
         }
         catch (err) {
