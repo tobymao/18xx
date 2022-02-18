@@ -4,7 +4,6 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
-require_relative 'corporation'
 
 module Engine
   module Game
@@ -48,21 +47,6 @@ module Engine
         MINOR_SUBSIDY = 10
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'close_minors' => [
-            'SJ merger',
-            'Minors are closed, transferring all assets to SJ. Minor owners get a 10% SJ share',
-          ],
-          'full_cap' => [
-            'Full Capitalization',
-            'All unfloated corporations will receive full funding on float',
-          ],
-        ).freeze
-
-        STATUS_TEXT = {
-          'float_2' => [
-            '20% to float',
-            'An unstarted corporation needs 20% sold to start for the first time',
-          ],
           'float_3' => [
             '30% to float',
             'An unstarted corporation needs 30% sold to start for the first time',
@@ -75,6 +59,17 @@ module Engine
             '50% to float',
             'An unstarted corporation needs 50% sold to start for the first time',
           ],
+          'close_minors' => [
+            'SJ merger',
+            'Minors are closed, transferring all assets to SJ. Minor owners get a 10% SJ share',
+          ],
+          'full_cap' => [
+            'Full Capitalization',
+            'All unfloated corporations will receive full funding on float',
+          ],
+        ).freeze
+
+        STATUS_TEXT = {
           'sj_can_float' => [
             'SJ can float',
             'SJ can float if 50% of its shares are sold, receiving K700 from the bank',
@@ -97,7 +92,6 @@ module Engine
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
             operating_rounds: 2,
-            status: %w[float_2],
           },
           {
             name: '3',
@@ -105,7 +99,6 @@ module Engine
             train_limit: { minor: 2, major: 4 },
             tiles: %w[yellow green],
             operating_rounds: 2,
-            status: %w[float_3],
           },
           {
             name: '4',
@@ -113,7 +106,6 @@ module Engine
             train_limit: { minor: 2, major: 3 },
             tiles: %w[yellow green],
             operating_rounds: 2,
-            status: %w[float_4],
           },
           {
             name: '5',
@@ -121,7 +113,7 @@ module Engine
             train_limit: { national: 3, major: 2 },
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            status: %w[float_5 sj_can_float],
+            status: %w[sj_can_float],
           },
           {
             name: '5E',
@@ -129,7 +121,7 @@ module Engine
             train_limit: { national: 3, major: 2 },
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            status: %w[float_5 sj_can_float],
+            status: %w[sj_can_float],
           },
           {
             name: '4D',
@@ -137,7 +129,7 @@ module Engine
             train_limit: { national: 3, major: 2 },
             tiles: %w[yellow green brown],
             operating_rounds: 2,
-            status: %w[float_5 sj_can_float],
+            status: %w[sj_can_float],
           },
         ].freeze
 
@@ -175,6 +167,9 @@ module Engine
                 price: 180,
               },
             ],
+            events: [
+              { 'type' => 'float_3' },
+            ],
           },
           {
             name: '4',
@@ -191,6 +186,9 @@ module Engine
                 ],
                 price: 280,
               },
+            ],
+            events: [
+              { 'type' => 'float_4' },
             ],
           },
           {
@@ -209,6 +207,7 @@ module Engine
               },
             ],
             events: [
+              { 'type' => 'float_5' },
               { 'type' => 'close_companies' },
               { 'type' => 'full_cap' },
               { 'type' => 'close_minors' },
@@ -251,17 +250,6 @@ module Engine
             else
               cities.first.add_reservation!(minor)
             end
-          end
-        end
-
-        def init_corporations(stock_market)
-          game_corporations.map do |corporation|
-            G18Scan::Corporation.new(
-              self,
-              min_price: stock_market.par_prices.map(&:price).min,
-              capitalization: self.class::CAPITALIZATION,
-              **corporation.merge(corporation_opts),
-            )
           end
         end
 
@@ -324,14 +312,6 @@ module Engine
 
         def ferry_included(route)
           route.corporation.assigned?(ferry.id) && route.hexes.any? { |h| h.id == 'L7' }
-        end
-
-        def float_percent
-          return 20 if @phase.status.include?('float_2')
-          return 30 if @phase.status.include?('float_3')
-          return 40 if @phase.status.include?('float_4')
-
-          50
         end
 
         def float_str(entity)
@@ -399,6 +379,28 @@ module Engine
 
         def copenhagen_dit_upgrade(from, to)
           from.name == '403' && to.name == '121'
+        end
+
+        def update_float_percent(percent)
+          @corporations.each do |corporation|
+            next if corporation.floated? || corporation == sj
+
+            corporation.float_percent = percent
+          end
+
+          @log << "-- Event: New corporations need #{percent}% shares sold to float --"
+        end
+
+        def event_float_3!
+          update_float_percent(30)
+        end
+
+        def event_float_4!
+          update_float_percent(40)
+        end
+
+        def event_float_5!
+          update_float_percent(50)
         end
 
         def event_full_cap!
