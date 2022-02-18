@@ -561,16 +561,18 @@ module Engine
             prev = corp.share_price.price
 
             @stock_market.move_up(corp) if sold_out?(corp) && sold_out_increase?(corp)
-            pool_share_drop = self.class::POOL_SHARE_DROP
-            price_drops =
-              if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
-                0
-              elsif pool_share_drop == :one
-                1
-              else
-                shares_in_pool
-              end
-            price_drops.times { @stock_market.move_down(corp) }
+            if corp.operated?
+              pool_share_drop = self.class::POOL_SHARE_DROP
+              price_drops =
+                if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
+                  0
+                elsif pool_share_drop == :one
+                  1
+                else
+                  shares_in_pool
+                end
+              price_drops.times { @stock_market.move_down(corp) }
+            end
 
             log_share_price(corp, prev)
           end
@@ -878,6 +880,12 @@ module Engine
           return false unless corporation_available?(corporation)
 
           super
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          return super if bundle.corporation.operated?
+
+          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
         end
 
         def sellable_bundles(player, corporation)
