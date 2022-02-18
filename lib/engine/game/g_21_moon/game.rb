@@ -975,7 +975,7 @@ module Engine
               { text: '80', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Helium-3', props: { style: { border: '1px solid', backgroundColor: 'red' } } },
+              { text: 'Helium-3', props: { style: { color: 'white', backgroundColor: 'red' } } },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '50', props: { style: { border: '1px solid' } } },
