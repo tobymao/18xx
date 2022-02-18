@@ -169,6 +169,7 @@ module Engine
 
           def force_purchase(bidder, target)
             assign_target(bidder, target)
+            place_initial_token(target)
 
             @log << "#{bidder.name} is forced to take #{target.name} for free"
 
