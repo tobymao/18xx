@@ -88,7 +88,7 @@ module Engine
     end
 
     def nodes
-      chains.flat_map { |c| c['nodes'] }.uniq.compact
+      chains.flat_map { |c| c[:nodes] }.uniq.compact
     end
 
     def next_chain(node, chain, other)
