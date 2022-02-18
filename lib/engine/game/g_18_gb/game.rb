@@ -81,7 +81,7 @@ module Engine
         )
 
         MARKET = [
-          %w[50o 55o 60o 65o 70p 75p 80p 90p 100p 115 130 160 180 200 220 240 265 290 320 350e 380e],
+          %w[50o 55o 60o 65o 70p 75p 80p 90p 100p 115 130 145 160 180 200 220 240 265 290 320 350e 380e],
         ].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
