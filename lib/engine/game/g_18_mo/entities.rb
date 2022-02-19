@@ -31,7 +31,7 @@ module Engine
            name: 'Mail Contract',
            value: 60,
            revenue: 0,
-           desc: 'Adds $10 per location visited by any one train of the owning corporation. Never '\
+           desc: 'Adds $10 per paying location visited by any one train of the owning corporation. Never '\
                  'closes once purchased by a corporation.',
            sym: 'MAIL',
            abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],

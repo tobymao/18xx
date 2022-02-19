@@ -31,6 +31,7 @@ module Engine
         ].freeze
 
         GREEN_GROUP = %w[ATSF MKT CBQ RI MP SSW SLSF].freeze
+        MAIL_CONTRACT_BONUS = 10
 
         REMOVED_CORP_SECOND_TOKEN = {
           'ATSF' => 'H4',
@@ -244,6 +245,43 @@ module Engine
 
         def block_for_steamboat?
           false
+        end
+
+        def num_mail_stops(route)
+          return route.visited_stops.size if route.train.distance.is_a?(Numeric)
+
+          [route.train.distance[0]['pay'], route.visited_stops.size].min
+        end
+
+        def revenue_for(route, stops)
+          revenue = stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+
+          revenue += east_west_bonus(stops)[:revenue]
+
+          if route.train.owner.companies.include?(mail_contract)
+            longest = route.routes.max_by { |r| [num_mail_stops(r), r.train.id] }
+            revenue += num_mail_stops(route) * self.class::MAIL_CONTRACT_BONUS if route == longest
+          end
+
+          revenue
+        end
+
+        def revenue_str(route)
+          stops = route.stops
+          stop_hexes = stops.map(&:hex)
+          str = route.hexes.map do |h|
+            stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
+          end.join('-')
+
+          bonus = east_west_bonus(stops)[:description]
+          str += " + #{bonus}" if bonus
+
+          if route.train.owner.companies.include?(mail_contract)
+            longest = route.routes.max_by { |r| [num_mail_stops(r), r.train.id] }
+            str += ' + Mail Contract' if route == longest
+          end
+
+          str
         end
       end
     end
