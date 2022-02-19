@@ -7,13 +7,11 @@ module Engine
     module G18Scan
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-          SJ_START_PRICE = 100
-
           def get_par_prices(entity, corp)
             return super unless corp == @game.sj
 
             @game.stock_market.par_prices.select do |p|
-              p.price == SJ_START_PRICE && p.price * 2 <= entity.cash
+              p.price == @game.class::SJ_START_PRICE && p.price * 2 <= entity.cash
             end
           end
         end
