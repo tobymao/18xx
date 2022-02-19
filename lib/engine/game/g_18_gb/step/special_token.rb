@@ -29,9 +29,8 @@ module Engine
 
           def switch_for_expensive_token(token)
             return token unless token.price.zero?
-            return token unless current_entity.tokens.size > 1
 
-            current_entity.tokens.max_by(&:price)
+            current_entity.tokens.reject(&:used).max_by(&:price)
           end
 
           def process_place_token(action)
