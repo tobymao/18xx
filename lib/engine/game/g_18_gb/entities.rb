@@ -256,7 +256,7 @@ module Engine
               {
                 type: 'token',
                 when: 'owning_player_track',
-                hexes: ['I14'],
+                hexes: ['H9'],
                 teleport_price: 50,
                 price: 0,
                 count: 1,
