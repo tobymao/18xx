@@ -83,9 +83,8 @@ module Engine
             raise GameError, "Cannot place a token on #{action.city.hex.name}" unless available_hex(entity,
                                                                                                     action.city.hex)
 
-            old_token = pending_minor.tokens.find { |t| t.city == action.city }
-            new_token = entity.unplaced_tokens.last
-            old_token.remove!
+            new_token = entity.unplaced_tokens.first
+            pending_token.remove!
             action.city.exchange_token(new_token)
 
             @game.log << "#{pending_corporation.name} replaces #{pending_minor.name} token on #{action.city.hex.name}"
