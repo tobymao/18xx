@@ -392,16 +392,18 @@ module Engine
         def rust_trains!(train, entity)
           super
 
-          all_corporations.each do |c|
-            pullman = owns_pullman?(c)
-            next unless pullman
+          all_corporations.each { |c| maybe_discard_pullman(c) }
+        end
 
-            trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
-            next if trains > 1 && trains <= train_limit(c)
+        def maybe_discard_pullman(entity)
+          pullman = owns_pullman?(entity)
+          return unless pullman
 
-            depot.reclaim_train(pullman)
-            @log << "#{c.name} is forced to discard pullman train"
-          end
+          trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? entity.trains.size : entity.trains.count { |t| !t.obsolete }
+          return if trains > 1 && trains <= train_limit(entity)
+
+          depot.reclaim_train(pullman)
+          @log << "#{entity.name} is forced to discard pullman train"
         end
 
         def depot_trains(entity)

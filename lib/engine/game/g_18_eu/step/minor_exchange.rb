@@ -78,6 +78,8 @@ module Engine
 
           @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')}"\
                        " train#{transferred.one? ? '' : 's'} from #{source.name}"
+
+          @game.maybe_discard_pullman(destination)
         end
       end
     end
