@@ -605,8 +605,9 @@ module Engine
           @_shares[share.id] = share
         end
 
-        def emergency_convert_capital(corporation)
-          5 * stock_market.find_share_price(corporation, [:left] * 3).price
+        def convert_capital(corporation, emergency)
+          steps = emergency ? 3 : 2
+          5 * stock_market.find_share_price(corporation, [:left] * steps).price
         end
 
         def convert_to_ten_share(corporation, price_drops = 0, blame_president = false)
