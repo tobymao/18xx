@@ -191,18 +191,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Quincy (H4) token',
-                desc_detail: 'May place token in Quincy (H4) for $40 if connected, $100 '\
-                             'otherwise. Token slot is reserved until Phase IV.',
+                description: 'Token Quincy (H4) for $40/$60.',
+                desc_detail: 'May place token in Quincy (H4) for $40 if connected, $60 otherwise.',
                 hexes: ['H4'],
                 price: 40,
                 count: 1,
-                teleport_price: 100,
-              },
-              {
-                type: 'reservation',
-                hex: 'H4',
-                remove: 'IV',
+                teleport_price: 60,
               },
             ],
             coordinates: 'A7',
@@ -220,18 +214,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Kansas City (C7) token',
-                desc_detail: 'May place token in Kansas City (C7) for $40 if connected, $100 '\
-                             'otherwise. Token slot is reserved until Phase IV.',
+                description: 'Token Kansas City (C7) for $40/$80.',
+                desc_detail: 'May place token in Kansas City (C7) for $40 if connected, $80 otherwise.',
                 hexes: ['C7'],
                 price: 40,
                 count: 1,
-                teleport_price: 100,
-              },
-              {
-                type: 'reservation',
-                hex: 'C7',
-                remove: 'IV',
+                teleport_price: 80,
               },
             ],
             coordinates: 'J4',
@@ -249,18 +237,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Sedalia (E9) token',
-                desc_detail: 'May place token in Sedalia (E9) for $40 if connected, $100 '\
-                             'otherwise. Token slot is reserved until Phase IV.',
+                description: 'Token Sealia (E9) for $40/$80.',
+                desc_detail: 'May place token in Sedalia (E9) for $40 if connected, $60 otherwise.',
                 hexes: ['E9'],
                 price: 40,
                 count: 1,
-                teleport_price: 100,
-              },
-              {
-                type: 'reservation',
-                hex: 'E9',
-                remove: 'IV',
+                teleport_price: 60,
               },
             ],
             coordinates: 'C13',
@@ -278,18 +260,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Pleasant Hill (D8) token',
-                desc_detail: 'May place token in Pleasant Hill (D8) for $40 if connected, $100 '\
-                             'otherwise. Token slot is reserved until Phase IV.',
+                description: 'Token Pleasant Hill (D8) for $40/$60.',
+                desc_detail: 'May place token in Pleasant Hill (D8) for $40 if connected, $60 otherwise.',
                 hexes: ['D8'],
                 price: 40,
                 count: 1,
-                teleport_price: 100,
-              },
-              {
-                type: 'reservation',
-                hex: 'D8',
-                remove: 'IV',
+                teleport_price: 60,
               },
             ],
             coordinates: 'J8',
@@ -308,18 +284,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Kansas City (C7) token',
-                desc_detail: 'May place token in Kansas City (C7) for $40 if connected, $100 '\
-                             'otherwise. Token slot is reserved until Phase IV.',
-                hexes: ['C7'],
+                description: 'Token Jefferson City (G9) for $40/$80.',
+                desc_detail: 'May place token in Jefferson City (G9) for $40 if connected, $80 otherwise.',
+                hexes: ['G9'],
                 price: 40,
                 count: 1,
-                teleport_price: 100,
-              },
-              {
-                type: 'reservation',
-                hex: 'C7',
-                remove: 'IV',
+                teleport_price: 80,
               },
             ],
             coordinates: 'K5',
@@ -337,18 +307,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Springfield (E13) token',
-                desc_detail: 'May place token in Springfield (E13) for $40 if connected, $100 '\
-                             'otherwise. Token slot is reserved until Phase IV.',
+                description: 'Token Springfield (E13) for $40/$80.',
+                desc_detail: 'May place token in Springfield (E13) for $40 if connected, $80 otherwise.',
                 hexes: ['E13'],
                 price: 40,
                 count: 1,
-                teleport_price: 100,
-              },
-              {
-                type: 'reservation',
-                hex: 'E13',
-                remove: 'IV',
+                teleport_price: 80,
               },
             ],
             coordinates: 'J8',
@@ -367,18 +331,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 St. Louis (J8) token',
-                desc_detail: 'May place token in St. Louis (J8) for $40 if connected, $100 '\
-                             'otherwise. Token slot is reserved until Phase IV.',
+                description: 'Token St. Louis (J8) for $40/$80.',
+                desc_detail: 'May place token in St. Louis (J8) for $40 if connected, $80 otherwise.',
                 hexes: ['J8'],
                 price: 40,
                 count: 1,
-                teleport_price: 100,
-              },
-              {
-                type: 'reservation',
-                hex: 'J8',
-                remove: 'IV',
+                teleport_price: 80,
               },
             ],
             coordinates: 'J14',

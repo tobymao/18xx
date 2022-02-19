@@ -48,10 +48,6 @@ module Engine
           { lay: true, upgrade: :not_if_upgraded, cost: 20 },
         ].freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'remove_reservations' => ['Remove Reservations', 'Remove reserved token slots for corporations']
-        ).freeze
-
         def init_round
           G18MO::Round::Draft.new(self, [G18MO::Step::DraftPurchase])
         end
@@ -191,9 +187,6 @@ module Engine
                 distance: 8,
                 price: 800,
               },
-            ],
-            events: [
-              { 'type' => 'remove_reservations' },
             ],
           },
         ].freeze
