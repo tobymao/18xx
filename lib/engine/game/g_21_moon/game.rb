@@ -561,16 +561,18 @@ module Engine
             prev = corp.share_price.price
 
             @stock_market.move_up(corp) if sold_out?(corp) && sold_out_increase?(corp)
-            pool_share_drop = self.class::POOL_SHARE_DROP
-            price_drops =
-              if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
-                0
-              elsif pool_share_drop == :one
-                1
-              else
-                shares_in_pool
-              end
-            price_drops.times { @stock_market.move_down(corp) }
+            if corp.operated?
+              pool_share_drop = self.class::POOL_SHARE_DROP
+              price_drops =
+                if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
+                  0
+                elsif pool_share_drop == :one
+                  1
+                else
+                  shares_in_pool
+                end
+              price_drops.times { @stock_market.move_down(corp) }
+            end
 
             log_share_price(corp, prev)
           end
@@ -880,10 +882,43 @@ module Engine
           super
         end
 
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          return super if bundle.corporation.operated?
+
+          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
+        end
+
         def sellable_bundles(player, corporation)
           return super unless @round.active_step.respond_to?(:sellable_bundles)
 
           @round.active_step.sellable_bundles(player, corporation)
+        end
+
+        def emergency_issuable_cash(corporation)
+          emergency_issuable_bundles(corporation).group_by(&:corporation).sum do |_corp, bundles|
+            bundles.max_by(&:num_shares)&.price || 0
+          end
+        end
+
+        def emergency_issuable_bundles(entity)
+          return [] if entity.trains.any?
+          return [] unless @depot.min_depot_train
+
+          min_train_price = @depot.min_depot_price
+          return [] if entity.cash >= min_train_price
+
+          @corporations.flat_map do |corp|
+            bundles = bundles_for_corporation(entity, corp)
+            bundles.select! { |b| @share_pool.fit_in_bank?(b) }
+
+            # Cannot issue more shares than needed to buy the train from the bank
+            train_buying_bundles = bundles.select { |b| (entity.cash + b.price) >= min_train_price }
+            if train_buying_bundles.size > 1
+              excess_bundles = train_buying_bundles[1..-1]
+              bundles -= excess_bundles
+            end
+            bundles
+          end.compact
         end
 
         def upgrade_cost(tile, hex, entity, spender)
@@ -940,7 +975,7 @@ module Engine
               { text: '80', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Helium-3', props: { style: { border: '1px solid', backgroundColor: 'red' } } },
+              { text: 'Helium-3', props: { style: { color: 'white', backgroundColor: 'red' } } },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '50', props: { style: { border: '1px solid' } } },
