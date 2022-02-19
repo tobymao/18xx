@@ -50,6 +50,13 @@ module Engine
 
             @round.teleport_ability = nil
           end
+
+          def adjust_token_price_ability!(entity, token, hex, city, special_ability: nil)
+            # When Trajektanstalt teleports a token it needs to be fully paid
+            return super unless special_ability&.owner == @game.trajektanstalt
+
+            [token, special_ability]
+          end
         end
       end
     end
