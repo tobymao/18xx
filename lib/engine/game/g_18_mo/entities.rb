@@ -41,7 +41,7 @@ module Engine
            name: 'Pool Share',
            value: 80,
            revenue: 10,
-           desc: 'Player may exchange for a share in the bank pool.',
+           desc: 'Player may exchange for a share in the bank pool. This share may not be sold.',
            sym: 'PS',
            abilities: [{
              type: 'exchange',

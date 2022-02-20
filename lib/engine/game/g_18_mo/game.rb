@@ -9,6 +9,8 @@ module Engine
   module Game
     module G18MO
       class Game < G1846::Game
+        attr_accessor :exchanged_share
+
         include_meta(G18MO::Meta)
         include G18MO::Entities
         include G18MO::Map
@@ -49,6 +51,11 @@ module Engine
           { lay: true, upgrade: :not_if_upgraded, cost: 20 },
         ].freeze
 
+        def setup
+          super
+          @exchange_share = nil
+        end
+
         def init_round
           G18MO::Round::Draft.new(self, [G18MO::Step::DraftPurchase])
         end
@@ -74,8 +81,8 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::Exchange,
-            G1846::Step::BuySellParShares,
+            G18MO::Step::Exchange,
+            G18MO::Step::BuySellParShares,
           ])
         end
 
