@@ -32,7 +32,7 @@ module Engine
           end
 
           def convert_text
-            capital_str = @game.format_currency(@game.emergency_convert_capital(current_entity))
+            capital_str = @game.format_currency(@game.convert_capital(current_entity, true))
             "Convert to 10-share (#{capital_str})"
           end
 

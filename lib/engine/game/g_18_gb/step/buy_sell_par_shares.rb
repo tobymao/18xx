@@ -36,7 +36,8 @@ module Engine
           def entity_choices(corporation)
             return {} unless can_convert?(current_entity, corporation)
 
-            { "convert_#{corporation.id}" => 'Convert to 10-share' }
+            capital_str = @game.format_currency(@game.convert_capital(corporation, false))
+            { "convert_#{corporation.id}" => "Convert to 10-share (#{capital_str})" }
           end
 
           def description

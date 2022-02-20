@@ -256,7 +256,7 @@ module Engine
               {
                 type: 'token',
                 when: 'owning_player_track',
-                hexes: ['I14'],
+                hexes: ['H9'],
                 teleport_price: 50,
                 price: 0,
                 count: 1,
@@ -528,17 +528,6 @@ module Engine
                 description: 'Conversion tokens: 2',
                 desc_detail: 'Receives 2 additional £50 tokens on the charter when converted to a 10-share corporation',
                 count: 2,
-              },
-              {
-                type: 'tile_lay',
-                hexes: ['H17'],
-                tiles: %w[G36 G37 G38],
-                cost: 0,
-                reachable: true,
-                consume_tile_lay: true,
-                description: 'May place a green tile in H17',
-                desc_detail: 'May place a green tile in its home city (H17), instead of the usual yellow tile, even before ' \
-                             'green tiles are normally available',
               },
             ],
           },

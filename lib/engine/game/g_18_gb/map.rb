@@ -383,6 +383,7 @@ module Engine
             ['L1'] => 'town=revenue:10;path=a:1,b:_0;path=a:2,b:_0',
           },
           blue: {
+            ['B23'] => '',
             ['C22'] => 'path=a:2,b:4;path=a:5,b:0;upgrade=cost:50,terrain:river;label=S',
             ['I4'] => 'path=a:1,b:2;upgrade=cost:50,terrain:river;label=FT',
           },
@@ -526,6 +527,7 @@ module Engine
             ['K24'] => 'path=a:1,b:2;path=a:1,b:3',
           },
           blue: {
+            ['B23'] => '',
             ['C22'] => 'path=a:2,b:4;path=a:5,b:0;upgrade=cost:50,terrain:river;label=S',
           },
         }.freeze
