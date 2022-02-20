@@ -823,6 +823,10 @@ module Engine
         entity.runnable_trains
       end
 
+      def discarded_train_placement
+        self.class::DISCARDED_TRAINS
+      end
+
       # Before rusting, check if this train individual should rust.
       def rust?(train, purchased_train)
         train.rusts_on == purchased_train.sym ||
