@@ -34,7 +34,7 @@ These attributes may be set for all ability types
   game phase class must match (one of) the ability's `when` string(s). Examples:
     - `any`: usable at any time during the game
     - `buying_train`: train buying step
-    - `Track`, `TrackAndToken`: track-laying step; if normal track lays are used
+    - `track`, `track_and_token`: track-laying step; if normal track lays are used
       up, but there is still a `Track` ability, then the active step will not
       pass on to the next step automatically
     - `sold`: when the company is bought from a player by a corporation
