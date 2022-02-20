@@ -27,13 +27,7 @@ module Engine
 
         BANK_CASH = 12_000
 
-        FIRST_EDITION_CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
-        SECOND_EDITION_CERT_LIMIT = { 2 => 26, 3 => 20, 4 => 15, 5 => 12, 6 => 11 }.freeze
-
-        def game_cert_limit
-          @game_cert_limit ||= second_edition? ? SECOND_EDITION_CERT_LIMIT : FIRST_EDITION_CERT_LIMIT
-          @game_cert_limit
-        end
+        CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
 
@@ -253,14 +247,11 @@ module Engine
                 when 'B&A'
                   corp[:tokens] = [0, 20, 20, 20]
                   change_president_certificate_to_30_percent(corp)
-                when 'ERIE', 'RWO'
+                when 'RWO'
                   change_president_certificate_to_30_percent(corp)
                 when 'NYNH'
                   corp[:tokens] = [0, 20, 20, 20]
                   corp[:sym] = 'NH'
-                  change_president_certificate_to_30_percent(corp)
-                when 'NY&H'
-                  corp[:tokens] = [0, 20]
                 end
                 corp
               end
@@ -275,20 +266,6 @@ module Engine
           corporation[:abilities] = corporation[:abilities].dup || []
           corporation[:abilities] << { type: 'description', description: "30% President's Certificate" }
           corporation
-        end
-
-        def game_companies
-          unless @game_companies
-            @game_companies = super.dup
-            if second_edition?
-              @game_companies.map! do |c|
-                company = c.dup
-                company[:value] = 180 if company[:sym] == 'DPC'
-                company
-              end
-            end
-          end
-          @game_companies
         end
 
         def location_name(coord)
@@ -739,6 +716,7 @@ module Engine
         def legal_tile_rotation?(entity, hex, tile)
           # NYC tiles have a specific rotation
           return tile.rotation.zero? if hex.id == 'J20' && %w[X11 X22].include?(tile.name)
+          return tile.rotation.zero? if second_edition? && hex.id == 'J20' && tile.name == 'X32'
 
           super
         end
@@ -797,7 +775,12 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super + (route_connection_bonus_hexes(route, stops: stops).size * 10)
+          additional_revenue = 0
+          if second_edition? && (route.train.name == 'D' || route.train.name == '2H')
+            additional_revenue = 30 * (stops.map(&:hex) & route.corporation.tokens.select(&:used).map(&:hex)).size
+          end
+
+          super + additional_revenue + (route_connection_bonus_hexes(route, stops: stops).size * 10)
         end
 
         def revenue_str(route)
@@ -943,6 +926,10 @@ module Engine
           @log << "#{owner.name} salvages a #{train.name} train for #{format_currency(salvage_value(train))}"
           @bank.spend(salvage_value(train), owner)
           @depot.reclaim_train(train)
+        end
+
+        def discarded_train_placement
+          second_edition? ? :remove : super
         end
 
         def rust(train)
