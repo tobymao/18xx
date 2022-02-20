@@ -982,7 +982,7 @@ module Engine
                                                                     'Game Ends 3 ORs after purchase/export'\
                                                                     ' of first 8 train'],
                                               'green_minors_available' => ['Green Minors become available'],
-                                              'majors_can_ipo' => ['Majors can be ipoed'],
+                                              'majors_can_ipo' => ['Majors can be started'],
                                               'minors_cannot_start' => ['Minors cannot start'],
                                               'minors_nationalized' => ['Minors are nationalized'],
                                               'nationalize_companies' =>
@@ -1554,7 +1554,7 @@ module Engine
         end
 
         def event_majors_can_ipo!
-          @log << 'Majors can now be started via IPO'
+          @log << 'Majors can now be started'
           @show_majors = true
           # Done elsewhere
         end
