@@ -296,6 +296,10 @@ module Engine
             .sort_by { |h| [h.president ? 1 : 0, h.percent] }
           all_bundles_for_corporation(share_holder, corporation, shares: shares)
         end
+
+        def place_second_token(corporation, two_player_only: true, deferred: true)
+          super(corporation, two_player_only: two_player_only, deferred: false)
+        end
       end
     end
   end
