@@ -36,13 +36,6 @@ module Engine
 
             variant[:price] - ability.discount
           end
-
-          def can_sell?(entity, bundle)
-            return unless bundle
-            return if @game.exchanged_share && bundle.shares.include?(@game.exchanged_share)
-
-            super
-          end
         end
       end
     end

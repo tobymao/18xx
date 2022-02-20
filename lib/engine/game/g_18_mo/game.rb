@@ -82,7 +82,7 @@ module Engine
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18MO::Step::Exchange,
-            G18MO::Step::BuySellParShares,
+            G1846::Step::BuySellParShares,
           ])
         end
 
@@ -289,6 +289,12 @@ module Engine
           end
 
           str
+        end
+
+        def bundles_for_corporation(share_holder, corporation, shares: nil)
+          shares = (shares || share_holder.shares_of(corporation).reject { |s| s == @exchanged_share })
+            .sort_by { |h| [h.president ? 1 : 0, h.percent] }
+          all_bundles_for_corporation(share_holder, corporation, shares: shares)
         end
       end
     end
