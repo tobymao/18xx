@@ -64,7 +64,7 @@ module Engine
           @round_num = round_num
           G1846::Round::Operating.new(self, [
             G1846::Step::Bankrupt,
-            Engine::Step::SpecialToken,
+            G18MO::Step::SpecialToken,
             Engine::Step::SpecialTrack,
             G1846::Step::BuyCompany,
             G1846::Step::IssueShares,
