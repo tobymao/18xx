@@ -18,74 +18,6 @@ module Engine
         STARTING_CASH = { 2 => 600, 3 => 425, 4 => 400, 5 => 385 }.freeze
         TILE_COST = 0
 
-        ORANGE_GROUP = [
-        'Pool Share',
-        'Extra Yellow Tile',
-        'Extra Green Tile',
-        'Tunnel Blasting Company',
-        ].freeze
-
-        BLUE_GROUP = [
-        'Ranch Tile',
-        'Train Discount',
-        'Revenue Change',
-        'Mountain Construction Company',
-        ].freeze
-
-        GREEN_GROUP = %w[ATSF MKT CBQ RI MP SSW SLSF].freeze
-        MAIL_CONTRACT_BONUS = 10
-
-        REMOVED_CORP_SECOND_TOKEN = {
-          'ATSF' => 'H4',
-          'SSW' => 'J8',
-          'MKT' => 'E9',
-          'RI' => 'C7',
-          'MP' => 'D8',
-          'CBQ' => 'C7',
-          'SLSF' => 'E13',
-        }.freeze
-
-        # Two lays with one being an upgrade, second tile costs 20
-        TILE_LAYS = [
-          { lay: true, upgrade: true },
-          { lay: true, upgrade: :not_if_upgraded, cost: 20 },
-        ].freeze
-
-        def setup
-          super
-          @exchange_share = nil
-        end
-
-        def init_round
-          G18MO::Round::Draft.new(self, [G18MO::Step::DraftPurchase])
-        end
-
-        def operating_round(round_num)
-          @round_num = round_num
-          G1846::Round::Operating.new(self, [
-            G1846::Step::Bankrupt,
-            G18MO::Step::SpecialToken,
-            Engine::Step::SpecialTrack,
-            G1846::Step::BuyCompany,
-            G1846::Step::IssueShares,
-            G1846::Step::TrackAndToken,
-            Engine::Step::Route,
-            G1846::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            Engine::Step::SpecialBuyTrain,
-            G18MO::Step::BuyTrain,
-            [G1846::Step::BuyCompany, { blocks: true }],
-          ], round_num: round_num)
-        end
-
-        def stock_round
-          Engine::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
-            G18MO::Step::Exchange,
-            G1846::Step::BuySellParShares,
-          ])
-        end
-
         PHASES = [
                 {
                   name: '2',
@@ -198,6 +130,79 @@ module Engine
             ],
           },
         ].freeze
+
+        ORANGE_GROUP = [
+        'Pool Share',
+        'Extra Yellow Tile',
+        'Extra Green Tile',
+        'Tunnel Blasting Company',
+        ].freeze
+
+        BLUE_GROUP = [
+        'Ranch Tile',
+        'Train Discount',
+        'Revenue Change',
+        'Mountain Construction Company',
+        ].freeze
+
+        GREEN_GROUP = %w[ATSF MKT CBQ RI MP SSW SLSF].freeze
+        MAIL_CONTRACT_BONUS = 10
+
+        REMOVED_CORP_SECOND_TOKEN = {
+          'ATSF' => 'H4',
+          'SSW' => 'J8',
+          'MKT' => 'E9',
+          'RI' => 'C7',
+          'MP' => 'D8',
+          'CBQ' => 'C7',
+          'SLSF' => 'E13',
+        }.freeze
+
+        # Two lays with one being an upgrade, second tile costs 20
+        TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: true, upgrade: :not_if_upgraded, cost: 20 },
+        ].freeze
+
+        def setup
+          super
+          @exchange_share = nil
+        end
+
+        def init_round
+          G18MO::Round::Draft.new(self, [G18MO::Step::DraftPurchase])
+        end
+
+        def operating_round(round_num)
+          @round_num = round_num
+          G1846::Round::Operating.new(self, [
+            G1846::Step::Bankrupt,
+            G18MO::Step::SpecialToken,
+            Engine::Step::SpecialTrack,
+            G1846::Step::BuyCompany,
+            G1846::Step::IssueShares,
+            G1846::Step::TrackAndToken,
+            Engine::Step::Route,
+            G1846::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
+            G18MO::Step::BuyTrain,
+            [G1846::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G18MO::Step::Exchange,
+            G1846::Step::BuySellParShares,
+          ])
+        end
+
+        def next_round!
+          @draft_finished = true # always use 1846 MP next_round!
+          super
+        end
 
         def operating_order
           @minors.select(&:floated?) + @corporations.select(&:floated?).sort
