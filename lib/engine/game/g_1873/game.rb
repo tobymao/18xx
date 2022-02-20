@@ -1902,7 +1902,7 @@ module Engine
 
         #  subtrain owner is actually supertrain owner
         def train_owner(train)
-          (@supertrains[train] || train).owner
+          (@supertrains[train] || train)&.owner
         end
 
         # 1. subtrain owner is actually supertrain owner
@@ -1919,6 +1919,11 @@ module Engine
         def qlb_bonus
           hex = hex_by_id(@qlb.coordinates.first)
           hex.tile.cities.first.route_revenue(@phase, @qlb_dummy_train)
+        end
+
+        # needed to deal with unallocated diesels being referenced by Route serialization
+        def city_tokened_by?(city, entity)
+          !entity || city.tokened_by?(entity)
         end
         #
         # end of route methods
