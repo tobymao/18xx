@@ -185,6 +185,11 @@ module Engine
               raise GameError, "#{target.name} cannot be purchased for #{@game.format_currency(price)}."
             end
 
+            unless price == min_bid(target)
+              raise GameError,
+                    "#{target.name} must be purchased for #{@game.format_currency(min_bid(target))}."
+            end
+
             assign_target(bidder, target)
 
             bidder.spend(price, @game.bank) if price.positive?
