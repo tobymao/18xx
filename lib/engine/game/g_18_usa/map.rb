@@ -7,7 +7,7 @@ module Engine
         LAYOUT = :pointy
 
         RESOURCE_LABELS = { coal: '⛏️', ore: '⚒️', oil: '🛢️' }.freeze
-        RESOURCE_ICONS = { coal: 'coalcar', oil: 'oil-derrick', ore: 'mine' }.freeze
+        RESOURCE_ICONS = { coal: 'coalcar', ore: 'mine', oil: 'oil-derrick' }.freeze
 
         ORE10_TILES = %w[7ore10 8ore10 9ore10 7coalore10 8coalore10 9coalore10].freeze
         ORE20_TILES = %w[7ore20 8ore20 9ore20 7coalore20 8coalore20 9coalore20].freeze
@@ -159,7 +159,7 @@ module Engine
           'X13' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=CL',
+            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=CLE',
           },
           'X14' => {
             'count' => 1,
