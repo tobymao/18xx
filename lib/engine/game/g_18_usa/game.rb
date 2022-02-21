@@ -480,9 +480,10 @@ module Engine
         end
 
         def upgrades_to_correct_color?(from, to)
+          return true if self.class::SPECIAL_TILES.include?(to.name)
+
           if @phase.tiles.include?(:brown)
             entity = @round.current_entity
-
             # Non-track upgrades
             if from.cities.empty?
               return to.color == :yellow if from.color == :white && !can_upgrade_track?(entity)
