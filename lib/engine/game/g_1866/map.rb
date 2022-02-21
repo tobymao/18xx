@@ -765,11 +765,11 @@ module Engine
             %w[D24 M1 R22 S11] =>
               'junction;path=a:5,b:_0,terminal:1',
             ['H2'] =>
-              'junction;path=a:0,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
+              'junction;path=a:0,b:_0,terminal:1;junction;path=a:2,b:_1,terminal:1',
             ['U19'] =>
-              'junction;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
+              'junction;path=a:0,b:_0,terminal:1;junction;path=a:5,b:_1,terminal:1',
             ['U3'] =>
-              'junction;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
+              'junction;path=a:1,b:_0,terminal:1;junction;path=a:2,b:_1,terminal:1',
             ['P14'] =>
               'path=a:2,b:5;border=edge:5',
             ['Q15'] =>
