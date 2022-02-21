@@ -727,6 +727,28 @@ module Engine
           current_entity
         end
 
+        def train_help(entity, trains, _routes)
+          leased_train = false
+          plus_trains = false
+          express_trains = false
+
+          trains.each do |t|
+            leased_train = true if t.owner == @depot
+            plus_trains = true if t.name.include?('+')
+            express_trains = true if t.name.include?('X')
+          end
+
+          help = []
+          help << "#{entity.id} is leasing a #{@depot.min_depot_train.name} train from the bank" if leased_train
+          help << 'N+M trains run N cities and offboards and M towns' if plus_trains
+          if express_trains
+            help << "X trains ignore all towns and count only cities and offboards. They add a bonus of #{format_currency(10)} "\
+                    'per hex as the crow flies between the start and the end of the route'
+          end
+
+          help
+        end
+
         def revenue_bonuses(route, stops)
           stop_hexes = stops.map { |stop| stop.hex.name }
           @companies.select { |co| co.owner == route&.corporation&.owner }.flat_map do |co|
