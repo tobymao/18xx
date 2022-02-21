@@ -486,9 +486,10 @@ module Engine
             # Non-track upgrades
             if from.cities.empty?
               return to.color == :yellow if from.color == :white && !can_upgrade_track?(entity)
+
               return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
             end
-           
+
             # City upgrades
             if from.color == :white
               colors = [:green]
@@ -607,9 +608,6 @@ module Engine
 
           @recently_floated = []
           turn = "#{@turn}.#{@round.round_num}"
-          if turn == '1.1'
-            @depot.export! until @phase.tiles.include?(:gray)
-          end
           case turn
           when '1.1' then @depot.export_all!('2')
           when '1.2' then @depot.export_all!('2+')
