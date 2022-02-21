@@ -86,7 +86,7 @@ module Engine
         ].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
-          unlimited: :yellow,
+          unlimited: :olive,
         )
 
         EVENTS_TEXT = {
