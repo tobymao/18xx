@@ -1,54 +1,37 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
-require_relative '../../../step/train'
-require_relative 'scrap_train_module'
+require_relative '../../../step/buy_train'
 module Engine
   module Game
     module G18USA
       module Step
-        class BuyPullman < Engine::Step::Base
-          include Engine::Step::Train
-          include ScrapTrainModule # Why would you scrap a pullman so you can buy a pullman!?
-          def actions(entity)
-            return [] if entity != current_entity
-
-            if @game.depot.upcoming.any? { |t| t.name == 'P' } && can_buy_train?(entity) && @game.pullmans_available? && \
-                entity.runnable_trains.none? { |t| @game.pullman_train?(t) }
-              return %w[buy_train pass]
-            end
-
-            []
-          end
-
+        class BuyPullman < Engine::Step::BuyTrain
           def description
-            'Buy Pullman (Early)'
+            'Buy Pullman'
           end
 
           def pass_description
             'Skip (Pullman)'
           end
 
-          def process_buy_train(action)
-            check_spend(action)
-            buy_train_action(action)
-            pass! if !can_buy_train?(action.entity) && pass_if_cannot_buy_train?(action.entity)
+          def must_buy_train?(_)
+            false
           end
 
-          def check_spend(action)
-            return if action.train.price <= buying_power(action.entity)
+          def president_may_contribute?(_)
+            false
+          end
 
-            raise GameError, "#{action.entity.name} may not spend "\
-                             "#{@game.format_currency(action.price)} on "\
-                             "#{action.train.owner.name}'s #{action.train.name} "\
-                             "train; may only spend #{@game.format_currency(buying_power(action.entity))}."
+          def can_buy_train?(entity, _shell = nil)
+            @game.pullmans_available? && entity.runnable_trains.none? { |t| @game.pullman_train?(t) }
           end
 
           def buyable_trains(entity)
             # Can't buy a second pullman and can't buy a pullman if it's not legal to well, buy pullmans.
-            [] if entity.runnable_trains.any? { |t| @game.pullman_train?(t) } || !@game.pullmans_available?
+            return [] unless can_buy_train?(entity)
+
             # Cannot buy a pullman if you have a pullman
-            Array(@game.depot.upcoming.find { |t| @game.pullman_train?(t) })
+            (@depot.depot_trains & super).select { |t| @game.pullman_train?(t) }
           end
         end
       end

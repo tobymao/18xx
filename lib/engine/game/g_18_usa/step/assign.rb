@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/assign'
-require_relative 'scrap_train_module'
+
 module Engine
   module Game
     module G18USA
       module Step
         class Assign < Engine::Step::Assign
-          include ScrapTrainModule
           def process_assign(action)
             company = action.entity
             target = action.target

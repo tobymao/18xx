@@ -2776,15 +2776,11 @@ module Engine
         false
       end
 
-      # This is a bit of a hack to get around how 1840 and 18USA have different and incompatible opinions on what the
-      #  option to use the scrap_trains action in a merger round means
-      def use_1840_style_merger_round_scrap_trains?
-        true
-      end
-
-      # If true, instead of doing a relatively big view with a header and corporation context for scrapping trains, only a
-      # button [{scrap}] will be displayed, where {scrap} is taken from the current step's scrap_info(train) method
-      def use_compact_scrap_trains_view
+      # If a game overrides this to true, then if the possible actions for the current entity include any of
+      #   buy_train, scrap_train, or reassign_train then
+      # the Operating view will be used instead of the Merger round view for train actiosn in a merger round.
+      # See https://github.com/tobymao/18xx/issues/7169
+      def train_actions_always_use_operating_round_view?
         false
       end
     end

@@ -1,52 +1,22 @@
 # frozen_string_literal: true
 
 require_relative '../../g_1817/step/buy_sell_par_shares'
+require_relative 'scrap_train_module'
 
 module Engine
   module Game
     module G18USA
       module Step
         class BuySellParShares < G1817::Step::BuySellParShares
+          include ScrapTrainModule
           MIN_BID = 100
           MAX_BID = 100_000
           MAX_PAR_PRICE = 200
 
           def corporate_actions(entity)
-            return [] if @winning_bid
-
-            return [] if @corporate_action && @corporate_action.entity != entity
-
-            actions = []
-            if @round.current_actions.none?
-              actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
-              actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
-              actions << 'scrap_train' if can_scrap_train?(entity)
-            end
+            actions = super
+            actions << 'scrap_train' if !@winning_bid && @round.current_actions.none? && can_scrap_train?(entity)
             actions
-          end
-
-          def can_scrap_train?(entity)
-            return false unless entity.corporation?
-            return false unless entity.owned_by?(current_entity)
-
-            entity.trains.find { |t| @game.pullman_train?(t) }
-          end
-
-          def scrappable_trains(entity)
-            entity.trains.select { |t| t.name == 'P' }
-          end
-
-          def scrap_info(_)
-            @game.scrap_info
-          end
-
-          def scrap_button_text(_)
-            @game.scrap_button_text
-          end
-
-          def process_scrap_train(action)
-            @corporate_action = action
-            @game.scrap_train_by_owner(action, current_entity)
           end
 
           def auto_actions(entity)

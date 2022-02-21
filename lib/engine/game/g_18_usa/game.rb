@@ -653,7 +653,7 @@ module Engine
             G1817::Step::CashCrisis,
             G18USA::Step::ObsoleteTrain,
             G18USA::Step::Loan,
-            G18USA::Step::ScrapTrain,
+            G18USA::Step::DiscardTrain,
             G18USA::Step::SpecialTrack,
             G18USA::Step::SpecialToken,
             G18USA::Step::SpecialBuyTrain,
@@ -664,65 +664,12 @@ module Engine
             G18USA::Step::BuyPullman,
             G18USA::Step::Route,
             G18USA::Step::Dividend,
-            G18USA::Step::DiscardTrain,
             G18USA::Step::BuyTrain,
           ], round_num: round_num)
         end
 
-        def pullman_scrap_value
-          50
-        end
-
-        def scrap_info
-          "Scrap Pullman for #{format_currency(pullman_scrap_value)}"
-        end
-
-        def scrap_button_text
-          'Scrap Pullman'
-        end
-
-        def use_compact_scrap_trains_view
-          true
-        end
-
-        def use_1840_style_merger_round_scrap_trains?
-          false
-        end
-
         def crowded_corps
-          @crowded_corps ||= corporations.select do |c|
-            trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
-            trains > train_limit(c) || c.trains.count { |t| pullman_train?(t) } > 1
-          end
-        end
-
-        # owner is the alleged corporation scrapping a pullman
-        def scrap_train_by_corporation(action, _owner)
-          entity = action.entity
-          raise GameError, "#{entity.name} cannot scrap a train now" unless entity == current_entity
-
-          train = action.train
-          raise GameError, "#{entity.name} cannot scrap a #{train.name} train" unless pullman_train?(train)
-
-          scrap_train(train)
-        end
-
-        # owner is the alleged owner of the company scrapping a pullman
-        def scrap_train_by_owner(action, _owner)
-          entity = action.entity
-          raise GameError, "#{entity.name} cannot scrap a train now" unless entity&.owner == current_entity
-
-          train = action.train
-          raise GameError, "#{entity.name} cannot scrap a #{train.name} train" unless pullman_train?(train)
-
-          scrap_train(train)
-        end
-
-        # Do error checking before calling this.
-        def scrap_train(train)
-          @bank.spend(pullman_scrap_value, train.owner)
-          @log << "#{train.owner.name} scraps a pullman for #{format_currency(pullman_scrap_value)}"
-          @depot.reclaim_train(train)
+          @crowded_corps ||= super | corporations.select { |c| c.trains.count { |t| pullman_train?(t) } > 1 }
         end
 
         def next_round!
@@ -735,11 +682,6 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
-              # The normal export logic which plays nicely with privates exists in first_turn_housekeeping but it does not
-              #  work in the edgecase where there are 0 entities acting in an operating round - this exists to cover this
-              #  edge case. Since there are no corporatiosn, there is nobody who could use a private to save a train from
-              #  rusting prematurely so this is fine.
-              export_train if @round.entities.empty?
               # Store the share price of each corp to determine if they can be acted upon in the AR
               @stock_prices_start_merger = @corporations.to_h { |corp| [corp, corp.share_price] }
               @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"

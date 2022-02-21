@@ -7,10 +7,6 @@ module View
     class DiscardTrains < Snabberb::Component
       include Actionable
 
-      def current_entity_actions
-        @current_entity_actions ||= @game.round.actions_for(@game.round.active_step&.current_entity) || []
-      end
-
       def render
         block_props = {
           style: {
@@ -39,7 +35,8 @@ module View
             h(:div, trains),
           ])
         end
-        overflow << h(ScrapTrains, corporation: @current_entity) if current_entity_actions.include?('scrap_train')
+        overflow << h(ScrapTrains, corporation: @current_entity) if @game.round.actions_for(step.current_entity)
+            &.include?('scrap_train')
         overflow << h(Map, game: @game) if @game.round.is_a?(Engine::Round::Operating)
 
         h(:div, [

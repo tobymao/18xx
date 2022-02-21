@@ -2,7 +2,6 @@
 
 require_relative '../../../step/base'
 require_relative '../../../step/tracker'
-require_relative 'scrap_train_module'
 
 module Engine
   module Game
@@ -10,7 +9,6 @@ module Engine
       module Step
         class DenverTrack < Engine::Step::Base
           include Engine::Step::Tracker
-          include ScrapTrainModule
           ACTIONS = %w[lay_tile].freeze
 
           def actions(entity)

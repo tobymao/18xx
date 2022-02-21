@@ -2,13 +2,12 @@
 
 require_relative '../../../step/half_pay'
 require_relative '../../g_1817/step/dividend'
-require_relative 'scrap_train_module'
+
 module Engine
   module Game
     module G18USA
       module Step
         class Dividend < G1817::Step::Dividend
-          include ScrapTrainModule
           DIVIDEND_TYPES = %i[payout half withhold].freeze
           include Engine::Step::HalfPay
 

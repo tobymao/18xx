@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
-require_relative 'scrap_train_module'
+
 module Engine
   module Game
     module G18USA
       module Step
         class ObsoleteTrain < Engine::Step::Base
-          include ScrapTrainModule
           ACTIONS = %w[choose pass].freeze
 
           def actions(entity)

@@ -10,7 +10,7 @@ module Engine
           include ScrapTrainModule
           def actions(entity)
             actions = super
-            if entity.corporation? && entity == @buyer && entity.trains.any? { |t| @game.pullman_train?(t) }
+            if entity == @buyer && can_scrap_train?(entity)
               actions = %w[pass] if actions.empty?
               actions << 'scrap_train'
             end
@@ -18,39 +18,18 @@ module Engine
           end
 
           def pass_description
-            if @offer
-              'Pass (Offer for Sale)'
-            elsif @auctioning
-              'Pass (Bid)'
-            elsif @buyer && can_take_loan?(@buyer)
-              'Pass (Take Loan)'
-            elsif @buyer && can_payoff?(@buyer)
-              'Pass (On payoff Loan)'
-            elsif @buyer
-              'Pass (Scrap Train)'
-            end
+            return 'Pass (Scrap Train)' if @buyer && !can_take_loan?(@buyer) && !can_payoff?(@buyer)
+
+            super
           end
 
           def process_pass(action)
-            if @offer
-              @game.log << "#{@offer.owner.name} declines to put #{@offer.name} up for sale"
-              @round.offering.delete(@offer)
-              @offer = nil
-              setup_auction
-            elsif @buyer && can_take_loan?(@buyer)
-              @passed_take_loans = true
-              @game.log << "#{@buyer.name} passes taking additional loans"
-              acquire_post_loan
-            elsif @buyer && can_payoff?(@buyer)
-              @passed_payoff_loans = true
-              @game.log << "#{@buyer.name} passes paying off additional loans"
-              acquire_post_loan
-            elsif @buyer
+            if @buyer && !can_take_loan?(@buyer) && !can_payoff?(@buyer)
               @passed_scrap_trains = true
               @game.log << "#{@buyer.name} passes scrapping trains"
               acquire_post_loan
             else
-              pass_auction(action.entity)
+              super
             end
           end
 
@@ -60,13 +39,9 @@ module Engine
             super
           end
 
+          # This version is needed to reference @passed_scrap_trains
           def can_scrap_train?(entity)
             return true if entity.corporation? && !@passed_scrap_trains && entity.trains.find { |t| @game.pullman_train?(t) }
-          end
-
-          def process_scrap_train(action)
-            @corporate_action = action
-            @game.scrap_train_by_corporation(action, current_entity)
           end
         end
       end
