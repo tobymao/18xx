@@ -784,7 +784,7 @@ module Engine
                 tiles: [], # Added during setup
                 when: 'track',
                 reachable: true,
-                consume_tile_lay: true,
+                consume_tile_lay: false,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
                 count: 1,

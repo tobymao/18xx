@@ -393,7 +393,7 @@ module Engine
         end
 
         def resource_abilities_for_hex(hex, resource, selected_companies)
-          selected_companies.flat_map { |c| abilities(c, 'tile_lay') }.compact.select do |ability|
+          selected_companies.flat_map { |c| abilities(c, :tile_lay) }.compact.select do |ability|
             ability.hexes.include?(hex.id) && ability.tiles.include?(RESOURCE_LABELS[resource])
           end
         end
@@ -446,45 +446,14 @@ module Engine
         # to: Tile - Tile to upgrade to
         # special - ???
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          laying_entity = @round.current_entity
-
           # Resource tiles
           return @phase.tiles.include?(:green) && ore_upgrade?(from, to) if ORE20_TILES.include?(to.name)
           if to.color == :yellow && resource_tile?(to)
-            return from.color == :white && can_lay_resource_tile?(from, to, laying_entity.companies)
+            return from.color == :white && can_lay_resource_tile?(from, to, @round.current_entity.companies)
           end
 
           # Workaround to allow Denver tile orientation to change after placement
           return to.name == 'X04' if from.name == 'X04s'
-
-          # Metropolitan upgrades
-          return %w[X01 X02 X04 X06].include?(from.name) && tile_color_valid_for_phase?(to) if to.name == '592'
-
-          # Brown home city upgrade only on first operation
-          if !laying_entity.operated? &&
-             to.color == :brown &&
-             tile_color_valid_for_phase?(to) &&
-             from.hex == home_hex_for(laying_entity) &&
-             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
-            if active_metropolitan_hexes.include?(from.hex)
-              return to.name == 'X14' if from.hex.id == 'H14'
-              return to.name == 'X15' if from.hex.id == 'G3'
-              return to.name == 'X16' if from.hex.id == 'D28'
-
-              return to.name == '593'
-            end
-
-            return %w[63 448 611].include?(to.name)
-          end
-
-          return selected_company&.id == 'P27' if COMPANY_TOWN_TILES.include?(to.name)
-
-          if @phase.tiles.include?(:brown) && from.color == :white && !from.cities.empty? && !from.label
-            # Unplaced cities must go to green
-            return PLAIN_GREEN_CITY_TILES.include?(to.name)
-          end
-
-          return false if from.color == :white && to.color != :yellow && !can_upgrade_track?(laying_entity)
 
           super
         end
@@ -500,19 +469,33 @@ module Engine
 
         def upgrades_to_correct_label?(from, to)
           case from.hex.name
-          when 'E11'
-            return to.name == 'X04' if from.color == :white && metro_denver
           when 'D24'
             return true if to.name == 'X13'
             return false if to.color == :brown
           end
 
+          return %w[X01 X02 X04 X06].include?(from.name) if to.name == '592'
+
           super
         end
 
         def upgrades_to_correct_color?(from, to)
-          if @phase.tiles.include?(:brown) && from.cities.empty?
-            return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
+          if @phase.tiles.include?(:brown)
+            entity = @round.current_entity
+
+            # Non-track upgrades
+            if from.cities.empty?
+              return to.color == :yellow if from.color == :white && !can_upgrade_track?(entity)
+
+              return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
+            end
+
+            # City upgrades
+            if from.color == :white
+              colors = [:green]
+              colors << :brown if !entity.operated? && home_hex_for(entity) == from.hex
+              return colors.include?(to.color)
+            end
           end
 
           super
