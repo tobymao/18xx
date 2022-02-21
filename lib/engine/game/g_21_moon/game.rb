@@ -671,6 +671,10 @@ module Engine
           corporations.reject(&:minor?).sort_by(&:name)
         end
 
+        def player_sort(entities)
+          entities.reject(&:minor?).sort_by(&:name).group_by(&:owner)
+        end
+
         def lb_trains(corporation)
           corporation.trains.select { |t| @train_base[t] == :lb }
         end
