@@ -102,7 +102,7 @@ module Engine
            name: 'Half-Price Token',
            value: 40,
            revenue: 15,
-           desc: 'Owning corporation may place a token for half price. (do not use this to teleport)',
+           desc: 'Owning corporation may place a token for half price.',
            sym: 'HPTOK',
            color: nil,
            abilities: [{
@@ -238,7 +238,7 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Token Sealia (E9) for $40/$80.',
+                description: 'Token Sedalia (E9) for $40/$80.',
                 desc_detail: 'May place token in Sedalia (E9) for $40 if connected, $60 otherwise.',
                 hexes: ['E9'],
                 price: 40,
