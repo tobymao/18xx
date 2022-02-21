@@ -152,7 +152,7 @@ module Engine
           'ATSF' => 'H4',
           'SSW' => 'J8',
           'MKT' => 'E9',
-          'RI' => 'C7',
+          'RI' => 'G9',
           'MP' => 'D8',
           'CBQ' => 'C7',
           'SLSF' => 'E13',
