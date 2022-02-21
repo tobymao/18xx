@@ -145,6 +145,13 @@ module Engine
             pool_shares = @game.share_pool.percent_of(corp) || 0
             pool_shares.positive?
           end
+
+          def can_ipo_any?(entity)
+            return false unless entity
+            return false if converted?
+
+            super
+          end
         end
       end
     end
