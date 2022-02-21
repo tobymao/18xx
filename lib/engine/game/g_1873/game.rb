@@ -466,13 +466,16 @@ module Engine
           visited_tokens = {}
 
           routes.each do |route|
-            route.visited_stops.each do |node|
-              next unless node.city?
+            route.hexes.each do |hex|
+              hex.tile.stops.each do |node|
+                next unless node.city?
+                next unless route.node_signatures.include?(node.signature)
 
-              node.tokens.each do |token|
-                next if !token || token.corporation != corporation
+                node.tokens.each do |token|
+                  next if !token || token.corporation != corporation
 
-                visited_tokens[token] = true
+                  visited_tokens[token] = true
+                end
               end
             end
           end

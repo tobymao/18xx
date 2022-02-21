@@ -20,7 +20,7 @@ module Engine
       @subsidy = opts[:subsidy]
       @halts = opts[:halts]
       @abilities = opts[:abilities]
-      @saved_nodes = opts[:nodes] # node.signature for every node in the route
+      @node_signatures = opts[:nodes] # node.signature for every node in the route
       @local_length = @game.local_length
 
       @node_chains = {}
@@ -34,7 +34,7 @@ module Engine
 
     def clear_cache!(all: false, only_routes: false)
       @connection_hexes = nil if all
-      @saved_nodes = nil if all
+      @node_signatures = nil if all
       @revenue = nil
       @revenue_str = nil
 
@@ -87,8 +87,8 @@ module Engine
       connection_data&.map { |c| c[:chain] }
     end
 
-    def nodes
-      chains.flat_map { |c| c[:nodes] }.uniq.compact
+    def node_signatures
+      @node_signatures ||= chains.flat_map { |c| c[:nodes] }.uniq.compact.map(&:signature)
     end
 
     def next_chain(node, chain, other)
@@ -405,9 +405,9 @@ module Engine
       # If we're reconstructing a route with multiple ways to satisfy
       # the connection data (e.g., 457--464, IR7--8), prefer ones that
       # pass through the nodes associated with it.
-      if @saved_nodes
+      if @node_signatures
         candidates.each do |a, b, left, right, middle|
-          return [a, b, left, right, middle] if [left, right, middle].all? { |n| @saved_nodes.include?(n.signature) }
+          return [a, b, left, right, middle] if [left, right, middle].all? { |n| @node_signatures.include?(n.signature) }
         end
       end
 
@@ -459,6 +459,7 @@ module Engine
       other_paths = compute_other_paths
 
       if possibilities.one?
+        @node_signatures = nil
         chain = possibilities[0].find do |ch|
           ch[:nodes].any? { |node| @game.city_tokened_by?(node, corporation) } && (ch[:paths] & other_paths).empty?
         end
@@ -471,7 +472,10 @@ module Engine
       else
         possibilities.each_cons(2).with_index do |pair, index|
           a, b, left, right, middle = find_pairwise_chain(*pair, other_paths)
-          return @connection_data.clear if !left&.hex || !right&.hex || !middle&.hex
+          if !left&.hex || !right&.hex || !middle&.hex
+            @node_signatures = nil
+            return @connection_data.clear
+          end
 
           @connection_data << { left: left, right: middle, chain: a } if index.zero?
           @connection_data << { left: middle, right: right, chain: b }
@@ -480,6 +484,7 @@ module Engine
         end
       end
 
+      @node_signatures = nil
       @connection_data
     end
 
