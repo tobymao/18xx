@@ -40,6 +40,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '£%d'
 
+        CERT_LIMIT_TYPES = [].freeze
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
         PRESIDENT_SALES_TO_MARKET = true
@@ -507,10 +508,6 @@ module Engine
 
         def non_president_sales_drop_price?
           !@phase.status.include?('only_pres_drop')
-        end
-
-        def num_certs(entity)
-          entity.shares.sum(&:cert_size)
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
