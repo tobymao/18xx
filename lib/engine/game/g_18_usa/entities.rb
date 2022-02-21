@@ -281,7 +281,6 @@ module Engine
             abilities: [],
           },
           # P15
-          # TODO Make a choice ability
           {
             name: 'P15 - Western Land Grant',
             value: 60,

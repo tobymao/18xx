@@ -312,7 +312,10 @@ module Engine
           end
 
           @log << "Removing #{to_remove.map(&:name).join(', ')}"
-          to_remove.each(&:close!)
+          to_remove.each do |company|
+            company.close!
+            @round.active_step.companies.delete(company)
+          end
         end
 
         def setup_resource_subsidy

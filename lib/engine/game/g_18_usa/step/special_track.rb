@@ -16,16 +16,6 @@ module Engine
             super
           end
 
-          def hex_neighbors(entity, hex)
-            hexes = ability.hexes
-            return if hexes&.any? && !hexes&.include?(hex.id)
-
-            # When actually laying track entity will be the corp.
-            owner = entity.corporation? ? entity : entity.owner
-
-            @game.graph.connected_hexes(owner)[hex]
-          end
-
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
             hex = action.hex
