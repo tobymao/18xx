@@ -95,12 +95,12 @@ module Engine
           city_by_id('G2-0-0').place_token(neutral, neutral.next_token)
         end
 
-        # this could be a useful function in depot itself
         def add_optional_train(type)
-          modified_trains = @depot.trains.select { |t| t.name == type }
-          new_train = modified_trains.first.clone
-          new_train.index = modified_trains.size
-          @depot.insert_train(new_train, new_train.index)
+          proto = self.class::TRAINS.find { |e| e[:name] == type }
+          index = @depot.trains.count { |t| t.name == type }
+          new_train = Train.new(**proto, index: index)
+          @depot.insert_train(new_train)
+          update_cache(:trains)
         end
 
         def ipo_name(_entity = nil)
