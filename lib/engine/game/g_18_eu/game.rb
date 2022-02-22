@@ -441,6 +441,12 @@ module Engine
           end
         end
 
+        def hex_blocked_by_ability?(entity, ability, hex)
+          return false if entity&.owner == ability&.owner&.owner
+
+          super
+        end
+
         def mark_auctioning(minor)
           minor.reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
         end
