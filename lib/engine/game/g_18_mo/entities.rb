@@ -238,7 +238,7 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Token Sedalia (E9) for $40/$80.',
+                description: 'Token Sedalia (E9) for $40/$60.',
                 desc_detail: 'May place token in Sedalia (E9) for $40 if connected, $60 otherwise.',
                 hexes: ['E9'],
                 price: 40,
