@@ -494,14 +494,14 @@ module Engine
         def new_operating_round(round_num = 1)
           @or += 1
 
-          round = super
-          upgrade_space_port if @or == 5 || @or == 9
-          event_close_companies! if @or == 7
-
           if @or == 9
             @operating_rounds = 3
             @three_or_round = true
           end
+
+          round = super
+          upgrade_space_port if @or == 5 || @or == 9
+          event_close_companies! if @or == 7
 
           round
         end
@@ -669,6 +669,10 @@ module Engine
 
         def bank_sort(corporations)
           corporations.reject(&:minor?).sort_by(&:name)
+        end
+
+        def player_sort(entities)
+          entities.reject(&:minor?).sort_by(&:name).group_by(&:owner)
         end
 
         def lb_trains(corporation)
