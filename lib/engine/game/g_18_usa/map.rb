@@ -124,21 +124,21 @@ module Engine
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;'\
+            'code' => 'town=revenue:10,visit_cost:0;'\
                       'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R.J.',
           },
           'X08' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;'\
+            'code' => 'town=revenue:10,visit_cost:0;'\
                       'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
           },
           'X09' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;'\
+            'code' => 'town=revenue:10,visit_cost:0;'\
                       'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
           },
           'X10' => {
