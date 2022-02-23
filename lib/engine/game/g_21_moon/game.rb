@@ -516,6 +516,7 @@ module Engine
             G21Moon::Step::Bankrupt,
             Engine::Step::BuyCompany,
             Engine::Step::Assign,
+            Engine::Step::HomeToken,
             G21Moon::Step::SpecialTrack,
             G21Moon::Step::TrainMod,
             G21Moon::Step::Track,
