@@ -40,6 +40,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '£%d'
 
+        CERT_LIMIT_TYPES = [].freeze
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
         PRESIDENT_SALES_TO_MARKET = true
@@ -85,7 +86,7 @@ module Engine
         ].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
-          unlimited: :yellow,
+          unlimited: :olive,
         )
 
         EVENTS_TEXT = {
@@ -509,10 +510,6 @@ module Engine
           !@phase.status.include?('only_pres_drop')
         end
 
-        def num_certs(entity)
-          entity.shares.sum(&:cert_size)
-        end
-
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
           price = corporation.share_price.price
@@ -728,6 +725,28 @@ module Engine
 
         def lessee
           current_entity
+        end
+
+        def train_help(entity, trains, _routes)
+          leased_train = false
+          plus_trains = false
+          express_trains = false
+
+          trains.each do |t|
+            leased_train = true if t.owner == @depot
+            plus_trains = true if t.name.include?('+')
+            express_trains = true if t.name.include?('X')
+          end
+
+          help = []
+          help << "#{entity.id} is leasing a #{@depot.min_depot_train.name} train from the bank" if leased_train
+          help << 'N+M trains run N cities and offboards and M towns' if plus_trains
+          if express_trains
+            help << "X trains ignore all towns and count only cities and offboards. They add a bonus of #{format_currency(10)} "\
+                    'per hex as the crow flies between the start and the end of the route'
+          end
+
+          help
         end
 
         def revenue_bonuses(route, stops)

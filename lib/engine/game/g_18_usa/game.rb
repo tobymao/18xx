@@ -343,7 +343,7 @@ module Engine
           end
           resources << 'NO RESOURCES' if resources.empty?
 
-          subsidy[:description] =
+          subsidy[:desc] =
             "The corporation can place its choice of one of the following resources: #{resources.join(', ')}. " \
             'Placing a track and the resource token from the Resource Subsidy is a free extra ' \
             'track lay in addition to the normal track placements.'
@@ -362,8 +362,10 @@ module Engine
           end
         end
 
-        def home_hex_for(corporation)
-          corporation.tokens.first.hex
+        def home_hex_for(entity)
+          return nil unless entity.corporation?
+
+          entity.tokens.first.hex
         end
 
         TRACK_ENGINEER_TILE_LAYS = [ # Three lays with one being an upgrade, second tile costs 20, third tile free
@@ -373,7 +375,7 @@ module Engine
         ].freeze
 
         def tile_lays(entity)
-          return TRACK_ENGINEER_TILE_LAYS if entity.companies.include?(company_by_id('P7'))
+          return TRACK_ENGINEER_TILE_LAYS if entity.companies.include?(company_by_id('P7')) && @round.num_upgraded_track < 2
 
           super
         end
@@ -458,11 +460,6 @@ module Engine
           super
         end
 
-        def can_upgrade_track?(entity)
-          step = @round.active_step
-          step.respond_to?(:get_tile_lay) ? step.get_tile_lay(entity)[:upgrade] : true
-        end
-
         def ore_upgrade?(from, to)
           ORE10_TILES.include?(from.name) && ORE20_TILES.include?(to.name) && upgrades_to_correct_label?(from, to)
         end
@@ -479,17 +476,13 @@ module Engine
           super
         end
 
-        def upgrades_to_correct_color?(from, to)
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
           return true if self.class::SPECIAL_TILES.include?(to.name)
 
           if @phase.tiles.include?(:brown)
-            entity = @round.current_entity
+            entity = selected_company || @round.current_entity
             # Non-track upgrades
-            if from.cities.empty?
-              return to.color == :yellow if from.color == :white && !can_upgrade_track?(entity)
-
-              return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
-            end
+            return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) if from.cities.empty?
 
             # City upgrades
             if from.color == :white
@@ -869,8 +862,6 @@ module Engine
           return unless (subsidy = @subsidies_by_hex.delete(hex.coordinates))
 
           hex.tile.icons.reject! { |icon| icon.name.include?('subsidy') }
-          return if NO_SUBSIDIES.include?(subsidy[:id])
-
           subsidy_company = create_company_from_subsidy(subsidy)
           assign_boomtown_subsidy(hex, corporation) if subsidy_company.id == 'S8'
           subsidy_company.owner = corporation
@@ -911,6 +902,10 @@ module Engine
             subsidy.close!
           when 'S11'
             subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', 'plus_ten_twenty', true)
+            subsidy.close!
+          when 'S12', 'S13', 'S14', 'S15'
+            @log << "Subsidy contributes #{format_currency(subsidy.value)}"
+            @bank.spend(subsidy.value, corporation)
             subsidy.close!
           when 'S16'
             if subsidy.abilities.first.hexes.empty?

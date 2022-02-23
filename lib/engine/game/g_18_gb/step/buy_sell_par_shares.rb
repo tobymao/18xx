@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_sell_par_shares'
+require_relative '../../../action/choose'
 
 module Engine
   module Game
@@ -64,7 +65,7 @@ module Engine
             _action, corporation_id = action.choice.split('_')
             corporation = @game.corporations.find { |c| c.id == corporation_id }
             @game.convert_to_ten_share(corporation, 2, true)
-            @round.current_actions << action
+            track_action(action, corporation)
           end
 
           def process_choose_ability(action)
@@ -144,6 +145,19 @@ module Engine
 
             pool_shares = @game.share_pool.percent_of(corp) || 0
             pool_shares.positive?
+          end
+
+          def can_ipo_any?(entity)
+            return false unless entity
+            return false if converted?
+
+            super
+          end
+
+          def action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
+            return "#{corporation.name} converted to 10-share" if action.is_a? Action::Choose
+
+            super
           end
         end
       end

@@ -16,9 +16,10 @@ module Engine
           end
 
           def process_place_token(action)
-            @game.add_subsidy(token.corporation, action.city.hex)
-            @round.minimum_city_subsidy = 0
+            corporation = token.corporation
             super
+            @game.add_subsidy(corporation, action.city.hex)
+            @round.minimum_city_subsidy = 0
           end
 
           def available_hex(_entity, hex)
