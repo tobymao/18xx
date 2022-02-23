@@ -452,7 +452,7 @@ module Engine
             },
             'infrastructure_count' => 5,
             'companies' => %w[P1 P2 P3 P4 P5 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
             'national_corporations' => %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
             'corporation_count' => 13,
             'region_corporations' => {
@@ -493,7 +493,7 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[P1 P2 P3 P5 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SBB GL NRS],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SBB GL NRS L P],
             'national_corporations' => %w[GB FR BNL CH DE PRU HAN BAV WTB SAX],
             'corporation_count' => 9,
             'region_corporations' => {
@@ -572,7 +572,7 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[P1 P3 P4 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
-            'corporations' => %w[PLM MIDI OU SB BH FNR SSFL IFT SFAI SBB ZPB MZA],
+            'corporations' => %w[PLM MIDI OU SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
             'national_corporations' => %w[FR AHE ESP CH IT K2S SAR LV PAP TUS],
             'corporation_count' => 9,
             'region_corporations' => {
