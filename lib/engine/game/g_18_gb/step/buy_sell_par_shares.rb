@@ -155,7 +155,7 @@ module Engine
           end
 
           def action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
-            "#{corporation.name} converted to 10-share" if action.is_a? Action::Choose
+            return "#{corporation.name} converted to 10-share" if action.is_a? Action::Choose
 
             super
           end
