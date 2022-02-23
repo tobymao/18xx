@@ -751,7 +751,7 @@ module Engine
             resource_revenue
           end
 
-          pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == 'P' }
+          pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade[:id] == 'P' }
           revenue += 20 * stops.count { |s| !RURAL_TILES.include?(s.tile.name) } if pullman_assigned
 
           revenue += 10 if stop_hexes.find { |hex| hex.tile.icons.find { |icon| icon.name == 'plus_ten' } }
@@ -768,8 +768,7 @@ module Engine
               revenue += GNR_HALF_BONUS
             end
           end
-
-          if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
+          if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade[:id] == '/' }
             stop_skipped = skipped_stop(route, stops)
             if stop_skipped
               revenue -= stop_skipped.route_revenue(@phase, route.train)
@@ -808,7 +807,7 @@ module Engine
         end
 
         def check_connected(route, corporation)
-          return super unless @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
+          return super unless @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade[:id] == '/' }
 
           visits = route.visited_stops
           blocked = nil
@@ -824,8 +823,6 @@ module Engine
 
           # no need to check whether tokened out because of the above
           super(route, nil)
-
-          raise GameError, 'Route is not connected'
         end
 
         def tokened_out_stop(route)
