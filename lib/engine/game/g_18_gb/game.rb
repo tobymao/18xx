@@ -876,7 +876,7 @@ module Engine
         end
 
         def buy_train(operator, train, price = nil)
-          @train_bought = true
+          @train_bought = true if train.owner == @depot
           super
         end
 
