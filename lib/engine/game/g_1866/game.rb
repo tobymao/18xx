@@ -35,9 +35,6 @@ module Engine
         CURRENCY_FORMAT_STR = '£%d'
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 40, 4 => 30, 5 => 24, 6 => 20, 7 => 17 }.freeze
-        STARTING_CASH = { 3 => 800, 4 => 600, 5 => 480, 6 => 400, 7 => 340 }.freeze
-
         CAPITALIZATION = :incremental
 
         EBUY_CAN_SELL_SHARES = false
@@ -177,7 +174,6 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 20,
             price: 50,
             obsolete_on: '3',
             variants: [
@@ -220,7 +216,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 6,
             price: 200,
             rusts_on: '6',
             events: [
@@ -246,7 +241,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
             price: 300,
             rusts_on: '8',
             events: [
@@ -269,7 +263,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 4,
             price: 500,
             events: [
               {
@@ -313,7 +306,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 3,
             price: 600,
             variants: [
               {
@@ -349,7 +341,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 2,
             price: 800,
             variants: [
               {
@@ -385,7 +376,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 20,
             price: 1000,
             variants: [
               {
@@ -410,31 +400,190 @@ module Engine
           {
             name: 'INF',
             distance: 99,
-            num: 18,
             price: 0,
             reserved: true,
           },
           {
             name: 'P',
             distance: 99,
-            num: 5,
             price: 100,
           },
           {
             name: 'H',
             distance: 99,
-            num: 5,
             price: 120,
           },
           {
             name: 'M',
             distance: 99,
-            num: 5,
             price: 200,
           },
         ].freeze
 
         # *********** 1866 Specific constants ***********
+        SCENARIO = {
+          'full' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 6,
+              '4' => 5,
+              '5' => 4,
+              '6' => 3,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 18,
+              'P' => 5,
+              'H' => 5,
+              'M' => 5,
+            },
+            'infrastructure_count' => 5,
+            'companies' => %w[P1 P2 P3 P4 P5 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
+            'national_corporations' => %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
+            'corporation_count' => 13,
+            'region_corporations' => {
+              'GB' => %w[LNWR GWR NBR],
+              'FR' => %w[PLM MIDI OU],
+              'DE' => %w[KPS BY KHS],
+              'AHE' => %w[SB BH FNR],
+              'IT' => %w[SSFL IFT SFAI],
+            },
+          },
+          'nes' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 4,
+              '4' => 3,
+              '5' => 3,
+              '6' => 2,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 10,
+              'P' => 3,
+              'H' => 3,
+              'M' => 3,
+            },
+            'infrastructure_count' => 3,
+            'companies' => %w[P1 P2 P3 P5 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SBB GL NRS L P],
+            'national_corporations' => %w[GB FR BNL CH DE PRU HAN BAV WTB SAX],
+            'corporation_count' => 9,
+            'region_corporations' => {
+              'GB' => %w[LNWR GWR NBR],
+              'FR' => %w[PLM MIDI OU],
+              'DE' => %w[KPS BY KHS],
+              'BNL' => %w[GL NRS],
+            },
+          },
+          'ces' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 4,
+              '4' => 3,
+              '5' => 3,
+              '6' => 2,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 15,
+              'P' => 3,
+              'H' => 3,
+              'M' => 3,
+            },
+            'infrastructure_count' => 3,
+            'companies' => %w[P1 P4 P5 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS],
+            'national_corporations' => %w[AHE BNL CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
+            'corporation_count' => 9,
+            'region_corporations' => {
+              'DE' => %w[KPS BY KHS],
+              'AHE' => %w[SB BH FNR],
+              'IT' => %w[SSFL IFT SFAI],
+            },
+          },
+          'ses' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 4,
+              '4' => 3,
+              '5' => 3,
+              '6' => 2,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 10,
+              'P' => 3,
+              'H' => 3,
+              'M' => 3,
+            },
+            'infrastructure_count' => 3,
+            'companies' => %w[P1 P3 P4 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[PLM MIDI OU SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
+            'national_corporations' => %w[FR AHE ESP CH IT K2S SAR LV PAP TUS],
+            'corporation_count' => 9,
+            'region_corporations' => {
+              'FR' => %w[PLM MIDI OU],
+              'ESP' => %w[ZPB MZA],
+              'AHE' => %w[SB BH FNR],
+              'IT' => %w[SSFL IFT SFAI],
+            },
+          },
+        }.freeze
+
         C_TILE_UPGRADE = {
           'C1' => 'C6',
           'C2' => 'C7',
@@ -518,7 +667,6 @@ module Engine
           '10' => 40,
         }.freeze
 
-        INFRASTRUCTURE_COUNT = 5
         INFRASTRUCTURE_TRAINS = %w[H P M].freeze
         INFRASTRUCTURE_HUB = 'H'
         INFRASTRUCTURE_PALACE = 'P'
@@ -548,7 +696,6 @@ module Engine
 
         NATIONAL_MARKET_SHARE_LIMIT = 80
         NATIONAL_COMPANIES = %w[P2 P3 P4 P5 P6 P7].freeze
-        NATIONAL_CORPORATIONS = %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS].freeze
         NATIONAL_REGION_HEXES = {
           'PRU' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
           'HAN' => %w[D18 E15 E17 E19 E21 F16 F18],
@@ -626,14 +773,6 @@ module Engine
           '10' => 40,
         }.freeze
 
-        STARTING_REGION_CORPORATIONS = {
-          'GB' => %w[LNWR GWR NBR],
-          'FR' => %w[PLM MIDI OU],
-          'DE' => %w[KPS BY KHS],
-          'AHE' => %w[SB BH FNR],
-          'IT' => %w[SSFL IFT SFAI],
-        }.freeze
-
         SHARE_PRICE_SUFFIX = ['T', 'M', 'B', ''].freeze
 
         STOCK_TURN_TOKEN_PREFIX = 'ST'
@@ -645,7 +784,7 @@ module Engine
                       SBB GL NRS ZPB MZA],
         }.freeze
 
-        attr_reader :game_end_triggered_corporation, :game_end_triggered_round,
+        attr_reader :scenario, :game_end_triggered_corporation, :game_end_triggered_round,
                     :major_national_formed, :major_national_formed_round, :player_sold_shares
 
         def action_processed(_action); end
@@ -802,6 +941,20 @@ module Engine
           format('£%.1<val>f', val: val)
         end
 
+        def game_cert_limit
+          @scenario['cert_limit']
+        end
+
+        def game_companies
+          companies = @scenario['companies']
+          self.class::COMPANIES.select { |c| companies.include?(c[:sym]) }
+        end
+
+        def game_corporations
+          corporations = @scenario['corporations'] + @scenario['national_corporations']
+          self.class::CORPORATIONS.select { |c| corporations.include?(c[:sym]) }
+        end
+
         def game_end_check
           @corp_max_reached ||= @corporations.any? do |c|
             reached = corporation?(c) && c.floated? && c.share_price.end_game_trigger?
@@ -896,8 +1049,21 @@ module Engine
           Array.new(130) { |id| Loan.new(id, @loan_value) }
         end
 
+        def init_optional_rules(optional_rules)
+          opt_rules = super
+          @scenario = init_scenario(opt_rules)
+          opt_rules
+        end
+
         def init_share_pool
           G1866::SharePool.new(self)
+        end
+
+        def init_starting_cash(players, bank)
+          cash = @scenario['starting_cash'][players.size]
+          players.each do |player|
+            bank.spend(cash, player)
+          end
         end
 
         def init_stock_market
@@ -964,6 +1130,10 @@ module Engine
         def num_certs(entity)
           # All players have a Stock Turn Company, this shouldnt count towards the cert limit.
           super - 1
+        end
+
+        def num_trains(train)
+          @scenario['train_count'][train[:name]]
         end
 
         def operating_order
@@ -1174,7 +1344,7 @@ module Engine
           @national_graph = Graph.new(self, home_as_token: true, no_blocking: true)
 
           # Setup the nationals infinite trains
-          self.class::NATIONAL_CORPORATIONS.each_with_index do |national, index|
+          @scenario['national_corporations'].each_with_index do |national, index|
             train = train_by_id("INF-#{index}")
             @depot.remove_train(train)
             train.buyable = false
@@ -1193,7 +1363,7 @@ module Engine
           @infrastructure_trains_h = []
           @infrastructure_trains_p = []
           @infrastructure_trains_m = []
-          self.class::INFRASTRUCTURE_COUNT.times.each do |index|
+          @scenario['infrastructure_count'].times.each do |index|
             h_train = train_by_id("H-#{index}")
             @infrastructure_trains_h << h_train
 
@@ -1518,7 +1688,7 @@ module Engine
         end
 
         def forced_formation_major(corporation, minors)
-          return if @major_national_formed[corporation.id]
+          return if !corporation || @major_national_formed[corporation.id]
 
           share_price = forced_formation_par_prices(corporation).last
           @stock_market.set_par(corporation, share_price)
@@ -1546,11 +1716,11 @@ module Engine
           corporation_by_id('AHE').coordinates.reject! { |coordinate| minor_lv.coordinates.include?(coordinate) }
 
           # Check if any of the AH corporations have tokened in Lombardy-Venetia
-          self.class::STARTING_REGION_CORPORATIONS['AHE'].each { |c| corporation_token_rights!(corporation_by_id(c)) }
+          @scenario['region_corporations']['AHE'].each { |c| corporation_token_rights!(corporation_by_id(c)) }
         end
 
         def forced_formation_national(corporation)
-          return if corporation.floated?
+          return if !corporation || corporation.floated?
 
           # Set the correct par price
           share_price = forced_formation_par_prices(corporation).last
@@ -1666,6 +1836,15 @@ module Engine
 
         def infrastructure_train?(train)
           self.class::INFRASTRUCTURE_TRAINS.include?(train.name)
+        end
+
+        def init_scenario(optional_rules)
+          scenario_name = 'full'
+          scenario_name = 'nes' if optional_rules.include?(:nes)
+          scenario_name = 'ces' if optional_rules.include?(:ces)
+          scenario_name = 'ses' if optional_rules.include?(:ses)
+
+          self.class::SCENARIO[scenario_name]
         end
 
         def initialize_sold_shares
@@ -1922,15 +2101,16 @@ module Engine
 
           # Select one of the three corporations based in each of GB, France, A-H, Germany & Italy
           starting_corps = []
-          self.class::STARTING_REGION_CORPORATIONS.each do |_, v|
+          @scenario['region_corporations'].each do |_, v|
             corp = corps.find { |c| v.include?(c.name) }
             starting_corps << corp
             corps.delete(corp)
           end
 
           # Include the next 8 corporations in the game, remove the last 7.
+          corps_count = @scenario['corporation_count'] - @scenario['region_corporations'].size
           corps.each_with_index do |c, index|
-            if index < 8
+            if index < corps_count
               starting_corps << c
             else
               removed_corporations << c
