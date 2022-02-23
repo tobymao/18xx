@@ -776,7 +776,7 @@ module Engine
 
         def revenue_for(route, stops)
           additional_revenue = 0
-          if second_edition? && (route.train.name == 'D')
+          if second_edition? && route.train.name == 'D'
             additional_revenue = 30 * (stops.map(&:hex) & route.corporation.tokens.select(&:used).map(&:hex)).size
           end
 
