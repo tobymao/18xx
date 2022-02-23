@@ -20,7 +20,7 @@ module Engine
               @train_export_triggered = true
             end
 
-            true
+            super
           end
         end
       end
