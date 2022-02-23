@@ -2775,6 +2775,14 @@ module Engine
       def show_map_legend?
         false
       end
+
+      # If a game overrides this to true, then if the possible actions for the current entity include any of
+      #   buy_train, scrap_train, or reassign_train then
+      # the Operating view will be used instead of the Merger round view for train actiosn in a merger round.
+      # See https://github.com/tobymao/18xx/issues/7169
+      def train_actions_always_use_operating_round_view?
+        false
+      end
     end
   end
 end

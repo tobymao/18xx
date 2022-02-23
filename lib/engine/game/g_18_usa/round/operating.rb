@@ -22,6 +22,14 @@ module Engine
 
             true
           end
+
+          def pay_interest!(entity)
+            # 1817's pay_interest! does a 'return unless step_passed?(Engine::Step::BuyTrain)' which unintentionally
+            #   passes for the 18USA BuyPullmanStep - here we check that 18USA BuyTrain is passed before continuing
+            return unless step_passed?(G18USA::Step::BuyTrain)
+
+            super
+          end
         end
       end
     end

@@ -1,15 +1,23 @@
 # frozen_string_literal: true
 
 require_relative '../../g_1817/step/buy_sell_par_shares'
+require_relative 'scrap_train_module'
 
 module Engine
   module Game
     module G18USA
       module Step
         class BuySellParShares < G1817::Step::BuySellParShares
+          include ScrapTrainModule
           MIN_BID = 100
           MAX_BID = 100_000
           MAX_PAR_PRICE = 200
+
+          def corporate_actions(entity)
+            actions = super
+            actions << 'scrap_train' if !@winning_bid && @round.current_actions.none? && can_scrap_train?(entity)
+            actions
+          end
 
           def auto_actions(entity)
             return [Engine::Action::Pass.new(entity)] if @auctioning && max_bid(entity, @auctioning) < min_bid(@auctioning)

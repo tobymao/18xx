@@ -623,7 +623,7 @@ module Engine
           @interest_fixed = nil
 
           G18USA::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G18USA::Step::DiscardTrain,
             G18USA::Step::DenverTrack,
             G18USA::Step::HomeToken,
             G18USA::Step::BuySellParShares,
@@ -653,6 +653,7 @@ module Engine
             G1817::Step::CashCrisis,
             G18USA::Step::ObsoleteTrain,
             G18USA::Step::Loan,
+            G18USA::Step::DiscardTrain,
             G18USA::Step::SpecialTrack,
             G18USA::Step::SpecialToken,
             G18USA::Step::SpecialBuyTrain,
@@ -660,11 +661,15 @@ module Engine
             G18USA::Step::DenverTrack,
             G18USA::Step::Track,
             G18USA::Step::Token,
+            G18USA::Step::BuyPullman,
             G18USA::Step::Route,
             G18USA::Step::Dividend,
-            Engine::Step::DiscardTrain,
             G18USA::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def crowded_corps
+          @crowded_corps ||= super | corporations.select { |c| c.trains.count { |t| pullman_train?(t) } > 1 }
         end
 
         def next_round!
@@ -682,10 +687,10 @@ module Engine
               @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
               G1817::Round::Merger.new(self, [
                 G18USA::Step::ReduceTokens,
-                Engine::Step::DiscardTrain,
+                G18USA::Step::DiscardTrain,
                 G1817::Step::PostConversion,
-                G1817::Step::PostConversionLoans,
-                G1817::Step::Conversion,
+                G18USA::Step::PostConversionLoans,
+                G18USA::Step::Conversion,
               ], round_num: @round.round_num)
             when G1817::Round::Merger
               @log << "-- #{round_description('Acquisition', @round.round_num)} --"
@@ -693,8 +698,8 @@ module Engine
                 G18USA::Step::ReduceTokens,
                 G1817::Step::Bankrupt,
                 G1817::Step::CashCrisis,
-                Engine::Step::DiscardTrain,
-                G1817::Step::Acquire,
+                G18USA::Step::DiscardTrain,
+                G18USA::Step::Acquire,
               ], round_num: @round.round_num)
             when G1817::Round::Acquisition
               if @round.round_num < @operating_rounds
@@ -829,6 +834,11 @@ module Engine
 
           corporation = route.corporation
           visits[1..-2].find { |node| node.city? && node.blocks?(corporation) }
+        end
+
+        def pullmans_available?
+          # Pullmans are available in phase 5, using the availability of brown track as an easy signal of this
+          @phase.tiles.include?(:brown)
         end
 
         def route_trains(entity)
