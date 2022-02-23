@@ -8,7 +8,7 @@ module Engine
           @p11 ||= @game.company_by_id('P11')
           @p11&.owner == entity
         end
-          
+
         def get_tile_lay(entity)
           action = super
           return unless action

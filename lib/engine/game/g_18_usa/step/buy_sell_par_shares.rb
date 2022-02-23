@@ -58,8 +58,6 @@ module Engine
 
             super
 
-            entity = winner.entity
-
             # Corporation only gets share price * 2 in cash, not the full winning bid
             extra_cash = corporation.cash - (corporation.share_price.price * 2)
             corporation.spend(extra_cash, @game.bank) if extra_cash.positive?
@@ -98,17 +96,17 @@ module Engine
 
             if company.id == 'P29'
               if corporation.companies.any? { |c| c.name == 'No Subsidy' }
-                @game.log << "#{corporation.name} started in a city with subsidy of 'None' and receives a free 2 train from #{company.name}"
+                @game.log << "#{corporation.name} started in a city with subsidy of 'None' and receives a free 2 " \
+                             "train from #{company.name}"
                 @game.buy_train(corporation, @game.depot.depot_trains.first, :free)
               else
-                @game.log << "#{corporation.name} not started in city with subsidy of 'None' and does not receive free 2 train from #{company.name}"
+                @game.log << "#{corporation.name} not started in city with subsidy of 'None' and does not receive " \
+                             "free 2 train from #{company.name}"
               end
               company.close!
             end
 
-            if company.id == 'P14'
-              company.close!
-            end
+            company.close! if company.id == 'P14'
 
             corporation_hex = corporation.tokens.first.hex
             if company.id == 'P10' && @game.potential_metropolitan_hexes.include?(corporation_hex) &&
