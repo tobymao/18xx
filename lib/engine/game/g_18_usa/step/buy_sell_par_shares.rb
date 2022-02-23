@@ -64,11 +64,7 @@ module Engine
             extra_cash = corporation.cash - (corporation.share_price.price * 2)
             corporation.spend(extra_cash, @game.bank) if extra_cash.positive?
 
-            return unless (subsidy = city_subsidy(corporation))
-
-            @game.log << "Subsidy contributes #{@game.format_currency(subsidy.value)}"
-            @game.bank.spend(subsidy.value, entity)
-            subsidy.close!
+            @game.apply_subsidy(corporation)
           end
 
           def par_price(bid)
@@ -98,9 +94,19 @@ module Engine
                                "#{@game.format_currency(price - current_value)} remaining."
             end
 
-            if company.id == 'P29' && corporation.companies.any? { |c| c.name == 'No Subsidy' }
-              @game.log << "#{corporation.name} immediately gets a free 2 train and #{company.name} closes"
-              @game.buy_train(corporation, @game.depot.depot_trains.first, :free)
+            super
+
+            if company.id == 'P29'
+              if corporation.companies.any? { |c| c.name == 'No Subsidy' }
+                @game.log << "#{corporation.name} started in a city with subsidy of 'None' and receives a free 2 train from #{company.name}"
+                @game.buy_train(corporation, @game.depot.depot_trains.first, :free)
+              else
+                @game.log << "#{corporation.name} not started in city with subsidy of 'None' and does not receive free 2 train from #{company.name}"
+              end
+              company.close!
+            end
+
+            if company.id == 'P14'
               company.close!
             end
 
@@ -111,8 +117,6 @@ module Engine
               @game.convert_potential_metro(corporation_hex)
               @game.graph.clear
             end
-
-            super
 
             @game.bank.spend(corporation.cash.abs, corporation) if corporation.cash.negative?
           end
@@ -125,8 +129,6 @@ module Engine
             return unless @corporation_size
 
             corporation = @winning_bid.corporation
-            @game.apply_subsidy(corporation)
-
             if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver && @game.hex_by_id('E11').tile.name == 'X04s'
               @round.pending_tracks << {
                 entity: corporation,
