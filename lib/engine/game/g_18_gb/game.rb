@@ -699,7 +699,7 @@ module Engine
           super
         end
 
-        def upgrades_to_correct_color?(from, to)
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
           (from.color == to.color && from.color == :blue) || super
         end
 
