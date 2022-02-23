@@ -27,7 +27,7 @@ module Engine
           end
 
           def maybe_restart_ownerless_corporations
-            @game.corporations.each do |c|
+            @game.corporations.dup.each do |c|
               next unless c.ipoed
               next unless c.presidents_share.owner == @game.share_pool
 
@@ -49,22 +49,9 @@ module Engine
                            " train#{transferred.one? ? '' : 's'} into the pool"
             end
 
-            corporation.share_holders.keys.each do |sh|
-              next if sh == corporation
-
-              sh.shares_by_corporation[corporation].dup.each { |share| share.transfer(corporation) }
-            end
-
-            corporation.spend(corporation.cash, @game.bank) if corporation.cash.positive?
-            corporation.tokens.each(&:remove!)
-            corporation.share_price&.corporations&.delete(corporation)
-            corporation.share_price = nil
-            corporation.par_price = nil
-            corporation.ipoed = false
-            corporation.unfloat!
-            corporation.owner = nil
-
-            @game.bank.shares_by_corporation[corporation].sort_by!(&:id)
+            @game.close_corporation(corporation)
+            corporation.close!
+            @game.corporations << @game.reset_corporation(corporation)
           end
         end
       end
