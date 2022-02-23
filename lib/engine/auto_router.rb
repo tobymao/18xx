@@ -124,6 +124,7 @@ module Engine
               connection_data: connection,
               bitfield: bitfield_from_connection(connection, hexside_bits),
             )
+            route.routes = [route]
             route.revenue(suppress_check_other: true) # defer route-collection checks til later
             train_routes[train] << route
           rescue RouteTooLong
