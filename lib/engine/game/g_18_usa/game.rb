@@ -343,7 +343,7 @@ module Engine
           end
           resources << 'NO RESOURCES' if resources.empty?
 
-          subsidy[:description] =
+          subsidy[:desc] =
             "The corporation can place its choice of one of the following resources: #{resources.join(', ')}. " \
             'Placing a track and the resource token from the Resource Subsidy is a free extra ' \
             'track lay in addition to the normal track placements.'
