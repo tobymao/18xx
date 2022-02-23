@@ -362,8 +362,10 @@ module Engine
           end
         end
 
-        def home_hex_for(corporation)
-          corporation.tokens.first.hex
+        def home_hex_for(entity)
+          return nil unless entity.corporation?
+
+          entity.tokens.first.hex
         end
 
         TRACK_ENGINEER_TILE_LAYS = [ # Three lays with one being an upgrade, second tile costs 20, third tile free
@@ -458,11 +460,6 @@ module Engine
           super
         end
 
-        def can_upgrade_track?(entity)
-          step = @round.active_step
-          step.respond_to?(:get_tile_lay) ? step.get_tile_lay(entity)[:upgrade] : true
-        end
-
         def ore_upgrade?(from, to)
           ORE10_TILES.include?(from.name) && ORE20_TILES.include?(to.name) && upgrades_to_correct_label?(from, to)
         end
@@ -479,17 +476,13 @@ module Engine
           super
         end
 
-        def upgrades_to_correct_color?(from, to)
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
           return true if self.class::SPECIAL_TILES.include?(to.name)
 
           if @phase.tiles.include?(:brown)
-            entity = @round.current_entity
+            entity = selected_company || @round.current_entity
             # Non-track upgrades
-            if from.cities.empty?
-              return to.color == :yellow if from.color == :white && !can_upgrade_track?(entity)
-
-              return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
-            end
+            return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) if from.cities.empty?
 
             # City upgrades
             if from.color == :white
