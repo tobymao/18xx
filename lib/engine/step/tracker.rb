@@ -9,6 +9,7 @@ module Engine
         {
           num_laid_track: 0,
           upgraded_track: false,
+          num_upgraded_track: 0,
           laid_hexes: [],
         }
       end
@@ -60,7 +61,10 @@ module Engine
         extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
 
         lay_tile(action, extra_cost: extra_cost, entity: entity, spender: spender)
-        @round.upgraded_track = true if track_upgrade?(old_tile, tile, action.hex)
+        if track_upgrade?(old_tile, tile, action.hex)
+          @round.upgraded_track = true
+          @round.num_upgraded_track += 1
+        end
         @round.num_laid_track += 1
         @round.laid_hexes << action.hex
       end
