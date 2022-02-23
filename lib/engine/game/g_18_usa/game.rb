@@ -855,8 +855,6 @@ module Engine
           return unless (subsidy = @subsidies_by_hex.delete(hex.coordinates))
 
           hex.tile.icons.reject! { |icon| icon.name.include?('subsidy') }
-          return if NO_SUBSIDIES.include?(subsidy[:id])
-
           subsidy_company = create_company_from_subsidy(subsidy)
           assign_boomtown_subsidy(hex, corporation) if subsidy_company.id == 'S8'
           subsidy_company.owner = corporation
