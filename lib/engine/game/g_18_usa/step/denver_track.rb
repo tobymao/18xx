@@ -75,7 +75,7 @@ module Engine
 
           def check_track_restrictions!(_entity, _old_tile, _new_tile); end
 
-          def legal_tile_rotation?
+          def legal_tile_rotation?(_entity, _hex, _tile)
             true
           end
         end

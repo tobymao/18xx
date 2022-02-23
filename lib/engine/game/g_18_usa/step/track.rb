@@ -11,6 +11,7 @@ module Engine
         class Track < Engine::Step::Track
           include Engine::Step::UpgradeTrackMaxExits
           include ResourceTrack
+          include P11Track
 
           def can_lay_tile?(entity)
             super || can_place_token_with_p20?(entity) || can_assign_p6?(entity)
@@ -30,39 +31,6 @@ module Engine
             @game.graph.connected_hexes(entity).keys.any? { |hex| hex.tile.color == :red }
           end
 
-          def owns_p11?(entity)
-            @p11 ||= @game.company_by_id('P11')
-            @p11&.owner == entity
-          end
-
-          def get_tile_lay(entity)
-            action = super
-            return unless action
-
-            action[:upgrade] = true if owns_p11?(entity) && @num_upgraded < 2
-            action
-          end
-
-          def available_hex(_entity, hex)
-            return nil if hex.tile.color != :white && !hex.tile.cities.empty? && @city_upgraded
-
-            super
-          end
-
-          def potential_tile_colors(entity, hex)
-            colors = super
-            return colors if !hex.tile.cities.empty? || !owns_p11?(entity)
-
-            colors << if colors.include?(:brown)
-                        :gray
-                      elsif colors.include?(:green)
-                        :brown
-                      else
-                        :green
-                      end
-            colors
-          end
-
           def legal_tile_rotation?(entity, hex, tile)
             return true if tile.name == 'X23'
 
@@ -78,17 +46,6 @@ module Engine
 
           def free_brown_city_upgrade?(entity, hex, tile)
             !entity.operated? && @game.home_hex_for(entity) == hex && tile.color == :brown
-          end
-
-          def lay_tile_action(action, entity: nil, spender: nil)
-            tile = action.tile
-            previous_tile = action.hex.tile
-            if previous_tile.color != :white
-              @num_upgraded += 1
-              @city_upgraded = true unless tile.cities.empty?
-            end
-
-            super
           end
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
@@ -117,12 +74,6 @@ module Engine
           def track_upgrade?(from, to, _hex)
             super ||
             (from.cities.empty? && (Engine::Tile::COLORS.index(to.color) - Engine::Tile::COLORS.index(from.color) > 1))
-          end
-
-          def setup
-            super
-            @city_upgraded = false
-            @num_upgraded = 0
           end
         end
       end

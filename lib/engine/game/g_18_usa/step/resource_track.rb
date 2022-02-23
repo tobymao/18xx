@@ -35,6 +35,17 @@ module Engine
             end
           end
 
+          def lay_tile_action(action, entity: nil, spender: nil)
+            if @game.resource_tile?(action.tile)
+              entity ||= action.entity
+              corporation = entity.corporation? ? entity : entity.owner
+              abilities = @game.abilities_to_lay_resource_tile(action.hex, action.tile, corporation.companies).values
+              return lay_tile(action, entity: entity, spender: spender) if abilities.none?(&:consume_tile_lay)
+            end
+
+            super
+          end
+
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
             hex = action.hex
