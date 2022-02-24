@@ -7,6 +7,8 @@ module Engine
   module Step
     class WaterfallAuction < Base
       include Auctioner
+      include ProgrammerAuctionBid
+
       ACTIONS = %w[bid pass].freeze
 
       attr_reader :companies

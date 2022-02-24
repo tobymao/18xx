@@ -9,6 +9,7 @@ module Engine
       module Step
         class ModifiedDutchAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
+          include Engine::Step::ProgrammerAuctionBid
           ACTIONS = %w[bid pass].freeze
 
           def description
@@ -268,6 +269,14 @@ module Engine
             hex = @game.hex_by_id(minor.coordinates)
             city_index = minor.city.to_i
             hex.tile.cities[city_index].place_token(minor, minor.next_token, free: true)
+          end
+
+          def auto_requires_auctioning?(_entity, program)
+            @auctioning && program.bid_target != @auctioning
+          end
+
+          def auto_bid_on_empty?(_entity, program)
+            program.enable_buy_price && @bids[program.bid_target].empty?
           end
         end
       end

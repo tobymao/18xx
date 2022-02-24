@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'view/game/auto_action/auction_bid'
+
 module View
   module Game
     class Auto < Form
@@ -22,6 +24,7 @@ module View
 
         if @game.players.find { |p| p.name == @user&.dig('name') }
           types = {
+            Engine::Action::ProgramAuctionBid => ->(settings) { render_auction_bid(settings) },
             Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
             Engine::Action::ProgramHarzbahnDraftPass => ->(settings) { render_harzbahn_draft_pass(settings) },
             Engine::Action::ProgramIndependentMines => ->(settings) { render_independent_mines(settings) },
@@ -55,6 +58,10 @@ module View
 
       def sender
         @game.player_by_id(@user['id']) if @user
+      end
+
+      def render_auction_bid(settings)
+        h(AutoAction::AuctionBid, game: @game, sender: sender, settings: settings)
       end
 
       def enable_merger_pass(form)
@@ -376,18 +383,6 @@ module View
             skip_close: skip_close,
             indefinite: indefinite
           )
-        )
-      end
-
-      def render_checkbox(label, id, form, checked)
-        render_input(
-          label,
-          id: id,
-          type: 'checkbox',
-          inputs: form,
-          attrs: {
-            checked: checked,
-          }
         )
       end
 
