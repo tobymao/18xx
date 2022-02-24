@@ -614,7 +614,7 @@ module Engine
           },
           # P30
           {
-            name: 'P3 - Double Heading',
+            name: 'P30 - Double Heading',
             value: 120,
             revenue: 0,
             desc: 'Each turn one non-permanent train may attach the Extender to run to one extra city',
