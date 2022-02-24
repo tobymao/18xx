@@ -35,6 +35,12 @@ module Engine
              500 520 540 560 580 600 625 650 675 700 725 750 775 800],
            ].freeze
 
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+           safe_par: 'Minimum Price for a 2($53), 5($74) and 10($120) share'\
+                     ' corporation taking maximum loans to ensure it avoids acquisition',
+           acquisition: 'Acquisition (Dividends needed to move right: $20: ➤, $40: ➤➤, $60: ➤➤➤, $80: ➤➤➤➤)'
+         ).freeze
+
         PHASES = [
           {
             name: '2',
