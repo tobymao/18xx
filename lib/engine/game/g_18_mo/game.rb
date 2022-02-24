@@ -305,6 +305,10 @@ module Engine
         def place_second_token(corporation, two_player_only: true, deferred: true)
           super(corporation, two_player_only: two_player_only, deferred: false)
         end
+
+        def setup_turn
+          1
+        end
       end
     end
   end
