@@ -54,7 +54,7 @@ module Engine
           'X2' => {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;label=B',
+            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;label=B',
           },
           'X3' => {
             'count' => 1,
@@ -183,7 +183,7 @@ module Engine
             ['D17'] => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0',
             ['G2'] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0',
             ['I6'] => 'path=a:1,b:3;stub=edge:2',
-            ['I8'] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0',
+            ['I8'] => 'city=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           gray: {
             ['A8'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0;'\
@@ -195,8 +195,8 @@ module Engine
             ['I16'] => 'path=a:1,b:4;path=a:1,b:2;',
           },
           red: {
-            ['A2'] => 'offboard=revenue:yellow_40|brown_60,hide:1,groups:Ireland;path=a:0,b:_0;border=edge:4',
-            ['A4'] => 'offboard=revenue:yellow_40|brown_60,groups:Ireland;path=a:0,b:_0;border=edge:1',
+            ['A2'] => 'offboard=revenue:yellow_50|brown_60,hide:1,groups:Ireland;path=a:0,b:_0;border=edge:4',
+            ['A4'] => 'offboard=revenue:yellow_50|brown_60,groups:Ireland;path=a:0,b:_0;border=edge:1',
             ['C16'] => 'offboard=revenue:yellow_20|brown_50,groups:Netherlands;'\
                        'path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;border=edge:4',
             ['C18'] => 'offboard=revenue:yellow_20|brown_50,hide:1,groups:Netherdlands;path=a:0,b:_0;border=edge:1',

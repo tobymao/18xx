@@ -28,7 +28,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[60
+          %w[60o
              67
              71
              76
@@ -48,7 +48,7 @@ module Engine
              375
              425],
           %w[53o
-             60
+             60o
              66
              70
              76
@@ -68,7 +68,7 @@ module Engine
              330],
           %w[46o
              55o
-             60
+             60o
              65
              70
              76
@@ -85,7 +85,7 @@ module Engine
           %w[39o
              48o
              54o
-             60
+             60o
              66
              71
              76p
@@ -98,8 +98,8 @@ module Engine
           %w[32o 41o 48o 55o 62 67 71p 76 82 90 100],
           %w[25o 34o 42o 50o 58o 65 67p 71 75 80],
           %w[18o 27o 36o 45o 54o 63 67 69 70],
-          %w[10o 20o 30o 40o 50o 60 67 68],
-          ['', '10o', '20o', '30o', '40o', '50o', '60'],
+          %w[10o 20o 30o 40o 50o 60o 67 68],
+          ['', '10o', '20o', '30o', '40o', '50o', '60o'],
           ['', '', '10o', '20o', '30o', '40o', '50o'],
           ['', '', '', '10o', '20o', '30o', '40o'],
         ].freeze
@@ -151,28 +151,31 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 6 },
+        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 7 },
                   {
                     name: '3',
                     distance: 3,
-                    price: 180,
+                    price: 160,
                     rusts_on: '5',
                     num: 5,
+                    discount: { '2' => 40 },
                   },
                   {
                     name: '4',
                     distance: 4,
                     price: 300,
                     rusts_on: '7',
-                    num: 4,
+                    num: 3,
+                    discount: { '3' => 80 },
                   },
                   {
                     name: '5',
                     distance: 5,
-                    price: 450,
+                    price: 400,
                     rusts_on: 'D',
                     num: 4,
                     events: [{ 'type' => 'late_corporations_available' }],
+                    discount: { '4' => 150 },
                   },
                   {
                     name: '6',
@@ -180,18 +183,21 @@ module Engine
                     price: 600,
                     num: 3,
                     events: [{ 'type' => 'close_companies' }],
+                    discount: { '5' => 200 },
                   },
                   {
                     name: '7',
                     distance: 7,
                     price: 750,
                     num: 3,
+                    discount: { '6' => 300 },
                   },
                   {
                     name: 'D',
                     distance: 999,
                     price: 900,
                     num: 20,
+                    discount: { '5' => 200, '6' => 300, '7' => 375 },
                   }].freeze
 
         LAYOUT = :pointy
