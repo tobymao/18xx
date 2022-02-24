@@ -371,6 +371,7 @@ module Engine
           },
           gray: {
             ['A22'] => 'town=revenue:10;path=a:3,b:_0;path=a:4,b:_0',
+            ['B23'] => '',
             ['D15'] => 'path=a:2,b:5',
             ['F3'] => 'path=a:4,b:5;path=a:5,b:0',
             ['F13'] => 'path=a:1,b:5;path=a:4,b:5',
@@ -383,7 +384,6 @@ module Engine
             ['L1'] => 'town=revenue:10;path=a:1,b:_0;path=a:2,b:_0',
           },
           blue: {
-            ['B23'] => '',
             ['C22'] => 'path=a:2,b:4;path=a:5,b:0;upgrade=cost:50,terrain:river;label=S',
             ['I4'] => 'path=a:1,b:2;upgrade=cost:50,terrain:river;label=FT',
           },
@@ -392,13 +392,11 @@ module Engine
         HEXES_2P_NW = {
           white: {
             %w[F7 F15 F19 F27 G20 H23 H25 H27 I18 I24 J1 J19 J23 K2] => '',
-            ['C18'] => 'border=edge:4,type:mountain,cost:50',
-            ['D17'] => 'border=edge:1,type:mountain,cost:50;border=edge:4,type:mountain,cost:50',
-            ['D19'] => 'border=edge:1,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            ['D17'] => 'border=edge:4,type:mountain,cost:50',
             %w[E16 E24 G24] => 'border=edge:1,type:mountain,cost:50',
             %w[E20 E22] => 'border=edge:2,type:mountain,cost:50',
             ['J15'] => 'border=edge:3,type:mountain,cost:50',
-            %w[G2 G10 H7] => 'border=edge:5,type:mountain,cost:50',
+            %w[D19 G2 G10 H7] => 'border=edge:5,type:mountain,cost:50',
             ['I8'] => 'border=edge:0,type:mountain,cost:50;border=edge:1,type:mountain,cost:50;' \
                       'border=edge:2,type:mountain,cost:50',
             ['I10'] => 'border=edge:0,type:mountain,cost:50;border=edge:1,type:mountain,cost:50;' \
@@ -417,8 +415,7 @@ module Engine
             ['G14'] => 'city=revenue:0;city=revenue:0;border=edge:3,type:mountain,cost:50;border=edge:4,type:mountain,cost:50;' \
                        'label=OO',
             %w[E18 E26 F17 F23 G6 G22 H5 I16 I20 I22 I26 J7] => 'town=revenue:0',
-            ['C20'] => 'town=revenue:0;border=edge:4,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
-            ['D21'] => 'town=revenue:0;border=edge:2,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
+            ['D21'] => 'town=revenue:0;border=edge:5,type:mountain,cost:50',
             ['F25'] => 'town=revenue:0;border=edge:4,type:mountain,cost:50',
             ['G12'] => 'town=revenue:0;border=edge:0,type:mountain,cost:50;border=edge:5,type:mountain,cost:50',
             ['I12'] => 'town=revenue:0;border=edge:2,type:mountain,cost:50;border=edge:3,type:mountain,cost:50',
@@ -518,6 +515,7 @@ module Engine
           },
           gray: {
             ['A22'] => 'town=revenue:10;path=a:3,b:_0;path=a:4,b:_0',
+            ['B23'] => '',
             ['D15'] => 'path=a:2,b:5',
             ['F13'] => 'path=a:1,b:5;path=a:4,b:5',
             ['I10'] => 'border=edge:0,type:mountain,cost:50;border=edge:1,type:mountain,cost:50;' \
@@ -527,7 +525,6 @@ module Engine
             ['K24'] => 'path=a:1,b:2;path=a:1,b:3',
           },
           blue: {
-            ['B23'] => '',
             ['C22'] => 'path=a:2,b:4;path=a:5,b:0;upgrade=cost:50,terrain:river;label=S',
           },
         }.freeze
