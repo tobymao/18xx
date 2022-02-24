@@ -16,6 +16,7 @@ module Engine
 
       def setup
         @round.num_laid_track = 0
+        @round.num_upgraded_track = 0
         @round.upgraded_track = false
         @round.laid_hexes = []
       end

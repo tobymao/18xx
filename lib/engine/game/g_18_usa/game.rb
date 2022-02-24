@@ -375,7 +375,7 @@ module Engine
         ].freeze
 
         def tile_lays(entity)
-          return TRACK_ENGINEER_TILE_LAYS if entity.companies.include?(company_by_id('P7')) && @round.num_upgraded_track < 2
+          return TRACK_ENGINEER_TILE_LAYS if entity.companies.include?(company_by_id('P7'))
 
           super
         end
