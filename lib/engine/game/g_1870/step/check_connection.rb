@@ -15,10 +15,14 @@ module Engine
           # token to be removed during the SR if a corporation closes
           def auto_actions(entity)
             corporations = if @round.entity_index.zero? || @round.step_passed?(G1870::Step::CheckConnection)
-                             @game.corporations.select { |c| destination(c) }
+                             @round.entities.select { |c| destination?(c) } # destinate in OR order
                            else
                              []
                            end
+
+            # if the current corporation is also destinating, it must run first
+            i = corporations.index(@round.current_operator)
+            corporations = [@round.current_operator] + (corporations - [@round.current_operator]) if i&.positive?
 
             [Engine::Action::DestinationConnection.new(
               entity,
@@ -26,7 +30,7 @@ module Engine
             )]
           end
 
-          def destination(corporation)
+          def destination?(corporation)
             return unless (destination = @game.destination_hex(corporation))
             return unless destination.assigned?(corporation)
             return unless (home = @game.home_hex(corporation))

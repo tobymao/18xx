@@ -34,7 +34,7 @@ module Engine
 
         def maybe_remove_token(minor, corporation)
           return unless corporation
-          return minor.tokens.first.remove! unless corporation.tokens.first&.used
+          return minor.tokens.first.remove! if corporation.placed_tokens.empty?
 
           @round.pending_acquisition = { minor: minor, corporation: corporation }
         end
@@ -78,6 +78,8 @@ module Engine
 
           @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')}"\
                        " train#{transferred.one? ? '' : 's'} from #{source.name}"
+
+          @game.maybe_discard_pullman(destination)
         end
       end
     end

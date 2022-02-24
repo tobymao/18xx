@@ -31,7 +31,8 @@ module Engine
 
         BIDDING_BOX_MINOR_COLOR = '#c6e9af'
 
-        GAME_END_CHECK = { bank: :full_or }.freeze # TODO: extreme edge case of one player remaining
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
             'minor_exchange' => [
@@ -94,12 +95,12 @@ module Engine
           city_by_id('G2-0-0').place_token(neutral, neutral.next_token)
         end
 
-        # this could be a useful function in depot itself
         def add_optional_train(type)
-          modified_trains = @depot.trains.select { |t| t.name == type }
-          new_train = modified_trains.first.clone
-          new_train.index = modified_trains.size
-          @depot.insert_train(new_train, new_train.index)
+          proto = self.class::TRAINS.find { |e| e[:name] == type }
+          index = @depot.trains.count { |t| t.name == type }
+          new_train = Train.new(**proto, index: index)
+          @depot.insert_train(new_train)
+          update_cache(:trains)
         end
 
         def ipo_name(_entity = nil)
@@ -116,6 +117,10 @@ module Engine
 
         def exchange_for_partial_presidency?
           false
+        end
+
+        def available_programmed_actions
+          super << Action::ProgramAuctionBid
         end
 
         def operating_round(round_num)
@@ -391,16 +396,18 @@ module Engine
         def rust_trains!(train, entity)
           super
 
-          all_corporations.each do |c|
-            pullman = owns_pullman?(c)
-            next unless pullman
+          all_corporations.each { |c| maybe_discard_pullman(c) }
+        end
 
-            trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
-            next if trains > 1 && trains <= train_limit(c)
+        def maybe_discard_pullman(entity)
+          pullman = owns_pullman?(entity)
+          return unless pullman
 
-            depot.reclaim_train(pullman)
-            @log << "#{c.name} is forced to discard pullman train"
-          end
+          trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? entity.trains.size : entity.trains.count { |t| !t.obsolete }
+          return if trains > 1 && trains <= train_limit(entity)
+
+          depot.reclaim_train(pullman)
+          @log << "#{entity.name} is forced to discard pullman train"
         end
 
         def depot_trains(entity)
@@ -436,6 +443,12 @@ module Engine
               prev = token
             end
           end
+        end
+
+        def hex_blocked_by_ability?(entity, ability, hex)
+          return false if entity&.owner == ability&.owner&.owner
+
+          super
         end
 
         def mark_auctioning(minor)

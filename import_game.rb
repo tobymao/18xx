@@ -35,7 +35,7 @@ def import_game(game_id)
     params = {
       id: player_id,
       name: name,
-      email: "#{name}@example.com",
+      email: "#{name.gsub(/\s/, '_')}@example.com",
       password: 'password',
       settings: {
         notifications: 'none',

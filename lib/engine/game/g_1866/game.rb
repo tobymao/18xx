@@ -35,9 +35,6 @@ module Engine
         CURRENCY_FORMAT_STR = '£%d'
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 40, 4 => 30, 5 => 24, 6 => 20, 7 => 17 }.freeze
-        STARTING_CASH = { 3 => 800, 4 => 600, 5 => 480, 6 => 400, 7 => 340 }.freeze
-
         CAPITALIZATION = :incremental
 
         EBUY_CAN_SELL_SHARES = false
@@ -177,7 +174,6 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 20,
             price: 50,
             obsolete_on: '3',
             variants: [
@@ -220,7 +216,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 6,
             price: 200,
             rusts_on: '6',
             events: [
@@ -246,7 +241,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
             price: 300,
             rusts_on: '8',
             events: [
@@ -269,7 +263,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 4,
             price: 500,
             events: [
               {
@@ -313,7 +306,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 3,
             price: 600,
             variants: [
               {
@@ -349,7 +341,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 2,
             price: 800,
             variants: [
               {
@@ -385,7 +376,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 20,
             price: 1000,
             variants: [
               {
@@ -410,31 +400,190 @@ module Engine
           {
             name: 'INF',
             distance: 99,
-            num: 18,
             price: 0,
             reserved: true,
           },
           {
             name: 'P',
             distance: 99,
-            num: 5,
             price: 100,
           },
           {
             name: 'H',
             distance: 99,
-            num: 5,
             price: 120,
           },
           {
             name: 'M',
             distance: 99,
-            num: 5,
             price: 200,
           },
         ].freeze
 
         # *********** 1866 Specific constants ***********
+        SCENARIO = {
+          'full' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 6,
+              '4' => 5,
+              '5' => 4,
+              '6' => 3,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 18,
+              'P' => 5,
+              'H' => 5,
+              'M' => 5,
+            },
+            'infrastructure_count' => 5,
+            'companies' => %w[P1 P2 P3 P4 P5 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
+            'national_corporations' => %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
+            'corporation_count' => 13,
+            'region_corporations' => {
+              'GB' => %w[LNWR GWR NBR],
+              'FR' => %w[PLM MIDI OU],
+              'DE' => %w[KPS BY KHS],
+              'AHE' => %w[SB BH FNR],
+              'IT' => %w[SSFL IFT SFAI],
+            },
+          },
+          'nes' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 4,
+              '4' => 3,
+              '5' => 3,
+              '6' => 2,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 10,
+              'P' => 3,
+              'H' => 3,
+              'M' => 3,
+            },
+            'infrastructure_count' => 3,
+            'companies' => %w[P1 P2 P3 P5 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SBB GL NRS L P],
+            'national_corporations' => %w[GB FR BNL CH DE PRU HAN BAV WTB SAX],
+            'corporation_count' => 9,
+            'region_corporations' => {
+              'GB' => %w[LNWR GWR NBR],
+              'FR' => %w[PLM MIDI OU],
+              'DE' => %w[KPS BY KHS],
+              'BNL' => %w[GL NRS],
+            },
+          },
+          'ces' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 4,
+              '4' => 3,
+              '5' => 3,
+              '6' => 2,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 15,
+              'P' => 3,
+              'H' => 3,
+              'M' => 3,
+            },
+            'infrastructure_count' => 3,
+            'companies' => %w[P1 P4 P5 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS],
+            'national_corporations' => %w[AHE BNL CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
+            'corporation_count' => 9,
+            'region_corporations' => {
+              'DE' => %w[KPS BY KHS],
+              'AHE' => %w[SB BH FNR],
+              'IT' => %w[SSFL IFT SFAI],
+            },
+          },
+          'ses' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 4,
+              '4' => 3,
+              '5' => 3,
+              '6' => 2,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 10,
+              'P' => 3,
+              'H' => 3,
+              'M' => 3,
+            },
+            'infrastructure_count' => 3,
+            'companies' => %w[P1 P3 P4 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[PLM MIDI OU SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
+            'national_corporations' => %w[FR AHE ESP CH IT K2S SAR LV PAP TUS],
+            'corporation_count' => 9,
+            'region_corporations' => {
+              'FR' => %w[PLM MIDI OU],
+              'ESP' => %w[ZPB MZA],
+              'AHE' => %w[SB BH FNR],
+              'IT' => %w[SSFL IFT SFAI],
+            },
+          },
+        }.freeze
+
         C_TILE_UPGRADE = {
           'C1' => 'C6',
           'C2' => 'C7',
@@ -518,7 +667,6 @@ module Engine
           '10' => 40,
         }.freeze
 
-        INFRASTRUCTURE_COUNT = 5
         INFRASTRUCTURE_TRAINS = %w[H P M].freeze
         INFRASTRUCTURE_HUB = 'H'
         INFRASTRUCTURE_PALACE = 'P'
@@ -548,7 +696,6 @@ module Engine
 
         NATIONAL_MARKET_SHARE_LIMIT = 80
         NATIONAL_COMPANIES = %w[P2 P3 P4 P5 P6 P7].freeze
-        NATIONAL_CORPORATIONS = %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS].freeze
         NATIONAL_REGION_HEXES = {
           'PRU' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
           'HAN' => %w[D18 E15 E17 E19 E21 F16 F18],
@@ -576,10 +723,10 @@ module Engine
 
         # Only need up to phase 5, all national concessions are forced to convert in phase 5
         NATIONAL_PHASE_PAR_TYPES = {
-          'L/2' => :par_1,
-          '3' => :par_2,
-          '4' => :par_2,
-          '5' => :par_3,
+          'L/2' => :par,
+          '3' => :par_1,
+          '4' => :par_1,
+          '5' => :par_2,
         }.freeze
 
         NATIONAL_PREPRINTED_TILES = %w[AHE DE ESP].freeze
@@ -626,13 +773,7 @@ module Engine
           '10' => 40,
         }.freeze
 
-        STARTING_REGION_CORPORATIONS = {
-          'GB' => %w[LNWR GWR NBR],
-          'FR' => %w[PLM MIDI OU],
-          'DE' => %w[KPS BY KHS],
-          'AHE' => %w[SB BH FNR],
-          'IT' => %w[SSFL IFT SFAI],
-        }.freeze
+        SHARE_PRICE_SUFFIX = ['T', 'M', 'B', ''].freeze
 
         STOCK_TURN_TOKEN_PREFIX = 'ST'
         STOCK_TURN_TOKEN_END_GAME = 600
@@ -643,7 +784,7 @@ module Engine
                       SBB GL NRS ZPB MZA],
         }.freeze
 
-        attr_reader :game_end_triggered_corporation, :game_end_triggered_round,
+        attr_reader :scenario, :game_end_triggered_corporation, :game_end_triggered_round,
                     :major_national_formed, :major_national_formed_round, :player_sold_shares
 
         def action_processed(_action); end
@@ -800,6 +941,20 @@ module Engine
           format('£%.1<val>f', val: val)
         end
 
+        def game_cert_limit
+          @scenario['cert_limit']
+        end
+
+        def game_companies
+          companies = @scenario['companies']
+          self.class::COMPANIES.select { |c| companies.include?(c[:sym]) }
+        end
+
+        def game_corporations
+          corporations = @scenario['corporations'] + @scenario['national_corporations']
+          self.class::CORPORATIONS.select { |c| corporations.include?(c[:sym]) }
+        end
+
         def game_end_check
           @corp_max_reached ||= @corporations.any? do |c|
             reached = corporation?(c) && c.floated? && c.share_price.end_game_trigger?
@@ -894,8 +1049,21 @@ module Engine
           Array.new(130) { |id| Loan.new(id, @loan_value) }
         end
 
+        def init_optional_rules(optional_rules)
+          opt_rules = super
+          @scenario = init_scenario(opt_rules)
+          opt_rules
+        end
+
         def init_share_pool
           G1866::SharePool.new(self)
+        end
+
+        def init_starting_cash(players, bank)
+          cash = @scenario['starting_cash'][players.size]
+          players.each do |player|
+            bank.spend(cash, player)
+          end
         end
 
         def init_stock_market
@@ -909,6 +1077,10 @@ module Engine
 
         def ipo_name(_entity)
           'Treasury'
+        end
+
+        def ipo_reserved_name(_entity = nil)
+          'Reserved'
         end
 
         def issuable_shares(entity)
@@ -960,6 +1132,10 @@ module Engine
           super - 1
         end
 
+        def num_trains(train)
+          @scenario['train_count'][train[:name]]
+        end
+
         def operating_order
           floated = @corporations.select(&:floated?)
           minor_nationals, corporations = floated.partition { |c| minor_national_corporation?(c) }
@@ -998,18 +1174,7 @@ module Engine
         end
 
         def par_price_str(share_price)
-          row, = share_price.coordinates
-          row_str = case row
-                    when 0
-                      'T'
-                    when 1
-                      'M'
-                    when 2
-                      'B'
-                    else
-                      ''
-                    end
-          "#{format_currency(share_price.price)}#{row_str}"
+          "#{format_currency(share_price.price)}#{share_price_suffix(share_price)}"
         end
 
         def payout_companies
@@ -1133,7 +1298,7 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          before_share_price = corporation.share_price
           was_president = corporation.president?(bundle.owner) || bundle.owner == corporation
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           if was_president
@@ -1141,7 +1306,7 @@ module Engine
           else
             bundle.num_shares.times { @stock_market.move_down(corporation) }
           end
-          log_share_price(corporation, price)
+          log_share_price_row(corporation, before_share_price)
         end
 
         def setup
@@ -1179,7 +1344,7 @@ module Engine
           @national_graph = Graph.new(self, home_as_token: true, no_blocking: true)
 
           # Setup the nationals infinite trains
-          self.class::NATIONAL_CORPORATIONS.each_with_index do |national, index|
+          @scenario['national_corporations'].each_with_index do |national, index|
             train = train_by_id("INF-#{index}")
             @depot.remove_train(train)
             train.buyable = false
@@ -1198,7 +1363,7 @@ module Engine
           @infrastructure_trains_h = []
           @infrastructure_trains_p = []
           @infrastructure_trains_m = []
-          self.class::INFRASTRUCTURE_COUNT.times.each do |index|
+          @scenario['infrastructure_count'].times.each do |index|
             h_train = train_by_id("H-#{index}")
             @infrastructure_trains_h << h_train
 
@@ -1211,6 +1376,9 @@ module Engine
 
           # Randomize and setup the corporations
           setup_corporations
+
+          # Set up the national shares
+          setup_nationals
 
           # Give all players stock turn token and remove unused
           setup_stock_turn_token
@@ -1282,7 +1450,7 @@ module Engine
             'same tile.',
             'Corporations tile lay phase 8: 4 tracks, max 3 upgrades. Can be done in any order. Can upgrade the same '\
             'tile.',
-            'Corporations tile lay phase 9: 4 tracks, max 4 upgrades. Can be done in any order. Can upgrade the same '\
+            'Corporations tile lay phase 10: 4 tracks, max 4 upgrades. Can be done in any order. Can upgrade the same '\
             'tile.',
           ]
         end
@@ -1348,6 +1516,10 @@ module Engine
           return true if from.label.to_s == 'B' && from.color == :white && (to.name == '5' || to.name == '6')
 
           super
+        end
+
+        def all_corporation_token_rights(player)
+          player.shares_by_corporation.each { |c, _| corporation_token_rights!(c) if corporation?(c) && c.president?(player) }
         end
 
         def after_lay_tile(corporation)
@@ -1516,7 +1688,7 @@ module Engine
         end
 
         def forced_formation_major(corporation, minors)
-          return if @major_national_formed[corporation.id]
+          return if !corporation || @major_national_formed[corporation.id]
 
           share_price = forced_formation_par_prices(corporation).last
           @stock_market.set_par(corporation, share_price)
@@ -1531,7 +1703,7 @@ module Engine
           end
 
           # Move the rest of the shares into the market
-          corporation_shares = corporation.shares_of(corporation)
+          corporation_shares = corporation.shares_of(corporation).select(&:buyable)
           @share_pool.transfer_shares(ShareBundle.new(corporation_shares), @share_pool) unless corporation_shares.empty?
 
           corporation.ipoed = true
@@ -1544,11 +1716,11 @@ module Engine
           corporation_by_id('AHE').coordinates.reject! { |coordinate| minor_lv.coordinates.include?(coordinate) }
 
           # Check if any of the AH corporations have tokened in Lombardy-Venetia
-          self.class::STARTING_REGION_CORPORATIONS['AHE'].each { |c| corporation_token_rights!(corporation_by_id(c)) }
+          @scenario['region_corporations']['AHE'].each { |c| corporation_token_rights!(corporation_by_id(c)) }
         end
 
         def forced_formation_national(corporation)
-          return if corporation.floated?
+          return if !corporation || corporation.floated?
 
           # Set the correct par price
           share_price = forced_formation_par_prices(corporation).last
@@ -1565,7 +1737,7 @@ module Engine
           corporation.ipoed = true
 
           # Move the rest of the shares into the market
-          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
+          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation).select(&:buyable)), @share_pool)
 
           # Close the concession
           corporation.par_via_exchange.close!
@@ -1666,6 +1838,15 @@ module Engine
           self.class::INFRASTRUCTURE_TRAINS.include?(train.name)
         end
 
+        def init_scenario(optional_rules)
+          scenario_name = 'full'
+          scenario_name = 'nes' if optional_rules.include?(:nes)
+          scenario_name = 'ces' if optional_rules.include?(:ces)
+          scenario_name = 'ses' if optional_rules.include?(:ses)
+
+          self.class::SCENARIO[scenario_name]
+        end
+
         def initialize_sold_shares
           @player_sold_shares = Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = false } }
         end
@@ -1684,6 +1865,18 @@ module Engine
 
         def loans_due_interest(entity)
           entity&.loans&.size || 0
+        end
+
+        def log_share_price_row(entity, from_share_price)
+          from_suffix = share_price_suffix(from_share_price)
+          to_suffix = share_price_suffix(entity.share_price)
+          from_price = from_share_price.price
+          to_price = entity.share_price.price
+          return if from_price == to_price && from_suffix == to_suffix
+
+          from = "#{format_currency(from_price)}#{from_suffix == to_suffix ? '' : from_suffix}"
+          to = "#{format_currency(to_price)}#{from_suffix == to_suffix ? '' : to_suffix}"
+          @log << "#{entity.name}'s share price changes from #{from} to #{to}"
         end
 
         def germany_or_italy_national?(corporation)
@@ -1762,10 +1955,9 @@ module Engine
           entity.loans.delete(loan)
           @loans << loan
 
-          current_price = entity.share_price.price
+          before_share_price = entity.share_price
           @stock_market.move_up(entity)
-          @log << "#{entity.name}'s share price changes from " \
-                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+          log_share_price_row(entity, before_share_price)
         end
 
         def payoff_player_loan(player)
@@ -1909,15 +2101,16 @@ module Engine
 
           # Select one of the three corporations based in each of GB, France, A-H, Germany & Italy
           starting_corps = []
-          self.class::STARTING_REGION_CORPORATIONS.each do |_, v|
+          @scenario['region_corporations'].each do |_, v|
             corp = corps.find { |c| v.include?(c.name) }
             starting_corps << corp
             corps.delete(corp)
           end
 
           # Include the next 8 corporations in the game, remove the last 7.
+          corps_count = @scenario['corporation_count'] - @scenario['region_corporations'].size
           corps.each_with_index do |c, index|
-            if index < 8
+            if index < corps_count
               starting_corps << c
             else
               removed_corporations << c
@@ -1945,6 +2138,14 @@ module Engine
           end
 
           @game_end_corporation_operated = Hash.new { |h, k| h[k] = false }
+        end
+
+        def setup_nationals
+          @corporations.each do |corporation|
+            next unless major_national_corporation?(corporation)
+
+            corporation.shares.each { |share| share.buyable = false if share.index > 4 }
+          end
         end
 
         def sell_stock_turn_token(corporation)
@@ -1983,6 +2184,11 @@ module Engine
 
             @companies.delete(company)
           end
+        end
+
+        def share_price_suffix(share_price)
+          row, = share_price.coordinates
+          self.class::SHARE_PRICE_SUFFIX[row]
         end
 
         def starting_stock_turn_tokens
@@ -2063,10 +2269,9 @@ module Engine
           entity.loans << loan
           @loans.delete(loan)
 
-          current_price = entity.share_price.price
+          before_share_price = entity.share_price
           @stock_market.move_down(entity)
-          @log << "#{entity.name}'s share price changes from " \
-                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+          log_share_price_row(entity, before_share_price)
         end
 
         def take_player_loan(player, loan)

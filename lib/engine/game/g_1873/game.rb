@@ -466,13 +466,16 @@ module Engine
           visited_tokens = {}
 
           routes.each do |route|
-            route.visited_stops.each do |node|
-              next unless node.city?
+            route.hexes.each do |hex|
+              hex.tile.stops.each do |node|
+                next unless node.city?
+                next unless route.node_signatures.include?(node.signature)
 
-              node.tokens.each do |token|
-                next if !token || token.corporation != corporation
+                node.tokens.each do |token|
+                  next if !token || token.corporation != corporation
 
-                visited_tokens[token] = true
+                  visited_tokens[token] = true
+                end
               end
             end
           end
@@ -1902,7 +1905,7 @@ module Engine
 
         #  subtrain owner is actually supertrain owner
         def train_owner(train)
-          (@supertrains[train] || train).owner
+          (@supertrains[train] || train)&.owner
         end
 
         # 1. subtrain owner is actually supertrain owner
@@ -1919,6 +1922,11 @@ module Engine
         def qlb_bonus
           hex = hex_by_id(@qlb.coordinates.first)
           hex.tile.cities.first.route_revenue(@phase, @qlb_dummy_train)
+        end
+
+        # needed to deal with unallocated diesels being referenced by Route serialization
+        def city_tokened_by?(city, entity)
+          !entity || city.tokened_by?(entity)
         end
         #
         # end of route methods

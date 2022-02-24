@@ -83,7 +83,7 @@ module Engine
 
               tile.borders.delete(border)
               types << border.type
-              cost - border_cost_discount(entity, spender, cost, hex)
+              cost - border_cost_discount(entity, spender, border, cost, hex)
             end
 
             [total_cost, types]

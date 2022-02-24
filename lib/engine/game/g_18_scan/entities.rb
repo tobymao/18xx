@@ -18,7 +18,13 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'shares', shares: 'VR_1' },
-              # TODO: Two +20 bonus tokens for ferry
+              # TODO: Ferry token svg
+              {
+                type: 'assign_corporation',
+                when: 'owning_player_token',
+                count: 2,
+                owner_type: 'player',
+              },
             ],
             color: nil,
           },
@@ -36,7 +42,13 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'shares', shares: 'S&NJ_1' },
-              # TODO: +50 bonus token for Kiruna
+              # TODO: Ore mine token svg
+              {
+                type: 'assign_corporation',
+                when: 'owning_player_token',
+                count: 1,
+                owner_type: 'player',
+              },
             ],
             color: nil,
           },
@@ -57,7 +69,7 @@ module Engine
                 type: 'tile_lay',
                 hexes: %w[F3],
                 tiles: %w[403 121 584],
-                when: 'track',
+                when: 'owning_player_track',
                 owner_type: 'player',
                 count: 1,
                 consume_tile_lay: true,
@@ -111,6 +123,7 @@ module Engine
             name: 'Södra Stambanan',
             logo: '18_scan/1',
             simple_logo: '18_scan/1.alt',
+            type: 'minor',
             tokens: [0, 40],
             coordinates: 'G4',
             destination_coordinates: 'B11',
@@ -134,9 +147,10 @@ module Engine
             name: 'Nordvärsta Stambanan',
             logo: '18_scan/2',
             simple_logo: '18_scan/2.alt',
+            type: 'minor',
             tokens: [0, 40],
             coordinates: 'F11',
-            city: 0,
+            city: 1,
             destination_coordinates: 'B11',
             color: '#5b74b4',
             abilities: [
@@ -158,9 +172,10 @@ module Engine
             name: 'Västra Stambanan',
             logo: '18_scan/3',
             simple_logo: '18_scan/3.alt',
+            type: 'minor',
             tokens: [0, 40],
             coordinates: 'F11',
-            city: 1,
+            city: 0,
             destination_coordinates: 'D7',
             color: '#5b74b4',
             abilities: [
@@ -183,6 +198,7 @@ module Engine
           {
             sym: 'DSB',
             name: 'Danske Statsbaner',
+            type: 'major',
             logo: '18_scan/DSB',
             simple_logo: '18_scan/DSB.alt',
             float_percent: 20,
@@ -194,6 +210,7 @@ module Engine
           {
             sym: 'S&NJ',
             name: 'Sveriges & Norges Järnvägar',
+            type: 'major',
             logo: '18_scan/SNJ',
             simple_logo: '18_scan/SNJ.alt',
             float_percent: 20,
@@ -205,6 +222,7 @@ module Engine
           {
             sym: 'NSB',
             name: 'Norges Statsbaner',
+            type: 'major',
             logo: '18_scan/NSB',
             simple_logo: '18_scan/NSB.alt',
             float_percent: 20,
@@ -216,6 +234,7 @@ module Engine
           {
             sym: 'VR',
             name: 'Valtionraurariet',
+            type: 'major',
             logo: '18_scan/VR',
             simple_logo: '18_scan/VR.alt',
             float_percent: 20,
@@ -229,22 +248,11 @@ module Engine
             name: 'Statens Järnvägar',
             logo: '18_scan/SJ',
             simple_logo: '18_scan/SJ.alt',
+            type: 'national',
             float_percent: 50,
             floatable: false,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: 'F3',
             color: '#3561AE',
-            abilities: [
-              {
-                type: 'train_limit',
-                description: '+1 train limit',
-                increase: 1,
-              },
-              {
-                type: 'no_buy',
-                description: 'Cannot float before phase 5',
-              },
-            ],
           },
         ].freeze
       end

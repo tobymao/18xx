@@ -74,7 +74,7 @@ module Engine
             end
             return if new_entities.empty?
 
-            find_entity = current_entity
+            find_entity = @current_operator
             new_entities.each do |c|
               index = @entities_orginal.size
               @entities_orginal.each_with_index do |e, idx|

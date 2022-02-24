@@ -380,9 +380,9 @@ module Engine
           {
             red: {
               ['A4'] => 'offboard=revenue:yellow_40|brown_60,groups:NorthWest;path=a:0,b:_0,terminal:1;'\
-                        'border=edge:4,type:impassable,color:blue;icon=image:18_rhl/RGE',
+                        'icon=image:18_rhl/RGE',
               ['A6'] => 'offboard=revenue:yellow_40|brown_60,groups:NorthWest;path=a:5,b:_0,terminal:1;'\
-                        'border=edge:0,type:impassable,color:blue;border=edge:1,type:impassable,color:blue;icon=image:18_rhl/RGE',
+                        'border=edge:0,type:impassable,color:blue;icon=image:18_rhl/RGE',
               ['A14'] => 'city=revenue:yellow_40|brown_60;path=a:0,b:_0,terminal:1',
               ['B15'] => 'city=revenue:yellow_50|brown_80;path=a:1,b:_0,terminal:1',
               ['C2'] => 'city=revenue:yellow_10|brown_30;path=a:4,b:_0,terminal:1',
@@ -391,14 +391,14 @@ module Engine
               ['D15'] => 'city=revenue:10;city=revenue:10;path=a:0,b:_0,terminal:1;path=a:1,b:_1,terminal:1;'\
                          'label=+10/link;icon=image:18_rhl/ERh',
               ['E2'] => 'city=revenue:yellow_20|brown_40;path=a:3,b:_0;path=a:5,b:_0',
-              ['G2'] => 'city=revenue:yellow_10|brown_20,groups:Roermond;path=a:4,b:_0,terminal:1;icon=image:18_rhl/ERh',
+              ['G2'] => 'city=revenue:yellow_10|brown_20,groups:Roermond;path=a:4,b:_0,terminal:1;'\
+                        'icon=image:18_rhl/ERh',
               ['J1'] => 'offboard=revenue:yellow_10|brown_30;path=a:5,b:_0,terminal:1',
               ['L1'] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0,terminal:1',
               ['L9'] => 'town=revenue:10;path=a:2,b:_0;path=a:3,b:_0',
               ['L11'] => 'offboard=revenue:yellow_30|brown_70;border=edge:3,type:impassable,color:blue;'\
-                         'border=edge:4,type:impassable,color:blue;path=a:2,b:_0;icon=image:18_rhl/RGE',
-              ['L13'] => 'offboard=revenue:yellow_30|brown_60;border=edge:1,type:impassable,color:blue;path=a:2,b:_0;'\
-                         'icon=image:18_rhl/RGE',
+                         'path=a:2,b:_0;icon=image:18_rhl/RGE',
+              ['L13'] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;icon=image:18_rhl/RGE',
             },
             gray: {
               %w[A2 A8 A10 A12 B1 D1 F1 H1 L3 L5 L7] => '',
@@ -412,13 +412,13 @@ module Engine
               ['B5'] => 'border=edge:3,type:impassable,color:blue;border=edge:4,type:impassable,color:blue',
               ['B7'] => 'border=edge:0,type:impassable,color:blue;border=edge:1,type:impassable,color:blue;'\
                         'border=edge:5,type:impassable,color:blue',
-              ['B9'] => 'city=revenue:0;border=edge:0,type:water',
+              ['B9'] => 'city=revenue:0',
               %w[B11 D3 D5 E4 F3 F7 G4 G8 H3 H5 H7 I2 I8 J5 J7 K8] => '',
               %w[B13 E8 F5 J3] => 'town=revenue:0;town=revenue:0',
               %w[C4 I6 K4] => 'town=revenue:0',
               ['C6'] => 'town=revenue:0;border=edge:3,type:impassable,color:blue',
               ['C8'] => 'stub=edge:3;upgrade=cost:30,terrain:water;border=edge:2,type:impassable,color:blue;'\
-                        'border=edge:3,type:water;border=edge:4,type:impassable,color:blue',
+                        'border=edge:4,type:impassable,color:blue',
               ['C10'] => 'town=revenue:0;town=revenue:0;border=edge:1,type:impassable,color:blue',
               %w[C12 D11] => 'city=revenue:0;city=revenue:0;label=OO',
               ['D13'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain;label=Y',

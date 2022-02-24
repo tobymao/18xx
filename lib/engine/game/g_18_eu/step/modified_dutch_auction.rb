@@ -9,6 +9,7 @@ module Engine
       module Step
         class ModifiedDutchAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
+          include Engine::Step::ProgrammerAuctionBid
           ACTIONS = %w[bid pass].freeze
 
           def description
@@ -169,6 +170,7 @@ module Engine
 
           def force_purchase(bidder, target)
             assign_target(bidder, target)
+            place_initial_token(target)
 
             @log << "#{bidder.name} is forced to take #{target.name} for free"
 
@@ -184,11 +186,17 @@ module Engine
               raise GameError, "#{target.name} cannot be purchased for #{@game.format_currency(price)}."
             end
 
+            unless price == min_bid(target)
+              raise GameError,
+                    "#{target.name} must be purchased for #{@game.format_currency(min_bid(target))}."
+            end
+
             assign_target(bidder, target)
 
             bidder.spend(price, @game.bank) if price.positive?
             @log << "#{bidder.name} purchases #{target.name} for #{@game.format_currency(price)}"
 
+            place_initial_token(target)
             reset_auction(bidder, target)
           end
 
@@ -220,9 +228,7 @@ module Engine
             @log << "#{bidder.name} wins the auction for #{target.name} "\
                     "with a bid of #{@game.format_currency(price)}"
 
-            hex = @game.hex_by_id(target.coordinates)
-            city = target.city.to_i || 0
-            hex.tile.cities[city].place_token(target, target.next_token, free: true)
+            place_initial_token(target)
           end
 
           def all_passed!
@@ -257,6 +263,20 @@ module Engine
             @round.goto_entity!(@auction_triggerer)
             @auction_triggerer = nil
             next_entity!
+          end
+
+          def place_initial_token(minor)
+            hex = @game.hex_by_id(minor.coordinates)
+            city_index = minor.city.to_i
+            hex.tile.cities[city_index].place_token(minor, minor.next_token, free: true)
+          end
+
+          def auto_requires_auctioning?(_entity, program)
+            @auctioning && program.bid_target != @auctioning
+          end
+
+          def auto_bid_on_empty?(_entity, program)
+            program.enable_buy_price && @bids[program.bid_target].empty?
           end
         end
       end
