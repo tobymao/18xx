@@ -7,6 +7,16 @@ require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'scenarios'
+require_relative 'round/operating'
+require_relative 'step/buy_sell_par_shares'
+require_relative 'step/buy_train'
+require_relative 'step/dividend'
+require_relative 'step/emr_share_buying'
+require_relative 'step/route'
+require_relative 'step/special_choose'
+require_relative 'step/special_token'
+require_relative 'step/track_and_token'
+require_relative 'step/waterfall_auction'
 
 module Engine
   module Game
@@ -19,6 +29,9 @@ module Engine
         include Scenarios
         include TrainlessSharesHalfValue
 
+        attr_reader :scenario
+        attr_accessor :train_bought
+
         GAME_END_CHECK = { final_train: :current_or, stock_market: :current_or }.freeze
 
         BANKRUPTCY_ALLOWED = false
@@ -27,6 +40,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '£%d'
 
+        CERT_LIMIT_TYPES = [].freeze
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
         PRESIDENT_SALES_TO_MARKET = true
@@ -68,11 +82,11 @@ module Engine
         )
 
         MARKET = [
-          %w[50o 55o 60o 65o 70p 75p 80p 90p 100p 115 130 160 180 200 220 240 265 290 320 350e 380e],
+          %w[50o 55o 60o 65o 70p 75p 80p 90p 100p 115 130 145 160 180 200 220 240 265 290 320 350e 380e],
         ].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
-          unlimited: :yellow,
+          unlimited: :olive,
         )
 
         EVENTS_TEXT = {
@@ -332,6 +346,8 @@ module Engine
         VALID_ABILITIES_CLOSED = %i[hex_bonus reservation tile_lay token].freeze
 
         def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
+          return if entity&.player?
+
           ability = super
 
           return ability unless entity&.company?
@@ -362,18 +378,18 @@ module Engine
         def close_company_in_hex(hex)
           @companies.each do |company|
             block = abilities(company, :blocks_hexes)
-            close_company(company) if block.hexes.include?(hex.coordinates)
+            close_company(company) if block&.hexes&.include?(hex.coordinates)
           end
         end
 
         def game_companies
           scenario_comps = @scenario['companies']
-          self.class::COMPANIES.select { |comp| scenario_comps.include?(comp['sym']) }
+          self.class::COMPANIES.select { |comp| scenario_comps.include?(comp[:sym]) }
         end
 
         def game_corporations
           scenario_corps = @scenario['corporations'] + @scenario['corporation-extra'].sort_by { rand }.take(1)
-          self.class::CORPORATIONS.select { |corp| scenario_corps.include?(corp['sym']) }
+          self.class::CORPORATIONS.select { |corp| scenario_corps.include?(corp[:sym]) }
         end
 
         def game_tiles
@@ -436,8 +452,15 @@ module Engine
         end
 
         def sorted_corporations
-          ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
-          ipoed.sort + others
+          case @round
+          when Engine::Round::Stock
+            ipoed, others = @corporations.reject { |corp| @tiers[corp.id] > @round_counter }.partition(&:ipoed)
+            ipoed.sort + others
+          when Engine::Round::Operating
+            [@round.current_operator]
+          else
+            []
+          end
         end
 
         def required_bids_to_pass
@@ -516,8 +539,8 @@ module Engine
 
         def status_array(corp)
           status = []
-          status << %w[10-share bold] if corp.type == '10-share'
-          status << %w[5-share bold] if corp.type == '5-share'
+          status << %w[10-share bold] if corp.type == :'10-share'
+          status << %w[5-share bold] if corp.type == :'5-share'
           status << %w[Insolvent bold] if insolvent?(corp)
           status << %w[Receivership bold] if corp.receivership?
           status
@@ -525,7 +548,7 @@ module Engine
 
         def float_corporation(corporation)
           super
-          return unless corporation.type == '10-share'
+          return unless corporation.type == :'10-share'
 
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
@@ -579,20 +602,19 @@ module Engine
           @_shares[share.id] = share
         end
 
-        def emergency_convert_bundles(corporation)
-          return [] unless corporation.trains.empty?
-          return [] if corporation.cash >= @depot.min_depot_price
-
-          shares = (0..4).map { |i| Engine::Share.new(corporation, percent: 20, index: 4 + i) }
-          bundle = Engine::ShareBundle.new(shares)
-          bundle.share_price = stock_market.find_share_price(corporation, [:left] * 3).price
-          [bundle]
+        def convert_capital(corporation, emergency)
+          steps = emergency ? 3 : 2
+          5 * stock_market.find_share_price(corporation, [:left] * steps).price
         end
 
-        def convert_to_ten_share(corporation, price_drops = 0)
+        def convert_to_ten_share(corporation, price_drops = 0, blame_president = false)
           # update corporation type and report conversion
-          corporation.type = '10-share'
-          @log << "#{corporation.id} converts into a 10-share company"
+          corporation.type = :'10-share'
+          @log << (if blame_president
+                     "#{corporation.owner.name} converts #{corporation.id} into a 10-share corporation"
+                   else
+                     "#{corporation.id} converts into a 10-share corporation"
+                   end)
 
           # update existing shares to 10% shares
           original_shares = shares_for_corporation(corporation)
@@ -677,7 +699,7 @@ module Engine
           super
         end
 
-        def upgrades_to_correct_color?(from, to)
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
           (from.color == to.color && from.color == :blue) || super
         end
 
@@ -703,6 +725,28 @@ module Engine
 
         def lessee
           current_entity
+        end
+
+        def train_help(entity, trains, _routes)
+          leased_train = false
+          plus_trains = false
+          express_trains = false
+
+          trains.each do |t|
+            leased_train = true if t.owner == @depot
+            plus_trains = true if t.name.include?('+')
+            express_trains = true if t.name.include?('X')
+          end
+
+          help = []
+          help << "#{entity.id} is leasing a #{@depot.min_depot_train.name} train from the bank" if leased_train
+          help << 'N+M trains run N cities and offboards and M towns' if plus_trains
+          if express_trains
+            help << "X trains ignore all towns and count only cities and offboards. They add a bonus of #{format_currency(10)} "\
+                    'per hex as the crow flies between the start and the end of the route'
+          end
+
+          help
         end
 
         def revenue_bonuses(route, stops)
@@ -741,13 +785,8 @@ module Engine
           end.join
         end
 
-        def compass_points_on_route(route)
-          hexes = route.ordered_paths.map { |path| path.hex.coordinates }
-          @scenario['compass-hexes'].select do |_compass, compasshexes|
-            hexes.any? do |coords|
-              compasshexes.include?(coords)
-            end
-          end.map(&:first)
+        def compass_points_in_network(network_hexes)
+          @scenario['compass-hexes'].reject { |_compass, compass_hexes| (network_hexes & compass_hexes).empty? }.map(&:first)
         end
 
         def ns_bonus
@@ -764,9 +803,47 @@ module Engine
           end
         end
 
+        def routes_intersect(first, second)
+          !(first.visited_stops & second.visited_stops).empty?
+        end
+
+        def route_sets_intersect(first, second)
+          first.any? { |a| second.any? { |b| routes_intersect(a, b) } }
+        end
+
+        def combine_route_sets(sets)
+          # simplify overlapping route sets by combining them where possible
+          overlapped = []
+
+          sets.combination(2).select { |first, second| route_sets_intersect(first, second) }.each do |first, second|
+            overlapped << second
+            second.each { |route| first << route }
+          end
+
+          sets.reject { |set| overlapped.include?(set) }
+        end
+
+        def route_sets(routes)
+          sets = routes.map { |route| [route] }
+          return [] if sets.empty?
+
+          prev_length = 0
+          while sets.size != prev_length
+            prev_length = sets.size
+            sets = combine_route_sets(sets)
+          end
+          sets
+        end
+
         def compass_bonuses(route)
           bonuses = []
-          points = compass_points_on_route(route)
+          return bonuses if route.chains.empty?
+
+          route_set = route_sets(route.routes).find { |set| set.include?(route) } || []
+          return bonuses unless route == route_set.first # apply bonus to the first route in the set
+
+          hexes = route_set.flat_map { |r| r.ordered_paths.map { |path| path.hex.coordinates } }
+          points = compass_points_in_network(hexes)
           bonuses << { revenue: ns_bonus, description: 'NS' } if points.include?('N') && points.include?('S')
           bonuses << { revenue: ew_bonus, description: 'EW' } if points.include?('E') && points.include?('W')
           bonuses
@@ -799,7 +876,7 @@ module Engine
         end
 
         def buy_train(operator, train, price = nil)
-          @train_bought = true
+          @train_bought = true if train.owner == @depot
           super
         end
 
@@ -819,11 +896,21 @@ module Engine
             G18GB::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18GB::Step::BuyTrain,
+            G18GB::Step::EMRShareBuying,
           ], round_num: round_num)
         end
 
         def or_round_finished
           depot.export! unless @train_bought
+        end
+
+        def end_now?(after)
+          if @round.is_a?(round_end) && @depot.upcoming.size == 1 && !@train_bought
+            @depot.export!
+            return true
+          end
+
+          super
         end
       end
     end

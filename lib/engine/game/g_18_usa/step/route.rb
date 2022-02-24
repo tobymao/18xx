@@ -25,8 +25,8 @@ module Engine
             @upgrade_train_assignments[upgrade] = train
             @round.train_upgrade_assignments[train] = [] unless @round.train_upgrade_assignments[train]
             @round.train_upgrade_assignments[train] << upgrade
-            train.name = train.name + (upgrade['size'] ? "#{upgrade['id']}#{upgrade['size']}" : upgrade['id'])
-            train.distance = train.distance + upgrade['size'] if upgrade['size']
+            train.name = train.name + (upgrade[:size] ? "#{upgrade[:id]}#{upgrade[:size]}" : upgrade[:id])
+            train.distance = train.distance + upgrade[:size] if upgrade[:size]
           end
 
           def available_hex(entity, hex)
@@ -47,8 +47,8 @@ module Engine
           def choices_for_entity(entity)
             choices = {}
             upgrade_choices(entity).each_with_index do |upgrade, p_index|
-              train_choices(entity, upgrade['permanents']).each_with_index do |train, t_index|
-                choices["#{t_index}-#{p_index}"] = "Attach #{upgrade['name']} upgrade to #{train.name} train"
+              train_choices(entity, upgrade[:permanents]).each_with_index do |train, t_index|
+                choices["#{t_index}-#{p_index}"] = "Attach #{upgrade[:name]} upgrade to #{train.name} train"
               end
             end
             choices
@@ -56,8 +56,8 @@ module Engine
 
           def detach_upgrades
             @upgrade_train_assignments.each do |upgrade, train|
-              train.name = train.name.gsub(upgrade['size'] ? "#{upgrade['id']}#{upgrade['size']}" : upgrade['id'], '')
-              train.distance = train.distance - upgrade['size'] if upgrade['size']
+              train.name = train.name.gsub(upgrade[:size] ? "#{upgrade[:id]}#{upgrade[:size]}" : upgrade[:id], '')
+              train.distance = train.distance - upgrade[:size] if upgrade[:size]
             end
             @upgrade_train_assignments = {}
             @round.train_upgrade_assignments = {}
@@ -66,7 +66,7 @@ module Engine
           def train_choices(entity, allow_permanents)
             # Pullmans don't get upgrades. That'd be silly.
             @game.route_trains(entity).reject do |t|
-              (!allow_permanents && !t.obsolete_on && !t.rusts_on) || t.variant['name'] == 'P'
+              (!allow_permanents && !t.obsolete_on && !t.rusts_on) || @game.pullman_train?(t)
             end
           end
 
@@ -76,7 +76,7 @@ module Engine
               @game.company_by_id('P19').owner == entity
             choices << { name: 'Extender', id: '+', size: 1, permanents: false } if !@game.company_by_id('P30').closed? &&
               @game.company_by_id('P30').owner == entity
-            choices << { name: 'Pullman', id: 'P', size: nil, permanents: true } if entity.runnable_trains.any? do |t|
+            choices << { name: 'Pullman', id: 'P', size: nil, permanents: true } if entity.trains.any? do |t|
                                                                                       @game.pullman_train?(t)
                                                                                     end
             choices.reject { |upgrade| @upgrade_train_assignments[upgrade] }
@@ -86,8 +86,8 @@ module Engine
             entity = action.entity
             choices = action.choice.split('-', -1).map(&:to_i)
             upgrade = upgrade_choices(entity)[choices[1]]
-            train = train_choices(entity, upgrade['permanents'])[choices[0]]
-            @log << "#{entity.id} chooses to attach the #{upgrade['name']} upgrade to the #{train.name} train"
+            train = train_choices(entity, upgrade[:permanents])[choices[0]]
+            @log << "#{entity.id} chooses to attach the #{upgrade[:name]} upgrade to the #{train.name} train"
             attach_upgrade(train, upgrade)
           end
 

@@ -281,7 +281,6 @@ module Engine
             abilities: [],
           },
           # P15
-          # TODO Make a choice ability
           {
             name: 'P15 - Western Land Grant',
             value: 60,
@@ -615,7 +614,7 @@ module Engine
           },
           # P30
           {
-            name: 'P3 - Double Heading',
+            name: 'P30 - Double Heading',
             value: 120,
             revenue: 0,
             desc: 'Each turn one non-permanent train may attach the Extender to run to one extra city',
@@ -785,7 +784,7 @@ module Engine
                 tiles: [], # Added during setup
                 when: 'track',
                 reachable: true,
-                consume_tile_lay: true,
+                consume_tile_lay: false,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
                 count: 1,

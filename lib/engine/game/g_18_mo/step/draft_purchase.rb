@@ -97,9 +97,7 @@ module Engine
             float_minor(company)
           end
 
-          def action_finalized
-            @round.reset_entity_index! if finished?
-          end
+          def action_finalized; end
 
           def committed_cash
             0

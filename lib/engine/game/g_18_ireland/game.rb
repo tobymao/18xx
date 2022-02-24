@@ -476,7 +476,7 @@ module Engine
             comp.close!
             comp.id
           end
-          @log << "Removed #{removed.join(',')} companies"
+          @log << "Removed #{removed.join(', ')} companies"
         end
 
         def setup

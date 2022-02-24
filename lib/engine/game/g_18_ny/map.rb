@@ -328,8 +328,8 @@ module Engine
 
         SECOND_EDITION_HEXES = {
           white: {
-            %w[K19] => 'town=revenue:0;border=edge:1,type:water,cost:80;border=edge:4,type:water,cost:80',
-            %w[K21] => 'city=revenue:0;upgrade=cost:80,terrain:water;border=edge:1,type:water,cost:80',
+            %w[K19] => 'town=revenue:0;border=edge:2,type:water,cost:40;border=edge:4,type:water,cost:80',
+            %w[K21] => 'city=revenue:0;border=edge:1,type:water,cost:80',
           },
           red: {
             %w[D0] => 'town=revenue:yellow_20|green_40|brown_80|gray_100;path=a:4,b:_0;path=a:5,b:_0;border=edge:5',
@@ -344,7 +344,7 @@ module Engine
             %w[K15] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia;' \
                        'path=a:3,b:_0;border=edge:2,type:divider;border=edge:4',
             %w[K17] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia,hide:1;' \
-                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;border=edge:4,type:water,cost:80',
+                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;border=edge:4,type:water,cost:40',
           },
           blue: {
             %w[K23] => 'junction;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',

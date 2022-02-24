@@ -13,8 +13,8 @@ module Engine
         @id ||= "#{tile.id}-#{index}"
       end
 
-      def full_id
-        "#{hex&.id}-#{tile.name}-#{index}"
+      def signature
+        "#{hex&.id}-#{index}"
       end
 
       def hex

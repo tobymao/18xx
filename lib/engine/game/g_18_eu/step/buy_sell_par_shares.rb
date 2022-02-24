@@ -12,10 +12,19 @@ module Engine
 
           def actions(entity)
             actions = super
-
             actions << 'buy_shares' if entity.minor?
-
+            actions << 'pass' if @game.owns_any_minor?(entity) && !bought?
             actions
+          end
+
+          def auto_actions(entity)
+            programmed = super
+            return programmed if programmed
+
+            normal_actions = actions(entity)
+            return [Engine::Action::Pass.new(entity)] if normal_actions == ['pass'] && !can_exchange?(entity)
+
+            []
           end
 
           def round_state
@@ -69,15 +78,11 @@ module Engine
           end
 
           def can_exchange?(entity)
-            return true if @game.loading
-            return true if @game.corporations.any? { |c| @game.can_par?(c, entity) }
-
-            @game.minors.any? { |m| m.owner == entity && can_exchange_minor?(m) }
+            ipo = can_ipo_any?(entity)
+            @game.minors.any? { |m| m.owner == entity && (can_exchange_minor?(m) || ipo) }
           end
 
           def can_exchange_minor?(minor)
-            return true if @game.loading
-
             connected = connected_corporations(minor)
             return false if connected.empty?
 

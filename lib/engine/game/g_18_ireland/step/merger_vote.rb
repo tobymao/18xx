@@ -19,9 +19,13 @@ module Engine
             'Vote for Merger'
           end
 
+          def vote_str(num_votes)
+            num_votes == 1 ? '1 vote' : "#{num_votes} votes"
+          end
+
           def choices
             votes = current_voter.last
-            { for: "#{votes} votes For Merger", against: "#{votes} votes Against Merger" }
+            { for: "#{vote_str(votes)} for merger", against: "#{vote_str(votes)} against merger" }
           end
 
           def description
@@ -34,7 +38,7 @@ module Engine
             vote = action.choice
             entity = action.entity
             votes = current_voter.last
-            raise GameError, 'Not players turn' unless entity == current_voter.first
+            raise GameError, 'Not player\'s turn' unless entity == current_voter.first
 
             if vote == 'for'
               @round.votes_for += votes
@@ -43,7 +47,7 @@ module Engine
             end
 
             @round.to_vote.shift
-            @game.log << "#{entity.name} casts #{votes} votes #{vote} merger #{vote_summary}"
+            @game.log << "#{entity.name} casts #{vote_str(votes)} #{vote} merger #{vote_summary}"
             check_result
           end
 

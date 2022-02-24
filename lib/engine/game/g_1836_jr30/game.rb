@@ -453,7 +453,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            G1836Jr30::Step::BuyTrain,
+            Engine::Step::BuySingleTrainOfType,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end

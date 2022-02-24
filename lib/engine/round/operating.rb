@@ -99,7 +99,9 @@ module Engine
       end
 
       def finished?
-        super || !any_to_act?
+        finished = super || !any_to_act?
+        @current_operator = nil if finished
+        finished
       end
     end
   end

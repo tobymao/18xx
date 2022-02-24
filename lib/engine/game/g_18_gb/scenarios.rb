@@ -89,7 +89,7 @@ module Engine
               'N' => %w[G0 I0 K0],
               'E' => %w[K0 K22 J27 G26],
               'S' => %w[J27 G26 D27 a25],
-              'W' => %w[a19 C16 C14 E6],
+              'W' => %w[a19 a25 C16 C14 E6],
             },
           },
           '4Std' =>
@@ -118,7 +118,7 @@ module Engine
               'N' => %w[G0 I0 K0],
               'E' => %w[K0 K22 J27 G26],
               'S' => %w[J27 G26 D27 a25],
-              'W' => %w[a19 C16 C14 E6],
+              'W' => %w[a19 a25 C16 C14 E6],
             },
           },
           '4Alt' =>
@@ -147,7 +147,7 @@ module Engine
               'N' => %w[G0 I0 K0],
               'E' => %w[K0 K22 J27 G26],
               'S' => %w[J27 G26 D27 a25],
-              'W' => %w[a19 C16 C14 E6],
+              'W' => %w[a19 a25 C16 C14 E6],
             },
           },
           '5' =>
@@ -176,7 +176,7 @@ module Engine
               'N' => %w[G0 I0 K0],
               'E' => %w[K0 K22 J27 G26],
               'S' => %w[J27 G26 D27 a25],
-              'W' => %w[a19 C16 C14 E6],
+              'W' => %w[a19 a25 C16 C14 E6],
             },
           },
           '6' =>
@@ -205,7 +205,7 @@ module Engine
               'N' => %w[G0 I0 K0],
               'E' => %w[K0 K22 J27 G26],
               'S' => %w[J27 G26 D27 a25],
-              'W' => %w[a19 C16 C14 E6],
+              'W' => %w[a19 a25 C16 C14 E6],
             },
           },
         }.freeze

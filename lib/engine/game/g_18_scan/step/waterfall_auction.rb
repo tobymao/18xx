@@ -17,6 +17,8 @@ module Engine
             @game.log << "Minor #{minor.name} floats"
             minor.owner = player
             minor.float!
+            @game.place_home_token(minor)
+            @game.bank.spend(price, minor)
           end
         end
       end

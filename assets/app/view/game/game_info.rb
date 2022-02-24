@@ -411,7 +411,8 @@ module View
       end
 
       def endgame
-        rows = @game.class::GAME_END_CHECK.map do |reason, timing|
+        values = @game.game_end_check_values
+        rows = values.map do |reason, timing|
           reason_str = @game.class::GAME_END_REASONS_TEXT[reason]
           if reason == :bankrupt
             reason_str = case @game.class::BANKRUPTCY_ENDS_GAME_AFTER
