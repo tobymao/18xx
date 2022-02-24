@@ -100,12 +100,6 @@ module Engine
             @game.after_lay_tile(entity)
           end
 
-          def setup
-            super
-
-            @round.num_upgraded_track = 0
-          end
-
           def try_take_loan(entity, price)
             return if !price.positive? || price <= entity.cash
 
