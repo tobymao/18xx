@@ -23,10 +23,7 @@ module View
 
           form = {}
 
-          children = [h(:h3, name)]
-          children << h(:p, description)
-
-          children << h(:div, [render_entity_selector(form)])
+          children = [h(:h3, name), h(:p, description), h(:div, [render_entity_selector(form)])]
 
           children << h(Corporation, corporation: selected) if selected&.corporation? || selected&.minor?
           children << h(Company, company: selected) if selected&.company?
