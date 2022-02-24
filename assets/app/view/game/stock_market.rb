@@ -183,7 +183,9 @@ module View
           ])
         end
 
-        [h(:div, { style: { width: 'max-content' } }, row)]
+        # Wrap if the row too long
+        rows = row.size < 60 ? [row] : [row.shift((row.size / 2.0).ceil), row]
+        rows.map { |r| h(:div, { style: { width: 'max-content' } }, r) }
       end
 
       def grid_zigzag(zigzag)
