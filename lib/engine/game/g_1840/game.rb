@@ -930,6 +930,10 @@ module Engine
                        'Pink → Yellow: -200 | Orange: -100 | Red: -50  ',
                        'Purple → Yellow: -400 | Orange: -300 | Red: -100 | Purple +200  '].freeze
         end
+
+        def train_actions_always_use_operating_round_view?
+          true
+        end
       end
     end
   end
