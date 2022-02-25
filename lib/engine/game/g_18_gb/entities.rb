@@ -24,7 +24,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close LB' },
               },
             ],
           },
@@ -47,7 +47,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close AF' },
               },
               {
                 type: 'tile_lay',
@@ -79,7 +79,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close GN' },
               },
               {
                 type: 'reservation',
@@ -117,7 +117,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close SD' },
               },
               {
                 type: 'hex_bonus',
@@ -146,7 +146,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close LM' },
               },
               {
                 type: 'hex_bonus',
@@ -176,7 +176,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close LS' },
               },
               {
                 type: 'tile_lay',
@@ -212,7 +212,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close TV' },
               },
               {
                 type: 'tile_lay',
@@ -246,7 +246,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close MC' },
               },
               {
                 type: 'reservation',
@@ -284,7 +284,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close CH' },
               },
               {
                 type: 'hex_bonus',
