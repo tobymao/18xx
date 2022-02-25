@@ -410,7 +410,7 @@ module Engine
           prototype = self.class::TRAINS.find { |e| e[:name] == name }
           raise GameError, "Unable to find train #{name} in TRAINS" unless prototype
 
-          @depot.insert_train(Train.new(**prototype, index: 999), @depot.upcoming.index { |t| t.name == name })
+          @depot.insert_train(Train.new(**prototype, index: 999), @depot.upcoming.index { |t| t.name == name } || 0)
           update_cache(:trains)
 
           @log << "#{corp.name} adds a #{name} train to depot"
