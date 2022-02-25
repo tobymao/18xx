@@ -284,6 +284,13 @@ module Engine
           value - soo.value
         end
 
+        def buy_train(operator, train, price = nil)
+          return super unless train&.owner&.corporation?
+
+          train.operated = false if train.owner.operating_history[[turn, @round.round_num]].nil?
+          super
+        end
+
         def train_limit(entity)
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
         end
