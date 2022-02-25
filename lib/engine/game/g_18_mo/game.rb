@@ -115,7 +115,7 @@ module Engine
           {
             name: '5E',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99 }],
-            price: 600,
+            price: 700,
           },
           {
             name: '7',
@@ -263,7 +263,7 @@ module Engine
           when '3E', '5E'
             1
           when '5'
-            two_player? ? 3 : num_players - 1
+            two_player? ? 4 : num_players
           when '7'
             two_player? ? 4 : 9
           end
