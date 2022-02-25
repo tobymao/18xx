@@ -912,7 +912,7 @@ module Engine
             subsidy.close!
           when 'S12', 'S13', 'S14', 'S15'
             @log << "Subsidy contributes #{format_currency(subsidy.value)}"
-            @bank.spend(subsidy.value, corporation)
+            @bank.spend(subsidy.value, corporation.owner)
             subsidy.close!
           when 'S16'
             if subsidy.abilities.first.hexes.empty?
