@@ -11,6 +11,15 @@ module Engine
             super
             @exchanged = false
           end
+
+          def buy_train_action(action, entity = nil)
+            super
+            @exchanged = true if action.exchange
+          end
+
+          def discountable_trains_allowed?(_entity)
+            !@exchanged
+          end
         end
       end
     end
