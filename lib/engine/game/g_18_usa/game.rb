@@ -96,7 +96,7 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             corporation_sizes: [5, 10],
-            events: [{ 'type' => 'increased_oil' }],
+            status: %w[increased_oil],
           },
           {
             name: '6',
@@ -133,12 +133,12 @@ module Engine
         end
 
         # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
-        EVENTS_TEXT = {
-          'upgrade_oil' => [
-            'Oil Upgraded',
+        STATUS_TEXT = {
+          'increased_oil' => [
+            'Oil value increased',
             'Oil worth $20 for the remainder of the game',
           ],
-        }.merge(Base::EVENTS_TEXT)
+        }.merge(G1817::Game::STATUS_TEXT)
 
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 40 },
                   { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 5 },
@@ -188,11 +188,6 @@ module Engine
 
         SEED_MONEY = nil
 
-        def event_upgrade_oil!
-          @log << "-- Event: #{EVENTS_TEXT['upgrade_oil'][1]} --"
-          @oil_value = 20
-        end
-
         def active_metropolitan_hexes
           @active_metropolitan_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
         end
@@ -241,8 +236,6 @@ module Engine
           setup_company_tiles
 
           @jump_graph = Graph.new(self, no_blocking: true)
-
-          @oil_value = 10
 
           @recently_floated = []
 
@@ -378,6 +371,10 @@ module Engine
           entity.tokens.first.hex
         end
 
+        def phase_5_or_later?
+          @phase.tiles.include?(:brown)
+        end
+
         TRACK_ENGINEER_TILE_LAYS = [ # Three lays with one being an upgrade, second tile costs 20, third tile free
           { lay: true, upgrade: true },
           { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
@@ -489,7 +486,7 @@ module Engine
         def upgrades_to_correct_color?(from, to, selected_company: nil)
           return true if self.class::SPECIAL_TILES.include?(to.name)
 
-          if @phase.tiles.include?(:brown)
+          if phase_5_or_later?
             entity = selected_company || @round.current_entity
             # Non-track upgrades
             return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) if from.cities.empty?
@@ -749,8 +746,8 @@ module Engine
             next resource_revenue if hex.tile.color == :white || (resources = tile_resources(hex.tile)).empty?
 
             resource_revenue += 10 if resources.include?(:coal)
-            resource_revenue += hex.tile.name.include?('ore10') ? 10 : 20 if resources.include?(:ore)
-            resource_revenue += @oil_value if resources.include?(:oil)
+            resource_revenue += ORE20_TILES.include?(hex.tile.name) ? 20 : 10 if resources.include?(:ore)
+            resource_revenue += phase_5_or_later? ? 20 : 10 if resources.include?(:oil)
             resource_revenue
           end
 
@@ -759,7 +756,7 @@ module Engine
 
           revenue += 10 if stop_hexes.find { |hex| hex.tile.icons.find { |icon| icon.name == 'plus_ten' } }
           if stop_hexes.find { |hex| hex.tile.icons.find { |icon| icon.name == 'plus_ten_twenty' } }
-            revenue += @phase.tiles.include?(:brown) ? 20 : 10
+            revenue += phase_5_or_later? ? 20 : 10
           end
           revenue += 10 if company_by_id('P8').owner == corporation && !(stop_hexes & @p8_hexes).empty?
 
@@ -838,7 +835,7 @@ module Engine
 
         def pullmans_available?
           # Pullmans are available in phase 5, using the availability of brown track as an easy signal of this
-          @phase.tiles.include?(:brown)
+          phase_5_or_later?
         end
 
         def route_trains(entity)
