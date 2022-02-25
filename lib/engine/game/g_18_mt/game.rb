@@ -104,6 +104,12 @@ module Engine
           G18MT::SharePool.new(self)
         end
 
+        def next_sr_player_order
+          return :after_last_to_act if round.auction?
+
+          self.class::NEXT_SR_PLAYER_ORDER
+        end
+
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
