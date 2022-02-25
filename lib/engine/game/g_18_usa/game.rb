@@ -159,9 +159,13 @@ module Engine
                   { name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }].freeze
 
         def game_trains
-          return G1817::Game::TRAINS if @optional_rules.include?(:seventeen_trains)
+          return seventeen_trains if @optional_rules.include?(:seventeen_trains)
 
           self.class::TRAINS
+        end
+
+        def seventeen_trains
+          G1817::Game::TRAINS.dup + [{ name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }]
         end
 
         # Does not include guaranteed metropolis New York City
