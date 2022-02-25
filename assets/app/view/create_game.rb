@@ -37,6 +37,7 @@ module View
         inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
                                                    container_style: { paddingLeft: '0.5rem' })
         inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
+        inputs << h(:p, [render_input('Random Seed', id: :seed, placeholder: 'Optional random seed', label_style: @label_style)])
         inputs << render_game_info
       when :hotseat
         inputs << h(:label, { style: @label_style }, 'Player Names')
@@ -44,6 +45,8 @@ module View
           n = index + 1
           inputs << render_input('', id: "player_#{n}", attrs: { value: "Player #{n}" })
         end
+        inputs << h(:div,
+                    [render_input('Random Seed', id: :seed, placeholder: 'Optional random seed', label_style: @label_style)])
         inputs << render_game_info
       when :json
         inputs << render_upload_button
@@ -351,9 +354,12 @@ module View
 
     def submit
       game_params = params
+      game_params[:seed] = game_params[:seed].to_i
+      game_params[:seed] = nil if (game_params[:seed]).zero?
+
       if @mode == :multi
         begin
-          return create_game(params)
+          return create_game(game_params)
         rescue Engine::OptionError => e
           return store(:flash_opts, e.message)
         end
@@ -378,6 +384,7 @@ module View
             optional_rules: game_params[:optional_rules] || [],
           },
         }
+        game_data[:settings][:seed] = game_params[:seed] if game_params[:seed]
       end
 
       create_hotseat(
