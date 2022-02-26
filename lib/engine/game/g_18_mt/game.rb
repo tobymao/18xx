@@ -293,7 +293,7 @@ module Engine
         def buy_train(operator, train, price = nil)
           return super unless train&.owner&.corporation?
 
-          train.operated = false if train.owner.operating_history[[turn, @round.round_num]].nil?
+          train.operated = false unless train.owner.operating_history[[turn, @round.round_num]]
           super
         end
 
