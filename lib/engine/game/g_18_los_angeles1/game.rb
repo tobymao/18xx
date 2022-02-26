@@ -67,6 +67,20 @@ module Engine
         def place_second_token_kwargs
           { two_player_only: false, deferred: false }
         end
+
+        def after_par_check_limit!; end
+
+        def after_bid; end
+
+        def draft_finished?; end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1846::Step::Assign,
+            G1846::Step::BuySellParShares,
+          ])
+        end
       end
     end
   end
