@@ -81,6 +81,10 @@ module Engine
             G1846::Step::BuySellParShares,
           ])
         end
+
+        def home_token_locations(corporation)
+          raise NotImplementedError
+        end
       end
     end
   end
