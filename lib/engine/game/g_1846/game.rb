@@ -3,6 +3,8 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'step/draft_2p_distribution'
+require_relative 'step/draft_distribution'
 require_relative '../company_price_up_to_face'
 require_relative '../base'
 
