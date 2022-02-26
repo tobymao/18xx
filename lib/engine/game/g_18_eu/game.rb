@@ -98,8 +98,9 @@ module Engine
         def add_optional_train(type)
           proto = self.class::TRAINS.find { |e| e[:name] == type }
           index = @depot.trains.count { |t| t.name == type }
+          upcoming_index = @depot.upcoming.find_index { |t| t.name == type }
           new_train = Train.new(**proto, index: index)
-          @depot.insert_train(new_train)
+          @depot.insert_train(new_train, upcoming_index + index)
           update_cache(:trains)
         end
 
