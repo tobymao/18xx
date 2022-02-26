@@ -38,14 +38,12 @@ module Engine
               @log << "#{company.name} closes"
               company.close!
             when 'P8'
-              raise GameError, "#{owner.name} has no available tokens" if owner.tokens.reject(&:used).empty?
-
               validate_offboard_assignment(target, owner)
 
+              token = Engine::Token.new(owner)
+              owner.tokens << token
               offboard_area = offboard_area_hexes(target)
               assigned_hex = offboard_area.find(&:location_name)
-              token = owner.tokens.reject(&:used).first
-
               assigned_hex.place_token(token)
               @game.p8_hexes = offboard_area
               @log << "#{owner.name} assigns token to #{location_name}"
@@ -66,7 +64,6 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            return false if entity.id == 'P8' && entity.owner.tokens.reject(&:used).empty?
             return connected_to_hex?(entity.owner, hex) && hex.tile.color == :red if %w[P6 P8].include?(entity.id)
 
             valid = super
