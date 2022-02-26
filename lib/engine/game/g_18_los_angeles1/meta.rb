@@ -15,6 +15,7 @@ module Engine
 
         GAME_TITLE = '18 Los Angeles'
         # GAME_IS_VARIANT_OF = G18LosAngeles::Meta
+        GAME_ALIASES = ['18LA_1'].freeze
       end
     end
   end
