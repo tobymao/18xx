@@ -13,7 +13,7 @@ module Engine
 
         GAME_DESIGNER = 'Anthony Fryer'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
-        GAME_PUBLISHER = %i[traxx sea_horse].freeze
+        GAME_PUBLISHER = %i[traxx].freeze
         GAME_RULES_URL = {
           '18 Los Angeles Rules' =>
                           'https://drive.google.com/file/d/16di_KBlGYnmdAMvjl2ZiqvyeB7wTAJ_4/view?usp=sharing',
