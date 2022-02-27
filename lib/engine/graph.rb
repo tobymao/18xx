@@ -60,6 +60,10 @@ module Engine
       @tokens[corporation]
     end
 
+    def no_blocking?
+      @no_blocking
+    end
+
     def tokenable_cities(corporation)
       # A list of all tokenable cities per corporation
       return @tokenable_cities[corporation] if @tokenable_cities.key?(corporation)
@@ -147,6 +151,7 @@ module Engine
 
       routes = @routes[corporation] || {}
       walk_corporation = @no_blocking ? nil : corporation
+      skip_paths = @game.graph_skip_paths(corporation)
 
       tokens.keys.each do |node|
         return nil if routes[:route_train_purchase] && routes_only
@@ -155,7 +160,7 @@ module Engine
         local_nodes = {}
 
         node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
-                  tile_type: @game.class::TILE_TYPE) do |path, _, _|
+                  skip_paths: skip_paths, tile_type: @game.class::TILE_TYPE) do |path, _, _|
           next if paths[path]
 
           paths[path] = true

@@ -9,10 +9,33 @@ module Engine
       module Step
         class ModifiedDutchAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
+          include Engine::Step::ProgrammerAuctionBid
           ACTIONS = %w[bid pass].freeze
 
           def description
             'Modified Dutch Auction for Minors'
+          end
+
+          def pass_description
+            return super unless @auctioning
+            return 'Pass (Bid)' unless @bids[@auctioning].none?
+
+            @current_reduction.positive? ? 'Decline (Buy)' : 'Decline (Bid)'
+          end
+
+          def log_pass(entity)
+            return super unless @auctioning
+            return log_cant_afford(entity) unless can_afford?(entity)
+
+            @log << "#{entity.name} #{@bids[@auctioning].none? ? 'declines' : 'passes on'} #{@auctioning.name}"
+          end
+
+          def log_cant_afford(entity)
+            @log << "#{entity.name} cannot afford #{@auctioning.name}"
+          end
+
+          def bid_str(_entity)
+            @bids[@auctioning].none? && @current_reduction.positive? ? 'Buy' : 'Place Bid'
           end
 
           def actions(entity)
@@ -50,28 +73,30 @@ module Engine
             return unless @auctioning
 
             entity = action.entity
-
             pass_auction(entity)
 
-            if entities.all?(&:passed?)
-              all_passed!
-              force_purchase(@auction_triggerer, @auctioning) if min_bid(@auctioning).zero?
-              return
-            end
+            return all_passed! if entities.all?(&:passed?)
 
             next_entity! if @auctioning
           end
 
           def pass_auction(entity)
             entity.pass!
-
-            super
+            log_pass(entity)
+            remove_from_auction(entity) unless @bids[@auctioning].none?
           end
 
           def next_entity!
             @round.next_entity_index!
             entity = entities[entity_index]
-            next_entity! if entity&.passed?
+            return next_entity! if entity&.passed?
+            return unless @auctioning
+            return if can_afford?(entity)
+
+            pass_auction(entity)
+            return all_passed! if entities.all?(&:passed?)
+
+            next_entity!
           end
 
           def process_bid(action)
@@ -116,8 +141,9 @@ module Engine
           def selection_bid(bid)
             @auction_triggerer = bid.entity
             target = bid_target(bid)
+            @game.mark_auctioning(target)
 
-            @game.log << "#{@auction_triggerer.name} selects #{target.name} for auction with no initial bid."
+            @log << "#{@auction_triggerer.name} selects #{target.name} for auction with no initial bid."
             auction_entity(target)
           end
 
@@ -127,10 +153,14 @@ module Engine
 
           protected
 
+          def can_afford?(entity)
+            entity.cash >= min_bid(@auctioning)
+          end
+
           def reduce_price
             @current_reduction += @reduction_step
 
-            @game.log << "#{@auctioning.name} is now offered for #{@game.format_currency(min_bid(@auctioning))}"
+            @log << "#{@auctioning.name} is now offered for #{@game.format_currency(min_bid(@auctioning))}"
           end
 
           def assign_target(bidder, target)
@@ -140,6 +170,7 @@ module Engine
 
           def force_purchase(bidder, target)
             assign_target(bidder, target)
+            place_initial_token(target)
 
             @log << "#{bidder.name} is forced to take #{target.name} for free"
 
@@ -155,18 +186,26 @@ module Engine
               raise GameError, "#{target.name} cannot be purchased for #{@game.format_currency(price)}."
             end
 
+            unless price == min_bid(target)
+              raise GameError,
+                    "#{target.name} must be purchased for #{@game.format_currency(min_bid(target))}."
+            end
+
             assign_target(bidder, target)
 
             bidder.spend(price, @game.bank) if price.positive?
             @log << "#{bidder.name} purchases #{target.name} for #{@game.format_currency(price)}"
 
+            place_initial_token(target)
             reset_auction(bidder, target)
           end
 
           def add_bid(bid)
             target = bid_target(bid)
+            @game.mark_auctioning(target) unless @auction_triggerer
             @auction_triggerer ||= bid.entity
             auction_entity(target) unless @auctioning
+            entities.each(&:unpass!) if @bids[@auctioning].none?
 
             super
 
@@ -188,6 +227,8 @@ module Engine
             bidder.spend(price, @game.bank) if price.positive?
             @log << "#{bidder.name} wins the auction for #{target.name} "\
                     "with a bid of #{@game.format_currency(price)}"
+
+            place_initial_token(target)
           end
 
           def all_passed!
@@ -195,6 +236,7 @@ module Engine
             reduce_price
             entities.each(&:unpass!)
             next_entity!
+            force_purchase(@auction_triggerer, @auctioning) if min_bid(@auctioning).zero?
           end
 
           def resolve_bids
@@ -221,6 +263,20 @@ module Engine
             @round.goto_entity!(@auction_triggerer)
             @auction_triggerer = nil
             next_entity!
+          end
+
+          def place_initial_token(minor)
+            hex = @game.hex_by_id(minor.coordinates)
+            city_index = minor.city.to_i
+            hex.tile.cities[city_index].place_token(minor, minor.next_token, free: true)
+          end
+
+          def auto_requires_auctioning?(_entity, program)
+            @auctioning && program.bid_target != @auctioning
+          end
+
+          def auto_bid_on_empty?(_entity, program)
+            program.enable_buy_price && @bids[program.bid_target].empty?
           end
         end
       end

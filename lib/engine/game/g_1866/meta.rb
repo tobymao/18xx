@@ -19,6 +19,27 @@ module Engine
         GAME_RULES_URL = 'https://google.com'
 
         PLAYER_RANGE = [3, 7].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :nes,
+            short_name: 'NES',
+            desc: 'North Europe Scenario (GB FR BNL CH DE)',
+          },
+          {
+            sym: :ces,
+            short_name: 'CES',
+            desc: 'Central Europe Scenario (BNL CH AHE DE I)',
+          },
+          {
+            sym: :ses,
+            short_name: 'SES',
+            desc: 'South Europe Scenario (FR ESP CH AHE IT)',
+          },
+        ].freeze
+
+        MUTEX_RULES = [
+          %i[nes ces ses],
+        ].freeze
       end
     end
   end

@@ -355,7 +355,7 @@ module Engine
                 type: 'assign_hexes',
                 hexes: %w[B6 C3 C7 C9 E7 F6 G7 G11 H8 H10 I3 I5 J8 J12 K3 K7 L10],
                 count: 1,
-                when: 'TrackAndToken',
+                when: 'track_and_token',
                 owner_type: 'corporation',
               },
               { type: 'hex_bonus', owner_type: 'corporation', amount: 20, hexes: [] },

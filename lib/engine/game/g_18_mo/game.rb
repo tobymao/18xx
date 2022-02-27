@@ -9,73 +9,14 @@ module Engine
   module Game
     module G18MO
       class Game < G1846::Game
+        attr_accessor :exchanged_share
+
         include_meta(G18MO::Meta)
         include G18MO::Entities
         include G18MO::Map
 
         STARTING_CASH = { 2 => 600, 3 => 425, 4 => 400, 5 => 385 }.freeze
         TILE_COST = 0
-
-        ORANGE_GROUP = [
-        'Pool Share',
-        'Extra Yellow Tile',
-        'Extra Green Tile',
-        'Tunnel Blasting Company',
-        ].freeze
-
-        BLUE_GROUP = [
-        'Ranch Tile',
-        'Train Discount',
-        'Revenue Change',
-        'Mountain Construction Company',
-        ].freeze
-
-        GREEN_GROUP = %w[ATSF MKT CBQ RI MP SSW SLSF].freeze
-
-        REMOVED_CORP_SECOND_TOKEN = {
-          'ATSF' => 'H4',
-          'SSW' => 'J8',
-          'MKT' => 'E9',
-          'RI' => 'C7',
-          'MP' => 'D8',
-          'CBQ' => 'C7',
-          'SLSF' => 'E13',
-        }.freeze
-
-        # Two lays with one being an upgrade, second tile costs 20
-        TILE_LAYS = [
-          { lay: true, upgrade: true },
-          { lay: true, upgrade: :not_if_upgraded, cost: 20 },
-        ].freeze
-
-        def init_round
-          G18MO::Round::Draft.new(self, [G18MO::Step::DraftPurchase])
-        end
-
-        def operating_round(round_num)
-          @round_num = round_num
-          G1846::Round::Operating.new(self, [
-            G1846::Step::Bankrupt,
-            Engine::Step::SpecialToken,
-            G1846::Step::BuyCompany,
-            G1846::Step::IssueShares,
-            G1846::Step::TrackAndToken,
-            Engine::Step::Route,
-            G1846::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            Engine::Step::SpecialBuyTrain,
-            G1846::Step::BuyTrain,
-            [G1846::Step::BuyCompany, { blocks: true }],
-          ], round_num: round_num)
-        end
-
-        def stock_round
-          Engine::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
-            Engine::Step::Exchange,
-            G1846::Step::BuySellParShares,
-          ])
-        end
 
         PHASES = [
                 {
@@ -174,7 +115,7 @@ module Engine
           {
             name: '5E',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99 }],
-            price: 600,
+            price: 700,
           },
           {
             name: '7',
@@ -187,12 +128,115 @@ module Engine
                 price: 800,
               },
             ],
-            events: [
-              { 'type' => 'remove_markers' },
-              { 'type' => 'remove_reservations' },
-            ],
           },
         ].freeze
+
+        ORANGE_GROUP = [
+        'Pool Share',
+        'Extra Yellow Tile',
+        'Extra Green Tile',
+        'Tunnel Blasting Company',
+        ].freeze
+
+        BLUE_GROUP = [
+        'Ranch Tile',
+        'Train Discount',
+        'Revenue Change',
+        'Mountain Construction Company',
+        ].freeze
+
+        GREEN_GROUP = %w[ATSF MKT CBQ RI MP SSW SLSF].freeze
+        MAIL_CONTRACT_BONUS = 10
+
+        REMOVED_CORP_SECOND_TOKEN = {
+          'ATSF' => 'H4',
+          'SSW' => 'J8',
+          'MKT' => 'E9',
+          'RI' => 'G9',
+          'MP' => 'D8',
+          'CBQ' => 'C7',
+          'SLSF' => 'E13',
+        }.freeze
+
+        # Two lays with one being an upgrade, second tile costs 20
+        TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: true, upgrade: :not_if_upgraded, cost: 20 },
+        ].freeze
+
+        def setup
+          super
+          @exchange_share = nil
+          add_teleport_destinations
+        end
+
+        def add_teleport_destinations
+          @teleport_destination = {}
+          @corporations.each do |corporation|
+            ability = abilities(corporation, :token)
+            next unless ability
+
+            ability.hexes.each do |hex_id|
+              @teleport_destination[hex_id] = corporation
+              (hex = hex_by_id(hex_id)).location_name += " (#{corporation.name})"
+              hex.tile.location_name += " (#{corporation.name})"
+            end
+          end
+        end
+
+        def remove_teleport_destination(corporation, city)
+          hex = city.hex
+          return if @teleport_destination[hex.id] != corporation && !out_of_slots?(city)
+
+          @teleport_destination.delete(hex.id)
+          hex.location_name = location_name(hex.id)
+          hex.tile.location_name = location_name(hex.id)
+        end
+
+        # return true if all slots are filled and no upgrade can add a slot
+        def out_of_slots?(city)
+          tile = city.tile
+          return false unless city.available_slots.zero?
+
+          # doesn't handle case where upgrade tiles are gone
+          tile.color == :gray || tile.color == :brown || (tile.color == :green && tile.label.to_s != 'Z') ||
+            (tile.color == :yellow && tile.label.to_s == 'StL')
+        end
+
+        def init_round
+          G18MO::Round::Draft.new(self, [G18MO::Step::DraftPurchase])
+        end
+
+        def operating_round(round_num)
+          @round_num = round_num
+          G1846::Round::Operating.new(self, [
+            G1846::Step::Bankrupt,
+            G18MO::Step::SpecialToken,
+            Engine::Step::SpecialTrack,
+            G1846::Step::BuyCompany,
+            G1846::Step::IssueShares,
+            G18MO::Step::TrackAndToken,
+            Engine::Step::Route,
+            G1846::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
+            G18MO::Step::BuyTrain,
+            [G1846::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G18MO::Step::Exchange,
+            G1846::Step::BuySellParShares,
+          ])
+        end
+
+        def next_round!
+          @draft_finished = true # always use 1846 MP next_round!
+          super
+        end
 
         def operating_order
           @minors.select(&:floated?) + @corporations.select(&:floated?).sort
@@ -219,7 +263,7 @@ module Engine
           when '3E', '5E'
             1
           when '5'
-            two_player? ? 3 : num_players - 1
+            two_player? ? 4 : num_players
           when '7'
             two_player? ? 4 : 9
           end
@@ -247,6 +291,57 @@ module Engine
 
         def block_for_steamboat?
           false
+        end
+
+        def num_mail_stops(route)
+          return route.visited_stops.size if route.train.distance.is_a?(Numeric)
+
+          [route.train.distance[0]['pay'], route.visited_stops.size].min
+        end
+
+        def revenue_for(route, stops)
+          revenue = stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+
+          revenue += east_west_bonus(stops)[:revenue]
+
+          if route.train.owner.companies.include?(mail_contract)
+            longest = route.routes.max_by { |r| [num_mail_stops(r), r.train.id] }
+            revenue += num_mail_stops(route) * self.class::MAIL_CONTRACT_BONUS if route == longest
+          end
+
+          revenue
+        end
+
+        def revenue_str(route)
+          stops = route.stops
+          stop_hexes = stops.map(&:hex)
+          str = route.hexes.map do |h|
+            stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
+          end.join('-')
+
+          bonus = east_west_bonus(stops)[:description]
+          str += " + #{bonus}" if bonus
+
+          if route.train.owner.companies.include?(mail_contract)
+            longest = route.routes.max_by { |r| [num_mail_stops(r), r.train.id] }
+            str += ' + Mail Contract' if route == longest
+          end
+
+          str
+        end
+
+        def bundles_for_corporation(share_holder, corporation, shares: nil)
+          shares = (shares || share_holder.shares_of(corporation).reject { |s| s == @exchanged_share })
+            .sort_by { |h| [h.president ? 1 : 0, h.percent] }
+          all_bundles_for_corporation(share_holder, corporation, shares: shares)
+        end
+
+        def place_second_token(corporation, two_player_only: true, deferred: true)
+          super(corporation, two_player_only: two_player_only, deferred: false)
+        end
+
+        def setup_turn
+          1
         end
       end
     end

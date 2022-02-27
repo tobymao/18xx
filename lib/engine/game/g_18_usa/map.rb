@@ -7,7 +7,7 @@ module Engine
         LAYOUT = :pointy
 
         RESOURCE_LABELS = { coal: '⛏️', ore: '⚒️', oil: '🛢️' }.freeze
-        RESOURCE_ICONS = { coal: 'coalcar', oil: 'oil-derrick', ore: 'mine' }.freeze
+        RESOURCE_ICONS = { coal: 'coalcar', ore: 'mine', oil: 'oil-derrick' }.freeze
 
         ORE10_TILES = %w[7ore10 8ore10 9ore10 7coalore10 8coalore10 9coalore10].freeze
         ORE20_TILES = %w[7ore20 8ore20 9ore20 7coalore20 8coalore20 9coalore20].freeze
@@ -41,8 +41,9 @@ module Engine
         PLAIN_GREEN_CITY_TILES = %w[14 15 619].freeze
         PLAIN_BROWN_CITY_TILES = %w[63 611 448].freeze
 
-        RURAL_TILES = %w[x07 x08 x09].freeze
+        RURAL_TILES = %w[X07 X08 X09].freeze
         COMPANY_TOWN_TILES = %w[X20 X21 X22].freeze
+        SPECIAL_TILES = (RURAL_TILES + COMPANY_TOWN_TILES + ['X23']).freeze
 
         CITY_HEXES = %w[B8 B14 C3 C17 C29 D6 D14 D20 D24 E3 E7 E11 E15 E17 E23 F20 F26 G3 G7 G11 G17 G27 H8 H14 H20 H22 I13 I15
                         I19 I25].freeze
@@ -97,6 +98,12 @@ module Engine
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DFW',
           },
+          'X04s' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DEN',
+            'hidden' => true,
+          },
           'X04' => {
             'count' => 1,
             'color' => 'yellow',
@@ -117,21 +124,21 @@ module Engine
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;'\
+            'code' => 'town=revenue:10,visit_cost:0;'\
                       'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R.J.',
           },
           'X08' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;'\
+            'code' => 'town=revenue:10,visit_cost:0;'\
                       'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
           },
           'X09' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;'\
+            'code' => 'town=revenue:10,visit_cost:0;'\
                       'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
           },
           'X10' => {
@@ -153,7 +160,7 @@ module Engine
           'X13' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=CL',
+            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=CLE',
           },
           'X14' => {
             'count' => 1,

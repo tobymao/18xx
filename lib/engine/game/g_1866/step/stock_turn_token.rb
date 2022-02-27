@@ -38,10 +38,6 @@ module Engine
             'Stock Turn Token'
           end
 
-          def log_pass(entity)
-            @log << "#{entity.name} passes" if @round.current_actions.empty?
-          end
-
           def log_skip(entity)
             return unless @game.stock_turn_corporation?(entity)
 
@@ -71,6 +67,7 @@ module Engine
             super
 
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
+            check_graph_clear(corporation)
             change_market
             @round.force_next_entity!
           end
@@ -86,6 +83,7 @@ module Engine
           def process_par(action)
             super
 
+            check_graph_clear(action.corporation)
             change_market
             @round.force_next_entity!
           end
@@ -105,13 +103,16 @@ module Engine
           end
 
           def process_sell_shares(action)
+            entity = current_entity
             corporation = action.bundle.corporation
             previous_president = corporation.owner
             super
 
+            check_graph_clear(corporation)
             @game.player_sold_shares[action.entity][corporation] = true
             @round.recalculate_order
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
+            @game.all_corporation_token_rights(entity) if @game.national_corporation?(corporation)
           end
 
           def issuable_shares(_entity)
@@ -120,6 +121,12 @@ module Engine
 
           def redeemable_shares(_entity)
             []
+          end
+
+          def check_graph_clear(corporation)
+            return unless @game.national_corporation?(corporation)
+
+            @game.graph.clear
           end
 
           def change_market
@@ -131,7 +138,7 @@ module Engine
               @game.sell_stock_turn_token(entity)
               player = entity.owner
               st_company = player.companies.find { |c| @game.stock_turn_token_company?(c) }
-              st_company.name = @game.stock_turn_token_name(player)
+              @game.stock_turn_token_name!(st_company)
               return
             end
 
@@ -146,7 +153,8 @@ module Engine
             current_price = entity.share_price.price
             times.times { @game.stock_market.move_right(entity) }
             @log << "#{current_entity.name}'s stock turn token price changes from "\
-                    "#{@game.format_currency(current_price)} to #{@game.format_currency(entity.share_price.price)}"
+                    "#{@game.format_currency(current_price)} to #{@game.format_currency(entity.share_price.price)}"\
+                    "#{times > 1 ? " (#{times} steps)" : ''}"
           end
         end
       end

@@ -14,7 +14,7 @@ module Engine
           def buyable_trains(entity)
             buyable_trains = super
             # Cannot buy a pullman if you have a pullman
-            buyable_trains.reject! { |t| @game.pullman_train?(t) } if entity.runnable_trains&.any? { |t| @game.pullman_train?(t) }
+            buyable_trains.reject! { |t| @game.pullman_train?(t) } if entity.trains&.any? { |t| @game.pullman_train?(t) }
             buyable_trains
           end
         end

@@ -49,7 +49,7 @@ module Engine
           end
 
           def description
-            'Lay Denver'
+            'Choose Denver track orientation'
           end
 
           def any_tiles?(_entity)
@@ -73,7 +73,9 @@ module Engine
             pending_track[:hexes].include?(hex)
           end
 
-          def legal_tile_rotation?
+          def check_track_restrictions!(_entity, _old_tile, _new_tile); end
+
+          def legal_tile_rotation?(_entity, _hex, _tile)
             true
           end
         end

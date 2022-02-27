@@ -35,9 +35,6 @@ module Engine
         CURRENCY_FORMAT_STR = '£%d'
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 40, 4 => 30, 5 => 24, 6 => 20, 7 => 17 }.freeze
-        STARTING_CASH = { 3 => 800, 4 => 600, 5 => 480, 6 => 400, 7 => 340 }.freeze
-
         CAPITALIZATION = :incremental
 
         EBUY_CAN_SELL_SHARES = false
@@ -59,11 +56,11 @@ module Engine
 
         MARKET = [
           %w[0c 10 20 30 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
-             200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
+             200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[0c 10 20 30 40 45 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
-             200 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
+             200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[0c 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
-             200pxzw 220 240 260 280 300 330 360 390 420 460 500e 540e 580e 630e 680e],
+             200pxzw 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[120P 100P 75P 75P 75P 120P 80P 80P 80P 50P],
         ].freeze
 
@@ -86,7 +83,9 @@ module Engine
                                               par: 'Yellow phase (L/2) par',
                                               par_1: 'Green phase (3/4) par',
                                               par_2: 'Brown phase (5/6) par',
-                                              par_3: 'Gray phase (8/10) par').freeze
+                                              par_3: 'Gray phase (8/10) par',
+                                              endgame: 'End game corporations/nationals',
+                                              max_price: 'End game stock turn tokens').freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
@@ -162,7 +161,7 @@ module Engine
 
         TRAINS = [
           {
-            name: 'L',
+            name: 'L+',
             distance: [
               {
                 'nodes' => ['city'],
@@ -175,7 +174,6 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 20,
             price: 50,
             obsolete_on: '3',
             variants: [
@@ -194,7 +192,8 @@ module Engine
                   },
                 ],
                 price: 100,
-                obsolete_on: '4',
+                obsolete_on: nil,
+                rusts_on: '4',
               },
             ],
             events: [
@@ -217,9 +216,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
             price: 200,
-            obsolete_on: '6',
+            rusts_on: '6',
             events: [
               {
                 'type' => 'green_ferries',
@@ -243,9 +241,8 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
             price: 300,
-            obsolete_on: '8',
+            rusts_on: '8',
             events: [
               {
                 'type' => 'infrastructure_m',
@@ -266,9 +263,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
-            price: 450,
-            obsolete_on: '10',
+            price: 500,
             events: [
               {
                 'type' => 'brown_ferries',
@@ -293,8 +288,7 @@ module Engine
                   },
                 ],
                 multiplier: 2,
-                price: 450,
-                obsolete_on: '10',
+                price: 500,
               },
             ],
           },
@@ -312,7 +306,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
             price: 600,
             variants: [
               {
@@ -348,7 +341,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 5,
             price: 800,
             variants: [
               {
@@ -384,7 +376,6 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 20,
             price: 1000,
             variants: [
               {
@@ -409,31 +400,190 @@ module Engine
           {
             name: 'INF',
             distance: 99,
-            num: 18,
             price: 0,
             reserved: true,
           },
           {
             name: 'P',
             distance: 99,
-            num: 6,
-            price: 80,
+            price: 100,
           },
           {
             name: 'H',
             distance: 99,
-            num: 6,
             price: 120,
           },
           {
             name: 'M',
             distance: 99,
-            num: 6,
-            price: 160,
+            price: 200,
           },
         ].freeze
 
         # *********** 1866 Specific constants ***********
+        SCENARIO = {
+          'full' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 6,
+              '4' => 5,
+              '5' => 4,
+              '6' => 3,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 18,
+              'P' => 5,
+              'H' => 5,
+              'M' => 5,
+            },
+            'infrastructure_count' => 5,
+            'companies' => %w[P1 P2 P3 P4 P5 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
+            'national_corporations' => %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
+            'corporation_count' => 13,
+            'region_corporations' => {
+              'GB' => %w[LNWR GWR NBR],
+              'FR' => %w[PLM MIDI OU],
+              'DE' => %w[KPS BY KHS],
+              'AHE' => %w[SB BH FNR],
+              'IT' => %w[SSFL IFT SFAI],
+            },
+          },
+          'nes' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 4,
+              '4' => 3,
+              '5' => 3,
+              '6' => 2,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 10,
+              'P' => 3,
+              'H' => 3,
+              'M' => 3,
+            },
+            'infrastructure_count' => 3,
+            'companies' => %w[P1 P2 P3 P5 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SBB GL NRS L P],
+            'national_corporations' => %w[GB FR BNL CH DE PRU HAN BAV WTB SAX],
+            'corporation_count' => 9,
+            'region_corporations' => {
+              'GB' => %w[LNWR GWR NBR],
+              'FR' => %w[PLM MIDI OU],
+              'DE' => %w[KPS BY KHS],
+              'BNL' => %w[GL NRS],
+            },
+          },
+          'ces' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 4,
+              '4' => 3,
+              '5' => 3,
+              '6' => 2,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 15,
+              'P' => 3,
+              'H' => 3,
+              'M' => 3,
+            },
+            'infrastructure_count' => 3,
+            'companies' => %w[P1 P4 P5 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS],
+            'national_corporations' => %w[AHE BNL CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
+            'corporation_count' => 9,
+            'region_corporations' => {
+              'DE' => %w[KPS BY KHS],
+              'AHE' => %w[SB BH FNR],
+              'IT' => %w[SSFL IFT SFAI],
+            },
+          },
+          'ses' => {
+            'cert_limit' => {
+              3 => 40,
+              4 => 30,
+              5 => 24,
+              6 => 20,
+              7 => 17,
+            },
+            'starting_cash' => {
+              3 => 800,
+              4 => 600,
+              5 => 480,
+              6 => 400,
+              7 => 340,
+            },
+            'train_count' => {
+              'L+' => 20,
+              '3' => 4,
+              '4' => 3,
+              '5' => 3,
+              '6' => 2,
+              '8' => 2,
+              '10' => 20,
+              'INF' => 10,
+              'P' => 3,
+              'H' => 3,
+              'M' => 3,
+            },
+            'infrastructure_count' => 3,
+            'companies' => %w[P1 P3 P4 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'corporations' => %w[PLM MIDI OU SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
+            'national_corporations' => %w[FR AHE ESP CH IT K2S SAR LV PAP TUS],
+            'corporation_count' => 9,
+            'region_corporations' => {
+              'FR' => %w[PLM MIDI OU],
+              'ESP' => %w[ZPB MZA],
+              'AHE' => %w[SB BH FNR],
+              'IT' => %w[SSFL IFT SFAI],
+            },
+          },
+        }.freeze
+
         C_TILE_UPGRADE = {
           'C1' => 'C6',
           'C2' => 'C7',
@@ -517,13 +667,12 @@ module Engine
           '10' => 40,
         }.freeze
 
-        INFRASTRUCTURE_COUNT = 6
         INFRASTRUCTURE_TRAINS = %w[H P M].freeze
         INFRASTRUCTURE_HUB = 'H'
         INFRASTRUCTURE_PALACE = 'P'
         INFRASTRUCTURE_MAIL = 'M'
 
-        LOCAL_TRAIN = 'L'
+        LOCAL_TRAIN = 'L+'
 
         LONDON_HEX = 'F6'
         LONDON_TILE = 'L1'
@@ -547,7 +696,6 @@ module Engine
 
         NATIONAL_MARKET_SHARE_LIMIT = 80
         NATIONAL_COMPANIES = %w[P2 P3 P4 P5 P6 P7].freeze
-        NATIONAL_CORPORATIONS = %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS].freeze
         NATIONAL_REGION_HEXES = {
           'PRU' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
           'HAN' => %w[D18 E15 E17 E19 E21 F16 F18],
@@ -555,35 +703,39 @@ module Engine
           'WTB' => %w[I13 I15 J14 K15],
           'SAX' => %w[H20 H22 I21 I23],
           'K2S' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19],
-          'SAR' => %w[N12 O13 O15 S13 T12],
+          'SAR' => %w[N12 O13 O15 P14 Q15 R14 S13 T12],
           'LV' => %w[M17 N14 N16 N18 N20 O17 P18],
           'PAP' => %w[Q19 R18 R20 S19],
           'TUS' => %w[P16 Q17],
           'AHE' => %w[J22 J24 J26 K23 K25 L18 L20 L22 L24 L26 M19 M21 M23 M25 N22 N24 N26 O21 O23 O25
-                      P22 P24 P26 Q23 Q25 R24],
-          'BNL' => %w[E13 F10 F12 F14 G9 G11 G13 H10 H12 I11],
-          'FR' => %w[H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
-                     M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13],
-          'GB' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
+                      P22 P24 P26 Q23 Q25 R24 S25],
+          'BNL' => %w[E13 F8 F10 F12 F14 G9 G11 G13 H10 H12 I11],
+          'FR' => %w[G7 H4 H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
+                     M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13 R12],
+          'GB' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 F8 G1 G3 G5 G7 H4],
           'ESP' => %w[O1 P0 P2 P4 Q1 Q3 Q5 R0 R2 R4 S1 S3 T0 T2 U1],
           'CH' => %w[L12 L14 L16 M13 M15],
           'DE' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25 D18 E15 E17
                      E19 E21 F16 F18 I17 I19 J16 J18 J20 K17 K19 K21 I13 I15 J14 K15 H20 H22 I21 I23],
-          'IT' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19 N12 O13 O15 S13 T12 M17 N14 N16 N18 N20 O17 P18
-                     Q19 R18 R20 S19 P16 Q17],
+          'IT' => %w[R12 S21 S23 S25 T20 T22 T24 U21 V18 V20 W19 N12 O13 O15 P14 Q15 R14 S13 S15 S17 T12 T14 T16 T18 M17
+                     N14 N16 N18 N20 O17 P18 Q19 R18 R20 S19 P16 Q17],
         }.freeze
 
         # Only need up to phase 5, all national concessions are forced to convert in phase 5
         NATIONAL_PHASE_PAR_TYPES = {
-          'L/2' => :par_1,
-          '3' => :par_2,
-          '4' => :par_2,
-          '5' => :par_3,
+          'L/2' => :par,
+          '3' => :par_1,
+          '4' => :par_1,
+          '5' => :par_2,
         }.freeze
 
         NATIONAL_PREPRINTED_TILES = %w[AHE DE ESP].freeze
 
-        NATIONAL_TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+        MINOR_NATIONAL_TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+        NATIONAL_TILE_LAYS = [
+          { lay: true, upgrade: true, cost: 0 },
+          { lay: :not_if_upgraded, upgrade: false, cost: 0 },
+        ].freeze
         TILE_LAYS = [
           { lay: true, upgrade: true, cost: 0 },
           { lay: true, upgrade: true, cost: 10 },
@@ -621,15 +773,10 @@ module Engine
           '10' => 40,
         }.freeze
 
-        STARTING_REGION_CORPORATIONS = {
-          'GB' => %w[LNWR GWR NBR],
-          'FR' => %w[PLM MIDI OU],
-          'DE' => %w[KPS BY KHS],
-          'AHE' => %w[SB BH FNR],
-          'IT' => %w[SSFL IFT SFAI],
-        }.freeze
+        SHARE_PRICE_SUFFIX = ['T', 'M', 'B', ''].freeze
 
         STOCK_TURN_TOKEN_PREFIX = 'ST'
+        STOCK_TURN_TOKEN_END_GAME = 600
 
         # Corporations which will be able to float on which turn
         TURN_CORPORATIONS = {
@@ -637,22 +784,10 @@ module Engine
                       SBB GL NRS ZPB MZA],
         }.freeze
 
-        attr_reader :game_end_triggered_corporation, :game_end_triggered_round,
+        attr_reader :scenario, :game_end_triggered_corporation, :game_end_triggered_round,
                     :major_national_formed, :major_national_formed_round, :player_sold_shares
 
         def action_processed(_action); end
-
-        def buy_train(operator, train, price = nil)
-          super
-
-          train = @depot.upcoming.first
-          return if local_train?(train)
-
-          next_train = @depot.upcoming[1]
-          return if train.name == next_train.name
-
-          @depot.reclaim_train(train)
-        end
 
         def can_par?(corporation, parrer)
           return false if corporation.id == self.class::GERMANY_NATIONAL && corporation_by_id('PRU').owner != parrer
@@ -806,6 +941,20 @@ module Engine
           format('£%.1<val>f', val: val)
         end
 
+        def game_cert_limit
+          @scenario['cert_limit']
+        end
+
+        def game_companies
+          companies = @scenario['companies']
+          self.class::COMPANIES.select { |c| companies.include?(c[:sym]) }
+        end
+
+        def game_corporations
+          corporations = @scenario['corporations'] + @scenario['national_corporations']
+          self.class::CORPORATIONS.select { |c| corporations.include?(c[:sym]) }
+        end
+
         def game_end_check
           @corp_max_reached ||= @corporations.any? do |c|
             reached = corporation?(c) && c.floated? && c.share_price.end_game_trigger?
@@ -813,7 +962,8 @@ module Engine
             reached
           end
           @st_max_reached ||= @stock_turn_token_in_play.values.flatten.any? do |c|
-            reached = !c.closed? && c.share_price.end_game_trigger?
+            reached = !c.closed? && c.share_price.end_game_trigger? &&
+              c.share_price.price == self.class::STOCK_TURN_TOKEN_END_GAME
             @game_end_triggered_corporation ||= c if reached
             reached
           end
@@ -866,6 +1016,16 @@ module Engine
           national_corporation?(entity) ? @national_graph : @graph
         end
 
+        def graph_skip_paths(entity)
+          skip_paths = {}
+          @hexes.each do |hex|
+            add_skip_paths = (national_corporation?(entity) && !hex_within_national_region?(entity, hex)) ||
+              (corporation?(entity) && !hex_operating_rights?(entity, hex))
+            hex.tile.paths.each { |path| skip_paths[path] = true } if add_skip_paths
+          end
+          skip_paths.empty? ? nil : skip_paths
+        end
+
         def init_companies(_players)
           # Must do the randomize here, since the companies is duped in the setup of the auction
           super.sort_by { rand }
@@ -889,8 +1049,21 @@ module Engine
           Array.new(130) { |id| Loan.new(id, @loan_value) }
         end
 
+        def init_optional_rules(optional_rules)
+          opt_rules = super
+          @scenario = init_scenario(opt_rules)
+          opt_rules
+        end
+
         def init_share_pool
           G1866::SharePool.new(self)
+        end
+
+        def init_starting_cash(players, bank)
+          cash = @scenario['starting_cash'][players.size]
+          players.each do |player|
+            bank.spend(cash, player)
+          end
         end
 
         def init_stock_market
@@ -904,6 +1077,10 @@ module Engine
 
         def ipo_name(_entity)
           'Treasury'
+        end
+
+        def ipo_reserved_name(_entity = nil)
+          'Reserved'
         end
 
         def issuable_shares(entity)
@@ -941,6 +1118,7 @@ module Engine
               reorder_players_isr!
               stock_round_isr
             end
+          update_stock_turn_token_names
         end
 
         def new_auction_round
@@ -952,6 +1130,10 @@ module Engine
         def num_certs(entity)
           # All players have a Stock Turn Company, this shouldnt count towards the cert limit.
           super - 1
+        end
+
+        def num_trains(train)
+          @scenario['train_count'][train[:name]]
         end
 
         def operating_order
@@ -987,23 +1169,12 @@ module Engine
 
         def or_round_finished
           # Export all L/2 trains at the end of OR2
-          @depot.export_all!('L') if @round.round_num == 2 && local_train?(@depot.upcoming.first)
+          @depot.export_all!(self.class::LOCAL_TRAIN) if @round.round_num == 2 && local_train?(@depot.upcoming.first)
           stock_turn_token_remove!
         end
 
         def par_price_str(share_price)
-          row, = share_price.coordinates
-          row_str = case row
-                    when 0
-                      'T'
-                    when 1
-                      'M'
-                    when 2
-                      'B'
-                    else
-                      ''
-                    end
-          "#{format_currency(share_price.price)}#{row_str}"
+          "#{format_currency(share_price.price)}#{share_price_suffix(share_price)}"
         end
 
         def payout_companies
@@ -1127,7 +1298,7 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          before_share_price = corporation.share_price
           was_president = corporation.president?(bundle.owner) || bundle.owner == corporation
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           if was_president
@@ -1135,7 +1306,7 @@ module Engine
           else
             bundle.num_shares.times { @stock_market.move_down(corporation) }
           end
-          log_share_price(corporation, price)
+          log_share_price_row(corporation, before_share_price)
         end
 
         def setup
@@ -1156,9 +1327,6 @@ module Engine
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
-          @red_reservation_entity = corporation_by_id('R')
-          @corporations.delete(@red_reservation_entity)
-
           @london_reservation_entity = corporation_by_id('L')
           @corporations.delete(@london_reservation_entity)
 
@@ -1176,7 +1344,7 @@ module Engine
           @national_graph = Graph.new(self, home_as_token: true, no_blocking: true)
 
           # Setup the nationals infinite trains
-          self.class::NATIONAL_CORPORATIONS.each_with_index do |national, index|
+          @scenario['national_corporations'].each_with_index do |national, index|
             train = train_by_id("INF-#{index}")
             @depot.remove_train(train)
             train.buyable = false
@@ -1195,7 +1363,7 @@ module Engine
           @infrastructure_trains_h = []
           @infrastructure_trains_p = []
           @infrastructure_trains_m = []
-          self.class::INFRASTRUCTURE_COUNT.times.each do |index|
+          @scenario['infrastructure_count'].times.each do |index|
             h_train = train_by_id("H-#{index}")
             @infrastructure_trains_h << h_train
 
@@ -1208,6 +1376,9 @@ module Engine
 
           # Randomize and setup the corporations
           setup_corporations
+
+          # Set up the national shares
+          setup_nationals
 
           # Give all players stock turn token and remove unused
           setup_stock_turn_token
@@ -1260,16 +1431,17 @@ module Engine
         end
 
         def tile_lays(entity)
-          return self.class::NATIONAL_TILE_LAYS if national_corporation?(entity)
+          return self.class::MINOR_NATIONAL_TILE_LAYS if minor_national_corporation?(entity)
+          return self.class::NATIONAL_TILE_LAYS if major_national_corporation?(entity)
 
           self.class::TILE_LAYS
         end
 
         def timeline
           [
-            'OR2: When OR2 is complete all remaining L/2 are exported.',
-            'Trains: After the 4th train in each phase, all trains of the next phase will be available for purchase.',
-            'Nationals tile lay: 1 track, 1 yellow or 1 upgrade.',
+            'OR2: When OR2 is complete all remaining L+/2 are exported.',
+            'Minor nationals tile lay: 1 yellow or 1 upgrade. No costs involved.',
+            'Nationals tile lay: 2 yellow or 1 upgrade. No costs involved.',
             "Corporations tile lay: 4 tracks, first is free, second cost #{format_currency(10)}, "\
             "third cost #{format_currency(20)} and fourth cost #{format_currency(30)}. "\
             "With a total of #{format_currency(60)} if all four is used.",
@@ -1278,7 +1450,7 @@ module Engine
             'same tile.',
             'Corporations tile lay phase 8: 4 tracks, max 3 upgrades. Can be done in any order. Can upgrade the same '\
             'tile.',
-            'Corporations tile lay phase 9: 4 tracks, max 4 upgrades. Can be done in any order. Can upgrade the same '\
+            'Corporations tile lay phase 10: 4 tracks, max 4 upgrades. Can be done in any order. Can upgrade the same '\
             'tile.',
           ]
         end
@@ -1344,6 +1516,10 @@ module Engine
           return true if from.label.to_s == 'B' && from.color == :white && (to.name == '5' || to.name == '6')
 
           super
+        end
+
+        def all_corporation_token_rights(player)
+          player.shares_by_corporation.each { |c, _| corporation_token_rights!(c) if corporation?(c) && c.president?(player) }
         end
 
         def after_lay_tile(corporation)
@@ -1482,6 +1658,7 @@ module Engine
           forced_formation_major(corporation_by_id(self.class::GERMANY_NATIONAL), %w[PRU HAN BAV WTB SAX])
           forced_formation_national(corporation_by_id('GB'))
 
+          @graph.clear
           @round.check_operating_order!
         end
 
@@ -1511,7 +1688,7 @@ module Engine
         end
 
         def forced_formation_major(corporation, minors)
-          return if @major_national_formed[corporation.id]
+          return if !corporation || @major_national_formed[corporation.id]
 
           share_price = forced_formation_par_prices(corporation).last
           @stock_market.set_par(corporation, share_price)
@@ -1526,7 +1703,7 @@ module Engine
           end
 
           # Move the rest of the shares into the market
-          corporation_shares = corporation.shares_of(corporation)
+          corporation_shares = corporation.shares_of(corporation).select(&:buyable)
           @share_pool.transfer_shares(ShareBundle.new(corporation_shares), @share_pool) unless corporation_shares.empty?
 
           corporation.ipoed = true
@@ -1539,11 +1716,11 @@ module Engine
           corporation_by_id('AHE').coordinates.reject! { |coordinate| minor_lv.coordinates.include?(coordinate) }
 
           # Check if any of the AH corporations have tokened in Lombardy-Venetia
-          self.class::STARTING_REGION_CORPORATIONS['AHE'].each { |c| corporation_token_rights!(corporation_by_id(c)) }
+          @scenario['region_corporations']['AHE'].each { |c| corporation_token_rights!(corporation_by_id(c)) }
         end
 
         def forced_formation_national(corporation)
-          return if corporation.floated?
+          return if !corporation || corporation.floated?
 
           # Set the correct par price
           share_price = forced_formation_par_prices(corporation).last
@@ -1560,7 +1737,7 @@ module Engine
           corporation.ipoed = true
 
           # Move the rest of the shares into the market
-          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
+          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation).select(&:buyable)), @share_pool)
 
           # Close the concession
           corporation.par_via_exchange.close!
@@ -1628,7 +1805,7 @@ module Engine
               next if !stop || (!stop.city? && !stop.offboard?)
 
               palace_car_revenue += 10
-              next if !stop.city? && !stop.tokened_by?(entity)
+              next if !stop.city? || !stop.tokened_by?(entity)
 
               stop_base_revenue = stop.route_base_revenue(phase, train)
               transist_hub_revenue = stop_base_revenue if stop_base_revenue > transist_hub_revenue
@@ -1661,6 +1838,15 @@ module Engine
           self.class::INFRASTRUCTURE_TRAINS.include?(train.name)
         end
 
+        def init_scenario(optional_rules)
+          scenario_name = 'full'
+          scenario_name = 'nes' if optional_rules.include?(:nes)
+          scenario_name = 'ces' if optional_rules.include?(:ces)
+          scenario_name = 'ses' if optional_rules.include?(:ses)
+
+          self.class::SCENARIO[scenario_name]
+        end
+
         def initialize_sold_shares
           @player_sold_shares = Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = false } }
         end
@@ -1679,6 +1865,18 @@ module Engine
 
         def loans_due_interest(entity)
           entity&.loans&.size || 0
+        end
+
+        def log_share_price_row(entity, from_share_price)
+          from_suffix = share_price_suffix(from_share_price)
+          to_suffix = share_price_suffix(entity.share_price)
+          from_price = from_share_price.price
+          to_price = entity.share_price.price
+          return if from_price == to_price && from_suffix == to_suffix
+
+          from = "#{format_currency(from_price)}#{from_suffix == to_suffix ? '' : from_suffix}"
+          to = "#{format_currency(to_price)}#{from_suffix == to_suffix ? '' : to_suffix}"
+          @log << "#{entity.name}'s share price changes from #{from} to #{to}"
         end
 
         def germany_or_italy_national?(corporation)
@@ -1757,10 +1955,9 @@ module Engine
           entity.loans.delete(loan)
           @loans << loan
 
-          current_price = entity.share_price.price
+          before_share_price = entity.share_price
           @stock_market.move_up(entity)
-          @log << "#{entity.name}'s share price changes from " \
-                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+          log_share_price_row(entity, before_share_price)
         end
 
         def payoff_player_loan(player)
@@ -1873,9 +2070,9 @@ module Engine
           return unless premium_token
 
           @stock_turn_token_premium_count[player] -= 1
-          player_cash = @round.round_num * 5
-          @log << "#{player.name} gives all players #{format_currency(player_cash)}"
-          @players.each { |p| player.spend(player_cash, p) unless player == p }
+          extra_cash = stock_turn_token_premium_price
+          @log << "#{player.name} pays an extra #{format_currency(extra_cash)} to the bank for the premium token"
+          player.spend(extra_cash, @bank)
 
           @depot.export!
         end
@@ -1904,15 +2101,16 @@ module Engine
 
           # Select one of the three corporations based in each of GB, France, A-H, Germany & Italy
           starting_corps = []
-          self.class::STARTING_REGION_CORPORATIONS.each do |_, v|
+          @scenario['region_corporations'].each do |_, v|
             corp = corps.find { |c| v.include?(c.name) }
             starting_corps << corp
             corps.delete(corp)
           end
 
           # Include the next 8 corporations in the game, remove the last 7.
+          corps_count = @scenario['corporation_count'] - @scenario['region_corporations'].size
           corps.each_with_index do |c, index|
-            if index < 8
+            if index < corps_count
               starting_corps << c
             else
               removed_corporations << c
@@ -1942,6 +2140,14 @@ module Engine
           @game_end_corporation_operated = Hash.new { |h, k| h[k] = false }
         end
 
+        def setup_nationals
+          @corporations.each do |corporation|
+            next unless major_national_corporation?(corporation)
+
+            corporation.shares.each { |share| share.buyable = false if share.index > 4 }
+          end
+        end
+
         def sell_stock_turn_token(corporation)
           player = corporation.owner
           price = corporation.share_price.price
@@ -1967,8 +2173,8 @@ module Engine
           # Give each player a stock turn company
           @players.each_with_index do |player, index|
             company = @companies.find { |c| c.id == "#{self.class::STOCK_TURN_TOKEN_PREFIX}#{index + 1}" }
-            company.name = stock_turn_token_name(player)
             company.owner = player
+            stock_turn_token_name!(company)
             player.companies << company
           end
 
@@ -1978,6 +2184,11 @@ module Engine
 
             @companies.delete(company)
           end
+        end
+
+        def share_price_suffix(share_price)
+          row, = share_price.coordinates
+          self.class::SHARE_PRICE_SUFFIX[row]
         end
 
         def starting_stock_turn_tokens
@@ -2016,14 +2227,26 @@ module Engine
           @stock_turn_token_count[player].positive? || @stock_turn_token_premium_count[player].positive?
         end
 
-        def stock_turn_token_name(player)
-          return 'ST token (ENDGAME)' if game_end_triggered?
+        def stock_turn_token_name!(company)
+          player = company.owner
+          name = if game_end_triggered?
+                   'ST token (ENDGAME)'
+                 else
+                   "ST token (#{@stock_turn_token_count[player]} / #{@stock_turn_token_premium_count[player]}P)"
+                 end
 
-          "ST token (#{@stock_turn_token_count[player]} / #{@stock_turn_token_premium_count[player]}P)"
+          company.name = name
+          company.desc = 'Premium stock turn tokens costs stock market price + '\
+                         "#{format_currency(stock_turn_token_premium_price)}. "\
+                         'T = Top row, M = Middle row and B = Bottom row.'
         end
 
         def stock_turn_token_premium?(player)
           @stock_turn_token_count[player].zero?
+        end
+
+        def stock_turn_token_premium_price
+          @round.round_num * 20
         end
 
         def stock_turn_token_remove!
@@ -2046,10 +2269,9 @@ module Engine
           entity.loans << loan
           @loans.delete(loan)
 
-          current_price = entity.share_price.price
+          before_share_price = entity.share_price
           @stock_market.move_down(entity)
-          @log << "#{entity.name}'s share price changes from " \
-                  "#{format_currency(current_price)} to #{format_currency(entity.share_price.price)}"
+          log_share_price_row(entity, before_share_price)
         end
 
         def take_player_loan(player, loan)
@@ -2086,6 +2308,13 @@ module Engine
 
             neighbor.neighbors[neighbor.neighbor_direction(hex)] = hex
             hex.neighbors[direction] = neighbor
+          end
+        end
+
+        def update_stock_turn_token_names
+          @players.each do |player|
+            st_company = player.companies.find { |c| stock_turn_token_company?(c) }
+            stock_turn_token_name!(st_company)
           end
         end
 

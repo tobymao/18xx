@@ -54,6 +54,7 @@ module View
           buttons << render_offer(entity, auctioning_corporation) if actions.include?('assign')
 
           buttons << render_merge(entity) if actions.include?('merge')
+          buttons << h(ScrapTrains, corporation: entity) if actions.include?('scrap_train')
           children << h(:div, buttons) if buttons.any?
 
           props = {

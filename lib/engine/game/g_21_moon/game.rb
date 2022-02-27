@@ -410,7 +410,7 @@ module Engine
           prototype = self.class::TRAINS.find { |e| e[:name] == name }
           raise GameError, "Unable to find train #{name} in TRAINS" unless prototype
 
-          @depot.insert_train(Train.new(**prototype, index: 999), @depot.upcoming.index { |t| t.name == name })
+          @depot.insert_train(Train.new(**prototype, index: 999), @depot.upcoming.index { |t| t.name == name } || 0)
           update_cache(:trains)
 
           @log << "#{corp.name} adds a #{name} train to depot"
@@ -446,7 +446,7 @@ module Engine
           super
         end
 
-        def upgrades_to_correct_color?(from, to)
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
           return true if to.name == T_TILE
 
           case from.color
@@ -494,14 +494,14 @@ module Engine
         def new_operating_round(round_num = 1)
           @or += 1
 
-          round = super
-          upgrade_space_port if @or == 5 || @or == 9
-          event_close_companies! if @or == 7
-
           if @or == 9
             @operating_rounds = 3
             @three_or_round = true
           end
+
+          round = super
+          upgrade_space_port if @or == 5 || @or == 9
+          event_close_companies! if @or == 7
 
           round
         end
@@ -516,6 +516,7 @@ module Engine
             G21Moon::Step::Bankrupt,
             Engine::Step::BuyCompany,
             Engine::Step::Assign,
+            Engine::Step::HomeToken,
             G21Moon::Step::SpecialTrack,
             G21Moon::Step::TrainMod,
             G21Moon::Step::Track,
@@ -561,16 +562,18 @@ module Engine
             prev = corp.share_price.price
 
             @stock_market.move_up(corp) if sold_out?(corp) && sold_out_increase?(corp)
-            pool_share_drop = self.class::POOL_SHARE_DROP
-            price_drops =
-              if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
-                0
-              elsif pool_share_drop == :one
-                1
-              else
-                shares_in_pool
-              end
-            price_drops.times { @stock_market.move_down(corp) }
+            if corp.operated?
+              pool_share_drop = self.class::POOL_SHARE_DROP
+              price_drops =
+                if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
+                  0
+                elsif pool_share_drop == :one
+                  1
+                else
+                  shares_in_pool
+                end
+              price_drops.times { @stock_market.move_down(corp) }
+            end
 
             log_share_price(corp, prev)
           end
@@ -669,6 +672,10 @@ module Engine
           corporations.reject(&:minor?).sort_by(&:name)
         end
 
+        def player_sort(entities)
+          entities.reject(&:minor?).sort_by(&:name).group_by(&:owner)
+        end
+
         def lb_trains(corporation)
           corporation.trains.select { |t| @train_base[t] == :lb }
         end
@@ -714,7 +721,7 @@ module Engine
 
           raise GameError, "Must visit #{base.to_s.upcase}" unless other_route
 
-          raise GameError, "Must visit #{base.to_s.upcase} or intersect with a route that does"
+          raise GameError, "Must visit #{base.to_s.upcase} or intersect with another #{base.to_s.upcase} route that does"
         end
 
         def sp_revenue(routes)
@@ -846,6 +853,11 @@ module Engine
         def end_game!
           super
 
+          if @end_bonuses.empty?
+            @log << 'No end of game bonuses'
+            return
+          end
+
           @log << 'End of game bonus tokens:'
           @corporations.reject(&:closed?).each do |c|
             next if @end_bonuses[c].empty?
@@ -875,6 +887,45 @@ module Engine
           super
         end
 
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          return super if bundle.corporation.operated?
+
+          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
+        end
+
+        def sellable_bundles(player, corporation)
+          return super unless @round.active_step.respond_to?(:sellable_bundles)
+
+          @round.active_step.sellable_bundles(player, corporation)
+        end
+
+        def emergency_issuable_cash(corporation)
+          emergency_issuable_bundles(corporation).group_by(&:corporation).sum do |_corp, bundles|
+            bundles.max_by(&:num_shares)&.price || 0
+          end
+        end
+
+        def emergency_issuable_bundles(entity)
+          return [] if entity.trains.any?
+          return [] unless @depot.min_depot_train
+
+          min_train_price = @depot.min_depot_price
+          return [] if entity.cash >= min_train_price
+
+          @corporations.flat_map do |corp|
+            bundles = bundles_for_corporation(entity, corp)
+            bundles.select! { |b| @share_pool.fit_in_bank?(b) }
+
+            # Cannot issue more shares than needed to buy the train from the bank
+            train_buying_bundles = bundles.select { |b| (entity.cash + b.price) >= min_train_price }
+            if train_buying_bundles.size > 1
+              excess_bundles = train_buying_bundles[1..-1]
+              bundles -= excess_bundles
+            end
+            bundles
+          end.compact
+        end
+
         def upgrade_cost(tile, hex, entity, spender)
           ability = entity.all_abilities.find do |a|
             a.type == :tile_discount &&
@@ -896,6 +947,67 @@ module Engine
           return false unless (corporation = token.corporation)
 
           lb_city?(token.city, corporation)
+        end
+
+        def show_map_legend?
+          true
+        end
+
+        def map_legend
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            # header
+            [
+              { text: 'Tile Color:', props: { style: { border: '1px solid' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: '#fde900' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: '#71bf44' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: '#cb7745' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: '#bcbdc0' } } },
+            ],
+            # body
+            [
+              { text: 'Source-X', props: { style: { color: 'white', backgroundColor: 'black' } } },
+              { text: '20', props: { style: { border: '1px solid' } } },
+              { text: '40', props: { style: { border: '1px solid' } } },
+              { text: '60', props: { style: { border: '1px solid' } } },
+              { text: '80', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Helium-3', props: { style: { color: 'white', backgroundColor: 'red' } } },
+              { text: '30', props: { style: { border: '1px solid' } } },
+              { text: '40', props: { style: { border: '1px solid' } } },
+              { text: '50', props: { style: { border: '1px solid' } } },
+              { text: '60', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Regolith', props: { style: { border: '1px solid', backgroundColor: 'orange' } } },
+              { text: '20', props: { style: { border: '1px solid' } } },
+              { text: '20', props: { style: { border: '1px solid' } } },
+              { text: '40', props: { style: { border: '1px solid' } } },
+              { text: '50', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Armacolite', props: { style: { border: '1px solid', backgroundColor: 'yellow' } } },
+              { text: '40', props: { style: { border: '1px solid' } } },
+              { text: '30', props: { style: { border: '1px solid' } } },
+              { text: '30', props: { style: { border: '1px solid' } } },
+              { text: '20', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Magnetite', props: { style: { border: '1px solid' } } },
+              { text: '10', props: { style: { border: '1px solid' } } },
+              { text: '10', props: { style: { border: '1px solid' } } },
+              { text: '10', props: { style: { border: '1px solid' } } },
+              { text: '10', props: { style: { border: '1px solid' } } },
+            ],
+          ]
         end
       end
     end

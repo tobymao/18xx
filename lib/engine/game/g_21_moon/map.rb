@@ -273,7 +273,7 @@ module Engine
         # rubocop:enable Layout/LineLength
 
         LOCATION_NAMES = {
-          'A3' => 'Helium-3 Mine',
+          'A3' => 'Power Plant',
           'B14' => 'Water Farm',
           'L2' => 'Research Station',
           'M13' => 'Tourism Colony',

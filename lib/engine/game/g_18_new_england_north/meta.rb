@@ -10,7 +10,7 @@ module Engine
         include Game::Meta
         include G18NewEngland::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         PROTOTYPE = true
         DEPENDS_ON = '18NewEngland'
 

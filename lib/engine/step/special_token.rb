@@ -64,7 +64,7 @@ module Engine
       end
 
       def process_pass(action)
-        @log << "#{action.entity.owner.name} (#{action.entity.sym}) declines to place token"
+        @log << "#{action.entity.owner.name} (#{action.entity.id}) declines to place token"
         teleport_complete
       end
 

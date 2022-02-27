@@ -58,6 +58,7 @@ module Engine
             end
 
             super
+            @took_loan = false
           end
 
           def process_sell_shares(action)

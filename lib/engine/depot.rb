@@ -38,7 +38,7 @@ module Engine
 
       @game.remove_train(train)
       train.owner = self
-      @discarded << train if @game.class::DISCARDED_TRAINS == :discard && !train.obsolete
+      @discarded << train if @game.discarded_train_placement == :discard && !train.obsolete
       @depot_trains = nil
     end
 

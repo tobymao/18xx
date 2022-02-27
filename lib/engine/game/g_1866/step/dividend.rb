@@ -48,7 +48,7 @@ module Engine
             @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays half" if kind == 'half'
 
             withhold = payout[:corporation] - subsidy
-            if withhold.positive? && !@game.minor_national_corporation?(entity)
+            if withhold.positive? && !@game.national_corporation?(entity)
               @log << "#{entity.name} withholds #{@game.format_currency(withhold)}"
             elsif payout[:per_share].zero?
               @log << "#{entity.name} does not run"
@@ -76,7 +76,7 @@ module Engine
 
             @round.routes = []
             log_run_payout(entity, kind, revenue, subsidy, action, payout)
-            payout_corporation(payout[:corporation], entity)
+            payout_corporation(payout[:corporation], entity) unless @game.national_corporation?(entity)
             payout_shares(entity, revenue + subsidy - payout[:corporation]) if payout[:per_share].positive?
             change_share_price(entity, payout)
 
@@ -85,6 +85,21 @@ module Engine
 
           def payout(entity, revenue, subsidy)
             { corporation: subsidy, per_share: payout_per_share(entity, revenue) }
+          end
+
+          def payout_shares(entity, revenue)
+            per_share = payout_per_share(entity, revenue)
+
+            payouts = {}
+            (@game.players + @game.corporations).each do |payee|
+              payout_entity(entity, payee, per_share, payouts) if !payee.corporation? || !@game.national_corporation?(payee)
+            end
+
+            receivers = payouts
+                          .sort_by { |_r, c| -c }
+                          .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+            log_payout_shares(entity, revenue, per_share, receivers)
           end
 
           def skip!

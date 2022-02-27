@@ -508,7 +508,7 @@ module Engine
           G18SJ::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
-            G18SJ::Step::Assign,
+            G18SJ::Step::AssignSveabolaget,
             G18SJ::Step::SpecialTrack,
             G18SJ::Step::BuyCompany,
             G18SJ::Step::IssueShares,

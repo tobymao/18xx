@@ -24,7 +24,7 @@ module Engine
             @cash_crisis_player = entity.player
             pay_interest!(entity)
 
-            if !active_step && entity.operator? && entity.trains.reject { |t| @game.pullman_train?(t) }.empty?
+            if !active_step && entity == @current_operator && entity.trains.reject { |t| @game.pullman_train?(t) }.empty?
               @log << "#{entity.name} has no trains and liquidates"
               @game.liquidate!(entity)
             end

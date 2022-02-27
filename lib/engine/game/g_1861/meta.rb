@@ -13,7 +13,7 @@ module Engine
 
         GAME_SUBTITLE = 'The Railways of the Russian Empire'
         GAME_DESIGNER = 'Ian D. Wilson'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1867'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1861'
         GAME_LOCATION = 'Russia'
         GAME_PUBLISHER = :grand_trunk_games
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/212807/18611867-rulebook'

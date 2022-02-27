@@ -109,7 +109,7 @@ module Engine
             if (previous_proposer = @round.proposed_mergers[merging_sorted])
               # Filtering proposals would be quite complex as it can be 2 long or 3 long, this is easy.
               @game.log << "#{previous_proposer.name} already proposed the same exact merger of"\
-                           " #{@round.merging.map(&:name).join(',')}."\
+                           " #{@round.merging.map(&:name).join(', ')}."\
                            ' This is against the rules, clearing proposal.'
               @round.merging = []
               return
@@ -146,9 +146,9 @@ module Engine
               shares
             end
             @round.votes_needed = (available_votes / 2.0).floor + 1
-            voters = @round.to_vote.map { |p, _s| p.name }.join(',')
+            voters = @round.to_vote.map { |p, _s| p.name }.join(', ')
             @game.log << "Shareholders (#{voters}) will now vote for proposed merge of "\
-                         "#{@round.merging.map(&:name).join(',')}, #{@round.votes_needed} votes needed"
+                         "#{@round.merging.map(&:name).join(', ')}; #{@round.votes_needed} votes needed"
 
             @round.proposed_mergers[merging_sorted] = entity
 
@@ -226,7 +226,7 @@ module Engine
                 "#{action.entity.name} proposing merge of #{action.corporation.name}"
               else
                 "#{action.entity.name} adds #{action.corporation.name}"\
-                  " to proposed merge of #{@round.merging.map(&:name).join(',')}"
+                  " to proposed merge of #{@round.merging.map(&:name).join(', ')}"
               end
             @round.merging << action.corporation
 

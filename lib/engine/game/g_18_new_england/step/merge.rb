@@ -13,6 +13,7 @@ module Engine
           include Engine::Step::TokenMerger
           include Engine::Step::ProgrammerMergerPass
           CONVERT_PAR = 100
+          REPLACE_TOKEN_PRICE = 40
 
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
@@ -177,6 +178,7 @@ module Engine
                 new_token = Engine::Token.new(to)
                 to.tokens << new_token
               end
+              new_token.price = REPLACE_TOKEN_PRICE
 
               city = token.city
               token.remove!

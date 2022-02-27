@@ -806,10 +806,7 @@ module Engine
           return false if to.name == '172L' && from.hex.name != 'C18'
           return false if to.name == '63' && (from.hex.name == 'B11' || from.hex.name == 'C18')
 
-          if %w[B11 C18 N17 J3 J5].include?(from.hex.name)
-            return true if from.color == :green && to.name == '170'
-            return false if to.color == :yellow && to.cities.empty?
-          end
+          return true if %w[B11 C18 N17 J3 J5].include?(from.hex.name) && (from.color == :green && to.name == '170')
 
           super
         end
@@ -839,6 +836,12 @@ module Engine
 
         def reissued?(corporation)
           @reissued[corporation]
+        end
+
+        def close_corporation(corporation)
+          super(corporation)
+          # Game::close_corporation does not close the corp from continuing acting in the round so we need close!
+          corporation.close!
         end
       end
     end

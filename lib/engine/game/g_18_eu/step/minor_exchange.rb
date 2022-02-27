@@ -8,6 +8,15 @@ module Engine
       module MinorExchange
         include Engine::Step::ShareBuying
 
+        def connected_corporations(minor)
+          ability = @game.abilities(minor, :exchange)
+          @game.exchange_corporations(ability)
+        end
+
+        def exchange?(corporation)
+          corporation.available_share || @game.share_pool.shares_by_corporation[corporation]&.first
+        end
+
         def merge_minor!(minor, corporation, source)
           maybe_remove_token(minor, corporation)
 
@@ -25,7 +34,7 @@ module Engine
 
         def maybe_remove_token(minor, corporation)
           return unless corporation
-          return minor.tokens.first.remove! unless corporation.tokens.first&.used
+          return minor.tokens.first.remove! if corporation.placed_tokens.empty?
 
           @round.pending_acquisition = { minor: minor, corporation: corporation }
         end
@@ -69,6 +78,8 @@ module Engine
 
           @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')}"\
                        " train#{transferred.one? ? '' : 's'} from #{source.name}"
+
+          @game.maybe_discard_pullman(destination)
         end
       end
     end

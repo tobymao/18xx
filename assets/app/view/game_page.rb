@@ -418,7 +418,8 @@ module View
            Engine::Round::Draft
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Merger
-        if !(%w[buy_train scrap_train reassign_trains] & current_entity_actions).empty?
+        if !(%w[buy_train scrap_train reassign_trains] & current_entity_actions).empty? &&
+              @game.train_actions_always_use_operating_round_view?
           h(Game::Round::Operating, game: @game)
         else
           h(Game::Round::Merger, game: @game)

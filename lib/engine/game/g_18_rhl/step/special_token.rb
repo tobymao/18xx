@@ -9,7 +9,7 @@ module Engine
         class SpecialToken < Engine::Step::SpecialToken
           def ability(entity)
             return unless entity
-            return if entity != @round.teleported || !entity.corporation?
+            return if entity != @round.teleported || !entity.corporation? || entity.receivership?
 
             # As the ability is player owned instead of owned by current entity
             # we have saved it when doing teleport, and now we return it.
@@ -17,10 +17,10 @@ module Engine
           end
 
           def adjust_token_price_ability!(entity, token, _hex, _city, special_ability: nil)
-            return super unless entity == @game.konzession_essen_osterath
+            return super unless entity == @game.trajektanstalt
 
             # Need to override this as base implementation otherwise change token price to 0.
-            # In 18Rhl the full current price is paid for teleported token.
+            # In 18Rhl the full current price is paid for teleported token for Private 4.
             [token, special_ability]
           end
 

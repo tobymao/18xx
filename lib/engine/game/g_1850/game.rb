@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# require_relative '../g_1870/game'
+require_relative '../g_1870/game'
 require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
@@ -113,6 +113,22 @@ module Engine
           { name: '10', distance: 10, price: 950, num: 2 },
           { name: '12', distance: 12, price: 1100, num: 12 },
         ].freeze
+
+        def setup
+          # Place neutral token in Sault St. Marie
+          neutral = Corporation.new(
+            sym: 'N',
+            name: 'Neutral',
+            logo: 'open_city',
+            simple_logo: 'open_city.alt',
+            tokens: [0, 0],
+          )
+          neutral.owner = @bank
+
+          neutral.tokens.each { |token| token.type = :neutral }
+
+          city_by_id('C20-0-0').place_token(neutral, neutral.next_token)
+        end
 
         # Everything below this line is also included in 1870's game.rb file
 

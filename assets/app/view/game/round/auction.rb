@@ -279,11 +279,13 @@ module View
                       size: @current_entity.cash.to_s.size + 2,
                     })
 
+          bid_str = @step.respond_to?(:bid_str) ? @step.bid_str(minor) : 'Place Bid'
+
           [
             input,
             h(:button,
               { on: { click: -> { create_minor_bid(minor, input) } } },
-              'Place Bid'),
+              bid_str),
           ]
         end
 
