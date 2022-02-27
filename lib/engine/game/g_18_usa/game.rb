@@ -610,9 +610,13 @@ module Engine
           @recently_floated = []
           turn = "#{@turn}.#{@round.round_num}"
           case turn
-          when '1.1' then @depot.export_all!('2')
-          when '1.2' then @depot.export_all!('2+')
-          when '2.2' then @depot.export_all!('3')
+          when '1.1'
+            @depot.export_all!('2')
+          when '1.2'
+            @depot.export_all!('2+')
+            @phase.next! unless @phase.tiles.include?(:green)
+          when '2.2'
+            @depot.export_all!('3')
           else
             @depot.export! unless turn == '2.1'
           end
