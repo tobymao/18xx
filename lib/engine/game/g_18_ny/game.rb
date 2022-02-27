@@ -670,7 +670,7 @@ module Engine
         def tile_lay(_hex, old_tile, new_tile)
           if old_tile.label
             # add label to new tile, if this is a plain lay on a label.
-            new_tile.label = old_tile.label.to_s if old_tile.label && !new_tile.label
+            new_tile.label = old_tile.label.to_s unless new_tile.label
 
             # remove the label when we remove a temporaily labelled tile.
             if PLAIN_SYMBOL_HEXES.include?(old_tile.color) &&
