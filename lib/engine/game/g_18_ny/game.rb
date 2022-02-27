@@ -50,15 +50,13 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
 
+        # These hexes, in these colours, take plain tiles, even though
+        # they have symbols on them.
         PLAIN_SYMBOL_HEXES = {
-          yellow: %w[D8 D12 J20],
-          green: %w[E3 K19 D12],
+          yellow: %w[K19 D8 D12],
+          green: %w[D12 E3 K19],
           brown: %w[E3],
         }.freeze
-
-        SYMBOL_ON_PLAIN_YELLOW = %w[D8 D12 J20].freeze
-        SYMBOL_ON_PLAIN_GREEN = %w[E3 K19 D12].freeze
-        SYMBOL_ON_PLAIN_BROWN = %w[E3].freeze
 
         # Two lays with one being an upgrade. Tile lays cost 20
         TILE_COST = 20
@@ -673,6 +671,7 @@ module Engine
           # remove the label if this was a punched tile.
           if old_tile.label && \
              PLAIN_SYMBOL_HEXES.include?(old_tile.color) && \
+             old_tile.hex &&
              PLAIN_SYMBOL_HEXES[old_tile.color].include?(old_tile.hex.id)
             old_tile.label = nil
           end
@@ -711,6 +710,8 @@ module Engine
 
         def upgrades_to_correct_label?(from, to)
           # handle lays of a plain tile over a hex/tile with a label
+
+          @log << "upgrade label check #{to.color} #{from.hex.name}"
           return true if PLAIN_SYMBOL_HEXES.include?(to.color) && PLAIN_SYMBOL_HEXES[to.color].include?(from.hex.name)
 
           # Handle hexes that change from standard tiles to special city tiles
