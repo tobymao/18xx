@@ -1287,7 +1287,18 @@ module Engine
           @london_extra_city_index = city.tile.cities.index { |c| c == city }
         end
 
-        def after_lay_tile(hex, tile)
+        def after_lay_tile(hex, old_tile, tile)
+          if old_tile.label
+            # add label to new tile, if this is a plain lay on a label
+            new_tile.label = old_tile.label.to_s unless new_tile.label
+
+            # remove the label when we upgrade a temporarily labelled tile
+            if PLAIN_SYMBOL_HEXES.include(old_tile.color) &&
+               PLAIN_SYMBOL_HEXES[old_tile.color].include?(hex.id)
+              old_tile.label = nil
+            end
+          end
+
           # If we upgraded london, check if we need to add the extra slot from minor 14
           upgrade_london(hex) if hex.name == self.class::LONDON_HEX
 
