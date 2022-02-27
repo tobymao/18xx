@@ -19,7 +19,7 @@ module Engine
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'bid' if can_bid?(entity)
 
-            actions << 'pass' unless actions.any?
+            actions << 'pass' unless actions.empty?
             actions
           end
 
