@@ -667,14 +667,25 @@ module Engine
           @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }
         end
 
-        def tile_lay(_hex, old_tile, _new_tile)
-          # remove the label if this was a punched tile.
-          if old_tile.label && \
-             PLAIN_SYMBOL_HEXES.include?(old_tile.color) && \
-             old_tile.hex &&
-             PLAIN_SYMBOL_HEXES[old_tile.color].include?(old_tile.hex.id)
-            old_tile.label = nil
+        def tile_lay(_hex, old_tile, new_tile)
+          if old_tile.label
+            new_color = new_tile.color
+            # add label to new tile, if this is a plain lay on a label.
+            if PLAIN_SYMBOL_HEXES.include?(new_color) &&
+               PLAIN_SYMBOL_HEXES[new_color].include?(new_tile.hex.id) &&
+               !new_tile.label
+
+              new_tile.label = old_tile.label.to_s
+            end
+
+            # remove the label when we remove a temporaily labelled tile.
+            if PLAIN_SYMBOL_HEXES.include?(old_tile.color) &&
+               PLAIN_SYMBOL_HEXES[old_tile.color].include?(new_tile.hex.id)
+
+              old_tile.label = nil
+            end
           end
+
           return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
 
           @log << "#{erie_canal_private.name}'s revenue reduced from #{format_currency(erie_canal_private.revenue)}" \
@@ -711,25 +722,7 @@ module Engine
         def upgrades_to_correct_label?(from, to)
           # handle lays of a plain tile over a hex/tile with a label
 
-          @log << "upgrade label check #{to.color} #{from.hex.name}"
           return true if PLAIN_SYMBOL_HEXES.include?(to.color) && PLAIN_SYMBOL_HEXES[to.color].include?(from.hex.name)
-
-          # Handle hexes that change from standard tiles to special city tiles
-          case from.hex.location_name
-          when 'Buffalo'
-            return true if to.name == 'X35'
-            return false if to.color == :gray
-          when 'Rochester'
-            return true if to.color == :yellow
-            return true if to.name == 'X13'
-            return false if to.color == :green
-          when 'Syracuse'
-            return true if to.name == 'X24'
-            return false if to.color == :brown
-          when 'Brooklyn'
-            return true if to.name == 'X21'
-            return false if to.color == :brown
-          end
 
           super
         end
