@@ -88,7 +88,7 @@ module Engine
           hexes = super
 
           hexes.each do |hex|
-            hex.ignore_for_axes = true if %w[a9 G14].include?(hex.id)
+            hex.ignore_for_axes = true if %w[a5 a9 G14].include?(hex.id)
           end
 
           hexes

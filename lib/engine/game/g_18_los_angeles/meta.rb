@@ -13,7 +13,7 @@ module Engine
 
         GAME_DESIGNER = 'Anthony Fryer'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
-        GAME_PUBLISHER = %i[traxx sea_horse].freeze
+        GAME_PUBLISHER = %i[traxx].freeze
         GAME_RULES_URL = {
           '18 Los Angeles Rules' =>
                           'https://drive.google.com/file/d/16di_KBlGYnmdAMvjl2ZiqvyeB7wTAJ_4/view?usp=sharing',
@@ -23,7 +23,7 @@ module Engine
         GAME_TITLE = '18 Los Angeles 2'
         # GAME_DISPLAY_TITLE = '18 Los Angeles'
         GAME_SUBTITLE = 'Railroading in the City of Angels'
-        GAME_ALIASES = ['18LA'].freeze
+        GAME_ALIASES = %w[18LA 18LA_2].freeze
         # GAME_VARIANTS = [
         #   {
         #     sym: :first_ed,
