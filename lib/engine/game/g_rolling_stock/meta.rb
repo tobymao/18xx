@@ -17,7 +17,7 @@ module Engine
         GAME_RULES_URL = 'https://github.com/beorn7/rolling_stock/blob/master/rules.pdf'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/RollingStock'
 
-        PLAYER_RANGE = [2, 5].freeze
+        PLAYER_RANGE = [2, 6].freeze
       end
     end
   end

@@ -34,7 +34,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '$%d'
         BANK_CASH = 10_000
-        STARTING_CASH = 30
+        STARTING_CASH = { 2 => 30, 3 => 30, 4 => 30, 5 => 30, 6 => 25 }.freeze
 
         MARKET = [
           %w[0c
@@ -134,8 +134,8 @@ module Engine
         end
 
         def investment_round
-          GRollingStock::Round::Investment.new(self, [
-            GRollingStock::Step::BuySellSharesBidCompanies,
+          Round::Investment.new(self, [
+            Step::BuySellSharesBidCompanies,
           ])
         end
 
