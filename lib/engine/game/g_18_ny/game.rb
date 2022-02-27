@@ -56,9 +56,15 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
 
-        SYMBOL_ON_PLAIN_YELLOW = %w[D8 D12 J20]
-        SYMBOL_ON_PLAIN_GREEN = %w[E3 K19 D12]
-        SYMBOL_ON_PLAIN_BROWN = %w[E3]
+        PLAIN_SYMBOL_HEXES = {
+          yellow: %w[D8 D12 J20],
+          green: %w[E3 K19 D12],
+          brown: %w[E3],
+        }.freeze
+
+        SYMBOL_ON_PLAIN_YELLOW = %w[D8 D12 J20].freeze
+        SYMBOL_ON_PLAIN_GREEN = %w[E3 K19 D12].freeze
+        SYMBOL_ON_PLAIN_BROWN = %w[E3].freeze
 
         # Two lays with one being an upgrade. Tile lays cost 20
         TILE_COST = 20
@@ -687,6 +693,12 @@ module Engine
         end
 
         def tile_lay(_hex, old_tile, _new_tile)
+          # remove the label if this was a punched tile.
+          if old_tile.label && \
+             PLAIN_SYMBOL_HEXES.include?(old_tile.color) && \
+             PLAIN_SYMBOL_HEXES[old_tile.color].include?(old_tile.hex.id)
+            old_tile.label = nil
+          end
           return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
 
           @log << "#{erie_canal_private.name}'s revenue reduced from #{format_currency(erie_canal_private.revenue)}" \
@@ -722,14 +734,7 @@ module Engine
 
         def upgrades_to_correct_label?(from, to)
           # handle lays of a plain tile over a hex/tile with a label
-          case to.color
-          when :yellow
-            return true if SYMBOL_ON_PLAIN_YELLOW.include?(from.hex.name)
-          when :green
-            return true if SYMBOL_ON_PLAIN_GREEN.include?(from.hex.name)
-          when :brown
-            return true if SYMBOL_ON_PLAIN_BROWN.include?(from.hex.name)
-          end
+          return true if PLAIN_SYMBOL_HEXES.include?(to.color) && PLAIN_SYMBOL_HEXES[to.color].include?(from.hex.name)
 
           # Handle hexes that change from standard tiles to special city tiles
           case from.hex.location_name
