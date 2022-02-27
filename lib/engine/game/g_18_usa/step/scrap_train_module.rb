@@ -41,7 +41,6 @@ module Engine
             @game.bank.spend(pullman_scrap_value, train.owner)
             @game.log << "#{train.owner.name} scraps a pullman for #{@game.format_currency(pullman_scrap_value)}"
             @game.depot.reclaim_train(train)
-            # @game.reset_crowded_corps
           end
 
           def can_scrap_train?(entity)
