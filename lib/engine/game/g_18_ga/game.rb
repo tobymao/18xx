@@ -181,6 +181,16 @@ module Engine
           t.obsolete_on = obsolete_on
           t.variants.each { |_, v| v.merge!(rusts_on: rusts_on, obsolete_on: obsolete_on) }
         end
+
+        def event_close_companies!
+          super
+
+          remove_icon_from_waycross
+        end
+
+        def remove_icon_from_waycross
+          @waycross_hex.tile.icons = []
+        end
       end
     end
   end

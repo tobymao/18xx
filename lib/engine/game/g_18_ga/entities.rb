@@ -158,7 +158,6 @@ module Engine
             text_color: 'black',
           },
         ].freeze
-
       end
     end
   end
