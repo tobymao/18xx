@@ -16,7 +16,7 @@ module Engine
         @teleport_price = teleport_price
         @extra_action = extra_action || false
         @from_owner = from_owner || false
-        @discount = discount
+        @discount = discount || 0
         @city = city
         @neutral = neutral || false
         @cheater = cheater || false
