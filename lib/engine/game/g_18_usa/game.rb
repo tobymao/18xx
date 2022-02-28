@@ -905,9 +905,6 @@ module Engine
           return unless (subsidy = corporation.companies.first)
 
           case subsidy.id
-          when 'S9'
-            corporation.tokens << Engine::Token.new(corporation)
-            subsidy.close!
           when 'S10'
             subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', 'plus_ten', true)
             subsidy.close!
