@@ -75,10 +75,7 @@ module View
             children << render_minors(ms)
           end
         end
-
-        abilities_to_display = @corporation.all_abilities.select do |ability|
-          ability.owner.corporation? && ability.description
-        end
+        abilities_to_display = @corporation.all_abilities.select(&:description)
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
 
         extras = []
