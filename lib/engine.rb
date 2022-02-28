@@ -53,7 +53,7 @@ module Engine
   end
 
   def self.closest_display_title(title)
-    game_by_title(title).display_title
+    game_by_title(title)&.display_title
   end
 
   def self.closest_title(title)
