@@ -717,6 +717,7 @@ module Engine
                 type: 'token',
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
+                price: 0,
                 count: 1,
                 from_owner: false,
                 cheater: 0,
