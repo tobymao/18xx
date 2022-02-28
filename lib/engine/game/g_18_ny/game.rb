@@ -50,6 +50,14 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
 
+        # These hexes, in these colours, take plain tiles, even though
+        # they have symbols on them.
+        PLAIN_SYMBOL_HEXES = {
+          yellow: %w[K19 D8 D12],
+          green: %w[D12 E3 K19],
+          brown: %w[E3],
+        }.freeze
+
         # Two lays with one being an upgrade. Tile lays cost 20
         TILE_COST = 20
         TILE_LAYS = [
@@ -659,7 +667,19 @@ module Engine
           @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }
         end
 
-        def tile_lay(_hex, old_tile, _new_tile)
+        def tile_lay(_hex, old_tile, new_tile)
+          if old_tile.label
+            # add label to new tile, if this is a plain lay on a label.
+            new_tile.label = old_tile.label.to_s unless new_tile.label
+
+            # remove the label when we remove a temporaily labelled tile.
+            if PLAIN_SYMBOL_HEXES.include?(old_tile.color) &&
+               PLAIN_SYMBOL_HEXES[old_tile.color].include?(new_tile.hex.id)
+
+              old_tile.label = nil
+            end
+          end
+
           return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
 
           @log << "#{erie_canal_private.name}'s revenue reduced from #{format_currency(erie_canal_private.revenue)}" \
@@ -694,21 +714,9 @@ module Engine
         end
 
         def upgrades_to_correct_label?(from, to)
-          # Handle hexes that change from standard tiles to special city tiles
-          case from.hex.location_name
-          when 'Buffalo'
-            return true if to.name == 'X35'
-            return false if to.color == :gray
-          when 'Rochester'
-            return true if to.name == 'X13'
-            return false if to.color == :green
-          when 'Syracuse'
-            return true if to.name == 'X24'
-            return false if to.color == :brown
-          when 'Brooklyn'
-            return true if to.name == 'X21'
-            return false if to.color == :brown
-          end
+          # handle lays of a plain tile over a hex/tile with a label
+
+          return true if PLAIN_SYMBOL_HEXES.include?(to.color) && PLAIN_SYMBOL_HEXES[to.color].include?(from.hex.name)
 
           super
         end
