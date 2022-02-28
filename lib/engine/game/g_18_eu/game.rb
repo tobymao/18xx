@@ -85,7 +85,7 @@ module Engine
             sym: 'N',
             name: 'Neutral',
             logo: 'open_city',
-            simple_logo: 'open_city.alt',
+            simple_logo: 'open_city',
             tokens: [0, 0],
           )
           neutral.owner = @bank
@@ -95,12 +95,13 @@ module Engine
           city_by_id('G2-0-0').place_token(neutral, neutral.next_token)
         end
 
-        # this could be a useful function in depot itself
         def add_optional_train(type)
-          modified_trains = @depot.trains.select { |t| t.name == type }
-          new_train = modified_trains.first.clone
-          new_train.index = modified_trains.size
-          @depot.insert_train(new_train, new_train.index)
+          proto = self.class::TRAINS.find { |e| e[:name] == type }
+          index = @depot.trains.count { |t| t.name == type }
+          upcoming_index = @depot.upcoming.find_index { |t| t.name == type }
+          new_train = Train.new(**proto, index: index)
+          @depot.insert_train(new_train, upcoming_index + index)
+          update_cache(:trains)
         end
 
         def ipo_name(_entity = nil)
@@ -117,6 +118,10 @@ module Engine
 
         def exchange_for_partial_presidency?
           false
+        end
+
+        def available_programmed_actions
+          super << Action::ProgramAuctionBid
         end
 
         def operating_round(round_num)
@@ -439,6 +444,12 @@ module Engine
               prev = token
             end
           end
+        end
+
+        def hex_blocked_by_ability?(entity, ability, hex)
+          return false if entity&.owner == ability&.owner&.owner
+
+          super
         end
 
         def mark_auctioning(minor)

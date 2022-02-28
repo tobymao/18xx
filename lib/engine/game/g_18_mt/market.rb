@@ -4,6 +4,14 @@ module Engine
   module Game
     module G18MT
       module Market
+        MARKET_TEXT = {
+          par: 'Par value',
+          no_cert_limit: 'Corporation shares do not count towards cert limit',
+          multiple_buy: 'Corporation shares can be held above 60%, '\
+                        'Can buy more than one share from the market in the corporation per turn',
+          endgame: 'End game trigger',
+        }.freeze
+
         MARKET = [
           %w[70
              80

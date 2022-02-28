@@ -170,6 +170,7 @@ module View
           ]
           inputs << h(IssueShares, entity: corporation) unless (@step.actions(corporation) & %w[buy_shares sell_shares]).empty?
           inputs << h(BuyTrains, corporation: corporation) if @step.actions(corporation).include?('buy_train')
+          inputs << h(ScrapTrains, corporation: corporation) if @step.actions(corporation).include?('scrap_train')
           inputs << h(Choose, entity: corporation) if @current_actions.include?('choose') && @step.choice_available?(corporation)
           inputs = inputs.compact
           h('div.margined_bottom', { style: { width: '20rem' } }, inputs) if inputs.any?

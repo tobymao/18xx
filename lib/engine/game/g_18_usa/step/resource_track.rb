@@ -16,8 +16,12 @@ module Engine
             !tile.offboards&.empty? && !@game.resource_tile?(tile)
           end
 
+          def resource_ability_used?(tile)
+            @game.resource_tile?(tile) && tile.color == :yellow && !@game.class::ORE20_TILES.include?(tile.name)
+          end
+
           def legal_tile_rotation?(entity, hex, tile)
-            return super unless @game.resource_tile?(tile)
+            return super unless resource_ability_used?(tile)
 
             super &&
             tile.exits.any? do |exit|
@@ -35,6 +39,21 @@ module Engine
             end
           end
 
+          def track_upgrade?(_from, to, _hex)
+            super || @game.class::ORE20_TILES.include?(to.name)
+          end
+
+          def lay_tile_action(action, entity: nil, spender: nil)
+            if resource_ability_used?(action.tile)
+              entity ||= action.entity
+              corporation = entity.corporation? ? entity : entity.owner
+              abilities = @game.abilities_to_lay_resource_tile(action.hex, action.tile, corporation.companies).values
+              return lay_tile(action, entity: entity, spender: spender) if abilities.none?(&:consume_tile_lay)
+            end
+
+            super
+          end
+
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
             hex = action.hex
@@ -42,7 +61,9 @@ module Engine
             corporation = entity.corporation? ? entity : entity.owner
 
             super
-            @game.consume_abilities_to_lay_resource_tile(hex, tile, corporation.companies) if @game.resource_tile?(tile)
+            return unless resource_ability_used?(tile)
+
+            @game.consume_abilities_to_lay_resource_tile(hex, tile, corporation.companies)
           end
         end
       end

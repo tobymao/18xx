@@ -9,6 +9,7 @@ module Engine
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
           include ResourceTrack
+          include P11Track
 
           def actions(entity)
             return [] if entity&.id == 'P16' && !@game.phase.tiles.include?(:brown)

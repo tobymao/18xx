@@ -115,7 +115,7 @@ module Engine
           {
             name: '5E',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99 }],
-            price: 600,
+            price: 700,
           },
           {
             name: '7',
@@ -167,6 +167,40 @@ module Engine
         def setup
           super
           @exchange_share = nil
+          add_teleport_destinations
+        end
+
+        def add_teleport_destinations
+          @teleport_destination = {}
+          @corporations.each do |corporation|
+            ability = abilities(corporation, :token)
+            next unless ability
+
+            ability.hexes.each do |hex_id|
+              @teleport_destination[hex_id] = corporation
+              (hex = hex_by_id(hex_id)).location_name += " (#{corporation.name})"
+              hex.tile.location_name += " (#{corporation.name})"
+            end
+          end
+        end
+
+        def remove_teleport_destination(corporation, city)
+          hex = city.hex
+          return if @teleport_destination[hex.id] != corporation && !out_of_slots?(city)
+
+          @teleport_destination.delete(hex.id)
+          hex.location_name = location_name(hex.id)
+          hex.tile.location_name = location_name(hex.id)
+        end
+
+        # return true if all slots are filled and no upgrade can add a slot
+        def out_of_slots?(city)
+          tile = city.tile
+          return false unless city.available_slots.zero?
+
+          # doesn't handle case where upgrade tiles are gone
+          tile.color == :gray || tile.color == :brown || (tile.color == :green && tile.label.to_s != 'Z') ||
+            (tile.color == :yellow && tile.label.to_s == 'StL')
         end
 
         def init_round
@@ -181,7 +215,7 @@ module Engine
             Engine::Step::SpecialTrack,
             G1846::Step::BuyCompany,
             G1846::Step::IssueShares,
-            G1846::Step::TrackAndToken,
+            G18MO::Step::TrackAndToken,
             Engine::Step::Route,
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -229,7 +263,7 @@ module Engine
           when '3E', '5E'
             1
           when '5'
-            two_player? ? 3 : num_players - 1
+            two_player? ? 4 : num_players
           when '7'
             two_player? ? 4 : 9
           end
@@ -304,6 +338,10 @@ module Engine
 
         def place_second_token(corporation, two_player_only: true, deferred: true)
           super(corporation, two_player_only: two_player_only, deferred: false)
+        end
+
+        def setup_turn
+          1
         end
       end
     end

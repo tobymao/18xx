@@ -614,7 +614,7 @@ module Engine
           },
           # P30
           {
-            name: 'P3 - Double Heading',
+            name: 'P30 - Double Heading',
             value: 120,
             revenue: 0,
             desc: 'Each turn one non-permanent train may attach the Extender to run to one extra city',
@@ -714,9 +714,15 @@ module Engine
             icon: 'subsidy_free_station',
             abilities: [
               {
-                type: 'additional_token',
-                count: 1,
+                type: 'token',
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
+                price: 0,
+                count: 1,
+                from_owner: false,
+                cheater: 0,
+                special_only: true,
+                hexes: [], # Determined in special_token step
               },
             ],
             id: 'S9',

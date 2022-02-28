@@ -477,7 +477,7 @@ module Engine
             sym: 'N',
             name: 'Neutral',
             logo: 'open_city',
-            simple_logo: 'open_city.alt',
+            simple_logo: 'open_city',
             tokens: [0, 0],
           )
           neutral.owner = @bank

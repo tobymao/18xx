@@ -35,6 +35,12 @@ module Engine
              500 520 540 560 580 600 625 650 675 700 725 750 775 800],
            ].freeze
 
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+           safe_par: 'Minimum Price for a 2($53), 5($74) and 10($120) share'\
+                     ' corporation taking maximum loans to ensure it avoids acquisition',
+           acquisition: 'Acquisition (Dividends needed to move right: $20: ➤, $40: ➤➤, $60: ➤➤➤, $80: ➤➤➤➤)'
+         ).freeze
+
         PHASES = [
           {
             name: '2',
@@ -90,7 +96,7 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             corporation_sizes: [5, 10],
-            events: [{ 'type' => 'increased_oil' }],
+            status: %w[increased_oil],
           },
           {
             name: '6',
@@ -127,12 +133,12 @@ module Engine
         end
 
         # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
-        EVENTS_TEXT = {
-          'upgrade_oil' => [
-            'Oil Upgraded',
+        STATUS_TEXT = {
+          'increased_oil' => [
+            'Oil value increased',
             'Oil worth $20 for the remainder of the game',
           ],
-        }.merge(Base::EVENTS_TEXT)
+        }.merge(G1817::Game::STATUS_TEXT)
 
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 40 },
                   { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 5 },
@@ -153,9 +159,13 @@ module Engine
                   { name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }].freeze
 
         def game_trains
-          return G1817::Game::TRAINS if @optional_rules.include?(:seventeen_trains)
+          return seventeen_trains if @optional_rules.include?(:seventeen_trains)
 
           self.class::TRAINS
+        end
+
+        def seventeen_trains
+          G1817::Game::TRAINS.dup + [{ name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }]
         end
 
         # Does not include guaranteed metropolis New York City
@@ -177,11 +187,6 @@ module Engine
         }.freeze
 
         SEED_MONEY = nil
-
-        def event_upgrade_oil!
-          @log << "-- Event: #{EVENTS_TEXT['upgrade_oil'][1]} --"
-          @oil_value = 20
-        end
 
         def active_metropolitan_hexes
           @active_metropolitan_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
@@ -231,8 +236,6 @@ module Engine
           setup_company_tiles
 
           @jump_graph = Graph.new(self, no_blocking: true)
-
-          @oil_value = 10
 
           @recently_floated = []
 
@@ -343,7 +346,7 @@ module Engine
           end
           resources << 'NO RESOURCES' if resources.empty?
 
-          subsidy[:description] =
+          subsidy[:desc] =
             "The corporation can place its choice of one of the following resources: #{resources.join(', ')}. " \
             'Placing a track and the resource token from the Resource Subsidy is a free extra ' \
             'track lay in addition to the normal track placements.'
@@ -362,8 +365,14 @@ module Engine
           end
         end
 
-        def home_hex_for(corporation)
-          corporation.tokens.first.hex
+        def home_hex_for(entity)
+          return nil unless entity.corporation?
+
+          entity.tokens.first.hex
+        end
+
+        def phase_5_or_later?
+          @phase.tiles.include?(:brown)
         end
 
         TRACK_ENGINEER_TILE_LAYS = [ # Three lays with one being an upgrade, second tile costs 20, third tile free
@@ -458,11 +467,6 @@ module Engine
           super
         end
 
-        def can_upgrade_track?(entity)
-          step = @round.active_step
-          step.respond_to?(:get_tile_lay) ? step.get_tile_lay(entity)[:upgrade] : true
-        end
-
         def ore_upgrade?(from, to)
           ORE10_TILES.include?(from.name) && ORE20_TILES.include?(to.name) && upgrades_to_correct_label?(from, to)
         end
@@ -479,17 +483,13 @@ module Engine
           super
         end
 
-        def upgrades_to_correct_color?(from, to)
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
           return true if self.class::SPECIAL_TILES.include?(to.name)
 
-          if @phase.tiles.include?(:brown)
-            entity = @round.current_entity
+          if phase_5_or_later?
+            entity = selected_company || @round.current_entity
             # Non-track upgrades
-            if from.cities.empty?
-              return to.color == :yellow if from.color == :white && !can_upgrade_track?(entity)
-
-              return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
-            end
+            return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) if from.cities.empty?
 
             # City upgrades
             if from.color == :white
@@ -610,9 +610,13 @@ module Engine
           @recently_floated = []
           turn = "#{@turn}.#{@round.round_num}"
           case turn
-          when '1.1' then @depot.export_all!('2')
-          when '1.2' then @depot.export_all!('2+')
-          when '2.2' then @depot.export_all!('3')
+          when '1.1'
+            @depot.export_all!('2')
+          when '1.2'
+            @depot.export_all!('2+')
+            @phase.next! unless @phase.tiles.include?(:green)
+          when '2.2'
+            @depot.export_all!('3')
           else
             @depot.export! unless turn == '2.1'
           end
@@ -623,7 +627,7 @@ module Engine
           @interest_fixed = nil
 
           G18USA::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G18USA::Step::DiscardTrain,
             G18USA::Step::DenverTrack,
             G18USA::Step::HomeToken,
             G18USA::Step::BuySellParShares,
@@ -653,6 +657,7 @@ module Engine
             G1817::Step::CashCrisis,
             G18USA::Step::ObsoleteTrain,
             G18USA::Step::Loan,
+            G18USA::Step::DiscardTrain,
             G18USA::Step::SpecialTrack,
             G18USA::Step::SpecialToken,
             G18USA::Step::SpecialBuyTrain,
@@ -660,11 +665,15 @@ module Engine
             G18USA::Step::DenverTrack,
             G18USA::Step::Track,
             G18USA::Step::Token,
+            G18USA::Step::BuyPullman,
             G18USA::Step::Route,
             G18USA::Step::Dividend,
-            Engine::Step::DiscardTrain,
             G18USA::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def crowded_corps
+          @crowded_corps ||= super | corporations.select { |c| c.trains.count { |t| pullman_train?(t) } > 1 }
         end
 
         def next_round!
@@ -682,10 +691,10 @@ module Engine
               @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
               G1817::Round::Merger.new(self, [
                 G18USA::Step::ReduceTokens,
-                Engine::Step::DiscardTrain,
+                G18USA::Step::DiscardTrain,
                 G1817::Step::PostConversion,
-                G1817::Step::PostConversionLoans,
-                G1817::Step::Conversion,
+                G18USA::Step::PostConversionLoans,
+                G18USA::Step::Conversion,
               ], round_num: @round.round_num)
             when G1817::Round::Merger
               @log << "-- #{round_description('Acquisition', @round.round_num)} --"
@@ -693,8 +702,8 @@ module Engine
                 G18USA::Step::ReduceTokens,
                 G1817::Step::Bankrupt,
                 G1817::Step::CashCrisis,
-                Engine::Step::DiscardTrain,
-                G1817::Step::Acquire,
+                G18USA::Step::DiscardTrain,
+                G18USA::Step::Acquire,
               ], round_num: @round.round_num)
             when G1817::Round::Acquisition
               if @round.round_num < @operating_rounds
@@ -741,17 +750,17 @@ module Engine
             next resource_revenue if hex.tile.color == :white || (resources = tile_resources(hex.tile)).empty?
 
             resource_revenue += 10 if resources.include?(:coal)
-            resource_revenue += hex.tile.name.include?('ore10') ? 10 : 20 if resources.include?(:ore)
-            resource_revenue += @oil_value if resources.include?(:oil)
+            resource_revenue += ORE20_TILES.include?(hex.tile.name) ? 20 : 10 if resources.include?(:ore)
+            resource_revenue += phase_5_or_later? ? 20 : 10 if resources.include?(:oil)
             resource_revenue
           end
 
-          pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == 'P' }
+          pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade[:id] == 'P' }
           revenue += 20 * stops.count { |s| !RURAL_TILES.include?(s.tile.name) } if pullman_assigned
 
           revenue += 10 if stop_hexes.find { |hex| hex.tile.icons.find { |icon| icon.name == 'plus_ten' } }
           if stop_hexes.find { |hex| hex.tile.icons.find { |icon| icon.name == 'plus_ten_twenty' } }
-            revenue += @phase.tiles.include?(:brown) ? 20 : 10
+            revenue += phase_5_or_later? ? 20 : 10
           end
           revenue += 10 if company_by_id('P8').owner == corporation && !(stop_hexes & @p8_hexes).empty?
 
@@ -763,8 +772,7 @@ module Engine
               revenue += GNR_HALF_BONUS
             end
           end
-
-          if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
+          if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade[:id] == '/' }
             stop_skipped = skipped_stop(route, stops)
             if stop_skipped
               revenue -= stop_skipped.route_revenue(@phase, route.train)
@@ -803,7 +811,7 @@ module Engine
         end
 
         def check_connected(route, corporation)
-          return super unless @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
+          return super unless @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade[:id] == '/' }
 
           visits = route.visited_stops
           blocked = nil
@@ -819,8 +827,6 @@ module Engine
 
           # no need to check whether tokened out because of the above
           super(route, nil)
-
-          raise GameError, 'Route is not connected'
         end
 
         def tokened_out_stop(route)
@@ -829,6 +835,11 @@ module Engine
 
           corporation = route.corporation
           visits[1..-2].find { |node| node.city? && node.blocks?(corporation) }
+        end
+
+        def pullmans_available?
+          # Pullmans are available in phase 5, using the availability of brown track as an easy signal of this
+          phase_5_or_later?
         end
 
         def route_trains(entity)
@@ -862,8 +873,6 @@ module Engine
           return unless (subsidy = @subsidies_by_hex.delete(hex.coordinates))
 
           hex.tile.icons.reject! { |icon| icon.name.include?('subsidy') }
-          return if NO_SUBSIDIES.include?(subsidy[:id])
-
           subsidy_company = create_company_from_subsidy(subsidy)
           assign_boomtown_subsidy(hex, corporation) if subsidy_company.id == 'S8'
           subsidy_company.owner = corporation
@@ -896,14 +905,15 @@ module Engine
           return unless (subsidy = corporation.companies.first)
 
           case subsidy.id
-          when 'S9'
-            corporation.tokens << Engine::Token.new(corporation)
-            subsidy.close!
           when 'S10'
             subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', 'plus_ten', true)
             subsidy.close!
           when 'S11'
             subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', 'plus_ten_twenty', true)
+            subsidy.close!
+          when 'S12', 'S13', 'S14', 'S15'
+            @log << "Subsidy contributes #{format_currency(subsidy.value)}"
+            @bank.spend(subsidy.value, corporation.owner)
             subsidy.close!
           when 'S16'
             if subsidy.abilities.first.hexes.empty?

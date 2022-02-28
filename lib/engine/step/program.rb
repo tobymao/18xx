@@ -6,6 +6,7 @@ module Engine
   module Step
     class Program < Base
       ACTIONS = %w[
+        program_auction_bid
         program_buy_shares
         program_independent_mines
         program_merger_pass
@@ -18,6 +19,10 @@ module Engine
         return [] unless entity.player?
 
         ACTIONS
+      end
+
+      def process_program_auction_bid(action)
+        process_program_enable(action)
       end
 
       def process_program_buy_shares(action)

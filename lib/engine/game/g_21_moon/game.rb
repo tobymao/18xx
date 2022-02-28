@@ -410,7 +410,7 @@ module Engine
           prototype = self.class::TRAINS.find { |e| e[:name] == name }
           raise GameError, "Unable to find train #{name} in TRAINS" unless prototype
 
-          @depot.insert_train(Train.new(**prototype, index: 999), @depot.upcoming.index { |t| t.name == name })
+          @depot.insert_train(Train.new(**prototype, index: 999), @depot.upcoming.index { |t| t.name == name } || 0)
           update_cache(:trains)
 
           @log << "#{corp.name} adds a #{name} train to depot"
@@ -446,7 +446,7 @@ module Engine
           super
         end
 
-        def upgrades_to_correct_color?(from, to)
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
           return true if to.name == T_TILE
 
           case from.color
@@ -516,6 +516,7 @@ module Engine
             G21Moon::Step::Bankrupt,
             Engine::Step::BuyCompany,
             Engine::Step::Assign,
+            Engine::Step::HomeToken,
             G21Moon::Step::SpecialTrack,
             G21Moon::Step::TrainMod,
             G21Moon::Step::Track,
