@@ -189,7 +189,7 @@ module Engine
         end
 
         def remove_icon_from_waycross
-          @waycross_hex.tile.icons = []
+          waycross_hex.tile.icons = []
         end
       end
     end
