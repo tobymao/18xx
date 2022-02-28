@@ -45,6 +45,10 @@ module Engine
 
         TILE_TYPE = :lawson
 
+        PLAIN_SYMBOL_HEXES = {
+          yellow: %w[D35 B43 K42 M42],
+        }.freeze
+
         MARKET = [
           ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '550', '600', '650', '700e'],
           ['', '', '', '', '', '', '', '', '', '', '', '', '', '330', '360', '400', '450', '500', '550', '600', '650'],
@@ -1289,11 +1293,15 @@ module Engine
 
         def after_lay_tile(hex, old_tile, tile)
           if old_tile.label
-            # add label to new tile, if this is a plain lay on a label
-            new_tile.label = old_tile.label.to_s unless new_tile.label
+            # add temporary label to designated plain tile lays
+            if PLAIN_SYMBOL_HEXES.include?(tile.color) &&
+               PLAIN_SYMBOL_HEXES[tile.color].include?(hex.id) &&
+               !tile.label
+              tile.label = old_tile.label.to_s
+            end
 
             # remove the label when we upgrade a temporarily labelled tile
-            if PLAIN_SYMBOL_HEXES.include(old_tile.color) &&
+            if PLAIN_SYMBOL_HEXES.include?(old_tile.color) &&
                PLAIN_SYMBOL_HEXES[old_tile.color].include?(hex.id)
               old_tile.label = nil
             end
