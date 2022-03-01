@@ -452,12 +452,12 @@ module Engine
             },
             'infrastructure_count' => 5,
             'companies' => %w[P1 P2 P3 P4 P5 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
             'national_corporations' => %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
             'corporation_count' => 13,
             'region_corporations' => {
               'GB' => %w[LNWR GWR NBR],
-              'FR' => %w[PLM MIDI OU],
+              'FR' => %w[PLM MIDI OU CPS],
               'DE' => %w[KPS BY KHS],
               'AHE' => %w[SB BH FNR],
               'IT' => %w[SSFL IFT SFAI],
@@ -493,12 +493,12 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[P1 P2 P3 P5 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SBB GL NRS L P],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SBB GL NRS L P],
             'national_corporations' => %w[GB FR BNL CH DE PRU HAN BAV WTB SAX],
             'corporation_count' => 9,
             'region_corporations' => {
               'GB' => %w[LNWR GWR NBR],
-              'FR' => %w[PLM MIDI OU],
+              'FR' => %w[PLM MIDI OU CPS],
               'DE' => %w[KPS BY KHS],
               'BNL' => %w[GL NRS],
             },
@@ -572,11 +572,11 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[P1 P3 P4 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
-            'corporations' => %w[PLM MIDI OU SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
+            'corporations' => %w[PLM MIDI OU CPS SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
             'national_corporations' => %w[FR AHE ESP CH IT K2S SAR LV PAP TUS],
             'corporation_count' => 9,
             'region_corporations' => {
-              'FR' => %w[PLM MIDI OU],
+              'FR' => %w[PLM MIDI OU CPS],
               'ESP' => %w[ZPB MZA],
               'AHE' => %w[SB BH FNR],
               'IT' => %w[SSFL IFT SFAI],
@@ -609,6 +609,7 @@ module Engine
           'PLM' => 'FR',
           'MIDI' => 'FR',
           'OU' => 'FR',
+          'CPS' => 'FR',
           'KPS' => %w[DE PRU],
           'BY' => %w[DE BAV],
           'KHS' => %w[DE HAN],
@@ -780,8 +781,8 @@ module Engine
 
         # Corporations which will be able to float on which turn
         TURN_CORPORATIONS = {
-          'ISR' => %w[PRU HAN BAV WTB SAX K2S SAR LV PAP TUS LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI
-                      SBB GL NRS ZPB MZA],
+          'ISR' => %w[PRU HAN BAV WTB SAX K2S SAR LV PAP TUS LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SB BH FNR SSFL IFT
+                      SFAI SBB GL NRS ZPB MZA],
         }.freeze
 
         attr_reader :scenario, :game_end_triggered_corporation, :game_end_triggered_round,
