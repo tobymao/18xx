@@ -67,7 +67,8 @@ module View
 
           owner = " (#{@game.acting_for_entity(entity).name.truncate})" if !entity.player? && entity.owner
           owner = ' (CLOSED)' if entity.closed?
-          children << h(:span, "#{entity.name}#{owner}")
+          name = entity.company? ? entity.sym : entity.name
+          children << h(:span, "#{name}#{owner}")
 
           h(:li, entity_props, children)
         end
