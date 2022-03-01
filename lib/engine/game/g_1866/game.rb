@@ -61,7 +61,7 @@ module Engine
              200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[0c 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
              200pxzw 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
-          %w[120P 100P 75P 75P 75P 120P 80P 80P 80P 50P],
+          %w[135P 110P 80P 70P 70P 120P 80P 110P 90P 45P],
         ].freeze
 
         EVENTS_TEXT = {
@@ -636,16 +636,16 @@ module Engine
           'CH' => 'Available from OR1',
           'DE' => 'Converted by PRU president or force convert in phase 5',
           'IT' => 'Converted by K2S president or force convert in phase 5',
-          'PRU' => 'President share costs £120',
-          'HAN' => 'President share costs £100',
-          'BAV' => 'President share costs £75',
-          'WTB' => 'President share costs £75',
-          'SAX' => 'President share costs £75',
+          'PRU' => 'President share costs £135',
+          'HAN' => 'President share costs £110',
+          'BAV' => 'President share costs £80',
+          'WTB' => 'President share costs £70',
+          'SAX' => 'President share costs £70',
           'K2S' => 'President share costs £120',
           'SAR' => 'President share costs £80',
-          'LV' => 'President share costs £80',
-          'PAP' => 'President share costs £80',
-          'TUS' => 'President share costs £50',
+          'LV' => 'President share costs £110',
+          'PAP' => 'President share costs £90',
+          'TUS' => 'President share costs £45',
         }.freeze
 
         FERRY_TILE_G7 = 'border=edge:2,type:impassable;border=edge:4,type:impassable;path=a:1,b:5'
