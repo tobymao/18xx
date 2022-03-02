@@ -368,6 +368,10 @@ module Engine
           @graph
         end
 
+        def can_run_route?(entity)
+          @graph.route_info(entity)&.dig(:route_available)
+        end
+
         def after_buy_company(player, company, _price)
           super
           return ols_start(player) if company.sym == 'OLS'
