@@ -29,6 +29,24 @@ module Engine
             @last_share_issued_price = action.bundle.price_per_share if action.entity == current_entity
             super
           end
+
+          def round_state
+            super.merge(
+              {
+                train_buy_available: true,
+              }
+            )
+          end
+
+          def setup
+            @round.train_buy_available = true
+            super
+          end
+
+          def pass!
+            @round.train_buy_available = false
+            super
+          end
         end
       end
     end
