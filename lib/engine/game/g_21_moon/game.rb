@@ -970,6 +970,10 @@ module Engine
           lb_city?(token.city, corporation)
         end
 
+        def train_purchase_name(train)
+          "#{@train_base[train].to_s.upcase}:#{train.name}"
+        end
+
         def show_map_legend?
           true
         end
