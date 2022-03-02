@@ -281,7 +281,7 @@ module Engine
               abilities(corporation, :reservation) do |ability|
                 corporation.remove_ability(ability)
               end
-              place_second_token(corporation, deferred: true)
+              place_second_token(corporation, **place_second_token_kwargs)
             end
           end
           @log << "Privates in the game: #{@companies.reject { |c| c.name.include?('Pass') }.map(&:name).sort.join(', ')}"
@@ -368,6 +368,10 @@ module Engine
 
         def corporation_removal_groups
           two_player? ? [NORTH_GROUP, SOUTH_GROUP] : [GREEN_GROUP]
+        end
+
+        def place_second_token_kwargs
+          { deferred: true }
         end
 
         def place_second_token(corporation, two_player_only: true, deferred: true)

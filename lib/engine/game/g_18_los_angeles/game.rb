@@ -32,24 +32,26 @@ module Engine
           'LAS' => '/icons/1846/sc_token.svg',
         }.freeze
 
-        ORANGE_GROUP = [
-          'Beverly Hills Carriage',
-          'South Bay Line',
+        CORPORATIONS_GROUP = %w[
+          ELA
+          LA
+          LAIR
+          PER
+          SF
+          SP
+          UP
         ].freeze
-
-        BLUE_GROUP = [
-          'Chino Hills Excavation',
-          'Los Angeles Citrus',
-          'Los Angeles Steamship',
-        ].freeze
-
-        GREEN_GROUP = %w[LA SF SP].freeze
 
         REMOVED_CORP_SECOND_TOKEN = {
+          'ELA' => 'C4',
           'LA' => 'B9',
-          'SF' => 'C8',
+          'LAIR' => 'E6',
+          'SF' => 'D11',
           'SP' => 'C6',
+          'UP' => 'B13',
         }.freeze
+
+        HOME_TOKEN_TIMING = :float
 
         ABILITY_ICONS = {
           SBL: 'sbl',
@@ -73,6 +75,17 @@ module Engine
           'remove_markers' => ['Remove Markers', 'Remove LA Steamship and LA Citrus markers']
         ).freeze
 
+        def setup
+          super
+          post_setup
+        end
+
+        def post_setup
+          @corporations.each do |corporation|
+            place_home_token(corporation) unless corporation.id == 'PER'
+          end
+        end
+
         def setup_turn
           1
         end
@@ -94,24 +107,16 @@ module Engine
           hexes
         end
 
-        def num_removals(group)
-          return 0 if @players.size == 5
-          return 1 if @players.size == 4
-
-          case group
-          when ORANGE_GROUP, BLUE_GROUP
-            1
-          when GREEN_GROUP
-            2
-          end
+        def num_removals(_group)
+          two_player? ? 2 : 0
         end
 
         def corporation_removal_groups
-          [GREEN_GROUP]
+          two_player? ? [CORPORATIONS_GROUP] : []
         end
 
-        def place_second_token(corporation, **_kwargs)
-          super(corporation, two_player_only: false, deferred: false)
+        def place_second_token_kwargs
+          { two_player_only: true, deferred: false }
         end
 
         def init_round
