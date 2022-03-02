@@ -9,7 +9,7 @@ module Engine
         class DiscardTrain < Engine::Step::DiscardTrain
           include ScrapTrainModule
           def actions(entity)
-            actions = super
+            actions = super.dup
             actions << 'scrap_train' if can_scrap_train?(entity)
             actions
           end
