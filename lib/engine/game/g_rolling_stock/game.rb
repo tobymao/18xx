@@ -249,7 +249,7 @@ module Engine
         end
 
         def share_prices
-          PAR_PRICES.values.flatten.uniq.map { |p| get_price(p) }
+          PAR_PRICES.values.flatten.uniq.map { |p| prices[p] }
         end
 
         def ipo_companies
@@ -257,19 +257,11 @@ module Engine
         end
 
         def available_par_prices(company)
-          PAR_PRICES[@company_stars[company.sym]].map { |p| get_price(p) }.select { |p| p.corporations.empty? }
+          PAR_PRICES[@company_stars[company.sym]].map { |p| prices[p] }.select { |p| p.corporations.empty? }
         end
 
-        def get_price(price)
-          @price_cache ||= {}
-          @price_cache[price] ||= lookup_price(price)
-        end
-
-        def lookup_price(price)
-          @stock_market.market[0].size.times do |i|
-            next unless @stock_market.share_price(0, i)
-            return @stock_market.share_price(0, i) if @stock_market.share_price(0, i).price == price
-          end
+        def prices
+          @prices ||= @stock_market.market[0].to_h { |p| [p.price, p] }
         end
 
         def move_to_right(corporation)
