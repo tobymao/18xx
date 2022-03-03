@@ -27,7 +27,6 @@ module Engine
                 owner_type: 'corporation',
                 hexes: ['E87'],
                 tiles: [],
-                # FIXME: tiles: %w[3 4 58],
                 when: 'owning_corp_or_turn',
                 count: 1,
               },
@@ -114,7 +113,8 @@ module Engine
                 hexes: [],
                 reachable: true,
                 special: false,
-                description: 'If Tobu places a token in Asakusa (H84), it may lay or upgrade a tile twice '\
+                description: 'Double tile lay if H84 was tokened',
+                desc_detail: 'If Tobu places a token in Asakusa (H84), it may lay or upgrade a tile twice '\
                              'in each subsequent operating round. The same hex may be upgraded twice.',
               },
             ],
@@ -138,11 +138,13 @@ module Engine
                 description: 'Double income from Tokorozawa (A81)',
                 hexes: ['A81'],
               },
-              # terrain: town
               {
                 type: 'tile_income',
                 income: 100,
+                town: true,
                 owner_only: true,
+                description: '¥100 subsidy after laying town tiles',
+                desc_detail: 'Gets a subsidy of ¥100 from the bank to treasury whenever it places a tile with a town',
               },
             ],
           },
@@ -205,8 +207,9 @@ module Engine
                 hexes: [],
                 reachable: true,
                 special: false,
-                description: 'For each small city tile it places, Tokyu may lay or upgrade one extra tile '\
-                             'in the current operating round. Only one extra tile is received for a double small city.',
+                description: 'Additional tile lays after laying town tiles',
+                desc_detail: 'For each town tile it places, Tokyu may lay or upgrade one extra tile '\
+                             'in the current operating round. Only one extra tile is received for a double town.',
               },
               {
                 type: 'assign_hexes',
@@ -217,7 +220,8 @@ module Engine
                 type: 'train_discount',
                 discount: '0.2',
                 trains: %w[2 3 4 5 6 D],
-                description: 'If Tokyu places a token in Nagatsuda (A93), it may purchase trains from the bank '\
+                description: 'Buy trains at 20% discount if A93 was tokened',
+                desc_detail: 'If Tokyu places a token in Nagatsuda (A93), it may purchase trains from the bank '\
                              'or open market at a 20% discount.',
               },
             ],
@@ -237,7 +241,8 @@ module Engine
               {
                 type: 'assign_hexes',
                 count: 1,
-                description: 'Double income from Yokosuka (D98) and Haneda airport (H92)',
+                description: 'Double income from D98 and H92',
+                desc_detail: 'Double income from Yokosuka (D98) and Haneda airport (H92)',
                 hexes: %w[D98 H92],
               },
             ],
@@ -277,7 +282,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_discount',
-                description: 'Places green and brown "T" tiles without terrain costs.',
+                description: 'Place green and brown "T" tiles without terrain costs',
                 hexes: %w[F84 F86 F88 G85 G87 G89 H84],
                 discount: 80,
               },
@@ -291,6 +296,7 @@ module Engine
             simple_logo: '18_jpt/SAR.alt',
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'D96',
+            city: 0,
             color: :lightGreen,
             text_color: 'black',
             reservation_color: nil,

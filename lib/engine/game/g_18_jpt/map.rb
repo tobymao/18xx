@@ -213,7 +213,7 @@ module Engine
             ['G85'] => 'city=revenue:30;city=revenue:30;path=a:3,b:_1;upgrade=cost:80;label=T',
             ['G87'] => 'city=revenue:30,loc:1.5;city=revenue:30;path=a:3,b:_0;path=a:4,b:_1;upgrade=cost:80;label=T',
             ['G89'] => 'city=revenue:30,loc:1.5;city=revenue:30,loc:5.5;path=a:0,b:_1;path=a:1,b:_0;upgrade=cost:80;label=T',
-            ['H84'] => 'city=revenue:30,loc:1.5;city=revenue:30,loc:4.5;path=a:3,b:_0;path=a:4,b:_1;upgrade=cost:80,terrain:river;label=T',
+            ['H84'] => 'city=revenue:30,loc:1;city=revenue:30,loc:5.5;path=a:3,b:_0;path=a:4,b:_1;upgrade=cost:80,terrain:river;label=T',
           },
           green: {
             ['J88'] => 'city=revenue:20;upgrade=cost:80',
