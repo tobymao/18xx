@@ -129,6 +129,41 @@ module Engine
             available_on: '6',
           },
         ].freeze
+
+        def init_hexes(companies, corporations)
+          hexes = super
+
+          @corporations.each do |corporation|
+            next unless (ability = abilities(corporation, :assign_hexes))
+
+            hexes
+              .select { |h| ability.hexes.include?(h.name) }
+              .each { |h| h.assign!(corporation) }
+          end
+
+          hexes
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+
+          # Double revenue of corporation's destination hexes
+          if (ability = abilities(route.corporation, :assign_hexes))
+            stops.each do |stop|
+              next unless ability.hexes.include?(stop.hex.name)
+
+              revenue += stop.route_revenue(route.phase, route.train)
+            end
+          end
+
+          revenue
+        end
+
+        def assignment_tokens(assignment)
+          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
+
+          super
+        end
       end
     end
   end
