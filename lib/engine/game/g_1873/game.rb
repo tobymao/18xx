@@ -1841,9 +1841,25 @@ module Engine
 
         def concession_route_run?(entity, routes)
           return true if entity == @qlb
+          return false unless routes
 
           @corporation_info[entity][:concession_routes].all? do |con_route|
-            routes.any? { |r| (r.connection_hexes.flatten & con_route).size == con_route.size }
+            routes.any? do |r|
+              ((route_hexes = r.connection_hexes.flatten.uniq) & con_route).size == con_route.size &&
+                route_hexes.size == con_route.size
+            end
+          end
+        end
+
+        def concession_route?(corporation, route)
+          return false unless corporation
+          return false unless @corporation_info[corporation][:concession_routes]
+          return false unless route
+
+          route_hexes = route.connection_hexes.flatten.uniq
+
+          @corporation_info[corporation][:concession_routes].any? do |con_route|
+            (route_hexes & con_route).size == con_route.size && route_hexes.size == con_route.size
           end
         end
 
@@ -1927,6 +1943,11 @@ module Engine
         # needed to deal with unallocated diesels being referenced by Route serialization
         def city_tokened_by?(city, entity)
           !entity || city.tokened_by?(entity)
+        end
+
+        def revenue_str(route)
+          str = super
+          concession_route?(route.corporation, route) ? "#{str} (concession)" : str
         end
         #
         # end of route methods
