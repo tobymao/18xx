@@ -130,6 +130,20 @@ module Engine
           },
         ].freeze
 
+        def setup
+          tr = corporation_by_id('TR')
+
+          # Move 3 last ordinary shares of TR to bank pool
+          @share_pool.buy_shares(
+            @share_pool,
+            ShareBundle.new(tr.shares.dup.reverse.take(3)),
+            exchange: :free
+          )
+
+          # Place second starting token for TR
+          @hexes.find { |hex| hex.name == 'H76' }.tile.cities.first.place_token(tr, tr.next_token)
+        end
+
         def init_hexes(companies, corporations)
           hexes = super
 

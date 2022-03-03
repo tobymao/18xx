@@ -91,16 +91,8 @@ module Engine
             tokens: [0, 0, 40, 100, 100],
             coordinates: 'A77',
             color: :grey,
-            text_color: 'black',
             reservation_color: nil,
             abilities: [
-              # Second starting token
-              {
-                type: 'token',
-                hexes: ['H76'],
-                teleport_price: 0,
-                when: 'par',
-              },
               # Double tile lay after placing a token in Asakusa H84
               {
                 type: 'assign_hexes',
