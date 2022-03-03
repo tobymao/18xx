@@ -104,6 +104,12 @@ module Engine
           G18MT::SharePool.new(self)
         end
 
+        def next_sr_player_order
+          return :after_last_to_act if round.auction?
+
+          self.class::NEXT_SR_PLAYER_ORDER
+        end
+
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
@@ -282,6 +288,13 @@ module Engine
           return value unless soo&.owner == player
 
           value - soo.value
+        end
+
+        def buy_train(operator, train, price = nil)
+          return super unless train&.owner&.corporation?
+
+          train.operated = false unless train.owner.operating_history[[turn, @round.round_num]]
+          super
         end
 
         def train_limit(entity)

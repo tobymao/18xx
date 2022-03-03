@@ -71,7 +71,7 @@ module Engine
               parts = name.split('::')
               last = parts.last
               part = (%w[Game Meta].include?(last) ? parts[-2] : last)
-              part.sub(/^G/, 'g_').gsub(/(.)([A-Z]+)/, '\1_\2').downcase
+              part.sub(/^G/, 'g_').gsub(/(.)([A-Z]+)/, '\1_\2').sub(/__/, '_').downcase
             end
         end
 

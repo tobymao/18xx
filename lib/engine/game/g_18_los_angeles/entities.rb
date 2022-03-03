@@ -70,16 +70,21 @@ module Engine
           },
           {
             name: 'Chino Hills Excavation',
-            value: 60,
+            value: 50,
             revenue: 20,
-            desc: 'Reduces, for the owning corporation, the cost of laying all hill tiles and '\
-                  'tunnel/pass hexsides by $20.',
+            desc: 'Reduces, for the owning corporation, the total terrain cost for all tile lays by $20.',
             sym: 'CHE',
             abilities: [
               {
                 type: 'tile_discount',
                 discount: 20,
                 terrain: 'mountain',
+                owner_type: 'corporation',
+              },
+              {
+                type: 'tile_discount',
+                discount: 20,
+                terrain: 'water',
                 owner_type: 'corporation',
               },
             ],
@@ -89,14 +94,14 @@ module Engine
             name: 'Los Angeles Citrus',
             value: 60,
             revenue: 15,
-            desc: 'The owning corporation may assign Los Angeles Citrus to either Riverside (C14) '\
-                  'or Port of Long Beach (F7), to add $30 to all routes it runs to this location.',
+            desc: 'The owning corporation may assign Los Angeles Citrus to Oxnard (B1), Yorba Linda '\
+                  '(D13), or Irvine (F15), to add $30 to all routes it runs to this location.',
             sym: 'LAC',
             abilities: [
               {
                 type: 'assign_hexes',
                 when: 'owning_corp_or_turn',
-                hexes: %w[C14 F7],
+                hexes: %w[B1 D13 F15],
                 count: 1,
                 owner_type: 'corporation',
               },
@@ -113,15 +118,15 @@ module Engine
             name: 'Los Angeles Steamship',
             value: 40,
             revenue: 10,
-            desc: 'The owning corporation may assign the Los Angeles Steamship to one of Oxnard ('\
-                  'B1), Santa Monica (C2), Port of Long Beach (F7), or Westminster (F9), to add $'\
-                  '20 per port symbol to all routes it runs to this location.',
+            desc: 'The owning corporation may assign the Los Angeles Steamship to Oxnard (B1), '\
+                  'Santa Monica (C2), or Westminster (F9), to add $20 per port symbol to all '\
+                  'routes it runs to this location.',
             sym: 'LAS',
             abilities: [
               {
                 type: 'assign_hexes',
                 when: 'owning_corp_or_turn',
-                hexes: %w[B1 C2 F7 F9],
+                hexes: %w[B1 C2 F9],
                 count_per_or: 1,
                 owner_type: 'corporation',
               },
@@ -135,30 +140,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'South Bay Line',
-            value: 40,
-            revenue: 15,
-            desc: 'The owning corporation may make an extra $0 cost tile upgrade of either Redondo '\
-                  'Beach (E4) or Torrance (E6), but not both.',
-            sym: 'SBL',
-            abilities: [
-              {
-                type: 'tile_lay',
-                when: 'owning_corp_or_turn',
-                owner_type: 'corporation',
-                free: true,
-                hexes: %w[E4 E6],
-                tiles: %w[14 15 619],
-                special: false,
-                count: 1,
-              },
-            ],
-            color: nil,
-          },
-          {
             name: 'Puente Trolley',
             value: 40,
-            revenue: 15,
+            revenue: 10,
             desc: 'The owning corporation may lay an extra $0 cost yellow tile in Puente (C10), '\
                   'even if they are not connected to Puente.',
             sym: 'PT',
@@ -247,6 +231,38 @@ module Engine
             ],
             color: nil,
           },
+          {
+            name: 'Angeles Public Dump',
+            sym: 'APD',
+            value: 40,
+            revenue: 10,
+            desc: '',
+            abilities: [],
+          },
+          {
+            name: 'Los Angeles Paving',
+            sym: 'LAP',
+            value: 60,
+            revenue: 15,
+            desc: '',
+            abilities: [],
+          },
+          {
+            name: 'Redondo Junction',
+            sym: 'RJ',
+            value: 50,
+            revenue: 10,
+            desc: '',
+            abilities: [],
+          },
+          {
+            name: 'RKO Pictures',
+            sym: 'RP',
+            value: 40,
+            revenue: 10,
+            desc: '',
+            abilities: [],
+          },
         ].freeze
 
         CORPORATIONS = [
@@ -263,7 +279,7 @@ module Engine
                 description: 'Reserved $40/$60 Culver City (C4) token',
                 hexes: ['C4'],
                 price: 40,
-                teleport_price: 60,
+                teleport_price: 100,
               },
               { type: 'reservation', hex: 'C4', remove: 'IV' },
             ],
@@ -314,7 +330,6 @@ module Engine
             logo: '18_los_angeles/PER',
             simple_logo: '18_los_angeles/PER.alt',
             tokens: [0, 80, 80, 80],
-            coordinates: 'F13',
             color: '#ff6a00',
             text_color: 'black',
             always_market_price: true,
@@ -327,17 +342,8 @@ module Engine
             logo: '18_los_angeles/SF',
             simple_logo: '18_los_angeles/SF.alt',
             tokens: [0, 80, 80, 80, 80],
-            abilities: [
-              {
-                type: 'token',
-                description: 'Reserved $40 Montebello (C8) token',
-                hexes: ['C8'],
-                count: 1,
-                price: 40,
-              },
-              { type: 'reservation', hex: 'C8', remove: 'IV' },
-            ],
-            coordinates: 'D13',
+            abilities: [],
+            coordinates: 'E12',
             color: '#ff7fed',
             text_color: 'black',
             always_market_price: true,
@@ -357,7 +363,7 @@ module Engine
                 hexes: ['C6'],
                 price: 40,
                 count: 1,
-                teleport_price: 100,
+                teleport_price: 60,
               },
               { type: 'reservation', hex: 'C6', remove: 'IV' },
             ],

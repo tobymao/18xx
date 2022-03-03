@@ -29,6 +29,8 @@ module Engine
             raise GameError, "#{target} not allowed for token. Only allowed: #{allowed}." unless allowed.include?(target)
 
             super
+
+            @game.remove_icon_from_waycross unless @game.abilities(@game.p3_company, :token)&.count&.positive?
           end
 
           include OnlyOneTokenPerRound

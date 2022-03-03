@@ -48,10 +48,12 @@ module Engine
           end
 
           def process_lay_tile(action)
+            old_tile = action.hex.tile
+
             lay_tile_action(action)
             pass! unless can_lay_tile?(action.entity)
 
-            @game.after_lay_tile(action.hex, action.tile)
+            @game.after_lay_tile(action.hex, old_tile, action.tile)
           end
 
           def process_pass(action)
