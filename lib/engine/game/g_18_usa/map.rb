@@ -165,7 +165,7 @@ module Engine
           'X14' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
+            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
                       'label=DFW',
           },
           'X15' => {
@@ -630,7 +630,7 @@ module Engine
           'F20' => 'Louisville',
           'F26' => 'Baltimore',
           'G3' => 'Los Angeles',
-          'G7' => 'Pheonix',
+          'G7' => 'Phoenix',
           'G11' => 'Santa Fe',
           'G17' => 'Memphis',
           'G27' => 'Norfolk',
@@ -640,7 +640,7 @@ module Engine
           'H22' => 'Atlanta',
           'I13' => 'San Antonio',
           'I15' => 'Houston',
-          'I19' => 'New Orelans',
+          'I19' => 'New Orleans',
           'I25' => 'Jacksonville',
           'J20' => 'Port of New Orleans',
           'J24' => 'Florida',

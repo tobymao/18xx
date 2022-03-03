@@ -305,7 +305,7 @@ module View
       def other_trains(other_corp_trains, corporation)
         hidden_trains = false
         trains_to_buy = other_corp_trains.flat_map do |other, trains|
-          trains.group_by(&:name).flat_map do |name, group|
+          trains.group_by { |t| @game.train_purchase_name(t) }.flat_map do |name, group|
             fixed_price = @step.respond_to?(:fixed_price) && @step.fixed_price(group[0])
             input = if fixed_price
                       h('div.right', @game.format_currency(fixed_price))

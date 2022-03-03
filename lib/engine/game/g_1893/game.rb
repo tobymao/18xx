@@ -502,7 +502,7 @@ module Engine
               abilities: [
                 {
                   type: 'base',
-                  description: 'When AGV form: becomes 20% president certificate in AGV',
+                  description: 'Becomes AGV\'s president certificate',
                   desc_detail: 'During merge rounds in phase 4 this minor gives 20 votes on AGV formation. '\
                                'When AGV form this minor is exchanged for a 20% president certificate in AGV, '\
                                'while the treasury, token and train(s) of the minor are merged into AGV.',

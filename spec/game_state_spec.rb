@@ -14,37 +14,6 @@ module Engine
       Find.find(FIXTURES_DIR).find { |f| File.basename(f) == "#{described_class}.json" }
     end
 
-    describe '18GA' do
-      describe 9222 do
-        it 'MRC\'s ability cannot be used by a non-owning corporation' do
-          game = game_at_action(game_file, 248)
-          action = {
-            'type' => 'lay_tile',
-            'entity' => 'MRC',
-            'entity_type' => 'company',
-            'hex' => 'F12',
-            'tile' => '9-2',
-            'rotation' => 2,
-          }
-          expect(game.exception).to be_nil
-          expect(game.process_action(action).exception).to be_a(GameError)
-        end
-        it 'MRC\'s ability can be used by the owning corporation' do
-          game = game_at_action(game_file, 284)
-          mrc = game.company_by_id('MRC')
-
-          expect(game.active_step).to be_a(Step::Track)
-          expect(game.round.actions_for(mrc)).to eq(%w[lay_tile pass])
-
-          game = game_at_action(game_file, 285)
-          mrc = game.company_by_id('MRC')
-
-          expect(game.active_step).to be_a(Step::Token)
-          expect(game.round.actions_for(mrc)).to eq([])
-        end
-      end
-    end
-
     describe '18Chesapeake' do
       describe 1277 do
         it 'closes Cornelius Vanderbilt when SRR buys a train' do

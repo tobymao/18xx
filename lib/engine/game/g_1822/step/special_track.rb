@@ -28,6 +28,7 @@ module Engine
           end
 
           def process_lay_tile(action)
+            old_tile = action.hex.tile
             entity = action.entity
             ability = abilities(entity)
             spender = if !entity.owner
@@ -54,7 +55,7 @@ module Engine
               lay_tile_action(action, spender: spender)
             end
             @in_process = false
-            @game.after_lay_tile(action.hex, action.tile)
+            @game.after_lay_tile(action.hex, old_tile, action.tile)
             ability.use!
 
             if ability.type == :tile_lay && ability.count <= 0 && ability.closed_when_used_up

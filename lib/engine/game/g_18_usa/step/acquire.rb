@@ -10,10 +10,9 @@ module Engine
           include ScrapTrainModule
           def actions(entity)
             actions = super
-            if entity == @buyer && can_scrap_train?(entity)
-              actions = %w[pass] if actions.empty?
-              actions << 'scrap_train'
-            end
+            return actions if actions.empty?
+
+            actions << 'scrap_train' if entity == @buyer && can_scrap_train?(entity)
             actions
           end
 

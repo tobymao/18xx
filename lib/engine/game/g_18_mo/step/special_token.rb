@@ -26,6 +26,7 @@ module Engine
             )
 
             teleport_complete if @round.teleported
+            @game.remove_teleport_destination(entity, action.city)
           end
         end
       end

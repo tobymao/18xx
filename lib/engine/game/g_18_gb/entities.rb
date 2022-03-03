@@ -24,7 +24,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close LB' },
               },
             ],
           },
@@ -47,7 +47,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close AF' },
               },
               {
                 type: 'tile_lay',
@@ -65,8 +65,12 @@ module Engine
             name: 'Great Northern',
             value: 70,
             revenue: 25,
-            desc: 'The GN allows a corporation to lay a free Station Marker in York (I14). The GN owner may use this ability ' \
-                  'once per game, after the GN has closed, for any corporation which they control.',
+            desc: 'The GN allows a corporation to lay a Station Marker in York (I14). A space is reserved for the GN until the '\
+                  'blue phase, otherwise an empty space must be available in York. The GN owner may use this ability ' \
+                  'once per game, after the GN has closed, for any corporation which they control. The station is free if the ' \
+                  'corporation can trace a route to York, otherwise it costs £50. After laying the marker, the corporation ' \
+                  'also gains the ability to lay a green tile in York as one of its standard tile actions, instead of the ' \
+                  'usual yellow tile, even before green tiles are normally available.',
             sym: 'GN',
             color: nil,
             abilities: [
@@ -79,7 +83,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close GN' },
               },
               {
                 type: 'reservation',
@@ -117,7 +121,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close SD' },
               },
               {
                 type: 'hex_bonus',
@@ -146,7 +150,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close LM' },
               },
               {
                 type: 'hex_bonus',
@@ -176,7 +180,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close LS' },
               },
               {
                 type: 'tile_lay',
@@ -212,7 +216,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close TV' },
               },
               {
                 type: 'tile_lay',
@@ -232,8 +236,12 @@ module Engine
             name: 'Maryport & Carlisle',
             value: 60,
             revenue: 20,
-            desc: 'The MC allows a corporation to lay a Station Marker in Carlisle (H9). The MC owner may use this ability ' \
-                  'once per game, after the MC has closed, for any corporation which they control.',
+            desc: 'The MC allows a corporation to lay a Station Marker in Carlisle (H9). A space is reserved for the MC until ' \
+                  'the blue phase, otherwise an empty space must be available in Carlisle. The MC owner may use this ability ' \
+                  'once per game, after the MC has closed, for any corporation which they control. The station is free if the ' \
+                  'corporation can trace a route to Carlisle, otherwise it costs £50.  After laying the marker, the ' \
+                  'corporation also gains the ability to lay a green tile in Carlisle as one of its standard tile actions, ' \
+                  'instead of the usual yellow tile, even before green tiles are normally available.',
             sym: 'MC',
             color: nil,
             abilities: [
@@ -246,7 +254,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close MC' },
               },
               {
                 type: 'reservation',
@@ -284,7 +292,7 @@ module Engine
                 type: 'choose_ability',
                 owner_type: 'player',
                 when: 'any',
-                choices: { close: 'Close' },
+                choices: { close: 'Close CH' },
               },
               {
                 type: 'hex_bonus',
