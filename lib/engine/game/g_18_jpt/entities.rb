@@ -18,7 +18,7 @@ module Engine
             sym: 'TER',
             value: 40,
             revenue: 10,
-            desc: 'A corporation owning the TER may place a green tile on Shimokitazawa (E87) in addition to its normal tile '\
+            desc: 'The corporation owning the TER may place a green tile on Shimokitazawa (E87) in addition to its normal tile '\
                   'placement during its turn. A route to Shimokitazawa is not required. Blocks E87 while owned by player.',
             abilities: [
               { type: 'blocks_hexes', owner_type: 'player', hexes: ['E87'] },
@@ -26,7 +26,7 @@ module Engine
                 type: 'tile_lay',
                 owner_type: 'corporation',
                 hexes: ['E87'],
-                tiles: [],
+                tiles: %w[14 611],
                 when: 'owning_corp_or_turn',
                 count: 1,
               },
@@ -38,11 +38,8 @@ module Engine
             sym: 'TMGBT',
             value: 70,
             revenue: 15,
-            desc: 'A corporation owning the TMGBT gets a subsidy of 50 yen from the bank to its treasury every time '\
+            desc: 'The corporation owning the TMGBT gets a subsidy of 50 yen from the bank to its treasury every time '\
                   'after it places green "T" tiles.',
-            abilities: [
-              # TODO: get 50 yen after green T tile lay
-            ],
             color: nil,
           },
           {
@@ -93,18 +90,10 @@ module Engine
             color: :grey,
             reservation_color: nil,
             abilities: [
-              # Double tile lay after placing a token in Asakusa H84
               {
                 type: 'assign_hexes',
                 count: 1,
                 hexes: ['H84'],
-              },
-              {
-                type: 'tile_lay',
-                tiles: [],
-                hexes: [],
-                reachable: true,
-                special: false,
                 description: 'Double tile lay if H84 was tokened',
                 desc_detail: 'If Tobu places a token in Asakusa (H84), it may lay or upgrade a tile twice '\
                              'in each subsequent operating round. The same hex may be upgraded twice.',
@@ -125,16 +114,13 @@ module Engine
             reservation_color: nil,
             abilities: [
               {
-                type: 'assign_hexes',
-                count: 1,
+                type: 'hex_bonus',
+                amount: 0,
                 description: 'Double income from Tokorozawa (A81)',
                 hexes: ['A81'],
               },
               {
-                type: 'tile_income',
-                income: 100,
-                town: true,
-                owner_only: true,
+                type: 'description',
                 description: '¥100 subsidy after laying town tiles',
                 desc_detail: 'Gets a subsidy of ¥100 from the bank to treasury whenever it places a tile with a town',
               },
@@ -153,8 +139,8 @@ module Engine
             reservation_color: nil,
             abilities: [
               {
-                type: 'assign_hexes',
-                count: 1,
+                type: 'hex_bonus',
+                amount: 0,
                 description: 'Double income from Odawara (A91)',
                 hexes: ['A91'],
               },
@@ -173,8 +159,8 @@ module Engine
             reservation_color: nil,
             abilities: [
               {
-                type: 'assign_hexes',
-                count: 1,
+                type: 'hex_bonus',
+                amount: 0,
                 description: 'Double income from Hachioji (A87)',
                 hexes: ['A87'],
               },
@@ -194,11 +180,7 @@ module Engine
             reservation_color: nil,
             abilities: [
               {
-                type: 'tile_lay',
-                tiles: [],
-                hexes: [],
-                reachable: true,
-                special: false,
+                type: 'description',
                 description: 'Additional tile lays after laying town tiles',
                 desc_detail: 'For each town tile it places, Tokyu may lay or upgrade one extra tile '\
                              'in the current operating round. Only one extra tile is received for a double town.',
@@ -207,12 +189,7 @@ module Engine
                 type: 'assign_hexes',
                 count: 1,
                 hexes: ['A93'],
-              },
-              {
-                type: 'train_discount',
-                discount: '0.2',
-                trains: %w[2 3 4 5 6 D],
-                description: 'Buy trains at 20% discount if A93 was tokened',
+                description: 'Buy trains at 20% discount if A93 tokened',
                 desc_detail: 'If Tokyu places a token in Nagatsuda (A93), it may purchase trains from the bank '\
                              'or open market at a 20% discount.',
               },
@@ -231,8 +208,8 @@ module Engine
             reservation_color: nil,
             abilities: [
               {
-                type: 'assign_hexes',
-                count: 1,
+                type: 'hex_bonus',
+                amount: 0,
                 description: 'Double income from D98 and H92',
                 desc_detail: 'Double income from Yokosuka (D98) and Haneda airport (H92)',
                 hexes: %w[D98 H92],
@@ -253,8 +230,8 @@ module Engine
             reservation_color: nil,
             abilities: [
               {
-                type: 'assign_hexes',
-                count: 1,
+                type: 'hex_bonus',
+                amount: 0,
                 description: 'Double income from Narita (L84)',
                 hexes: ['L84'],
               },
@@ -274,7 +251,8 @@ module Engine
             abilities: [
               {
                 type: 'tile_discount',
-                description: 'Place green and brown "T" tiles without terrain costs',
+                description: 'Place "T" tiles for free',
+                desc_detail: 'Place green and brown "T" tiles without terrain costs',
                 hexes: %w[F84 F86 F88 G85 G87 G89 H84],
                 discount: 80,
               },
@@ -294,8 +272,8 @@ module Engine
             reservation_color: nil,
             abilities: [
               {
-                type: 'assign_hexes',
-                count: 1,
+                type: 'hex_bonus',
+                amount: 0,
                 description: 'Double income from Yamato (A95)',
                 hexes: ['A95'],
               },
@@ -314,8 +292,8 @@ module Engine
             reservation_color: nil,
             abilities: [
               {
-                type: 'assign_hexes',
-                count: 1,
+                type: 'hex_bonus',
+                amount: 0,
                 description: 'Double income from Tsukuba (L76)',
                 hexes: ['L76'],
               },
@@ -333,8 +311,8 @@ module Engine
             reservation_color: nil,
             abilities: [
               {
-                type: 'assign_hexes',
-                count: 1,
+                type: 'hex_bonus',
+                amount: 0,
                 description: 'Double income from Shiroi (L80)',
                 hexes: ['L80'],
               },
