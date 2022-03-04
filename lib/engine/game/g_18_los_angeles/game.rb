@@ -54,7 +54,16 @@ module Engine
           'UP' => 'B13',
         }.freeze
 
-        HOME_TOKEN_TIMING = :float
+        HOME_TOKEN_TIMING = :par
+
+        PER_HEXES = %w[
+          A4 A6
+          B5 B13
+          C8
+          D7 D9 D11 D13
+          E4 E6
+          F9 F11 F13
+        ].freeze
 
         ABILITY_ICONS = {
           SBL: 'sbl',
@@ -194,9 +203,18 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
             G1846::Step::Assign,
             G18LosAngeles::Step::BuySellParShares,
           ])
+        end
+
+        def home_token_locations(corporation)
+          return [] unless corporation.id == 'PER'
+
+          self.class::PER_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
+            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+          end
         end
 
         def operating_round(round_num)
