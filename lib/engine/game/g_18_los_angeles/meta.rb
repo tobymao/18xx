@@ -15,8 +15,8 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
         GAME_PUBLISHER = %i[traxx].freeze
         GAME_RULES_URL = {
-          '18 Los Angeles Rules' =>
-                          'https://drive.google.com/file/d/16di_KBlGYnmdAMvjl2ZiqvyeB7wTAJ_4/view?usp=sharing',
+          '18 Los Angeles 2nd Edition Rules' =>
+                          'https://drive.google.com/file/d/1mno-8gmYlSjUSB91IcfW_Pvtcr1xUWiy/view?usp=sharing',
           '1846 Rules' =>
                 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
         }.freeze

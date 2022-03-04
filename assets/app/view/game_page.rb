@@ -424,6 +424,8 @@ module View
         else
           h(Game::Round::Merger, game: @game)
         end
+      else
+        h(Game::Round::Stock, game: @game) if @round.stock?
       end
     end
 

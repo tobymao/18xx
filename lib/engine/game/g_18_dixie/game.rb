@@ -37,14 +37,23 @@ module Engine
 
         include CitiesPlusTownsRouteDistanceStr
 
-        TRACK_RESTRICTION = :permissive
-        SELL_BUY_ORDER = :sell_buy_sell
-        TILE_RESERVATION_BLOCKS_OTHERS = true
-        CURRENCY_FORMAT_STR = '$%d'
-
+        # General Constants
         BANK_CASH = 12_000
+        CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12, 6 => 11 }.freeze
+        CURRENCY_FORMAT_STR = '$%d'
+        GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :full_or }.freeze
+        SELL_BUY_ORDER = :sell_buy_sell
+        STARTING_CASH = { 3 => 700, 4 => 525, 5 => 425, 6 => 375 }.freeze
+        TILE_RESERVATION_BLOCKS_OTHERS = true
+        TRACK_RESTRICTION = :permissive
+
+        # OR Constants
+        FIRST_TURN_EXTRA_TILE_LAYS = [{ lay: true, upgrade: false }].freeze
+        MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+        MINOR_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
         def setup
+          @recently_floated = []
           @minors.each do |minor|
             train = @depot.upcoming[0]
             train.buyable = false
@@ -53,10 +62,30 @@ module Engine
           end
         end
 
-        CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12, 6 => 11 }.freeze
+        # OR Stuff
+        def or_round_finished
+          @recently_floated = []
+        end
 
-        STARTING_CASH = { 3 => 700, 4 => 525, 5 => 425, 6 => 375 }.freeze
-        GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :full_or }.freeze
+        def tile_lays(entity)
+          operator = entity.company? ? entity.owner : entity
+          extra_tile_lays = @recently_floated&.include?(operator) ? FIRST_TURN_EXTRA_TILE_LAYS : []
+          if operator.corporation?
+            extra_tile_lays + MAJOR_TILE_LAYS
+          elsif operator.minor?
+            extra_tile_lays + MINOR_TILE_LAYS
+          else
+            super
+          end
+        end
+
+        # SR stuff
+
+        def float_corporation(corporation)
+          @recently_floated << corporation
+
+          super
+        end
       end
     end
   end

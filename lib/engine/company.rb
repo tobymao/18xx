@@ -3,12 +3,14 @@
 require_relative 'abilities'
 require_relative 'entity'
 require_relative 'ownable'
+require_relative 'passer'
 
 module Engine
   class Company
     include Abilities
     include Entity
     include Ownable
+    include Passer
 
     attr_accessor :name, :desc, :max_price, :min_price, :revenue, :discount, :value
     attr_reader :sym, :min_auction_price, :treasury, :interval, :color, :text_color

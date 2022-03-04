@@ -57,7 +57,15 @@ module Engine
             entity = action.entity
             routes = action.routes
 
-            @log << "QLB runs local train for #{@game.format_currency(@game.qlb_bonus)}" if entity == @game.qlb
+            if entity == @game.qlb
+              @log << "QLB runs local train for #{@game.format_currency(@game.qlb_bonus)}"
+            elsif entity.trains.any? { |t| @game.train_type(t) == :mining } &&
+              routes.none? { |r| @game.train_type(r.train) == :mining }
+              raise GameError, 'Must run concession route with non-diesel train'
+            elsif entity.trains.any? { |t| @game.train_type(t) == :passenger } &&
+              routes.none? { |r| @game.train_type(r.train) == :passenger }
+              raise GameError, 'Must run concession route with diesel train'
+            end
 
             routes.each do |r|
               @game.use_pool_diesel(r.train, entity) if @game.diesel?(r.train)
