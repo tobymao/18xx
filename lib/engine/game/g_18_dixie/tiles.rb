@@ -48,6 +48,11 @@ module Engine
           '70' => 3,
           '170' => 3,
 
+          'X10' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:20,slots:3;path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0;label=Atl',
+          },
           'X20' => {
             'count' => 1,
             'color' => 'green',
