@@ -50,14 +50,6 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
 
-        # These hexes, in these colours, take plain tiles, even though
-        # they have symbols on them.
-        PLAIN_SYMBOL_HEXES = {
-          yellow: %w[K19 D8 D12],
-          green: %w[D12 E3 K19],
-          brown: %w[E3],
-        }.freeze
-
         # These symbols upgrade to plain tiles in these colours
         PLAIN_SYMBOL_UPGRADES = {
           yellow: %w[Br R S],
