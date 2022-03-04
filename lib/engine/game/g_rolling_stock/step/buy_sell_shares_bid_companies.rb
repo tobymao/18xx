@@ -24,6 +24,8 @@ module Engine
           end
 
           def can_bid?(entity)
+            return unless @round.current_actions.empty?
+
             biddable = @game.biddable_companies
             !biddable.empty? && max_bid(entity) >= biddable.min_by(&:value).value
           end
@@ -120,6 +122,59 @@ module Engine
             else
               super
             end
+          end
+
+          def can_buy_any?(entity)
+            return unless @round.current_actions.empty?
+
+            @game.share_pool.shares.group_by(&:corporation).each do |_, shares|
+              return true if can_buy_shares?(entity, shares)
+            end
+
+            false
+          end
+
+          def can_buy_shares?(entity, shares)
+            return false if shares.empty?
+
+            entity.cash >= @game.next_price_to_right(shares.first.corporation.share_price).price
+          end
+
+          def can_buy?(entity, bundle)
+            return unless bundle.owner.share_pool?
+
+            entity.cash >= @game.next_price_to_right(bundle.corporation.share_price).price
+          end
+
+          def buy_shares(entity, bundle, exchange: nil, swap: nil, allow_president_change: true)
+            bundle.share_price = @game.next_price_to_right(bundle.corporation.share_price).price
+            @game.share_pool.buy_shares(entity,
+                                        bundle,
+                                        exchange: exchange,
+                                        swap: swap,
+                                        allow_president_change: allow_president_change)
+            @game.move_to_right(bundle.corporation)
+          end
+
+          def can_sell_any?(entity)
+            return unless @round.current_actions.empty?
+
+            @game.corporations.any? do |corporation|
+              bundles = @game.bundles_for_corporation(entity, corporation)
+              bundles.any? { |bundle| can_sell?(entity, bundle) }
+            end
+          end
+
+          def can_sell?(entity, bundle)
+            return unless bundle
+
+            entity == bundle.owner && bundle.shares.one?
+          end
+
+          def sell_shares(_entity, bundle, swap: nil)
+            bundle.share_price = @game.next_price_to_left(bundle.corporation.share_price).price
+            @game.share_pool.sell_shares(bundle, allow_president_change: true, swap: swap)
+            @game.move_to_left(bundle.corporation)
           end
 
           def visible_corporations
