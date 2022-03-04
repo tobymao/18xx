@@ -55,7 +55,7 @@ module Engine
           yellow: %w[Br R S],
           green: %w[Bu Br S],
           brown: %w[Bu],
-        }
+        }.freeze
 
         # Two lays with one being an upgrade. Tile lays cost 20
         TILE_COST = 20
