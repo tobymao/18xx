@@ -58,6 +58,13 @@ module Engine
           brown: %w[E3],
         }.freeze
 
+        # These symbols upgrade to plain tiles in these colours
+        PLAIN_SYMBOL_UPGRADES = {
+          yellow: %w[Br R S],
+          green: %w[Bu Br S],
+          brown: %w[Bu],
+        }
+
         # Two lays with one being an upgrade. Tile lays cost 20
         TILE_COST = 20
         TILE_LAYS = [
@@ -673,9 +680,8 @@ module Engine
             new_tile.label = old_tile.label.to_s unless new_tile.label
 
             # remove the label when we remove a temporaily labelled tile.
-            if PLAIN_SYMBOL_HEXES.include?(old_tile.color) &&
-               PLAIN_SYMBOL_HEXES[old_tile.color].include?(new_tile.hex.id)
-
+            if PLAIN_SYMBOL_UPGRADES.include?(old_tile.color) &&
+               PLAIN_SYMBOL_UPGRADES[old_tile.color].include?(old_tile.label.to_s)
               old_tile.label = nil
             end
           end
@@ -716,7 +722,7 @@ module Engine
         def upgrades_to_correct_label?(from, to)
           # handle lays of a plain tile over a hex/tile with a label
 
-          return true if PLAIN_SYMBOL_HEXES.include?(to.color) && PLAIN_SYMBOL_HEXES[to.color].include?(from.hex.name)
+          return true if PLAIN_SYMBOL_UPGRADES.include?(to.color) && PLAIN_SYMBOL_UPGRADES[to.color].include?(from.label.to_s)
 
           super
         end
