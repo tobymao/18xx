@@ -14,6 +14,8 @@ module Engine
           def self.short_name
             'IR'
           end
+
+          def finish_round; end
         end
       end
     end
