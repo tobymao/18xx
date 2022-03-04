@@ -2776,6 +2776,10 @@ module Engine
         false
       end
 
+      def train_purchase_name(train)
+        train.name
+      end
+
       # If a game overrides this to true, then if the possible actions for the current entity include any of
       #   buy_train, scrap_train, or reassign_train then
       # the Operating view will be used instead of the Merger round view for train actiosn in a merger round.

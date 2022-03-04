@@ -722,7 +722,11 @@ module Engine
         def upgrades_to_correct_label?(from, to)
           # handle lays of a plain tile over a hex/tile with a label
 
-          return true if PLAIN_SYMBOL_UPGRADES.include?(to.color) && PLAIN_SYMBOL_UPGRADES[to.color].include?(from.label.to_s)
+          if PLAIN_SYMBOL_UPGRADES.include?(to.color) &&
+             PLAIN_SYMBOL_UPGRADES[to.color].include?(from.label.to_s) &&
+             !to.label
+            return true
+          end
 
           super
         end

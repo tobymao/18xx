@@ -11,13 +11,12 @@ module Engine
             super
 
             entity = action.entity
-            return unless entity.id == 'P20'
-
             @game.log << "#{entity.name} closes"
             entity.close!
           end
 
           def available_hex(entity, hex)
+            return s9_available_hex(entity, hex) if entity.id == 'S9'
             return false unless entity.id == 'P20'
             return false if @game.class::COMPANY_TOWN_TILES.include?(hex.tile.name)
 
@@ -26,10 +25,21 @@ module Engine
               @game.graph.connected_hexes(corporation)[hex]
           end
 
+          def s9_available_hex(entity, hex)
+            !hex.tile.cities.empty? &&
+              !hex.tile.cities.first.tokened_by?(entity.owner) &&
+              @game.graph.reachable_hexes(entity.owner).include?(hex)
+          end
+
           def ability(entity)
             return unless entity&.company?
 
-            @game.abilities(entity, :token, time: '%current_step%')
+            possible_times = [
+              '%current_step%',
+              'owning_corp_or_turn',
+            ]
+
+            @game.abilities(entity, :token, time: possible_times)
           end
         end
       end

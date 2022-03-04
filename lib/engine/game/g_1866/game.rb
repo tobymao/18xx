@@ -61,7 +61,7 @@ module Engine
              200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[0c 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
              200pxzw 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
-          %w[120P 100P 75P 75P 75P 120P 80P 80P 80P 50P],
+          %w[135P 110P 80P 70P 70P 120P 80P 110P 90P 45P],
         ].freeze
 
         EVENTS_TEXT = {
@@ -452,12 +452,12 @@ module Engine
             },
             'infrastructure_count' => 5,
             'companies' => %w[P1 P2 P3 P4 P5 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
             'national_corporations' => %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
             'corporation_count' => 13,
             'region_corporations' => {
               'GB' => %w[LNWR GWR NBR],
-              'FR' => %w[PLM MIDI OU],
+              'FR' => %w[PLM MIDI OU CPS],
               'DE' => %w[KPS BY KHS],
               'AHE' => %w[SB BH FNR],
               'IT' => %w[SSFL IFT SFAI],
@@ -465,11 +465,11 @@ module Engine
           },
           'nes' => {
             'cert_limit' => {
-              3 => 40,
-              4 => 30,
-              5 => 24,
-              6 => 20,
-              7 => 17,
+              3 => 28,
+              4 => 21,
+              5 => 17,
+              6 => 14,
+              7 => 12,
             },
             'starting_cash' => {
               3 => 800,
@@ -493,23 +493,23 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[P1 P2 P3 P5 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU KPS BY KHS SBB GL NRS L P],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SBB GL NRS L P],
             'national_corporations' => %w[GB FR BNL CH DE PRU HAN BAV WTB SAX],
             'corporation_count' => 9,
             'region_corporations' => {
               'GB' => %w[LNWR GWR NBR],
-              'FR' => %w[PLM MIDI OU],
+              'FR' => %w[PLM MIDI OU CPS],
               'DE' => %w[KPS BY KHS],
               'BNL' => %w[GL NRS],
             },
           },
           'ces' => {
             'cert_limit' => {
-              3 => 40,
-              4 => 30,
-              5 => 24,
-              6 => 20,
-              7 => 17,
+              3 => 28,
+              4 => 21,
+              5 => 17,
+              6 => 14,
+              7 => 12,
             },
             'starting_cash' => {
               3 => 800,
@@ -544,11 +544,11 @@ module Engine
           },
           'ses' => {
             'cert_limit' => {
-              3 => 40,
-              4 => 30,
-              5 => 24,
-              6 => 20,
-              7 => 17,
+              3 => 28,
+              4 => 21,
+              5 => 17,
+              6 => 14,
+              7 => 12,
             },
             'starting_cash' => {
               3 => 800,
@@ -572,11 +572,11 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[P1 P3 P4 P6 P7 P8 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
-            'corporations' => %w[PLM MIDI OU SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
+            'corporations' => %w[PLM MIDI OU CPS SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
             'national_corporations' => %w[FR AHE ESP CH IT K2S SAR LV PAP TUS],
             'corporation_count' => 9,
             'region_corporations' => {
-              'FR' => %w[PLM MIDI OU],
+              'FR' => %w[PLM MIDI OU CPS],
               'ESP' => %w[ZPB MZA],
               'AHE' => %w[SB BH FNR],
               'IT' => %w[SSFL IFT SFAI],
@@ -609,6 +609,7 @@ module Engine
           'PLM' => 'FR',
           'MIDI' => 'FR',
           'OU' => 'FR',
+          'CPS' => 'FR',
           'KPS' => %w[DE PRU],
           'BY' => %w[DE BAV],
           'KHS' => %w[DE HAN],
@@ -636,16 +637,16 @@ module Engine
           'CH' => 'Available from OR1',
           'DE' => 'Converted by PRU president or force convert in phase 5',
           'IT' => 'Converted by K2S president or force convert in phase 5',
-          'PRU' => 'President share costs £120',
-          'HAN' => 'President share costs £100',
-          'BAV' => 'President share costs £75',
-          'WTB' => 'President share costs £75',
-          'SAX' => 'President share costs £75',
+          'PRU' => 'President share costs £135',
+          'HAN' => 'President share costs £110',
+          'BAV' => 'President share costs £80',
+          'WTB' => 'President share costs £70',
+          'SAX' => 'President share costs £70',
           'K2S' => 'President share costs £120',
           'SAR' => 'President share costs £80',
-          'LV' => 'President share costs £80',
-          'PAP' => 'President share costs £80',
-          'TUS' => 'President share costs £50',
+          'LV' => 'President share costs £110',
+          'PAP' => 'President share costs £90',
+          'TUS' => 'President share costs £45',
         }.freeze
 
         FERRY_TILE_G7 = 'border=edge:2,type:impassable;border=edge:4,type:impassable;path=a:1,b:5'
@@ -780,8 +781,8 @@ module Engine
 
         # Corporations which will be able to float on which turn
         TURN_CORPORATIONS = {
-          'ISR' => %w[PRU HAN BAV WTB SAX K2S SAR LV PAP TUS LNWR GWR NBR PLM MIDI OU KPS BY KHS SB BH FNR SSFL IFT SFAI
-                      SBB GL NRS ZPB MZA],
+          'ISR' => %w[PRU HAN BAV WTB SAX K2S SAR LV PAP TUS LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SB BH FNR SSFL IFT
+                      SFAI SBB GL NRS ZPB MZA],
         }.freeze
 
         attr_reader :scenario, :game_end_triggered_corporation, :game_end_triggered_round,

@@ -4,6 +4,7 @@ require_relative '../g_1846/game'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'step/buy_sell_par_shares'
 require_relative 'step/draft_distribution'
 require_relative 'step/special_token'
 require_relative '../stubs_are_restricted'
@@ -27,29 +28,33 @@ module Engine
                         brown: '#644c00',
                         purple: '#832e9a')
 
+        attr_reader :drafted_companies, :parred_corporations
+
         ASSIGNMENT_TOKENS = {
           'LAC' => '/icons/18_los_angeles/lac_token.svg',
           'LAS' => '/icons/1846/sc_token.svg',
         }.freeze
 
-        ORANGE_GROUP = [
-          'Beverly Hills Carriage',
-          'South Bay Line',
+        CORPORATIONS_GROUP = %w[
+          ELA
+          LA
+          LAIR
+          PER
+          SF
+          SP
+          UP
         ].freeze
-
-        BLUE_GROUP = [
-          'Chino Hills Excavation',
-          'Los Angeles Citrus',
-          'Los Angeles Steamship',
-        ].freeze
-
-        GREEN_GROUP = %w[LA SF SP].freeze
 
         REMOVED_CORP_SECOND_TOKEN = {
+          'ELA' => 'C4',
           'LA' => 'B9',
-          'SF' => 'C8',
+          'LAIR' => 'E6',
+          'SF' => 'D11',
           'SP' => 'C6',
+          'UP' => 'B13',
         }.freeze
+
+        HOME_TOKEN_TIMING = :float
 
         ABILITY_ICONS = {
           SBL: 'sbl',
@@ -73,6 +78,33 @@ module Engine
           'remove_markers' => ['Remove Markers', 'Remove LA Steamship and LA Citrus markers']
         ).freeze
 
+        CORPORATION_START_LIMIT = {
+          2 => 5,
+          3 => 5,
+          4 => 6,
+          5 => 7,
+        }.freeze
+
+        COMPANY_DRAFT_LIMIT = {
+          2 => 8,
+          3 => 9,
+          4 => 10,
+          5 => 11,
+        }.freeze
+
+        def setup
+          super
+          post_setup
+        end
+
+        def post_setup
+          @parred_corporations = 0
+          @drafted_companies = 0
+          @corporations.each do |corporation|
+            place_home_token(corporation) unless corporation.id == 'PER'
+          end
+        end
+
         def setup_turn
           1
         end
@@ -94,24 +126,16 @@ module Engine
           hexes
         end
 
-        def num_removals(group)
-          return 0 if @players.size == 5
-          return 1 if @players.size == 4
-
-          case group
-          when ORANGE_GROUP, BLUE_GROUP
-            1
-          when GREEN_GROUP
-            2
-          end
+        def num_removals(_group)
+          two_player? ? 2 : 0
         end
 
         def corporation_removal_groups
-          [GREEN_GROUP]
+          two_player? ? [CORPORATIONS_GROUP] : []
         end
 
-        def place_second_token(corporation, **_kwargs)
-          super(corporation, two_player_only: false, deferred: false)
+        def place_second_token_kwargs
+          { two_player_only: true, deferred: false }
         end
 
         def init_round
@@ -127,6 +151,52 @@ module Engine
             @log << "#{company.name} is removed" unless company.value >= 100
           end
           @draft_finished = true
+        end
+
+        def after_par(corporation)
+          super
+          after_par_check_limit!
+        end
+
+        def par_limit
+          @par_limit ||= CORPORATION_START_LIMIT[@players.size]
+        end
+
+        def after_par_check_limit!
+          @parred_corporations += 1
+
+          return if @players.size == 5
+          return unless @parred_corporations >= par_limit
+
+          closing = []
+          @corporations.select { |c| c.par_price.nil? }.each do |corporation|
+            abilities(corporation, :reservation) do |ability|
+              corporation.remove_ability(ability)
+            end
+            @corporations.reject! { |e| e == corporation }
+            closing << corporation.name
+          end
+          @log << "Closing remaining corporations: #{closing.join(', ')}"
+        end
+
+        def after_bid
+          @drafted_companies += 1
+        end
+
+        def draft_limit
+          @draft_limit ||= COMPANY_DRAFT_LIMIT[@players.size]
+        end
+
+        def draft_finished?
+          @drafted_companies >= draft_limit
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1846::Step::Assign,
+            G18LosAngeles::Step::BuySellParShares,
+          ])
         end
 
         def operating_round(round_num)

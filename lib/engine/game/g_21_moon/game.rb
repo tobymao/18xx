@@ -198,6 +198,12 @@ module Engine
         SE_HEXES = %w[L14 M11 M13].freeze
         NW_HEXES = %w[A3 A5 B2].freeze
         SW_HEXES = %w[B14 C15].freeze
+        BONUS_LOCATIONS = {
+          'NE' => 'L4',
+          'SE' => 'L14',
+          'NW' => 'A5',
+          'SW' => 'C15',
+        }.freeze
         END_BONUS_VALUE = 50
         END_BONUS_COUNT = 4
 
@@ -294,6 +300,8 @@ module Engine
           }
           @crossed_rift = false
           @sp_tiles = SP_TILES.map { |tn| @tiles.find { |t| t.name == tn } }
+
+          update_bonus_locations
         end
 
         def transfer_share(share, new_owner)
@@ -358,6 +366,10 @@ module Engine
 
         def token_graph_for_entity(_entity)
           @graph
+        end
+
+        def can_run_route?(entity)
+          @graph.route_info(entity)&.dig(:route_available)
         end
 
         def after_buy_company(player, company, _price)
@@ -759,6 +771,7 @@ module Engine
         end
 
         def update_end_bonuses(corp, routes)
+          changed = false
           routes.each do |r|
             offboards = {}
             r.hexes.each do |h|
@@ -778,7 +791,15 @@ module Engine
               @end_bonuses[corp] << bonus
               @bonuses_left[bonus] -= 1
               @log << "#{corp.name} receives '#{bonus}' end game bonus token"
+              changed = true
             end
+          end
+          update_bonus_locations if changed
+        end
+
+        def update_bonus_locations
+          BONUS_LOCATIONS.each do |bonus, hexid|
+            hex_by_id(hexid).tile.location_name = "Bonus Tokens: #{@bonuses_left[bonus]}"
           end
         end
 
@@ -947,6 +968,10 @@ module Engine
           return false unless (corporation = token.corporation)
 
           lb_city?(token.city, corporation)
+        end
+
+        def train_purchase_name(train)
+          "#{@train_base[train].to_s.upcase}:#{train.name}"
         end
 
         def show_map_legend?

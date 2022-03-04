@@ -68,7 +68,7 @@ module Engine
             ['E1'] => 'offboard=revenue:yellow_30|brown_50;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0',
             ['A17'] => 'offboard=revenue:yellow_30|brown_40;path=a:0,b:_0;path=a:5,b:_0',
             ['B22'] => 'offboard=revenue:yellow_60|brown_40;path=a:0,b:_0;path=a:1,b:_0',
-            ['E23'] => 'offboard=revenue:yellow_30|brown_46;path=a:0,b:_0;path=a:1,b:_0',
+            ['E23'] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:1,b:_0',
             ['H28'] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:1,b:_0;city=revenue:0',
             ['N2'] => 'city=revenue:yellow_50|brown_80,loc:center;town=revenue:10,loc:5.5;path=a:3,b:_0;path=a:_1,b:_0;',
           },
@@ -103,7 +103,7 @@ module Engine
 
             %w[D12 E7 F6 F14 G13 G23 H8 H10 I19 J6 J10 K17 L22 L24 M7] => 'city=revenue:0',
             %w[D6] => 'city=revenue:20',
-            %w[G17] => 'city=revenue:0,slots:3;label=ATL',
+            %w[G17] => 'city=revenue:0,slots:3;label=Atl',
             %w[J16] => 'city=revenue:0;upgrade=cost:20,terrain:river',
             %w[C11 C17] => 'city=revenue:0;upgrade=cost:40,terrain:river',
             %w[E3] => 'city=revenue:0;upgrade=cost:60,terrain:river',

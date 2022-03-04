@@ -29,6 +29,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
+
         MARKET = [
           %w[0l 0a 0a 0a 42 44 46 48 50p 53s 56p 59p 62p 66p 70p 74s 78p 82p 86p 90p 95p 100p 105p 110p 115p 120s 127p 135p 142p
              150p 157p 165p 172p 180p 190p 200p 210 220 230 240 250 260 270 285 300 315 330 345 360 375 390 405 420 440 460 480
@@ -905,9 +907,6 @@ module Engine
           return unless (subsidy = corporation.companies.first)
 
           case subsidy.id
-          when 'S9'
-            corporation.tokens << Engine::Token.new(corporation)
-            subsidy.close!
           when 'S10'
             subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', 'plus_ten', true)
             subsidy.close!

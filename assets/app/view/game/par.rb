@@ -33,10 +33,11 @@ module View
             on: { click: par },
           }
 
-          available_cash = entity.cash
-          if step.respond_to?(:available_par_cash)
-            available_cash = step.available_par_cash(entity, @corporation, share_price: share_price)
-          end
+          available_cash = if step.respond_to?(:available_par_cash)
+                             step.available_par_cash(entity, @corporation, share_price: share_price)
+                           else
+                             entity.cash
+                           end
           # Needed for 1825 minors (where share price is for a 10% share, but certs are 20% and 40%)
           multiplier = @corporation.price_multiplier
           purchasable_shares = [(available_cash / share_price.price).to_i,
