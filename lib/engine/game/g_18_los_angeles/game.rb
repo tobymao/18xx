@@ -66,14 +66,9 @@ module Engine
         ].freeze
 
         ABILITY_ICONS = {
-          SBL: 'sbl',
           LAC: 'meat',
           LAS: 'port',
         }.freeze
-
-        LSL_HEXES = %w[E4 E6].freeze
-        LSL_ICON = 'sbl'
-        LSL_ID = 'SBL'
 
         LITTLE_MIAMI_HEXES = [].freeze
 
@@ -267,10 +262,6 @@ module Engine
 
         def steamboat
           @steamboat ||= company_by_id('LAS')
-        end
-
-        def lake_shore_line
-          @lake_shore_line ||= company_by_id('SBL')
         end
 
         def dch
