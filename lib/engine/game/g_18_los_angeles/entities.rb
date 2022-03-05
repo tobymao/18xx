@@ -254,8 +254,8 @@ module Engine
                 hexes: %w[A4 A6 B9 B13 C4 C8 D7 D9 D11 E4 E6 F11],
                 free: true,
                 special: true,
-                count: 1
-              }
+                count: 1,
+              },
             ],
           },
           {
