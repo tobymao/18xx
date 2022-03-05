@@ -244,8 +244,19 @@ module Engine
             sym: 'LAP',
             value: 60,
             revenue: 15,
-            desc: '',
-            abilities: [],
+            desc: 'Place a plain yellow track on a city hexagon. Cannot be Long Beach, or any '\
+                  "corporation or minor's home station location.",
+            abilities: [
+              {
+                type: 'tile_lay',
+                when: 'owning_corp_or_turn',
+                tiles: %w[7 8 9],
+                hexes: %w[A4 A6 B9 B13 C4 C8 D7 D9 D11 E4 E6 F11],
+                free: true,
+                special: true,
+                count: 1
+              }
+            ],
           },
           {
             name: 'Redondo Junction',
