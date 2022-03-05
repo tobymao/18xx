@@ -42,6 +42,10 @@ module Engine
         LSL_ICON = 'sbl'
         LSL_ID = 'SBL'
 
+        EVENTS_TEXT = G1846::Game::EVENTS_TEXT.merge(
+          'remove_markers' => ['Remove Markers', 'Remove LA Steamship and LA Citrus markers']
+        ).freeze
+
         def post_setup; end
 
         def game_companies

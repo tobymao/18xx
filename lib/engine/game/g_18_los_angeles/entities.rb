@@ -268,11 +268,25 @@ module Engine
           },
           {
             name: 'RKO Pictures',
-            sym: 'RP',
+            sym: 'RKO',
             value: 40,
             revenue: 10,
-            desc: '',
-            abilities: [],
+            desc: 'Place a +20 token on the Hollywood location (B5).',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[B5],
+                count: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'sold',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
           },
         ].freeze
 
