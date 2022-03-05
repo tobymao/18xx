@@ -397,7 +397,7 @@ module Engine
 
         def place_token_on_upgrade(action)
           hex_id = action.tile.hex.id
-          return unless action.tile.color == 'green' && @second_tokens_in_green.include?(hex_id)
+          return unless action.tile.color == :green && @second_tokens_in_green.include?(hex_id)
 
           corporation = @second_tokens_in_green[hex_id]
           token = corporation.find_token_by_type
