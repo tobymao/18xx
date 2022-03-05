@@ -29,6 +29,7 @@ module Engine
                         purple: '#832e9a')
 
         attr_reader :drafted_companies, :parred_corporations
+        attr_accessor :rj_token
 
         ASSIGNMENT_TOKENS = {
           'LAC' => '/icons/18_los_angeles/lac_token.svg',
@@ -82,7 +83,7 @@ module Engine
         BOOMTOWN_REVENUE_DESC = 'RKO'
 
         EVENTS_TEXT = G1846::Game::EVENTS_TEXT.merge(
-          'remove_markers' => ['Remove Markers', 'Remove LA Steamship, LA Citrus, and RKO Pictures markers']
+          'remove_markers' => ['Remove Tokens & Markers', 'Remove RJ token and LA Steamship, LA Citrus, and RKO Pictures markers']
         ).freeze
 
         CORPORATION_START_LIMIT = {
@@ -275,6 +276,10 @@ module Engine
           @dch ||= company_by_id('DC&H')
         end
 
+        def rj
+          @rj ||= company_by_id('RJ')
+        end
+
         def block_for_steamboat?
           false
         end
@@ -377,6 +382,22 @@ module Engine
 
         def east_west_desc
           'E/W or N/S'
+        end
+
+        def event_remove_markers!
+          super
+
+          # piggy-back on the markers event to avoid redefining all the trains
+          # from 1846 just for the sake of adding a single new event
+          event_remove_rj_token!
+        end
+
+        def event_remove_rj_token!
+          return unless rj_token
+
+          @log << "-- Event: #{rj_token.corporation.id}'s \"RJ\" token removed from #{rj_token.hex.id} --"
+          rj_token.destroy!
+          @rj_token = nil
         end
       end
     end
