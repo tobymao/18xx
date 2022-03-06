@@ -69,28 +69,6 @@ module Engine
             color: nil,
           },
           {
-            name: 'Chino Hills Excavation',
-            value: 50,
-            revenue: 20,
-            desc: 'Reduces, for the owning corporation, the total terrain cost for all tile lays by $20.',
-            sym: 'CHE',
-            abilities: [
-              {
-                type: 'tile_discount',
-                discount: 20,
-                terrain: 'mountain',
-                owner_type: 'corporation',
-              },
-              {
-                type: 'tile_discount',
-                discount: 20,
-                terrain: 'water',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
             name: 'Los Angeles Citrus',
             value: 60,
             revenue: 15,
@@ -229,6 +207,15 @@ module Engine
                           D13 E4 E6 E10 E12 F7 F9 F11 F13],
               },
             ],
+            color: nil,
+          },
+          {
+            name: 'Chino Hills Excavation',
+            value: 50,
+            revenue: 20,
+            desc: 'Reduces, for the owning corporation, the total terrain cost for all tile lays by $20.',
+            sym: 'CHE2',
+            abilities: [],
             color: nil,
           },
           {
