@@ -311,6 +311,12 @@ Modified station token placement
   placed in a location that the ability is allowed to use. Default false.
 - `neutral`: If true, this ability uses a "neutral" token, which allows all
   corporations to pass through it
+- `check_tokenable`: If false, skip the `tokenable?` check before placing the
+  token. Used in 18LA2 for the Angeles Public Dump, which places a special
+  station token that does not actually belong to the owning corporation, and can
+  therefore be placed in the same city as another token belonging to the owning
+  corporation. Note that this property will bypass all tokenable checks, not
+  just `:existing_token`. Default true.
 
 
 ## sell_company

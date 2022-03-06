@@ -15,12 +15,18 @@ module Engine
 
             super
 
-            return unless action.entity == @game.rj
-
-            token = action.city.tokens[action.slot]
-            token.logo = token.logo.sub('.svg', '_RJ.svg')
-            token.simple_logo = token.logo
-            @game.rj_token = token
+            if action.entity == @game.rj
+              token = action.city.tokens.reverse.find(&:itself)
+              token.logo = token.logo.sub('.svg', '_RJ.svg')
+              token.simple_logo = token.logo
+              @game.rj_token = token
+            elsif action.entity == @game.dump_company
+              token = action.city.tokens.reverse.find(&:itself)
+              token.corporation = @game.dump_corp
+              token.logo = @game.dump_corp.logo
+              token.simple_logo = token.logo
+              @game.dump_token = token
+            end
           end
         end
       end
