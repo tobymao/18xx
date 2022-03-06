@@ -305,6 +305,7 @@ module Engine
           when 'H22'
             hex.lay(@tiles.find { |t| t.name == 'X01' })
           end
+          @graph.clear
         end
 
         def randomize_privates
