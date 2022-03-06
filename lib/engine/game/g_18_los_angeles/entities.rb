@@ -236,8 +236,24 @@ module Engine
             sym: 'APD',
             value: 40,
             revenue: 10,
-            desc: '',
-            abilities: [],
+            desc: 'Place the -20 station token in any location except for Los Angeles or Long Beach. '\
+                  'This token cannot be used by any corporation and reduces revenue in its location '\
+                  'by $20 for all corporations and minors.',
+            abilities: [
+              {
+                type: 'token',
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                hexes: %w[
+                  A4 A6 A8 B5 B9 B11 B13 C4 C8 C12 D5 D7 D9 D11 D13
+                  E4 E6 E10 E12 F9 F11 F13
+                ],
+                price: 0,
+                teleport_price: 0,
+                count: 1,
+                extra_action: true,
+              },
+            ],
           },
           {
             name: 'Los Angeles Paving',

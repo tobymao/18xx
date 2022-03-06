@@ -29,7 +29,7 @@ module Engine
                         purple: '#832e9a')
 
         attr_reader :drafted_companies, :parred_corporations
-        attr_accessor :rj_token
+        attr_accessor :dump_token, :rj_token
 
         ASSIGNMENT_TOKENS = {
           'LAC' => '/icons/18_los_angeles/lac_token.svg',
@@ -83,7 +83,8 @@ module Engine
         BOOMTOWN_REVENUE_DESC = 'RKO'
 
         EVENTS_TEXT = G1846::Game::EVENTS_TEXT.merge(
-          'remove_markers' => ['Remove Tokens & Markers', 'Remove RJ token and LA Steamship, LA Citrus, and RKO Pictures markers']
+          'remove_markers' => ['Remove Tokens & Markers',
+                               'Remove Dump (-20) and RJ tokens, as well as LA Steamship, LA Citrus, and RKO Pictures markers']
         ).freeze
 
         CORPORATION_START_LIMIT = {
@@ -99,6 +100,10 @@ module Engine
           4 => 10,
           5 => 11,
         }.freeze
+
+        DUMP_PENALTY = 20
+        DUMP_PENALTY_WESTMINSTER = 10
+        WESTMINSTER_HEX = 'F9'
 
         def setup
           super
@@ -280,6 +285,10 @@ module Engine
           @rj ||= company_by_id('RJ')
         end
 
+        def apd
+          @apd ||= company_by_id('APD')
+        end
+
         def block_for_steamboat?
           false
         end
@@ -390,6 +399,7 @@ module Engine
           # piggy-back on the markers event to avoid redefining all the trains
           # from 1846 just for the sake of adding a single new event
           event_remove_rj_token!
+          event_remove_dump_token!
         end
 
         def event_remove_rj_token!
@@ -398,6 +408,47 @@ module Engine
           @log << "-- Event: #{rj_token.corporation.id}'s \"RJ\" token removed from #{rj_token.hex.id} --"
           rj_token.destroy!
           @rj_token = nil
+        end
+
+        def event_remove_dump_token!
+          return unless dump_token
+
+          @log << "-- Event: Angeles Public Dump (-20) token removed from #{dump_token.hex.id} --"
+          dump_token.destroy!
+          @dump_token = nil
+        end
+
+        def dump_corp
+          @dump_corp ||= Corporation.new(
+            sym: 'DUMP',
+            name: 'Dump',
+            logo: '18_los_angeles/dump',
+            tokens: [0],
+          )
+        end
+
+        def dump_penalty(route)
+          return 0 unless dump_token
+          return 0 unless (dump_stop = route.stops.find { |s| s.hex == dump_token.hex })
+          return DUMP_PENALTY unless dump_stop.hex.id == WESTMINSTER_HEX
+
+          # Westminster (F9) has a base value of $10 and the Dump can reduce
+          # that to $0 but not -$10; however, if Westminster is getting the
+          # bonus $40 value from the LA Steamship (steamboat), then the Dump
+          # does reduce the total from $50 to $30
+          steamboat&.owner == route.corporation && dump_stop.hex.assigned?(steamboat.id) ? DUMP_PENALTY : DUMP_PENALTY_WESTMINSTER
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue -= dump_penalty(route)
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += ' - Dump' if dump_penalty(route).positive?
+          str
         end
       end
     end
