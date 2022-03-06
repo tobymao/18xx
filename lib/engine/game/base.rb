@@ -2732,15 +2732,15 @@ module Engine
         nil
       end
 
-      def adjustable_train_list?
+      def adjustable_train_list?(_entity)
         false
       end
 
-      def adjustable_train_sizes?
+      def adjustable_train_sizes?(_entity)
         false
       end
 
-      def reset_adjustable_trains!; end
+      def reset_adjustable_trains!(_entity, _routes); end
 
       def operation_round_short_name
         self.class::OPERATION_ROUND_SHORT_NAME

@@ -229,6 +229,8 @@ module View
       end
 
       def actions(render_halts)
+        current_entity = @game.round.current_entity
+
         submit = lambda do
           process_action(Engine::Action::RunRoutes.new(@game.current_entity, routes: active_routes))
           cleanup
@@ -240,7 +242,7 @@ module View
         end
 
         reset_all = lambda do
-          @game.reset_adjustable_trains!(@routes)
+          @game.reset_adjustable_trains!(current_entity, @routes)
           @selected_route = nil
           store(:selected_route, @selected_route)
           @routes.clear
@@ -268,11 +270,17 @@ module View
         end
 
         add_train = lambda do
-          store(:routes, @routes) if @game.add_route_train(@routes)
+          if (new_train = @game.add_route_train(current_entity, @routes))
+            new_route = Engine::Route.new(@game, @game.phase, new_train, abilities: @abilities, routes: @routes)
+            @selected_route = new_route
+            @routes << new_route
+            store(:selected_route, @selected_route, skip: true)
+            store(:routes, @routes)
+          end
         end
 
         delete_train = lambda do
-          if @game.delete_route_train(@selected_route)
+          if @game.delete_route_train(current_entity, @selected_route)
             @routes.delete(@selected_route)
             @selected_route = @routes[0]
             store(:selected_route, @selected_route, skip: true)
@@ -281,12 +289,12 @@ module View
         end
 
         increase_train = lambda do
-          @game.increase_route_train(@selected_route)
+          @game.increase_route_train(current_entity, @selected_route)
           store(:selected_route, @selected_route)
         end
 
         decrease_train = lambda do
-          @game.decrease_route_train(@selected_route)
+          @game.decrease_route_train(current_entity, @selected_route)
           store(:selected_route, @selected_route)
         end
 
@@ -310,11 +318,11 @@ module View
         if @game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat
           buttons << h('button.small', { on: { click: auto } }, 'Auto')
         end
-        if @game.adjustable_train_list?
-          buttons << h('button.small', { on: { click: add_train } }, '+Train')
-          buttons << h('button.small', { on: { click: delete_train } }, '-Train')
+        if @game.adjustable_train_list?(current_entity)
+          buttons << h('button.small', { on: { click: add_train } }, "+#{@game.adjustable_train_label(current_entity)}")
+          buttons << h('button.small', { on: { click: delete_train } }, "-#{@game.adjustable_train_label(current_entity)}")
         end
-        if @game.adjustable_train_sizes?
+        if @game.adjustable_train_sizes?(current_entity)
           buttons << h('button.small', { on: { click: increase_train } }, '+Size')
           buttons << h('button.small', { on: { click: decrease_train } }, '-Size')
         end
