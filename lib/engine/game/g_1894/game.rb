@@ -236,6 +236,8 @@ module Engine
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :red,
                                                             unlimited: :gray)
 
+        IPO_RESERVED_NAME = 'Treasury'
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           late_corporations_available: ['Late corporations are now available'],
         ).freeze
@@ -267,11 +269,12 @@ module Engine
             Engine::Step::Assign,
             Engine::Step::BuyCompany,
             G1894::Step::SpecialBuy,
+            G1894::Step::RedeemShares,
             Engine::Step::HomeToken,
             G1894::Step::Track,
             G1894::Step::Token,
             G1894::Step::Route,
-            Engine::Step::Dividend,
+            G1894::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1894::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
@@ -302,6 +305,10 @@ module Engine
                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
+        def ipo_reserved_name(_entity = nil)
+          'Treasury'
+        end
+
         def event_late_corporations_available!
           @log << "-- Event: #{EVENTS_TEXT['late_corporations_available'][0]} --"
           @corporations.concat(@late_corporations)
@@ -323,6 +330,20 @@ module Engine
 
         def init_round_finished
           @players.rotate!(@round.entity_index)
+        end
+
+        def issuable_shares(entity)
+          return [] if entity.num_ipo_reserved_shares < 1 || entity.num_ipo_shares - entity.num_ipo_reserved_shares != 0
+
+          bundle = Engine::ShareBundle.new(entity.shares_of(entity))
+          bundle.share_price = 100
+
+          [bundle]
+        end
+
+        def redeemable_shares(entity)
+          bundles_for_corporation(share_pool, entity)
+            .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
