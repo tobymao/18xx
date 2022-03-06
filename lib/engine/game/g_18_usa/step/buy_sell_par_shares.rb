@@ -57,6 +57,7 @@ module Engine
           end
 
           def win_bid(winner, company)
+            # Determine the subsidy before proessing the winning bid
             corporation = winner.corporation
             unless corporation.tokens.first.hex
               @pending_winning_bid = { winner: winner, company: company }
@@ -64,18 +65,36 @@ module Engine
             end
             @pending_winning_bid = nil
 
-            @remaining_bid_amount = winner.price
-            super
+            @winning_bid = winner
+            entity = @winning_bid.entity
+            price = @winning_bid.price
+
+            @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
+
+            par_price = [price / 2, self.class::MAX_PAR_PRICE].min
+            share_price = @game.find_share_price(par_price)
+
+            # Temporarily give the entity cash to buy the corporation PAR shares
+            @game.bank.spend(share_price.price * 2, entity)
+
+            action = Action::Par.new(entity, corporation: corporation, share_price: share_price)
+            process_par(action)
+
+            # Clear the corporation of 'share' cash
+            corporation.spend(corporation.cash, @game.bank)
+
+            # Player spends cash to start corporation, even if it forces them negative
+            # which they'll need to sort by adding companies.
+            starting_cash = share_price.price * 2
+            entity.spend(starting_cash, corporation, check_cash: false)
+            entity.spend(price - starting_cash, @game.bank, check_cash: false) if price > starting_cash
+
+            @corporation_size = nil
+            size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
+
+            @remaining_bid_amount = price
             @game.apply_subsidy(corporation)
-          end
-
-          def par_price(bid)
-            par_price = super
-            [par_price, self.class::MAX_PAR_PRICE].min
-          end
-
-          def starting_cash(corporation)
-            corporation.share_price.price * 2
+            par_corporation if available_subsidiaries(winner.entity).none?
           end
 
           def city_subsidy(corporation)
@@ -151,8 +170,6 @@ module Engine
           end
 
           def par_corporation
-            return unless @corporation_size
-
             @remaining_bid_amount = 0
             corporation = @winning_bid.corporation
             @game.bank.spend(corporation.cash.abs, corporation) if corporation.cash.negative?

@@ -367,7 +367,7 @@ module Engine
 
             @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
 
-            par_price = par_price(price)
+            par_price = price / 2
 
             share_price = @game.find_share_price(par_price)
 
@@ -382,22 +382,12 @@ module Engine
 
             # Player spends cash to start corporation, even if it forces them negative
             # which they'll need to sort by adding companies.
-            starting_cash = starting_cash(corporation)
-            entity.spend(starting_cash, corporation, check_cash: false)
-            entity.spend(price - starting_cash, @game.bank, check_cash: false) if price > starting_cash
+            entity.spend(price, corporation, check_cash: false)
 
             @corporation_size = nil
             size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
 
             par_corporation if available_subsidiaries(winner.entity).none?
-          end
-
-          def par_price(bid)
-            bid / 2
-          end
-
-          def starting_cash(_corporation)
-            @winning_bid.price
           end
 
           def available_subsidiaries(entity)
