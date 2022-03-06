@@ -244,8 +244,8 @@ module Engine
             sym: 'LAP',
             value: 60,
             revenue: 15,
-            desc: 'Place a plain yellow track on a city hexagon. Cannot be Long Beach, or any '\
-                  "corporation or minor's home station location.",
+            desc: 'The owning corporation may lay an extra $0 cost plain yellow track on a city '\
+                  "hexagon. Cannot be used in any corporation or minor's home station location.",
             abilities: [
               {
                 type: 'tile_lay',
