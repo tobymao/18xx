@@ -26,8 +26,8 @@ module Engine
           '29' => 1,
           '30' => 1,
           '31' => 1,
-          '35' => 1,
-          '36' => 1,
+          '35' => 2,
+          '36' => 2,
           '39' => 1,
           '40' => 1,
           '41' => 2,
@@ -43,7 +43,7 @@ module Engine
           '58' => 3,
           '69' => 1,
           '70' => 1,
-          '118' => 1,
+          '118' => 2,
           '619' => 4,
           '624' => 1,
           'X1' => {
@@ -96,32 +96,32 @@ module Engine
             'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
           },
           'X10' => {
-            'count' => 1,
+            'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:40;city=revenue:40,loc:3.5;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1',
           },
           'X11' => {
-            'count' => 1,
+            'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:40;city=revenue:40,loc:2.5;path=a:0,b:_0;path=a:4,b:_0;path=a:2,b:_1;path=a:3,b:_1',
           },
           'X12' => {
-            'count' => 1,
+            'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:40;city=revenue:40,loc:1.5;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1',
           },
           'X13' => {
-            'count' => 1,
+            'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_0;path=a:2,b:_1;path=a:4,b:_1',
           },
           'X14' => {
-            'count' => 1,
+            'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:4,b:_1',
           },
           'X15' => {
-            'count' => 1,
+            'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:3.5;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;path=a:4,b:_1',

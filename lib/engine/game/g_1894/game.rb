@@ -151,13 +151,14 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 7 },
+        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 1 },
                   {
                     name: '3',
                     distance: 3,
                     price: 160,
                     rusts_on: '5',
-                    num: 5,
+                    num: 1,
+                    events: [{ 'type' => 'late_corporations_available' }],
                     discount: { '2' => 40 },
                   },
                   {
@@ -165,7 +166,7 @@ module Engine
                     distance: 4,
                     price: 300,
                     rusts_on: '7',
-                    num: 3,
+                    num: 1,
                     discount: { '3' => 80 },
                   },
                   {
@@ -173,8 +174,7 @@ module Engine
                     distance: 5,
                     price: 400,
                     rusts_on: 'D',
-                    num: 4,
-                    events: [{ 'type' => 'late_corporations_available' }],
+                    num: 2,
                     discount: { '4' => 150 },
                   },
                   {
@@ -255,6 +255,18 @@ module Engine
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
 
+        GREEN_CITY_14_TILE = '14'
+        BROWN_CITY_14_UPGRADES_TILES = %w[X14 X15 36]
+        GREEN_CITY_15_TILE = '15'
+        BROWN_CITY_15_UPGRADES_TILES = %w[X12 35 118]
+        GREEN_CITY_619_TILE = '619'
+        BROWN_CITY_619_UPGRADES_TILES = %w[X10 X11 X13]
+
+        FRENCH_LATE_COMPANIES = %w[F1 F2]
+        FRENCH_LATE_COMPANIES_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 I8].freeze
+        BELGIAN_LATE_COMPANIES = %w[B1 B2]
+        BELGIAN_LATE_COMPANIES_HOME_HEXES = %w[D15 D17 E16 F15 G14 H17].freeze
+
         def stock_round
           G1894::Round::Stock.new(self, [
             G1894::Step::BuySellParShares,
@@ -269,8 +281,8 @@ module Engine
             Engine::Step::Assign,
             Engine::Step::BuyCompany,
             G1894::Step::SpecialBuy,
-            G1894::Step::RedeemShares,
             Engine::Step::HomeToken,
+            G1894::Step::RedeemShares,
             G1894::Step::Track,
             G1894::Step::Token,
             G1894::Step::Route,
@@ -294,7 +306,7 @@ module Engine
             Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
           block_england
 
-          plm = corporations.find { |c| c.id == 'PLM' }
+          plm = corporation_by_id('PLM')
           paris_tiles_names = %w[X1 X4 X5 X7 X8]
           paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
@@ -346,9 +358,43 @@ module Engine
             .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
         end
 
+        def after_par(corporation)
+          super
+
+          if FRENCH_LATE_COMPANIES.include?(corporation.name)
+            FRENCH_LATE_COMPANIES_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
+              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+            end
+            home_hex = hexes.find { |h| h.id == 'G2' }
+            home_hex.tile.add_reservation!(corporation, nil)
+            corporation.coordinates = home_hex.id
+          elsif BELGIAN_LATE_COMPANIES.include?(corporation.name)
+            BELGIAN_LATE_COMPANIES_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
+              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+            end
+          end
+        end
+
+        def home_token_locations(corporation)
+          if FRENCH_LATE_COMPANIES.include?(corporation.name)
+            FRENCH_LATE_COMPANIES_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
+              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+            end
+          elsif BELGIAN_LATE_COMPANIES.include?(corporation.name)
+            BELGIAN_LATE_COMPANIES_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
+              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+            end
+          else
+            raise NotImplementedError
+          end
+        end
+
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return to.name == AMIENS_TILE if from.hex.name == AMIENS_HEX && from.color == :white
           return GREEN_CITY_TILES.include?(to.name) if from.hex.name == AMIENS_HEX && from.color == :yellow
+          return BROWN_CITY_14_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
+          return BROWN_CITY_15_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
+          return BROWN_CITY_619_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
 
           super
         end
@@ -435,6 +481,10 @@ module Engine
           @late_corporations.delete(to_remove[0])
           @late_corporations.delete(to_remove[1])
           @log << 'Removing F2 and B2 late corporations'
+        end
+
+        def plm_corporation
+          @plm_corporation ||= corporation_by_id('PLM')
         end
       end
     end
