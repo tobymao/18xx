@@ -562,6 +562,10 @@ module Engine
         @round.active_step&.current_entity || actions[-1].entity
       end
 
+      def pass_entity(_user)
+        current_entity
+      end
+
       def active_players
         players_ = @round.active_entities.map(&:player).compact
 

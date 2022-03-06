@@ -14,7 +14,7 @@ module View
           on: {
             click: lambda do
               @before_process_pass.call
-              process_action(Engine::Action::Pass.new(@game.current_entity))
+              process_action(Engine::Action::Pass.new(@game.pass_entity(!hotseat? && @user)))
             end,
           },
         }

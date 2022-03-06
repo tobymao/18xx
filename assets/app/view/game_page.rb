@@ -425,7 +425,11 @@ module View
           h(Game::Round::Merger, game: @game)
         end
       else
-        h(Game::Round::Stock, game: @game) if @round.stock?
+        if @round.stock?
+          h(Game::Round::Stock, game: @game)
+        elsif @round.unordered?
+          h(Game::Round::Unordered, game: @game, user: @user, hotseat: @game_data[:mode] == :hotseat)
+        end
       end
     end
 
@@ -448,7 +452,13 @@ module View
     end
 
     def current_entity_actions
-      @current_entity_actions ||= @game.round.actions_for(@game.round.active_step&.current_entity) || []
+      @current_entity_actions ||= if !@game.round.unordered?
+                                    @game.round.actions_for(@game.round.active_step&.current_entity) || []
+                                  elsif @game_data[:mode] == :hotseat
+                                    @game.round.entities.flat_map { |e| @game.round.actions_for(e) }.uniq.compact
+                                  else
+                                    @game.round.actions_for(@game.player_by_id(@user['id'])) || []
+                                  end
     end
 
     def step

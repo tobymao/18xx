@@ -138,12 +138,29 @@ module Engine
           @bank.spend(FOREIGN_START_CASH, @foreign_investor)
         end
 
+        # FIXME
+        def can_acquire_any_company?(corporation)
+          @companies.any? { |c| c.owner && c.owner != corporation && corporation.cash >= c.min_price }
+        end
+
+        # FIXME: should this just be players that can propose offers,
+        # or should it also include players that respond to offers?
+        #
+        # FIXME: should this be sorted?
+        #
+        # any player with a company, or any player owning a corporation
+        #
+        def acquisition_players
+          owners = @players.select { |p| p != @foreign_investor && !p.companies.empty? }
+          @corporations.each { |c| owners << c.owner if c.owner }
+          owners.uniq
+        end
+
         def init_round
           new_investment_round
         end
 
         def new_investment_round
-          @turn += 1
           @log << "-- Turn #{@turn}, Phase 1 - Investment --"
           @round_counter += 1
           investment_round
@@ -155,35 +172,32 @@ module Engine
           ])
         end
 
-        def new_ipo_round
-          @log << "-- Turn #{@turn}, Phase 9 - IPO --"
-          if ipo_companies.empty?
-            @log << 'No companies eligible to convert'
-            new_investment_round
-          else
-            ipo_round
-          end
-        end
-
-        def ipo_round
-          Round::IPO.new(self, [
-            Step::IPOCompany,
-          ])
-        end
-
-        def reorder_by_cash
-          # this should break ties in favor of the closest to previous PD
-          pd_player = @players.max_by(&:cash)
-          @players.rotate!(@players.index(pd_player))
-          @log << "Player order: #{@players.map(&:name).join(', ')}"
-        end
-
         # wrap-up
         def phase2
           @log << "-- Turn #{@turn}, Phase 2 - Wrap-Up --"
           reorder_by_cash
           # FIXME: implement foriegn investor purchase
           @on_deck.clear
+        end
+
+        def new_acquisition_round
+          @log << "-- Turn #{@turn}, Phase 3 - Acquisition --"
+          @round_counter += 1
+          if @corporations.any? { |corp| can_acquire_any_company?(corp) }
+            acquisition_round
+          else
+            @log << 'No corporations can acquire a company'
+            # new_closing_round
+            phase5 # FIXME: move to after closing_round
+            phase7 # FIXME: move to after dividends_round
+            new_ipo_round # FIXME
+          end
+        end
+
+        def acquisition_round
+          Round::Acquisition.new(self, [
+            Step::ProposeAndPurchase,
+          ])
         end
 
         # income
@@ -207,15 +221,42 @@ module Engine
           @log << "-- Turn #{@turn}, Phase 7 - End Card --"
         end
 
+        def new_ipo_round
+          @log << "-- Turn #{@turn}, Phase 9 - IPO --"
+          @round_counter += 1
+          if ipo_companies.empty?
+            @log << 'No companies eligible to convert'
+            new_investment_round
+          else
+            ipo_round
+          end
+        end
+
+        def ipo_round
+          Round::IPO.new(self, [
+            Step::IPOCompany,
+          ])
+        end
+
+        def reorder_by_cash
+          # this should break ties in favor of the closest to previous PD
+          pd_player = @players.max_by(&:cash)
+          @players.rotate!(@players.index(pd_player))
+          @log << "Player order: #{@players.map(&:name).join(', ')}"
+        end
+
         def next_round!
           @round =
             case @round
             when Round::Investment
               phase2
+              new_acquisition_round
+            when Round::Acquisition
               phase5 # FIXME: move to after closing_round
               phase7 # FIXME: move to after dividends_round
-              new_ipo_round # FIXME: new_acquistion_round
+              new_ipo_round # FIXME: new_acquisition_round
             when Round::IPO
+              @turn += 1
               new_investment_round
             end
         end
@@ -294,6 +335,13 @@ module Engine
             price = @stock_market.share_price(r, c - 1)
           end
           price
+        end
+
+        def pass_entity(user)
+          return super unless @round.unordered?
+          return @round.entities.find { |e| !e.passed? } unless user
+
+          player_by_id(user['id']) || super
         end
       end
     end
