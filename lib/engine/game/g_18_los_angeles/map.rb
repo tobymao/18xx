@@ -111,7 +111,7 @@ module Engine
             ['a5'] => 'offboard=revenue:0,visit_cost:100;path=a:0,b:_0;path=a:5,b:_0',
 
             ['B5'] => 'city=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
-                      'border=edge:1,type:mountain,cost:20',
+                      'border=edge:1,type:mountain,cost:20;icon=image:18_los_angeles/boom',
             ['C2'] => 'city=revenue:10;icon=image:port;icon=image:port;path=a:2,b:_0;path=a:4,b:_0;'\
                       'path=a:5,b:_0;path=a:0,b:_0;',
             ['D13'] => 'city=revenue:20,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\

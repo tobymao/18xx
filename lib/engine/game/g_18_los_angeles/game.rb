@@ -33,6 +33,7 @@ module Engine
         ASSIGNMENT_TOKENS = {
           'LAC' => '/icons/18_los_angeles/lac_token.svg',
           'LAS' => '/icons/1846/sc_token.svg',
+          'RKO' => '/icons/18_los_angeles/bt_token.svg',
         }.freeze
 
         CORPORATIONS_GROUP = %w[
@@ -66,25 +67,22 @@ module Engine
         ].freeze
 
         ABILITY_ICONS = {
-          SBL: 'sbl',
           LAC: 'meat',
           LAS: 'port',
+          RKO: 'boom',
         }.freeze
-
-        LSL_HEXES = %w[E4 E6].freeze
-        LSL_ICON = 'sbl'
-        LSL_ID = 'SBL'
 
         LITTLE_MIAMI_HEXES = [].freeze
 
         MEAT_HEXES = %w[C14 F7].freeze
         STEAMBOAT_HEXES = %w[B1 C2 F7 F9].freeze
-        BOOMTOWN_HEXES = [].freeze
+        BOOMTOWN_HEXES = %w[B5].freeze
 
         MEAT_REVENUE_DESC = 'Citrus'
+        BOOMTOWN_REVENUE_DESC = 'RKO'
 
         EVENTS_TEXT = G1846::Game::EVENTS_TEXT.merge(
-          'remove_markers' => ['Remove Markers', 'Remove LA Steamship and LA Citrus markers']
+          'remove_markers' => ['Remove Markers', 'Remove LA Steamship, LA Citrus, and RKO Pictures markers']
         ).freeze
 
         CORPORATION_START_LIMIT = {
@@ -269,8 +267,8 @@ module Engine
           @steamboat ||= company_by_id('LAS')
         end
 
-        def lake_shore_line
-          @lake_shore_line ||= company_by_id('SBL')
+        def boomtown
+          @boomtown ||= company_by_id('RKO')
         end
 
         def dch

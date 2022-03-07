@@ -244,8 +244,19 @@ module Engine
             sym: 'LAP',
             value: 60,
             revenue: 15,
-            desc: '',
-            abilities: [],
+            desc: 'The owning corporation may lay an extra $0 cost plain yellow track on a city '\
+                  "hexagon. Cannot be used in any corporation or minor's home station location.",
+            abilities: [
+              {
+                type: 'tile_lay',
+                when: 'owning_corp_or_turn',
+                tiles: %w[7 8 9],
+                hexes: %w[A4 A6 B9 B13 C4 C8 D7 D9 D11 E4 E6 F11],
+                free: true,
+                special: true,
+                count: 1,
+              },
+            ],
           },
           {
             name: 'Redondo Junction',
@@ -257,11 +268,25 @@ module Engine
           },
           {
             name: 'RKO Pictures',
-            sym: 'RP',
+            sym: 'RKO',
             value: 40,
             revenue: 10,
-            desc: '',
-            abilities: [],
+            desc: 'Place a +20 token on the Hollywood location (B5).',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[B5],
+                count: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'sold',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
           },
         ].freeze
 
