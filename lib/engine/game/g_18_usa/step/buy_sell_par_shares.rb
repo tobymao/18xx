@@ -132,6 +132,8 @@ module Engine
               company.close!
             when 'P29'
               use_p29_ability(company)
+            else
+              super
             end
           end
 
@@ -170,6 +172,8 @@ module Engine
           end
 
           def par_corporation
+            return unless @corporation_size
+
             @remaining_bid_amount = 0
             corporation = @winning_bid.corporation
             @game.bank.spend(corporation.cash.abs, corporation) if corporation.cash.negative?
