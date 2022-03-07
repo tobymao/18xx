@@ -1390,6 +1390,7 @@ module Engine
       end
 
       def upgrade_cost(tile, hex, entity, spender)
+        entity = entity.owner if !entity.corporation? && entity.owner&.corporation?
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
             (!a.hexes || a.hexes.include?(hex.name))
@@ -1406,6 +1407,7 @@ module Engine
       end
 
       def tile_cost_with_discount(_tile, hex, entity, spender, cost)
+        entity = entity.owner if !entity.corporation? && entity.owner&.corporation?
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
             !a.terrain &&
