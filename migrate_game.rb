@@ -47,6 +47,15 @@ def repair(game, original_actions, actions, broken_action)
     # Move token is now place token.
     broken_action['type'] = 'place_token'
     return [broken_action]
+  elsif game.is_a?(Engine::Game::G18USA::Game)
+    if broken_action['type'] == 'pass'
+      actions.delete(broken_action)
+    elsif broken_action['type'] == 'bid' && prev_action['type'] == 'pass'
+      actions.delete(prev_action)
+    else
+      add_pass.call
+    end
+    return
   elsif broken_action['type'] == 'buy_tokens'
     # 1817 no longer needs buy tokens
     actions.delete(broken_action)
@@ -66,7 +75,7 @@ def repair(game, original_actions, actions, broken_action)
     broken_action['entity'] == prev_action['entity']
     actions.delete(broken_action)
     return
-  elsif broken_action['type'] == 'place_token' && game.is_a?(Engine::Game::Step::G1867)
+  elsif broken_action['type'] == 'place_token' && game.is_a?(Engine::Game::G1867)
     # Stub changed token numbering
     hex_id = broken_action['city'].split('-')[0]
     hex = game.hex_by_id(hex_id)
