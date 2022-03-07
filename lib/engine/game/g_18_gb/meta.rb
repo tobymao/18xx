@@ -16,7 +16,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18GB'
         GAME_LOCATION = 'Great Britain'
         GAME_PUBLISHER = :golden_spike
-        GAME_RULES_URL = 'https://drive.google.com/file/d/1i4Sfje2blnEIzrQi5DvISSSa1Kz2s7Ur/view'
+        GAME_RULES_URL = 'https://docs.google.com/document/d/12yNo5WAi6ywc6N5XmTl-FvAZeI5kLwCMkxhgf7jgNSk/view'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [

@@ -234,7 +234,7 @@ module Engine
           },
           {
             name: 'Maryport & Carlisle',
-            value: 60,
+            value: 50,
             revenue: 20,
             desc: 'The MC allows a corporation to lay a Station Marker in Carlisle (H9). A space is reserved for the MC until ' \
                   'the blue phase, otherwise an empty space must be available in Carlisle. The MC owner may use this ability ' \
