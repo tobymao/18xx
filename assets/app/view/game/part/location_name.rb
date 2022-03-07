@@ -243,11 +243,12 @@ module View
         end
 
         def l_center
-          {
-            region_weights: CENTER,
-            x: 0,
-            y: -delta_y / 2,
+          loc = { x: 0, y: -delta_y / 2 }
+          loc[:region_weights] = {
+            [9, 14] => 1,
+            [7, 8, 15, 16] => 0.7,
           }
+          loc
         end
 
         def l_down24
