@@ -64,7 +64,7 @@ module Engine
 
           def p27_available_hex(_entity, hex)
             hex.tile.color == :white &&
-              (hex.tile.cities.empty? || hex.tile.cities.all? { |c| c.tokens.empty? }) &&
+              (hex.tile.cities.empty? || hex.tile.cities.none?(&:tokened?)) &&
               (hex.neighbors.values & @game.active_metropolitan_hexes).empty?
           end
 

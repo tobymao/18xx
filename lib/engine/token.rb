@@ -2,8 +2,8 @@
 
 module Engine
   class Token
-    attr_reader :logo, :simple_logo, :extra
-    attr_accessor :city, :price, :type, :used, :status, :hex, :corporation
+    attr_reader :extra
+    attr_accessor :city, :price, :type, :used, :status, :hex, :corporation, :logo, :simple_logo
 
     def initialize(corporation, price: 0, logo: nil, simple_logo: nil, type: :normal)
       @corporation = corporation

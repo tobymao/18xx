@@ -42,11 +42,11 @@ module Engine
 
               token = Engine::Token.new(owner)
               owner.tokens << token
-              offboard_area = offboard_area_hexes(target)
-              assigned_hex = offboard_area.find(&:location_name)
+              hexes = offboard_area_hexes(target)
+              assigned_hex = hexes.find(&:location_name)
               assigned_hex.place_token(token)
-              @game.p8_hexes = offboard_area
-              @log << "#{owner.name} assigns token to #{location_name}"
+              @game.p8_hexes = hexes
+              @log << "#{owner.name} assigns #{company.name} token to #{assigned_hex.location_name}"
 
               # Can only be assigned once
               company.remove_ability(ability)

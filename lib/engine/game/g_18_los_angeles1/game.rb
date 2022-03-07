@@ -32,6 +32,20 @@ module Engine
           'SP' => 'C6',
         }.freeze
 
+        ABILITY_ICONS = {
+          SBL: 'sbl',
+          LAC: 'meat',
+          LAS: 'port',
+        }.freeze
+
+        LSL_HEXES = %w[E4 E6].freeze
+        LSL_ICON = 'sbl'
+        LSL_ID = 'SBL'
+
+        EVENTS_TEXT = G1846::Game::EVENTS_TEXT.merge(
+          'remove_markers' => ['Remove Markers', 'Remove LA Steamship and LA Citrus markers']
+        ).freeze
+
         def post_setup; end
 
         def game_companies
@@ -39,6 +53,10 @@ module Engine
             self.class::COMPANIES + (G18LosAngeles::Game::COMPANIES.slice(0, 11).map do |company|
                                        self.class::COMPANIES_1E[company[:sym]] || company
                                      end)
+        end
+
+        def lake_shore_line
+          @lake_shore_line ||= company_by_id('SBL')
         end
 
         def game_corporations

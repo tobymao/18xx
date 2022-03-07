@@ -265,6 +265,7 @@ module Engine
       end
 
       def border_cost_discount(entity, spender, border, cost, hex)
+        entity = entity.owner if !entity.corporation? && entity.owner&.corporation?
         entity.all_abilities.each do |a|
           next if (a.type != :tile_discount) ||
             !a.terrain ||

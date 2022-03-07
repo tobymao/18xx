@@ -1390,6 +1390,7 @@ module Engine
       end
 
       def upgrade_cost(tile, hex, entity, spender)
+        entity = entity.owner if !entity.corporation? && entity.owner&.corporation?
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
             (!a.hexes || a.hexes.include?(hex.name))
@@ -1406,6 +1407,7 @@ module Engine
       end
 
       def tile_cost_with_discount(_tile, hex, entity, spender, cost)
+        entity = entity.owner if !entity.corporation? && entity.owner&.corporation?
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
             !a.terrain &&
@@ -2732,15 +2734,15 @@ module Engine
         nil
       end
 
-      def adjustable_train_list?
+      def adjustable_train_list?(_entity)
         false
       end
 
-      def adjustable_train_sizes?
+      def adjustable_train_sizes?(_entity)
         false
       end
 
-      def reset_adjustable_trains!; end
+      def reset_adjustable_trains!(_entity, _routes); end
 
       def operation_round_short_name
         self.class::OPERATION_ROUND_SHORT_NAME
