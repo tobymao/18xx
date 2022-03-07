@@ -24,6 +24,8 @@ module Engine
                         orange: '#f48221',
                         brown: '#7b352a')
 
+        attr_reader :drafted_companies
+
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%d'
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
@@ -345,6 +347,8 @@ module Engine
         def sleeper_train
           @sleeper_train ||= company_by_id('ST')
         end
+
+        def draft_finished?; end
       end
     end
   end

@@ -41,6 +41,10 @@ module Engine
         true
       end
 
+      def tokened?
+        !@tokens.compact.empty?
+      end
+
       def tokened_by?(corporation)
         @tokens.any? { |t| t&.corporation == corporation } || @extra_tokens.any? { |t| t&.corporation == corporation }
       end

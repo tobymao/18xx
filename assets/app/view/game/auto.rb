@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/game/auto_action/auction_bid'
+require 'view/game/auto_action/buy_shares'
 
 module View
   module Game
@@ -14,12 +15,15 @@ module View
       needs :user
       needs :buy_corporation, store: true, default: nil
 
+      AUTO_ACTIONS_WIKI = 'https://github.com/tobymao/18xx/wiki/Auto-actions'
+
       def render_content
         children = [
           h(:h2, 'Auto Actions'),
           h(:p, 'Auto actions allow you to preprogram your moves ahead of time. '\
                 'On asynchronous games this can shorten a game considerably.'),
           h(:p, 'Please note, these are not secret from other players.'),
+          h(:p, render_wiki),
         ]
 
         if @game.players.find { |p| p.name == @user&.dig('name') }
@@ -56,12 +60,21 @@ module View
         h(:div, props, children)
       end
 
+      def render_wiki
+        [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
+           'Please read this for more details when it will deactivate')]
+      end
+
       def sender
         @game.player_by_id(@user['id']) if @user
       end
 
       def render_auction_bid(settings)
         h(AutoAction::AuctionBid, game: @game, sender: sender, settings: settings)
+      end
+
+      def render_buy_shares(settings)
+        h(AutoAction::BuyShares, game: @game, sender: sender, settings: settings)
       end
 
       def enable_merger_pass(form)
@@ -159,171 +172,6 @@ module View
         children
       end
 
-      def enable_buy_shares(form)
-        settings = params(form)
-
-        corporation = @game.corporation_by_id(settings['corporation'])
-        auto_pass_after = settings['auto_pass_after']
-
-        if settings['float']
-          until_condition = 'float'
-          from_market = false
-        elsif settings['ipo']
-          until_condition = settings['buy_ipo'].to_i
-          from_market = false
-        elsif settings['market']
-          until_condition = settings['buy_market'].to_i
-          from_market = true
-        end
-
-        process_action(
-          Engine::Action::ProgramBuyShares.new(
-            sender,
-            corporation: corporation,
-            until_condition: until_condition,
-            from_market: from_market,
-            auto_pass_after: auto_pass_after,
-          )
-        )
-      end
-
-      AUTO_ACTIONS_WIKI = 'https://github.com/tobymao/18xx/wiki/Auto-actions'
-      def render_share_choice(form, corporation, shares, name, print_name, selected, settings)
-        owned = sender.num_shares_of(corporation, ceil: false)
-        default_value = owned + 1
-        default_value = settings&.until_condition if selected && settings && settings&.until_condition != 'float'
-        input = render_input(
-          "Buy from #{print_name} until at ",
-          id: "buy_#{name}",
-          type: :number,
-          inputs: form,
-          attrs: {
-            min: owned,
-            max: owned + shares.size,
-            value: default_value,
-            required: true,
-          },
-          input_style: { width: '5rem' },
-          container_style: { margin: '0' },
-        )
-
-        h(:div, [render_input([input, 'share(s)'],
-                              id: name,
-                              type: 'radio',
-                              name: 'mode',
-                              inputs: form,
-                              attrs: {
-                                name: 'mode_options',
-                                checked: selected,
-                              })])
-      end
-
-      def render_buy_shares(settings)
-        form = {}
-        text = 'Auto Buy Shares'
-        text += ' (Enabled)' if settings
-        children = [h(:h3, text)]
-        children << h(:p,
-                      'Automatically buy shares in a corporation.'\
-                      ' This will deactivate itself if other players do actions that may impact you.'\
-                      ' It will also deactivate if there are multiple share sizes (5%, 10%, 20%)'\
-                      ' available for purchase.')
-        children << h(:p,
-                      [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
-                         'Please read this for more details when it will deactivate')])
-
-        buyable = @game.corporations.select do |corp|
-          corp.ipoed && (!corp.ipo_shares.empty? || !@game.share_pool.shares_by_corporation[corp].empty?)
-        end
-
-        if buyable.empty?
-          children << h('p.bold', 'No corporations have shares available to buy, cannot program!')
-        else
-          selected = @buy_corporation || settings&.corporation || buyable.first
-          values = buyable.map do |entity|
-            attrs = { value: entity.name }
-            attrs[:selected] = true if selected == entity
-            h(:option, { attrs: attrs }, entity.name)
-          end
-          buy_corp_change = lambda do
-            corp = Native(form[:corporation]).elm&.value
-            store(:buy_corporation, @game.corporation_by_id(corp))
-          end
-          children << h(:div, [render_input('Corporation',
-                                            id: 'corporation',
-                                            el: 'select',
-                                            on: { input: buy_corp_change },
-                                            children: values, inputs: form)])
-
-          children << h(Corporation, corporation: selected)
-          corp_settings = settings if selected == settings&.corporation
-
-          # Which settings should be checked
-          settings_checked = if corp_settings&.until_condition == 'float'
-                               :float
-                             elsif corp_settings&.from_market
-                               :from_market
-                             elsif corp_settings
-                               :from_ipo
-                             else
-                               first_radio = true
-                               nil
-                             end
-
-          # Because the program does not deactivate it could be there
-          # is nothing left in the ipo/market/float. Show it anyway
-          # if it is activated
-          if !selected.floated? || settings_checked == :float
-            # There is a settings and it's floated, otherwise true if not selected already
-            checked = first_radio || settings_checked == :float
-
-            children << h(:div, [render_input('Until float',
-                                              id: 'float',
-                                              type: 'radio',
-                                              name: 'mode',
-                                              inputs: form,
-                                              attrs: {
-                                                name: 'mode_options',
-                                                checked: checked,
-                                              })])
-            first_radio = false
-          end
-
-          if !selected.ipo_shares.empty? || settings_checked == :from_ipo
-            checked = first_radio || settings_checked == :from_ipo
-            children << render_share_choice(form,
-                                            selected,
-                                            selected.ipo_shares,
-                                            'ipo',
-                                            @game.ipo_name(selected),
-                                            checked,
-                                            corp_settings)
-            first_radio = false
-          end
-
-          if !@game.share_pool.shares_by_corporation[selected].empty? || settings_checked == :from_market
-            checked = first_radio
-            checked = (corp_settings&.until_condition != 'float' && corp_settings&.from_market) if corp_settings
-            children << render_share_choice(form,
-                                            selected,
-                                            @game.share_pool.shares_by_corporation[selected],
-                                            'market',
-                                            'Market',
-                                            checked,
-                                            corp_settings)
-          end
-          children << render_checkbox('Switch to auto-pass after successful completion.',
-                                      'auto_pass_after',
-                                      form,
-                                      !!settings&.auto_pass_after)
-          subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_buy_shares(form) }]
-          subchildren << render_disable(settings) if settings
-          children << h(:div, subchildren)
-
-        end
-        children
-      end
-
       def enable_share_pass(form)
         settings = params(form)
 
@@ -348,9 +196,6 @@ module View
                       'Automatically pass in the stock round.'\
                       ' This will deactivate itself if other players do actions that may impact you.'\
                       ' It will only pass on your normal turn and allow you to bid etc.')
-        children << h(:p,
-                      [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
-                         'Please read this for more details when it will deactivate')])
         children << render_checkbox('Pass even if other players do actions that may impact you.',
                                     'sr_unconditional',
                                     form,

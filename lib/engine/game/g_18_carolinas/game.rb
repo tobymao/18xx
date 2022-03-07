@@ -711,16 +711,19 @@ module Engine
           @corporation_trains[entity] = nil
         end
 
-        def adjustable_train_list?
+        def adjustable_train_list?(_entity)
           true
         end
 
-        def adjustable_train_sizes?
+        def adjustable_train_sizes?(_entity)
           true
         end
 
-        def reset_adjustable_trains!(routes)
-          entity = routes[0].train.owner
+        def adjustable_train_label(_entity)
+          'Train'
+        end
+
+        def reset_adjustable_trains!(entity, _routes)
           raise GameError, 'Unable to find owner' unless entity
 
           return unless @corporation_trains[entity]
@@ -729,8 +732,7 @@ module Engine
           @corporation_trains[entity].each { |t| append_var_train(entity, t) }
         end
 
-        def add_route_train(routes)
-          entity = routes[0].train.owner
+        def add_route_train(entity, _routes)
           raise GameError, 'Unable to find owner' unless entity
 
           current_distance = entity.trains.sum(&:distance)
@@ -742,13 +744,13 @@ module Engine
           raise GameError, "Unable to allocate train of distance #{min_train}" unless new_train
 
           append_var_train(entity, new_train)
-          true
+          new_train
         end
 
-        def delete_route_train(route)
+        def delete_route_train(entity, route)
           train = route.train
-          entity = train.owner
           raise GameError, 'Unable to find owner' unless entity
+          raise GameError, 'Wrong owner' unless entity == train.owner
 
           return false if train.owner.receivership? && must_buy_power?(entity)
           return false if entity.trains.one?
@@ -758,10 +760,10 @@ module Engine
           true
         end
 
-        def increase_route_train(route)
+        def increase_route_train(entity, route)
           train = route.train
-          entity = train.owner
           raise GameError, 'Unable to find owner' unless entity
+          raise GameError, 'Wrong owner' unless entity == train.owner
 
           return if train.distance == MAX_TRAIN
 
@@ -773,10 +775,10 @@ module Engine
           route.train = new_train
         end
 
-        def decrease_route_train(route)
+        def decrease_route_train(entity, route)
           train = route.train
-          entity = train.owner
           raise GameError, 'Unable to find owner' unless entity
+          raise GameError, 'Wrong owner' unless entity == train.owner
 
           return if train.distance == min_train
 

@@ -180,6 +180,7 @@ module Engine
         LSL_ICON = 'lsl'
         LSL_ID = 'LSL'
         MEAT_REVENUE_DESC = 'Meat-Packing'
+        BOOMTOWN_REVENUE_DESC = 'Boomtown'
 
         LITTLE_MIAMI_HEXES = %w[H12 G13].freeze
 
@@ -472,7 +473,7 @@ module Engine
           end.join('-')
 
           [
-            [boomtown, 'Boomtown'],
+            [boomtown, self.class::BOOMTOWN_REVENUE_DESC],
             [meat_packing, self.class::MEAT_REVENUE_DESC],
             [steamboat, 'Port'],
           ].each do |company, desc|

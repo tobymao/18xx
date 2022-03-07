@@ -316,13 +316,17 @@ module Engine
 
             @log << "#{company.name} used for forming #{corporation.name} "\
                     "contributing #{@game.format_currency(company.value)} value"
+            use_on_assign_abilities(company)
 
+            par_corporation if available_subsidiaries(entity).empty?
+          end
+
+          def use_on_assign_abilities(company)
+            corporation = company.owner
             @game.abilities(company, :additional_token) do |ability|
               corporation.tokens << Engine::Token.new(corporation)
               ability.use!
             end
-
-            par_corporation if available_subsidiaries(entity).empty?
           end
 
           def contribution_can_exceed_corporation_cash?
@@ -363,7 +367,7 @@ module Engine
 
             @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
 
-            par_price = par_price(price)
+            par_price = price / 2
 
             share_price = @game.find_share_price(par_price)
 
@@ -377,17 +381,13 @@ module Engine
             corporation.spend(corporation.cash, @game.bank)
 
             # Player spends cash to start corporation, even if it forces them negative
-            # which they'll need to sort by adding companeis.
+            # which they'll need to sort by adding companies.
             entity.spend(price, corporation, check_cash: false)
 
             @corporation_size = nil
             size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
 
             par_corporation if available_subsidiaries(winner.entity).none?
-          end
-
-          def par_price(bid)
-            bid / 2
           end
 
           def available_subsidiaries(entity)

@@ -244,24 +244,64 @@ module Engine
             sym: 'LAP',
             value: 60,
             revenue: 15,
-            desc: '',
-            abilities: [],
+            desc: 'The owning corporation may lay an extra $0 cost plain yellow track on a city '\
+                  "hexagon. Cannot be used in any corporation or minor's home station location.",
+            abilities: [
+              {
+                type: 'tile_lay',
+                when: 'owning_corp_or_turn',
+                tiles: %w[7 8 9],
+                hexes: %w[A4 A6 B9 B13 C4 C8 D7 D9 D11 E4 E6 F11],
+                free: true,
+                special: true,
+                count: 1,
+              },
+            ],
           },
           {
             name: 'Redondo Junction',
             sym: 'RJ',
             value: 50,
             revenue: 10,
-            desc: '',
-            abilities: [],
+            desc: 'Place the "RJ" token in any location except Los Angeles or Long Beach. This token '\
+                  'acts as a station token for the owning corporation until Phase IV.',
+            abilities: [
+              {
+                type: 'token',
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                hexes: %w[
+                  A4 A6 A8 B5 B9 B11 B13 C4 C8 C12 D5 D7 D9 D11 D13
+                  E4 E6 E10 E12 F9 F11 F13
+                ],
+                price: 0,
+                teleport_price: 0,
+                count: 1,
+                extra_action: true,
+              },
+            ],
           },
           {
             name: 'RKO Pictures',
-            sym: 'RP',
+            sym: 'RKO',
             value: 40,
             revenue: 10,
-            desc: '',
-            abilities: [],
+            desc: 'Place a +20 token on the Hollywood location (B5).',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[B5],
+                count: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'sold',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
           },
         ].freeze
 
