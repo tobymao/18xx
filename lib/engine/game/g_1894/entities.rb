@@ -28,7 +28,8 @@ module Engine
             sym: 'CS',
             value: 50,
             revenue: 10,
-            desc: 'Owning corporation may lay or upgrade a tile in Charleroi (G14) along with an optional station marker.'\
+            desc: 'Owning corporation may lay a yellow tile or upgrade a yellow tile in Charleroi'\
+                  ' (G14) along with an optional station marker.'\
                   ' This counts as one of the corporation\'s tile builds.'\
                   ' Blocks G14 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['G14'] },
@@ -36,7 +37,7 @@ module Engine
                           type: 'teleport',
                           owner_type: 'corporation',
                           hexes: ['G14'],
-                          tiles: %w[14 15 35 36 57 118 619 X10 X11 X12 X13 X14 X15],
+                          tiles: %w[14 15 57 619],
                         }],
           },
           {
