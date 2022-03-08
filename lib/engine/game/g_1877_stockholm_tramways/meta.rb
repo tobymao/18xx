@@ -12,7 +12,7 @@ module Engine
 
         GAME_TITLE = '1877: Stockholm Tramways'
         GAME_DESIGNER = 'Love Brandefelt'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1877StockholmTramways'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1877-Stockholm-Tramways'
         GAME_LOCATION = 'Stockholm, Sweden'
         GAME_PUBLISHER = :self_published
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/236903/official-rules'
