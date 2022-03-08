@@ -43,7 +43,7 @@ module Engine
           {
             name: 'Ligne de Saint-Quentin à Guise',
             sym: 'SQG',
-            value: 80,
+            value: 70,
             revenue: 10,
             desc: 'Never closes.',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'player' },
@@ -136,7 +136,7 @@ module Engine
             name: 'Chemins de fer de l\'État belge',
             logo: '1894/Belge',
             simple_logo: '1894/Belge.alt',
-            tokens: [0, 40, 60, 80, 100],
+            tokens: [0, 40, 60, 80],
             coordinates: 'F15',
             color: '#61b229',
           },

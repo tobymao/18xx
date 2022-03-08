@@ -249,6 +249,8 @@ module Engine
 
         PARIS_HEX = 'G4'
         SQG_HEX = 'G10'
+        LE_SUD_HEX = 'I2'
+        LUXEMBOURG_HEX = 'I18'
 
         AMIENS_HEX = 'E6'
         AMIENS_TILE = 'X3'
@@ -342,6 +344,19 @@ module Engine
 
         def init_round_finished
           @players.rotate!(@round.entity_index)
+
+          company_by_id('SQG').revenue = 0
+        end
+
+        def action_processed(action)
+          super
+
+          if action.is_a?(Action::LayTile) && action.hex.id == SQG_HEX
+            tile = hex_by_id(SQG_HEX).tile
+            sqg = company_by_id('SQG')
+            sqg.revenue = tile.cities[0].revenue['diesel']
+            @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
+          end
         end
 
         def issuable_shares(entity)
@@ -403,6 +418,8 @@ module Engine
           revenue = super
           revenue += pc_bonus(route.corporation, stops)
           revenue += est_le_sud_bonus(route.corporation, stops)
+          revenue += luxembourg_value(stops)
+
           revenue
         end
 
@@ -411,7 +428,17 @@ module Engine
         end
 
         def est_le_sud_bonus(corp, stops)
-          corp.id == 'Est' && stops.any? { |s| s.hex.id == 'I2' } ? 20 : 0
+          corp.id == 'Est' && stops.any? { |s| s.hex.id == LE_SUD_HEX } ? 20 : 0
+        end
+
+        def luxembourg_value(stops)
+          stops.any? { |s| s.hex.id == LUXEMBOURG_HEX } ? stops.map { |s| get_current_revenue(s.revenue) }.max : 0
+        end
+
+        def get_current_revenue(revenue)
+          phase.tiles.reverse_each { |color| return (revenue[color]) if revenue[color] }
+
+          0
         end
 
         def ferry_marker_available?
