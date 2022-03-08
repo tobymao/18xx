@@ -158,38 +158,36 @@ module Engine
           },
           {
             name: '3',
-            on: '3',
+            on: '3H',
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
           },
           {
             name: '4',
-            on: '4',
-            train_limit: 3,
+            on: '4H',
+            train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
-          },
-          {
-            name: '5',
-            on: '5',
-            train_limit: 2,
-            tiles: %i[yellow green brown],
-            operating_rounds: 3,
           },
           {
             name: '6',
-            on: '6',
-            train_limit: 2,
+            on: '6H',
+            train_limit: 3,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
           {
-            name: 'D',
-            on: 'D',
-            train_limit: 2,
+            name: '8',
+            on: '8H',
+            train_limit: 3,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+          },
+          {
+            name: '10',
+            on: '10H',
+            train_limit: 3,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
@@ -197,41 +195,43 @@ module Engine
 
         TRAINS = [
           {
-            name: '2',
+            name: '2H',
             distance: 2,
             price: 80,
-            rusts_on: '4',
+            rusts_on: '4H',
             num: 6,
           },
           {
-            name: '3',
+            name: '3H',
             distance: 3,
             price: 180,
-            rusts_on: '6',
+            rusts_on: '8H',
             num: 5,
           },
           {
-            name: '4',
+            name: '4H',
             distance: 4,
-            price: 300,
-            rusts_on: 'D',
+            price: 280,
+            rusts_on: '10H',
             num: 4,
           },
           {
-            name: '5',
-            distance: 5,
-            price: 450,
-            num: 3,
-            events: [{ 'type' => 'close_companies' }],
+            name: '6H',
+            distance: 6,
+            price: 500,
+            num: 2,
           },
-          { name: '6', distance: 6, price: 630, num: 2 },
           {
-            name: 'D',
-            distance: 999,
-            price: 1100,
-            num: 20,
-            available_on: '6',
-            discount: { '4' => 300, '5' => 300, '6' => 300 },
+            name: '8H',
+            distance: 8,
+            price: 600,
+            num: 2,
+          },
+          {
+            name: '10H',
+            distance: 10,
+            price: 700,
+            num: 36,
           },
         ].freeze
 
@@ -380,7 +380,7 @@ module Engine
         SELL_AFTER = :after_ipo
         SELL_BUY_ORDER = :sell_buy
         MARKET_SHARE_LIMIT = 100
-        CERT_LIMIT_INCLUDES_PRIVATES = false
+        MUST_BUY_TRAIN = :always
 
         GAME_END_CHECK = { stock_market: :current_round, custom: :current_or }.freeze
 
@@ -397,7 +397,7 @@ module Engine
             %w[D2 C7 E11 G11 H8 I7] => 'city=revenue:0',
             ['F8'] => 'city=revenue:0;upgrade=cost:40,terrain:water',
             ['E7'] => 'city=revenue:0;label=C',
-            ['F4'] => 'city=revenue:0,loc:5.5;label=C;upgrade=cost:40,terrain:water',
+            ['F4'] => 'city=revenue:0;label=C;upgrade=cost:40,terrain:water',
           },
           yellow: {
             ['D4'] => 'city=revenue:20;path=a:1,b:_0;path=a:_0,b:5',
@@ -424,17 +424,91 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1877StockholmTramways::Step::Dividend,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
         end
 
-        def init_stock_market
-          StockMarket.new(self.class::MARKET, [])
-        end
-
         def init_round
           stock_round
+        end
+
+        def game_route_revenue(stop, phase, train)
+          return 0 unless stop
+
+          stop.route_revenue(phase, train)
+        end
+
+        def check_overlap(routes) end
+
+        def check_overlap_single(route)
+          tracks = []
+
+          route.paths.each do |path|
+            a = path.a
+            b = path.b
+
+            tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+            tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+
+            # check track between edges and towns not in center
+            # (essentially, that town needs to act like an edge for this purpose)
+            if b.edge? && a.town? && (nedge = a.tile.preferred_city_town_edges[a]) && nedge != b.num
+              tracks << [path.hex, a, path.lanes[0][1]]
+            end
+            if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
+              tracks << [path.hex, b, path.lanes[1][1]]
+            end
+          end
+
+          tracks.group_by(&:itself).each do |k, v|
+            raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
+          end
+        end
+
+        def hex_edge_cost(conn)
+          conn[:paths].each_cons(2).sum do |a, b|
+            a.hex == b.hex ? 0 : 1
+          end
+        end
+
+        def route_distance(route)
+          route.chains.sum { |conn| hex_edge_cost(conn) }
+        end
+
+        def route_distance_str(route)
+          "#{route_distance(route)}H"
+        end
+
+        def check_distance(route, _visits)
+          limit = route.train.distance
+          distance = route_distance(route)
+          raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
+        end
+
+        def check_other(route)
+          check_overlap_single(route)
+        end
+
+        def stop_on_other_route?(this_route, stop)
+          this_route.routes.each do |r|
+            return false if r == this_route
+
+            other_stops = r.stops
+            return true if other_stops.include?(stop)
+            return true unless (other_stops.flat_map(&:groups) & stop.groups).empty?
+          end
+          false
+        end
+
+        def revenue_for(route, stops)
+          stops.sum do |stop|
+            stop_on_other_route?(route, stop) ? 0 : game_route_revenue(stop, route.phase, route.train)
+          end
+        end
+
+        def compute_other_paths(_, _)
+          []
         end
       end
     end
