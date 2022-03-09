@@ -237,6 +237,16 @@ module Engine
 
           super
         end
+
+        def tile_lays(entity)
+          # Enable double tile lay for TR after ability activation
+          return self.class::DOUBLE_TILE_LAYS if ABILITY_DOUBLE_TILE_LAY.owner == entity
+
+          return [DEFAULT_TILE_LAY] unless entity == tc && @round.num_additional_lays.positive?
+
+          # Each tile lay on hex with a town provides additional tile lay to TC
+          Array.new(1 + @round.num_additional_lays) { DEFAULT_TILE_LAY }
+        end
       end
     end
   end
