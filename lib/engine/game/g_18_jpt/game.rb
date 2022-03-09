@@ -25,6 +25,9 @@ module Engine
                         brown: '#5E4E35',
                         purple: '#572979')
 
+        TRACK_RESTRICTION = :permissive
+        SELL_BUY_ORDER = :sell_buy_sell
+        TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '¥%d'
 
         BANK_CASH = 12_000
@@ -130,9 +133,55 @@ module Engine
           },
         ].freeze
 
-        def setup
-          tr = corporation_by_id('TR')
+        TR_SECOND_STARTING_TOKEN = 'H76'
+        TOWN_TILE_SUBSIDY = 100
+        T_TILE_SUBSIDY = 50
 
+        RESERVED_TILES = %w[J7 J14 J15].freeze
+
+        DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
+
+        ABILITY_DOUBLE_TILE_LAY = Ability::Base.new(
+          type: 'description',
+          description: 'Lay or upgrade two tiles',
+          desc_detail: 'Lay or upgrade a tile twice in each operating round. The same hex may be upgraded twice.',
+        )
+
+        DELAYED_ABILITIES = {
+          'TC' => Ability::TrainDiscount.new(
+            type: 'train_discount',
+            discount: 0.2,
+            trains: %w[2 3 4 5 6 D],
+            description: 'Buy trains at 20% discount',
+            desc_detail: 'May purchase trains from the bank or open market at a 20% discount.',
+          ),
+          'TR' => ABILITY_DOUBLE_TILE_LAY,
+        }.freeze
+
+        DEFAULT_TILE_LAY = { lay: true, upgrade: true }.freeze
+
+        DOUBLE_TILE_LAYS = [
+          DEFAULT_TILE_LAY,
+          DEFAULT_TILE_LAY,
+        ].freeze
+
+        def ser
+          @ser ||= corporation_by_id('SER')
+        end
+
+        def tc
+          @tc ||= corporation_by_id('TC')
+        end
+
+        def tr
+          @tr ||= corporation_by_id('TR')
+        end
+
+        def tmgbt
+          @tmgbt ||= company_by_id('TMGBT')
+        end
+
+        def setup
           # Move 3 last ordinary shares of TR to bank pool
           @share_pool.buy_shares(
             @share_pool,
