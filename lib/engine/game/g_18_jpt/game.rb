@@ -205,6 +205,21 @@ module Engine
           hexes
         end
 
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuyCompany,
+            G18JPT::Step::Track,
+            G18JPT::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
         def place_home_token(corporation)
           super
 
@@ -230,6 +245,16 @@ module Engine
           end
 
           revenue
+        end
+
+        def revenue_str(route)
+          str = super
+
+          return str unless (ability = abilities(route.corporation, :hex_bonus))
+
+          route.hexes.each { |hex| str += " + Bonus from #{hex.name}" if ability.hexes.include?(hex.name) }
+
+          str
         end
 
         def assignment_tokens(assignment)
