@@ -9,24 +9,18 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def can_buy?(entity, bundle)
-            return false if attempt_ndm_action_on_unavailable?(bundle)
-
-            super
+            super && !attempt_ndm_action_on_unavailable?(bundle)
           end
 
           def can_sell?(entity, bundle)
-            return false if attempt_ndm_action_on_unavailable?(bundle)
-
-            super
+            super && !attempt_ndm_action_on_unavailable?(bundle)
           end
 
           def can_gain?(entity, bundle, exchange: false)
-            return false if attempt_ndm_action_on_unavailable?(bundle)
-            return if !bundle || !entity
+            return if !bundle || !entity || attempt_ndm_action_on_unavailable?(bundle)
 
             corporation = bundle.corporation
-
-            corporation.holding_ok?(entity, bundle.percent) && (exchange || room_to_gain?(entity, bundle, exchange))
+            corporation.holding_ok?(entity, bundle.percent) && (exchange || room_to_gain?(entity, bundle))
           end
 
           include SwapBuySell
@@ -46,15 +40,14 @@ module Engine
             bundle.corporation == @game.ndm && @game.phase.status.include?('ndm_unavailable')
           end
 
-          # Need to allow buying 5% shares in NdM even if at cert limit as these shares are not
-          # counted towards cert limit (but they still count for 60% corporation limit).
-          def room_to_gain?(entity, bundle, exchange)
-            return true if bundle.corporation == @game.ndm &&
-                           @game.num_certs(entity) == @game.cert_limit &&
-                           bundle.percent == 5 &&
-                           !exchange
+          def room_to_gain?(entity, bundle)
+            return true if @game.num_certs(entity) < @game.cert_limit
 
-            @game.num_certs(entity) < @game.cert_limit
+            # Need to allow buying 5% shares in NdM even if at cert limit as these shares are not
+            # counted towards cert limit (but they still count for 60% corporation limit).
+            @game.num_certs(entity) == @game.cert_limit &&
+            bundle.corporation == @game.ndm &&
+            bundle.percent == 5
           end
         end
       end
