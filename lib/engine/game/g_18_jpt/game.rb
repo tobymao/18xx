@@ -217,8 +217,11 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
+          # corporations with destination coordinates don't have double revenue
+          return revenue if route.corporation.destination_coordinates
+
           # Double revenue of corporation's destination hexes
-          if (ability = abilities(route.corporation, :assign_hexes))
+          if (ability = abilities(route.corporation, :hex_bonus))
             stops.each do |stop|
               next unless ability.hexes.include?(stop.hex.name)
 
