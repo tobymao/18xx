@@ -14,6 +14,13 @@ module Engine
             end
 
             super
+
+            return unless action.entity == @game.rj
+
+            token = action.city.tokens[action.slot]
+            token.logo = token.logo.sub('.svg', '_RJ.svg')
+            token.simple_logo = token.logo
+            @game.rj_token = token
           end
         end
       end

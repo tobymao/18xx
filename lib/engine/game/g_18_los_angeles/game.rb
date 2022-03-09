@@ -4,6 +4,7 @@ require_relative '../g_1846/game'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'step/buy_sell_par_shares'
 require_relative 'step/draft_distribution'
 require_relative 'step/special_token'
 require_relative '../stubs_are_restricted'
@@ -27,51 +28,90 @@ module Engine
                         brown: '#644c00',
                         purple: '#832e9a')
 
+        attr_reader :drafted_companies, :parred_corporations
+        attr_accessor :rj_token
+
         ASSIGNMENT_TOKENS = {
           'LAC' => '/icons/18_los_angeles/lac_token.svg',
           'LAS' => '/icons/1846/sc_token.svg',
+          'RKO' => '/icons/18_los_angeles/bt_token.svg',
         }.freeze
 
-        ORANGE_GROUP = [
-          'Beverly Hills Carriage',
-          'South Bay Line',
+        CORPORATIONS_GROUP = %w[
+          ELA
+          LA
+          LAIR
+          PER
+          SF
+          SP
+          UP
         ].freeze
-
-        BLUE_GROUP = [
-          'Chino Hills Excavation',
-          'Los Angeles Citrus',
-          'Los Angeles Steamship',
-        ].freeze
-
-        GREEN_GROUP = %w[LA SF SP].freeze
 
         REMOVED_CORP_SECOND_TOKEN = {
+          'ELA' => 'C4',
           'LA' => 'B9',
-          'SF' => 'C8',
+          'LAIR' => 'E6',
+          'SF' => 'D11',
           'SP' => 'C6',
+          'UP' => 'B13',
         }.freeze
+
+        HOME_TOKEN_TIMING = :par
+
+        PER_HEXES = %w[
+          A4 A6
+          B5 B13
+          C8
+          D7 D9 D11 D13
+          E4 E6
+          F9 F11 F13
+        ].freeze
 
         ABILITY_ICONS = {
-          SBL: 'sbl',
           LAC: 'meat',
           LAS: 'port',
+          RKO: 'boom',
         }.freeze
-
-        LSL_HEXES = %w[E4 E6].freeze
-        LSL_ICON = 'sbl'
-        LSL_ID = 'SBL'
 
         LITTLE_MIAMI_HEXES = [].freeze
 
         MEAT_HEXES = %w[C14 F7].freeze
         STEAMBOAT_HEXES = %w[B1 C2 F7 F9].freeze
-        BOOMTOWN_HEXES = [].freeze
+        BOOMTOWN_HEXES = %w[B5].freeze
 
         MEAT_REVENUE_DESC = 'Citrus'
+        BOOMTOWN_REVENUE_DESC = 'RKO'
 
         EVENTS_TEXT = G1846::Game::EVENTS_TEXT.merge(
-          'remove_markers' => ['Remove Markers', 'Remove LA Steamship and LA Citrus markers']
+          'remove_markers' => ['Remove Tokens & Markers', 'Remove RJ token and LA Steamship, LA Citrus, and RKO Pictures markers']
         ).freeze
+
+        CORPORATION_START_LIMIT = {
+          2 => 5,
+          3 => 5,
+          4 => 6,
+          5 => 7,
+        }.freeze
+
+        COMPANY_DRAFT_LIMIT = {
+          2 => 8,
+          3 => 9,
+          4 => 10,
+          5 => 11,
+        }.freeze
+
+        def setup
+          super
+          post_setup
+        end
+
+        def post_setup
+          @parred_corporations = 0
+          @drafted_companies = 0
+          @corporations.each do |corporation|
+            place_home_token(corporation) unless corporation.id == 'PER'
+          end
+        end
 
         def setup_turn
           1
@@ -94,24 +134,16 @@ module Engine
           hexes
         end
 
-        def num_removals(group)
-          return 0 if @players.size == 5
-          return 1 if @players.size == 4
-
-          case group
-          when ORANGE_GROUP, BLUE_GROUP
-            1
-          when GREEN_GROUP
-            2
-          end
+        def num_removals(_group)
+          two_player? ? 2 : 0
         end
 
         def corporation_removal_groups
-          [GREEN_GROUP]
+          two_player? ? [CORPORATIONS_GROUP] : []
         end
 
-        def place_second_token(corporation, **_kwargs)
-          super(corporation, two_player_only: false, deferred: false)
+        def place_second_token_kwargs
+          { two_player_only: true, deferred: false }
         end
 
         def init_round
@@ -127,6 +159,61 @@ module Engine
             @log << "#{company.name} is removed" unless company.value >= 100
           end
           @draft_finished = true
+        end
+
+        def after_par(corporation)
+          super
+          after_par_check_limit!
+        end
+
+        def par_limit
+          @par_limit ||= CORPORATION_START_LIMIT[@players.size]
+        end
+
+        def after_par_check_limit!
+          @parred_corporations += 1
+
+          return if @players.size == 5
+          return unless @parred_corporations >= par_limit
+
+          closing = []
+          @corporations.select { |c| c.par_price.nil? }.each do |corporation|
+            abilities(corporation, :reservation) do |ability|
+              corporation.remove_ability(ability)
+            end
+            @corporations.reject! { |e| e == corporation }
+            closing << corporation.name
+          end
+          @log << "Closing remaining corporations: #{closing.join(', ')}"
+        end
+
+        def after_bid
+          @drafted_companies += 1
+        end
+
+        def draft_limit
+          @draft_limit ||= COMPANY_DRAFT_LIMIT[@players.size]
+        end
+
+        def draft_finished?
+          @drafted_companies >= draft_limit
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
+            G1846::Step::Assign,
+            G18LosAngeles::Step::BuySellParShares,
+          ])
+        end
+
+        def home_token_locations(corporation)
+          return [] unless corporation.id == 'PER'
+
+          self.class::PER_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
+            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+          end
         end
 
         def operating_round(round_num)
@@ -181,12 +268,16 @@ module Engine
           @steamboat ||= company_by_id('LAS')
         end
 
-        def lake_shore_line
-          @lake_shore_line ||= company_by_id('SBL')
+        def boomtown
+          @boomtown ||= company_by_id('RKO')
         end
 
         def dch
           @dch ||= company_by_id('DC&H')
+        end
+
+        def rj
+          @rj ||= company_by_id('RJ')
         end
 
         def block_for_steamboat?
@@ -291,6 +382,22 @@ module Engine
 
         def east_west_desc
           'E/W or N/S'
+        end
+
+        def event_remove_markers!
+          super
+
+          # piggy-back on the markers event to avoid redefining all the trains
+          # from 1846 just for the sake of adding a single new event
+          event_remove_rj_token!
+        end
+
+        def event_remove_rj_token!
+          return unless rj_token
+
+          @log << "-- Event: #{rj_token.corporation.id}'s \"RJ\" token removed from #{rj_token.hex.id} --"
+          rj_token.destroy!
+          @rj_token = nil
         end
       end
     end

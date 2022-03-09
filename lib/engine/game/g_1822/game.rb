@@ -45,6 +45,10 @@ module Engine
 
         TILE_TYPE = :lawson
 
+        PLAIN_SYMBOL_UPGRADES = {
+          yellow: %w[S T],
+        }.freeze
+
         MARKET = [
           ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '550', '600', '650', '700e'],
           ['', '', '', '', '', '', '', '', '', '', '', '', '', '330', '360', '400', '450', '500', '550', '600', '650'],
@@ -1287,7 +1291,22 @@ module Engine
           @london_extra_city_index = city.tile.cities.index { |c| c == city }
         end
 
-        def after_lay_tile(hex, tile)
+        def after_lay_tile(hex, old_tile, tile)
+          if old_tile.label
+            # add temporary label to plain tile lays on designated symbols
+            if PLAIN_SYMBOL_UPGRADES.include?(tile.color) &&
+               PLAIN_SYMBOL_UPGRADES[tile.color].include?(old_tile.label.to_s) &&
+               !tile.label
+              tile.label = old_tile.label.to_s
+            end
+
+            # remove the label when we upgrade a temporarily labelled tile
+            if PLAIN_SYMBOL_UPGRADES.include?(old_tile.color) &&
+               PLAIN_SYMBOL_UPGRADES[old_tile.color].include?(old_tile.label.to_s)
+              old_tile.label = nil
+            end
+          end
+
           # If we upgraded london, check if we need to add the extra slot from minor 14
           upgrade_london(hex) if hex.name == self.class::LONDON_HEX
 

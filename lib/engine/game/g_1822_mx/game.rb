@@ -53,6 +53,9 @@ module Engine
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
         P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
 
+        # Don't run 1822 specific code for the LCDR
+        COMPANY_LCDR = nil
+
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
           'P2' => { acquire: %i[major], phase: 2 },

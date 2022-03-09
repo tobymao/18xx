@@ -180,6 +180,7 @@ module Engine
         LSL_ICON = 'lsl'
         LSL_ID = 'LSL'
         MEAT_REVENUE_DESC = 'Meat-Packing'
+        BOOMTOWN_REVENUE_DESC = 'Boomtown'
 
         LITTLE_MIAMI_HEXES = %w[H12 G13].freeze
 
@@ -281,7 +282,7 @@ module Engine
               abilities(corporation, :reservation) do |ability|
                 corporation.remove_ability(ability)
               end
-              place_second_token(corporation, deferred: true)
+              place_second_token(corporation, **place_second_token_kwargs)
             end
           end
           @log << "Privates in the game: #{@companies.reject { |c| c.name.include?('Pass') }.map(&:name).sort.join(', ')}"
@@ -370,6 +371,10 @@ module Engine
           two_player? ? [NORTH_GROUP, SOUTH_GROUP] : [GREEN_GROUP]
         end
 
+        def place_second_token_kwargs
+          { deferred: true }
+        end
+
         def place_second_token(corporation, two_player_only: true, deferred: true)
           return if two_player_only && !two_player?
 
@@ -393,7 +398,7 @@ module Engine
 
         def place_token_on_upgrade(action)
           hex_id = action.tile.hex.id
-          return unless action.tile.color == 'green' && @second_tokens_in_green.include?(hex_id)
+          return unless action.tile.color == :green && @second_tokens_in_green.include?(hex_id)
 
           corporation = @second_tokens_in_green[hex_id]
           token = corporation.find_token_by_type
@@ -468,7 +473,7 @@ module Engine
           end.join('-')
 
           [
-            [boomtown, 'Boomtown'],
+            [boomtown, self.class::BOOMTOWN_REVENUE_DESC],
             [meat_packing, self.class::MEAT_REVENUE_DESC],
             [steamboat, 'Port'],
           ].each do |company, desc|

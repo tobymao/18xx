@@ -400,6 +400,22 @@ module Engine
           new_train
         end
 
+        def unallocate_pool_diesel(entity, train)
+          s_train = entity.trains.find { |t| diesel?(t) }
+          return unless s_train
+          return if train == s_train
+          return unless @subtrains[s_train].include?(train)
+          return unless @subtrains[s_train].size > 1 # always leave one allocated per supertrain
+          return if @subtrains[s_train][0] == train # always leave the first
+          return unless @diesel_pool[train]
+          return unless @diesel_pool[train][:allocated]
+
+          @diesel_pool[train][:allocated] = false
+          @diesel_pool[train][:used] = false
+          @subtrains[s_train].delete(train)
+          @supertrains.delete(train)
+        end
+
         def free_pool_diesels(entity)
           s_train = entity.trains.find { |t| diesel?(t) }
           return unless s_train
@@ -1668,8 +1684,6 @@ module Engine
         def check_distance(route, visits)
           train = route.train
 
-          add_new_diesel(route) if diesel?(route.train)
-
           # no real "distance" for 1873 routes, instead might as well use visits for checks:
           # check that route begins and ends with termini
           corporation = train_owner(route.train)
@@ -1829,21 +1843,27 @@ module Engine
           raise GameError, 'Diesel route has to directly or indirectly connect to concession route'
         end
 
-        def add_new_diesel(route)
-          # add diesel to end if all diesel routes are defined
-          s_train = @supertrains[route.train]
-          num_diesel_routes = route.routes.count { |r| diesel?(r.train) }
-          num_diesels = @subtrains[s_train].size
-          return unless num_diesel_routes == num_diesels
-
-          allocate_pool_diesel(route.train)
-        end
-
         def concession_route_run?(entity, routes)
           return true if entity == @qlb
+          return false unless routes
 
           @corporation_info[entity][:concession_routes].all? do |con_route|
-            routes.any? { |r| (r.connection_hexes.flatten & con_route).size == con_route.size }
+            routes.any? do |r|
+              ((route_hexes = r.connection_hexes.flatten.uniq) & con_route).size == con_route.size &&
+                route_hexes.size == con_route.size
+            end
+          end
+        end
+
+        def concession_route?(corporation, route)
+          return false unless corporation
+          return false unless @corporation_info[corporation][:concession_routes]
+          return false unless route
+
+          route_hexes = route.connection_hexes.flatten.uniq
+
+          @corporation_info[corporation][:concession_routes].any? do |con_route|
+            (route_hexes & con_route).size == con_route.size && route_hexes.size == con_route.size
           end
         end
 
@@ -1927,6 +1947,35 @@ module Engine
         # needed to deal with unallocated diesels being referenced by Route serialization
         def city_tokened_by?(city, entity)
           !entity || city.tokened_by?(entity)
+        end
+
+        def revenue_str(route)
+          str = super
+          concession_route?(route.corporation, route) ? "#{str} (concession)" : str
+        end
+
+        def adjustable_train_list?(entity)
+          entity.trains.any? { |t| diesel?(t) }
+        end
+
+        def adjustable_train_label(_entity)
+          'Diesel'
+        end
+
+        # add diesel to end
+        def add_route_train(entity, _routes)
+          diesel = entity.trains.find { |t| diesel?(t) }
+          return unless diesel
+
+          allocate_pool_diesel(diesel)
+        end
+
+        def delete_route_train(entity, route)
+          train = route.train
+          return unless diesel?(train)
+          return if entity.trains.include?(route.train)
+
+          unallocate_pool_diesel(entity, train)
         end
         #
         # end of route methods

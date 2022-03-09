@@ -29,7 +29,7 @@ module Engine
       nil
     end
 
-    def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil, allow_president_change: true)
+    def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil, allow_president_change: true, silent: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
       if @allow_president_sale && bundle.presidents_share && bundle.owner == self
         bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
@@ -47,7 +47,7 @@ module Engine
       price = bundle.price
       par_price = corporation.par_price&.price
 
-      if ipoed != corporation.ipoed
+      if ipoed != corporation.ipoed && !silent
         @log << "#{entity.name} #{@game.ipo_verb(corporation)} #{corporation.name} at "\
                 "#{@game.format_currency(par_price)}"
       end
@@ -69,22 +69,26 @@ module Engine
         price = exchange_price || 0
         case exchange
         when :free
-          @log << "#{entity.name} receives #{share_str}"
+          @log << "#{entity.name} receives #{share_str}" unless silent
         when Company
-          @log << if exchange_price
-                    "#{entity.name} exchanges #{exchange.name} and #{@game.format_currency(price)}"\
-                      " from #{from} for #{share_str}"
-                  else
-                    "#{entity.name} exchanges #{exchange.name} from #{from} for #{share_str}"
-                  end
+          unless silent
+            @log << if exchange_price
+                      "#{entity.name} exchanges #{exchange.name} and #{@game.format_currency(price)}"\
+                        " from #{from} for #{share_str}"
+                    else
+                      "#{entity.name} exchanges #{exchange.name} from #{from} for #{share_str}"
+                    end
+          end
         end
       else
         price -= swap.price if swap
         swap_text = swap ? " + swap of a #{swap.percent}% share" : ''
         verb = entity == corporation ? 'redeems' : 'buys'
-        @log << "#{entity.name} #{verb} #{share_str} "\
-                "from #{from} "\
-                "for #{@game.format_currency(price)}#{swap_text}"
+        unless silent
+          @log << "#{entity.name} #{verb} #{share_str} "\
+                  "from #{from} "\
+                  "for #{@game.format_currency(price)}#{swap_text}"
+        end
       end
 
       if price.zero?
