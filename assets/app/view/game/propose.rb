@@ -12,12 +12,12 @@ module View
       needs :company
 
       def render
-        step = @game.round.active_step
+        @step = @game.round.active_step
 
         propose_click = lambda do
           corp_name = Native(@corp_dropdown).elm.value
           corp = @game.corporation_by_id(corp_name)
-          price = @price_input.JS['elm'].JS['value'].to_i
+          price = @step.fixed_price(@company) || @price_input.JS['elm'].JS['value'].to_i
           process_action(Engine::Action::Propose.new(
             @player,
             corporation: corp,
@@ -31,29 +31,33 @@ module View
             height: '1.3rem',
             width: '4rem',
             padding: '0 0 0 0.2rem',
-          }
+          },
         }
         corp_options = @corporations.map do |corp|
           h(:option, { attrs: { value: corp.name } }, corp.name)
         end
         @corp_dropdown = h('select', dropdown_props, corp_options)
 
-        @price_input = h(
-          'input.no_margin',
-          style: {
-            height: '1.2rem',
-            width: '3rem',
-            padding: '0 0 0 0.2rem',
-          },
-          attrs: price_range(@company)
-        )
+        @price_input = if (price = @step.fixed_price(@company))
+                         " #{@game.format_currency(price)} "
+                       else
+                         h(
+                           'input.no_margin',
+                           style: {
+                             height: '1.2rem',
+                             width: '3rem',
+                             padding: '0 0 0 0.2rem',
+                           },
+                           attrs: price_range(@company)
+                         )
+                       end
 
         h(:div, [
           'Corp:',
           @corp_dropdown,
           'Price:',
           @price_input,
-          h('button.no_margin', { on: { click: propose_click } }, 'Offer')
+          h('button.no_margin', { on: { click: propose_click } }, 'Offer'),
         ])
       end
 
@@ -63,7 +67,7 @@ module View
             height: '1.3rem',
             width: '4rem',
             padding: '0 0 0 0.2rem',
-          }
+          },
         }
         corp_options = @corporations.map do |corp|
           h(:option, { attrs: { value: corp.name } }, corp.name)
@@ -81,7 +85,7 @@ module View
               padding: '0 0 0 0.2rem',
             },
             attrs: price_range(@company)
-          )
+          ),
         ])
       end
 

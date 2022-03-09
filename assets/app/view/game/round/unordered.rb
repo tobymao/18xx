@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
+require 'view/game/actionable'
+
 module View
   module Game
     module Round
       class Unordered < Snabberb::Component
-        needs :game
+        include Actionable
+        include Lib::Settings
+
         needs :user
         needs :hotseat
         needs :selected_company, default: nil, store: true
@@ -15,7 +20,74 @@ module View
           @entities = @hotseat ? @step.active_entities : [@game.player_by_id(@user['id'])]
           @current_actions = @entities.flat_map { |e| round.actions_for(e) }.uniq.compact
 
-          div_props = {
+          children = []
+          children << render_offers
+          children << render_player_entities
+
+          h(:div, children.compact)
+        end
+
+        def render_offers
+          return nil if (offers = @step.offers).empty?
+
+          section_props = {
+            style: {
+              width: 'max-content',
+              marginTop: '1rem',
+            },
+          }
+
+          offer_props = {
+            style: {
+              border: '1px solid',
+              borderRadius: '5px',
+              marginBottom: '0.5rem',
+              padding: '0.2rem 0.5rem 0.2rem 0.5rem',
+            },
+          }
+
+          offers = offers.map do |offer|
+            line = []
+            line << @step.offer_text(offer)
+            if @current_actions.include?('respond') &&
+              @entities.any? { |entity| @step.can_respond?(entity, offer) }
+              offer_props[:style][:background] = color_for(:your_turn)
+
+              accept = lambda do
+                process_action(Engine::Action::Respond.new(
+                  offer[:responder],
+                  corporation: offer[:corporation],
+                  company: offer[:company],
+                  accept: true,
+                ))
+              end
+
+              reject = lambda do
+                process_action(Engine::Action::Respond.new(
+                  offer[:responder],
+                  corporation: offer[:corporation],
+                  company: offer[:company],
+                  accept: false,
+                ))
+              end
+
+              line << h(:div, [
+                h(:button, { on: { click: accept } }, 'Accept'),
+                h(:button, { on: { click: reject } }, 'Reject'),
+              ])
+            else
+              offer_props[:style][:background] = color_for(:bg2)
+            end
+            h(:div, offer_props, line)
+          end
+
+          h(:div, section_props, [
+            *offers,
+          ])
+        end
+
+        def render_player_entities
+          flex_props = {
             style: {
               display: 'flex',
               maxWidth: '100%',
@@ -23,23 +95,10 @@ module View
             },
           }
 
-          h(:div, div_props, render_player_entities)
-        end
-
-        def render_player_entities
-          div_props = {
-            style: {
-              display: 'grid',
-              grid: 'auto / repeat(auto-fill, minmax(17rem, 1fr))',
-              gap: '3rem 1.2rem',
-            },
-          }
-          players = @game.players
+          players = @game.player_entities
           if (i = players.map(&:name).rindex(@user&.dig(:name)))
             players = players.rotate(i)
           end
-
-          bankrupt_players, players = players.partition(&:bankrupt)
 
           player_owned = @game.player_sort(@game.corporations.select(&:owner))
           children = players.map do |p|
@@ -52,10 +111,12 @@ module View
               *corps,
             ])
           end
+          h(:div, flex_props, children)
         end
 
         def render_company(company)
           inputs = []
+
           if @current_actions.include?('propose') && @selected_company == company
             @entities.each do |entity|
               corps = []
@@ -65,12 +126,32 @@ module View
               inputs << h(Propose, player: entity, corporations: corps, company: company) unless corps.empty?
             end
           end
-          h(:div, [ h(Company, company: company), *inputs ])
+
+          if @current_actions.include?('sell_company') && @selected_company == company
+            @entities.each do |entity|
+              inputs << close_input(entity, company) if @step.can_close?(entity, company)
+            end
+          end
+
+          h(:div, [h(Company, company: company), *inputs])
+        end
+
+        def close_input(entity, company)
+          close = lambda do
+            process_action(Engine::Action::SellCompany.new(
+              entity,
+              company: company,
+              price: 0
+            ))
+            store(:selected_company, nil, skip: true)
+          end
+
+          h(:button, { on: { click: close } }, "Close #{company.sym}")
         end
 
         def render_corporation(corp)
           subsidiaries = corp.companies.map { |c| render_company(c) }
-          h(:div, [ h(Corporation, corporation: corp), *subsidiaries ])
+          h(:div, [h(Corporation, corporation: corp), *subsidiaries])
         end
       end
     end

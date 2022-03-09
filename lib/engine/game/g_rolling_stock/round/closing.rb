@@ -6,19 +6,17 @@ module Engine
   module Game
     module GRollingStock
       module Round
-        class Acquisition < Engine::Round::Base
-          attr_accessor :proposals, :transacted_cash, :transacted_companies
-
+        class Closing < Engine::Round::Base
           def self.round_name
-            'Acquisition Round'
+            'Closing Round'
           end
 
           def self.short_name
-            'Acquisition'
+            'Closing'
           end
 
           def name
-            'Phase 3 - Acquisition'
+            'Phase 4 - Closing'
           end
 
           def unordered?
@@ -26,7 +24,7 @@ module Engine
           end
 
           def select_entities
-            @game.acquisition_players
+            @game.closing_players
           end
 
           def finished?

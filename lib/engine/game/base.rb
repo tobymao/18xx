@@ -2592,6 +2592,10 @@ module Engine
         []
       end
 
+      def player_entities
+        @players
+      end
+
       def player_sort(entities)
         entities.sort_by(&:name).group_by(&:owner)
       end
