@@ -45,7 +45,7 @@ module Engine
                   },
                   {
                     name: '7',
-                    on: 'D',
+                    on: 'E',
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     status: ['corporate_shares_open'],
