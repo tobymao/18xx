@@ -186,25 +186,32 @@ module Engine
           @share_pool.buy_shares(
             @share_pool,
             ShareBundle.new(tr.shares.dup.reverse.take(3)),
-            exchange: :free
           )
-
-          # Place second starting token for TR
-          @hexes.find { |hex| hex.name == 'H76' }.tile.cities.first.place_token(tr, tr.next_token)
         end
 
         def init_hexes(companies, corporations)
           hexes = super
 
           @corporations.each do |corporation|
-            next unless (ability = abilities(corporation, :assign_hexes))
+            next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
+
+            dest_hexes = dest_abilities.map(&:hexes).flatten
 
             hexes
-              .select { |h| ability.hexes.include?(h.name) }
+              .select { |h| dest_hexes.include?(h.name) }
               .each { |h| h.assign!(corporation) }
           end
 
           hexes
+        end
+
+        def place_home_token(corporation)
+          super
+
+          # Place second starting token for TR
+          return unless corporation == tr && !corporation.tokens[1]&.used
+
+          @hexes.find { |hex| hex.name == TR_SECOND_STARTING_TOKEN }.tile.cities.first.place_token(tr, tr.next_token)
         end
 
         def revenue_for(route, stops)
