@@ -247,6 +247,16 @@ module Engine
           # Each tile lay on hex with a town provides additional tile lay to TC
           Array.new(1 + @round.num_additional_lays) { DEFAULT_TILE_LAY }
         end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return to.name == 'J7' if from.hex.name == 'D96' && from.hex.color == :green
+          return to.name == 'J14' if %w[E77 F94].include?(from.hex.name) && from.hex.color == :green
+          return to.name == 'J15' if from.hex.name == 'J88' && from.hex.color == :green
+
+          return false if RESERVED_TILES.include?(to.name)
+
+          super
+        end
       end
     end
   end
