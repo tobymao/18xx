@@ -608,6 +608,25 @@ module Engine
           'C15' => 'C20',
         }.freeze
 
+        COMPANY_SHORT_NAME = {
+          'C1' => 'GB',
+          'C2' => 'FR',
+          'C3' => 'AHE',
+          'C4' => 'BNL',
+          'C5' => 'ESP',
+          'C6' => 'CH',
+          'M1' => 'G1-PRU',
+          'M2' => 'G2-HAN',
+          'M3' => 'G3-BAV',
+          'M4' => 'G4-WTB',
+          'M5' => 'G5-SAX',
+          'M6' => 'I1-K2S',
+          'M7' => 'I2-SAR',
+          'M8' => 'I3-LV',
+          'M9' => 'I4-PAP',
+          'M10' => 'I5-TUS',
+        }.freeze
+
         CORPORATIONS_OPERATING_RIGHTS = {
           'LNWR' => 'GB',
           'GWR' => 'GB',
