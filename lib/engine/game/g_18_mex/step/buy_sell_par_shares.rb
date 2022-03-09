@@ -9,15 +9,24 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def can_buy?(entity, bundle)
-            super && !attempt_ndm_action_on_unavailable?(bundle)
+            return false if attempt_ndm_action_on_unavailable?(bundle)
+
+            super
           end
 
           def can_sell?(entity, bundle)
-            super && !attempt_ndm_action_on_unavailable?(bundle)
+            return false if attempt_ndm_action_on_unavailable?(bundle)
+
+            super
           end
 
-          def can_gain?(entity, bundle)
-            super && !attempt_ndm_action_on_unavailable?(bundle)
+          def can_gain?(entity, bundle, exchange: false)
+            return false if attempt_ndm_action_on_unavailable?(bundle)
+            return if !bundle || !entity
+
+            corporation = bundle.corporation
+
+            corporation.holding_ok?(entity, bundle.percent) && (exchange || room_to_gain?(entity, bundle, exchange))
           end
 
           include SwapBuySell
@@ -35,6 +44,17 @@ module Engine
 
           def attempt_ndm_action_on_unavailable?(bundle)
             bundle.corporation == @game.ndm && @game.phase.status.include?('ndm_unavailable')
+          end
+
+          # Need to allow buying 5% shares in NdM even if at cert limit as these shares are not
+          # counted towards cert limit (but they still count for 60% corporation limit).
+          def room_to_gain?(entity, bundle, exchange)
+            return true if bundle.corporation == @game.ndm &&
+                           @game.num_certs(entity) == @game.cert_limit &&
+                           bundle.percent == 5 &&
+                           !exchange
+
+            @game.num_certs(entity) < @game.cert_limit
           end
         end
       end
