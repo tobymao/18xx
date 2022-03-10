@@ -125,7 +125,8 @@ This company may be exchanged for a single share of a specified corporation duri
 that allows exchange.
 
 - `corporations`: An array with corporation names, whose share may be exchanged.
-  Use a simple `"any"` (no array) to allow for any corporation.
+  Use a simple `"any"` (no array) to allow for any corporation. Use a simple
+  `"ipoed"` (no array) to allow from any company that has been ipoed.
 - `from`: Where the share may be take from, either `"ipo"`,
   `"market"`, or an array containing both.
 
@@ -139,6 +140,11 @@ Give a route bonus if at least one of the hexes are included in the route.
 ## no_buy
 
 This company may not be bought in.
+
+## purchase_train
+
+Immediately purchases (for normal amount) the currently available depot train
+for the owning corporation.
 
 ## reservation
 

@@ -13,7 +13,7 @@ module Engine
     include Spender
 
     attr_accessor :bankrupt
-    attr_reader :name, :companies, :id, :history
+    attr_reader :name, :companies, :id, :history, :unsold_companies
 
     def initialize(id, name)
       @id = id
@@ -21,6 +21,7 @@ module Engine
       @cash = 0
       @companies = []
       @history = []
+      @unsold_companies = []
     end
 
     def value

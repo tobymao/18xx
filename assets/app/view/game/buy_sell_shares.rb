@@ -33,6 +33,8 @@ module View
                            .map(&:first).sort_by(&:percent).reverse
                        end
 
+        @reserved_shares = @corporation.reserved_shares
+
         children = []
 
         if @corporation.ipoed
@@ -43,6 +45,9 @@ module View
         children.concat(render_exchanges)
 
         children << h(SellShares, player: @current_entity, corporation: @corporation) if @corporation.ipoed
+        children << h(Split, corporation: @corporation) if @step.actions(@current_entity).include?('split') &&
+                                                           @game.respond_to?(:can_split?) &&
+                                                           @game.can_split?(@corporation, @current_entity)
 
         children.compact!
         return h(:div, children) unless children.empty?
@@ -59,6 +64,7 @@ module View
         children.concat(render_treasury_shares)
         children.concat(render_market_shares)
         children.concat(render_corporate_shares)
+        children.concat(render_shares_for_others)
         children.concat(render_price_protection)
         children.concat(render_reduced_price_shares(@ipo_shares, source: @game.ipo_name(@corporation)))
         children.concat(render_reduced_price_shares(@pool_shares))
@@ -126,6 +132,51 @@ module View
         end
       end
 
+      def render_shares_for_others
+        return [] unless @step.respond_to?(:can_buy_for)
+
+        targets = @step.can_buy_for(@current_entity)
+
+        targets.flat_map do |target|
+          pool_shares = @pool_shares.map do |share|
+            next unless @step.can_buy?(target, share.to_bundle, borrow_from: @current_entity)
+
+            h(Button::BuyShare,
+              share: share,
+              entity: @current_entity,
+              purchase_for: target,
+              borrow_from: @current_entity,
+              percentages_available: @pool_shares.size)
+          end
+
+          treasury_shares = @treasury_shares.map do |share|
+            next unless @step.can_buy?(target, share.to_bundle, borrow_from: @current_entity)
+
+            h(Button::BuyShare,
+              share: share,
+              entity: @current_entity,
+              purchase_for: target,
+              borrow_from: @current_entity,
+              percentages_available: @treasury_shares.size,
+              source: 'Treasury')
+          end
+
+          ipo_shares = @ipo_shares.map do |share|
+            next unless @step.can_buy?(@current_entity, share.to_bundle, borrow_from: @current_entity)
+
+            h(Button::BuyShare,
+              share: share,
+              entity: @current_entity,
+              purchase_for: target,
+              borrow_from: @current_entity,
+              percentages_available: @ipo_shares.size,
+              source: @game.ipo_name(share.corporation))
+          end
+
+          pool_shares + treasury_shares + ipo_shares
+        end
+      end
+
       def render_price_protection
         return [] unless @step.respond_to?(:price_protection)
 
@@ -181,6 +232,10 @@ module View
             end
 
             children.concat(render_share_exchange(@pool_shares, entity)) if ability.from.include?(:market)
+            if ability.from.include?(:reserved)
+              children.concat(render_share_exchange(@reserved_shares[0, 1], entity,
+                                                    source: 'Reserved'))
+            end
           end
         end
 

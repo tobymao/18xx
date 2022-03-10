@@ -29,6 +29,9 @@ module Engine
     # Types which are info only and shouldn't
     NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 par_3 par_overlap safe_par convert_range max_price repar].freeze
 
+    # Types which count as par
+    PAR_TYPES = %i[par par_overlap par_1 par_2 par_3].freeze
+
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
 
@@ -83,7 +86,7 @@ module Engine
     end
 
     def can_par?
-      %i[par par_overlap par_1 par_2 par_3].include?(@type)
+      PAR_TYPES.include?(@type)
     end
 
     def end_game_trigger?
@@ -106,6 +109,11 @@ module Engine
     def normal_movement?
       # Can be moved into normally, rather than something custom such as not owning a train.
       @type != :liquidation
+    end
+
+    def remove_par!
+      @types -= PAR_TYPES
+      @type = @types.first
     end
   end
 end

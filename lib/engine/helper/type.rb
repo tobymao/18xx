@@ -18,6 +18,8 @@ module Engine
       end
 
       def type_s(obj)
+        return nil unless obj
+
         obj.class.name.split('::').last.gsub(/(.)([A-Z])/, '\1_\2').downcase
       end
     end

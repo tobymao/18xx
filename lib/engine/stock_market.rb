@@ -132,5 +132,10 @@ module Engine
     def share_price(row, column)
       @market[row]&.[](column)
     end
+
+    def remove_par!(price)
+      @par_prices.delete(price)
+      price.remove_par!
+    end
   end
 end
