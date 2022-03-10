@@ -632,7 +632,7 @@ module Engine
         end
 
         def available_splits
-          corporations.reject do |c|
+          corporations.select do |c|
             !c.ipoed && c.full_name.include?('Branch')
           end
         end
