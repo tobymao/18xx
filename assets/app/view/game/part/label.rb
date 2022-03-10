@@ -17,7 +17,7 @@ module View
             y: 0,
           },
           pointy: {
-            region_weights: { [5, 6] => 1.0, [7, 12] => 0.25 },
+            region_weights: { [0, 1] => 1.0, [2, 6] => 0.25 },
             x: -65,
             y: 0,
           },
@@ -30,7 +30,7 @@ module View
             y: 0,
           },
           pointy: {
-            region_weights: { [17, 18] => 1.0, [11, 16] => 0.25 },
+            region_weights: { [22, 23] => 1.0, [17, 21] => 0.25 },
             x: 65,
             y: 0,
           },
