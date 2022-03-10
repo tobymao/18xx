@@ -11,7 +11,7 @@ module Engine
             return [] unless @round.entities.include?(entity)
 
             actions = []
-            actions << 'propose' if can_propose_any?(entity)
+            actions << 'offer' if can_offer_any?(entity)
             actions << 'respond' if can_respond_any?(entity)
             actions << 'pass' if can_pass?(entity)
             actions
@@ -35,8 +35,8 @@ module Engine
           end
 
           # is there a company that a corporation run by this player can afford and isn't
-          # currently in a proposal?
-          def can_propose_any?(entity)
+          # currently in a offers?
+          def can_offer_any?(entity)
             return unless can_pass?(entity)
 
             @game.corporations.any? do |corp|
@@ -46,7 +46,7 @@ module Engine
                 next if @round.transacted_companies[c]
                 next unless c.owner
                 next if c.owner.corporation? && c.owner.companies.one?
-                next if existing_proposal?(corp, c)
+                next if existing_offers?(corp, c)
 
                 if c.owner == @game.foreign_investor
                   (corp.cash - @round.transacted_cash[corp]) >= c.max_price
@@ -57,13 +57,13 @@ module Engine
             end
           end
 
-          def can_propose?(entity, corporation, company)
+          def can_offer?(entity, corporation, company)
             return unless entity
             return if @round.transacted_companies[company]
             return unless corporation&.owner
             return unless company.owner
             return if company.owner.corporation? && company.owner.companies.one?
-            return if existing_proposal?(corporation, company)
+            return if existing_offers?(corporation, company)
 
             if company.owner == @game.foreign_investor
               (corporation.cash - @round.transacted_cash[corporation]) >= company.max_price
@@ -73,37 +73,37 @@ module Engine
           end
 
           def can_respond_any?(entity)
-            responder_in_any_proposal?(entity)
+            responder_in_any_offer?(entity)
           end
 
-          def can_respond?(entity, proposal)
-            proposal[:responder] == entity
+          def can_respond?(entity, offer)
+            offer[:responder] == entity
           end
 
-          def existing_proposal?(corporation, company)
-            @round.proposals.any? { |prop| prop[:corporation] == corporation && prop[:company] == company }
+          def existing_offers?(corporation, company)
+            @round.offers.any? { |prop| prop[:corporation] == corporation && prop[:company] == company }
           end
 
-          def responder_in_any_proposal?(entity)
+          def responder_in_any_offer?(entity)
             return false unless entity.player?
 
-            @round.proposals.any? { |prop| prop[:responder] == entity }
+            @round.offers.any? { |prop| prop[:responder] == entity }
           end
 
-          # toss any proposals that can no longer complete. This can happen:
+          # toss any offers that can no longer complete. This can happen:
           # - if multiple offers are made for the same company
           # - if multiple offers are made by the same corporation without enough cash to cover all
           #
           # in certain right-of-refusal cases, the responder list may have to be filtered
           #
-          def filter_proposals!
-            @round.proposals.dup.each do |prop|
+          def filter_offers!
+            @round.offers.dup.each do |prop|
               company = prop[:company]
               corporation = prop[:corporation]
               price = prop[:price]
               responder_list = prop[:responder_list]
               if @round.transacted_companies[company] || (corporation.cash - @round.transacted_cash[corporation]) < price
-                @round.proposals.delete(prop)
+                @round.offers.delete(prop)
               elsif responder_list
                 # toss any right-of-refusal corps that can't afford the company
                 # - this may trigger a purchase
@@ -121,26 +121,26 @@ module Engine
             action.entity.pass!
           end
 
-          def process_propose(action)
+          def process_offer(action)
             proposer = action.entity
             corporation = action.corporation
             company = action.company
             price = action.price
             responder = company.owner.player? ? company.owner : company.owner.owner
 
-            raise GameError, 'illegal proposal' unless can_propose?(proposer, corporation, company)
+            raise GameError, 'illegal offer' unless can_offer?(proposer, corporation, company)
 
             return foreign_propose(action) if company.owner == @game.foreign_investor
             return acquire_company(corporation, company, price) if responder == proposer
 
-            proposal = {
+            offer = {
               proposer: proposer,
               corporation: corporation,
               company: company,
               price: price,
               responder: responder,
             }
-            @round.proposals << proposal
+            @round.offers << offer
 
             @log << "#{corporation.name} (#{proposer.name}) offers to purchase #{company.sym} from #{responder.name} "\
                     "for #{@game.format_currency(price)}"
@@ -160,7 +160,7 @@ module Engine
 
             responder = responder_list[0].owner
 
-            proposal = {
+            offer = {
               proposer: proposer,
               corporation: corporation,
               company: company,
@@ -168,7 +168,7 @@ module Engine
               responder: responder,
               responder_list: responder_list,
             }
-            @round.proposals << proposal
+            @round.offers << offer
 
             @log << "#{corporation.name} (#{proposer.name}) proposes to purchase #{company.sym} from the Foreign Investor "\
                     "for #{@game.format_currency(price)}"
@@ -190,62 +190,62 @@ module Engine
             corporation = action.corporation
             company = action.company
             accept = action.accept
-            proposal = find_proposal(corporation, company)
-            raise GameError, "Unable to find offer for #{company.sym} by #{corporation.name}" unless proposal
-            raise GameError, 'Wrong responder to proposal' if responder != proposal[:responder]
-            return foreign_respond(action, proposal) if company.owner == @game.foreign_investor
+            offer = find_offer(corporation, company)
+            raise GameError, "Unable to find offer for #{company.sym} by #{corporation.name}" unless offer
+            raise GameError, 'Wrong responder to offer' if responder != offer[:responder]
+            return foreign_respond(action, offer) if company.owner == @game.foreign_investor
 
-            @round.proposals.delete(proposal)
+            @round.offers.delete(offer)
 
             unless accept
-              @log << "#{responder.name} rejects proposal for #{company.sym} by #{corporation.name} (#{proposal[:proposer].name})"
+              @log << "#{responder.name} rejects offer for #{company.sym} by #{corporation.name} (#{offer[:proposer].name})"
               return
             end
 
-            @log << "#{responder.name} accepts proposal for #{company.sym} by #{corporation.name} (#{proposal[:proposer].name})"
-            acquire_company(corporation, company, proposal[:price])
+            @log << "#{responder.name} accepts offer for #{company.sym} by #{corporation.name} (#{offer[:proposer].name})"
+            acquire_company(corporation, company, offer[:price])
           end
 
-          def foreign_respond(action, proposal)
+          def foreign_respond(action, offer)
             responder = action.entity
-            original_corp = proposal[:corporation]
-            responder_list = proposal[:responder_list]
+            original_corp = offer[:corporation]
+            responder_list = offer[:responder_list]
             corporation = responder_list.shift
-            proposer = proposal[:proposer]
+            proposer = offer[:proposer]
             company = action.company
             accept = action.accept
 
             if accept
-              @round.proposals.delete(proposal)
+              @round.offers.delete(offer)
               @log << "#{corporation.name} (#{responder.name}) preempts purchase of #{company.sym} by "\
                       "#{original_corp.name} (#{proposer&.name || 'Receivership'})"
-              acquire_company(corporation, company, proposal[:price])
+              acquire_company(corporation, company, offer[:price])
             else
               @log << "#{corporation.name} (#{responder.name}) refuses right of purchase of #{company.sym}"
 
-              next_responder!(proposal)
+              next_responder!(offer)
             end
           end
 
-          def next_responder!(proposal)
-            responder_list = proposal[:responder_list]
-            proposer = proposal[:proposer]
-            company = proposal[:company]
+          def next_responder!(offer)
+            responder_list = offer[:responder_list]
+            proposer = offer[:proposer]
+            company = offer[:company]
 
             # ignore corporations owned by proposer at top of list except for the one wanting to buy
             responder_list.shift while proposer && responder_list[0]&.owner == proposer && responder_list.size > 1
 
             if responder_list[0]&.owner == proposer
-              @round.proposals.delete(proposal)
-              acquire_company(proposal[:corporation], company, proposal[:price])
+              @round.offers.delete(offer)
+              acquire_company(offer[:corporation], company, offer[:price])
             else
-              proposal[:responder] = responder_list[0].owner
-              @log << "#{responder_list[0].name} (#{proposal[:responder].name}) has next right of refusal"
+              offer[:responder] = responder_list[0].owner
+              @log << "#{responder_list[0].name} (#{offer[:responder].name}) has next right of refusal"
             end
           end
 
-          def find_proposal(corporation, company)
-            @round.proposals.find { |p| p[:corporation] == corporation && p[:company] == company }
+          def find_offer(corporation, company)
+            @round.offers.find { |p| p[:corporation] == corporation && p[:company] == company }
           end
 
           def acquire_company(corporation, company, price)
@@ -267,11 +267,11 @@ module Engine
             @log << "#{corporation.name}#{rcvr} acquires #{company.sym} from #{old_owner.name} "\
                     "for #{@game.format_currency(price)}"
 
-            filter_proposals!
+            filter_offers!
           end
 
           def offers
-            @round.proposals
+            @round.offers
           end
 
           def player_corporations(player)
@@ -279,7 +279,7 @@ module Engine
           end
 
           def active_entities
-            (@round.entities.reject(&:passed?) + @round.proposals.map { |p| p[:responder] }).uniq
+            (@round.entities.reject(&:passed?) + @round.offers.map { |p| p[:responder] }).uniq
           end
 
           def active?

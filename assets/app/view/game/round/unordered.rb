@@ -117,13 +117,13 @@ module View
         def render_company(company)
           inputs = []
 
-          if @current_actions.include?('propose') && @selected_company == company
+          if @current_actions.include?('offer') && @selected_company == company
             @entities.each do |entity|
               corps = []
               @step.player_corporations(entity).each do |corp|
-                corps << corp if @step.can_propose?(entity, corp, company)
+                corps << corp if @step.can_offer?(entity, corp, company)
               end
-              inputs << h(Propose, player: entity, corporations: corps, company: company) unless corps.empty?
+              inputs << h(Offer, player: entity, corporations: corps, company: company) unless corps.empty?
             end
           end
 

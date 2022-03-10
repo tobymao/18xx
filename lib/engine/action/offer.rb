@@ -4,7 +4,7 @@ require_relative 'base'
 
 module Engine
   module Action
-    class Propose < Base
+    class Offer < Base
       attr_reader :entity, :corporation, :company, :price
 
       def initialize(entity, corporation:, company:, price:)

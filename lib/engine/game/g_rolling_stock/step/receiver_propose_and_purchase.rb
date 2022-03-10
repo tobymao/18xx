@@ -15,11 +15,11 @@ module Engine
           end
 
           def active_entities
-            receiver_proposals.map { |p| p[:responder] }.uniq
+            receiver_offers.map { |p| p[:responder] }.uniq
           end
 
           def active?
-            !receiver_proposals.empty?
+            !receiver_offers.empty?
           end
 
           def blocking?
@@ -29,33 +29,33 @@ module Engine
           def round_state
             super.merge(
               {
-                proposals: [],
+                offers: [],
                 transacted_cash: Hash.new { |h, k| h[k] = 0 },
                 transacted_companies: {},
               }
             )
           end
 
-          def receiver_proposals
-            @round.proposals.select { |p| p[:corporation].receivership? }
+          def receiver_offers
+            @round.offers.select { |p| p[:corporation].receivership? }
           end
 
           def setup
-            add_next_receiver_proposal
+            add_next_receiver_offer
           end
 
           def process_response(action)
             super
 
-            add_next_receiver_proposal if receiver_proposals.empty?
+            add_next_receiver_offer if receiver_offers.empty?
           end
 
-          def add_next_receiver_proposal
-            while (prop = create_receiver_proposal)
+          def add_next_receiver_offer
+            while (prop = create_receiver_offer)
               if prop[:responder_list].empty?
                 acquire_company(prop[:corporation], prop[:company], prop[:price])
               else
-                @round.proposals << prop
+                @round.offers << prop
                 @log << "#{prop[:corporation].name} (Receivership) proposes to purchase #{prop[:company].sym} from the "\
                         "Foreign Investor for #{@game.format_currency(prop[:price])}"
                 @log << "#{prop[:responder_list][0].name} (#{prop[:responder].name}) has right of first refusal"
@@ -65,7 +65,7 @@ module Engine
             end
           end
 
-          def create_receiver_proposal
+          def create_receiver_offer
             receiver, company = elegible_receiver_and_company
             return unless receiver
 

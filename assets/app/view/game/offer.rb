@@ -4,7 +4,7 @@ require 'view/game/actionable'
 
 module View
   module Game
-    class Propose < Snabberb::Component
+    class Offer < Snabberb::Component
       include Actionable
 
       needs :player
@@ -14,11 +14,11 @@ module View
       def render
         @step = @game.round.active_step
 
-        propose_click = lambda do
+        offer_click = lambda do
           corp_name = Native(@corp_dropdown).elm.value
           corp = @game.corporation_by_id(corp_name)
           price = @step.fixed_price(@company) || @price_input.JS['elm'].JS['value'].to_i
-          process_action(Engine::Action::Propose.new(
+          process_action(Engine::Action::Offer.new(
             @player,
             corporation: corp,
             company: @company,
@@ -57,7 +57,7 @@ module View
           @corp_dropdown,
           'Price:',
           @price_input,
-          h('button.no_margin', { on: { click: propose_click } }, 'Offer'),
+          h('button.no_margin', { on: { click: offer_click } }, 'Offer'),
         ])
       end
 
