@@ -8,7 +8,6 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def actions(entity)
-            return [] if entity == current_entity && @round.stock? && @round.player_passed[entity]
             return ['choose_ability'] unless choices_ability(entity).empty?
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
@@ -86,14 +85,6 @@ module Engine
             @log << "#{entity.name} passes" if @round.current_actions.empty?
           end
 
-          def log_skip(entity)
-            if @round.stock? && @round.player_passed[entity]
-              @log << "#{entity.name} have passed and is out of the ISR"
-            else
-              super
-            end
-          end
-
           def process_choose_ability(action)
             entity = action.entity
             choice = action.choice
@@ -161,12 +152,6 @@ module Engine
 
             log_pass(action.entity)
             pass!
-          end
-
-          def process_pass(action)
-            @round.player_passed[action.entity] = true if @round.stock?
-
-            super
           end
 
           def process_payoff_player_debt(action)
