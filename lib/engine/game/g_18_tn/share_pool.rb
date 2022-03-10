@@ -6,7 +6,8 @@ module Engine
   module Game
     module G18TN
       class SharePool < Engine::SharePool
-        def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil, allow_president_change: true)
+        def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
+                       allow_president_change: true, borrow_from: nil)
           super
 
           return if shares.corporation.id != 'L&N' || !@game.lnr.owner

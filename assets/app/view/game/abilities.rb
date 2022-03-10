@@ -76,6 +76,7 @@ module View
         actions = actions_for(@selected_company)
 
         views = []
+        views << render_purchase_train_button if actions.include?('purchase_train')
         views << render_sell_company_button if actions.include?('sell_company')
         views << render_ability_choice_buttons if actions.include?('choose_ability')
         views << h(Exchange) if actions.include?('buy_shares')
@@ -92,6 +93,20 @@ module View
 
       def actions_for(company)
         @game.round.actions_for(company)
+      end
+
+      # Render a button for the purchase train action that purchases the
+      # currently available depot train
+      def render_purchase_train_button
+        purchase = lambda do
+          process_action(Engine::Action::PurchaseTrain.new(
+            @selected_company
+          ))
+        end
+
+        # Show the train that will be bought on the button
+        train = @game.depot.depot_trains.first
+        h(:button, { on: { click: purchase } }, "Purchase #{train.name} for #{@game.format_currency(train.price)}")
       end
 
       def render_sell_company_button

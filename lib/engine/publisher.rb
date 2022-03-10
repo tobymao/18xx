@@ -60,6 +60,10 @@ module Engine
         name: 'Marflow Games',
         url: 'https://18xx-marflow-games.de/',
       },
+      loserdogs: {
+        name: 'Loserdogs',
+        url: 'http://tanisan.com/ld/',
+      },
     }.freeze
   end
 end

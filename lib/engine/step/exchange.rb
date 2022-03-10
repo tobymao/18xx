@@ -43,6 +43,7 @@ module Engine
 
         shares = []
         @game.exchange_corporations(ability).each do |corporation|
+          shares << corporation.reserved_shares.first if ability.from.include?(:reserved)
           shares << corporation.available_share if ability.from.include?(:ipo)
           shares << @game.share_pool.shares_by_corporation[corporation]&.first if ability.from.include?(:market)
         end

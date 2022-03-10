@@ -109,8 +109,16 @@ module Engine
     end
 
     def other_trains(corporation)
-      @trains.reject do |train|
+      all_others = @trains.reject do |train|
         !train.buyable || [corporation, self, nil].include?(train.owner)
+      end
+
+      return all_others if @game.class::ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS
+
+      # Remove any trains owned by corporations that aren't owned by this
+      # corporations owner
+      all_others.select do |train|
+        train.owner.owner == corporation.owner
       end
     end
 

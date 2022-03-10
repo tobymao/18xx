@@ -7,7 +7,7 @@ module SwapBuySell
   # Check if it is possible to buy an NdM share of 10%
   # when player swaps in a 5% share and return the share to be swapped in.
   def swap_buy(player, corporation, share)
-    return if @game.ndm != corporation || share.percent != 10
+    return if @game.ndm != corporation || share.percent != 10 || @game.num_certs(player) == @game.cert_limit
 
     # Must be in pool, not IPO (rule 3.2.c(5))
     return unless @game.share_pool.shares_by_corporation[corporation].include?(share)

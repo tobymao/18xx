@@ -16,6 +16,8 @@ module View
         needs :prefix, default: 'Buy'
         needs :source, default: 'Market'
         needs :action, default: Engine::Action::BuyShares
+        needs :purchase_for, default: nil
+        needs :borrow_from, default: nil
 
         def render
           bundle = @share.to_bundle
@@ -28,12 +30,20 @@ module View
           text += " #{bundle.percent}%" if show_percentage
           text += " #{@source} Share"
           text += " (#{reduced_price} + #{@swap_share.percent}% Share)" if @swap_share
+          text += " for #{@purchase_for.name}" if @purchase_for
 
-          h(:button, { on: { click: -> { buy_shares(@entity, bundle, swap: @swap_share) } } }, text)
+          h(:button, {
+              on: {
+                click: lambda {
+                  buy_shares(@entity, bundle, swap: @swap_share, purchase_for: @purchase_for, borrow_from: @borrow_from)
+                },
+              },
+            }, text)
         end
 
-        def buy_shares(entity, bundle, swap: nil)
-          process_action(@action.new(entity, shares: bundle.shares, swap: swap))
+        def buy_shares(entity, bundle, swap: nil, purchase_for: nil, borrow_from: nil)
+          process_action(@action.new(entity, shares: bundle.shares, swap: swap, purchase_for: purchase_for,
+                                             borrow_from: borrow_from))
         end
       end
     end
