@@ -24,10 +24,10 @@ module Engine
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
                   :type, :floatable, :original_par_price, :reservation_color, :min_price, :ipo_owner,
-                  :always_market_price
-    attr_reader :companies, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
+                  :always_market_price, :full_name
+    attr_reader :companies, :name, :fraction_shares, :id, :needs_token_to_par,
                 :presidents_share, :price_multiplier, :treasury_as_holding
-    attr_writer :par_price, :share_price
+    attr_writer :par_price, :share_price, :forced_share_percent
 
     SHARES = ([20] + Array.new(8, 10)).freeze
 
@@ -65,6 +65,7 @@ module Engine
       @closed = false
       @float_percent = opts[:float_percent] || 60
       @float_excludes_market = opts[:float_excludes_market] || false
+      @float_includes_reserved = opts[:float_includes_reserved] || false
       @floatable = opts[:floatable].nil? ? true : opts[:floatable]
       @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
@@ -200,18 +201,27 @@ module Engine
     def floated?
       return false unless @floatable
 
-      @floated ||= @ipo_owner.percent_of(self) <= 100 - @float_percent -
-        (@float_excludes_market ? percent_in_market : 0)
+      @floated ||= @ipo_owner.percent_of(self) <= (
+        100 - @float_percent -
+        (@float_excludes_market ? percent_in_market : 0) +
+        (@float_includes_reserved ? percent_in_reserved : 0))
     end
 
     def percent_to_float
       return 0 if @floated
 
-      @ipo_owner.percent_of(self) - (100 - @float_percent - (@float_excludes_market ? percent_in_market : 0))
+      @ipo_owner.percent_of(self) -
+        (100 - @float_percent -
+         (@float_excludes_market ? percent_in_market : 0) +
+         (@float_includes_reserved ? percent_in_reserved : 0))
     end
 
     def percent_in_market
       num_market_shares * share_percent
+    end
+
+    def percent_in_reserved
+      num_ipo_reserved_shares * share_percent
     end
 
     def unfloat!
@@ -255,7 +265,7 @@ module Engine
     end
 
     def share_percent
-      @second_share&.percent || (presidents_percent / 2)
+      @forced_share_percent || @second_share&.percent || (presidents_percent / 2)
     end
 
     def closed?

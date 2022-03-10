@@ -317,16 +317,15 @@ module View
       }
 
       note = !@game_data.dig('user_settings', 'notepad').to_s.empty?
-      menu_items = [
-        item('G|ame', ''),
-        item('E|ntities', '#entities'),
-        item('M|ap', '#map'),
-        item('Mark|et', '#market'),
-        item('I|nfo', '#info'),
-        item('T|iles', '#tiles'),
-        item('S|preadsheet', '#spreadsheet'),
-        item("To|ols#{' 📝' if note}", '#tools'),
-      ]
+      menu_items = []
+      menu_items << item('G|ame', '')
+      menu_items << item('E|ntities', '#entities')
+      menu_items << item('M|ap', '#map') unless @game.layout == :none
+      menu_items << item('Mark|et', '#market')
+      menu_items << item('I|nfo', '#info')
+      menu_items << item('T|iles', '#tiles') unless @game.layout == :none
+      menu_items << item('S|preadsheet', '#spreadsheet')
+      menu_items << item("To|ols#{' 📝' if note}", '#tools')
 
       enabled = @game.programmed_actions[@game.player_by_id(@user['id'])] if @user
       menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
@@ -425,7 +424,11 @@ module View
           h(Game::Round::Merger, game: @game)
         end
       else
-        h(Game::Round::Stock, game: @game) if @round.stock?
+        if @round.stock?
+          h(Game::Round::Stock, game: @game)
+        elsif @round.unordered?
+          h(Game::Round::Unordered, game: @game, user: @user, hotseat: @game_data[:mode] == :hotseat)
+        end
       end
     end
 
@@ -448,7 +451,13 @@ module View
     end
 
     def current_entity_actions
-      @current_entity_actions ||= @game.round.actions_for(@game.round.active_step&.current_entity) || []
+      @current_entity_actions ||= if !@game.round.unordered?
+                                    @game.round.actions_for(@game.round.active_step&.current_entity) || []
+                                  elsif @game_data[:mode] == :hotseat
+                                    @game.round.entities.flat_map { |e| @game.round.actions_for(e) }.uniq.compact
+                                  else
+                                    @game.round.actions_for(@game.player_by_id(@user['id'])) || []
+                                  end
     end
 
     def step

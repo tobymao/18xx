@@ -17,7 +17,7 @@ module View
             gap: '3rem 1.2rem',
           },
         }
-        players = @game.players
+        players = @game.player_entities
         if (i = players.map(&:name).rindex(@user&.dig(:name)))
           players = players.rotate(i)
         end

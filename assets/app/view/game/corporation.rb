@@ -373,7 +373,7 @@ module View
         num_treasury_shares = share_number_str(@corporation.num_treasury_shares)
 
         pool_rows = []
-        if !num_ipo_shares.empty? || num_dc_avail.positive? || @corporation.capitalization != :full
+        if !num_ipo_shares.empty? || num_dc_avail.positive? || !%i[full none].include?(@corporation.capitalization)
           pool_rows << h('tr.ipo', [
             h('td.left', @game.ipo_name(@corporation)),
             h('td.right', shares_props, ('d' * num_dc_avail) + num_ipo_shares),

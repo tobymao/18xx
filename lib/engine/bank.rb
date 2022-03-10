@@ -20,7 +20,7 @@ module Engine
       @check = check
     end
 
-    def check_cash(amount)
+    def check_cash(amount, borrow_from: nil)
       return unless @check
       return unless (@cash - amount).negative?
 

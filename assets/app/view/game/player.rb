@@ -3,6 +3,7 @@
 require 'lib/settings'
 require 'lib/text'
 require 'view/game/companies'
+require 'view/game/unsold_companies'
 require 'view/share_calculation'
 
 module View
@@ -32,6 +33,7 @@ module View
         ]
 
         divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden) if @player.companies.any? || @show_hidden
+        divs << h(UnsoldCompanies, owner: @player, game: @game) unless @player.unsold_companies.empty?
 
         unless (minors = @game.player_card_minors(@player)).empty?
           divs << render_minors(minors)
@@ -152,7 +154,7 @@ module View
         end
         trs << h(:tr, [
           h(:td, 'Certs'),
-          h('td.right', td_cert_props, @game.show_game_cert_limit? ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),
+          h('td.right', td_cert_props, @game.show_game_cert_limit?(@player) ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),
         ])
         trs << h(:tr, [
           h(:td, 'Shares'),

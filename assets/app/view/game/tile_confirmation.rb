@@ -28,7 +28,7 @@ module View
             backgroundColor: default_for(:green),
             **button_style,
           },
-          on: { click: -> { lay_tile } },
+          on: { click: confirm_click },
         }
 
         cancel = {
@@ -55,6 +55,19 @@ module View
           h('button.no_margin', cancel),
           h('button.no_margin', confirm),
         ])
+      end
+
+      def confirm_click
+        # If there is a "blocks_hexes_consent" ability on this hex, get consent
+        (@game.companies + @game.minors + @game.corporations).each do |company|
+          next if company.closed?
+          next unless (ability = @game.abilities(company, :blocks_hexes_consent))
+          next unless @game.hex_blocked_by_ability?(@tile_selector.entity, ability, @tile_selector.hex)
+
+          return -> { check_consent(company.owner, -> { lay_tile }) }
+        end
+
+        -> { lay_tile }
       end
 
       def lay_tile
