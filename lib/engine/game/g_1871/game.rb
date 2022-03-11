@@ -730,7 +730,7 @@ module Engine
           home_hex_id = corporation.coordinates
 
           # Return choices of all tokens that aren't the home
-          corporation.placed_tokens.select do |token|
+          corporation.placed_tokens.reject do |token|
             token.city.hex&.id == home_hex_id
           end
         end
@@ -748,7 +748,7 @@ module Engine
           corporation.capitalization = :incremental
 
           # Handle the players presidency
-          owner_non_presidents_shares = corporation.owner.shares_by_corporation[corporation].select(&:president)
+          owner_non_presidents_shares = corporation.owner.shares_by_corporation[corporation].reject(&:president)
 
           @log << "#{corporation.owner.name} exchanges 2 shares of #{corporation.name} for the president cert of #{branch.name}"
           owner_non_presidents_shares.take(2).each do |share|
