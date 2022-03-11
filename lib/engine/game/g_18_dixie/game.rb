@@ -58,8 +58,19 @@ module Engine
             train = @depot.upcoming[0]
             train.buyable = false
             buy_train(minor, train, :free)
+
             Array(minor.coordinates).each { |coordinates| hex_by_id(coordinates).tile.cities[0].add_reservation!(minor) }
           end
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G18Dixie::Step::SelectionAuction,
+          ])
+        end
+
+        def player_card_minors(player)
+          minors.select { |m| m.owner == player }
         end
 
         # OR Stuff
@@ -79,12 +90,33 @@ module Engine
           end
         end
 
+        def operating_order
+          corporations = @corporations.select(&:floated?)
+          if @turn == 1 && (@round_num || 1) == 1
+            corporations.sort_by! do |c|
+              sp = c.share_price
+              [sp.price, sp.corporations.find_index(c)]
+            end
+          else
+            corporations.sort!
+          end
+          @minors.select(&:floated?) + corporations
+        end
         # SR stuff
 
         def float_corporation(corporation)
           @recently_floated << corporation
 
           super
+        end
+
+        def put_private_in_pool(entity)
+          raise GameError "#{entity.name} is not a private" unless entity.company?
+
+          auctionable_ability = entity.all_abilities.find { |a| a.description == AUCTIONABLE_PRIVATE_DESCRIPTION }
+          entity.remove_ability(auctionable_ability)
+          entity.add_ability(POOL_PRIVATE_ABILITY)
+          entity.owner = @bank
         end
       end
     end
