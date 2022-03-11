@@ -623,6 +623,25 @@ module Engine
           'C15' => 'C20',
         }.freeze
 
+        COMPANY_STARTING_BID = {
+          'C1' => 10,
+          'C2' => 10,
+          'C3' => 10,
+          'C4' => 10,
+          'C5' => 10,
+          'C6' => 10,
+          'M1' => 80,
+          'M2' => 60,
+          'M3' => 60,
+          'M4' => 60,
+          'M5' => 60,
+          'M6' => 80,
+          'M7' => 60,
+          'M8' => 60,
+          'M9' => 60,
+          'M10' => 30,
+        }.freeze
+
         COMPANY_SHORT_NAME = {
           'C1' => 'GB',
           'C2' => 'FR',
@@ -733,7 +752,7 @@ module Engine
           'TUS' => [3, 9],
         }.freeze
 
-        NATIONAL_MARKET_SHARE_LIMIT = 80
+        NATIONAL_MARKET_SHARE_LIMIT = 90
         NATIONAL_COMPANIES = %w[C1 C2 C3 C4 C5 C6].freeze
         NATIONAL_REGION_HEXES = {
           'PRU' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
@@ -758,14 +777,6 @@ module Engine
                      E19 E21 F16 F18 I17 I19 J16 J18 J20 K17 K19 K21 I13 I15 J14 K15 H20 H22 I21 I23],
           'IT' => %w[R12 S21 S23 S25 T20 T22 T24 U21 V18 V20 W19 N12 O13 O15 P14 Q15 R14 S13 S15 S17 T12 T14 T16 T18 M17
                      N14 N16 N18 N20 O17 P18 Q19 R18 R20 S19 P16 Q17],
-        }.freeze
-
-        # Only need up to phase 5, all national concessions are forced to convert in phase 5
-        NATIONAL_PHASE_PAR_TYPES = {
-          'L/2' => :par,
-          '3' => :par_1,
-          '4' => :par_1,
-          '5' => :par_2,
         }.freeze
 
         NATIONAL_PREPRINTED_TILES = %w[AHE DE ESP].freeze
@@ -1333,7 +1344,6 @@ module Engine
 
         def setup
           @stock_turn_token_count = {}
-          @stock_turn_token_premium_count = {}
           @stock_turn_token_in_play = {}
           @stock_turn_token_number = {}
           @stock_turn_token_remove = []
@@ -1341,7 +1351,6 @@ module Engine
           @player_setup_order.each_with_index do |player, index|
             @log << "#{player.name} have stock turn tokens with number #{index + 1}"
             @stock_turn_token_count[player] = starting_stock_turn_tokens
-            @stock_turn_token_premium_count[player] = 2
             @stock_turn_token_in_play[player] = []
             @stock_turn_token_number[player] = 0
           end
@@ -1764,7 +1773,7 @@ module Engine
         end
 
         def forced_formation_par_prices(corporation)
-          par_type = phase_par_type(corporation)
+          par_type = phase_par_type
           par_prices = par_prices_sorted.select do |p|
             p.types.include?(par_type) && can_par_share_price?(p, corporation)
           end
@@ -2027,11 +2036,7 @@ module Engine
           end.compact
         end
 
-        def phase_par_type(corporation)
-          if national_corporation?(corporation) && !germany_or_italy_national?(corporation)
-            return self.class::NATIONAL_PHASE_PAR_TYPES[@phase.name]
-          end
-
+        def phase_par_type
           self.class::PHASE_PAR_TYPES[@phase.name]
         end
 
@@ -2087,21 +2092,11 @@ module Engine
           @share_pool.transfer_shares(share.to_bundle, player)
 
           player.spend(share_price.price, @bank)
-          premium_token = stock_turn_token_premium?(player)
-          @log << "#{player.name} buys a#{premium_token ? ' premium' : ''} stock turn token at "\
-                  "#{format_currency(share_price.price)}"
+          @log << "#{player.name} buys a stock turn token at #{format_currency(share_price.price)}"
 
           @stock_turn_token_in_play[player] << corporation
           @stock_turn_token_number[player] += 1
-          @stock_turn_token_count[player] -= 1 unless premium_token
-          return unless premium_token
-
-          @stock_turn_token_premium_count[player] -= 1
-          extra_cash = stock_turn_token_premium_price
-          @log << "#{player.name} pays an extra #{format_currency(extra_cash)} to the bank for the premium token"
-          player.spend(extra_cash, @bank)
-
-          @depot.export!
+          @stock_turn_token_count[player] -= 1
         end
 
         def setup_corporations
@@ -2189,11 +2184,6 @@ module Engine
 
           @stock_turn_token_in_play[player].delete(corporation)
           @stock_turn_token_remove << corporation
-          return if !@stock_turn_token_count[player].positive? || game_end_triggered?
-
-          @log << "#{player.name}'s remaining stock turn tokens (#{@stock_turn_token_count[player]}) becomes premium tokens"
-          @stock_turn_token_premium_count[player] += @stock_turn_token_count[player]
-          @stock_turn_token_count[player] = 0
         end
 
         def setup_stock_turn_token
@@ -2243,7 +2233,7 @@ module Engine
         end
 
         def stock_turn_token?(player)
-          @stock_turn_token_count[player].positive? || @stock_turn_token_premium_count[player].positive?
+          @stock_turn_token_count[player].positive?
         end
 
         def stock_turn_token_name!(company)
@@ -2251,21 +2241,16 @@ module Engine
           name = if game_end_triggered?
                    'ST token (ENDGAME)'
                  else
-                   "ST token (#{@stock_turn_token_count[player]} / #{@stock_turn_token_premium_count[player]}P)"
+                   "ST token (#{@stock_turn_token_count[player]})"
                  end
 
           company.name = name
-          company.desc = 'Premium stock turn tokens costs stock market price + '\
-                         "#{format_currency(stock_turn_token_premium_price)}. "\
-                         'T = Top row, M = Middle row and B = Bottom row.'
-        end
-
-        def stock_turn_token_premium?(player)
-          @stock_turn_token_count[player].zero?
-        end
-
-        def stock_turn_token_premium_price
-          @round.round_num * 20
+          company.desc = if @round.operating?
+                           'Buy/Sell a stock turn token, it enters play as already operated. T = Top row, M = Middle '\
+                             'row and B = Bottom row.'
+                         else
+                           'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.'
+                         end
         end
 
         def stock_turn_token_remove!

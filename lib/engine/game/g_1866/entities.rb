@@ -116,7 +116,7 @@ module Engine
           {
             name: 'Prussia Minor National',
             sym: 'M1',
-            value: 135,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Prussia minor national company.',
             abilities: [],
@@ -126,7 +126,7 @@ module Engine
           {
             name: 'Hannover Minor National',
             sym: 'M2',
-            value: 110,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Hannover minor national company.',
             abilities: [],
@@ -136,7 +136,7 @@ module Engine
           {
             name: 'Bavaria Minor National',
             sym: 'M3',
-            value: 80,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Bavaria minor national company.',
             abilities: [],
@@ -146,7 +146,7 @@ module Engine
           {
             name: 'Württemberg Minor National',
             sym: 'M4',
-            value: 70,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Württemberg minor national company.',
             abilities: [],
@@ -156,7 +156,7 @@ module Engine
           {
             name: 'Saxony Minor National',
             sym: 'M5',
-            value: 70,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Saxony minor national company.',
             abilities: [],
@@ -166,7 +166,7 @@ module Engine
           {
             name: 'Kgdm 2 Sicilies Minor National',
             sym: 'M6',
-            value: 120,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Kgdm 2 Sicilies minor national company.',
             abilities: [],
@@ -176,7 +176,7 @@ module Engine
           {
             name: 'Sardinia Minor National',
             sym: 'M7',
-            value: 80,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Sardinia minor national company.',
             abilities: [],
@@ -186,7 +186,7 @@ module Engine
           {
             name: 'Lombardy-Venetia Minor National',
             sym: 'M8',
-            value: 80,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Lombardy-Venetia minor national company.',
             abilities: [],
@@ -196,7 +196,7 @@ module Engine
           {
             name: 'Papal States Minor National',
             sym: 'M9',
-            value: 90,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Papal States minor national company.',
             abilities: [],
@@ -206,7 +206,7 @@ module Engine
           {
             name: 'Tuscany Minor National',
             sym: 'M10',
-            value: 45,
+            value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Tuscany minor national company.',
             abilities: [],
@@ -218,8 +218,7 @@ module Engine
             sym: 'ST1',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
             abilities: [],
             color: nil,
           },
@@ -228,8 +227,7 @@ module Engine
             sym: 'ST2',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
             abilities: [],
             color: nil,
           },
@@ -238,8 +236,7 @@ module Engine
             sym: 'ST3',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
             abilities: [],
             color: nil,
           },
@@ -248,8 +245,7 @@ module Engine
             sym: 'ST4',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
             abilities: [],
             color: nil,
           },
@@ -258,8 +254,7 @@ module Engine
             sym: 'ST5',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
             abilities: [],
             color: nil,
           },
@@ -268,8 +263,7 @@ module Engine
             sym: 'ST6',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
             abilities: [],
             color: nil,
           },
@@ -278,8 +272,7 @@ module Engine
             sym: 'ST7',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
             abilities: [],
             color: nil,
           },

@@ -63,9 +63,7 @@ module Engine
 
             choices = {}
             operator = entity.company? ? entity.owner : entity
-            valid_token = @game.stock_turn_token?(operator)
-            token_permium = @game.stock_turn_token_premium?(operator)
-            if valid_token && !token_permium
+            if @game.stock_turn_token?(operator)
               get_par_prices(operator).sort_by(&:price).each do |p|
                 par_str = @game.par_price_str(p)
                 choices[par_str] = par_str
@@ -79,7 +77,7 @@ module Engine
           end
 
           def get_par_prices(entity, corp = nil)
-            par_type = @game.phase_par_type(corp)
+            par_type = @game.phase_par_type
             par_prices = @game.par_prices_sorted.select do |p|
               p.types.include?(par_type) && p.price <= entity.cash && @game.can_par_share_price?(p, corp)
             end
@@ -174,8 +172,8 @@ module Engine
             auction_log(@companies[0]) unless @companies.empty?
           end
 
-          def starting_bid(_company)
-            0
+          def starting_bid(company)
+            @game.class::COMPANY_STARTING_BID[company.id]
           end
 
           private
