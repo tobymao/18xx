@@ -132,7 +132,7 @@ module Engine
             most_valuable_unsold_company = @companies.pop
             most_valuable_unsold_company.close!
             @game.log << "#{most_valuable_unsold_company.name} is removed from the game"
-            @companies.reverse.each { |c| @game.put_private_in_pool(c) }
+            @companies.reverse_each { |c| @game.put_private_in_pool(c) }
           end
         end
       end
