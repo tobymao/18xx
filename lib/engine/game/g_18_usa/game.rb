@@ -260,15 +260,17 @@ module Engine
             name: 'Neutral',
             logo: 'minus_ten',
             simple_logo: 'minus_ten',
-            tokens: [0, 0, 0, 0, 0, 0],
+            tokens: [],
           )
           @neutral.owner = @bank
 
           # Add neutral tokens to both the tile display and the actual tile
           COMPANY_TOWN_TILES.each do |ct_name|
             [@tiles, @all_tiles].each do |tile_set|
+              token = Token.new(@neutral, price: 0, type: :neutral)
+              @neutral.tokens << token
               tile = tile_set.find { |t| t.name == ct_name }
-              tile.cities.first.place_token(@neutral, @neutral.tokens.reject(&:used).first, check_tokenable: false)
+              tile.cities.first.place_token(@neutral, token, check_tokenable: false)
             end
           end
         end
