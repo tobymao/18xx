@@ -131,9 +131,8 @@ module Engine
           def finish_auction
             most_valuable_unsold_company = @companies.pop
             most_valuable_unsold_company.close!
-            @game.log << "#{most_valuable_unsold_company.name} is removed from the game, "\
-            'the remaining privates are put in the open market'
-            @companies.reverse.each { |c| puts c.id; @game.put_private_in_pool(c) }
+            @game.log << "#{most_valuable_unsold_company.name} is removed from the game"
+            @companies.reverse.each { |c| @game.put_private_in_pool(c) }
           end
         end
       end

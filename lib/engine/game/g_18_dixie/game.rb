@@ -73,10 +73,45 @@ module Engine
           minors.select { |m| m.owner == player }
         end
 
+        def init_round_finished
+            [M1_SYM, M2_SYM, M3_SYM, M4_SYM, M5_SYM, M6_SYM, M7_SYM, M8_SYM, M9_SYM, M10_SYM, M11_SYM, M12_SYM]\
+                .each {|m_id| make_minor_available(m_id) }
+        end
+        def timeline
+          return super if @optional_rules.include?(:seventeen_trains)
+
+          @timeline = [
+            'End of ISR: Highest numbered remaining private is permanently closed',
+            'SR1: Unsold ISR private companies* are available, Minors 1-12 are available for purcahse '  ,
+            'End of OR 1.2: All unsold 2 trains are put in the open market',
+            'SR2: Private companies 8-10 are available for auction Minor 13 is now available for purchase from the bank',
+            'End of OR 2.1: Minors 1-4 are closed',
+            'End of OR 2.2: Minors 5-8 are closed. Unsold private companies are put into open market for purchase in SR3',
+            'End of SR3: All unsold Minors and Privates are closed',
+            'End of OR 3.1: Minors 9-13 are closed',
+          ].freeze
+        end
         # OR Stuff
         def or_round_finished
           @recently_floated = []
+          turn = "#{@turn.to_s}.#{@round.round_num}"
+          # Turn is X.Y where X is from the *following* OR, and Y is from the *preceding* OR. :(
+          case turn
+          when '2.2'
+            @depot.reclaim_all!('2')
+            make_minor_available(M13_SYM)
+            %w[P8 P9 P10].each {|company_id| add_private(company_by_id(company_id))}
+
+          when '2.1'
+            [M1_SYM, M2_SYM, M3_SYM, M4_SYM].each {|m_id| close_minor(m_id)}
+          when '3.2'
+            [M5_SYM, M6_SYM, M7_SYM, M8_SYM].each {|m_id| close_minor(m_id)}
+            %w[P8 P9 P10].each {|company_id| put_private_in_pool(company_by_id(company_id))}
+          when '3.1'
+            [M9_SYM, M10_SYM, M11_SYM, M12_SYM, M13_SYM].each {|m_id| close_minor(m_id)}
+          end
         end
+
 
         def tile_lays(entity)
           operator = entity.company? ? entity.owner : entity
@@ -102,20 +137,46 @@ module Engine
           end
           @minors.select(&:floated?) + corporations
         end
+
+        def close_minor(minor_id)
+            minor = minor_by_id(minor_id)
+            unless minor.closed?
+                @log << "#{minor.name} closes"
+                company_by_id(minor_id).close!
+                minor.close!
+            end
+        end
         # SR stuff
+        def sr_round_finished
+            super
+        end
 
         def float_corporation(corporation)
           @recently_floated << corporation
 
           super
         end
+        
+        def make_minor_available(minor_id)
+            minor_company = company_by_id(minor_id)
+            minor_company.owner = @bank
+            @log << "Minor #{minor_id} is now available for purchase"
+        end
+
+        def add_private(entity)
+            raise GameError "#{entity.name} is not a private" unless entity.company?
+  
+            @log << "#{entity.name} is available to be put up for auction"
+            entity.owner = @bank
+        end
 
         def put_private_in_pool(entity)
           raise GameError "#{entity.name} is not a private" unless entity.company?
 
           auctionable_ability = entity.all_abilities.find { |a| a.description == AUCTIONABLE_PRIVATE_DESCRIPTION }
-          entity.remove_ability(auctionable_ability)
+          entity.remove_ability(auctionable_ability) if auctionable_ability
           entity.add_ability(POOL_PRIVATE_ABILITY)
+          @log << "#{entity.name} is available to be bought from the bank for face value"
           entity.owner = @bank
         end
       end

@@ -30,7 +30,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR3* ▼',
+                description: 'Closes at the end of OR2.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of SR, which gets the minor\'s token and treasury',
               },
             ],
@@ -48,7 +48,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR3* ▼',
+                description: 'Closes at the end of OR2.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of L&N or SR, which gets the minor\'s token and treasury',
               },
             ],
@@ -66,7 +66,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR3* ▼',
+                description: 'Closes at the end of OR2.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of Frisco, which gets the minor\'s token and treasury',
               },
             ],
@@ -84,7 +84,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR3* ▼',
+                description: 'Closes at the end of OR2.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of WRA, which gets the minor\'s token and treasury',
               },
             ],
@@ -102,7 +102,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR4* ▼',
+                description: 'Closes at the end of OR2.2* ▼',
                 desc_detail: 'Is exchanged for a preferred share of SAL, which gets the minor\'s token and treasury',
               },
             ],
@@ -120,7 +120,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR4* ▼',
+                description: 'Closes at the end of OR2.2* ▼',
                 desc_detail: 'Is exchanged for a preferred share of ACL, which gets the minor\'s token and treasury',
               },
             ],
@@ -138,7 +138,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR4* ▼',
+                description: 'Closes at the end of OR2.2* ▼',
                 desc_detail: 'Is exchanged for a preferred share of L&B, which gets the minor\'s token and treasury',
               },
             ],
@@ -156,7 +156,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR4* ▼',
+                description: 'Closes at the end of OR2.2* ▼',
                 desc_detail: 'Is exchanged for a preferred share of CoG, which gets the minor\'s token and treasury',
               },
             ],
@@ -174,7 +174,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5* ▼',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of L&N, which gets the minor\'s token and treasury',
               },
               {
@@ -196,7 +196,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5* ▼',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of IC, which gets the minor\'s token and treasury',
               },
             ],
@@ -214,7 +214,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5* ▼',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of IC, which gets the minor\'s token and treasury',
               },
             ],
@@ -232,7 +232,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5* ▼',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of Cog, Frisco, or WRA, '\
                              'which gets the minor\'s token and treasury',
               },
@@ -255,7 +255,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5* ▼',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for any any remaining preferred share, '\
                              'the corresponding corporation gets the minor\'s token and treasury',
               },

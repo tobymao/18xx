@@ -16,7 +16,7 @@ module Engine
         COMPANIES = [
           # Available SR1
           {
-            name: 'Atlanta, Valdosta & Western Rwy.',
+            name: 'P1: Atlanta, Valdosta & Western Rwy.',
             sym: 'P1',
             value: 20,
             revenue: 5,
@@ -28,7 +28,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Atlanta, St. Andrews Bay Railway Co.',
+            name: 'P2: Atlanta, St. Andrews Bay Railway Co.',
             sym: 'P2',
             value: 30,
             revenue: 10,
@@ -43,7 +43,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Atlanta & West Point Railroad',
+            name: 'P3: Atlanta & West Point Railroad',
             sym: 'P3',
             value: 50,
             revenue: 15,
@@ -60,7 +60,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Derrick, Carver & Thomas, RR Accountants',
+            name: 'P4: Derrick, Carver & Thomas, RR Accountants',
             sym: 'P4',
             value: 50,
             revenue: 10,
@@ -73,7 +73,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Alabama Great Southern Railroad',
+            name: 'P5: Alabama Great Southern Railroad',
             sym: 'P5',
             value: 80,
             revenue: 10,
@@ -88,7 +88,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'South Carolina Canal and Rail Road Company',
+            name: 'P6: South Carolina Canal and Rail Road Company',
             sym: 'P6',
             value: 140,
             revenue: 0,
@@ -107,7 +107,7 @@ module Engine
           },
           # Available SR2
           {
-            name: 'New Athens Yards',
+            name: 'P7: New Athens Yards',
             sym: 'P7',
             value: 100,
             revenue: 15,
@@ -119,12 +119,12 @@ module Engine
                   'can transfer to the SCL or ICG if previously assigned to a train owned by a predecessor. Once assigned '\
                   'to a train, that train cannot be sold to any other Corporation.',
             abilities: [
-            { type: 'description', description: AUCTIONABLE_PRIVATE_DESCRIPTION, desc_detail: AUCTIONABLE_PRIVATE_DESC_DETAIL },
+              { type: 'description', description: AUCTIONABLE_PRIVATE_DESCRIPTION, desc_detail: AUCTIONABLE_PRIVATE_DESC_DETAIL },
           ],
             color: nil,
           },
           {
-            name: '"Pan American" Pullman Service',
+            name: 'P8: "Pan American" Pullman Service',
             sym: 'P8',
             value: 50,
             revenue: 15,
@@ -136,12 +136,12 @@ module Engine
                   'SCL (if placed on a 5 Train). If neither token has been placed when phase 6 begins, this ability is lost. '\
                   'The token is removed as soon as the train it was assigned to is scrapped.',
             abilities: [
-            { type: 'description', description: AUCTIONABLE_PRIVATE_DESCRIPTION, desc_detail: AUCTIONABLE_PRIVATE_DESC_DETAIL },
+              { type: 'description', description: AUCTIONABLE_PRIVATE_DESCRIPTION, desc_detail: AUCTIONABLE_PRIVATE_DESC_DETAIL },
           ],
             color: nil,
           },
           {
-            name: 'Dixie Flyer Pullman Service',
+            name: 'P9: Dixie Flyer Pullman Service',
             sym: 'P9',
             value: 110,
             revenue: 5,
@@ -152,12 +152,12 @@ module Engine
                   'President must choose a train to be discarded. If the 1D+1 is discarded, it is removed from the game '\
                   'instead of being placed in the Open Market',
             abilities: [
-            { type: 'description', description: AUCTIONABLE_PRIVATE_DESCRIPTION, desc_detail: AUCTIONABLE_PRIVATE_DESC_DETAIL },
+              { type: 'description', description: AUCTIONABLE_PRIVATE_DESCRIPTION, desc_detail: AUCTIONABLE_PRIVATE_DESC_DETAIL },
           ],
             color: nil,
           },
           {
-            name: 'Western Railway of Alabama',
+            name: 'P10: Western Railway of Alabama',
             sym: 'P10',
             value: 150,
             revenue: 0,
@@ -167,7 +167,6 @@ module Engine
                   'and discards this Private Company. As long as this Private Company is in the game and unbought, the WRA'\
                   '\'s president\'s share is reserved.',
             abilities: [
-              { type: 'description', description: AUCTIONABLE_PRIVATE_DESCRIPTION, desc_detail: AUCTIONABLE_PRIVATE_DESC_DETAIL },
               { type: 'shares', shares: 'WRA_0' },
             ],
             color: nil,
@@ -175,12 +174,12 @@ module Engine
           {
             sym: ' 1',
 
-            value: 120,
+            value: 90,
 
             revenue: 0,
             name: 'M1: Georgia & Florida Railroad',
             color: 'black',
-            desc: 'Closes at the end of OR3. '\
+            desc: 'Closes at the end of OR2.1. '\
                   'Is exchanged for a preferred share of SR, which gets the minor\'s token and treasury',
             text_color: 'white',
 
@@ -188,12 +187,12 @@ module Engine
           {
             sym: ' 2',
 
-            value: 90,
+            value: 120,
 
             revenue: 0,
             name: 'M2: Tennessee Central Railway',
             color: 'black',
-            desc: 'Closes at the end of OR3. '\
+            desc: 'Closes at the end of OR2.1. '\
                   'Is exchanged for a preferred share of L&N or SR, which gets the minor\'s token and treasury',
 
             text_color: 'white',
@@ -206,7 +205,7 @@ module Engine
             revenue: 0,
             name: 'M3: Missisippi Central Railroad',
             color: 'black',
-            desc: 'Closes at the end of OR3. '\
+            desc: 'Closes at the end of OR2.1. '\
                   'Is exchanged for a preferred share of Frisco, which gets the minor\'s token and treasury',
 
             text_color: 'white',
@@ -219,7 +218,7 @@ module Engine
             revenue: 0,
             name: 'M4: Alabama & Tenessee River Railroad',
             color: 'black',
-            desc: 'Closes at the end of OR3. '\
+            desc: 'Closes at the end of OR2.1. '\
                   'Is exchanged for a preferred share of WRA, which gets the minor\'s token and treasury',
 
             text_color: 'white',
@@ -232,7 +231,7 @@ module Engine
             revenue: 0,
             name: 'M5: Tallahassee Railroad',
             color: 'black',
-            desc: 'Closes at the end of OR4. '\
+            desc: 'Closes at the end of OR2.2. '\
                   'Is exchanged for a preferred share of SAL, which gets the minor\'s token and treasury',
 
             text_color: 'white',
@@ -245,7 +244,7 @@ module Engine
             revenue: 0,
             name: 'M6: Atlanta, Birmingham & Coast Railroad',
             color: 'black',
-            desc: 'Closes at the end of OR4. '\
+            desc: 'Closes at the end of OR2.2. '\
                   'Is exchanged for a preferred share of ACL, which gets the minor\'s token and treasury',
 
             text_color: 'white',
@@ -258,7 +257,7 @@ module Engine
             revenue: 0,
             name: 'M7: Western & Atlantic Railroad',
             color: 'black',
-            desc: 'Closes at the end of OR4. '\
+            desc: 'Closes at the end of OR2.2. '\
                   'Is exchanged for a preferred share of L&B, which gets the minor\'s token and treasury',
 
             text_color: 'white',
@@ -271,7 +270,7 @@ module Engine
             revenue: 0,
             name: 'M8: Georgia Railroad',
             color: 'black',
-            desc: 'Closes at the end of OR4. '\
+            desc: 'Closes at the end of OR2.2. '\
                   'Is exchanged for a preferred share of CoG, which gets the minor\'s token and treasury',
 
             text_color: 'white',
@@ -283,7 +282,7 @@ module Engine
             revenue: 0,
             name: 'M9: Nashville, Chattanooga & St. Louis Railway',
             color: 'black',
-            desc: 'Closes at the end of OR5. '\
+            desc: 'Closes at the end of OR3.1. '\
                   'Is exchanged for a preferred share of L&N, which gets the minor\'s token and treasury. '\
                   'Has a choice of starting location',
 
@@ -297,7 +296,7 @@ module Engine
             revenue: 0,
             name: 'M10: Gulf, Mobile & Ohio Railroad',
             color: 'black',
-            desc: 'Closes at the end of OR5. '\
+            desc: 'Closes at the end of OR3.1. '\
                   'Is exchanged for a preferred share of IC, which gets the minor\'s token and treasury',
 
             text_color: 'white',
@@ -310,7 +309,7 @@ module Engine
             revenue: 0,
             name: 'M11: Mobile & Ohio Railroad',
             color: 'black',
-            desc: 'Closes at the end of OR5. '\
+            desc: 'Closes at the end of OR3.1. '\
                   'Is exchanged for a preferred share of IC, which gets the minor\'s token and treasury',
 
             text_color: 'white',
@@ -322,7 +321,7 @@ module Engine
             revenue: 0,
             name: 'M12: Memphis & Charleston RR',
             color: 'black',
-            desc: 'Closes at the end of OR5. '\
+            desc: 'Closes at the end of OR3.1. '\
                   'Is exchanged for a preferred share of Cog, Frisco, or WRA, '\
                   'which gets the minor\'s token and treasury. '\
                   'Has a choice of starting location',
@@ -337,7 +336,7 @@ module Engine
             revenue: 0,
             name: 'M13: New Orleans and Texas RR',
             color: 'black',
-            desc: 'Closes at the end of OR5. '\
+            desc: 'Closes at the end of OR3.1. '\
                   'Is exchanged for any any remaining preferred share, '\
                   'the corresponding corporation gets the minor\'s token and treasury',
 
