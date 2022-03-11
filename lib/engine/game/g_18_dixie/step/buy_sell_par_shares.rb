@@ -169,6 +169,13 @@ module Engine
             @round.goto_entity!(@auction_triggerer)
             @round.next_entity_index!
           end
+
+          def process_buy_company(action)
+            super
+            company = action.company
+            sym = company.sym
+            @game.float_minor(sym, action.entity) unless sym[0] == 'P'
+          end
         end
       end
     end

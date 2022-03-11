@@ -94,6 +94,22 @@ module Engine
         end
 
         # OR Stuff
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+          Engine::Step::Bankrupt,
+          Engine::Step::Exchange,
+          Engine::Step::SpecialTrack,
+          Engine::Step::BuyCompany,
+          Engine::Step::Track,
+          Engine::Step::Token,
+          Engine::Step::Route,
+          G18Dixie::Step::Dividend,
+          Engine::Step::DiscardTrain,
+          Engine::Step::BuyTrain,
+          [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
         def or_round_finished
           @recently_floated = []
           turn = "#{@turn}.#{@round.round_num}"
@@ -204,6 +220,13 @@ module Engine
           entity.add_ability(POOL_PRIVATE_ABILITY)
           @log << "#{entity.name} is available to be bought from the bank for face value"
           entity.owner = @bank
+        end
+
+        def float_minor(minor_id, owner)
+          minor = minor_by_id(minor_id)
+          minor.owner = owner
+          minor.float!
+          @recently_floated << minor
         end
       end
     end
