@@ -2,6 +2,7 @@
 
 require 'view/game/auto_action/auction_bid'
 require 'view/game/auto_action/buy_shares'
+require 'view/game/auto_action/share_pass'
 
 module View
   module Game
@@ -172,44 +173,8 @@ module View
         children
       end
 
-      def enable_share_pass(form)
-        settings = params(form)
-
-        unconditional = settings['sr_unconditional']
-        indefinite = settings['sr_indefinite']
-
-        process_action(
-          Engine::Action::ProgramSharePass.new(
-            sender,
-            unconditional: unconditional,
-            indefinite: indefinite,
-          )
-        )
-      end
-
       def render_share_pass(settings)
-        form = {}
-        text = 'Auto Pass in Stock Round'
-        text += ' (Enabled)' if settings
-        children = [h(:h3, text)]
-        children << h(:p,
-                      'Automatically pass in the stock round.'\
-                      ' This will deactivate itself if other players do actions that may impact you.'\
-                      ' It will only pass on your normal turn and allow you to bid etc.')
-        children << render_checkbox('Pass even if other players do actions that may impact you.',
-                                    'sr_unconditional',
-                                    form,
-                                    !!settings&.unconditional)
-        children << render_checkbox('Continue passing in future SR as well.',
-                                    'sr_indefinite',
-                                    form,
-                                    !!settings&.indefinite)
-
-        subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_share_pass(form) }]
-        subchildren << render_disable(settings) if settings
-        children << h(:div, subchildren)
-
-        children
+        h(AutoAction::SharePass, game: @game, sender: sender, settings: settings)
       end
 
       def enable_independent_mines(form)
