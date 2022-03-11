@@ -19,7 +19,7 @@ module View
         player = @corporation.owner
         children = []
 
-        verb = @must_buy_train ? 'must' : 'may'
+        verb = @must_buy_train || @step.must_buy_train_if_able_to?(@corporation) ? 'must' : 'may'
 
         cheapest_train_price = if @step.respond_to?(:cheapest_train_price)
                                  @step.cheapest_train_price(@corporation)
