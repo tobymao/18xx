@@ -387,7 +387,10 @@ module Engine
         # Override default rust behavior for 4+ trains so that we only rust them
         # if they've run once.
         def rust(train)
-          return if (train.name == '4+') && !train.operated
+          if train.name == '4+' && !train.ever_operated
+            train.obsolete = true
+            return
+          end
 
           super
         end
