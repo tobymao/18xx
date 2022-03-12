@@ -81,7 +81,7 @@ module Engine
               },
               {
                 type: 'tile_discount',
-                discount: 50,
+                discount: 75,
                 terrain: 'mountain',
                 owner_type: 'corporation',
                 hexes: %w[C30 D29],
