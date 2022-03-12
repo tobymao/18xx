@@ -381,7 +381,7 @@ module View
               marginBottom: '1rem',
             },
           }
-          children << h(Tranches, game: @game)
+          children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
           children << h(TrainSchedule, game: @game)
           h(:div, props, children)
         end

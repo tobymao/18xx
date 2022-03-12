@@ -10,6 +10,8 @@ module View
       needs :game
 
       def render
+        return nil unless @game.respond_to?(:tranches)
+
         title_props = {
           style: {
             padding: '0.4rem',
@@ -29,9 +31,9 @@ module View
         }
 
         trs = []
-        tranches = (@game.tranches if @game.respond_to?(:tranches)) || []
-        current_tranch_index = (@game.current_tranch_index if @game.respond_to?(:current_tranch_index))
-        current_tranch_available = (@game.tranch_available? if @game.respond_to?(:tranch_available?))
+        tranches = @game.tranches || []
+        current_tranch_index = @game.current_tranch_index
+        current_tranch_available = @game.tranch_available?
 
         tranches.each_with_index do |tranch, tranch_index|
           slots = []
