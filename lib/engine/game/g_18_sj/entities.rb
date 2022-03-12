@@ -24,11 +24,13 @@ module Engine
           {
             name: 'Göta kanalbolag',
             value: 40,
-            revenue: 10,
-            desc: 'Owning corporation may add a hex bonus to each train visit to any of the hexes E8, C8 and C16 '\
-                  'in three different ORs. Each train can receive the bonus multiple times. The bonus are 50kr the first '\
-                  'time this ability is used, 30kr the second and 20kr the third and last time. Using this ability '\
-                  'will not close the prive.',
+            revenue: 15,
+            desc: 'Wen Göta Kanalbolag is purchsed by a corporation The president of the corporation places th three '\
+                  'Göta Kanal bonus tokens (50/30/20), one on each Göta kanal hex (E8, C8, and C16).  When this '\
+                  'corporation operates, if any of the hexes are included in a route, the route is increased by '\
+                  'the sum of all Göta kanal bonuses the are reached by that route. After operating trains, the '\
+                  'largest number Göta kanal bonus token that was included in a route is removed from play.  The '\
+                  'tokens only affect the corporation that owns the Göta kanal private company.',
             sym: 'GKB',
             abilities:
             [
@@ -63,8 +65,8 @@ module Engine
             name: 'The Gellivare Company',
             value: 70,
             revenue: 15,
-            desc: 'Two extra track lays in hex E28 and F27.  Blocks hexes E28 and F27 if owned by a player. '\
-                  'Reduce terrain cost in D29 and C30 to 25 kr for mountains and 50 kr for the Narvik border.',
+            desc: 'Two extra connected track lays in hex E28 and F27.  Reduce terrain cost in D29 to 0 kr and in '\
+                  'C30 to 75 kr.Blocks hexes E28 and F27 if owned by a player.',
             sym: 'GC',
             abilities:
             [
@@ -96,10 +98,10 @@ module Engine
           {
             name: 'Motala Verkstad',
             value: 90,
-            revenue: 15,
-            desc: 'Owning corporation may do a premature buy of one or more trains, just before Run Routes. '\
-                  'These trains can be run even if they have run earlier in the OR. If ability is used the owning '\
-                  'corporation cannot buy any trains later in the same OR.',
+            revenue: 20,
+            desc: "During the owning corporation's operating turn, theat corporation may at any time buy one or more "\
+                  'train/s from the bank. This power may only be used one time during the game and must be used '\
+                  'before this private company closes.',
             sym: 'MV',
             abilities:
             [
@@ -133,7 +135,8 @@ module Engine
             value: 140,
             revenue: 0,
             desc: 'Buy gives control to minor corporation with same name. The minor starts with a 2 train '\
-                  'and a home token and splits revenue evenly with owner. The minor may never buy or sell trains.',
+                  'and a home token and splits revenue evenly with owner. The minor may never buy or sell trains.'\
+                  '  KHJ pays no revenue after the 2 train are rusted.',
             sym: 'KHJ',
           },
           {
