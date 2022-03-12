@@ -6,21 +6,8 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Stockton & Darlington',
-            sym: 'P1',
-            value: 0,
-            revenue: 0,
-            desc: 'Gives priority in ISR. Closes at end of IAR when ISR priority determined.',
-            abilities: [
-              {
-                type: 'no_buy',
-              },
-            ],
-            color: nil,
-          },
-          {
             name: 'Great Britain',
-            sym: 'P2',
+            sym: 'C1',
             value: 0,
             revenue: 10,
             desc: 'Concession for Great Britain National Corporation. Closes when concession exercised to purchase '\
@@ -32,15 +19,13 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
-              {
-                type: 'no_buy',
-              },
             ],
-            color: nil,
+            color: '#fde2c5',
+            text_color: 'black',
           },
           {
             name: 'France',
-            sym: 'P3',
+            sym: 'C2',
             value: 0,
             revenue: 10,
             desc: 'Concession for France National Corporation. Closes when concession exercised to purchase '\
@@ -52,15 +37,13 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
-              {
-                type: 'no_buy',
-              },
             ],
-            color: nil,
+            color: '#fffbcc',
+            text_color: 'black',
           },
           {
             name: 'Austro-Hungarian Empire',
-            sym: 'P4',
+            sym: 'C3',
             value: 0,
             revenue: 10,
             desc: 'Concession for Austro-Hungarian Empire National Corporation. Closes when concession exercised to '\
@@ -72,15 +55,13 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
-              {
-                type: 'no_buy',
-              },
             ],
-            color: nil,
+            color: '#e2ceb6',
+            text_color: 'black',
           },
           {
             name: 'Benelux',
-            sym: 'P5',
+            sym: 'C4',
             value: 0,
             revenue: 10,
             desc: 'Concession for Benelux National Corporation. Closes when concession exercised to purchase '\
@@ -92,15 +73,13 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
-              {
-                type: 'no_buy',
-              },
             ],
-            color: nil,
+            color: '#7eff80',
+            text_color: 'black',
           },
           {
             name: 'Spain',
-            sym: 'P6',
+            sym: 'C5',
             value: 0,
             revenue: 10,
             desc: 'Concession for Spain National Corporation. Closes when concession exercised to purchase '\
@@ -112,15 +91,13 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
-              {
-                type: 'no_buy',
-              },
             ],
-            color: nil,
+            color: '#bea481',
+            text_color: 'black',
           },
           {
             name: 'Switzerland',
-            sym: 'P7',
+            sym: 'C6',
             value: 0,
             revenue: 10,
             desc: 'Concession for Switzerland National Corporation. Closes when concession exercised to purchase '\
@@ -132,33 +109,117 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
-              {
-                type: 'no_buy',
-              },
             ],
-            color: nil,
+            color: '#d6cf81',
+            text_color: 'black',
           },
           {
-            name: 'Income Bond',
-            sym: 'P8',
+            name: 'Prussia Minor National',
+            sym: 'M1',
             value: 0,
-            revenue: 10,
-            desc: 'Pays phase based income 10/20/30/40.',
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Prussia minor national company.',
             abilities: [],
-            color: nil,
+            color: '#d9cde4',
+            text_color: 'black',
+          },
+          {
+            name: 'Hannover Minor National',
+            sym: 'M2',
+            value: 0,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Hannover minor national company.',
+            abilities: [],
+            color: '#a386be',
+            text_color: 'black',
+          },
+          {
+            name: 'Bavaria Minor National',
+            sym: 'M3',
+            value: 0,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Bavaria minor national company.',
+            abilities: [],
+            color: '#b8a2cd',
+            text_color: 'black',
+          },
+          {
+            name: 'Württemberg Minor National',
+            sym: 'M4',
+            value: 0,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Württemberg minor national company.',
+            abilities: [],
+            color: '#8e6aae',
+            text_color: 'black',
+          },
+          {
+            name: 'Saxony Minor National',
+            sym: 'M5',
+            value: 0,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Saxony minor national company.',
+            abilities: [],
+            color: '#78539a',
+            text_color: 'black',
+          },
+          {
+            name: 'Kgdm 2 Sicilies Minor National',
+            sym: 'M6',
+            value: 0,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Kgdm 2 Sicilies minor national company.',
+            abilities: [],
+            color: '#ffd8fe',
+            text_color: 'black',
+          },
+          {
+            name: 'Sardinia Minor National',
+            sym: 'M7',
+            value: 0,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Sardinia minor national company.',
+            abilities: [],
+            color: '#ff62fa',
+            text_color: 'black',
+          },
+          {
+            name: 'Lombardy-Venetia Minor National',
+            sym: 'M8',
+            value: 0,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Lombardy-Venetia minor national company.',
+            abilities: [],
+            color: '#ff7ffe',
+            text_color: 'black',
+          },
+          {
+            name: 'Papal States Minor National',
+            sym: 'M9',
+            value: 0,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Papal States minor national company.',
+            abilities: [],
+            color: '#ff33f9',
+            text_color: 'black',
+          },
+          {
+            name: 'Tuscany Minor National',
+            sym: 'M10',
+            value: 0,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the Tuscany minor national company.',
+            abilities: [],
+            color: '#ffa8fc',
+            text_color: 'black',
           },
           {
             name: 'Stock turn token',
             sym: 'ST1',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
-            abilities: [
-              {
-                type: 'no_buy',
-              },
-            ],
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
+            abilities: [],
             color: nil,
           },
           {
@@ -166,13 +227,8 @@ module Engine
             sym: 'ST2',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
-            abilities: [
-              {
-                type: 'no_buy',
-              },
-            ],
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
+            abilities: [],
             color: nil,
           },
           {
@@ -180,13 +236,8 @@ module Engine
             sym: 'ST3',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
-            abilities: [
-              {
-                type: 'no_buy',
-              },
-            ],
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
+            abilities: [],
             color: nil,
           },
           {
@@ -194,13 +245,8 @@ module Engine
             sym: 'ST4',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
-            abilities: [
-              {
-                type: 'no_buy',
-              },
-            ],
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
+            abilities: [],
             color: nil,
           },
           {
@@ -208,13 +254,8 @@ module Engine
             sym: 'ST5',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
-            abilities: [
-              {
-                type: 'no_buy',
-              },
-            ],
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
+            abilities: [],
             color: nil,
           },
           {
@@ -222,13 +263,8 @@ module Engine
             sym: 'ST6',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
-            abilities: [
-              {
-                type: 'no_buy',
-              },
-            ],
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
+            abilities: [],
             color: nil,
           },
           {
@@ -236,13 +272,8 @@ module Engine
             sym: 'ST7',
             value: 0,
             revenue: 0,
-            desc: 'Premium stock turn tokens costs stock market price + (£20 * OR), paid to the bank. T = Top row, '\
-                  'M = Middle row and B = Bottom row.',
-            abilities: [
-              {
-                type: 'no_buy',
-              },
-            ],
+            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
+            abilities: [],
             color: nil,
           },
         ].freeze
