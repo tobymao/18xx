@@ -158,12 +158,7 @@ module Engine
           'TR' => ABILITY_DOUBLE_TILE_LAY,
         }.freeze
 
-        DEFAULT_TILE_LAY = { lay: true, upgrade: true }.freeze
-
-        DOUBLE_TILE_LAYS = [
-          DEFAULT_TILE_LAY,
-          DEFAULT_TILE_LAY,
-        ].freeze
+        DOUBLE_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: true }].freeze
 
         def ser
           @ser ||= corporation_by_id('SER')
@@ -267,16 +262,18 @@ module Engine
           # Enable double tile lay for TR after ability activation
           return self.class::DOUBLE_TILE_LAYS if ABILITY_DOUBLE_TILE_LAY.owner == entity
 
-          return [DEFAULT_TILE_LAY] unless entity == tc && @round.num_additional_lays.positive?
+          return self.class::TILE_LAYS unless entity == tc && @round.num_additional_lays.positive?
 
           # Each tile lay on hex with a town provides additional tile lay to TC
-          Array.new(1 + @round.num_additional_lays) { DEFAULT_TILE_LAY }
+          Array.new(1 + @round.num_additional_lays) { { lay: true, upgrade: true } }
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          return to.name == 'J7' if from.hex.name == 'D96' && from.hex.color == :green
-          return to.name == 'J14' if %w[E77 F94].include?(from.hex.name) && from.hex.color == :green
-          return to.name == 'J15' if from.hex.name == 'J88' && from.hex.color == :green
+          if from.color == :green
+            return to.name == 'J7' if from.hex.name == 'D96'
+            return to.name == 'J14' if %w[E77 F94].include?(from.hex.name)
+            return to.name == 'J15' if from.hex.name == 'J88'
+          end
 
           return false if RESERVED_TILES.include?(to.name)
 

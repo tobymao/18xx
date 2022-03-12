@@ -307,6 +307,8 @@ module Engine
         end
 
         def revenue_for(route, stops)
+          raise GameError, 'Routes must use only broad gauge' unless route.paths.all? { |p| p.track == :broad }
+
           revenue = super
           # Bonus for connected narrow gauges directly connected
           # via narrow gauge without being connected to broad gauge.

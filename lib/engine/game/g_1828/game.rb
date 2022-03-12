@@ -1513,6 +1513,18 @@ module Engine
 
           new_market_price
         end
+
+        def check_distance(route, visits)
+          if route_includes_coalfields?(route) && !coal_marker?(current_entity)
+            raise GameError, 'Cannot run to Virginia Coalfields without a Coal Marker'
+          end
+
+          super
+        end
+
+        def route_includes_coalfields?(route)
+          route.connection_hexes.flatten.include?(VA_COALFIELDS_HEX)
+        end
       end
     end
   end

@@ -169,10 +169,7 @@ module View
         header, *chart = @step.chart
 
         rows = chart.map do |r|
-          h(:tr, [
-            h('td.padded_number', r[0]),
-            h(:td, r[1]),
-          ])
+          h(:tr, r.map { |ri| h('td.padded_number', ri) })
         end
 
         table_props = {
@@ -183,10 +180,7 @@ module View
 
         h(:table, table_props, [
           h(:thead, [
-            h(:tr, [
-              h(:th, header[0]),
-              h(:th, header[1]),
-            ]),
+            h(:tr, header.map { |hi| h(:th, hi) }),
           ]),
           h(:tbody, rows),
         ])

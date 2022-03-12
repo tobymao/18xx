@@ -8,7 +8,6 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def actions(entity)
-            return [] if entity == current_entity && @round.stock? && @round.player_passed[entity]
             return ['choose_ability'] unless choices_ability(entity).empty?
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
@@ -44,24 +43,20 @@ module Engine
             choices = {}
             operator = entity.company? ? entity.owner : entity
             valid_token = @game.stock_turn_token?(operator)
-            token_permium = @game.stock_turn_token_premium?(operator)
-            if @game.player_debt(operator).zero? && !@game.game_end_triggered? &&
-              ((valid_token && @round.operating?) || (valid_token && !@round.operating? && !token_permium)) &&
+            if @game.player_debt(operator).zero? && !@game.game_end_triggered? && valid_token &&
               @game.num_certs(operator) < @game.cert_limit
               get_par_prices(operator).sort_by(&:price).each do |p|
                 par_str = @game.par_price_str(p)
                 choices[par_str] = par_str
               end
             end
-            if @round.operating?
-              price = @game.format_currency(active_entities[0].share_price.price)
-              choices['SELL'] = "Sell the Stock Turn Token (#{price})"
-            end
+            price = @game.format_currency(active_entities[0].share_price.price)
+            choices['SELL'] = "Sell the Stock Turn Token (#{price})"
             choices
           end
 
           def description
-            'Initial Stock Round'
+            'Stock Turn Token Action'
           end
 
           def did_sell?(corporation, entity)
@@ -69,42 +64,20 @@ module Engine
           end
 
           def get_par_prices(entity, corp = nil)
-            return get_minor_national_par_prices(entity, corp) if @game.minor_national_corporation?(corp)
             return [@game.forced_formation_par_prices(corp).last] if @game.germany_or_italy_national?(corp)
 
-            par_type = @game.phase_par_type(corp)
+            par_type = @game.phase_par_type
             par_prices = @game.par_prices_sorted.select do |p|
-              extra = if corp.nil? && entity.player? && @game.stock_turn_token_premium?(entity)
-                        @game.stock_turn_token_premium_price
-                      else
-                        0
-                      end
               multiplier = corp.nil? || @game.major_national_corporation?(corp) ? 1 : 2
-              p.types.include?(par_type) && (p.price * multiplier) + extra <= entity.cash &&
+              p.types.include?(par_type) && (p.price * multiplier) <= entity.cash &&
                 @game.can_par_share_price?(p, corp)
             end
             par_prices.reject! { |p| p.price == @game.class::MAX_PAR_VALUE } if par_prices.size > 1
             par_prices
           end
 
-          def get_minor_national_par_prices(entity, corp)
-            par_rows = @game.class::MINOR_NATIONAL_PAR_ROWS[corp.name]
-            share_price = @game.stock_market.share_price(par_rows[0], par_rows[1])
-            return [] unless share_price.price <= entity.cash
-
-            [share_price]
-          end
-
           def log_pass(entity)
             @log << "#{entity.name} passes" if @round.current_actions.empty?
-          end
-
-          def log_skip(entity)
-            if @round.stock? && @round.player_passed[entity]
-              @log << "#{entity.name} have passed and is out of the ISR"
-            else
-              super
-            end
           end
 
           def process_choose_ability(action)
@@ -160,25 +133,6 @@ module Engine
               @game.after_par(corporation)
               track_action(action, corporation)
 
-            elsif @game.minor_national_corporation?(corporation)
-              @game.stock_market.set_par(corporation, share_price)
-
-              # Select the president share to buy
-              share = corporation.ipo_shares.first
-
-              # Move all to the market
-              bundle = ShareBundle.new(corporation.shares_of(corporation))
-              @game.share_pool.transfer_shares(bundle, @game.share_pool)
-
-              # Buy the share from the bank
-              @game.share_pool.buy_shares(action.entity,
-                                          share.to_bundle,
-                                          exchange: :free,
-                                          exchange_price: share.price_per_share)
-
-              @game.after_par(corporation)
-              track_action(action, corporation)
-
             elsif corporation.id == @game.class::ITALY_NATIONAL
               @game.forced_formation_major(@game.corporation_by_id(@game.class::ITALY_NATIONAL), %w[K2S SAR LV PAP TUS])
               track_action(action, corporation)
@@ -193,12 +147,6 @@ module Engine
 
             log_pass(action.entity)
             pass!
-          end
-
-          def process_pass(action)
-            @round.player_passed[action.entity] = true if @round.stock?
-
-            super
           end
 
           def process_payoff_player_debt(action)

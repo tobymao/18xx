@@ -137,7 +137,15 @@ module View
         end
 
         def render_company_actions(company)
-          return [h(:button, { on: { click: -> { offer } } }, 'Offer')] if @step.may_offer?(company)
+          if @step.respond_to?(:may_offer?) && @step.may_offer?(company)
+            return [h(:button, {
+                        on: {
+                          click: lambda {
+                            offer
+                          },
+                        },
+                      }, 'Offer')]
+          end
 
           return [] if @step.auctioneer? && @step.max_bid(@current_entity, company) < @step.min_bid(company)
 

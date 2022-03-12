@@ -282,11 +282,11 @@ module Engine
       }.freeze
 
       GAME_END_REASONS_TIMING_TEXT = {
-        immediate: 'Ends immediately',
+        immediate: 'Immediately',
         current_round: 'End of the current round',
-        current_or: 'Ends at the next end of an OR',
-        full_or: 'Ends at the next end of a complete OR set',
-        one_more_full_or_set: 'Finish the current OR set, then end after the next complete OR set',
+        current_or: 'Next end of an OR',
+        full_or: 'Next end of a complete OR set',
+        one_more_full_or_set: 'End of the next complete OR set after the current one',
       }.freeze
 
       OPERATING_ROUND_NAME = 'Operating'
