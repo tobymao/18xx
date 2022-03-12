@@ -63,7 +63,7 @@ module Engine
           'J5' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,loc:1.5,slots:2;city=revenue:40,loc:4;path=a:0,b:_1;path=a:4,b:_1;path=a:5,b:_0;',
+            'code' => 'city=revenue:40,loc:1.5,slots:2;city=revenue:40,loc:4;path=a:0,b:_1;path=a:4,b:_1;path=a:5,b:_0;upgrade=cost:80;',
           },
           'J6' => {
             'count' => 1,

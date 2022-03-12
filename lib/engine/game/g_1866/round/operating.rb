@@ -37,6 +37,12 @@ module Engine
             end
           end
 
+          def setup
+            super
+
+            @operated_entities = Hash.new { |h, k| h[k] = false }
+          end
+
           def start_operating
             entity = @entities[@entity_index]
             if @game.major_national_corporation?(entity) && entity.num_player_shares.zero?
@@ -80,11 +86,13 @@ module Engine
               @entities_orginal.each_with_index do |e, idx|
                 next if e[:type] == :minor_national
 
-                if @game.germany_or_italy_national?(c)
+                if @game.germany_or_italy_national?(c) || @game.stock_turn_corporation?(c)
+                  @operated_entities[c.id] = true
                   index = idx
                   break
                 end
                 next if major_national?(e) && major_national_formed?(e)
+                next if operated_entity?(e)
                 next if e[:price] > c.share_price.price
                 next if e[:price] == c.share_price.price && e[:row] <= c.share_price.coordinates[0]
 
@@ -115,6 +123,10 @@ module Engine
               price: corporation.share_price.price,
               row: corporation.share_price.coordinates[0],
             }
+          end
+
+          def operated_entity?(mapped_corporarion)
+            @operated_entities[mapped_corporarion[:id]]
           end
         end
       end

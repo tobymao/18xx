@@ -287,7 +287,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:120,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                'city=revenue:90,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                 'label=L',
             },
           'P1' =>
@@ -697,10 +697,10 @@ module Engine
 
             # London
             ['F6'] =>
-              'city=revenue:yellow_30|green_60|brown_90;path=a:0,b:_0;'\
-              'city=revenue:yellow_30|green_60|brown_90;path=a:1,b:_1;'\
-              'city=revenue:yellow_30|green_60|brown_90;path=a:2,b:_2;'\
-              'city=revenue:yellow_30|green_60|brown_90;path=a:3,b:_3;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:0,b:_0;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:1,b:_1;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:2,b:_2;'\
+              'city=revenue:yellow_30|green_50|brown_70;path=a:3,b:_3;'\
               'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
               'label=L;frame=color:#fde2c5',
 
