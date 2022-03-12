@@ -272,6 +272,7 @@ module Engine
         def stock_round
           G1894::Round::Stock.new(self, [
             G1894::Step::BuySellParShares,
+            G1894::Step::ChooseHomeHex
           ])
         end
 
@@ -354,7 +355,7 @@ module Engine
           if action.is_a?(Action::LayTile) && action.hex.id == SQG_HEX
             tile = hex_by_id(SQG_HEX).tile
             sqg = company_by_id('SQG')
-            sqg.revenue = tile.cities[0].revenue['diesel']
+            sqg.revenue = get_current_revenue(tile.cities[0])
             @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
           end
         end
@@ -419,6 +420,8 @@ module Engine
           revenue += pc_bonus(route.corporation, stops)
           revenue += est_le_sud_bonus(route.corporation, stops)
           revenue += luxembourg_value(stops)
+
+          raise GameError, 'Train visits Paris more than once' if route.hexes.count { |h| h.id == PARIS_HEX } > 1
 
           revenue
         end
