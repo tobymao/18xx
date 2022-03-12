@@ -219,8 +219,7 @@ module Engine
             closing_round
           else
             phase5
-            phase7 # FIXME: move to after dividends_round
-            new_ipo_round # FIXME: new_dividends_round
+            new_dividends_round
           end
         end
 
@@ -255,6 +254,23 @@ module Engine
               entity.spend(-income, @bank)
             end
           end
+        end
+
+        def new_dividends_round
+          @log << "-- Turn #{@turn}, Phase 6 - Dividends --"
+          @round_counter += 1
+          if @corporations.any?(&:floated?)
+            dividends_round
+          else
+            phase7
+            new_ipo_round # FIXME: new_issue_round
+          end
+        end
+
+        def dividends_round
+          Round::Dividends.new(self, [
+            Step::Dividend,
+          ])
         end
 
         # end card
@@ -297,8 +313,10 @@ module Engine
               new_closing_round
             when Round::Closing
               phase5
-              phase7 # FIXME: move to after dividends_round
-              new_ipo_round # FIXME: new_dividends_round
+              new_dividends_round
+            when Round::Dividends
+              phase7
+              new_ipo_round # FIXME: new_issue_round
             when Round::IPO
               @turn += 1
               new_investment_round
@@ -328,6 +346,30 @@ module Engine
         # FIXME: Synergistic
         def calculate_synergies(_corporation)
           0
+        end
+
+        def num_issued(corporation)
+          return 0 unless corporation.floated?
+
+          corporation.num_player_shares + corporation.num_market_shares
+        end
+
+        def max_dividend_per_share(corporation)
+          return 0 unless corporation.floated?
+
+          [(corporation.share_price.price / 3), (corporation.cash / num_issued(corporation))].min.to_i
+        end
+
+        # FIXME: TBD
+        # FIXME: Stars, Inc.
+        def corporation_stars(corporation, cash)
+          (cash / 10).to_i + corporation.companies.sum { |c| @company_stars[c.sym] }
+        end
+
+        def target_stars(corporation)
+          return 0 unless corporation.floated?
+
+          (num_issued(corporation) * corporation.share_price.price / 10.0).round
         end
 
         def issuable_shares(entity)
@@ -379,11 +421,12 @@ module Engine
         end
 
         def next_price_to_right(price)
-          while price.price != 75 && !price.corporations.empty?
-            r, c = price.coordinates
-            price = @stock_market.share_price(r, c + 1)
+          new_price = price
+          while new_price.price != 75 && (!new_price.corporations.empty? || new_price == price)
+            r, c = new_price.coordinates
+            new_price = @stock_market.share_price(r, c + 1)
           end
-          price
+          new_price
         end
 
         def move_to_left(corporation)
@@ -395,11 +438,39 @@ module Engine
         end
 
         def next_price_to_left(price)
-          while price.price != 0 && !price.corporations.empty?
-            r, c = price.coordinates
-            price = @stock_market.share_price(r, c - 1)
+          new_price = price
+          while new_price.price != 0 && (!new_price.corporations.empty? || new_price == price)
+            r, c = new_price.coordinates
+            new_price = @stock_market.share_price(r, c - 1)
           end
-          price
+          new_price
+        end
+
+        def move_to_price(corporation, new_price)
+          current_price = corporation.share_price
+          return if current_price.price == new_price.price
+
+          r, c = new_price.coordinates
+          @stock_market.move(corporation, r, c)
+          dir = new_price.price > current_price.price ? 'increases' : 'decreases'
+          @log << "#{corporation.name} share price #{dir} to #{format_currency(new_price.price)}"
+          close_corporation(corporation) if new_price.price.zero?
+        end
+
+        def star_diff_price(corporation, diff)
+          return unless corporation.floated?
+
+          if diff.zero?
+            corporation.share_price
+          elsif diff == 1
+            next_price_to_right(corporation.share_price)
+          elsif diff > 1
+            next_price_to_right(next_price_to_right(corporation.share_price))
+          elsif diff == -1
+            next_price_to_left(corporation.share_price)
+          else
+            next_price_to_left(next_price_to_left(corporation.share_price))
+          end
         end
 
         # FIXME: Junkyard Scrappers
@@ -424,6 +495,31 @@ module Engine
 
         def player_entities
           @players + [@foreign_investor]
+        end
+
+        def dividend_chart(corporation)
+          rows = (0..max_dividend_per_share(corporation)).map do |div|
+            cash_left = corporation.cash - (div * num_issued(corporation))
+            stars = corporation_stars(corporation, cash_left)
+            diff = stars - target_stars(corporation)
+            arrows = if diff == -1
+                       '⬅'
+                     elsif diff < -1
+                       '⬅⬅'
+                     elsif diff == 1
+                       '➡'
+                     elsif diff > 1
+                       '➡➡'
+                     else
+                       ''
+                     end
+            new_price = "#{arrows} #{format_currency(star_diff_price(corporation, diff).price)}"
+            [format_currency(div), format_currency(cash_left), "#{stars}★", new_price]
+          end
+          [
+            ['Div/Share', 'New Cash', 'Stars', 'New Price'],
+            *rows,
+          ]
         end
       end
     end
