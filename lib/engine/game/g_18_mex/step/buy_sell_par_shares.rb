@@ -42,7 +42,7 @@ module Engine
           def room_to_gain?(entity, bundle)
             return true if @game.num_certs(entity) < @game.cert_limit
 
-            # There is room ff this is a corporation in "yellow" zone in the stock market
+            # There is room if this is a corporation in the "yellow" zone in the stock market
             sp = bundle.corporation.share_price
             return true if sp && !sp.counts_for_limit
 
