@@ -9,10 +9,10 @@ module Engine
         include Engine::Step::Tracker
 
         def check_track_restrictions!(entity, old_tile, new_tile)
-            return if @game.loading || !entity.operator?
-            return if @game.class::GREEN_CITY_TILES.include?(old_tile.name)
+          return if @game.loading || !entity.operator?
+          return if @game.class::GREEN_CITY_TILES.include?(old_tile.name)
 
-            super
+          super
         end
       end
     end

@@ -339,9 +339,9 @@ module Engine
         def home_token_locations(corporation)
           raise NotImplementedError unless corporation.name == self.class::CORP_CHOOSES_HOME
 
-          # self.class::CORP_CHOOSES_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
-          #   hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
-          # end
+          self.class::CORP_CHOOSES_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
+            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+          end
         end
 
         def init_stock_market

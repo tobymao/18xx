@@ -258,22 +258,21 @@ module Engine
         GREEN_CITY_TILES = %w[14 15 619].freeze
 
         GREEN_CITY_14_TILE = '14'
-        BROWN_CITY_14_UPGRADES_TILES = %w[X14 X15 36]
+        BROWN_CITY_14_UPGRADES_TILES = %w[X14 X15 36].freeze
         GREEN_CITY_15_TILE = '15'
-        BROWN_CITY_15_UPGRADES_TILES = %w[X12 35 118]
+        BROWN_CITY_15_UPGRADES_TILES = %w[X12 35 118].freeze
         GREEN_CITY_619_TILE = '619'
-        BROWN_CITY_619_UPGRADES_TILES = %w[X10 X11 X13]
+        BROWN_CITY_619_UPGRADES_TILES = %w[X10 X11 X13].freeze
 
-        REGULAR_CORPORATIONS = %w[PLM CAB Ouest Belge GR Nord Est]
-        FRENCH_LATE_CORPORATIONS = %w[F1 F2]
+        REGULAR_CORPORATIONS = %w[PLM CAB Ouest Belge GR Nord Est].freeze
+        FRENCH_LATE_CORPORATIONS = %w[F1 F2].freeze
         FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 I8].freeze
-        BELGIAN_LATE_CORPORATIONS = %w[B1 B2]
+        BELGIAN_LATE_CORPORATIONS = %w[B1 B2].freeze
         BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 H17].freeze
 
         def stock_round
           G1894::Round::Stock.new(self, [
             G1894::Step::BuySellParShares,
-            #G1894::Step::ChooseHomeHex
           ])
         end
 
@@ -353,12 +352,12 @@ module Engine
         def action_processed(action)
           super
 
-          if action.is_a?(Action::LayTile) && action.hex.id == SQG_HEX
-            tile = hex_by_id(SQG_HEX).tile
-            sqg = company_by_id('SQG')
-            sqg.revenue = get_current_revenue(tile.cities[0])
-            @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
-          end
+          return unless action.is_a?(Action::LayTile) && action.hex.id == SQG_HEX
+
+          tile = hex_by_id(SQG_HEX).tile
+          sqg = company_by_id('SQG')
+          sqg.revenue = get_current_revenue(tile.cities[0])
+          @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
         end
 
         def issuable_shares(entity)
@@ -376,58 +375,28 @@ module Engine
         end
 
         def late_corporation_possible_home_hexes(corporation)
-          late_corporation_home_hexes = nil
+          possible_home_hexes = if FRENCH_LATE_CORPORATIONS.include?(corporation.name)
+                                  FRENCH_LATE_CORPORATIONS_HOME_HEXES
+                                else
+                                  BELGIAN_LATE_CORPORATIONS_HOME_HEXES
+                                end
 
-          # return if REGULAR_CORPORATIONS.include?(corporation.name)
-
-          # @pending_late_corporation = corporation
-          # puts @pending_late_corporation.inspect
-
-          if FRENCH_LATE_CORPORATIONS.include?(corporation.name)
-            FRENCH_LATE_CORPORATIONS_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
-              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
-            end
-            # home_hex = hexes.find { |h| h.id == 'G2' }
-            # home_hex.tile.add_reservation!(corporation, nil)
-            # corporation.coordinates = home_hex.id
-            late_corporation_possible_home_hexes = FRENCH_LATE_CORPORATIONS_HOME_HEXES
-          elsif BELGIAN_LATE_CORPORATIONS.include?(corporation.name)
-            BELGIAN_LATE_CORPORATIONS_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
-              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
-            end
+          possible_home_hexes = possible_home_hexes.map { |coord| hex_by_id(coord) }.select do |hex|
+            hex.tile.reservations.none? && hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
 
-          raise GameError, 'No possible home location' if late_corporation_possible_home_hexes == nil
+          possible_home_hexes_without_track = possible_home_hexes.select { |h| h.tile.color == :white }
+          possible_home_hexes = possible_home_hexes_without_track unless possible_home_hexes_without_track.none?
 
-          return late_corporation_possible_home_hexes
+          raise GameError, 'No possible home location' if possible_home_hexes.nil?
+
+          possible_home_hexes.map(&:id)
         end
 
         def home_hex(corporation, hex)
           corporation.coordinates = hex
+          hex_by_id(hex).tile.add_reservation!(corporation, 0)
         end
-
-
-        # def pending_late_corporation
-        #   @pending_late_corporation
-        # end
-
-        # def pending_late_corporation_home_hexes
-        #   @pending_late_corporation_home_hexes
-        # end
-
-        # def home_token_locations(corporation)
-        #   if FRENCH_LATE_CORPORATIONS.include?(corporation.name)
-        #     FRENCH_LATE_CORPORATIONS_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
-        #       hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
-        #     end
-        #   elsif BELGIAN_LATE_CORPORATIONS.include?(corporation.name)
-        #     BELGIAN_LATE_CORPORATIONS_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
-        #       hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
-        #     end
-        #   else
-        #     raise NotImplementedError
-        #   end
-        # end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return to.name == AMIENS_TILE if from.hex.name == AMIENS_HEX && from.color == :white
