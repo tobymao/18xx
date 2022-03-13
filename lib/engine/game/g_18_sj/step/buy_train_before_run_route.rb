@@ -15,7 +15,7 @@ module Engine
 
           def actions(entity)
             mv_ability = ability(entity)
-            return MV_ACTIONS if mv_ability && mv_ability.count > 0 && can_buy_train?(entity)
+            return MV_ACTIONS if mv_ability&.count&.positive? && can_buy_train?(entity)
 
             []
           end
@@ -28,7 +28,7 @@ module Engine
 
           def process_buy_train(action)
             from_depot = action.train.from_depot?
-            raise GameError, "Premature buys are only allowed from the Depot" unless from_depot
+            raise GameError, 'Premature buys are only allowed from the Depot' unless from_depot
 
             buy_train_action(action)
 
@@ -51,7 +51,7 @@ module Engine
 
           def help
             "Owning #{@game.motala_verkstad.name} gives the ability to buy trains from the Depot "\
-            'before running any routes.'
+              'before running any routes.'
           end
 
           def ability(entity)

@@ -41,7 +41,7 @@ module Engine
             else
               khj_train = minor.trains.first
               transfer_trains(buyer, minor)
-              @log << "The former KHJ train cannot be operated more this OR (see )rule 7.3)"
+              @log << 'The former KHJ train cannot be operated more this OR (see )rule 7.3)'
               khj_train.operated = true
             end
 

@@ -10,10 +10,7 @@ module Engine
           ACTIONS = %w[assign].freeze
 
           def actions(entity)
-            if @round.current_operator == @game.gkb.owner &&
-                (ability = ability(@round.current_operator))
-              return ACTIONS 
-            end
+            return ACTIONS if ability(entity)
 
             []
           end
@@ -23,10 +20,10 @@ module Engine
           end
 
           def ability(entity)
-            return if !@game.gkb || @game.gkb.owner != entity
+            return if !entity || !@game.gkb || @game.gkb.owner != entity
 
             ability = @game.abilities(entity, :assign_hexes)
-            return if !ability || ability.count == 0
+            return if !ability || ability.count.zero?
 
             ability
           end
@@ -35,33 +32,30 @@ module Engine
             entity = action.entity
             ability = ability(entity)
             target = action.target
-
-            assignable_hexes = ability.hexes.map { |h| @game.hex_by_id(h) }
-            assign_gkb_bonus(target, ability)
+            assign_gkb_bonus(entity, target, ability, amount(ability))
 
             return unless ability.count == 1
 
             last_target = @game.gkb_hexes.find { |h| !@game.gkb_hex_assigned?(h) }
-            assign_gkb_bonus(last_target, ability)
+            assign_gkb_bonus(entity, last_target, ability, 20)
           end
 
           def blocks?
             @game.gkb&.owner && @round.current_operator == @game.gkb.owner && ability(@round.current_operator)
           end
 
-          def available_hex(entity, hex)
+          def available_hex(_entity, hex)
             return unless @game.gkb_hexes.include?(hex)
             return if @game.gkb_hex_assigned?(hex)
-    
+
             @game.hex_by_id(hex.id).neighbors.keys
           end
 
-          def assign_gkb_bonus(target, ability)
-            id = "GKB#{amount(ability)}"
-            target.assign!(id)
-            amount_str = @game.format_currency(amount(ability))
+          def assign_gkb_bonus(entity, target, ability, amount)
+            target.assign!("GKB#{amount}")
+            amount_str = @game.format_currency(amount)
             ability.use!
-            @game.log << "Assigned a Göta kanal #{amount_str} token to hex #{target.name} using icon #{id}"
+            @game.log << "#{entity.name} assignes a Göta kanal #{amount_str} token to hex #{target.name}"
           end
 
           def amount(ability)

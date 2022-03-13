@@ -260,11 +260,11 @@ module Engine
         end
 
         def gkb_hex_assigned?(hex)
-          ASSIGNMENT_TOKENS.each { |id, _|
+          ASSIGNMENT_TOKENS.each do |id, _|
             next if id == 'SB'
 
             return true if hex.assigned?(id)
-          }
+          end
           false
         end
 
@@ -897,14 +897,12 @@ module Engine
 
         def gkb_bonuses_details(route)
           gkb_bonuses = []
-          route.stops.each { |s|
+          route.stops.each do |s|
             next unless gkb_hex_assigned?(s.hex)
 
             key = ASSIGNMENT_TOKENS.find { |id, _| s.hex.assigned?(id) }.first
-            amount = key.sub('GKB', '').to_i
-            details = "#{key}(#{s.hex.name})"
-            gkb_bonuses << { amount: amount, hex: s.hex, key: key }
-          }
+            gkb_bonuses << { hex: s.hex, key: key, amount: key.sub('GKB', '').to_i }
+          end
           gkb_bonuses
         end
 
@@ -1090,7 +1088,7 @@ module Engine
 
           return bonus if route.train.owner != gkb.owner
 
-          gkb_bonuses_details(route).each { |gbd|
+          gkb_bonuses_details(route).each do |gbd|
             bonus[:revenue] += gbd[:amount]
             details = "#{gbd[:key]}(#{gbd[:hex].name})"
             if bonus[:description]
@@ -1098,7 +1096,7 @@ module Engine
             else
               bonus[:description] = details
             end
-          }
+          end
 
           bonus
         end
