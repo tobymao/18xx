@@ -230,7 +230,7 @@ module View
             else
               # Handle a corporation having train discount ability
               @game.abilities(@corporation, :train_discount, time: @step.ability_timing) do |ability|
-                next if ability.count&.positive?
+                next if ability.count
 
                 price = ability.discounted_price(train, price) if ability.trains.include?(train.name)
               end
