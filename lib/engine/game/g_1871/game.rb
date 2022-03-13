@@ -761,7 +761,7 @@ module Engine
           # Go through all players and exchange, putting exchanged shares onto
           # corporation_treasury_shares
           @players.each do |player|
-            shares = player.shares_by_corporation[corporation].select(&:president)
+            shares = player.shares_by_corporation[corporation].reject(&:president)
             num_of_branch_shares = (shares.sum(&:percent) / 10 / 2).to_i
 
             next unless num_of_branch_shares.positive?
