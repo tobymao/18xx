@@ -221,7 +221,7 @@ module Engine
               # Assigning the bank sets it's value to 0 so avoid any bugs
               value = company.value
               assign_item(@receiver, company, company.value)
-              @log << "#{@receiver.name} is forced to buy #{company.name} for $#{@game.format_currency(value)}"
+              @log << "#{@receiver.name} is forced to buy #{company.name} for #{@game.format_currency(value)}"
             else
               force_on_highest_cash(company)
             end
