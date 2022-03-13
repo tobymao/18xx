@@ -947,6 +947,7 @@ module Engine
 
         def nationalize_major(major)
           @log << "#{major.name} is nationalized"
+          @log << "#{major.name} closes and its tokens becomes #{@sj.name} tokens"
 
           remove_reservation(major)
           transfer_home_token(@sj, major)
@@ -981,7 +982,6 @@ module Engine
 
           major.spend(major.cash, @bank) if major.cash.positive?
           major.close!
-          @log << "#{major.name} closes and its tokens becomes #{@sj.name} tokens"
 
           # Cert limit changes as the number of corporations decrease
           @log << "Certificate limit is now #{cert_limit}"
@@ -992,7 +992,7 @@ module Engine
 
           if tokened_hex_by(city.hex, target_corporation)
             @log << "#{merged.name}'s token in #{token.city.hex.name} is removed "\
-                    "as there is already a #{target_corporation.name} token there"
+                    "as there is already an #{target_corporation.name} token there"
             token.remove!
           else
             @log << "#{merged.name}'s token in #{city.hex.name} is replaced with an #{target_corporation.name} token"

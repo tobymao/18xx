@@ -65,7 +65,7 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'Two extra connected track lays in hex E28 and F27.  Reduce terrain cost in D29 to 0 kr and in '\
-                  'C30 to 75 kr.Blocks hexes E28 and F27 if owned by a player.',
+                  'C30 to 75 kr.  Blocks hexes E28 and F27 if owned by a player.',
             sym: 'GC',
             abilities:
             [
