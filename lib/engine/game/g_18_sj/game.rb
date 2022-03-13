@@ -333,7 +333,7 @@ module Engine
         end
 
         def find_company(companies, collection)
-          sym = collection[rand % collection.size]
+          sym = select(collection)
           to_find = companies.find { |comp| comp.sym == sym }
           @log << "Could not find company with sym='#{sym}' in #{@companies}" unless to_find
           to_find
