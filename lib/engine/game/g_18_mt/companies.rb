@@ -48,7 +48,7 @@ module Engine
                           when: 'track',
                           count: 1,
                           closed_when_used_up: true,
-                          hexes: %w[B4 B6 B8 B10 B12 B14 B18 C5 C13 C15 C17 D8 D10 D12 D16 D20 E3 E13 E19 F6],
+                          hexes: %w[B4 B6 B8 B10 B12 B14 B18 C5 C13 C15 C17 D8 D10 D12 D16 D20 E3 E13 E19 F6 F14],
                           tiles: ['mts'],
                         }],
             color: nil,

@@ -1349,7 +1349,6 @@ module Engine
                 C12
                 C16
                 E10
-                E14
                 E18
                 F13
                 F19
@@ -1364,6 +1363,9 @@ module Engine
                 B17
                 F23
               ] => 'city=revenue:0;upgrade=cost:10,terrain:mountain',
+              [
+                'E14',
+              ] => 'city=revenue:0;upgrade=cost:10,terrain:water',
               [
                 'D9',
               ] => 'city=revenue:0;upgrade=cost:20,terrain:water',
