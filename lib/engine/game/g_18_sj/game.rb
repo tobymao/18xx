@@ -248,9 +248,25 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           'SB' => '/icons/18_sj/sb_token.svg',
+          'GKB50' => '/icons/18_sj/50.svg',
+          'GKB30' => '/icons/18_sj/30.svg',
+          'GKB20' => '/icons/18_sj/20.svg',
         }.freeze
 
         GKB_HEXES = %w[C8 C16 E8].freeze
+
+        def gkb_hexes
+          @gkb_hexes ||= GKB_HEXES.map { |h| hex_by_id(h) }
+        end
+
+        def gkb_hex_assigned?(hex)
+          ASSIGNMENT_TOKENS.each { |id, _|
+            next if id == 'SB'
+
+            return true if hex.assigned?(id)
+          }
+          false
+        end
 
         EDELSWARD_PLAYER_ID = -1
 
@@ -508,6 +524,7 @@ module Engine
           G18SJ::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
+            G18SJ::Step::AssignGotaKanalbolaget,
             G18SJ::Step::AssignSveabolaget,
             G18SJ::Step::SpecialTrack,
             G18SJ::Step::BuyCompany,
@@ -878,6 +895,19 @@ module Engine
           @players.reject { |p| bot_player?(p) }.min_by { |p| [p.value, @players.index(p)] }
         end
 
+        def gkb_bonuses_details(route)
+          gkb_bonuses = []
+          route.stops.each { |s|
+            next unless gkb_hex_assigned?(s.hex)
+
+            key = ASSIGNMENT_TOKENS.find { |id, _| s.hex.assigned?(id) }.first
+            amount = key.sub('GKB', '').to_i
+            details = "#{key}(#{s.hex.name})"
+            gkb_bonuses << { amount: amount, hex: s.hex, key: key }
+          }
+          gkb_bonuses
+        end
+
         private
 
         def main_line_hex?(hex)
@@ -1058,26 +1088,17 @@ module Engine
         def gkb_bonus(route)
           bonus = { revenue: 0 }
 
-          return bonus if !route.abilities || route.abilities.empty?
-          raise GameError, "Only one ability supported: #{route.abilities}" if route.abilities.size > 1
+          return bonus if route.train.owner != gkb.owner
 
-          ability = abilities(route.train.owner, route.abilities.first, time: 'route')
-          raise GameError, "Cannot find ability #{route.abilities.first}" unless ability
-
-          bonuses = route.stops.count { |s| ability.hexes.include?(s.hex.name) }
-          if bonuses.positive?
-            amount = case ability.count
-                     when 3
-                       50
-                     when 2
-                       30
-                     else
-                       20
-                     end
-            bonus[:revenue] = amount * bonuses
-            bonus[:description] = 'GKB'
-            bonus[:description] += "x#{bonuses}" if bonuses > 1
-          end
+          gkb_bonuses_details(route).each { |gbd|
+            bonus[:revenue] += gbd[:amount]
+            details = "#{gbd[:key]}(#{gbd[:hex].name})"
+            if bonus[:description]
+              bonus[:description] += " + #{details}"
+            else
+              bonus[:description] = details
+            end
+          }
 
           bonus
         end
