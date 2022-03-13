@@ -99,7 +99,7 @@ module Engine
             name: 'Motala Verkstad',
             value: 90,
             revenue: 20,
-            desc: "During the owning corporation's operating turn, theat corporation may at any time buy one or more "\
+            desc: "During the owning corporation's operating turn, that corporation may at any time buy one or more "\
                   'train/s from the bank. This power may only be used one time during the game and must be used '\
                   'before this private company closes.',
             sym: 'MV',
@@ -109,6 +109,7 @@ module Engine
                 type: 'train_buy',
                 description: 'Buy trains before instead of after Run Routes',
                 owner_type: 'corporation',
+                count: 1,
               },
             ],
           },
