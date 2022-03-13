@@ -36,6 +36,7 @@ module Engine
 
           def split_start(corporation)
             @split_corporation = corporation
+            @split_branch = nil
             split_next
             @log << "#{current_entity.name} splitting #{@split_corporation.full_name}"
           end
