@@ -11,8 +11,10 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
-            # return [] unless entity.name = 'CAB'
+            puts @game.pending_late_corporation.inspect
             puts 'a'
+            return [] if @game.pending_late_corporation == nil
+            puts 'b'
 
             ACTIONS
           end
@@ -38,8 +40,9 @@ module Engine
           def process_choose(action)
             puts action.choice.inspect
             @game.log << "XYZ chooses #{action.choice} as its home location"
-            #@game.company_made_choice(@company, action.choice, :special_choose)
-            #@company = nil
+
+            skip!
+            @game.pending_late_corporation = nil
           end
 
           def skip!
