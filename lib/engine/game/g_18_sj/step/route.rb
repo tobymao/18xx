@@ -8,18 +8,6 @@ module Engine
     module G18SJ
       module Step
         class Route < Engine::Step::Route
-          def chart(_entity)
-            [
-              %w[Name Bonus],
-              ['Lapplandspilen (N-S)', @game.format_currency(100)],
-              ['Öst-Väst (Ö-V)', @game.format_currency(120)],
-              ['Malmfälten 1 (M-m)', @game.format_currency(50)],
-              ['Malmfälten 2 (M-m-m)', @game.format_currency(100)],
-              ['Bergslagen 1 (B-b)', @game.format_currency(50)],
-              ['Bergslagen 2 (B-b-b)', @game.format_currency(100)],
-            ]
-          end
-
           def process_run_routes(action)
             entity = action.entity
             routes = action.routes

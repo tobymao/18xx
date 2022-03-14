@@ -180,6 +180,81 @@ module Engine
         }.freeze
 
         LAYOUT = :pointy
+
+        def show_map_legend?
+          true
+        end
+
+        def map_legend
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            # header
+            [
+              { text: 'Bonus', props: { style: { border: '1px solid' } } },
+              { text: 'Icons', props: { style: { border: '1px solid' } } },
+              { text: 'kr', props: { style: { border: '1px solid' } } },
+            ],
+            # body
+            [
+              { text: 'Bergslagen 1', props: { style: { border: '1px solid black', color: 'white', backgroundColor: 'grey' } } },
+              {
+                text: 'B-b',
+                props: { style: { textAlign: 'center', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+              },
+              {
+                text: '50',
+                props: { style: { textAlign: 'right', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+              },
+            ],
+            [
+              { text: 'Bergslagen 2', props: { style: { border: '1px solid' } } },
+              { text: 'B-b-b', props: { style: { textAlign: 'center', border: '1px solid' } } },
+              { text: '100', props: { style: { textAlign: 'right', border: '1px solid' } } },
+            ],
+            [
+              {
+                text: 'Lapplandspilen',
+                props: { style: { border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+              },
+              {
+                text: 'N-S',
+                props: { style: { textAlign: 'center', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+              },
+              {
+                text: '100',
+                props: { style: { textAlign: 'right', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+              },
+            ],
+            [
+              { text: 'Malmfälten 1', props: { style: { border: '1px solid black' } } },
+              { text: 'M-m', props: { style: { textAlign: 'center', border: '1px solid black' } } },
+              { text: '50', props: { style: { textAlign: 'right', border: '1px solid black' } } },
+            ],
+            [
+              { text: 'Malmfälten 2', props: { style: { border: '1px solid black', color: 'white', backgroundColor: 'grey' } } },
+              {
+                text: 'M-m-m',
+                props: { style: { textAlign: 'center', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+              },
+              {
+                text: '100',
+                props: { style: { textAlign: 'right', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+              },
+            ],
+            [
+              { text: 'Öst-Väst', props: { style: { border: '1px solid' } } },
+              { text: 'Ö-V', props: { style: { textAlign: 'center', border: '1px solid' } } },
+              { text: '120', props: { style: { textAlign: 'right', border: '1px solid' } } },
+            ],
+          ]
+        end
       end
     end
   end
