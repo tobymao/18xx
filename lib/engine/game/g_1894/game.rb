@@ -293,6 +293,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G1894::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
+            G1894::Step::UpdateTokens,
           ], round_num: round_num)
         end
 
@@ -406,6 +407,19 @@ module Engine
           return BROWN_CITY_619_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
 
           super
+        end
+
+        def save_tokens(tokens, hex = nil)
+          @saved_tokens = tokens
+          @saved_tokens_hex = hex if hex
+        end
+
+        def saved_tokens
+          @saved_tokens
+        end
+
+        def saved_tokens_hex
+          @saved_tokens_hex
         end
 
         def revenue_for(route, stops)
