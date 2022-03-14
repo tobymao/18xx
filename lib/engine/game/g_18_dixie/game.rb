@@ -74,8 +74,11 @@ module Engine
         end
 
         def init_round_finished
-          [M1_SYM, M2_SYM, M3_SYM, M4_SYM, M5_SYM, M6_SYM, M7_SYM, M8_SYM, M9_SYM, M10_SYM, M11_SYM, M12_SYM]\
+          [M1_SYM, M2_SYM, M3_SYM, M4_SYM, M5_SYM, M6_SYM, M7_SYM, M8_SYM, M9_SYM, M10_SYM, M11_SYM, M12_SYM]
               .each { |m_id| make_minor_available(m_id) }
+          first_player = %w[P1 P2 P3 P4 P5 P6 P7].filter_map { |p_id| company_by_id(p_id).owner }.first
+          @log << "#{first_player.name} bought the lowest numbered private"
+          @round.goto_entity!(first_player)
         end
 
         def timeline
