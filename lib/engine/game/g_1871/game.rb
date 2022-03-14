@@ -816,6 +816,26 @@ module Engine
 
           []
         end
+
+        # Never include UB as priority deal player
+        def priority_deal_player
+          players = @players.reject(&:bankrupt).reject { |p| p == @union_bank }
+
+          if @round.current_entity&.player?
+            # We're in a round that iterates over players, so the
+            # priority deal card goes to the player who will go first if
+            # everyone passes starting now.  last_to_act is nil before
+            # anyone has gone, in which case the first player has PD.
+            last_to_act = @round.last_to_act
+            priority_idx = last_to_act ? (players.index(last_to_act) + 1) % players.size : 0
+            players[priority_idx]
+          else
+            # We're in a round that iterates over something else, like
+            # corporations.  The player list was already rotated when we
+            # left a player-focused round to put the PD player first.
+            players.first
+          end
+        end
       end
     end
   end
