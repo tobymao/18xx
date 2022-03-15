@@ -23,7 +23,8 @@ module Engine
 
             if @game.class::GREEN_CITY_TILES.include?(old_tile.name)
               tokens =  old_tile.cities.flat_map(&:tokens).compact
-              @game.save_tokens(tokens, hex)
+              @game.save_tokens(tokens)
+              @game.save_tokens_hex(hex)
 
               tokens.each do |token|
                 token.remove!
@@ -54,7 +55,7 @@ module Engine
               }
 
               @log << "#{entity.name} must choose city for token"
-              
+
               saved_tokens.delete(acting_corporation_token)
               @game.save_tokens(saved_tokens)
               @game.graph.clear

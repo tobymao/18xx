@@ -9,18 +9,39 @@ module Engine
         class UpdateTokens < Engine::Step::Base
           def actions(entity)
             @saved_tokens = @game.saved_tokens
+            hex = @game.saved_tokens_hex
+
             return [] unless @saved_tokens
-            #@current_entity = pending_entity
-            #return [] unless entity == pending_entity
-            #puts entity.inspect
-
+            return [] if hex.tile.cities.flat_map(&:tokens).compact.size == @saved_tokens.size
+            
+            # token = @saved_tokens[0]
+            # @hex = @game.saved_tokens_hex
             # @round.pending_tokens << {
-            #   entity: @saved_tokens[0].corporation,
-            #   hexes: [@game.saved_tokens_hex],
-            #   token: @saved_tokens[0],
+            #   entity: token.corporation,
+            #   hexes: [@hex],
+            #   token: token,
             # }
+            # @log << "#{token.corporation.name} must choose city for token"
+            # @saved_tokens.delete(token)
 
-            %w[hex_token]
+            # if @saved_tokens == []
+            #   pass!
+            # end
+
+            #@game.save_tokens(@saved_tokens)
+
+            #@game.operating_order.each do |
+
+            @saved_tokens.each do |token|
+              @round.pending_tokens << {
+                entity: token.corporation,
+                hexes: [@game.saved_tokens_hex],
+                token: token,
+              }
+              @log << "#{token.corporation.name} must choose city for token"
+            end
+
+            #%w[hex_token]
           end
 
           def pending_entity
@@ -36,14 +57,12 @@ module Engine
           # end
 
           def process_hex_token(action)
-            puts 'a'
             @saved_tokens.each do |token|
               @round.pending_tokens << {
                 entity: token.corporation,
                 hexes: [@game.saved_tokens_hex],
                 token: token,
               }
-              puts @round.pending_tokens.inspect
               @log << "#{token.corporation.name} must choose city for token"
               @saved_tokens.delete(token)
             end

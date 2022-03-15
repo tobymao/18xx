@@ -263,6 +263,7 @@ module Engine
         BROWN_CITY_15_UPGRADES_TILES = %w[X12 35 118].freeze
         GREEN_CITY_619_TILE = '619'
         BROWN_CITY_619_UPGRADES_TILES = %w[X10 X11 X13].freeze
+        BROWN_CITY_UPGRADES_TILES = %w[X10 X11 X12 X13 X14 X15 35 36 118]
 
         REGULAR_CORPORATIONS = %w[PLM CAB Ouest Belge GR Nord Est].freeze
         FRENCH_LATE_CORPORATIONS = %w[F1 F2].freeze
@@ -277,7 +278,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1894::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
@@ -353,9 +354,16 @@ module Engine
         def action_processed(action)
           super
 
-          return unless action.is_a?(Action::LayTile) && action.hex.id == SQG_HEX
+          return unless action.is_a?(Action::LayTile)
 
-          tile = hex_by_id(SQG_HEX).tile
+          tile = hex_by_id(action.hex.id).tile
+
+          if BROWN_CITY_14_UPGRADES_TILES.include?(tile.name)
+            tile.cities.each { |c| c.add_slot }
+          end
+
+          return unless action.hex.id == SQG_HEX
+
           sqg = company_by_id('SQG')
           sqg.revenue = get_current_revenue(tile.cities[0])
           @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
@@ -409,13 +417,16 @@ module Engine
           super
         end
 
-        def save_tokens(tokens, hex = nil)
+        def save_tokens(tokens)
           @saved_tokens = tokens
-          @saved_tokens_hex = hex if hex
         end
 
         def saved_tokens
           @saved_tokens
+        end
+
+        def save_tokens_hex(hex)
+          @saved_tokens_hex = hex
         end
 
         def saved_tokens_hex

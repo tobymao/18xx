@@ -8,11 +8,9 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           def place_token(entity, city, token, connected: true, extra_action: false, special_ability: nil)
-            raise GameError, "#{city.hex.location_name} may not be tokened" 
-              if city.hex.name != Engine::Game::G1894::Game::ENGLAND_HEX
+            raise GameError, "#{city.hex.location_name} may not be tokened" if city.hex.name == Engine::Game::G1894::Game::ENGLAND_HEX
 
-            raise GameError, "#{city.hex.location_name} may not be tokened this round"
-              if city.hex.name != @game.saved_tokens_hex
+            raise GameError, "#{city.hex.location_name} may not be tokened until removed tokens are placed again" if @game.saved_tokens_hex && city.hex.name == @game.saved_tokens_hex.name
 
             super
           end
