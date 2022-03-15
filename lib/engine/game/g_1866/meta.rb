@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         PROTOTYPE = true
 
         GAME_SUBTITLE = 'Railways of Europe'
@@ -19,27 +19,6 @@ module Engine
         GAME_RULES_URL = 'https://docs.google.com/document/d/1EH8REWBU68orMZI8M_cZ0Kc8v65YXb1l_ogSEzlz93g'
 
         PLAYER_RANGE = [3, 7].freeze
-        OPTIONAL_RULES = [
-          {
-            sym: :nes,
-            short_name: 'NES',
-            desc: 'North Europe Scenario (GB FR BNL CH DE)',
-          },
-          {
-            sym: :ces,
-            short_name: 'CES',
-            desc: 'Central Europe Scenario (BNL CH AHE DE I)',
-          },
-          {
-            sym: :ses,
-            short_name: 'SES',
-            desc: 'South Europe Scenario (FR ESP CH AHE IT)',
-          },
-        ].freeze
-
-        MUTEX_RULES = [
-          %i[nes ces ses],
-        ].freeze
       end
     end
   end
