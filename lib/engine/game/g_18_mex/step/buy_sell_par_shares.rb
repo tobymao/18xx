@@ -19,8 +19,7 @@ module Engine
           def can_gain?(entity, bundle, exchange: false)
             return if !bundle || !entity || attempt_ndm_action_on_unavailable?(bundle)
 
-            corporation = bundle.corporation
-            corporation.holding_ok?(entity, bundle.percent) && (exchange || room_to_gain?(entity, bundle))
+            bundle.corporation.holding_ok?(entity, bundle.percent) && (exchange || room_to_gain?(entity, bundle))
           end
 
           include SwapBuySell
@@ -42,6 +41,10 @@ module Engine
 
           def room_to_gain?(entity, bundle)
             return true if @game.num_certs(entity) < @game.cert_limit
+
+            # There is room if this is a corporation in the "yellow" zone in the stock market
+            sp = bundle.corporation.share_price
+            return true if sp && !sp.counts_for_limit
 
             # Need to allow buying 5% shares in NdM even if at cert limit as these shares are not
             # counted towards cert limit (but they still count for 60% corporation limit).

@@ -19,7 +19,7 @@ module View
         player = @corporation.owner
         children = []
 
-        verb = @must_buy_train ? 'must' : 'may'
+        verb = @must_buy_train || @should_buy_train == :contribute_all ? 'must' : 'may'
 
         cheapest_train_price = if @step.respond_to?(:cheapest_train_price)
                                  @step.cheapest_train_price(@corporation)
@@ -133,8 +133,12 @@ module View
         if (@step.can_buy_train?(@corporation, @active_shell) && @step.room?(@corporation, @active_shell)) ||
            @must_buy_train
           children << h(:div, "#{@corporation.name} must buy an available train") if @must_buy_train
-          if @should_buy_train == :liquidation
+          case @should_buy_train
+          when :liquidation
             children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
+          when :contribute_all
+            children << h(:div, "#{@corporation.name} must buy a train or "\
+                                "#{@corporation.owner.name} must contribute all his cash")
           end
           children << h(:h3, 'Available Trains')
           children << h(:div, div_props, [
@@ -226,6 +230,13 @@ module View
                   price = ability.discounted_price(train, price)
                   entity = @selected_company
                 end
+              end
+            else
+              # Handle a corporation having train discount ability
+              @game.abilities(@corporation, :train_discount, time: @step.ability_timing) do |ability|
+                next if ability.count
+
+                price = ability.discounted_price(train, price) if ability.trains.include?(train.name)
               end
             end
 

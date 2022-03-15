@@ -19,7 +19,7 @@ module Engine
             return ['merge'] if @round.merging&.one? || finalize_merger?
             return [] if @round.vote_outcome == :against
             # Must be an unstarted 10 share corporation to be able to do a merge.
-            return [] if @game.corporations.select { |x| x.type == :major }.empty?
+            return ['pass'] if merge_targets.empty?
 
             %w[pass merge]
           end
@@ -305,8 +305,16 @@ module Engine
             true
           end
 
+          def merge_targets
+            @game.corporations.select do |target|
+              target.type == :major && !target.floated?
+            end
+          end
+
           def mergeable_candidates(entity)
             merging = @round.merging || []
+
+            return [] if merge_targets.empty?
 
             # Can't merge at 3 corporations
             return [] if merging.size == LIMIT_MERGE
@@ -326,10 +334,7 @@ module Engine
 
           def mergeable(entity)
             if finalize_merger?
-              @game.corporations.select do |target|
-                target.type == :major &&
-                !target.floated?
-              end
+              merge_targets
             else
               mergeable_candidates(entity)
             end
