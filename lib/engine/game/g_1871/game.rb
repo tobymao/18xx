@@ -49,6 +49,7 @@ module Engine
         MARKET_SHARE_LIMIT = 80
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         MUST_SELL_IN_BLOCKS = true
+        NEXT_SR_PLAYER_ORDER = :first_to_pass
         SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
