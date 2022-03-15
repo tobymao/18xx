@@ -836,6 +836,19 @@ module Engine
             players.first
           end
         end
+
+        # Override to allow union bank to always lose ties when choosing a new
+        # president after a sale
+        def player_distance_for_president(player_a, player_b)
+          return 0 if !player_a || !player_b
+
+          return players.size + 1 if (player_a == @union_bank) || (player_b == @union_bank)
+
+          entities = players.reject(&:bankrupt)
+          a = entities.find_index(player_a)
+          b = entities.find_index(player_b)
+          a < b ? b - a : b - (a - entities.size)
+        end
       end
     end
   end
