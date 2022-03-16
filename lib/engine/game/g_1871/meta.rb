@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
         GAME_TITLE = 'The Old Prince'.freeze
         GAME_SUBTITLE = '1871'.freeze

@@ -83,7 +83,7 @@ module Engine
             %w[O25 G9] => 'path=a:4,b:5',
           },
           white: {
-            %w[B4 C3 B6 D4 E9 H12 H18 I15 J12 J18 K13 K17 L14 N12 O11 O13 O17 O21 P20 Q11 Q13 Q19 R14 S13 N18 D12 C7 P18 G15
+            %w[B4 C3 B6 D4 E9 H12 H18 I15 J12 J18 K13 K17 L14 N12 O11 O13 O17 O21 P20 Q11 Q13 Q19 R14 S11 S13 N18 D12 C7 P18 G15
                E15] => '',
             %w[U13 L12 J20 Q17 Q15] => 'town=revenue:0',
             %w[M13 Q21 D6] => 'city=revenue:0;label=X',
@@ -93,7 +93,7 @@ module Engine
             %w[R12 N14] => 'town=revenue:0;town=revenue:0;upgrade=cost:60,terrain:water',
             %w[R16] => 'city=revenue:0;label=X;upgrade=cost:60,terrain:water',
             %w[I13] => 'town=revenue:0;upgrade=cost:60,terrain:water',
-            %w[C9 D10 E13 F10 S11] => 'upgrade=cost:60,terrain:water',
+            %w[C9 D10 E13 F10] => 'upgrade=cost:60,terrain:water',
             %w[D8] => 'town=revenue:0;town=revenue:0;upgrade=cost:80,terrain:water',
             %w[T12] => 'city=revenue:20;path=a:3,b:_0;label=X;upgrade=cost:60,terrain:water',
             %w[G13 F12] => 'upgrade=cost:120,terrain:water',
@@ -120,7 +120,7 @@ module Engine
             %w[B8] => 'town=revenue:20;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;path=a:5,b:_0',
           },
           yellow: {
-            %w[O15] => 'city=revenue:20;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
+            %w[O15] => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
             %w[D14] => 'city=revenue:20;path=a:5,b:_0;path=a:3,b:_0',
             %w[D2] => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;label=T',
             %w[F14] => 'city=revenue:20;path=a:5,b:_0;path=a:1,b:_0;label=X',

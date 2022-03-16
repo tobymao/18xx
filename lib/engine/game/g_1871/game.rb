@@ -49,6 +49,7 @@ module Engine
         MARKET_SHARE_LIMIT = 80
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         MUST_SELL_IN_BLOCKS = true
+        NEXT_SR_PLAYER_ORDER = :first_to_pass
         SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
@@ -387,7 +388,10 @@ module Engine
         # Override default rust behavior for 4+ trains so that we only rust them
         # if they've run once.
         def rust(train)
-          return if (train.name == '4+') && !train.operated
+          if train.name == '4+' && !train.ever_operated
+            train.obsolete = true
+            return
+          end
 
           super
         end
@@ -727,7 +731,7 @@ module Engine
           home_hex_id = corporation.coordinates
 
           # Return choices of all tokens that aren't the home
-          corporation.placed_tokens.select do |token|
+          corporation.placed_tokens.reject do |token|
             token.city.hex&.id == home_hex_id
           end
         end
@@ -745,7 +749,7 @@ module Engine
           corporation.capitalization = :incremental
 
           # Handle the players presidency
-          owner_non_presidents_shares = corporation.owner.shares_by_corporation[corporation].select(&:president)
+          owner_non_presidents_shares = corporation.owner.shares_by_corporation[corporation].reject(&:president)
 
           @log << "#{corporation.owner.name} exchanges 2 shares of #{corporation.name} for the president cert of #{branch.name}"
           owner_non_presidents_shares.take(2).each do |share|
@@ -758,7 +762,7 @@ module Engine
           # Go through all players and exchange, putting exchanged shares onto
           # corporation_treasury_shares
           @players.each do |player|
-            shares = player.shares_by_corporation[corporation].select(&:president)
+            shares = player.shares_by_corporation[corporation].reject(&:president)
             num_of_branch_shares = (shares.sum(&:percent) / 10 / 2).to_i
 
             next unless num_of_branch_shares.positive?
@@ -812,6 +816,39 @@ module Engine
           return [biggest_bundle] if biggest_bundle
 
           []
+        end
+
+        # Never include UB as priority deal player
+        def priority_deal_player
+          players = @players.reject(&:bankrupt).reject { |p| p == @union_bank }
+
+          if @round.current_entity&.player?
+            # We're in a round that iterates over players, so the
+            # priority deal card goes to the player who will go first if
+            # everyone passes starting now.  last_to_act is nil before
+            # anyone has gone, in which case the first player has PD.
+            last_to_act = @round.last_to_act
+            priority_idx = last_to_act ? (players.index(last_to_act) + 1) % players.size : 0
+            players[priority_idx]
+          else
+            # We're in a round that iterates over something else, like
+            # corporations.  The player list was already rotated when we
+            # left a player-focused round to put the PD player first.
+            players.first
+          end
+        end
+
+        # Override to allow union bank to always lose ties when choosing a new
+        # president after a sale
+        def player_distance_for_president(player_a, player_b)
+          return 0 if !player_a || !player_b
+
+          return players.size + 1 if (player_a == @union_bank) || (player_b == @union_bank)
+
+          entities = players.reject(&:bankrupt)
+          a = entities.find_index(player_a)
+          b = entities.find_index(player_b)
+          a < b ? b - a : b - (a - entities.size)
         end
       end
     end

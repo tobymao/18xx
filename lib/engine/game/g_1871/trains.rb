@@ -8,21 +8,21 @@ module Engine
           {
             name: '2H',
             distance: 2,
-            price: 60,
+            price: 80,
             rusts_on: '5H',
             num: 4,
           },
           {
             name: '3H',
             distance: 3,
-            price: 80,
+            price: 100,
             rusts_on: '6H',
             num: 3,
           },
           {
             name: '4H',
             distance: 4,
-            price: 100,
+            price: 120,
             rusts_on: '2+',
             num: 3,
           },
@@ -78,7 +78,7 @@ module Engine
             name: 'D',
             distance: 999,
             price: 600,
-            num: 6,
+            num: 20,
           },
         ].freeze
       end

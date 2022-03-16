@@ -19,7 +19,9 @@ module View
       message = <<~MESSAGE
 
         <p>Simon Cutforth's, the designer of 1822, new prototype <a href='https://github.com/tobymao/18xx/wiki/1866'>1866</a>
-        is now available for alpha testing.<br>18JP-T is now available for alpha testing.</p>
+        is now available for alpha testing.<br>
+        18JP-T is now available for alpha testing.<br>
+        The Old Prince 1871 is now available for alpha testing.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
