@@ -86,6 +86,8 @@ module Engine
 
             @log << "#{player.name} offers #{company.name}"
             goto_entity!(@player1)
+
+            auto_pass_if_forced!
           end
 
           def process_pass(action)
@@ -191,7 +193,7 @@ module Engine
             company = bid.company
 
             assign_item(winner, company, bid.price)
-            @log << "#{winner.name} wins #{company.name} for $#{bid.price}"
+            @log << "#{winner.name} wins #{company.name} for #{@game.format_currency(bid.price)}"
 
             end_auction!
           end
@@ -202,7 +204,7 @@ module Engine
 
             # Pay privates until someone can win
             while highest.cash < company.value
-              @log << "No player can afford #{company.name} ($#{company.value}), paying out companies"
+              @log << "No player can afford #{company.name} (#{@game.format_currency(company.value)}), paying out companies"
               @game.payout_companies(ignore: ['KM'])
 
               highest = entities.max_by(&:cash)
@@ -210,14 +212,16 @@ module Engine
 
             # Now we have someone that can afford
             assign_item(highest, company, company.value)
-            @log << "#{highest.name} is forced to buy #{company.name} for $#{company.value} - highest cash"
+            @log << "#{highest.name} is forced to buy #{company.name} for #{@game.format_currency(company.value)} - highest cash"
           end
 
           def force_item(company)
             # Check if the receiver can take the item
             if @receiver.cash >= company.value
+              # Assigning the bank sets it's value to 0 so avoid any bugs
+              value = company.value
               assign_item(@receiver, company, company.value)
-              @log << "#{@receiver.name} is forced to buy #{company.name} for $#{company.value}"
+              @log << "#{@receiver.name} is forced to buy #{company.name} for #{@game.format_currency(value)}"
             else
               force_on_highest_cash(company)
             end
@@ -231,15 +235,33 @@ module Engine
             else
               goto_entity!(@player1)
             end
+
+            auto_pass_if_forced!
+          end
+
+          def auto_pass_if_forced!
+            player = entities[entity_index]
+            min_cash = min_bid(@selected_company)
+
+            return if player.cash >= min_cash
+
+            @log << "#{player.name} does not have #{@game.format_currency(min_cash)} (#{@game.format_currency(player.cash)})"
+            @round.process_action(Engine::Action::Pass.new(player))
           end
 
           def end_auction!
+            next_player = @player1
             goto_entity!(@player1)
 
             # Reset all of our variables
             @player1.unpass!
             @player2.unpass!
             @auctioneer = @auctioning = @player1 = @player2 = @receiver = nil
+
+            # If the next player only has one unsold company we can offer it right away
+            return unless next_player.unsold_companies.size == 1
+
+            @round.process_action(Engine::Action::Offer.new(next_player, company: next_player.unsold_companies.first))
           end
 
           def goto_entity!(entity)

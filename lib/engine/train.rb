@@ -7,9 +7,9 @@ module Engine
   class Train
     include Ownable
 
-    attr_accessor :obsolete, :operated, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
+    attr_accessor :obsolete, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
                   :distance, :reserved
-    attr_reader :available_on, :discount, :multiplier, :sym, :variant, :requires_token
+    attr_reader :available_on, :discount, :multiplier, :sym, :variant, :requires_token, :ever_operated, :operated
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
@@ -28,10 +28,16 @@ module Engine
       @rusted = false
       @obsolete = false
       @operated = false
+      @ever_operated = false
       @events = (opts[:events] || []).select { |e| @index == (e['when'] || 1) - 1 }
       @reserved = opts[:reserved] || false
       @requires_token = opts[:requires_token].nil? ? true : opts[:requires_token]
       init_variants(opts[:variants])
+    end
+
+    def operated=(value)
+      @ever_operated ||= value
+      @operated = value
     end
 
     def init_variants(variants)

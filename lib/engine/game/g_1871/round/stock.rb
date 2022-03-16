@@ -36,6 +36,7 @@ module Engine
 
           def split_start(corporation)
             @split_corporation = corporation
+            @split_branch = nil
             split_next
             @log << "#{current_entity.name} splitting #{@split_corporation.full_name}"
           end
@@ -117,6 +118,13 @@ module Engine
             @split_branch = branch
             @log << "#{current_entity.name} picked #{@split_branch.full_name} as the new company"
             split_next
+
+            # Now check if there is only one token choice, and just pick it if so
+            tokens = @game.split_token_choices(@split_corporation)
+            return unless tokens.size == 1
+
+            index = @split_corporation.tokens.find_index(tokens[0])
+            process_action(Engine::Action::Choose.new(current_entity, choice: index))
           end
 
           def split_pick_par(share_price)
@@ -139,6 +147,10 @@ module Engine
 
             @log << "#{@split_corporation.full_name} is out of tokens to swap"
             split_next
+
+            # if there is only one par choice, pick it
+            pars = @game.stock_market.par_prices
+            process_action(Engine::Action::Choose.new(current_entity, choice: pars[0].id)) if pars.size == 1
           end
 
           def split_pick_trains(train)
