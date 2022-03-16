@@ -23,10 +23,6 @@ module Engine
             actions
           end
 
-          def can_sell?(_entity, _bundle)
-            super && !@game.stock_turn_token_removed?(active_entities[0])
-          end
-
           def current_entity
             entity = active_entities[0]
             return unless entity
