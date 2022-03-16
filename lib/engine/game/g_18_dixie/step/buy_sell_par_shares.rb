@@ -175,6 +175,7 @@ module Engine
             company = action.company
             sym = company.sym
             @game.float_minor(sym, action.entity) unless sym[0] == 'P'
+            @round.next_entity_index!
           end
         end
       end

@@ -82,8 +82,6 @@ module Engine
         end
 
         def timeline
-          return super if @optional_rules.include?(:seventeen_trains)
-
           @timeline = [
             'End of ISR: Highest numbered remaining private is permanently closed',
             'SR1: Unsold ISR private companies* are available, Minors 1-12 are available for purcahse ',
@@ -229,6 +227,7 @@ module Engine
           minor = minor_by_id(minor_id)
           minor.owner = owner
           minor.float!
+          company_by_id(minor_id).close!
           @recently_floated << minor
         end
       end
