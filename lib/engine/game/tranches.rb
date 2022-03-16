@@ -13,7 +13,7 @@ module Engine
       # init_tranches([[nil, nil], [nil, nil]])
       def init_tranches(initial_tranches = [])
         @tranches = initial_tranches
-        @current_tranch_index = @tranches.find_index { |tranch| tranch.any?(&:nil?) }
+        @current_tranch_index = @tranches.find_index { |tranch| tranch.any?(&:nil?) } || 0
       end
 
       # Return the current tranch row
@@ -23,12 +23,16 @@ module Engine
 
       # Did we fill up every company slot?
       def tranches_full?
+        return true unless @tranches
+
         @current_tranch_index >= @tranches.size
       end
 
       # Returns the index in the current tranch that is open, or nil if
       # nothing is open
       def current_tranch_slot_index
+        return nil unless @tranches && current_tranch
+
         current_tranch.find_index(nil)
       end
 
@@ -59,10 +63,15 @@ module Engine
       # Returns true if all of the previous tranch row of companies have
       # operator, or have sold out.
       def previous_tranch_all_sold_out_or_operated?
+        return true unless @tranches
+        return true if @current_tranch_index.zero?
+
         prev_tranch = @tranches[@current_tranch_index - 1]
 
+        return true unless prev_tranch
+
         prev_tranch.all? do |corporation|
-          corporation.operated? or corporation_sold_out?(corporation)
+          corporation and (corporation.operated? or corporation_sold_out?(corporation))
         end
       end
 

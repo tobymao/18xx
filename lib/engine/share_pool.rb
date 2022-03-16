@@ -235,7 +235,17 @@ module Engine
 
       president = majority_share_holders
         .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
-        .min_by { |p| previous_president == self ? 0 : distance(previous_president, p) }
+        .min_by do |p|
+        if previous_president == self
+          0
+        else
+          (if @game.respond_to?(:player_distance_for_president)
+             @game.player_distance_for_president(previous_president, p)
+           else
+             distance(previous_president, p)
+           end)
+        end
+      end
       return unless president
 
       corporation.owner = president
