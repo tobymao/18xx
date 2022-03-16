@@ -4,7 +4,6 @@ require_relative '../base'
 require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
-require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -13,7 +12,6 @@ module Engine
         include_meta(G1894::Meta)
         include G1894::Map
         include G1894::Entities
-        include StubsAreRestricted
 
         CURRENCY_FORMAT_STR = '%d F'
 

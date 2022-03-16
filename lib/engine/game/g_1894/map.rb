@@ -180,7 +180,7 @@ module Engine
           yellow: {
             ['D17'] => 'city=revenue:10;path=a:0,b:_0;path=a:1,b:_0',
             ['G2'] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0',
-            ['I6'] => 'path=a:1,b:3;stub=edge:2',
+            ['I6'] => 'path=a:1,b:3',
             ['I8'] => 'city=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           brown: {
