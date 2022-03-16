@@ -70,7 +70,7 @@ module Engine
           'formation' => ['Formation', 'Forced formation of Major Nationals. Order of forming is: '\
                                        'Switzerland, Spain, Benelux, Austro-Hungarian Empire, Italy, France, '\
                                        'Germany, Great Britain.'],
-          'infrastructure_h' => ['Transit Hub', 'The H, transit hub infrastructure, will be available for purchase'\
+          'infrastructure_h' => ['Transit Hub', 'The H, transit hub infrastructure, will be available for purchase. '\
                                                 'The transit hub, gives one tokened city value to the treasury '\
                                                 '(when included on a route).'],
           'infrastructure_p' => ['Palace Car', 'The P, palace car infrastructure, will be available for purchase. '\
