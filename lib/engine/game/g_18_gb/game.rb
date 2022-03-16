@@ -539,6 +539,7 @@ module Engine
 
         def status_array(corp)
           status = []
+          status << ["Tier #{@tiers[corp.id]}", 'bold'] if @round_counter <= 1
           status << %w[10-share bold] if corp.type == :'10-share'
           status << %w[5-share bold] if corp.type == :'5-share'
           status << %w[Insolvent bold] if insolvent?(corp)
