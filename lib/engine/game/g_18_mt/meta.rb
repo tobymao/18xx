@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         PROTOTYPE = true
 
         GAME_DESIGNER = 'R. Ryan Driskel'
