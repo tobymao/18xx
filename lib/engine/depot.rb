@@ -33,6 +33,14 @@ module Engine
       end
     end
 
+    def reclaim_all!(name)
+      @game.log << "-- Event: All #{name} trains are discarded to the Bank Pool --"
+      while (train = @upcoming.first).name == name
+        reclaim_train(train)
+        @game.phase.buying_train!(nil, train)
+      end
+    end
+
     def reclaim_train(train)
       return unless train.owner
 
