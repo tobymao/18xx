@@ -167,7 +167,7 @@ module Engine
             ['E12'] => 'border=edge:3,type:mountain;border=edge:4,type:mountain;border=edge:5,type:mountain',
             ['E14'] => 'border=edge:1,type:mountain',
             ['F13'] => 'upgrade=cost:60,terrain:water;'\
-            'border=edge:0,type:mountain;border=edge:1,type:mountain;border=edge:2,type:mountain',
+                       'border=edge:0,type:mountain;border=edge:2,type:mountain',
             ['G4'] => 'city=revenue:0;city=revenue:0;label=P',
             ['G12'] => 'border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['G14'] => 'city=revenue:0;border=edge:0,type:mountain;border=edge:1,type:mountain',
@@ -183,15 +183,13 @@ module Engine
             ['I6'] => 'path=a:1,b:3;stub=edge:2',
             ['I8'] => 'city=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
-          brown: {
-            ['F11'] => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0;border=edge:4,type:mountain',
-          },
           gray: {
             ['A8'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0;'\
-                      'icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
+            'icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
             ['A10'] => 'city=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0,lanes:2;path=a:5,b:_0;',
             ['B5'] => 'path=a:1,b:5;',
             ['D1'] => 'town=revenue:20;path=a:3,b:_0;path=a:5,b:_0',
+            ['F11'] => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
             ['G18'] => 'path=a:0,b:2;',
             ['I16'] => 'path=a:1,b:4;path=a:1,b:2;',
           },

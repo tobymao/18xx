@@ -45,7 +45,7 @@ module Engine
             sym: 'SQG',
             value: 70,
             revenue: 10,
-            desc: 'Never closes.',
+            desc: 'Never closes. Revenue is equal to the revenue of Saint-Quenting (G10).',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'player' },
                         { type: 'close', on_phase: 'never', owner_type: 'corporation' }],
           },

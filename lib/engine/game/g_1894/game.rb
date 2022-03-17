@@ -19,7 +19,7 @@ module Engine
 
         BANK_CASH = 8000
 
-        CERT_LIMIT = { 3 => 99, 4 => 99, 5 => 99 }.freeze
+        CERT_LIMIT = { 3 => 99, 4 => 99 }.freeze
 
         STARTING_CASH = { 3 => 650, 4 => 550 }.freeze
 
@@ -151,13 +151,13 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 1 },
+        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 7 },
                   {
                     name: '3',
                     distance: 3,
                     price: 160,
                     rusts_on: '5',
-                    num: 1,
+                    num: 5,
                     events: [{ 'type' => 'late_corporations_available' }],
                     discount: { '2' => 40 },
                   },
@@ -166,7 +166,7 @@ module Engine
                     distance: 4,
                     price: 300,
                     rusts_on: '7',
-                    num: 1,
+                    num: 3,
                     discount: { '3' => 80 },
                   },
                   {
@@ -174,7 +174,7 @@ module Engine
                     distance: 5,
                     price: 400,
                     rusts_on: 'D',
-                    num: 2,
+                    num: 4,
                     discount: { '4' => 150 },
                   },
                   {
@@ -239,7 +239,7 @@ module Engine
         IPO_RESERVED_NAME = 'Treasury'
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          late_corporations_available: ['Late corporations are now available'],
+          'late_corporations_available' => ['Late corporations available', 'Late corporations can be opened'],
         ).freeze
 
         ENGLAND_HEX = 'A10'
