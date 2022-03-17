@@ -58,13 +58,77 @@ module Engine
             train = @depot.upcoming[0]
             train.buyable = false
             buy_train(minor, train, :free)
+
             Array(minor.coordinates).each { |coordinates| hex_by_id(coordinates).tile.cities[0].add_reservation!(minor) }
           end
         end
 
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G18Dixie::Step::SelectionAuction,
+          ])
+        end
+
+        def player_card_minors(player)
+          minors.select { |m| m.owner == player }
+        end
+
+        def init_round_finished
+          [M1_SYM, M2_SYM, M3_SYM, M4_SYM, M5_SYM, M6_SYM, M7_SYM, M8_SYM, M9_SYM, M10_SYM, M11_SYM, M12_SYM]
+              .each { |m_id| make_minor_available(m_id) }
+          first_player = %w[P1 P2 P3 P4 P5 P6 P7].filter_map { |p_id| company_by_id(p_id).owner }.first
+          @log << "#{first_player.name} bought the lowest numbered private"
+          @round.goto_entity!(first_player)
+        end
+
+        def timeline
+          @timeline = [
+            'End of ISR: Highest numbered remaining private is permanently closed',
+            'SR1: Unsold ISR private companies* are available, Minors 1-12 are available for purcahse ',
+            'End of OR 1.2: All unsold 2 trains are put in the open market',
+            'SR2: Private companies 8-10 are available for auction Minor 13 is now available for purchase from the bank',
+            'End of OR 2.1: Minors 1-4 are closed',
+            'End of OR 2.2: Minors 5-8 are closed. Unsold private companies are put into open market for purchase in SR3',
+            'End of SR3: All unsold Minors and Privates are closed',
+            'End of OR 3.1: Minors 9-13 are closed',
+          ].freeze
+        end
+
         # OR Stuff
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+          Engine::Step::Bankrupt,
+          Engine::Step::Exchange,
+          Engine::Step::SpecialTrack,
+          Engine::Step::BuyCompany,
+          Engine::Step::Track,
+          Engine::Step::Token,
+          Engine::Step::Route,
+          G18Dixie::Step::Dividend,
+          Engine::Step::DiscardTrain,
+          Engine::Step::BuyTrain,
+          [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
         def or_round_finished
           @recently_floated = []
+          turn = "#{@turn}.#{@round.round_num}"
+          # Turn is X.Y where X is from the *following* OR, and Y is from the *preceding* OR. :(
+          case turn
+          when '2.2'
+            @depot.reclaim_all!('2')
+            make_minor_available(M13_SYM)
+            %w[P8 P9 P10].each { |company_id| add_private(company_by_id(company_id)) }
+
+          when '2.1'
+            [M1_SYM, M2_SYM, M3_SYM, M4_SYM].each { |m_id| close_minor(m_id) }
+          when '3.2'
+            [M5_SYM, M6_SYM, M7_SYM, M8_SYM].each { |m_id| close_minor(m_id) }
+            %w[P8 P9 P10].each { |company_id| put_private_in_pool(company_by_id(company_id)) }
+          when '3.1'
+            [M9_SYM, M10_SYM, M11_SYM, M12_SYM, M13_SYM].each { |m_id| close_minor(m_id) }
+          end
         end
 
         def tile_lays(entity)
@@ -79,12 +143,92 @@ module Engine
           end
         end
 
+        def operating_order
+          corporations = @corporations.select(&:floated?)
+          if @turn == 1 && (@round_num || 1) == 1
+            corporations.sort_by! do |c|
+              sp = c.share_price
+              [sp.price, sp.corporations.find_index(c)]
+            end
+          else
+            corporations.sort!
+          end
+          @minors.select(&:floated?) + corporations
+        end
+
+        def close_minor(minor_id)
+          minor = minor_by_id(minor_id)
+          return if minor.closed?
+
+          @log << "#{minor.name} closes"
+          company_by_id(minor_id).close!
+          minor.close!
+        end
+
         # SR stuff
+        def stock_round
+          Round::Stock.new(self, [
+          Engine::Step::DiscardTrain,
+          Engine::Step::Exchange,
+          Engine::Step::SpecialTrack,
+          G18Dixie::Step::BuySellParShares,
+          ])
+        end
+
+        def bidding_power(player)
+          player.cash
+        end
+
+        def buyable_bank_owned_companies
+          return super if !@round.respond_to?(:auctioning) || !@round.auctioning
+
+          super.select { |c| @round.auctioning == c }
+        end
+
+        def sr_round_finished
+          super
+        end
 
         def float_corporation(corporation)
           @recently_floated << corporation
 
           super
+        end
+
+        def make_minor_available(minor_id)
+          minor_company = company_by_id(minor_id)
+          minor_company.owner = @bank
+          minor_company.add_ability(POOL_PRIVATE_ABILITY)
+          @log << "Minor #{minor_id} is now available for purchase"
+        end
+
+        def add_private(entity)
+          raise GameError "#{entity.name} is not a private" unless entity.company?
+
+          @log << "#{entity.name} is available to be put up for auction"
+          entity.owner = @bank
+        end
+
+        def must_auction_company?(company)
+          !company.all_abilities.include?(POOL_PRIVATE_ABILITY)
+        end
+
+        def put_private_in_pool(entity)
+          raise GameError "#{entity.name} is not a private" unless entity.company?
+
+          auctionable_ability = entity.all_abilities.find { |a| a.description == AUCTIONABLE_PRIVATE_DESCRIPTION }
+          entity.remove_ability(auctionable_ability) if auctionable_ability
+          entity.add_ability(POOL_PRIVATE_ABILITY)
+          @log << "#{entity.name} is available to be bought from the bank for face value"
+          entity.owner = @bank
+        end
+
+        def float_minor(minor_id, owner)
+          minor = minor_by_id(minor_id)
+          minor.owner = owner
+          minor.float!
+          company_by_id(minor_id).close!
+          @recently_floated << minor
         end
       end
     end
