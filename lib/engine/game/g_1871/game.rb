@@ -36,7 +36,7 @@ module Engine
         attr_reader :union_bank, :peir, :peir_shares, :peir_company_shares, :peir_corporation_shares, :random_corporation
 
         # Standard config
-        ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
+        ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = true
         BANK_CASH = 99_999
         CAPITALIZATION = :full
         CERT_LIMIT = { 3 => 20, 4 => 16 }.freeze
