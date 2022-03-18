@@ -267,6 +267,9 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # Allow merging of two separate cities into one with two slots
+          return to.name == '611' if from.hex.coordinates == 'F92' && from.color == :green
+
           # KU hexes have default upgrades in all colors but brown so check without label for simplicity
           if %w[E77 F94].include?(from.hex.name) && from.color != :brown
             from = from.dup
