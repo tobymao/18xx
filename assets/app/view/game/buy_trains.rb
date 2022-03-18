@@ -227,7 +227,7 @@ module View
                   entity = @selected_company
                 end
               end
-            else
+            elsif @step.respond_to?(:ability_timing)
               # Handle a corporation having train discount ability
               @game.abilities(@corporation, :train_discount, time: @step.ability_timing) do |ability|
                 next if ability.count
