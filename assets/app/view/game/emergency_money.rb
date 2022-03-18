@@ -14,15 +14,13 @@ module View
             verticalAlign: 'top',
           },
         }
-        if @game.round.actions_for(entity).include?('sell_shares')
-          player.shares_by_corporation.each do |corporation, shares|
-            next if shares.empty? || @game.sellable_bundles(player, corporation).empty?
+        player.shares_by_corporation.each do |corporation, shares|
+          next if shares.empty? || @game.sellable_bundles(player, corporation).empty?
 
-            corp = [h(Corporation, corporation: corporation)]
-            corp << h(SellShares, player: player, corporation: corporation)
+          corp = [h(Corporation, corporation: corporation)]
+          corp << h(SellShares, player: player, corporation: corporation)
 
-            children << h(:div, props, corp.compact)
-          end
+          children << h(:div, props, corp.compact)
         end
 
         if @game.round.actions_for(entity).include?('sell_company')
