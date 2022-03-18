@@ -137,7 +137,7 @@ module View
           when :liquidation
             children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
           when :contribute_all
-            children << h(:div, "#{@corporation.name} must buy a train or "\
+            children << h(:div, "#{@corporation.name} must buy a train or"\
                                 "#{@corporation.owner.name} must contribute all his cash")
           end
           children << h(:h3, 'Available Trains')
