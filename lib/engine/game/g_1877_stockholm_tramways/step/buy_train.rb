@@ -15,11 +15,6 @@ module Engine
             []
           end
 
-          def pass!
-            current_entity.owner.spend(buying_power(current_entity.owner), current_entity) if current_entity.trains.empty?
-            super
-          end
-
           def process_buy_train(action)
             if action.train.owned_by_corporation?
               min, max = spend_minmax(action.entity, action.train)
@@ -45,8 +40,8 @@ module Engine
             entity.trains.empty? && buying_power(entity) + buying_power(entity.owner) >= @depot.min_depot_price
           end
 
-          def should_buy_train?(entity)
-            :contribute_all if entity.trains.empty? && buying_power(entity) + buying_power(entity.owner) < @depot.min_depot_price
+          def must_buy_train_if_able_to?(_)
+            true
           end
 
           def buyable_trains(entity)
