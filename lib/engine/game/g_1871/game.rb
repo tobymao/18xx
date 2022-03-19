@@ -437,10 +437,10 @@ module Engine
         end
 
         # Returns true if this tile represents a brown tile on a map C hex
-        def brown_c?(tile)
+        def brown_cx?(tile)
           return false unless tile.color == :brown
 
-          tile.hex.original_tile.label.to_s.include?('C')
+          tile.hex.original_tile.label.to_s.include?('CX')
         end
 
         # Returns true if this tile represents a yellow tile on a map T hex
@@ -467,9 +467,9 @@ module Engine
           elsif yellow_t?(from)
             # if we're upgrading a yellow T, make sure we use T tiles
             return false unless to.label.to_s.include?('T')
-          elsif brown_c?(from)
-            # if we're upgrading a brown C, make sure we use the C tile
-            return false unless to.label.to_s.include?('C')
+          elsif brown_cx?(from)
+            # if we're upgrading the CX hex to gray, make sure we use the CX tile
+            return false unless to.label.to_s.include?('CX')
           elsif !map_x_or_t?(from)
             # normal label checking from base in other cases
             return false unless upgrades_to_correct_label?(from, to)
