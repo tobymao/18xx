@@ -92,46 +92,52 @@ module Engine
             'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_1;path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_0;'\
                       'label=OO',
           },
-          '921' =>
+          '921X' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D;'\
+            'code' => 'city=revenue:40,slots:1,loc:1;city=revenue:40,slots:2,loc:4;label=D;'\
+                      'path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
-          '922' =>
+          '922X' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D;'\
+            'code' => 'city=revenue:40,slots:1,loc:1;city=revenue:40,slots:2,loc:4;label=D;'\
+                      'path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_1;path=a:5,b:_1;path=a:_0,b:_1,track:narrow;'\
+                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0;label=D',
+          },
+          '923X' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2,loc:1;city=revenue:40,slots:1,loc:4;label=K;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
-          '923' =>
+          '924X' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=K;'\
+            'code' => 'city=revenue:40,slots:2,loc:1;city=revenue:40,slots:1,loc:4;label=K;'\
+                      'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
-          '924' =>
+          '925X' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=K;'\
+            'code' => 'city=revenue:40,slots:1,loc:1;city=revenue:40,slots:2,loc:4;label=DU;'\
+                      'path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
-          '925' =>
+          '926X' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DU;'\
-                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
-          },
-          '926' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DU;'\
+            'code' => 'city=revenue:40,slots:1,loc:1;city=revenue:40,slots:2,loc:4;label=DU;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
           '927' =>
@@ -244,7 +250,7 @@ module Engine
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3,loc:center;town=revenue:20,loc:4;path=a:0,b:_0;path=a:1,b:_0;'\
+            'code' => 'city=revenue:60,slots:3,loc:center;town=revenue:20,loc:2;path=a:0,b:_0;path=a:1,b:_0;'\
                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DU',
           },
           '950' =>

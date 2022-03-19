@@ -8,6 +8,21 @@ require_relative '../stubs_are_restricted'
 module Engine
   module Game
     module G18Rhl
+      # Used for cities that is the destination for Trajekt ferries
+      class VisitedWithoutCost
+        def initialize(visit)
+          @visit = visit
+        end
+
+        def visit_cost
+          0
+        end
+
+        def type
+          @visit.type
+        end
+      end
+
       class Game < Game::Base
         include_meta(G18Rhl::Meta)
         include Entities
@@ -285,6 +300,11 @@ module Engine
           ], round_num: round_num)
         end
 
+        def or_round_finished
+          reset_all_token_blocking
+          super
+        end
+
         def priority_deal_player
           return players_with_max_cash.first if @round.is_a?(Engine::Round::Stock) && players_with_max_cash.one?
 
@@ -369,6 +389,9 @@ module Engine
           @moers_tile_gray ||= @tiles.find { |t| t.name == '950' } if optional_promotion_tiles
           @d_k_tile ||= @tiles.find { |t| t.name == '932V' } if optional_promotion_tiles
           @d_du_k_tile ||= @tiles.find { |t| t.name == '932' } unless optional_promotion_tiles
+          @d_tile_brown ||= @tiles.find { |t| t.name == '927' }
+          @k_tile_brown ||= @tiles.find { |t| t.name == '928' }
+          @du_tile_brown ||= @tiles.find { |t| t.name == '929' }
           @du_tile_gray ||= @tiles.find { |t| t.name == '949' } if optional_promotion_tiles
           @osterath_tile ||= @tiles.find { |t| t.name == '935' }
 
@@ -528,6 +551,11 @@ module Engine
           to.name == @osterath_tile&.name &&
           selected_company == konzession_essen_osterath
 
+          # Handle Rhine Metropolis upgrade from green
+          return to.name == '927' if from.color == :green && from.hex.name == 'F9'
+          return to.name == '928' if from.color == :green && from.hex.name == 'I10'
+          return to.name == '929' if from.color == :green && from.hex.name == 'D9'
+
           # Handle Moers upgrades
           return to.name == '947' if from.color == :green && from.hex.name == 'D7'
           return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
@@ -545,7 +573,7 @@ module Engine
 
           if optional_promotion_tiles
             # Essen can be upgraded to gray
-            return to.name == 'Essen' if from.color == :brown && from.name == '216'
+            return to.name == 'Essen' if from.color == :brown && from.hex.name == 'D13'
 
             # Dusseldorf and Cologne can be upgraded to gray 932V
             return to.name == '932V' if from.color == :brown && %w[F9 I10].include?(from.hex.name)
@@ -602,6 +630,11 @@ module Engine
           upgrades |= [@d_du_k_tile] if @d_du_k_tile && %w[927 928 929].include?(tile.name)
           upgrades |= [@du_tile_gray] if @du_tile_gray && tile.name == '929'
 
+          # Show brown upgrades from Rhine Metropolis green tiles
+          upgrades |= [@d_tile_brown] if %w[921X 922X].include?(tile.name)
+          upgrades |= [@k_tile_brown] if %w[923X 924X].include?(tile.name)
+          upgrades |= [@du_tile_brown] if %w[925X 926X].include?(tile.name)
+
           upgrades
         end
 
@@ -623,6 +656,32 @@ module Engine
           yellow_block_hex.tile.icons.reject! { |i| i.name == 'green_hex' }
         end
 
+        def rhine_metropolis_visits(visits)
+          metropolis_visits = []
+
+          visits.each_with_index do |v, idx|
+            next unless RHINE_METROPOLIS_HEXES.include?(v.hex.name)
+
+            metropolis_visits << { name: v.hex.name, index: idx, color: v.hex.tile.color, loc: v.loc }
+          end
+
+          metropolis_visits.group_by { |v| v[:name] }.reject { |_, e| e.size < 2 }
+        end
+
+        def illegal_revisit_of_rhine_metropolis_hex?(visits)
+          visits.each do |_hex_name, v|
+            next if v.size < 2 || v.first[:color] != :green
+
+            0.upto(v.size - 2).each do |idx|
+              (idx + 1).upto(v.size - 1).each do |idx2|
+                # In green a visit of both cities can only be if using a trajekt
+                return true if v[idx][:loc] != v[idx2][:loc] && v[idx][:index] + 1 < v[idx2][:index]
+              end
+            end
+          end
+          false
+        end
+
         def check_distance(route, visits)
           first = visits.first
           last = visits.last
@@ -630,10 +689,6 @@ module Engine
           raise GameError, 'Route cannot begin/end in a town' if first.town? || last.town?
           raise GameError, 'Route to out-tokened off-board hex not allowed' if out_tokened_hex?(first.hex, corp) ||
                                                                                out_tokened_hex?(last.hex, corp)
-
-          if (metropolis_name, rhine_side = illegal_double_visit_yellow_rhine_metropolis?(visits))
-            raise GameError, "A route cannot visit #{metropolis_name} side of Rhine Metropolis #{rhine_side} twice"
-          end
 
           if visits.count { |v| EASTERN_RUHR_HEXES.include?(v.hex.name) } > 1
             raise GameError, 'A route cannot both begin and end at Eastern Ruhr off-board hexes'
@@ -647,19 +702,40 @@ module Engine
             raise GameError, 'A route cannot both begin and end at the Basel and Frankfurt off-board hexes'
           end
 
-          return super unless route.train.name == '8'
-
-          if !rge_terminus?(visits.first) && !rge_terminus?(visits.last)
-            raise GameError, 'Route for 8 trains must begin/end in an RGE hex'
+          if route.train.name == '8'
+            if !rge_terminus?(visits.first) && !rge_terminus?(visits.last)
+              raise GameError, 'Route for 8 trains must begin and/or end in an RGE hex'
+            end
+            if visits.find { |v| !RGE_HEXES.include?(v.hex.name) && v.hex.tile.color == :red }
+              raise GameError, 'Route for 8 trains cannot include any off-board hexes besides the RGE ones'
+            end
           end
 
-          return super unless visits.find { |v| !RGE_HEXES.include?(v.hex.name) && v.hex.tile.color == :red }
+          metropolis_visits = rhine_metropolis_visits(visits)
+          return super if metropolis_visits.empty?
 
-          raise GameError, 'Route for 8 trains cannot include any off-board hexes besides the RGE ones'
+          if illegal_revisit_of_rhine_metropolis_hex?(metropolis_visits)
+            raise GameError, 'Must use Trajekt for a revisiting route'
+          end
+
+          trajekts = trajekts_used(metropolis_visits)
+          return super if trajekts.empty?
+
+          # Create a clone so that we can set visit cost to zero for any Trajekts used
+          updated_visits = visits.clone
+          trajekts.each do |trajekt|
+            idx = trajekt[:index]
+            updated_visits[idx] = VisitedWithoutCost.new(visits[idx])
+          end
+
+          super(route, updated_visits)
         end
 
-        def revenue_for(route, stops)
-          revenue = super
+        def revenue_for(route, _stops)
+          # # Need to use visited_stops as the supplied stops might have some visited stops removed due to trajekt usage
+          stops = route.visited_stops
+
+          revenue = super(route, stops)
           revenue_info(route, stops).each { |b| revenue += b[:revenue] }
 
           revenue
@@ -667,8 +743,18 @@ module Engine
 
         def revenue_str(route)
           stops = route.stops
+
+          count = {}
+          route_hexes = route.hexes.map do |h|
+            # Auto-routing seems to give tripple hex in case of trajekt, so skip third
+            previous = count[h&.name] || 0
+            new_count = previous + 1
+            count[h&.name] = new_count
+            new_count > 2 ? nil : h
+          end.compact
+
           stop_hexes = stops.map(&:hex)
-          str = route.hexes.map do |h|
+          str = route_hexes.map do |h|
             stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
           end.join('-')
 
@@ -677,8 +763,13 @@ module Engine
           str
         end
 
+        def route_distance(route)
+          metropolis_visits = rhine_metropolis_visits(route.visited_stops)
+          super - trajekts_used(metropolis_visits).size
+        end
+
         def route_distance_str(route)
-          towns = route.visited_stops.count(&:town?)
+          towns = route.stops.count(&:town?)
           cities = route_distance(route) - towns
           return towns.zero? ? cities.to_s : "#{cities}+#{towns}" unless route.train.name == '8'
 
@@ -686,10 +777,13 @@ module Engine
         end
 
         def revenue_info(route, stops)
+          # # Need to use visited_stops as the supplied stops might have some visited stops removed due to trajekt usage
+          # stops = route.visited_stops
+
           [montan_bonus(route, stops),
            eastern_ruhr_area_bonus(stops),
            iron_rhine_bonus(stops),
-           trajekt_usage_penalty(route, stops),
+           trajekt_usage_penalty(route),
            rheingold_express_bonus(route, stops),
            ratingen_bonus(route, stops)]
         end
@@ -753,7 +847,49 @@ module Engine
           super - player.companies.sum(&:value)
         end
 
+        def reset_all_token_blocking
+          @corporations.each { |c| c.tokens.each { |t| t.type = :normal } }
+        end
+
+        def update_token_blocking_in_rhine_metropolies(entity)
+          reset_all_token_blocking
+          [duisburg_hex, dusseldorf_hex, cologne_hex].each do |hex|
+            next unless hex.tile.color == :green
+
+            tokens = get_all_tokens_in_hex(hex)
+            if tokens.size < 3
+              # If not fully tokened, make all tokens passable
+              type = :neutral
+            else
+              # If current operator has a token, make all passable in hex
+              entity_tokens = tokens.count { |t| t.corporation == entity }
+              type = entity_tokens.positive? ? :neutral : :normal
+            end
+
+            tokens.each { |t| t.type = type }
+          end
+        end
+
+        def get_token(entity, token)
+          return token unless token.nil?
+
+          # Due to changing the token type, this can cause problems when doing undo.
+          # As a fall back assume first available token of type normal/neutral is OK
+          token_owner = entity.company? ? entity.owner : entity
+          token_owner.find_token_by_type(:normal) || token_owner.find_token_by_type(:neutral)
+        end
+
         private
+
+        def get_all_tokens_in_hex(hex)
+          tokens = []
+          hex.tile.cities.each do |c|
+            c.tokens.each do |t|
+              tokens << t if t
+            end
+          end
+          tokens
+        end
 
         def variable_coal_mine
           case @variable_placement
@@ -792,47 +928,6 @@ module Engine
           city_number = 0 if hex.cities.one?
           hex.cities[city_number].place_token(corporation, corporation.next_token, free: true)
           @log << "#{corporation.name} places a token on #{hex_name}" unless silent
-        end
-
-        def illegal_double_visit_yellow_rhine_metropolis?(visits)
-          # For yellow tiles in the three Rhine Metropolis hexes, the hexes are divided into
-          # a West and an East part, where one of the sides has two cities while the other
-          # has one. It is not allowed to have a route that include both the cities on one side
-          # but it is allowed to have a route that includes one city from each side of the hex.
-
-          yellow_rhine_metropolis_visits = visits.select do |v|
-            RHINE_METROPOLIS_HEXES.include?(v.hex.name) &&
-                              v.hex.tile.color == :yellow
-          end
-          return unless yellow_rhine_metropolis_visits.size > 1
-
-          yellow_rhine_metropolis_visits.map! { |v| [v.hex.name, visit_on_west_side?(v)] }
-
-          found = nil
-          RHINE_METROPOLIS_HEXES.each do |hex_name|
-            metropolis_visits = yellow_rhine_metropolis_visits.select { |name, _| name == hex_name }
-            next unless metropolis_visits.size > 1
-
-            west, east = metropolis_visits.partition { |_, is_west| is_west }
-            found = ['West', "#{metropolis_name(hex_name, true)} (#{hex_name})"] if west.size > 1
-            found = ['East', "#{metropolis_name(hex_name, false)} (#{hex_name})"] if east.size > 1
-          end
-          found
-        end
-
-        def visit_on_west_side?(visit)
-          # To figure out if the city is on the West or East side on the Rhine Metropolis
-          # yellow hex, use the index of the cities on the tile. Index 0 is always West,
-          # and index 2 always East. Index 1 is West on Cologne hex, and East on the other two.
-
-          case visit.hex.tile.cities.index(visit)
-          when 0
-            true
-          when 2
-            false
-          else
-            visit.hex.name == 'I10'
-          end
         end
 
         def get_location_name(hex_name)
@@ -906,42 +1001,33 @@ module Engine
           bonus
         end
 
-        def trajekt_usage_penalty(route, _stops)
-          # For any green Rhine Metropolis hex, we need to find out if the route
-          # passes from East to West (or reverse), as that means the ferry
-          # (the trajekt) has been used. By using the route information, and
-          # check for which edges are used, we can figure out if such an East-West
-          # or West-East passge has occured in these hexes.
+        def trajekt_usage_penalty(route)
+          metropolis_visits = rhine_metropolis_visits(route.visited_stops)
 
+          # For any green Rhine Metropolis hex, we need to check if ferry is used
           bonus = { revenue: 0 }
-          trajekts_used = 0
+          trajekts_count = trajekts_used(metropolis_visits).size
+          return bonus unless trajekts_count.positive?
 
-          hexes_with_edge_visited = get_hexes_with_edge_visited(route)
-          [duisburg_hex, dusseldorf_hex, cologne_hex].each do |metropolis_hex|
-            next unless metropolis_hex.tile.color == :green
-
-            used_city = hexes_with_edge_visited.select { |h, _| h == metropolis_hex.name }
-            next unless used_city.size > 1
-
-            west, east = used_city.partition { |_, edge| edge < 3 }
-            next if west.empty? || east.empty?
-
-            trajekts = west.size
-            trajekts = east.size if east.size < west.size
-            trajekts_used += trajekts
-          end
-
-          return bonus unless trajekts_used.positive?
-
-          bonus[:revenue] = -10 * trajekts_used
-          bonus[:description] = "#{trajekts_used} trajekt#{trajekts_used > 1 ? 's' : ''}"
+          bonus[:revenue] = -50 * trajekts_count
+          bonus[:description] = "#{trajekts_count} trajekt#{trajekts_count > 1 ? 's' : ''}"
           bonus
         end
 
-        def get_hexes_with_edge_visited(route)
-          # Get a list of all uniq exists where each element is in the form [hex name, edge number]
+        def trajekts_used(metropolis_visits)
+          green_visits = metropolis_visits.select { |_k, v| v.first[:color] == :green && v.size > 1 }
+          return [] if green_visits.empty?
 
-          route.chains.flat_map { |c| c[:paths] }.flat_map { |p| [p.hex.name].product(p.exits) }.uniq
+          trajekts = []
+          green_visits.each do |_hex_name, visits|
+            visits.each_cons(2) do |v|
+              v1 = v.first
+              v2 = v.last
+              trajekts << v2 if v1[:index] + 1 == v2[:index] && v1[:loc] != v2[:loc]
+            end
+          end
+
+          trajekts
         end
 
         def rheingold_express_bonus(route, stops)
@@ -991,10 +1077,6 @@ module Engine
                .map { |s| s.hex.name }
                .uniq
                .size
-        end
-
-        def trajekts_used?(hex_name, route)
-          route.chains.any? { |c| western_edge_used?(hex_name, c) && eastern_edge_used?(hex_name, c) }
         end
 
         def rge_terminus?(visited_node)

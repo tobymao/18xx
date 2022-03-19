@@ -237,7 +237,7 @@ module Engine
               {
                 type: 'teleport',
                 owner_type: 'player',
-                tiles: %w[921 922 923 924 925 926],
+                tiles: %w[921X 922X 923X 924X 925X 926X],
                 hexes: %w[D9 F9 I10],
                 count: 1,
                 when: %w[owning_player_or_turn],
