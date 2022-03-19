@@ -6,6 +6,7 @@ require 'view/link'
 require 'view/share_calculation'
 require 'view/game/bank'
 require 'view/game/stock_market'
+require 'view/game/tranches'
 require 'view/game/actionable'
 
 module View
@@ -76,10 +77,11 @@ module View
       end
 
       def render_extra_cards
-        h('div#extra_cards', { style: { marginBottom: '1rem' } }, [
-          h(Bank, game: @game),
-          h(GameInfo, game: @game, layout: 'upcoming_trains'),
-        ].compact)
+        children = []
+        children << h(Bank, game: @game)
+        children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
+        children << h(GameInfo, game: @game, layout: 'upcoming_trains')
+        h('div#extra_cards', { style: { marginBottom: '1rem' } }, children.compact)
       end
 
       def or_history(corporations)

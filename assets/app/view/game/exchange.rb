@@ -41,6 +41,9 @@ module View
 
           pool_share = @game.share_pool.shares_by_corporation[corporation]&.first
           children << render_exchange(pool_share, 'Market') if ability.from.include?(:market)
+
+          reserved_share = corporation.reserved_shares&.first
+          children << render_exchange(reserved_share, 'Reserved') if ability.from.include?(:reserved)
         end
 
         h(:div, [

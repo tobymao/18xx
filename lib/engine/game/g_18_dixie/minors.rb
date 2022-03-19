@@ -4,6 +4,19 @@ module Engine
   module Game
     module G18Dixie
       module Minors
+        M1_SYM = ' 1'
+        M2_SYM = ' 2'
+        M3_SYM = ' 3'
+        M4_SYM = ' 4'
+        M5_SYM = ' 5'
+        M6_SYM = ' 6'
+        M7_SYM = ' 7'
+        M8_SYM = ' 8'
+        M9_SYM = ' 9'
+        M10_SYM = '10'
+        M11_SYM = '11'
+        M12_SYM = '12'
+        M13_SYM = '13'
         MINORS = [
           {
             sym: ' 1',
@@ -11,12 +24,13 @@ module Engine
             logo: '18_mag/1',
             simple_logo: '18_mag/1.alt',
             tokens: [0],
+            shares: [100],
             name: 'Georgia & Florida Railroad',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR3',
+                description: 'Closes at the end of OR2.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of SR, which gets the minor\'s token and treasury',
               },
             ],
@@ -28,12 +42,13 @@ module Engine
             logo: '18_mag/2',
             simple_logo: '18_mag/2.alt',
             tokens: [0],
+            shares: [100],
             name: 'Tennessee Central Railway',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR3',
+                description: 'Closes at the end of OR2.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of L&N or SR, which gets the minor\'s token and treasury',
               },
             ],
@@ -45,12 +60,13 @@ module Engine
             logo: '18_mag/3',
             simple_logo: '18_mag/3.alt',
             tokens: [0],
+            shares: [100],
             name: 'Missisippi Central Railroad',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR3',
+                description: 'Closes at the end of OR2.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of Frisco, which gets the minor\'s token and treasury',
               },
             ],
@@ -62,12 +78,13 @@ module Engine
             logo: '18_mag/4',
             simple_logo: '18_mag/4.alt',
             tokens: [0],
+            shares: [100],
             name: 'Alabama & Tenessee River Railroad',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR3',
+                description: 'Closes at the end of OR2.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of WRA, which gets the minor\'s token and treasury',
               },
             ],
@@ -79,12 +96,13 @@ module Engine
             logo: '18_mag/5',
             simple_logo: '18_mag/5.alt',
             tokens: [0],
+            shares: [100],
             name: 'Tallahassee Railroad',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR4',
+                description: 'Closes at the end of OR2.2* ▼',
                 desc_detail: 'Is exchanged for a preferred share of SAL, which gets the minor\'s token and treasury',
               },
             ],
@@ -96,12 +114,13 @@ module Engine
             logo: '18_mag/6',
             simple_logo: '18_mag/6.alt',
             tokens: [0],
+            shares: [100],
             name: 'Atlanta, Birmingham & Coast Railroad',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR4',
+                description: 'Closes at the end of OR2.2* ▼',
                 desc_detail: 'Is exchanged for a preferred share of ACL, which gets the minor\'s token and treasury',
               },
             ],
@@ -113,12 +132,13 @@ module Engine
             logo: '18_mag/7',
             simple_logo: '18_mag/7.alt',
             tokens: [0],
+            shares: [100],
             name: 'Western & Atlantic Railroad',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR4',
+                description: 'Closes at the end of OR2.2* ▼',
                 desc_detail: 'Is exchanged for a preferred share of L&B, which gets the minor\'s token and treasury',
               },
             ],
@@ -130,12 +150,13 @@ module Engine
             logo: '18_mag/8',
             simple_logo: '18_mag/8.alt',
             tokens: [0],
+            shares: [100],
             name: 'Georgia Railroad',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR4',
+                description: 'Closes at the end of OR2.2* ▼',
                 desc_detail: 'Is exchanged for a preferred share of CoG, which gets the minor\'s token and treasury',
               },
             ],
@@ -147,12 +168,13 @@ module Engine
             logo: '18_mag/9',
             simple_logo: '18_mag/9.alt',
             tokens: [0],
+            shares: [100],
             name: 'Nashville, Chattanooga & St. Louis Railway',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of L&N, which gets the minor\'s token and treasury',
               },
               {
@@ -168,12 +190,13 @@ module Engine
             logo: '18_mag/10',
             simple_logo: '18_mag/10.alt',
             tokens: [0],
+            shares: [100],
             name: 'Gulf, Mobile & Ohio Railroad',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of IC, which gets the minor\'s token and treasury',
               },
             ],
@@ -185,12 +208,13 @@ module Engine
             logo: '18_mag/11',
             simple_logo: '18_mag/11.alt',
             tokens: [0],
+            shares: [100],
             name: 'Mobile & Ohio Railroad',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of IC, which gets the minor\'s token and treasury',
               },
             ],
@@ -202,12 +226,13 @@ module Engine
             logo: '18_mag/12',
             simple_logo: '18_mag/12.alt',
             tokens: [0],
+            shares: [100],
             name: 'Memphis & Charleston RR',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for a preferred share of Cog, Frisco, or WRA, '\
                              'which gets the minor\'s token and treasury',
               },
@@ -224,12 +249,13 @@ module Engine
             logo: '18_mag/13',
             simple_logo: '18_mag/13.alt',
             tokens: [0],
+            shares: [100],
             name: 'New Orleans and Texas RR',
             color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: 'Closes at the end of OR5',
+                description: 'Closes at the end of OR3.1* ▼',
                 desc_detail: 'Is exchanged for any any remaining preferred share, '\
                              'the corresponding corporation gets the minor\'s token and treasury',
               },

@@ -227,6 +227,13 @@ module View
                   entity = @selected_company
                 end
               end
+            elsif @step.respond_to?(:ability_timing)
+              # Handle a corporation having train discount ability
+              @game.abilities(@corporation, :train_discount, time: @step.ability_timing) do |ability|
+                next if ability.count
+
+                price = ability.discounted_price(train, price) if ability.trains.include?(train.name)
+              end
             end
 
             price = @game.discard_discount(train, price)

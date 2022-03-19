@@ -197,7 +197,7 @@ module Engine
             'corporation-extra' => [],
             'tier2-corps' => 6,
             'companies' => %w[LB AF GN SD LM LS TV MC CH],
-            'required_bids' => 2,
+            'required_bids' => 1,
             'map' => 'Standard',
             'gray-tiles' => true,
             'compass-hexes' =>

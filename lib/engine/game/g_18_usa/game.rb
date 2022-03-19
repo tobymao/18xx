@@ -260,15 +260,17 @@ module Engine
             name: 'Neutral',
             logo: 'minus_ten',
             simple_logo: 'minus_ten',
-            tokens: [0, 0, 0, 0, 0, 0],
+            tokens: [],
           )
           @neutral.owner = @bank
 
           # Add neutral tokens to both the tile display and the actual tile
           COMPANY_TOWN_TILES.each do |ct_name|
             [@tiles, @all_tiles].each do |tile_set|
+              token = Token.new(@neutral, price: 0, type: :neutral)
+              @neutral.tokens << token
               tile = tile_set.find { |t| t.name == ct_name }
-              tile.cities.first.place_token(@neutral, @neutral.tokens.reject(&:used).first, check_tokenable: false)
+              tile.cities.first.place_token(@neutral, token, check_tokenable: false)
             end
           end
         end
@@ -736,9 +738,11 @@ module Engine
             raise GameError, 'Cannot pass through Rural Junction tiles more than once'
           end
 
-          if route.routes.count { |r| !(r.stops.map { |s| s.hex.id } & MEXICO_HEXES).empty? } > 2
-            raise GameError, 'No more than two trains can run to Mexico'
+          mexico_routes = route.routes.count do |r|
+            r_stops = r == route ? stops : r.stops
+            !(r_stops.map { |s| s.hex.id } & MEXICO_HEXES).empty?
           end
+          raise GameError, 'No more than two trains can run to Mexico' if mexico_routes > 2
 
           stop_hexes = stops.map(&:hex)
           revenue = super
@@ -775,20 +779,29 @@ module Engine
               revenue += GNR_HALF_BONUS
             end
           end
-          if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade[:id] == '/' }
-            stop_skipped = skipped_stop(route, stops)
-            if stop_skipped
-              revenue -= stop_skipped.route_revenue(@phase, route.train)
-              # remove the pullman bonus if a pullman is used on this train
-              revenue -= 20 if pullman_assigned
-            end
-          end
           revenue
         end
 
+        def revenue_str(route)
+          stop_hexes = route.stops.map(&:hex)
+          route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
+        end
+
+        def compute_stops(route)
+          stops = super
+          if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade[:id] == '/' }
+            skipped = skipped_stop(route, stops)
+            stops.reject! { |stop| stop == skipped } if skipped
+          end
+          stops
+        end
+
         def skipped_stop(route, stops)
+          return nil if stops.size <= 2
+
           # Blocked stop is highest priority as it may stop route from being legal
-          t = tokened_out_stop(route)
+          corporation = route.train.owner
+          t = tokened_out_stop(corporation, stops)
           return t if t
 
           counted_stops = stops.select { |stop| stop&.visit_cost&.positive? }
@@ -797,14 +810,12 @@ module Engine
           return nil if counted_stops.size < route.train.distance
 
           # Count how many of our tokens are on the route; if only one we cannot skip that one.
-          our_tokened_stops = counted_stops.select { |stop| stop&.tokened_by?(route.train.owner) }
+          our_tokened_stops = counted_stops.select { |stop| stop.tokened_by?(route.train.owner) }
 
-          # Skip the worst stop if enough tokened stops
-          return counted_stops.min_by { |stop| stop.route_revenue(@phase, route.train) } if our_tokened_stops.size > 1
-
-          # Otherwise skip the worst untokened stop
-          untokened_stops = counted_stops.reject { |stop| stop&.tokened_by(route.train.owner) }
-          untokened_stops.min_by { |stop| stop.route_revenue(@phase, route.train) }
+          # Find the lowest revenue stop that can be skipped
+          counted_stops = counted_stops[1..-2]
+          counted_stops.reject! { |stop| stop == our_tokened_stops.first } if our_tokened_stops.one?
+          counted_stops.min_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
         end
 
         def check_distance(route, visits)
@@ -832,12 +843,8 @@ module Engine
           super(route, nil)
         end
 
-        def tokened_out_stop(route)
-          visits = route.visited_stops
-          return false unless visits.size > 2
-
-          corporation = route.corporation
-          visits[1..-2].find { |node| node.city? && node.blocks?(corporation) }
+        def tokened_out_stop(corporation, stops)
+          stops[1..-2].find { |node| node.city? && node.blocks?(corporation) }
         end
 
         def pullmans_available?

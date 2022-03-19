@@ -40,7 +40,7 @@ module View
           new_share = entity.share_price
 
           direction =
-            if option[:share_direction]
+            if new_share && option[:share_direction]
               moves = Array(option[:share_times]).zip(Array(option[:share_direction]))
 
               moves.map do |times, dir|
@@ -54,7 +54,7 @@ module View
 
           if entity.loans.any? && !@game.can_pay_interest?(entity, corp_income) && @game.cannot_pay_interest_str
             text += " #{@game.cannot_pay_interest_str}"
-          elsif new_share.acquisition?
+          elsif new_share&.acquisition?
             text += ' (Acquisition)'
           end
 
@@ -169,10 +169,7 @@ module View
         header, *chart = @step.chart
 
         rows = chart.map do |r|
-          h(:tr, [
-            h('td.padded_number', r[0]),
-            h(:td, r[1]),
-          ])
+          h(:tr, r.map { |ri| h('td.padded_number', ri) })
         end
 
         table_props = {
@@ -183,10 +180,7 @@ module View
 
         h(:table, table_props, [
           h(:thead, [
-            h(:tr, [
-              h(:th, header[0]),
-              h(:th, header[1]),
-            ]),
+            h(:tr, header.map { |hi| h(:th, hi) }),
           ]),
           h(:tbody, rows),
         ])

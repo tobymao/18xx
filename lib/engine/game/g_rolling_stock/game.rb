@@ -11,6 +11,8 @@ module Engine
         include_meta(GRollingStock::Meta)
         include Entities
 
+        attr_reader :foreign_investor
+
         register_colors(black: '#16190e',
                         blue: '#0189d1',
                         brown: '#7b352a',
@@ -79,6 +81,7 @@ module Engine
         }.freeze
 
         TILES = [].freeze
+        LAYOUT = :none
         CERT_LIMIT = 99
 
         SELL_MOVEMENT = :left_share_pres
@@ -87,6 +90,7 @@ module Engine
         SOLD_OUT_INCREASE = false
         EBUY_OTHER_VALUE = false
         PRESIDENT_SALES_TO_MARKET = true
+        CAPITALIZATION = :incremental
 
         PHASES = [
           { name: 'red', train_limit: 1, tiles: [:yellow], operating_rounds: 1 },
@@ -138,12 +142,28 @@ module Engine
           @bank.spend(FOREIGN_START_CASH, @foreign_investor)
         end
 
+        # FIXME: Overseas Trading
+        def can_acquire_any_company?(corporation)
+          @companies.any? { |c| c.owner && c.owner != corporation && corporation.cash >= c.min_price }
+        end
+
+        # any player with a company, or any player owning a corporation
+        #
+        def acquisition_players
+          owners = @players.select { |p| p != @foreign_investor && !p.companies.empty? }
+          @corporations.each { |c| owners << c.owner if c.owner && !c.receivership? }
+          owners.uniq
+        end
+
+        def closing_players
+          acquisition_players
+        end
+
         def init_round
           new_investment_round
         end
 
         def new_investment_round
-          @turn += 1
           @log << "-- Turn #{@turn}, Phase 1 - Investment --"
           @round_counter += 1
           investment_round
@@ -155,10 +175,115 @@ module Engine
           ])
         end
 
+        # wrap-up
+        def phase2
+          @log << "-- Turn #{@turn}, Phase 2 - Wrap-Up --"
+          reorder_by_cash
+
+          # foreign_investor buys
+          while (cheapest = (@offering - @on_deck).min_by(&:value)) && (@foreign_investor.cash >= cheapest.value)
+            @log << "#{@foreign_investor.name} buys #{cheapest.sym} for #{format_currency(cheapest.value)}"
+            cheapest.owner = @foreign_investor
+            @foreign_investor.companies << cheapest
+            @foreign_investor.spend(cheapest.value, @bank)
+
+            update_offering(cheapest)
+          end
+
+          @on_deck.clear
+        end
+
+        def new_acquisition_round
+          @log << "-- Turn #{@turn}, Phase 3 - Acquisition --"
+          @round_counter += 1
+          if @corporations.any? { |corp| can_acquire_any_company?(corp) }
+            acquisition_round
+          else
+            @log << 'No corporations can acquire a company'
+            new_closing_round
+          end
+        end
+
+        def acquisition_round
+          Round::Acquisition.new(self, [
+            Step::ReceiverProposeAndPurchase,
+            Step::ProposeAndPurchase,
+          ])
+        end
+
+        def new_closing_round
+          @log << "-- Turn #{@turn}, Phase 4 - Closing --"
+          @round_counter += 1
+          auto_close_companies
+          if @players.any? { |p| !p.companies.empty? } || @corporations.any? { |corp| corp.companies.size > 1 }
+            closing_round
+          else
+            phase5
+            new_dividends_round
+          end
+        end
+
+        def closing_round
+          Round::Closing.new(self, [
+            Step::CloseCompanies,
+          ])
+        end
+
+        def auto_close_companies
+          @foreign_investor.companies.each do |company|
+            if calculate_income(company).negative?
+              close_company(company)
+              @log << "#{company.sym} (#{company.owner.name}) has negative income"
+            end
+          end
+        end
+
+        # income
+        def phase5
+          @log << "-- Turn #{@turn}, Phase 5 - Income --"
+          (@players + [@foreign_investor] + @corporations).each do |entity|
+            next if entity.corporation? && !entity.ipoed
+
+            income = calculate_total_income(entity)
+
+            if income.positive?
+              @log << "#{entity.name} receives #{format_currency(income)}"
+              @bank.spend(income, entity)
+            elsif income.negative?
+              @log << "#{entity.name} pays #{format_currency(income)} due to negative income"
+              entity.spend(-income, @bank)
+            end
+          end
+        end
+
+        def new_dividends_round
+          @log << "-- Turn #{@turn}, Phase 6 - Dividends --"
+          @round_counter += 1
+          if @corporations.any?(&:floated?)
+            dividends_round
+          else
+            phase7
+            new_ipo_round # FIXME: new_issue_round
+          end
+        end
+
+        def dividends_round
+          Round::Dividends.new(self, [
+            Step::Dividend,
+          ])
+        end
+
+        # end card
+        def phase7
+          @log << "-- Turn #{@turn}, Phase 7 - End Card --"
+        end
+
         def new_ipo_round
           @log << "-- Turn #{@turn}, Phase 9 - IPO --"
+          @round_counter += 1
           if ipo_companies.empty?
             @log << 'No companies eligible to convert'
+            @turn += 1
             new_investment_round
           else
             ipo_round
@@ -178,51 +303,73 @@ module Engine
           @log << "Player order: #{@players.map(&:name).join(', ')}"
         end
 
-        # wrap-up
-        def phase2
-          @log << "-- Turn #{@turn}, Phase 2 - Wrap-Up --"
-          reorder_by_cash
-          # FIXME: implement foriegn investor purchase
-          @on_deck.clear
-        end
-
-        # income
-        def phase5
-          @log << "-- Turn #{@turn}, Phase 5 - Income --"
-          (@players + [@foreign_investor] + @corporations).each do |entity|
-            next if entity.corporation? && !entity.ipoed
-
-            income = entity.companies.sum(&:revenue)
-            income += calculate_synergies(entity) if entity.corporation?
-            income += FOREIGN_EXTRA_INCOME if entity == @foreign_investor
-            next unless income.positive?
-
-            @log << "#{entity.name} receives #{format_currency(income)}"
-            @bank.spend(income, entity)
-          end
-        end
-
-        # end card
-        def phase7
-          @log << "-- Turn #{@turn}, Phase 7 - End Card --"
-        end
-
         def next_round!
           @round =
             case @round
             when Round::Investment
               phase2
-              phase5 # FIXME: move to after closing_round
-              phase7 # FIXME: move to after dividends_round
-              new_ipo_round # FIXME: new_acquistion_round
+              new_acquisition_round
+            when Round::Acquisition
+              new_closing_round
+            when Round::Closing
+              phase5
+              new_dividends_round
+            when Round::Dividends
+              phase7
+              new_ipo_round # FIXME: new_issue_round
             when Round::IPO
+              @turn += 1
               new_investment_round
             end
         end
 
-        # FIXME
+        # FIXME: Prussian Railway
+        # FIXME: Doppler AG
+        # FIXME: Vintage Machinery
+        def calculate_total_income(entity)
+          income = entity.companies.sum { |c| calculate_income(c) }
+          income += calculate_synergies(entity) if entity.corporation?
+          income += FOREIGN_EXTRA_INCOME if entity == @foreign_investor
+          income
+        end
+
+        def calculate_income(company)
+          company.revenue - operating_cost(company)
+        end
+
+        # FIXME: TBD
+        def operating_cost(_company)
+          0
+        end
+
+        # FIXME: TBD
+        # FIXME: Synergistic
         def calculate_synergies(_corporation)
           0
+        end
+
+        def num_issued(corporation)
+          return 0 unless corporation.floated?
+
+          corporation.num_player_shares + corporation.num_market_shares
+        end
+
+        def max_dividend_per_share(corporation)
+          return 0 unless corporation.floated?
+
+          [(corporation.share_price.price / 3), (corporation.cash / num_issued(corporation))].min.to_i
+        end
+
+        # FIXME: TBD
+        # FIXME: Stars, Inc.
+        def corporation_stars(corporation, cash)
+          (cash / 10).to_i + corporation.companies.sum { |c| @company_stars[c.sym] }
+        end
+
+        def target_stars(corporation)
+          return 0 unless corporation.floated?
+
+          (num_issued(corporation) * corporation.share_price.price / 10.0).round
         end
 
         def issuable_shares(entity)
@@ -246,6 +393,7 @@ module Engine
           next_to_offer = @company_deck.shift
           @offering << next_to_offer
           @on_deck << next_to_offer
+          @log << "#{next_to_offer.sym} revealed from deck"
         end
 
         def share_prices
@@ -273,11 +421,12 @@ module Engine
         end
 
         def next_price_to_right(price)
-          while price.price != 75 && !price.corporations.empty?
-            r, c = price.coordinates
-            price = @stock_market.share_price(r, c + 1)
+          new_price = price
+          while new_price.price != 75 && (!new_price.corporations.empty? || new_price == price)
+            r, c = new_price.coordinates
+            new_price = @stock_market.share_price(r, c + 1)
           end
-          price
+          new_price
         end
 
         def move_to_left(corporation)
@@ -289,11 +438,88 @@ module Engine
         end
 
         def next_price_to_left(price)
-          while price.price != 0 && !price.corporations.empty?
-            r, c = price.coordinates
-            price = @stock_market.share_price(r, c - 1)
+          new_price = price
+          while new_price.price != 0 && (!new_price.corporations.empty? || new_price == price)
+            r, c = new_price.coordinates
+            new_price = @stock_market.share_price(r, c - 1)
           end
-          price
+          new_price
+        end
+
+        def move_to_price(corporation, new_price)
+          current_price = corporation.share_price
+          return if current_price.price == new_price.price
+
+          r, c = new_price.coordinates
+          @stock_market.move(corporation, r, c)
+          dir = new_price.price > current_price.price ? 'increases' : 'decreases'
+          @log << "#{corporation.name} share price #{dir} to #{format_currency(new_price.price)}"
+          close_corporation(corporation) if new_price.price.zero?
+        end
+
+        def star_diff_price(corporation, diff)
+          return unless corporation.floated?
+
+          if diff.zero?
+            corporation.share_price
+          elsif diff == 1
+            next_price_to_right(corporation.share_price)
+          elsif diff > 1
+            next_price_to_right(next_price_to_right(corporation.share_price))
+          elsif diff == -1
+            next_price_to_left(corporation.share_price)
+          else
+            next_price_to_left(next_price_to_left(corporation.share_price))
+          end
+        end
+
+        # FIXME: Junkyard Scrappers
+        def close_company(company)
+          owner = company.owner
+          owner.companies.delete(company)
+          company.owner = nil
+          @companies.delete(company)
+          @log << "#{company.sym} (#{owner.name}) closes"
+        end
+
+        def pass_entity(user)
+          return super unless @round.unordered?
+          return @round.entities.find { |e| !e.passed? } unless user
+
+          player_by_id(user['id']) || super
+        end
+
+        def company_header(company)
+          company.sym
+        end
+
+        def player_entities
+          @players + [@foreign_investor]
+        end
+
+        def dividend_chart(corporation)
+          rows = (0..max_dividend_per_share(corporation)).map do |div|
+            cash_left = corporation.cash - (div * num_issued(corporation))
+            stars = corporation_stars(corporation, cash_left)
+            diff = stars - target_stars(corporation)
+            arrows = if diff == -1
+                       '⬅'
+                     elsif diff < -1
+                       '⬅⬅'
+                     elsif diff == 1
+                       '➡'
+                     elsif diff > 1
+                       '➡➡'
+                     else
+                       ''
+                     end
+            new_price = "#{arrows} #{format_currency(star_diff_price(corporation, diff).price)}"
+            [format_currency(div), format_currency(cash_left), "#{stars}★", new_price]
+          end
+          [
+            ['Div/Share', 'New Cash', 'Stars', 'New Price'],
+            *rows,
+          ]
         end
       end
     end

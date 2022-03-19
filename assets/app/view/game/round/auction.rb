@@ -99,7 +99,7 @@ module View
 
         def render_companies
           return [] if hidden? && !@step.visible?
-          return [] unless @current_actions.include?('bid')
+          return [] unless @current_actions.include?('bid') || (@step.respond_to?(:show_companies) && @step.show_companies)
 
           @selected_company = @step.auctioning if @step.auctioning
 
@@ -137,6 +137,16 @@ module View
         end
 
         def render_company_actions(company)
+          if @step.respond_to?(:may_offer?) && @step.may_offer?(company)
+            return [h(:button, {
+                        on: {
+                          click: lambda {
+                            offer
+                          },
+                        },
+                      }, 'Offer')]
+          end
+
           return [] if @step.auctioneer? && @step.max_bid(@current_entity, company) < @step.min_bid(company)
 
           buy_str = @step.respond_to?(:buy_str) ? @step.buy_str(company) : 'Buy'
@@ -381,6 +391,15 @@ module View
 
         def assign(company)
           process_action(Engine::Action::Assign.new(@current_entity, target: company))
+        end
+
+        def offer
+          hide!
+          process_action(Engine::Action::Offer.new(
+            @current_entity,
+            company: @selected_company
+          ))
+          store(:selected_company, @selected_company, skip: true)
         end
 
         def choose

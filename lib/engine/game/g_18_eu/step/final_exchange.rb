@@ -101,7 +101,7 @@ module Engine
             bundle.corporation.ipoed
           end
 
-          def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
+          def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil)
             raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" unless exchange
 
             @game.share_pool.buy_shares(entity,

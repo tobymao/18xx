@@ -90,6 +90,17 @@ company is bought in by a corporation.
 
 - `hexes`: An array of hex coordinates that are blocked
 
+## blocks_hexes_consent
+
+Designate hexes which are blocked by this ability. Use the `owner_type:
+"player"` to specify that the blocking ends when the company is bought in by a
+corporation. However unlike `blocks_hexes` this doesn't block the ability except
+through a front end confirmation, so players (if they click through) are allowed
+to lay a tile on this hex. This is just like when purchasing a train from
+another player.
+
+- `hexes`: An array of hex coordinates that are blocked
+
 ## blocks_partition
 
 Designate a type of partition which this ability disallows crossing.
@@ -125,7 +136,8 @@ This company may be exchanged for a single share of a specified corporation duri
 that allows exchange.
 
 - `corporations`: An array with corporation names, whose share may be exchanged.
-  Use a simple `"any"` (no array) to allow for any corporation.
+  Use a simple `"any"` (no array) to allow for any corporation. Use a simple
+  `"ipoed"` (no array) to allow from any company that has been ipoed.
 - `from`: Where the share may be take from, either `"ipo"`,
   `"market"`, or an array containing both.
 
@@ -139,6 +151,11 @@ Give a route bonus if at least one of the hexes are included in the route.
 ## no_buy
 
 This company may not be bought in.
+
+## purchase_train
+
+Immediately purchases (for normal amount) the currently available depot train
+for the owning corporation.
 
 ## reservation
 

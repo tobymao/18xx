@@ -117,6 +117,7 @@ module Engine
         timing = @game.check_sale_timing(entity, corporation)
 
         timing &&
+          !(@game.class::TURN_SELL_LIMIT && (bundle.percent + sold_this_turn(corporation)) > @game.class::TURN_SELL_LIMIT) &&
           !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&
           can_sell_order? &&
           @game.share_pool.fit_in_bank?(bundle) &&
@@ -139,6 +140,15 @@ module Engine
         end
       end
 
+      def sold_this_turn(corporation)
+        sell_actions = @round.current_actions.select do |a|
+          a.is_a?(Action::SellShares) and a.bundle.corporation == corporation
+        end
+
+        # Find out how much was sold this turn
+        sell_actions.sum { |a| a.bundle.percent }
+      end
+
       def did_sell?(corporation, entity)
         @round.players_sold[entity][corporation]
       end
@@ -155,7 +165,7 @@ module Engine
 
       def process_buy_shares(action)
         @round.bought_from_ipo = true if action.bundle.owner.corporation?
-        buy_shares(action.entity, action.bundle, swap: action.swap)
+        buy_shares(action.purchase_for || action.entity, action.bundle, swap: action.swap, borrow_from: action.borrow_from)
         track_action(action, action.bundle.corporation)
       end
 

@@ -453,6 +453,7 @@ module Engine
         end
 
         def hex_blocked_by_ability?(entity, ability, hex)
+          return false unless hex.tile.color == :white
           return false if entity&.owner == ability&.owner&.owner
 
           super

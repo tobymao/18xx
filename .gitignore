@@ -24,6 +24,8 @@
 
 docker-compose.override.yml
 
+.ruby-version
+
 db.backup*
 validate*.json
 .pgpass

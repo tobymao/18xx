@@ -125,10 +125,11 @@ module Engine
               {
                 type: 'base',
                 description: 'Special par/float rules',
-                desc_detail: "When the president's share is acquired (via private No. 6) 3 10% shares are moved "\
-                             "from IPO to the Market. When RhE floats it receives only the value of the president's "\
-                             "share, and the initial value of the 3 shares moved when parring will be paid to RhE's "\
-                             'treasury as soon as there is a track link from Köln to Aachen via Düren.',
+                desc_detail: "When the president's share is acquired (via private No. 6) three 10% shares are moved "\
+                             'from IPO to the Market, and the initial par value of the 3 shares will be paid to '\
+                             "RhE's treasury as soon as there is a track link from Köln to Aachen via Düren. RhE "\
+                             'floats directly, and the starting treasury is the winning bid for private 6. Note! '\
+                             'RhE can only be parred at 70, 75, or 80.',
               },
             ],
             always_market_price: true,

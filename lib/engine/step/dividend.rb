@@ -46,8 +46,6 @@ module Engine
         kind = action.kind.to_sym
         payout = dividend_options(entity)[kind]
 
-        rust_obsolete_trains!(entity)
-
         entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
           routes,
           action,
@@ -56,6 +54,8 @@ module Engine
         )
 
         entity.trains.each { |train| train.operated = true }
+
+        rust_obsolete_trains!(entity)
 
         @round.routes = []
 
@@ -152,6 +152,9 @@ module Engine
 
       def change_share_price(entity, payout)
         return unless payout[:share_direction]
+
+        # For any company without a share price, skip price movement
+        return unless entity.share_price
 
         prev = entity.share_price.price
 

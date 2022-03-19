@@ -244,7 +244,7 @@ module View
 
         def l_center
           {
-            region_weights: CENTER,
+            region_weights: { [9, 14] => 1, [7, 8, 15, 16] => 0.7 },
             x: 0,
             y: -delta_y / 2,
           }

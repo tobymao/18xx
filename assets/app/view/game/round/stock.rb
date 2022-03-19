@@ -9,6 +9,7 @@ require 'view/game/par'
 require 'view/game/players'
 require 'view/game/sell_shares'
 require 'view/game/stock_market'
+require 'view/game/tranches'
 require 'view/game/bid'
 
 module View
@@ -27,6 +28,7 @@ module View
           entity = @step.current_entity
           @current_actions = round.actions_for(entity)
 
+          @selected_corporation ||= @step.selected_corporation if @step.respond_to?(:selected_corporation)
           @auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
           @selected_corporation ||= @auctioning_corporation
           @mergeable_entity = @step.mergeable_entity if @step.respond_to?(:mergeable_entity)
@@ -379,6 +381,7 @@ module View
               marginBottom: '1rem',
             },
           }
+          children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
           children << h(TrainSchedule, game: @game)
           h(:div, props, children)
         end

@@ -83,7 +83,15 @@ module Engine
           def pass_auction(entity)
             entity.pass!
             log_pass(entity)
-            remove_from_auction(entity) unless @bids[@auctioning].none?
+
+            return if @bids[@auctioning].none?
+
+            remove_from_auction(entity)
+          end
+
+          def remove_from_auction(entity)
+            @active_bidders.delete(entity)
+            resolve_bids
           end
 
           def next_entity!
@@ -247,7 +255,7 @@ module Engine
             return unless @active_bidders.one?
             return if @bids[@auctioning].empty?
 
-            winner = @bids[@auctioning].first
+            winner = @bids[@auctioning].max_by(&:price)
             win_bid(winner, target)
             reset_auction(winner, target)
           end

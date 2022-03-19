@@ -152,6 +152,8 @@ module Engine
           setup_company_price_up_to_face
         end
 
+        def after_bid; end
+
         def cert_limit
           (8 * corporations.size / players.size).to_i
         end
