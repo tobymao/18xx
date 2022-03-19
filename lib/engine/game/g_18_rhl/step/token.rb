@@ -13,6 +13,12 @@ module Engine
 
             super
           end
+
+          def place_token(entity, city, token)
+            # Due to changing the token type, this can cause problems when doing undo.
+            # As a fall back assume first available token of type normal/neutral is OK
+            super(entity, city, @game.get_token(entity, token))
+          end
         end
       end
     end
