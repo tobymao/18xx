@@ -270,11 +270,11 @@ module Engine
           # Allow merging of two separate cities into one with two slots
           return to.name == '611' if from.hex.coordinates == 'F92' && from.color == :green
 
-          # KU hexes have default upgrades in all colors but brown so check without label for simplicity
-          if %w[E77 F94].include?(from.hex.name) && from.color != :brown
-            from = from.dup
-            from.labels.clear
-          end
+          super
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          return to.labels.empty? if from.label.to_s == 'KU' && from.color != :brown
 
           super
         end
