@@ -18,7 +18,7 @@ module Engine
       route_limit = opts[:route_limit] || 10_000
 
       connections = {}
-      trains = @game.route_trains(corporation)
+      trains = @game.route_trains(corporation).sort_by(&:price).reverse
 
       graph = @game.graph_for_entity(corporation)
       nodes = graph.connected_nodes(corporation).keys.sort_by do |node|
