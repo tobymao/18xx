@@ -94,6 +94,16 @@ module Engine
           @entities.size > index
       end
 
+      def recalculate_majors_order
+        # Recalculate order only for major companies
+        index = @entity_index + 1
+        return unless index < @entities.size - 1
+
+        # Find the first major corporation after current operating entity.
+        index += @entities[index..-1].find_index { |c| c.type == :major } || 0
+        @entities[index..-1] = @entities[index..-1].sort
+      end
+
       def operating?
         true
       end

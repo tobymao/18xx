@@ -4,7 +4,7 @@ require_relative '../../../round/operating'
 
 module Engine
   module Game
-    module G1822
+    module G18NewEngland
       module Round
         class Operating < Engine::Round::Operating
           def recalculate_order
