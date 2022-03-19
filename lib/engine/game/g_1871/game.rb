@@ -793,7 +793,7 @@ module Engine
           end
 
           branch_shares_left = share_pool.shares_by_corporation[branch].size
-          treasury_shares = corporation.shares_by_corporation[corporation].size
+          treasury_shares = corporation.shares_by_corporation[corporation].count(&:buyable)
 
           # Assign the partial capital to the branch
           @bank.spend(branch.par_price.price * branch_shares_left, branch)
