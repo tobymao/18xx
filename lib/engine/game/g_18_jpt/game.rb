@@ -137,8 +137,6 @@ module Engine
         TOWN_TILE_SUBSIDY = 100
         T_TILE_SUBSIDY = 50
 
-        RESERVED_TILES = %w[J7 J14 J15].freeze
-
         DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
 
         ABILITY_DOUBLE_TILE_LAY = Ability::Base.new(
@@ -269,13 +267,14 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          if from.color == :green
-            return to.name == 'J7' if from.hex.name == 'D96'
-            return to.name == 'J14' if %w[E77 F94].include?(from.hex.name)
-            return to.name == 'J15' if from.hex.name == 'J88'
-          end
+          # Allow merging of two separate cities into one with two slots
+          return to.name == '611' if from.hex.coordinates == 'F92' && from.color == :green
 
-          return false if RESERVED_TILES.include?(to.name)
+          super
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          return to.labels.empty? if from.label.to_s == 'KU' && from.color != :brown
 
           super
         end
