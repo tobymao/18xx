@@ -15,7 +15,7 @@ module Engine
 
         actions = super
         actions << 'bid' if !bought? && can_bid?(entity)
-        actions << 'pass' if actions.any? && !actions.include?('pass')
+        actions << 'pass' if actions.any? && !actions.include?('pass') && !must_sell?(entity)
         actions
       end
 
