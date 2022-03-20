@@ -16,13 +16,13 @@ module View
         @step = @game.round.active_step
         @current_entity = @step.current_entity
 
-        @ipo_shares = @corporation.ipo_shares.group_by(&:percent).values
+        @ipo_shares = @corporation.ipo_shares.select(&:buyable).group_by(&:percent).values
           .map(&:first).sort_by(&:percent).reverse
 
         @treasury_shares = if @corporation.ipo_is_treasury?
                              []
                            else
-                             @corporation.treasury_shares.group_by(&:percent).values
+                             @corporation.treasury_shares.select(&:buyable).group_by(&:percent).values
                                .map(&:first).sort_by(&:percent).reverse
                            end
 
@@ -138,15 +138,16 @@ module View
         targets = @step.can_buy_for(@current_entity)
 
         targets.flat_map do |target|
-          pool_shares = @pool_shares.map do |share|
-            next unless @step.can_buy?(target, share.to_bundle, borrow_from: @current_entity)
+          ipo_shares = @ipo_shares.map do |share|
+            next unless @step.can_buy?(@current_entity, share.to_bundle, borrow_from: @current_entity)
 
             h(Button::BuyShare,
               share: share,
               entity: @current_entity,
               purchase_for: target,
               borrow_from: @current_entity,
-              percentages_available: @pool_shares.size)
+              percentages_available: @ipo_shares.size,
+              source: @game.ipo_name(share.corporation))
           end
 
           treasury_shares = @treasury_shares.map do |share|
@@ -161,19 +162,18 @@ module View
               source: 'Treasury')
           end
 
-          ipo_shares = @ipo_shares.map do |share|
-            next unless @step.can_buy?(@current_entity, share.to_bundle, borrow_from: @current_entity)
+          pool_shares = @pool_shares.map do |share|
+            next unless @step.can_buy?(target, share.to_bundle, borrow_from: @current_entity)
 
             h(Button::BuyShare,
               share: share,
               entity: @current_entity,
               purchase_for: target,
               borrow_from: @current_entity,
-              percentages_available: @ipo_shares.size,
-              source: @game.ipo_name(share.corporation))
+              percentages_available: @pool_shares.size)
           end
 
-          pool_shares + treasury_shares + ipo_shares
+          ipo_shares + treasury_shares + pool_shares
         end
       end
 

@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
-require_relative 'step/dividend'
-require_relative 'step/buy_train'
-require_relative '../base'
 
 module Engine
   module Game
@@ -134,7 +132,6 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         MARKET_SHARE_LIMIT = 100
         MUST_BUY_TRAIN = :always
-        TRAIN_PRICE_MULTIPLE = 5
 
         GAME_END_CHECK = { stock_market: :current_round, custom: :current_or }.freeze
 
@@ -146,17 +143,13 @@ module Engine
           stock_round
         end
 
-        def stock_round
-          Round::Stock.new(self, [Engine::Step::BuySellParShares])
-        end
-
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1877StockholmTramways::Step::Dividend,
-            G1877StockholmTramways::Step::BuyTrain,
+            Engine::Step::BuyTrain,
           ], round_num: round_num)
         end
 

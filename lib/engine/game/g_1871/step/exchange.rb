@@ -26,6 +26,13 @@ module Engine
             non_buy_action = Engine::Action::Base.new(action.entity)
             @round.current_actions << non_buy_action
           end
+
+          def can_gain?(entity, bundle, exchange: false)
+            return if !bundle || !entity
+            return true if exchange
+
+            super
+          end
         end
       end
     end

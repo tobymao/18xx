@@ -42,6 +42,18 @@ module Engine
             @game.log << "#{action.entity.name} receives a "\
                          "#{@game.format_currency(@game.class::TOWN_TILE_SUBSIDY)} subsidy from the bank"
           end
+
+          # preserve labels on some special cities because they may use unlabeled yellow/green/brown tiles
+          def process_lay_tile(action)
+            old_tile = action.hex.tile
+
+            super
+
+            return unless old_tile.label.to_s == 'KU'
+
+            old_tile.label = nil
+            action.tile.label = 'KU' unless action.tile.label
+          end
         end
       end
     end

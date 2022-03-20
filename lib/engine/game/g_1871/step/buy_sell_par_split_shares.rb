@@ -116,6 +116,13 @@ module Engine
               can_gain?(entity, bundle)
           end
 
+          def can_gain?(entity, bundle, exchange: false)
+            return if !bundle || !entity
+            return true if exchange
+
+            super
+          end
+
           def visible_corporations
             # Always show ML and SL
             @game.corporations[0..1].reject(&:closed?) +
