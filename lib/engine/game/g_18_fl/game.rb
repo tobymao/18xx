@@ -310,7 +310,7 @@ module Engine
               special: false,
               reachable: true,
               hexes: [],
-              tiles: [],
+              tiles: %w[3 4 6o 6fl 8 9 58],
               closed_when_used_up: true,
               when: %w[track owning_player_or_turn],
             },
