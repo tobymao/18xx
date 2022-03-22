@@ -248,6 +248,8 @@ module Engine
         LOCATION_NAMES = {
           'a19' => 'Pembroke',
           'a25' => 'Plymouth',
+          'A11' => 'NS Bonus',
+          'A13' => 'EW Bonus',
           'A20' => 'Swansea',
           'A22' => 'Bridgend',
           'B21' => 'Cardiff',
@@ -348,6 +350,8 @@ module Engine
           red: {
             ['a19'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
             ['a25'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;icon=image:18_gb/south;icon=image:18_gb/west',
+            ['A11'] => 'offboard=revenue:yellow_20|blue_20|gray_20;icon=image:18_gb/south;icon=image:18_gb/north',
+            ['A13'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/west;icon=image:18_gb/east',
             ['C14'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
             ['C16'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:1,b:_0;path=a:5,b:_0;icon=image:18_gb/west',
             ['D27'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
@@ -422,6 +426,8 @@ module Engine
             ['H3'] => 'border=edge:2,type:mountain,cost:50;town=revenue:0',
           },
           red: {
+            ['A11'] => 'offboard=revenue:yellow_20|blue_20|gray_20;icon=image:18_gb/south;icon=image:18_gb/north',
+            ['A13'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/west;icon=image:18_gb/east',
             ['D23'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['D25'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:4,b:_0;path=a:5,b:_0;' \
                        'border=edge:4,type:mountain,cost:50',
@@ -494,6 +500,8 @@ module Engine
           red: {
             ['a19'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
             ['a25'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;icon=image:18_gb/south;icon=image:18_gb/west',
+            ['A11'] => 'offboard=revenue:yellow_20|blue_20|gray_20;icon=image:18_gb/south;icon=image:18_gb/north',
+            ['A13'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/west;icon=image:18_gb/east',
             ['C14'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
             ['C16'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:1,b:_0;path=a:5,b:_0;icon=image:18_gb/west',
             ['D27'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
