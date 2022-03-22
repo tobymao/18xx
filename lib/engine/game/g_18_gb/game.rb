@@ -317,7 +317,7 @@ module Engine
         def optional_hexes
           case @scenario['map']
           when '2NS'
-            self.class::HEXES_2P_NW
+            self.class::HEXES_2P_NS
           when '2EW'
             self.class::HEXES_2P_EW
           else

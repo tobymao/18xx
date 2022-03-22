@@ -393,7 +393,7 @@ module Engine
           },
         }.freeze
 
-        HEXES_2P_NW = {
+        HEXES_2P_NS = {
           white: {
             %w[F7 F15 F19 F27 G20 H23 H25 H27 I18 I24 J1 J19 J23 K2] => '',
             ['D17'] => 'border=edge:4,type:mountain,cost:50',
