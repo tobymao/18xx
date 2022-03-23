@@ -36,18 +36,40 @@ module Engine
             @log << "#{corporation.name} share price is set to #{@game.format_currency(share_price.price)}"
             @game.stock_market.set_par(corporation, share_price)
 
-            # player gets first share
-            diff = share_price.price - company.value
-            @log << "#{player.name} pays difference of #{@game.format_currency(diff)} to #{corporation.name} "\
-                    'and receives one share'
-            player.spend(diff, corporation)
-            first_share = corporation.ipo_shares[0]
-            @game.share_pool.buy_shares(player, first_share.to_bundle, exchange: :free, silent: true)
+            if share_price.price >= company.value
+              shares = corporation.ipo_shares.take(2)
 
-            # issue next share
-            second_share = corporation.ipo_shares[1]
-            @game.share_pool.sell_shares(second_share.to_bundle, silent: true)
-            @log << "#{corporation.name} issues one share and receives #{@game.format_currency(share_price.price)}"
+              # player gets first share
+              diff = share_price.price - company.value
+              raise GameError, "#{player.name} does not have #{@game.format_currency(diff)} to spend on IPO" if player.cash < diff
+
+              @log << "#{player.name} pays difference of #{@game.format_currency(diff)} to #{corporation.name} "\
+                      'and receives one share'
+              player.spend(diff, corporation) if diff.positive?
+              @game.share_pool.buy_shares(player, shares[0].to_bundle, exchange: :free, silent: true)
+
+              # issue next share
+              @log << "#{corporation.name} issues one share and receives #{@game.format_currency(share_price.price)}"
+              @game.share_pool.sell_shares(shares[1].to_bundle, silent: true)
+            else
+              shares = corporation.ipo_shares.take(4)
+
+              # player gets first two shares
+              diff = (share_price.price * 2) - company.value
+              raise GameError, "#{player.name} does not have #{@game.format_currency(diff)} to spend on IPO" if player.cash < diff
+
+              @log << "#{player.name} pays difference of #{@game.format_currency(diff)} to #{corporation.name} "\
+                      'and receives two shares'
+              player.spend(diff, corporation) if diff.positive?
+              @game.share_pool.buy_shares(player, shares[0].to_bundle, exchange: :free, silent: true)
+              @game.share_pool.buy_shares(player, shares[1].to_bundle, exchange: :free, silent: true)
+
+              # issue next two shares
+              @game.share_pool.sell_shares(shares[2].to_bundle, silent: true)
+              @game.share_pool.sell_shares(shares[3].to_bundle, silent: true)
+              @log << "#{corporation.name} issues two shares and receives "\
+                      "#{@game.format_currency(share_price.price * 2)}"
+            end
 
             corporation.companies << company
             company.owner = corporation
