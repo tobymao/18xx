@@ -809,7 +809,8 @@ module Engine
           return [] unless (train = @depot.min_depot_train)
           return [] if corp.cash >= train.price
 
-          bundles = bundles_for_corporation(corp, corp)
+          shares = corp.shares_of(corp).select(&:buyable)
+          bundles = bundles_for_corporation(corp, corp, shares: shares)
 
           # If a train cannot be afforded, issue all possible shares
           biggest_bundle = bundles.max_by(&:num_shares)
