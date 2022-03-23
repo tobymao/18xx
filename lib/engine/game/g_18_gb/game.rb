@@ -782,11 +782,11 @@ module Engine
         end
 
         def ns_bonus_offboard
-          @hexes.find { |hex| hex.coordinates == 'A11' }.tile.offboards.first
+          @hexes.find { |hex| hex.coordinates == 'C8' }.tile.offboards.first
         end
 
         def ew_bonus_offboard
-          @hexes.find { |hex| hex.coordinates == 'A13' }.tile.offboards.first
+          @hexes.find { |hex| hex.coordinates == 'C10' }.tile.offboards.first
         end
 
         def routes_intersect(first, second)
