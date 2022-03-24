@@ -267,6 +267,9 @@ module Engine
             @log << "#{corporation.name}#{rcvr} acquires #{company.sym} from #{old_owner.name} "\
                     "for #{@game.format_currency(price)}"
 
+            @game.clear_synergy_income(old_owner) if old_owner.corporation?
+            @game.clear_synergy_income(corporation)
+
             filter_offers!
           end
 
