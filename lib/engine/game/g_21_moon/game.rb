@@ -920,12 +920,6 @@ module Engine
           @round.active_step.sellable_bundles(player, corporation)
         end
 
-        def close_corporation(corporation, quiet: false)
-          super
-
-          corporation.close!
-        end
-
         def emergency_issuable_cash(corporation)
           emergency_issuable_bundles(corporation).group_by(&:corporation).sum do |_corp, bundles|
             bundles.max_by(&:num_shares)&.price || 0

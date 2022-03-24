@@ -50,7 +50,6 @@ module Engine
             end
 
             @game.close_corporation(corporation)
-            corporation.close!
             @game.corporations << @game.reset_corporation(corporation)
           end
         end

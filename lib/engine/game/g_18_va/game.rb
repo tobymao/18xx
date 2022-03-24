@@ -791,7 +791,6 @@ module Engine
             @log << "#{company_by_id(company).name} token removed from #{hex}"
           end
 
-          corporation.close!
           corporation = reset_corporation(corporation)
           hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, 0)
           @corporations << corporation

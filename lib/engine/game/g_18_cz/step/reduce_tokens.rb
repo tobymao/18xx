@@ -41,7 +41,6 @@ module Engine
                                                              check_tokenable: false)
 
             @game.close_corporation(acquired_corps.first)
-            acquired_corps.first.close!
             @round.corporations_removing_tokens = nil
           end
         end

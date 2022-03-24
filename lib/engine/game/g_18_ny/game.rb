@@ -520,7 +520,6 @@ module Engine
 
             @log << "#{corp.name} is removed from the game"
             close_corporation(corp, quiet: true)
-            corp.close!
           end
         end
 
@@ -1134,7 +1133,6 @@ module Engine
         def complete_acquisition(_entity, corporation)
           @round.acquisition_corporations = []
           close_corporation(corporation, quiet: true)
-          corporation.close!
         end
 
         def transfer_assets(from, to)
@@ -1270,7 +1268,6 @@ module Engine
           @log << "#{entity.name} merges into #{nyc_corporation.name}"
           nyc_corporation.num_treasury_shares.zero? ? exchange_for_bank_share(entity) : exchange_for_nyc_share(entity)
           close_corporation(entity, quiet: true)
-          entity.close!
         end
 
         def exchange_for_nyc_share(entity)
@@ -1338,7 +1335,6 @@ module Engine
               @bank.spend(liquidation_price, owner)
             end
             close_corporation(minor, quiet: true)
-            minor.close!
           end
         end
       end

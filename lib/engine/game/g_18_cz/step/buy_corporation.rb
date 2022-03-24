@@ -88,7 +88,6 @@ module Engine
             return if tokens_to_clear
 
             @game.close_corporation(corporation)
-            corporation.close!
 
             @game.remove_ate_reservation if corporation.id == 'ATE'
           end

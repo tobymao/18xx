@@ -837,12 +837,6 @@ module Engine
         def reissued?(corporation)
           @reissued[corporation]
         end
-
-        def close_corporation(corporation)
-          super(corporation)
-          # Game::close_corporation does not close the corp from continuing acting in the round so we need close!
-          corporation.close!
-        end
       end
     end
   end
