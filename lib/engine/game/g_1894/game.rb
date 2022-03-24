@@ -17,7 +17,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%d F'
 
-        BANK_CASH = 8000
+        BANK_CASH = 6000
 
         CERT_LIMIT = { 3 => 99, 4 => 99 }.freeze
 
