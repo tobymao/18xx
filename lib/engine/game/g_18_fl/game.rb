@@ -145,7 +145,7 @@ module Engine
           'B5' => 'Mobile',
           'B7' => 'Pensacola',
           'B13' => 'Chattahoochee',
-          'B15' => 'Talahassee',
+          'B15' => 'Tallahassee',
           'B19' => 'Lake City',
           'B23' => 'Jacksonville',
           'C14' => 'St. Marks',
@@ -293,7 +293,7 @@ module Engine
 
         COMPANIES = [
           {
-            name: 'Talahassee Railroad',
+            name: 'Tallahassee Railroad',
             value: 0,
             discount: -20,
             revenue: 5,
@@ -310,7 +310,7 @@ module Engine
               special: false,
               reachable: true,
               hexes: [],
-              tiles: [],
+              tiles: %w[3 4 6o 6fl 8 9 58],
               closed_when_used_up: true,
               when: %w[track owning_player_or_turn],
             },

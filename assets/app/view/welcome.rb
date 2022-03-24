@@ -18,7 +18,8 @@ module View
     def render_notification
       message = <<~MESSAGE
 
-        <p>Simon Cutforth's, the designer of 1822, new prototype <a href='https://github.com/tobymao/18xx/wiki/1866'>1866</a>
+        <p>21Moon is now beta.<br>
+        Simon Cutforth's, the designer of 1822, new prototype <a href='https://github.com/tobymao/18xx/wiki/1866'>1866</a>
         is now available for alpha testing.<br>
         18JP-T is now available for alpha testing.<br>
         The Old Prince 1871 is now available for alpha testing.</p>

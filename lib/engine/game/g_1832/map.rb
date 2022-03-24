@@ -36,7 +36,7 @@ module Engine
           'I3' => 'Mobile',
           'J2' => 'New Orleans',
           'J4' => 'Pensacola',
-          'J10' => 'Talahassee',
+          'J10' => 'Tallahassee',
           'J12' => 'Valdosta',
           'J14' => 'Jacksonville',
           'L14' => 'Orlando',

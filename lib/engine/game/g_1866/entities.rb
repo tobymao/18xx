@@ -11,7 +11,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'Concession for Great Britain National Corporation. Closes when concession exercised to purchase '\
-                  'corporation.',
+                  'corporation or forced conversion at the start of phase 5.',
             abilities: [
               {
                 type: 'exchange',
@@ -29,7 +29,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'Concession for France National Corporation. Closes when concession exercised to purchase '\
-                  'corporation.',
+                  'corporation or forced conversion at the start of phase 5.',
             abilities: [
               {
                 type: 'exchange',
@@ -47,7 +47,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'Concession for Austro-Hungarian Empire National Corporation. Closes when concession exercised to '\
-                  'purchase corporation.',
+                  'purchase corporation or forced conversion at the start of phase 5.',
             abilities: [
               {
                 type: 'exchange',
@@ -65,7 +65,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'Concession for Benelux National Corporation. Closes when concession exercised to purchase '\
-                  'corporation.',
+                  'corporation or forced conversion at the start of phase 5.',
             abilities: [
               {
                 type: 'exchange',
@@ -83,7 +83,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'Concession for Spain National Corporation. Closes when concession exercised to purchase '\
-                  'corporation.',
+                  'corporation or forced conversion at the start of phase 5.',
             abilities: [
               {
                 type: 'exchange',
@@ -101,7 +101,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'Concession for Switzerland National Corporation. Closes when concession exercised to purchase '\
-                  'corporation.',
+                  'corporation or forced conversion at the start of phase 5.',
             abilities: [
               {
                 type: 'exchange',
