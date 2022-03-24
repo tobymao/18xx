@@ -111,6 +111,19 @@ module Engine
           5 => [30, 33, 37],
         }.freeze
 
+        END_CARD_FRONT = 7
+        END_CARD_BACK = 8
+
+        COST_OF_OWNERSHIP_RSS = {
+          1 => [0, 0, 0, 0, 0],
+          2 => [0, 0, 0, 0, 0],
+          3 => [0, 0, 0, 0, 0],
+          4 => [2, 0, 0, 0, 0],
+          5 => [4, 4, 0, 0, 0],
+          7 => [7, 7, 7, 0, 0],
+          8 => [10, 10, 10, 10, 0],
+        }.freeze
+
         def num_to_draw(players, stars)
           if players.size == 6
             8
@@ -140,6 +153,9 @@ module Engine
 
           @foreign_investor = Player.new(-1, 'Foreign Investor')
           @bank.spend(FOREIGN_START_CASH, @foreign_investor)
+          @cost_level = @company_stars[@company_deck[0].sym]
+          @log << 'No cost of ownership'
+          @cost_table = COST_OF_OWNERSHIP_RSS
         end
 
         # FIXME: Overseas Trading
@@ -218,6 +234,7 @@ module Engine
           if @players.any? { |p| !p.companies.empty? } || @corporations.any? { |corp| corp.companies.size > 1 }
             closing_round
           else
+            @log << 'No companies can close'
             phase5
             new_dividends_round
           end
@@ -262,8 +279,9 @@ module Engine
           if @corporations.any?(&:floated?)
             dividends_round
           else
+            @log << 'No corporations can pay dividends'
             phase7
-            new_ipo_round # FIXME: new_issue_round
+            new_issue_round
           end
         end
 
@@ -276,6 +294,29 @@ module Engine
         # end card
         def phase7
           @log << "-- Turn #{@turn}, Phase 7 - End Card --"
+          return if @cost_level != END_CARD_FRONT || !@offering.empty?
+
+          @cost_level = END_CARD_BACK
+          @log << "New cost of ownership: #{cost_level_str}"
+          @log << 'End game triggered'
+        end
+
+        def new_issue_round
+          @log << "-- Turn #{@turn}, Phase 8 - Issue Shares --"
+          @round_counter += 1
+
+          if issuable_corporations.empty?
+            @log << 'No corporations can issue'
+            new_ipo_round
+          else
+            issue_round
+          end
+        end
+
+        def issue_round
+          Round::Issue.new(self, [
+            Step::IssueShares,
+          ])
         end
 
         def new_ipo_round
@@ -316,7 +357,9 @@ module Engine
               new_dividends_round
             when Round::Dividends
               phase7
-              new_ipo_round # FIXME: new_issue_round
+              new_issue_round
+            when Round::Issue
+              new_ipo_round
             when Round::IPO
               @turn += 1
               new_investment_round
@@ -337,9 +380,8 @@ module Engine
           company.revenue - operating_cost(company)
         end
 
-        # FIXME: TBD
-        def operating_cost(_company)
-          0
+        def operating_cost(company)
+          @cost_table[@cost_level][@company_stars[company.sym]]
         end
 
         # FIXME: TBD
@@ -375,7 +417,15 @@ module Engine
         def issuable_shares(entity)
           return [] unless entity.corporation?
 
-          bundles_for_corporation(@bank, entity)
+          bundle = bundles_for_corporation(entity, entity).first
+          # FIXME: Stock Masters
+          bundle.share_price = next_price_to_left(bundle.corporation.share_price).price
+
+          [bundle]
+        end
+
+        def redeemable_shares(_entity)
+          []
         end
 
         def buyable_bank_owned_companies
@@ -390,10 +440,44 @@ module Engine
 
         def update_offering(company)
           @offering.delete(company)
-          next_to_offer = @company_deck.shift
-          @offering << next_to_offer
-          @on_deck << next_to_offer
-          @log << "#{next_to_offer.sym} revealed from deck"
+          if @company_deck.empty?
+            @log << 'Company Deck is empty'
+          else
+            next_to_offer = @company_deck.shift
+            @offering << next_to_offer
+            @on_deck << next_to_offer
+            @log << "#{next_to_offer.sym} revealed from deck"
+          end
+
+          new_cost = if @company_deck.empty?
+                       END_CARD_FRONT
+                     else
+                       @company_stars[@company_deck[0].sym]
+                     end
+
+          return unless @cost_level < new_cost
+
+          @cost_level = new_cost
+          @log << "New cost of ownership: #{cost_level_str}"
+        end
+
+        def cost_level_str
+          case @cost_level
+          when 1, 2, 3
+            'None'
+          when 4
+            'Red = $2'
+          when 5
+            'Red, Orange = $4'
+          when 6
+            'Red, Orange, Yellow = $7'
+          else
+            'Red, Orange, Yellow, Green = $10'
+          end
+        end
+
+        def issuable_corporations
+          @corporations.select { |c| c.ipoed && !issuable_shares(c).empty? }
         end
 
         def share_prices

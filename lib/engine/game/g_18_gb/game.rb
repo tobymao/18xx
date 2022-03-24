@@ -99,9 +99,6 @@ module Engine
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'bonus_20_20' => ['NS £20, EW £20', 'North-South bonus £20, East-West bonus £20'],
-          'bonus_20_30' => ['NS £20, EW £30', 'North-South bonus £20, East-West bonus £30'],
-          'bonus_20_40' => ['NS £20, EW £40', 'North-South bonus £20, East-West bonus £40'],
           'only_pres_drop' => ['Only pres. sales drop', 'Only sales by corporation presidents drop the share price'],
         ).freeze
 
@@ -110,7 +107,6 @@ module Engine
             name: '2+1',
             train_limit: { '5-share': 3, '10-share': 4 },
             tiles: [:yellow],
-            status: ['bonus_20_20'],
             operating_rounds: 2,
           },
           {
@@ -118,7 +114,6 @@ module Engine
             on: '3+1',
             train_limit: { '5-share': 3, '10-share': 4 },
             tiles: %i[yellow green],
-            status: ['bonus_20_20'],
             operating_rounds: 2,
           },
           {
@@ -126,7 +121,6 @@ module Engine
             on: '4+2',
             train_limit: { '5-share': 2, '10-share': 3 },
             tiles: %i[yellow green blue],
-            status: ['bonus_20_30'],
             operating_rounds: 2,
           },
           {
@@ -134,7 +128,6 @@ module Engine
             on: '5+2',
             train_limit: { '5-share': 2, '10-share': 3 },
             tiles: %i[yellow green blue brown],
-            status: ['bonus_20_30'],
             operating_rounds: 2,
           },
           {
@@ -142,7 +135,6 @@ module Engine
             on: '4X',
             train_limit: 2,
             tiles: %i[yellow green blue brown],
-            status: ['bonus_20_30'],
             operating_rounds: 2,
           },
           {
@@ -150,7 +142,6 @@ module Engine
             on: '5X',
             train_limit: 2,
             tiles: %i[yellow green blue brown],
-            status: ['bonus_20_30'],
             operating_rounds: 2,
           },
           {
@@ -158,7 +149,7 @@ module Engine
             on: '6X',
             train_limit: 2,
             tiles: %i[yellow green blue brown gray],
-            status: %w[bonus_20_40 only_pres_drop],
+            status: ['only_pres_drop'],
             operating_rounds: 2,
           },
         ].freeze
@@ -326,7 +317,7 @@ module Engine
         def optional_hexes
           case @scenario['map']
           when '2NS'
-            self.class::HEXES_2P_NW
+            self.class::HEXES_2P_NS
           when '2EW'
             self.class::HEXES_2P_EW
           else
@@ -790,18 +781,12 @@ module Engine
           @scenario['compass-hexes'].reject { |_compass, compass_hexes| (network_hexes & compass_hexes).empty? }.map(&:first)
         end
 
-        def ns_bonus
-          20
+        def ns_bonus_offboard
+          @hexes.find { |hex| hex.coordinates == 'C8' }.tile.offboards.first
         end
 
-        def ew_bonus
-          if @phase.status.include?('bonus_20_40')
-            40
-          elsif @phase.status.include?('bonus_20_30')
-            30
-          else
-            20
-          end
+        def ew_bonus_offboard
+          @hexes.find { |hex| hex.coordinates == 'C10' }.tile.offboards.first
         end
 
         def routes_intersect(first, second)
@@ -845,8 +830,19 @@ module Engine
 
           hexes = route_set.flat_map { |r| r.ordered_paths.map { |path| path.hex.coordinates } }
           points = compass_points_in_network(hexes)
-          bonuses << { revenue: ns_bonus, description: 'NS' } if points.include?('N') && points.include?('S')
-          bonuses << { revenue: ew_bonus, description: 'EW' } if points.include?('E') && points.include?('W')
+          if points.include?('N') && points.include?('S')
+            bonuses << {
+              revenue: ns_bonus_offboard.route_revenue(route.phase, route.train),
+              description: 'NS',
+            }
+          end
+          if points.include?('E') && points.include?('W')
+            bonuses << {
+              revenue: ew_bonus_offboard.route_revenue(route.phase, route.train),
+              description: 'EW',
+            }
+          end
+
           bonuses
         end
 

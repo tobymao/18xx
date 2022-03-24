@@ -74,9 +74,9 @@ module Engine
           },
           gray: {
             ['M17'] => 'city=revenue:yellow_20|brown_50;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;',
-            ['J26'] => 'city=revenue:yellow_30|brown_50,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_0;',
-            ['J2'] => 'city=revenue:yellow_30|brown_50,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
-            ['M25'] => 'city=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0',
+            ['J26'] => 'city=revenue:yellow_30|brown_60,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_0;',
+            ['J2'] => 'city=revenue:yellow_30|brown_60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
+            ['M25'] => 'city=revenue:yellow_40|brown_70;path=a:1,b:_0;path=a:2,b:_0',
             ['A13'] => 'city=revenue:40;path=a:0,b:_0;path=a:5,b:_0;',
           },
           white: {
@@ -91,9 +91,9 @@ module Engine
                J4 J14 J18 J20
                K5 K11 K13 K19 K21
                L6 L10 L12 L18
-               M11 M13 M15 M19 M21] => 'blank',
+               M11 M13 M15 M19 M21 M23] => 'blank',
             %w[L2 K3 L8 K7 K9 J8 L16 K15 I15 H16 K25 K23 J22 I21 F18 I27] => 'upgrade=cost:20,terrain:river',
-            %w[B8 C9 D8 E9 F12 D16 M3 M23] => 'upgrade=cost:40,terrain:river',
+            %w[B8 C9 D8 E9 F12 D16 M3] => 'upgrade=cost:40,terrain:river',
             %w[E19 E21 B14 B16 C15 D14 E13] => 'upgrade=cost:60,terrain:mountain',
             %w[C19 C21 D18 D20 E17] => 'upgrade=cost:120,terrain:mountain',
 
@@ -101,12 +101,11 @@ module Engine
             %w[M9 H20] => 'town=revenue:0;upgrade=cost:20,terrain:river',
             %w[F10] => 'town=revenue:0;upgrade=cost:40,terrain:river',
 
-            %w[D12 E7 F6 F14 G13 G23 H8 H10 I19 J6 J10 K17 L22 L24 M7] => 'city=revenue:0',
+            %w[C11 D12 E3 E7 F6 F14 G13 G23 H8 H10 I19 J6 J10 K17 L22 L24 M7] => 'city=revenue:0',
             %w[D6] => 'city=revenue:20',
             %w[G17] => 'city=revenue:0,slots:3;label=Atl',
             %w[J16] => 'city=revenue:0;upgrade=cost:20,terrain:river',
-            %w[C11 C17] => 'city=revenue:0;upgrade=cost:40,terrain:river',
-            %w[E3] => 'city=revenue:0;upgrade=cost:60,terrain:river',
+            %w[C17] => 'city=revenue:0;upgrade=cost:40,terrain:river',
 
           },
           yellow: {

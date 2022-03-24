@@ -405,7 +405,7 @@ module Engine
           {
             name: 'P',
             distance: 99,
-            price: 100,
+            price: 80,
           },
           {
             name: 'H',
@@ -690,16 +690,16 @@ module Engine
         ENTITY_STATUS_TEXT = {
           'DE' => 'Converted by PRU president or force convert in phase 5',
           'IT' => 'Converted by K2S president or force convert in phase 5',
-          'PRU' => 'Converted to a German share',
-          'HAN' => 'Converted to a German share',
-          'BAV' => 'Converted to a German share',
-          'WTB' => 'Converted to a German share',
-          'SAX' => 'Converted to a German share',
-          'K2S' => 'Converted to a Italian share',
-          'SAR' => 'Converted to a Italian share',
-          'LV' => 'Converted to a Italian share',
-          'PAP' => 'Converted to a Italian share',
-          'TUS' => 'Converted to a Italian share',
+          'PRU' => 'Min bid 80 | Converted to a German share',
+          'HAN' => 'Min bid 60 | Converted to a German share',
+          'BAV' => 'Min bid 60 | Converted to a German share',
+          'WTB' => 'Min bid 60 | Converted to a German share',
+          'SAX' => 'Min bid 60 | Converted to a German share',
+          'K2S' => 'Min bid 80 | Converted to a Italian share',
+          'SAR' => 'Min bid 60 | Converted to a Italian share',
+          'LV' => 'Min bid 60 | Converted to a Italian share',
+          'PAP' => 'Min bid 60 | Converted to a Italian share',
+          'TUS' => 'Min bid 30 | Converted to a Italian share',
         }.freeze
 
         FERRY_TILE_G7 = 'border=edge:2,type:impassable;border=edge:4,type:impassable;path=a:1,b:5'
@@ -832,6 +832,12 @@ module Engine
                     :major_national_formed, :major_national_formed_round, :player_sold_shares
 
         def action_processed(_action); end
+
+        def bank_sort(corporations)
+          return super unless @round.operating?
+
+          corporations.reject { |c| minor_national_corporation?(c) }.sort_by(&:name)
+        end
 
         def can_par?(corporation, parrer)
           return false if corporation.id == self.class::GERMANY_NATIONAL && corporation_by_id('PRU').owner != parrer
@@ -1034,9 +1040,11 @@ module Engine
             triggers.keys.each do |reason|
               next unless game_end_check_values[reason] == after
 
+              game_end_triggered = game_end_triggered?
               @final_round ||= @round.round_num + (after == :three_rounds ? 3 : 0)
               @game_end_triggered_round ||= @round.round_num
               @game_end_three_rounds ||= after == :three_rounds
+              update_stock_turn_token_names if game_end_triggered != game_end_triggered?
               return [reason, after]
             end
           end
