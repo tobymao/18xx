@@ -383,6 +383,7 @@ module Engine
             float_percent: 60,
             max_ownership_percent: 100,
             always_market_price: true,
+            custom_ability: 'prussian',
           },
           {
             sym: 'OS',
@@ -408,6 +409,7 @@ module Engine
             float_percent: 70,
             max_ownership_percent: 100,
             always_market_price: true,
+            custom_ability: 'stars',
           },
           {
             sym: 'DA',
@@ -420,6 +422,7 @@ module Engine
             float_percent: 60,
             max_ownership_percent: 100,
             always_market_price: true,
+            custom_ability: 'doppler',
           },
           {
             sym: 'VM',
@@ -432,6 +435,7 @@ module Engine
             float_percent: 70,
             max_ownership_percent: 100,
             always_market_price: true,
+            custom_ability: 'vintage_machinery',
           },
           {
             sym: 'SM',
@@ -444,6 +448,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             always_market_price: true,
+            custom_ability: 'stock_masters',
           },
           {
             sym: 'JS',
@@ -456,6 +461,7 @@ module Engine
             float_percent: 40,
             max_ownership_percent: 100,
             always_market_price: true,
+            custom_ability: 'junkyard_scrappers',
           },
           {
             sym: 'S',
@@ -468,6 +474,7 @@ module Engine
             float_percent: 40,
             max_ownership_percent: 100,
             always_market_price: true,
+            custom_ability: 'synergistic',
           },
         ].freeze
       end
