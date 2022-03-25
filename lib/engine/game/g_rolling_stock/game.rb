@@ -159,10 +159,24 @@ module Engine
           @log << 'No cost of ownership'
           @cost_table = COST_OF_OWNERSHIP_RSS
           @synergy_income = {}
+
+          # @corporations.find { |c| c.name == 'OS' }&.add_ability(GRollingStock::Ability::Overseas.new(type: :overseas))
+          self.class::CORPORATIONS.each do |corp|
+            next unless (custom = corp[:custom_ability])
+
+            klass = Engine::Ability::Base.type(custom)
+            ability = Object.const_get("Engine::Game::GRollingStock::Ability::#{klass}").new(type: custom.to_sym)
+            corporation_by_id(corp[:sym]).add_ability(ability)
+          end
         end
 
-        # FIXME: Overseas Trading
         def can_acquire_any_company?(corporation)
+          if abilities(corporation, :overseas) && @companies.any? do |c|
+               c.owner == @foreign_investor && corporation.cash >= c.value
+             end
+            return true
+          end
+
           @companies.any? { |c| c.owner && c.owner != corporation && corporation.cash >= c.min_price }
         end
 
@@ -479,6 +493,12 @@ module Engine
 
         def biddable_companies
           @offering - @on_deck
+        end
+
+        def responder_order
+          eligible = @corporations.select { |corp| corp.floated? && !corp.receivership? }
+          oversea_corp, others = eligible.partition { |corp| abilities(corp, :overseas) }
+          (oversea_corp + others.sort).compact
         end
 
         def update_offering(company)

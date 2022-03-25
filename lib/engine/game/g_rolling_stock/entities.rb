@@ -395,6 +395,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             always_market_price: true,
+            custom_ability: 'overseas',
           },
           {
             sym: 'SI',
