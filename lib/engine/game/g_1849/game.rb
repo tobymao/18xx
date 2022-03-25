@@ -399,7 +399,6 @@ module Engine
         def close_corporation(corporation, quiet: false)
           remove_rsa_abilities(corporation)
           super
-          corporation.close!
           corporation = reset_corporation(corporation)
           @afg = corporation if corporation.id == self.class::CORP_CHOOSES_HOME
           hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, 0) unless corporation == afg

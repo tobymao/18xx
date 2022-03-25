@@ -1580,6 +1580,7 @@ module Engine
           @minors.delete(corporation)
         end
 
+        corporation.close!
         @cert_limit = init_cert_limit
       end
 

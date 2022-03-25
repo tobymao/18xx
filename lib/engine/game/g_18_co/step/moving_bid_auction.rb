@@ -181,7 +181,6 @@ module Engine
             @game.log << "#{@game.drgr.name} wasn't purchased and closes along with #{@game.dsng.name}"
             @game.drgr.close!
             @game.close_corporation(@game.dsng, quiet: true)
-            @game.dsng.close!
           end
 
           def resolve_bids_for_company(company, bids)

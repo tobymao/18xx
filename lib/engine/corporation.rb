@@ -279,5 +279,9 @@ module Engine
       @floated = false
       @owner = nil
     end
+
+    def reopen!
+      @closed = false
+    end
   end
 end
