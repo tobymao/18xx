@@ -255,7 +255,6 @@ module Engine
               @game.log << "#{@game.drgr.name} closes due to takeover of #{@game.dsng.name}"
               @game.drgr.close!
             end
-            entity.close!
             @round.pending_takeover = nil
           end
 

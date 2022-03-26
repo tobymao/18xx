@@ -1288,7 +1288,6 @@ module Engine
 
             log << "#{corp.name} closes as its home station can never be available"
             close_corporation(corp, quiet: true)
-            corp.close!
           end
         end
 

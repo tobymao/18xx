@@ -29,7 +29,6 @@ module Engine
               next unless c.owner == player
 
               @game.close_corporation(c)
-              c.close!
             end
           end
         end

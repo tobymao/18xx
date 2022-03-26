@@ -101,6 +101,7 @@ module Engine
             move_tokens(corporation, target)
             receiving = move_assets(corporation, target)
 
+            corp_owner = corporation.owner
             @game.close_corporation(corporation)
 
             @log << "#{corporation.name} converts into #{target.name} receiving #{receiving.join(', ')}"
@@ -112,7 +113,7 @@ module Engine
             @round.merge_type = :convert
             # All players are eligable to buy shares unlike merger
             @round.share_dealing_players = @game.players.rotate(@game.players.index(target.owner))
-            @round.share_dealing_multiple = [corporation.owner]
+            @round.share_dealing_multiple = [corp_owner]
           end
 
           def move_assets(from, to)
