@@ -1165,7 +1165,6 @@ module Engine
 
           @log << "-- #{entity.name} is now bankrupt and will be removed from the game --"
           close_corporation(entity, quiet: true)
-          entity.close!
         end
 
         def hex_blocked_by_ability?(_entity, abilities, hex)

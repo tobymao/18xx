@@ -242,7 +242,6 @@ module Engine
 
           def close_corporation(entity)
             @game.close_corporation(entity)
-            entity.close!
             @round.pending_takeover = nil
           end
 

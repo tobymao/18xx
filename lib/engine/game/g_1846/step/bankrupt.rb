@@ -78,10 +78,7 @@ module Engine
             player.spend(player.cash, corp) if player.cash.positive?
 
             @game.corporations.dup.each do |corporation|
-              if corporation.share_price&.type == :close
-                @game.close_corporation(corporation)
-                corporation.close!
-              end
+              @game.close_corporation(corporation) if corporation.share_price&.type == :close
             end
 
             @game.declare_bankrupt(player)

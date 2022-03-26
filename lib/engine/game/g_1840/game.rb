@@ -916,10 +916,7 @@ module Engine
         def remove_open_tram_corporations
           @log << '-- All major corporations owns 3 line corporations --'
           @all_tram_corporations.each do |corp|
-            unless owning_major_corporation(corp)
-              close_corporation(corp)
-              corp.close!
-            end
+            close_corporation(corp) unless owning_major_corporation(corp)
           end
         end
 

@@ -95,7 +95,6 @@ module Engine
 
           def close!(entity)
             @game.close_corporation(entity)
-            entity.close!
             @round.pending_acquisition = nil
           end
         end

@@ -175,7 +175,6 @@ module Engine
           def nobody_wanted_me(entity)
             @log << "#{entity.name} is closed due to no bids during the acquisition round"
             @game.close_corporation(entity, quiet: true)
-            entity.close!
           end
         end
       end

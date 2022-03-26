@@ -548,7 +548,6 @@ module Engine
           end
 
           super
-          corporation.close!
         end
 
         def rust_trains!(train, _entity)

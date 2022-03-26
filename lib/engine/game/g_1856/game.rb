@@ -1776,11 +1776,7 @@ module Engine
           # Now that shares and president are determined, it's time to do presidential things
           national_token_swap
           # Close corporations now that trains, cash, rights, and tokens have been stripped
-          @nationalized_corps.each do |c|
-            close_corporation(c)
-            # close_corporation does not close the corp from continuing acting in the round so we need close!
-            c.close!
-          end
+          @nationalized_corps.each { |c| close_corporation(c) }
 
           earliest_index = @nationalized_corps.map { |n| @round.entities.index(n) }.min
           current_corp_index = @round.entities.index(train_by_id('6-0').owner)
