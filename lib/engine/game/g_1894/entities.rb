@@ -86,8 +86,8 @@ module Engine
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' PLM without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the PLM.'\
-                  ' When the PLM purchases its first train, the private company is closed.',
-            abilities: [{ type: 'close', when: 'bought_train', corporation: 'PLM' },
+                  ' Closes in green phase.',
+            abilities: [{ type: 'close', on_phase: 'Green' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'PLM_0' }],
           },

@@ -151,7 +151,7 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 7 },
+        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 7 },
                   {
                     name: '3',
                     distance: 3,
@@ -315,6 +315,14 @@ module Engine
           paris_tiles_names = %w[X1 X4 X5 X7 X8]
           paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
+
+          @players.each do |player|
+            share_pool.transfer_shares(plm.ipo_shares.last.to_bundle, player)
+          end
+
+          if @players.size == 3
+            share_pool.transfer_shares(plm.ipo_shares.last.to_bundle, share_pool)
+          end
         end
 
         def init_stock_market

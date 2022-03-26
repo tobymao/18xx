@@ -178,7 +178,7 @@ module Engine
             %w[H13] => 'town=revenue:0;town=revenue:0;border=edge:3,type:mountain;border=edge:4,type:mountain',
           },
           yellow: {
-            ['D17'] => 'city=revenue:10;path=a:0,b:_0;path=a:1,b:_0',
+            ['D17'] => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0',
             ['G2'] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0',
             ['I6'] => 'path=a:1,b:3;stub=edge:2',
             ['I8'] => 'city=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
