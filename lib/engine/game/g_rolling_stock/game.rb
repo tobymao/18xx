@@ -159,15 +159,6 @@ module Engine
           @log << 'No cost of ownership'
           @cost_table = COST_OF_OWNERSHIP_RSS
           @synergy_income = {}
-
-          # @corporations.find { |c| c.name == 'OS' }&.add_ability(GRollingStock::Ability::Overseas.new(type: :overseas))
-          self.class::CORPORATIONS.each do |corp|
-            next unless (custom = corp[:custom_ability])
-
-            klass = Engine::Ability::Base.type(custom)
-            ability = Object.const_get("Engine::Game::GRollingStock::Ability::#{klass}").new(type: custom.to_sym)
-            corporation_by_id(corp[:sym]).add_ability(ability)
-          end
         end
 
         def can_acquire_any_company?(corporation)

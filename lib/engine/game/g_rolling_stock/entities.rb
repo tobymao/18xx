@@ -383,7 +383,14 @@ module Engine
             float_percent: 60,
             max_ownership_percent: 100,
             always_market_price: true,
-            custom_ability: 'prussian',
+            abilities: [
+              {
+                type: 'generic',
+                subtype: 'prussian',
+                description: '+$1 Per Company',
+                desc_detail: 'Receives +$1 for each company it owns',
+              },
+            ],
           },
           {
             sym: 'OS',
@@ -396,7 +403,14 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             always_market_price: true,
-            custom_ability: 'overseas',
+            abilities: [
+              {
+                type: 'generic',
+                subtype: 'overseas',
+                description: 'Advantage Buying From Foreign Inv.',
+                desc_detail: 'First priority and only pays face value when trading with Foreign Investor',
+              },
+            ],
           },
           {
             sym: 'SI',
@@ -409,7 +423,14 @@ module Engine
             float_percent: 70,
             max_ownership_percent: 100,
             always_market_price: true,
-            custom_ability: 'stars',
+            abilities: [
+              {
+                type: 'generic',
+                subtype: 'stars',
+                description: '+★★',
+                desc_detail: 'Always adds 2 addtional ★s to its ★ count',
+              },
+            ],
           },
           {
             sym: 'DA',
@@ -422,7 +443,14 @@ module Engine
             float_percent: 60,
             max_ownership_percent: 100,
             always_market_price: true,
-            custom_ability: 'doppler',
+            abilities: [
+              {
+                type: 'generic',
+                subtype: 'doppler',
+                description: 'Double Income for Best Company',
+                desc_detail: 'Doubles printed income of its best company',
+              },
+            ],
           },
           {
             sym: 'VM',
@@ -435,7 +463,14 @@ module Engine
             float_percent: 70,
             max_ownership_percent: 100,
             always_market_price: true,
-            custom_ability: 'vintage_machinery',
+            abilities: [
+              {
+                type: 'generic',
+                subtype: 'vintage_machinery',
+                description: 'Cost of Ownership Reduced Up to $10',
+                desc_detail: 'Cost of ownership is reduced by up to $10 (but not below $0)',
+              },
+            ],
           },
           {
             sym: 'SM',
@@ -448,7 +483,14 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             always_market_price: true,
-            custom_ability: 'stock_masters',
+            abilities: [
+              {
+                type: 'generic',
+                subtype: 'stock_masters',
+                description: 'No Price Change When Issuing a Share',
+                desc_detail: 'When issuing a share, its share price does not change',
+              },
+            ],
           },
           {
             sym: 'JS',
@@ -461,7 +503,15 @@ module Engine
             float_percent: 40,
             max_ownership_percent: 100,
             always_market_price: true,
-            custom_ability: 'junkyard_scrappers',
+            abilities: [
+              {
+                type: 'generic',
+                subtype: 'junkyard_scrappers',
+                description: 'Bonus When Closing Companies',
+                desc_detail: 'When it closes a company, it receives twice the printed income '\
+                             'of that company as a scrapping bonus',
+              },
+            ],
           },
           {
             sym: 'S',
@@ -474,7 +524,14 @@ module Engine
             float_percent: 40,
             max_ownership_percent: 100,
             always_market_price: true,
-            custom_ability: 'synergistic',
+            abilities: [
+              {
+                type: 'generic',
+                subtype: 'synergistic',
+                description: '+$1 Per Two Synergy Markers',
+                desc_detail: 'Receives +$1 for every two synergy markers it owns (rounded down)',
+              },
+            ],
           },
         ].freeze
       end
