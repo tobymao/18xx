@@ -347,10 +347,10 @@ module Engine
           tile
         end.compact
 
-        if (hex.tile.cities.any? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:cities)) ||
+        if (!hex.tile.cities.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:cities)) ||
           (hex.tile.cities.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:track))
-          tiles.group_by(&:color).values.flat_map do |group|
-            max_edges = group.map { |t| t.edges.length }.max
+          tiles.group_by(&:color).flat_map do |_, group|
+            max_edges = group.map { |t| t.edges.size }.max
             group.select { |t| t.edges.size == max_edges }
           end
         else
