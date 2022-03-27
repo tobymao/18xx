@@ -45,6 +45,8 @@ module Engine
 
         TILE_TYPE = :lawson
 
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
+
         PLAIN_SYMBOL_UPGRADES = {
           yellow: %w[S T],
         }.freeze

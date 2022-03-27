@@ -338,7 +338,7 @@ module Engine
 
       def upgradeable_tiles(entity, ui_hex)
         hex = @game.hex_by_id(ui_hex.id) # hex instance from UI can go stale
-        potential_tiles(entity, hex).map do |tile|
+        tiles = potential_tiles(entity, hex).map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute
           tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
           next if tile.legal_rotations.empty?
@@ -346,6 +346,16 @@ module Engine
           tile.rotate! # rotate it to the first legal rotation
           tile
         end.compact
+
+        if (hex.tile.cities.any? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:cities)) ||
+          (hex.tile.cities.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:track))
+          tiles.group_by(&:color).values.flat_map do |group|
+            max_edges = group.map { |t| t.edges.length }.max
+            group.select { |t| t.edges.size == max_edges }
+          end
+        else
+          tiles
+        end
       end
 
       def legal_tile_rotation?(entity, hex, tile)

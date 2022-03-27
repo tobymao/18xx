@@ -49,6 +49,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
+
         TILES = {
           '3' => 2,
           '4' => 4,
