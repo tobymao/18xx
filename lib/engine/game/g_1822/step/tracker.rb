@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/tracker'
-require_relative '../../../step/upgrade_track_max_exits'
 
 module Engine
   module Game
     module G1822
       module Tracker
         include Engine::Step::Tracker
-        include Engine::Step::UpgradeTrackMaxExits
 
         def can_lay_tile?(entity)
           # Special case for minor 14, the first OR its hometoken placement counts as tile lay
