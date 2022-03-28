@@ -17,6 +17,27 @@ module Engine
         M11_SYM = '11'
         M12_SYM = '12'
         M13_SYM = '13'
+
+        MINOR_EXCHANGE_OPTIONS = {
+          M1_SYM => %w[SR],
+          M2_SYM => %w[L&N SR],
+          M3_SYM => %w[Fr],
+          M4_SYM => %w[WRA],
+          M5_SYM => %w[SAL],
+          M6_SYM => %w[ACL],
+          M7_SYM => %w[L&N],
+          M8_SYM => %w[CoG],
+          M9_SYM => %w[L&N],
+          M10_SYM => %w[IC],
+          M11_SYM => %w[IC],
+          M12_SYM => %w[Fr Cog WRA],
+          M13_SYM => %w[ACL CoG Fr IC L&N SAL SR WRA],
+        }.freeze
+
+        def minor_exchange_options(minor)
+          MINOR_EXCHANGE_OPTIONS[minor.id]&.map { |c_id| corporation_by_id(c_id) }
+        end
+
         MINORS = [
           {
             sym: ' 1',

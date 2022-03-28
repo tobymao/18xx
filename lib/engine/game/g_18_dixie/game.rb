@@ -94,9 +94,49 @@ module Engine
           ].freeze
         end
 
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              or_round_finished
+              # Store the share price of each corp to determine if they can be acted upon in the AR
+              @stock_prices_start_merger = @corporations.to_h { |corp| [corp, corp.share_price] }
+
+              if closing_minors
+                @log << "-- #{round_description('Minor Exchanges', @round.round_num)} --"
+                G18Dixie::Round::Merger.new(self, [
+                  G18Dixie::Step::Conversion,
+                ], round_num: @round.round_num)
+              elsif @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_set_finished
+                new_stock_round
+              end
+            when G18Dixie::Round::Merger
+              # 18Dixie merger round handles minor mergers ("closures / share exchanges")
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
         # OR Stuff
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
           Engine::Step::Bankrupt,
           Engine::Step::Exchange,
           Engine::Step::SpecialTrack,
@@ -120,15 +160,22 @@ module Engine
             @depot.reclaim_all!('2')
             make_minor_available(M13_SYM)
             %w[P8 P9 P10].each { |company_id| add_private(company_by_id(company_id)) }
-
-          when '2.1'
-            [M1_SYM, M2_SYM, M3_SYM, M4_SYM].each { |m_id| close_minor(m_id) }
           when '3.2'
-            [M5_SYM, M6_SYM, M7_SYM, M8_SYM].each { |m_id| close_minor(m_id) }
             %w[P8 P9 P10].each { |company_id| put_private_in_pool(company_by_id(company_id)) }
-          when '3.1'
-            [M9_SYM, M10_SYM, M11_SYM, M12_SYM, M13_SYM].each { |m_id| close_minor(m_id) }
           end
+        end
+
+        def closing_minors
+          turn = "#{@turn}.#{@round.round_num}"
+          case turn
+          when '2.1'
+            return [M1_SYM, M2_SYM, M3_SYM, M4_SYM].map { |m_id| minor_by_id(m_id) }
+          when '2.2'
+            return [M5_SYM, M6_SYM, M7_SYM, M8_SYM].map { |m_id| minor_by_id(m_id) }
+          when '3.1'
+            return [M9_SYM, M10_SYM, M11_SYM, M12_SYM, M13_SYM].map { |m_id| minor_by_id(m_id) }
+          end
+          []
         end
 
         def tile_lays(entity)
@@ -156,18 +203,15 @@ module Engine
           @minors.select(&:floated?) + corporations
         end
 
-        def close_minor(minor_id)
-          minor = minor_by_id(minor_id)
-          return if minor.closed?
-
+        def close_minor(minor, _corporation)
           @log << "#{minor.name} closes"
-          company_by_id(minor_id).close!
+          company_by_id(minor.id)&.close!
           minor.close!
         end
 
         # SR stuff
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
           Engine::Step::DiscardTrain,
           Engine::Step::Exchange,
           Engine::Step::SpecialTrack,
