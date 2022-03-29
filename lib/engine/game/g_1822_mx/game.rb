@@ -239,7 +239,7 @@ module Engine
             G1822::Step::SpecialToken,
             G1822MX::Step::Track,
             G1822::Step::DestinationToken,
-            G1822::Step::Token,
+            G1822MX::Step::Token,
             G1822MX::Step::Route,
             G1822MX::Step::Dividend,
             G1822::Step::BuyTrain,
@@ -631,6 +631,12 @@ module Engine
           end
           cost -= 20 if num_cubes >= 1 && terrain?(tile, 'river')
           cost
+        end
+
+        def purchasable_companies(entity = nil)
+          return [] if entity && entity.id == 'NDEM'
+
+          super
         end
       end
     end
