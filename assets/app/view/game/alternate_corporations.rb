@@ -410,12 +410,23 @@ module View
           },
         }
 
-        holdings = h(:div, holdings_props, [render_cash, render_stars])
+        holdings = h(:div, holdings_props, [render_rs_cash, render_stars])
 
         h('div.corp__holdings', holdings_row_props, [
           h(:div, sym_props, @corporation.name),
           holdings,
         ])
+      end
+
+      def render_rs_cash
+        round = @game.round
+        if round.respond_to?(:transacted_cash)
+          net_cash = @game.format_currency(@corporation.cash - round.transacted_cash[@corporation])
+          cash_str = "#{@game.format_currency(@corporation.cash)} (#{net_cash})"
+          render_header_segment(cash_str, 'Cash')
+        else
+          render_header_segment(@game.format_currency(@corporation.cash), 'Cash')
+        end
       end
 
       def render_stars

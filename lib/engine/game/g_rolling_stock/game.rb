@@ -412,10 +412,11 @@ module Engine
         end
 
         def total_income(entity)
-          return 0 if entity.companies.empty?
+          income = 0
+          income += FOREIGN_EXTRA_INCOME if entity == @foreign_investor
+          return income if entity.companies.empty?
 
           income = entity.companies.sum { |c| company_income(c) }
-          income += FOREIGN_EXTRA_INCOME if entity == @foreign_investor
           return income unless entity.corporation?
 
           income += synergy_income(entity)
@@ -519,6 +520,8 @@ module Engine
           return [] unless entity.corporation?
 
           bundle = bundles_for_corporation(entity, entity).first
+          return [] unless bundle
+
           bundle.share_price = next_price_to_left(bundle.corporation.share_price).price unless abilities(entity, :stock_masters)
 
           [bundle]
