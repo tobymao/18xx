@@ -11,6 +11,15 @@ a {
   text-underline-offset: 0.2em;
 }
 
+hr {
+   width: 80%;
+   color: rgba(0,0,0,0.2);
+   border-style: solid none none none;
+   border-width: 1px;
+   margin: 0 auto 3px auto;
+   align: center;
+}
+
 button, .button_link {
   font-size: 14px;
   background-color: gainsboro;
