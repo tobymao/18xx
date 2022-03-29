@@ -120,6 +120,7 @@ module Engine
               end
             when G18Dixie::Round::Merger
               # 18Dixie merger round handles minor mergers ("closures / share exchanges")
+              closing_minors.each { |minor| close_unstarted_minor_maybe(minor) }
               if @round.round_num < @operating_rounds
                 new_operating_round(@round.round_num + 1)
               else
@@ -176,6 +177,18 @@ module Engine
             return [M9_SYM, M10_SYM, M11_SYM, M12_SYM, M13_SYM].map { |m_id| minor_by_id(m_id) }
           end
           []
+        end
+
+        # the unstarted minor could be started & closed, hence, maybe
+        def close_unstarted_minor_maybe(minor)
+          return if minor.closed?
+
+          @log << "Unstarted minor #{minor.name} is removed from the game"
+          # Minors don't have cash until they run, so no cash to transfer
+          # Minors don't have tokens until they first operate, so unstarted minors don't have home tokens to transfer
+
+          company_by_id(minor.id).close!
+          minor.close!
         end
 
         def tile_lays(entity)

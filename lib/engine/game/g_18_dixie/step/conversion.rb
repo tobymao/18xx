@@ -86,16 +86,11 @@ module Engine
           end
 
           def move_tokens_to_major(major, minor)
-            # Moves tokens to surviving company and returns a list of those moved
-
-            # Seperate unused tokens to allow them to be moved to the end
-            used, unused = major.tokens.partition(&:used)
-
             tokens = others_tokens(minor).map do |token|
               new_token = Engine::Token.new(major, price: 0)
               if token.hex
-                used << new_token
                 token.swap!(new_token, check_tokenable: true)
+                major.tokens << new_token
               else
                 puts 'TODO: Confirm if unused minor tokens go onto a majors charter ever'
                 # If so, uncomment this, perhaps with additional conditioning
@@ -103,10 +98,6 @@ module Engine
               end
               new_token.hex&.id
             end
-
-            major.tokens.clear
-            major = used + unused.sort_by(&:price)
-
             # Owner may no longer have a valid route.
             @game.graph.clear_graph_for(major)
 
