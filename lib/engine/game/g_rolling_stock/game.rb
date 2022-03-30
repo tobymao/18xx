@@ -137,12 +137,14 @@ module Engine
         end
 
         def setup
-          @company_stars = self.class::COMPANIES.to_h { |c| [c[:sym], c[:stars]] }
-          @company_synergies = self.class::COMPANIES.to_h { |c| [c[:sym], c[:synergies]] }
+          @company_stars = self.class::COMPANIES.to_h { |c| [company_by_id(c[:sym]), c[:stars]] }
+          @company_synergies = self.class::COMPANIES.to_h do |c|
+            [company_by_id(c[:sym]), c[:synergies].to_h { |oc| [company_by_id(oc), true] }]
+          end
 
           @company_deck = []
           5.times do |stars|
-            matching = @companies.select { |c| @company_stars[c.sym] == (stars + 1) }
+            matching = @companies.select { |c| @company_stars[c] == (stars + 1) }
             highest = matching.max_by(&:value)
             drawn = matching.reject { |c| c == highest }.sort_by { rand }.take(num_to_draw(players, stars + 1))
             drawn << highest
@@ -153,13 +155,19 @@ module Engine
 
           @foreign_investor = Player.new(-1, 'Foreign Investor')
           @bank.spend(FOREIGN_START_CASH, @foreign_investor)
-          @cost_level = @company_stars[@company_deck[0].sym]
+          @cost_level = @company_stars[@company_deck[0]]
           @log << 'No cost of ownership'
           @cost_table = COST_OF_OWNERSHIP_RSS
+          @synergy_income = {}
         end
 
-        # FIXME: Overseas Trading
         def can_acquire_any_company?(corporation)
+          if abilities(corporation, :overseas) && @companies.any? do |c|
+               c.owner == @foreign_investor && corporation.cash >= c.value
+             end
+            return true
+          end
+
           @companies.any? { |c| c.owner && c.owner != corporation && corporation.cash >= c.min_price }
         end
 
@@ -366,13 +374,15 @@ module Engine
             end
         end
 
-        # FIXME: Prussian Railway
-        # FIXME: Doppler AG
-        # FIXME: Vintage Machinery
         def calculate_total_income(entity)
           income = entity.companies.sum { |c| calculate_income(c) }
-          income += calculate_synergies(entity) if entity.corporation?
           income += FOREIGN_EXTRA_INCOME if entity == @foreign_investor
+          return income unless entity.corporation?
+
+          income += synergy_income(entity)
+          income += entity.companies.size if abilities(entity, :prussian)
+          income += entity.companies.max_by(&:revenue).revenue if abilities(entity, :doppler)
+          income += [entity.companies.sum { |c| operating_cost(c) }, 10].min if abilities(entity, :vintage_machinery)
           income
         end
 
@@ -381,13 +391,65 @@ module Engine
         end
 
         def operating_cost(company)
-          @cost_table[@cost_level][@company_stars[company.sym]]
+          @cost_table[@cost_level][@company_stars[company]]
         end
 
-        # FIXME: TBD
+        def synergy_income(corporation)
+          @synergy_income[corporation] ||= calculate_synergy_income(corporation)
+        end
+
+        def clear_synergy_income(corporation)
+          @synergy_income.delete(corporation)
+        end
+
         # FIXME: Synergistic
-        def calculate_synergies(_corporation)
-          0
+        def calculate_synergy_income(corporation)
+          comps = corporation.companies
+          total = 0
+          count = 0
+          comps.each do |c|
+            pairs = calculate_synergy_pairs(c, comps)
+            total += pairs[0]
+            count += pairs[1]
+          end
+          total += (count / 2).to_i if abilities(corporation, :synergistic)
+          total
+        end
+
+        def calculate_synergy_pairs(company, other_companies)
+          total = 0
+          count = 0
+          other_companies.each do |oc|
+            if @company_synergies[company][oc] && company.value > oc.value
+              total += synergy_value_by_star(company, oc)
+              count += 1
+            end
+          end
+          [total, count]
+        end
+
+        def synergy_value_by_star(company_a, company_b)
+          stars = @company_stars[company_a]
+          other_stars = @company_stars[company_b]
+          case stars
+          when 1
+            1
+          when 2
+            other_stars < stars ? 1 : 2
+          when 3
+            other_stars < stars ? 2 : 4
+          when 4
+            other_stars < stars ? 4 : 8
+          else
+            case other_stars
+            when 3
+              4
+            when 4
+              8
+            else
+              16
+            end
+          end
         end
 
         def num_issued(corporation)
@@ -402,10 +464,10 @@ module Engine
           [(corporation.share_price.price / 3), (corporation.cash / num_issued(corporation))].min.to_i
         end
 
-        # FIXME: TBD
-        # FIXME: Stars, Inc.
         def corporation_stars(corporation, cash)
-          (cash / 10).to_i + corporation.companies.sum { |c| @company_stars[c.sym] }
+          total = (cash / 10).to_i + corporation.companies.sum { |c| @company_stars[c] }
+          total += 2 if abilities(corporation, :stars)
+          total
         end
 
         def target_stars(corporation)
@@ -418,8 +480,7 @@ module Engine
           return [] unless entity.corporation?
 
           bundle = bundles_for_corporation(entity, entity).first
-          # FIXME: Stock Masters
-          bundle.share_price = next_price_to_left(bundle.corporation.share_price).price
+          bundle.share_price = next_price_to_left(bundle.corporation.share_price).price unless abilities(entity, :stock_masters)
 
           [bundle]
         end
@@ -438,6 +499,12 @@ module Engine
           @offering - @on_deck
         end
 
+        def responder_order
+          eligible = @corporations.select { |corp| corp.floated? && !corp.receivership? }
+          oversea_corp, others = eligible.partition { |corp| abilities(corp, :overseas) }
+          (oversea_corp + others.sort).compact
+        end
+
         def update_offering(company)
           @offering.delete(company)
           if @company_deck.empty?
@@ -452,7 +519,7 @@ module Engine
           new_cost = if @company_deck.empty?
                        END_CARD_FRONT
                      else
-                       @company_stars[@company_deck[0].sym]
+                       @company_stars[@company_deck[0]]
                      end
 
           return unless @cost_level < new_cost
@@ -489,7 +556,7 @@ module Engine
         end
 
         def available_par_prices(company)
-          PAR_PRICES[@company_stars[company.sym]].map { |p| prices[p] }.select { |p| p.corporations.empty? }
+          PAR_PRICES[@company_stars[company]].map { |p| prices[p] }.select { |p| p.corporations.empty? }
         end
 
         def prices
@@ -557,13 +624,16 @@ module Engine
           end
         end
 
-        # FIXME: Junkyard Scrappers
         def close_company(company)
           owner = company.owner
           owner.companies.delete(company)
           company.owner = nil
           @companies.delete(company)
           @log << "#{company.sym} (#{owner.name}) closes"
+          return if !owner.corporation? || !abilities(owner, :junkyard_scrappers)
+
+          @bank.spend(owner, company.revenue)
+          @log << "#{owner.name} receives #{format_currency(company.revenue)} as a scrapping bonus"
         end
 
         def pass_entity(user)

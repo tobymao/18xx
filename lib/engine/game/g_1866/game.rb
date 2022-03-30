@@ -1732,11 +1732,17 @@ module Engine
           @log << "#{corporation.name} #{ipo_verb(corporation)} at #{format_currency(share_price.price)}"
 
           # Find the share holders to give a share, then close the minor
+          minor_corporations = []
           minors.each do |m|
-            minor = corporation_by_id(m)
-            @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, minor.owner) if minor.owner
+            minor_corporations << corporation_by_id(m)
+          end
 
-            close_corporation(minor)
+          minor_corporations.group_by(&:owner).each do |player, player_minors|
+            player_minors.each do |minor|
+              @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, player) if player
+
+              close_corporation(minor)
+            end
           end
 
           # Move the rest of the shares into the market
