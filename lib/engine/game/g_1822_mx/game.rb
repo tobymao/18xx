@@ -243,7 +243,7 @@ module Engine
             G1822MX::Step::Route,
             G1822MX::Step::Dividend,
             G1822::Step::BuyTrain,
-            G1822::Step::MinorAcquisition,
+            G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
             G1822::Step::IssueShares,
