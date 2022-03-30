@@ -11,7 +11,7 @@ module Engine
         include_meta(GRollingStock::Meta)
         include Entities
 
-        attr_reader :foreign_investor
+        attr_reader :foreign_investor, :company_stars, :company_synergies
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -86,11 +86,15 @@ module Engine
 
         SELL_MOVEMENT = :left_share_pres
         SELL_BUY_ORDER = :sell_buy
-        GAME_END_CHECK = { stock_market: :current_or, bank: :full_or }.freeze
+        GAME_END_CHECK = { custom: :immediate }.freeze
         SOLD_OUT_INCREASE = false
         EBUY_OTHER_VALUE = false
         PRESIDENT_SALES_TO_MARKET = true
         CAPITALIZATION = :incremental
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Max stock price in phase 1 or 7 or end card flipped in phase 7',
+        )
 
         PHASES = [
           { name: 'red', train_limit: 1, tiles: [:yellow], operating_rounds: 1 },
@@ -99,6 +103,16 @@ module Engine
           { name: 'green', train_limit: 1, tiles: [:yellow], operating_rounds: 1 },
           { name: 'blue', train_limit: 1, tiles: [:yellow], operating_rounds: 1 },
         ].freeze
+
+        STAR_COLORS = {
+          #     main color text     card color
+          1 => ['#cd5c5c', 'white', '#f8ecec'],
+          2 => ['#ffa500', 'black', '#fff7e5'],
+          3 => ['#ffff33', 'black', '#ffffe5'],
+          4 => ['#90ee90', 'black', '#e8fce8'],
+          5 => ['#add8e6', 'black', '#ecf7f8'],
+          6 => ['#9370db', 'white', '#efecf9'],
+        }.freeze
 
         FOREIGN_START_CASH = 4
         FOREIGN_EXTRA_INCOME = 5
@@ -256,7 +270,7 @@ module Engine
 
         def auto_close_companies
           @foreign_investor.companies.each do |company|
-            if calculate_income(company).negative?
+            if company_income(company).negative?
               close_company(company)
               @log << "#{company.sym} (#{company.owner.name}) has negative income"
             end
@@ -269,7 +283,7 @@ module Engine
           (@players + [@foreign_investor] + @corporations).each do |entity|
             next if entity.corporation? && !entity.ipoed
 
-            income = calculate_total_income(entity)
+            income = total_income(entity)
 
             if income.positive?
               @log << "#{entity.name} receives #{format_currency(income)}"
@@ -302,11 +316,34 @@ module Engine
         # end card
         def phase7
           @log << "-- Turn #{@turn}, Phase 7 - End Card --"
+
+          if @cost_level == END_CARD_BACK || @stock_market.max_reached?
+            @log << 'Game ends: Max Stock price has been reached' if @stock_market.max_reached?
+            @log << 'Game ends: Game end card reached' if @cost_level == END_CARD_BACK
+            return end_game!
+          end
+
           return if @cost_level != END_CARD_FRONT || !@offering.empty?
 
           @cost_level = END_CARD_BACK
           @log << "New cost of ownership: #{cost_level_str}"
-          @log << 'End game triggered'
+          @log << 'Game will end on next turn'
+        end
+
+        def custom_end_game_reached?
+          @stock_market.max_reached? && @round.is_a?(Round::Investment)
+        end
+
+        def game_ending_description
+          return if !@finished && @cost_level != END_CARD_BACK
+
+          after_text = @finished ? '' : ' : Game Ends on next phase 7'
+
+          if @stock_market.max_reached?
+            'Corporation hit max stock value'
+          else
+            "End card flipped#{after_text}"
+          end
         end
 
         def new_issue_round
@@ -374,9 +411,12 @@ module Engine
             end
         end
 
-        def calculate_total_income(entity)
-          income = entity.companies.sum { |c| calculate_income(c) }
+        def total_income(entity)
+          income = 0
           income += FOREIGN_EXTRA_INCOME if entity == @foreign_investor
+          return income if entity.companies.empty?
+
+          income = entity.companies.sum { |c| company_income(c) }
           return income unless entity.corporation?
 
           income += synergy_income(entity)
@@ -386,7 +426,7 @@ module Engine
           income
         end
 
-        def calculate_income(company)
+        def company_income(company)
           company.revenue - operating_cost(company)
         end
 
@@ -480,6 +520,8 @@ module Engine
           return [] unless entity.corporation?
 
           bundle = bundles_for_corporation(entity, entity).first
+          return [] unless bundle
+
           bundle.share_price = next_price_to_left(bundle.corporation.share_price).price unless abilities(entity, :stock_masters)
 
           [bundle]
@@ -636,6 +678,18 @@ module Engine
           @log << "#{owner.name} receives #{format_currency(company.revenue)} as a scrapping bonus"
         end
 
+        def close_corporation(corporation, quiet: false)
+          @log << "#{corporation.name} bankrupts"
+          corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+          @share_pool.shares_by_corporation.delete(corporation)
+
+          reset_corporation(corporation)
+        end
+
         def pass_entity(user)
           return super unless @round.unordered?
           return @round.entities.find { |e| !e.passed? } unless user
@@ -674,6 +728,26 @@ module Engine
             ['Div/Share', 'New Cash', 'Stars', 'New Price'],
             *rows,
           ]
+        end
+
+        def corporation_view(_corp)
+          'rs_corporation'
+        end
+
+        def company_view(_company)
+          'rs_company'
+        end
+
+        def company_card_only?
+          true
+        end
+
+        def company_available?(company)
+          !@on_deck.include?(company)
+        end
+
+        def company_colors(company)
+          STAR_COLORS[company_stars[company]]
         end
       end
     end
