@@ -54,6 +54,7 @@ module Engine
 
         def setup
           @recently_floated = []
+          setup_preferred_shares
           @minors.each do |minor|
             train = @depot.upcoming[0]
             train.buyable = false
@@ -230,6 +231,40 @@ module Engine
           Engine::Step::SpecialTrack,
           G18Dixie::Step::BuySellParShares,
           ])
+        end
+
+        def share_flags(shares)
+          return if shares.empty?
+
+          'P' * shares.count(&:preferred)
+        end
+
+        def preferred_share_slices_by_major(m_id)
+          {
+            'ACL' => (8...9),
+            'CoG' => (7...9),
+            'Fr' => (7...9),
+            'IC' => (7...9),
+            'L&N' => (6...9),
+            'SAL' => (8...9),
+            'SR' => (7...9),
+            'WRA' => (7...9),
+          }.freeze[m_id]
+        end
+
+        def preferred_shares_by_major
+          %w[ACL CoG Fr IC L&N SAL SR WRA].map do |c|
+            [corporation_by_id(c), corporation_by_id(c).shares.slice(preferred_share_slices_by_major(c))]
+          end
+        end
+
+        def setup_preferred_shares
+          preferred_shares_by_major.each { |_corp, shares| shares.each { |s| setup_preferred_share(s) } }
+        end
+
+        def setup_preferred_share(share)
+          share.buyable = false
+          share.preferred = true
         end
 
         def bidding_power(player)

@@ -8,7 +8,7 @@ module Engine
     include Ownable
 
     attr_accessor :percent, :buyable, :counts_for_limit, :cert_size, :last_cert,
-                  :double_cert
+                  :double_cert, :preferred
     attr_reader :corporation, :president, :index
 
     def initialize(corporation, owner: nil, president: false, percent: 10, index: 0, cert_size: 1)
@@ -24,6 +24,9 @@ module Engine
 
       # counts_for_limit: set to false if share is disregarded for cert limit
       @counts_for_limit = true
+
+      # preferred: set to true if share is disregarded for ownership limit (IE: doesn't count towards 60% limit in 18Dixie)
+      @preferred = false
 
       # last_cert: set to true if share must be bought/issued last from its location
       @last_cert = false
