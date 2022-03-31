@@ -439,19 +439,24 @@ module View
             fontSize: '80%',
           },
         }
+
+        rows = []
+        rows << h(:tr, [h('td.left', 'Company Revenue:'),
+                        h(:td, @game.format_currency(@corporation.companies.sum(&:revenue)))])
+        rows << h(:tr, [h('td.left', 'Synergies:'),
+                        h(:td, @game.format_currency(@game.synergy_income(@corporation)))])
+        rows << h(:tr, [h('td.left', 'Cost of Ownership:'),
+                        h(:td, @game.format_currency(@corporation.companies.sum { |c| @game.operating_cost(c) }))])
+        if (extra = @game.ability_income(@corporation)).positive?
+          rows << h(:tr, [h('td.left', 'Ability Income:'), h(:td, @game.format_currency(extra))])
+        end
+
         h(:table, [
           h(:thead, [
             h(:tr, [h('th.left', 'Income'),
                     h(:th, @game.format_currency(@game.total_income(@corporation)))]),
           ]),
-          h(:tbody, body_props, [
-            h(:tr, [h('td.left', 'Company Revenue:'),
-                    h(:td, @game.format_currency(@corporation.companies.sum(&:revenue)))]),
-            h(:tr, [h('td.left', 'Synergies:'),
-                    h(:td, @game.format_currency(@game.synergy_income(@corporation)))]),
-            h(:tr, [h('td.left', 'Cost of Ownership:'),
-                    h(:td, @game.format_currency(@corporation.companies.sum { |c| @game.operating_cost(c) }))]),
-          ]),
+          h(:tbody, body_props, rows),
         ])
       end
     end
