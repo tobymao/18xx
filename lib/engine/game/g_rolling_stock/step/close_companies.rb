@@ -25,6 +25,7 @@ module Engine
           end
 
           def must_close?(entity)
+            return unless entity.player?
             return if entity.companies.empty?
 
             (entity.cash + entity.companies.sum { |c| @game.company_income(c) }).negative?

@@ -35,6 +35,8 @@ module View
           @price_protection = @step.price_protection if @step.respond_to?(:price_protection)
           @selected_corporation ||= @price_protection&.corporation
 
+          @bank_first = @step.respond_to?(:bank_first?) && @step.bank_first?
+
           @current_entity = @step.current_entity
           if @last_player != @current_entity && !@auctioning_corporation
             store(:selected_corporation, nil, skip: true)
@@ -63,10 +65,11 @@ module View
           children.concat(render_buttons)
           children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
+          children.concat(render_bank_companies) if @bank_first
           children.concat(render_corporations)
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
-          children.concat(render_bank_companies)
+          children.concat(render_bank_companies) unless @bank_first
           children << h(Players, game: @game)
           if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
             children << h(BuyCompanyFromOtherPlayer, game: @game)
