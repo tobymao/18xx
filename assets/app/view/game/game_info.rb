@@ -35,7 +35,7 @@ module View
           children = []
         else
           children = @game.train_power? ? power : trains
-          children.concat(discarded_trains) if @depot.discarded.any?
+          children.concat(discarded_trains) unless @depot.discarded.empty?
         end
         if @game.phase_valid?
           children.concat(phases)
@@ -52,7 +52,7 @@ module View
 
         children = [h(:h3, 'Timeline')]
         children << progress_bar if @game.show_progress_bar?
-        @game.timeline.each { |line| children << h(:p, line) } if @game.timeline.any?
+        @game.timeline.each { |line| children << h(:p, line) } unless @game.timeline.empty?
 
         children
       end
@@ -83,7 +83,7 @@ module View
 
           extra = []
           extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
-          extra << h(:td, row_events) if phases_events.any?
+          extra << h(:td, row_events) unless phases_events.empty?
 
           tr_props = @game.phase.available?(phase[:name]) && phase != current_phase ? @dimmed_font_style : {}
 
@@ -104,7 +104,7 @@ module View
         extra = []
         extra << h(:th, 'New Corporation Size') if corporation_sizes
 
-        if status_text.any?
+        unless status_text.empty?
           status_text = [h(:table, { style: { marginTop: '0.3rem' } }, [
             h(:thead, [
               h(:tr, [
@@ -168,7 +168,7 @@ module View
       def trains
         rust_schedule, obsolete_schedule = rust_obsolete_schedule
 
-        show_obsolete_schedule = obsolete_schedule.keys.any?
+        show_obsolete_schedule = !obsolete_schedule.keys.empty?
         show_upgrade = @depot.upcoming.any?(&:discount)
         show_available = @depot.upcoming.any?(&:available_on)
         events = []
@@ -236,7 +236,7 @@ module View
 
           train_content << h(:td, discounts) if show_upgrade
           train_content << h(:td, train.available_on) if show_available
-          train_content << h(:td, event_text) if event_text.any?
+          train_content << h(:td, event_text) unless event_text.empty?
           tr_props = remaining.empty? ? @dimmed_font_style : {}
 
           h(:tr, tr_props, train_content)
@@ -247,7 +247,7 @@ module View
           h(:tr, [h('td.nowrap', { style: { maxWidth: '30vw' } }, desc[0]), h(:td, desc[1])])
         end
 
-        if event_text.any?
+        unless event_text.empty?
           event_text = [h(:table, { style: { marginTop: '0.3rem' } }, [
             h(:thead, [
               h(:tr, [
@@ -273,7 +273,7 @@ module View
                                      { attrs: { title: 'Available after purchase of first train of type' } },
                                      'Available')
         end
-        upcoming_train_header << h(:th, 'Events') if event_text.any?
+        upcoming_train_header << h(:th, 'Events') unless event_text.empty?
 
         [
           h(:h3, 'Trains'),
