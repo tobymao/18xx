@@ -10,6 +10,7 @@ require_relative 'trains'
 require_relative 'minors'
 require_relative 'companies'
 require_relative '../base'
+require_relative '../../share_bundle'
 require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
@@ -122,6 +123,7 @@ module Engine
             when G18Dixie::Round::Merger
               # 18Dixie merger round handles minor mergers ("closures / share exchanges")
               closing_minors.each { |minor| close_unstarted_minor_maybe(minor) }
+              release_preferred_shares if "#{@turn}.#{@round.round_num}" == '3.1'  
               if @round.round_num < @operating_rounds
                 new_operating_round(@round.round_num + 1)
               else
@@ -260,6 +262,19 @@ module Engine
 
         def setup_preferred_shares
           preferred_shares_by_major.each { |_corp, shares| shares.each { |s| setup_preferred_share(s) } }
+        end
+
+        def release_preferred_shares
+          @log << "Unclaimed preferred shares in IPO are put into the open market"
+          preferred_shares_by_major.each { |corp, shares| shares.each { |s| release_preferred_share_maybe(s, corp)} }
+        end
+
+        # Release the share to the open market if it's still in IPO, otherwise do nothing
+        def release_preferred_share_maybe(share, corp)
+          return unless share.owner == corp
+
+          share.buyable = true
+          @share_pool.transfer_shares(Engine::ShareBundle.new(share), @share_pool)
         end
 
         def setup_preferred_share(share)
