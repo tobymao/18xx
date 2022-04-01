@@ -56,7 +56,7 @@ module Engine
                     " receiving #{receiving.join(', ')}"
 
             @round.entities.delete(target)
-            @game.close_minor(minor, target)
+            @game.exchange_minor(minor, target)
 
             # Deleting the entity changes turn order, restore it.
             # @round.goto_entity!(corporation) unless @round.entities.empty?

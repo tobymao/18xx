@@ -224,6 +224,13 @@ module Engine
           @minors.select(&:floated?) + corporations
         end
 
+        def exchange_minor(minor, major)
+          share = preferred_shares_by_major.to_h[major].find { |s| s.owner == major }
+          share.buyable = true
+          @share_pool.buy_shares(minor.owner, share, exchange: true, exchange_price: 0)
+          close_minor(minor, major)
+        end
+
         def close_minor(minor, _corporation)
           @log << "#{minor.name} closes"
           company_by_id(minor.id)&.close!
@@ -260,7 +267,7 @@ module Engine
         end
 
         def preferred_shares_by_major
-          %w[ACL CoG Fr IC L&N SAL SR WRA].map do |c|
+          @preferred_shares_by_major ||= %w[ACL CoG Fr IC L&N SAL SR WRA].map do |c|
             [corporation_by_id(c), corporation_by_id(c).shares.slice(preferred_share_slices_by_major(c))]
           end
         end
@@ -279,7 +286,7 @@ module Engine
           return unless share.owner == corp
 
           share.buyable = true
-          @share_pool.transfer_shares(Engine::ShareBundle.new(share), @share_pool)
+          @share_pool.buy_shares(@share_pool, share, exchange: true, exchange_price: 0)
         end
 
         def setup_preferred_share(share)
