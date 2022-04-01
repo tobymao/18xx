@@ -138,6 +138,10 @@ module Engine
             end
         end
 
+        def ipo_reserved_name(_entity = nil)
+          'IPO Preferred'
+        end
+
         # OR Stuff
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [

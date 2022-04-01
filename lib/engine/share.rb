@@ -66,6 +66,12 @@ module Engine
       "<Share: #{@corporation.id} #{@percent}%>"
     end
 
+    def preferred_percent
+      return 0 if @preferred
+
+      @percent
+    end
+
     def transfer(new_entity)
       owner.shares_by_corporation[corporation].delete(self)
       corporation.share_holders[owner] -= percent

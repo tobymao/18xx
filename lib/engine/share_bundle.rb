@@ -65,5 +65,10 @@ module Engine
     def ==(other)
       [shares, percent, share_price] == [other.shares, other.percent, other.share_price]
     end
+
+    # Percent of shares not counting preferred shares
+    def preferred_percent
+      @preferred_percent ||= @shares.reject(&:preferred).sum(&:percent)
+    end
   end
 end

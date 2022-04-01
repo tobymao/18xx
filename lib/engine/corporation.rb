@@ -242,8 +242,8 @@ module Engine
 
     # Is it legal to hold percent shares in this corporation?
     def holding_ok?(share_holder, extra_percent = 0)
-      percent = share_holder.percent_of(self) + extra_percent
-      %i[multiple_buy unlimited].include?(@share_price&.type) || percent <= @max_ownership_percent
+      preferred_percent = share_holder.preferred_percent_of(self) + extra_percent
+      %i[multiple_buy unlimited].include?(@share_price&.type) || preferred_percent <= @max_ownership_percent
     end
 
     def all_abilities
