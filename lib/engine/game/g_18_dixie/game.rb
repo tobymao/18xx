@@ -227,7 +227,8 @@ module Engine
         def exchange_minor(minor, major)
           share = preferred_shares_by_major.to_h[major].find { |s| s.owner == major }
           share.buyable = true
-          @share_pool.buy_shares(minor.owner, share, exchange: true, exchange_price: 0)
+          # Don't exchange presidency unless parred
+          @share_pool.buy_shares(minor.owner, share, exchange: :free, allow_president_change: major.ipoed)
           close_minor(minor, major)
         end
 
@@ -282,11 +283,12 @@ module Engine
         end
 
         # Release the share to the open market if it's still in IPO, otherwise do nothing
-        def release_preferred_share_maybe(share, corp)
-          return unless share.owner == corp
+        def release_preferred_share_maybe(share, major)
+          return unless share.owner == major
 
+          # Don't exchange presidency unless parred
           share.buyable = true
-          @share_pool.buy_shares(@share_pool, share, exchange: true, exchange_price: 0)
+          @share_pool.buy_shares(@share_pool, share, exchange: :free, allow_president_change: major.ipoed)
         end
 
         def setup_preferred_share(share)
