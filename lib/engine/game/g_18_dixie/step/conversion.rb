@@ -73,7 +73,14 @@ module Engine
           def mergeable(minor)
             return [] unless minor.floated?
 
-            @game.minor_exchange_options(minor)
+            @game.minor_exchange_options(minor).select do |major|
+              # Any major exchange option, where there is an exchange share left in the IPO
+              @game.preferred_shares_by_major.any? do |m_id, shares|
+                major == m_id && shares.any? do |share|
+                  share.owner == major
+                end
+              end
+            end
           end
 
           def round_state

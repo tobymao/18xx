@@ -30,7 +30,7 @@ module Engine
           M9_SYM => %w[L&N],
           M10_SYM => %w[IC],
           M11_SYM => %w[IC],
-          M12_SYM => %w[Fr Cog WRA],
+          M12_SYM => %w[Fr CoG WRA],
           M13_SYM => %w[ACL CoG Fr IC L&N SAL SR WRA],
         }.freeze
 
@@ -254,7 +254,7 @@ module Engine
               {
                 type: 'description',
                 description: 'Closes at the end of OR3.1* ▼',
-                desc_detail: 'Is exchanged for a preferred share of Cog, Frisco, or WRA, '\
+                desc_detail: 'Is exchanged for a preferred share of CoG, Frisco, or WRA, '\
                              'which gets the minor\'s token and treasury',
               },
               {
