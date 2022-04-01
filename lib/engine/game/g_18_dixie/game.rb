@@ -123,7 +123,7 @@ module Engine
             when G18Dixie::Round::Merger
               # 18Dixie merger round handles minor mergers ("closures / share exchanges")
               closing_minors.each { |minor| close_unstarted_minor_maybe(minor) }
-              release_preferred_shares if "#{@turn}.#{@round.round_num}" == '3.1'  
+              release_preferred_shares if "#{@turn}.#{@round.round_num}" == '3.1'
               if @round.round_num < @operating_rounds
                 new_operating_round(@round.round_num + 1)
               else
@@ -142,6 +142,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
           Engine::Step::Bankrupt,
+          G18Dixie::Step::HomeToken,
           Engine::Step::Exchange,
           Engine::Step::SpecialTrack,
           Engine::Step::BuyCompany,
@@ -167,6 +168,10 @@ module Engine
           when '3.2'
             %w[P8 P9 P10].each { |company_id| put_private_in_pool(company_by_id(company_id)) }
           end
+        end
+
+        def home_token_locations(corporation)
+          hexes.select { |hex| corporation.coordinates.include?(hex.coordinates) }
         end
 
         def closing_minors
@@ -265,8 +270,8 @@ module Engine
         end
 
         def release_preferred_shares
-          @log << "Unclaimed preferred shares in IPO are put into the open market"
-          preferred_shares_by_major.each { |corp, shares| shares.each { |s| release_preferred_share_maybe(s, corp)} }
+          @log << 'Unclaimed preferred shares in IPO are put into the open market'
+          preferred_shares_by_major.each { |corp, shares| shares.each { |s| release_preferred_share_maybe(s, corp) } }
         end
 
         # Release the share to the open market if it's still in IPO, otherwise do nothing
