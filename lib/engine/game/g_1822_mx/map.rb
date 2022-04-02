@@ -339,7 +339,7 @@ module Engine
           'BC' =>
             {
               'count' => 1,
-              'color' => 'yellow',
+              'color' => 'white',
               'code' => 'icon=image:1822_mx/red_cube,large:1',
               'hidden' => true,
             },

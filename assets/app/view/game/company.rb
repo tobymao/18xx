@@ -3,12 +3,14 @@
 require 'lib/settings'
 require 'lib/truncate'
 require 'view/game/actionable'
+require 'view/game/alternate_companies'
 
 module View
   module Game
     class Company < Snabberb::Component
       include Actionable
       include Lib::Settings
+      include AlternateCompanies
 
       needs :company
       needs :bids, default: nil
@@ -78,6 +80,11 @@ module View
       end
 
       def render
+        # use alternate view of corporation if needed
+        if @game.respond_to?(:company_view) && (view = @game.company_view(@company))
+          return send("render_#{view}")
+        end
+
         if @layout == :table
           @hidden_divs = {}
           render_company_on_card(@company)

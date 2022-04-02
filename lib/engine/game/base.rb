@@ -246,6 +246,12 @@ module Engine
       # :lawson Tile type like 1817, 1822
       TILE_TYPE = :normal
 
+      # Must an upgrade use the maximum number of exits
+      # for track and/or cities?
+      # :cities for cities, as in  #611 and #63 in 1822
+      # :track  for track, as in 18USA
+      TILE_UPGRADES_MUST_USE_MAX_EXITS = [].freeze
+
       TILE_COST = 0
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
@@ -2817,6 +2823,18 @@ module Engine
       # See https://github.com/tobymao/18xx/issues/7169
       def train_actions_always_use_operating_round_view?
         false
+      end
+
+      def nav_bar_color
+        @phase.current[:tiles].last
+      end
+
+      def round_phase_string
+        "Phase #{@phase.name}"
+      end
+
+      def phase_valid?
+        true
       end
     end
   end

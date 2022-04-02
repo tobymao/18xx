@@ -69,23 +69,21 @@ module Engine
             receiver, company = elegible_receiver_and_company
             return unless receiver
 
-            responder_list = build_responder_list(nil, receiver, company.max_price)
+            responder_list = build_responder_list(nil, receiver, company)
 
             {
               proposer: nil,
               corporation: receiver,
               company: company,
-              price: company.max_price,
               responder: responder_list[0]&.owner,
               responder_list: responder_list,
             }
           end
 
           def elegible_receiver_and_company
-            # FIXME: Overseas Trading power
             @game.operating_order.select(&:receivership?).each do |candidate|
               @game.foreign_investor.companies.sort_by(&:value).reverse_each do |company|
-                return [candidate, company] if candidate.cash >= company.max_price
+                return [candidate, company] if candidate.cash >= foreign_price(candidate, company)
               end
             end
             [nil, nil]

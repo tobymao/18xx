@@ -31,12 +31,16 @@ module View
           },
         }
 
-        h('div.company_table', table_props, [
-          h('div.bold', 'Company'),
-          @game.show_value_of_companies?(@owner) ? h('div.bold.right', 'Value') : '',
-          h('div.bold.right', 'Income'),
-          *companies,
-        ])
+        if @game.respond_to?(:company_card_only?) && @game.company_card_only?
+          h(:div, companies)
+        else
+          h('div.company_table', table_props, [
+            h('div.bold', 'Company'),
+            @game.show_value_of_companies?(@owner) ? h('div.bold.right', 'Value') : '',
+            h('div.bold.right', 'Income'),
+            *companies,
+          ])
+        end
       end
     end
   end

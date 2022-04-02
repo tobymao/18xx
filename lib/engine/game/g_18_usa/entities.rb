@@ -42,7 +42,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
                   'corp in a city with $10 water cost, max one token '\
-                  'per city, regardless of connectivity.  Allows owning corp to '\
+                  'per city.  Allows owning corp to '\
                   'skip $10 river fee when placing track.',
             sym: 'P2',
             abilities: [
@@ -401,7 +401,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
                   'corp in a city with $10 water cost, max one token '\
-                  'per city, regardless of connectivity.  Allows owning corp to '\
+                  'per city.  Allows owning corp to '\
                   'skip $10 river fee when placing track. '\
                   'Also comes with one coal token and one ore token. (see rules on coal and ore) '\
                   'You can only ever use one of these two; using one means you forfeit the other',
@@ -440,7 +440,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with two $10 bridge tokens that may be placed by the owning '\
                   'corp in a city with $10 water cost, max one token '\
-                  'per city, regardless of connectivity..  Allows owning corp to '\
+                  'per city.  Allows owning corp to '\
                   'skip $10 river fee when placing track.',
             sym: 'P22',
             abilities: [

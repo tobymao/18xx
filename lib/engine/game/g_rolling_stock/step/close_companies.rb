@@ -25,9 +25,10 @@ module Engine
           end
 
           def must_close?(entity)
+            return unless entity.player?
             return if entity.companies.empty?
 
-            (entity.cash + entity.companies.sum { |c| @game.calculate_income(c) }).negative?
+            (entity.cash + entity.companies.sum { |c| @game.company_income(c) }).negative?
           end
 
           # is there a company that a corporation run by this player can afford and isn't

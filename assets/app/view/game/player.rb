@@ -19,6 +19,7 @@ module View
       needs :display, default: 'inline-block'
       needs :show_hidden, default: false
       needs :hide_logo, store: true, default: false
+      needs :show_companies, default: true
 
       def render
         card_style = {
@@ -32,8 +33,10 @@ module View
           render_body,
         ]
 
-        divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden) if @player.companies.any? || @show_hidden
-        divs << h(UnsoldCompanies, owner: @player, game: @game) unless @player.unsold_companies.empty?
+        if @show_companies
+          divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden) if @player.companies.any? || @show_hidden
+          divs << h(UnsoldCompanies, owner: @player, game: @game) unless @player.unsold_companies.empty?
+        end
 
         unless (minors = @game.player_card_minors(@player)).empty?
           divs << render_minors(minors)

@@ -40,8 +40,7 @@ module Engine
 
           def sell_shares(bundle)
             @game.share_pool.sell_shares(bundle)
-            # FIXME: Stock Masters
-            @game.move_to_left(bundle.corporation)
+            @game.move_to_left(bundle.corporation) unless @game.abilities(bundle.corporation, :stock_masters)
             pass!
           end
         end

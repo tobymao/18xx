@@ -9,6 +9,7 @@ module Engine
         class Dividend < Engine::Step::Base
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
+            return [] if entity.receivership?
 
             %w[dividend]
           end
@@ -19,6 +20,13 @@ module Engine
 
           def dividend_types
             [:variable]
+          end
+
+          def skip!
+            return super if !current_entity.corporation? || !current_entity.receivership?
+
+            @log << "#{current_entity.name} is in receivership and pays #{@game.format_currency(0)}"
+            process_dividend(Action::Dividend.new(current_entity, kind: 'variable', amount: 0))
           end
 
           def process_dividend(action)
