@@ -449,7 +449,7 @@ module Engine
         end
 
         def est_le_sud_bonus(corp, stops)
-          corp.id == 'Est' && stops.any? { |s| s.hex.id == LE_SUD_HEX } ? 20 : 0
+          corp.id == 'Est' && stops.any? { |s| s.hex.id == LE_SUD_HEX } ? 30 : 0
         end
 
         def luxembourg_value(stops)
