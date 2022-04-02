@@ -106,7 +106,7 @@ module View
             corps = player_owned[p]&.map { |c| render_corporation(c) }
 
             h(:div, [
-              h(Player, player: p, game: @game),
+              h(Player, player: p, game: @game, show_companies: false),
               *companies,
               *corps,
             ])
@@ -151,7 +151,7 @@ module View
 
         def render_corporation(corp)
           subsidiaries = corp.companies.map { |c| render_company(c) }
-          h(:div, [h(Corporation, corporation: corp), *subsidiaries])
+          h(:div, [h(Corporation, corporation: corp, show_companies: false), *subsidiaries])
         end
       end
     end

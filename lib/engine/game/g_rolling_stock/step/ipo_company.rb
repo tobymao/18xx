@@ -74,6 +74,7 @@ module Engine
             corporation.companies << company
             company.owner = corporation
             player.companies.delete(company)
+            @game.clear_synergy_income(corporation)
 
             pass!
           end
