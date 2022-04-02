@@ -37,10 +37,7 @@ module Engine
 
             @game.players.each { |p| payout_player(entity, p, amount) }
             payout_market(entity, amount)
-
-            diff = @game.corporation_stars(entity, entity.cash) - @game.target_stars(entity)
-            new_price = @game.star_diff_price(entity, diff)
-            @game.move_to_price(entity, new_price)
+            @game.dividend_price_movement(entity)
 
             pass!
           end

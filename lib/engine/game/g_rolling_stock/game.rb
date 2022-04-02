@@ -457,6 +457,7 @@ module Engine
 
         def ability_income(entity)
           return 0 unless entity.corporation?
+          return 0 if entity.companies.empty?
 
           extra = 0
           extra += entity.companies.size if abilities(entity, :prussian)
@@ -481,7 +482,6 @@ module Engine
           @synergy_income.delete(corporation)
         end
 
-        # FIXME: Synergistic
         def calculate_synergy_income(corporation)
           comps = corporation.companies
           total = 0
@@ -644,6 +644,13 @@ module Engine
           @prices ||= @stock_market.market[0].to_h { |p| [p.price, p] }
         end
 
+        def dividend_price_movement(corporation)
+          diff = corporation_stars(corporation, corporation.cash) - target_stars(corporation)
+          new_price = star_diff_price(corporation, diff)
+
+          move_to_price(corporation, new_price)
+        end
+
         def move_to_right(corporation)
           old_price = corporation.share_price.price
           r, c = next_price_to_right(corporation.share_price).coordinates
@@ -746,6 +753,10 @@ module Engine
         end
 
         def dividend_chart(corporation)
+          stars_dividend_chart(corporation)
+        end
+
+        def stars_dividend_chart(corporation)
           rows = (0..max_dividend_per_share(corporation)).map do |div|
             cash_left = corporation.cash - (div * num_issued(corporation))
             stars = corporation_stars(corporation, cash_left)
