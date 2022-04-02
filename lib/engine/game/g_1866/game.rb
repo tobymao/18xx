@@ -1285,9 +1285,10 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          if route.hexes.size != route.hexes.uniq.size &&
-            route.hexes.none? { |h| self.class::DOUBLE_HEX.include?(h.name) }
-            raise GameError, 'Route visits same hex twice'
+          route.hexes.group_by(&:itself).each do |k, v|
+            next if v.size < 2 || self.class::DOUBLE_HEX.include?(k.name)
+
+            raise GameError, "Route visits same hex #{k.name} twice"
           end
 
           train = route.train
@@ -1732,11 +1733,17 @@ module Engine
           @log << "#{corporation.name} #{ipo_verb(corporation)} at #{format_currency(share_price.price)}"
 
           # Find the share holders to give a share, then close the minor
+          minor_corporations = []
           minors.each do |m|
-            minor = corporation_by_id(m)
-            @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, minor.owner) if minor.owner
+            minor_corporations << corporation_by_id(m)
+          end
 
-            close_corporation(minor)
+          minor_corporations.group_by(&:owner).each do |player, player_minors|
+            player_minors.each do |minor|
+              @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, player) if player
+
+              close_corporation(minor)
+            end
           end
 
           # Move the rest of the shares into the market

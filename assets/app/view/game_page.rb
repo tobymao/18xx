@@ -296,6 +296,7 @@ module View
         else
           color_for(:bg2)
         end
+
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -308,7 +309,7 @@ module View
           top: '0',
           borderBottom: "1px solid #{color_for(:font2)}",
           borderTop: "1px solid #{color_for(:font2)}",
-          boxShadow: "0 5px 0 0 #{color_for(@game.phase.current[:tiles].last)}, 0 6px 0 0 #{color_for(:bg)}",
+          boxShadow: "0 5px 0 0 #{color_for(@game.nav_bar_color)}, 0 6px 0 0 #{color_for(:bg)}",
           backgroundColor: bg_color,
           color: active_player ? contrast_on(bg_color) : color_for(:font2),
           fontSize: 'large',
@@ -372,7 +373,7 @@ module View
     def render_round
       description = @game_data['mode'] == :hotseat ? '[HOTSEAT] ' : ''
       description += "#{@game.class.display_title}: "
-      description += "Phase #{@game.phase.name} - "
+      description += "#{@game.round_phase_string} - "
       name = @round.class.name.split(':').last
       description += @game.round_description(name)
       description += @game.finished ? ' - Game Over' : " - #{@round.description}"

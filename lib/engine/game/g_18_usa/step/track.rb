@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
-require_relative '../../../step/upgrade_track_max_exits'
 require_relative 'resource_track'
 
 module Engine
@@ -9,7 +8,6 @@ module Engine
     module G18USA
       module Step
         class Track < Engine::Step::Track
-          include Engine::Step::UpgradeTrackMaxExits
           include ResourceTrack
           include P11Track
 

@@ -187,6 +187,10 @@ module Engine
             @game.biddable_companies.include?(company) && max_bid(entity) >= company.value
           end
 
+          def bank_first?
+            true
+          end
+
           def setup
             setup_auction
             super

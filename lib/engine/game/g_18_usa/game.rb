@@ -31,6 +31,8 @@ module Engine
 
         OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
 
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities track].freeze
+
         MARKET = [
           %w[0l 0a 0a 0a 42 44 46 48 50p 53s 56p 59p 62p 66p 70p 74s 78p 82p 86p 90p 95p 100p 105p 110p 115p 120s 127p 135p 142p
              150p 157p 165p 172p 180p 190p 200p 210 220 230 240 250 260 270 285 300 315 330 345 360 375 390 405 420 440 460 480
