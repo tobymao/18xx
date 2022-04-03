@@ -2836,6 +2836,10 @@ module Engine
       def phase_valid?
         true
       end
+
+      def market_par_bars(_price)
+        []
+      end
     end
   end
 end

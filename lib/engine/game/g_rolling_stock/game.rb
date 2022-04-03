@@ -125,7 +125,7 @@ module Engine
         END_CARD_FRONT = 7
         END_CARD_BACK = 8
 
-        COST_OF_OWNERSHIP_RSS = {
+        COST_OF_OWNERSHIP = {
           1 => [0, 0, 0, 0, 0],
           2 => [0, 0, 0, 0, 0],
           3 => [0, 0, 0, 0, 0],
@@ -153,24 +153,29 @@ module Engine
             [company_by_id(c[:sym]), c[:synergies].to_h { |oc| [company_by_id(oc), true] }]
           end
 
-          @company_deck = []
+          @company_deck = setup_company_deck
+          @offering = @company_deck.shift(@players.size)
+          @on_deck = []
+
+          @foreign_investor = Player.new(-1, 'Foreign Investor')
+          @bank.spend(self.class::FOREIGN_START_CASH, @foreign_investor)
+          @cost_level = @company_stars[@company_deck[0]]
+          @log << 'No cost of ownership'
+          @cost_table = self.class::COST_OF_OWNERSHIP
+          @synergy_income = {}
+          @phase_counter = 0
+        end
+
+        def setup_company_deck
+          deck = []
           5.times do |stars|
             matching = @companies.select { |c| @company_stars[c] == (stars + 1) }
             highest = matching.max_by(&:value)
             drawn = matching.reject { |c| c == highest }.sort_by { rand }.take(num_to_draw(players, stars + 1))
             drawn << highest
-            @company_deck.concat(drawn.sort_by { rand })
+            deck.concat(drawn.sort_by { rand })
           end
-          @offering = @company_deck.shift(@players.size)
-          @on_deck = []
-
-          @foreign_investor = Player.new(-1, 'Foreign Investor')
-          @bank.spend(FOREIGN_START_CASH, @foreign_investor)
-          @cost_level = @company_stars[@company_deck[0]]
-          @log << 'No cost of ownership'
-          @cost_table = COST_OF_OWNERSHIP_RSS
-          @synergy_income = {}
-          @phase_counter = 0
+          deck
         end
 
         def can_acquire_any_company?(corporation)
@@ -344,15 +349,15 @@ module Engine
           @phase_counter += 1
           @log << "-- #{round_phase_string} - End Card --"
 
-          if @cost_level == END_CARD_BACK || @stock_market.max_reached?
+          if @cost_level == self.class::END_CARD_BACK || @stock_market.max_reached?
             @log << 'Game ends: Max Stock price has been reached' if @stock_market.max_reached?
-            @log << 'Game ends: Game end card reached' if @cost_level == END_CARD_BACK
+            @log << 'Game ends: Game end card reached' if @cost_level == self.class::END_CARD_BACK
             return end_game!
           end
 
-          return if @cost_level != END_CARD_FRONT || !@offering.empty?
+          return if @cost_level != self.class::END_CARD_FRONT || !@offering.empty?
 
-          @cost_level = END_CARD_BACK
+          @cost_level = self.class::END_CARD_BACK
           @log << "New cost of ownership: #{cost_level_str}"
           @log << 'Game will end on next turn'
         end
@@ -362,7 +367,7 @@ module Engine
         end
 
         def game_ending_description
-          return if !@finished && @cost_level != END_CARD_BACK
+          return if !@finished && @cost_level != self.class::END_CARD_BACK
 
           after_text = @finished ? '' : ' : Game Ends on next phase 7'
 
@@ -444,7 +449,7 @@ module Engine
 
         def total_income(entity)
           income = 0
-          income += FOREIGN_EXTRA_INCOME if entity == @foreign_investor
+          income += self.class::FOREIGN_EXTRA_INCOME if entity == @foreign_investor
           return income if entity.companies.empty?
 
           income = entity.companies.sum { |c| company_income(c) }
@@ -598,7 +603,7 @@ module Engine
           end
 
           new_cost = if @company_deck.empty?
-                       END_CARD_FRONT
+                       self.class::END_CARD_FRONT
                      else
                        @company_stars[@company_deck[0]]
                      end
@@ -629,7 +634,7 @@ module Engine
         end
 
         def share_prices
-          PAR_PRICES.values.flatten.uniq.map { |p| prices[p] }
+          self.class::PAR_PRICES.values.flatten.uniq.map { |p| prices[p] }
         end
 
         def ipo_companies
@@ -637,7 +642,7 @@ module Engine
         end
 
         def available_par_prices(company)
-          PAR_PRICES[@company_stars[company]].map { |p| prices[p] }.select { |p| p.corporations.empty? }
+          self.class::PAR_PRICES[@company_stars[company]].map { |p| prices[p] }.select { |p| p.corporations.empty? }
         end
 
         def prices
@@ -798,12 +803,12 @@ module Engine
         end
 
         def company_colors(company)
-          STAR_COLORS[company_stars[company]]
+          self.class::STAR_COLORS[company_stars[company]]
         end
 
         def nav_bar_color
           if @cost_level < 6
-            STAR_COLORS[@cost_level][3]
+            self.class::STAR_COLORS[@cost_level][3]
           else
             'gray'
           end
@@ -819,6 +824,14 @@ module Engine
 
         def round_description(name, _round_number)
           "#{name} Round"
+        end
+
+        def market_par_bars(price)
+          colors = []
+          self.class::PAR_PRICES.each do |k, v|
+            colors << self.class::STAR_COLORS[k][0] if v.include?(price.price)
+          end
+          colors
         end
       end
     end
