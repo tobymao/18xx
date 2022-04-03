@@ -158,7 +158,6 @@ module Engine
                     price: 160,
                     rusts_on: '5',
                     num: 5,
-                    events: [{ 'type' => 'late_corporations_available' }],
                     discount: { '2' => 40 },
                   },
                   {
@@ -175,6 +174,7 @@ module Engine
                     price: 400,
                     rusts_on: 'D',
                     num: 4,
+                    events: [{ 'type' => 'late_corporations_available' }],
                     discount: { '4' => 150 },
                   },
                   {
@@ -358,7 +358,7 @@ module Engine
 
           tile = hex_by_id(action.hex.id).tile
 
-          if BROWN_CITY_14_UPGRADES_TILES.include?(tile.name)
+          if BROWN_CITY_UPGRADES_TILES.include?(tile.name)
             tile.cities.each { |c| c.add_slot }
           end
 
@@ -462,6 +462,14 @@ module Engine
           0
         end
 
+        def check_distance(route, _visits)
+          if route.connection_hexes.flatten.include?(ENGLAND_HEX) && !ferry_marker?(current_entity)
+            raise GameError, 'Cannot run to England without a Ferry marker'
+          end
+
+          super
+        end
+
         def ferry_marker_available?
           hex_by_id(ENGLAND_FERRY_SUPPLY).tile.icons.any? { |icon| icon.name == FERRY_MARKER_ICON }
         end
@@ -497,7 +505,7 @@ module Engine
           @log << "#{entity.name} buys a ferry marker for $#{FERRY_MARKER_COST}"
 
           tile_icons = hex_by_id(ENGLAND_FERRY_SUPPLY).tile.icons
-          tile_icons.reject! { |icon| icon.name == FERRY_MARKER_ICON }
+          tile_icons.delete_at(tile_icons.find_index { |icon| icon.name == FERRY_MARKER_ICON })
 
           graph.clear
         end

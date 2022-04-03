@@ -24,7 +24,7 @@ module Engine
                         }],
           },
           {
-            name: 'Chrleroi-Sud',
+            name: 'Charleroi-Sud',
             sym: 'CS',
             value: 50,
             revenue: 10,
@@ -163,7 +163,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Value of Le Sud increased by 20',
+                description: 'Value of Le Sud increased by 30',
               },
             ],
           },
