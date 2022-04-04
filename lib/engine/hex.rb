@@ -164,7 +164,7 @@ module Engine
           new_city.exchange_token(token, cheater: cheater) if token
         end
         old_city.extra_tokens.each { |token| new_city.exchange_token(token, extra_slot: true) }
-        old_city.remove_tokens!
+        old_city.reset!
       end
 
       new_icons = tile.icons.group_by(&:name)
