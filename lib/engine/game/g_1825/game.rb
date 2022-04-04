@@ -439,6 +439,7 @@ module Engine
           raise OptionError, 'K2 not supported without K3' if @kits[2] && !@kits[3]
           raise OptionError, 'Cannot use extra Unit 3 trains without Unit 3' if !@units[3] && optional_rules.include?(:u3p)
           raise OptionError, 'Cannot use K1 or K6 with D1' if (@kits[1] || @kits[6]) && optional_rules.include?(:d1)
+          raise OptionError, 'Variant DB2 is for Unit 1' if !units[1] && optional_rules.include?(:db2)
 
           p_range = case @units.keys.sort.map(&:to_s).join
                     when '1'

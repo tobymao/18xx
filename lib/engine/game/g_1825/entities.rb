@@ -164,6 +164,7 @@ module Engine
             color: '#ffef00',
             text_color: '#000000',
             reservation_color: nil,
+            abilities: [],
           },
           {
             sym: 'LBSC',
@@ -553,6 +554,14 @@ module Engine
             gwr = corps.find { |corp| corp[:sym] == 'GWR' }
             gwr[:tokens] = [0, 0, 40, 100, 100, 100, 100]
             gwr[:coordinates] = %w[V14 Y7]
+          end
+          # Modify SECR / LBSC in variant DB2
+          if @optional_rules.include?(:db2)
+            secr = corps.find { |corp| corp[:sym] == 'SECR' }
+            secr[:abilities] << { type: 'blocks_hexes', owner_type: nil, hexes: ['W21'] }
+            PAR_BY_CORPORATION['SECR'] = 67
+            lbsc = corps.find { |corp| corp[:sym] == 'LBSC' }
+            lbsc[:abilities] = nil
           end
           add_entities(corps, R3_CORPORATIONS) if @regionals[3]
           add_entities(corps, K5_CORPORATIONS) if @kits[5]
