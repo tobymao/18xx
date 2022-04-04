@@ -17,15 +17,20 @@ module Engine
           end
 
           def pass_description
-            return 'Pass (Scrap Train)' if @buyer && !can_take_loan?(@buyer) && !can_payoff?(@buyer)
+            return 'Pass (Scrap Pullman)' if @buyer && !can_take_loan?(@buyer) && !can_payoff?(@buyer)
 
             super
           end
 
+          def process_acquire(buyer)
+            @passed_scrap_trains = false
+            super
+          end
+
           def process_pass(action)
-            if @buyer && !can_take_loan?(@buyer) && !can_payoff?(@buyer)
-              @passed_scrap_trains = true
-              @game.log << "#{@buyer.name} passes scrapping trains"
+            @passed_scrap_trains = true if @buyer
+            if @buyer && !can_take_loan?(@buyer)
+              @game.log << "#{@buyer.name} passes scrapping pullman"
               acquire_post_loan
             else
               super
