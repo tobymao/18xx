@@ -7,9 +7,14 @@ module Engine
     module G1822MX
       module Step
         class MinorAcquisition < Engine::Game::G1822::Step::MinorAcquisition
-          def connected_to_port?(entity)
-            @port_hexes ||= %w[F7 G8 H9 I10 J12].map { |id| @game.hex_by_id(id) }
+          def auto_actions(entity)
             @port_graph ||= Graph.new(@game, home_as_token: true)
+            @port_graph.clear
+            super
+          end
+
+          def connected_to_port?(entity)
+            @port_hexes ||= %w[F7 G8 H9 I10 J11].map { |id| @game.hex_by_id(id) }
             !(@port_graph.reachable_hexes(entity).keys & @port_hexes).empty?
           end
 
@@ -21,7 +26,7 @@ module Engine
                            # Minors only have one token, check if its connected
                            minor.tokens.first.city
                          end
-            @game.graph.connected_nodes(entity)[minor_city] || (connected_to_port?(entity) && connected_to_port?(minor))
+            @game.graph.connected_nodes(entity)[minor_city] || (connected_to_port?(minor) && connected_to_port?(entity))
           end
         end
       end
