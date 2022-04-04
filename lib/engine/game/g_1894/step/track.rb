@@ -43,7 +43,7 @@ module Engine
               plm_token = tokens.find { |t| t.corporation.id == 'PLM' }
               plm_token.move!(cities[0])
               @game.graph.clear
-            elsif saved_tokens
+            elsif saved_tokens and saved_tokens.any?
               acting_corporation_token = saved_tokens.find { |t| t.corporation == entity}
 
               return unless acting_corporation_token
