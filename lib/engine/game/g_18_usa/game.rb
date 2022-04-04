@@ -182,8 +182,8 @@ module Engine
         EXTENDED_MAX_LOAN = 60
         EXTENDED_LOANS_PER_INCREMENT = 6
 
-        def bridge_city_hex?(hex_id)
-          BRIDGE_CITY_HEXES.include?(hex_id)
+        def river_hex?(hex)
+          RIVER_HEXES.include?(hex.id)
         end
 
         ASSIGNMENT_TOKENS = {

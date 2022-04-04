@@ -22,8 +22,7 @@ module Engine
               id = 'bridge'
               raise GameError, "Bridge already on #{target.name}" if target.assigned?(id)
               raise GameError, 'Cannot lay bridge on New Orleans Metropolis' if target.id == 'I19' && @game.metro_new_orleans
-              raise GameError, 'Bridge must be placed on city or rural junction' if !@game.bridge_city_hex?(target.id) &&
-                  target.cities.empty? && target.towns.empty? && !@game.class::COMPANY_TOWN_TILES.include?(target.name)
+              raise GameError, 'Bridge must be placed on a city or rural junction in a river hex' unless bridge_hex?(target)
 
               target.assign!(id)
               ability.use!
@@ -59,6 +58,12 @@ module Engine
                                                                                    !connected_to_hex?(corporation, hex)
           end
 
+          def bridge_hex?(hex)
+            @game.river_hex?(hex) &&
+              !(hex.id == 'I19' && @game.metro_new_orleans) &&
+              (!hex.tile.cities.empty? || !hex.tile.towns.empty?)
+          end
+
           def offboard_area_hexes(hex)
             @game.mexico_hexes.include?(hex) ? @game.mexico_hexes : [hex]
           end
@@ -69,8 +74,7 @@ module Engine
             valid = super
             return valid unless %w[P2 P22 P21].include?(entity&.id)
 
-            valid && !(hex.id == 'I19' && @game.metro_new_orleans) && (!hex.tile.cities.empty? || !hex.tile.towns.empty?) &&
-              connected_to_hex?(entity.owner, hex)
+            valid && bridge_hex?(hex) && connected_to_hex?(entity.owner, hex)
           end
 
           def connected_to_hex?(entity, hex)
