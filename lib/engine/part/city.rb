@@ -121,7 +121,7 @@ module Engine
         open_slot = @tokens.find_index.with_index do |t, i|
           t.nil? && @reservations[i].nil?
         end
-        return [open_slot || @slots, cheater].max if cheater
+        return [open_slot || @tokens.size, cheater].max if cheater
 
         reservation || open_slot
       end
@@ -162,6 +162,11 @@ module Engine
         return @extra_tokens << token if extra_slot
 
         @tokens[get_slot(token.corporation, cheater: cheater)] = token
+      end
+
+      def reset!
+        remove_tokens!
+        @tokens = Array.new(@slots)
       end
     end
   end

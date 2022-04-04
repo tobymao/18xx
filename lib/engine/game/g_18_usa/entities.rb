@@ -54,7 +54,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
+                hexes: RIVER_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -415,7 +415,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
+                hexes: RIVER_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -452,7 +452,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
+                hexes: RIVER_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',

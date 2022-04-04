@@ -50,8 +50,7 @@ module Engine
         OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze
         ORE_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
         COAL_HEXES = %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24].freeze
-        BRIDGE_CITY_HEXES = %w[I19 C3 C17 D14 E15 E17 F20 G17].freeze
-        BRIDGE_TILE_HEXES = %w[B4 D18 E21 F18 H18].freeze
+        RIVER_HEXES = %w[B4 D18 E21 F18 H18 I19 C3 C17 D14 E15 E17 F20 G17].freeze
         MEXICO_HEXES = %w[I5 I7 I9 I11 J12 K13].freeze
 
         METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
