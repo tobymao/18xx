@@ -30,7 +30,7 @@ module Engine
           end
 
           def pending_entity
-            @game.saved_tokens[0].token.corporation if @game.save_tokens
+            @game.saved_tokens[0].token.corporation if @game.saved_tokens.any?
           end
 
           def description

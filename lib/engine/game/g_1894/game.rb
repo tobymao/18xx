@@ -218,7 +218,7 @@ module Engine
           bank: :full_or,
         }.freeze
 
-        SELL_BUY_ORDER = :sell_buy_sell
+        SELL_BUY_ORDER = :sell_buy
 
         NEXT_SR_PLAYER_ORDER = :first_to_pass
 
@@ -365,7 +365,7 @@ module Engine
           return unless action.hex.id == SQG_HEX
 
           sqg = company_by_id('SQG')
-          sqg.revenue = get_current_revenue(tile.cities[0])
+          sqg.revenue = get_current_revenue(tile.cities[0].revenue)
           @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
         end
 
