@@ -1285,9 +1285,10 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          if route.hexes.size != route.hexes.uniq.size &&
-            route.hexes.none? { |h| self.class::DOUBLE_HEX.include?(h.name) }
-            raise GameError, 'Route visits same hex twice'
+          route.hexes.group_by(&:itself).each do |k, v|
+            next if v.size < 2 || self.class::DOUBLE_HEX.include?(k.name)
+
+            raise GameError, "Route visits same hex #{k.name} twice"
           end
 
           train = route.train

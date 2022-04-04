@@ -2120,11 +2120,8 @@ module Engine
         def transfer_pres_share(corporation, owner)
           return if owner.shares_of(corporation).any?(&:president)
 
-          # the pres share must be in market
-          pres_share = @share_pool.shares_of(corporation).find(&:president)
-          raise GameError, "Pres share of #{corporation.name} not in market" unless pres_share
-
-          owner.shares_of(corporation).take(3).each { |s| transfer_share(s, @share_pool) }
+          pres_share = corporation.presidents_share
+          owner.shares_of(corporation).take(3).each { |s| transfer_share(s, pres_share.owner) }
           transfer_share(pres_share, owner)
         end
 

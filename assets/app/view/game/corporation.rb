@@ -20,6 +20,7 @@ module View
       needs :display, default: 'inline-block'
       needs :selectable, default: true
       needs :interactive, default: true
+      needs :show_companies, default: true
 
       def render
         # use alternate view of corporation if needed

@@ -2831,6 +2831,18 @@ module Engine
       def train_actions_always_use_operating_round_view?
         false
       end
+
+      def nav_bar_color
+        @phase.current[:tiles].last
+      end
+
+      def round_phase_string
+        "Phase #{@phase.name}"
+      end
+
+      def phase_valid?
+        true
+      end
     end
   end
 end
