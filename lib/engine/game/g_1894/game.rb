@@ -197,7 +197,7 @@ module Engine
                     distance: 999,
                     price: 900,
                     num: 20,
-                    available_on: '7',
+                    available_on: 'Gray',
                     discount: { '5' => 200, '6' => 300, '7' => 375 },
                   }].freeze
 
@@ -387,7 +387,9 @@ module Engine
           [bundle]
         end
 
-        def redeemable_shares(entity)
+        def redeemable_shares(entity)          
+          return bundles_for_corporation(share_pool, entity).reject { |bundle| bundle.shares.size > 2 || entity.cash < bundle.price } if entity.share_price.type == :unlimited
+
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
         end
