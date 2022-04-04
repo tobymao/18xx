@@ -47,6 +47,7 @@ module Engine
              500 550 600e],
         ].freeze
 
+        SELL_MOVEMENT = :left_per_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
@@ -75,6 +76,58 @@ module Engine
           'P16' => { acquire: %i[major], phase: 2 },
           'P17' => { acquire: %i[major minor], phase: 2 },
           'P18' => { acquire: %i[major], phase: 3 },
+        }.freeze
+
+        COMPANY_SHORT_NAMES = {
+          'P1' => 'P1 (5-Train)',
+          'P2' => 'P2 (Permanent 2T)',
+          'P3' => 'P3 (Permanent 3/2T)',
+          'P4' => 'P4 (Permanent LT)',
+          'P5' => 'P5 (Pullman)',
+          'P6' => 'P6 (Pullman)',
+          'P7' => 'P7 (Double Cash)',
+          'P8' => 'P8 (Adv. Tile Lay)',
+          'P9' => 'P9 (Extra Tile Lay)',
+          'P10' => 'P10 (Builder Cubes)',
+          'P11' => 'P11 (Builder Cubes)',
+          'P12' => 'P12 (Remove Town)',
+          'P13' => 'P13 (Remove Town)',
+          'P14' => 'P14 (Mail Contract)',
+          'P15' => 'P15 (Mail Contract)',
+          'P16' => 'P16 (Stock Drop)',
+          'P17' => 'P17 (Small Port)',
+          'P18' => 'P18 (Large Port)',
+          'C1' => 'FCM',
+          'C2' => 'MC',
+          'C3' => 'CHP',
+          'C4' => 'FNM',
+          'C5' => 'MIR',
+          'C6' => 'FCP',
+          'C7' => 'IRM',
+          'M1' => '1',
+          'M2' => '2',
+          'M3' => '3',
+          'M4' => '4',
+          'M5' => '5',
+          'M6' => '6',
+          'M7' => '7',
+          'M8' => '8',
+          'M9' => '9',
+          'M10' => '10',
+          'M11' => '11',
+          'M12' => '12',
+          'M13' => '13',
+          'M14' => '14',
+          'M15' => '15',
+          'M16' => '16',
+          'M17' => '17',
+          'M18' => '18',
+          'M19' => '19',
+          'M20' => '20',
+          'M21' => '21',
+          'M22' => '22',
+          'M23' => '23',
+          'M24' => '24',
         }.freeze
 
         def port_company?(entity)
@@ -590,8 +643,15 @@ module Engine
           company.close!
         end
 
-        def company_status_str
-          ''
+        def company_status_str(company)
+          bidbox_minors.each_with_index do |c, index|
+            return "Bid box #{index + 1}" if c == company
+          end
+
+          bidbox_concessions.each_with_index do |c, index|
+            return "Bid box #{index + 1}" if c == company
+          end
+          nil
         end
 
         def terrain?(tile, terrain)

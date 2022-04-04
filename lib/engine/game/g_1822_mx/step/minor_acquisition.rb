@@ -7,15 +7,9 @@ module Engine
     module G1822MX
       module Step
         class MinorAcquisition < Engine::Game::G1822::Step::MinorAcquisition
-          def auto_actions(entity)
-            @port_graph ||= Graph.new(@game, home_as_token: true)
-            @port_graph.clear
-            super
-          end
-
           def connected_to_port?(entity)
             @port_hexes ||= %w[F7 G8 H9 I10 J11].map { |id| @game.hex_by_id(id) }
-            !(@port_graph.reachable_hexes(entity).keys & @port_hexes).empty?
+            !(@game.graph.reachable_hexes(entity).keys & @port_hexes).empty?
           end
 
           def entity_connects?(entity, minor)
