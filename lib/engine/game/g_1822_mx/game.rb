@@ -141,6 +141,10 @@ module Engine
         BIDDING_BOX_START_PRIVATE = 'P1'
         BIDDING_BOX_START_MINOR = nil
 
+        def init_graph
+          Graph.new(self, home_as_token: true)
+        end
+
         TRAINS = [
           {
             name: 'L',
