@@ -181,7 +181,7 @@ module Engine
                     name: '6',
                     distance: 6,
                     price: 600,
-                    num: 3,
+                    num: 2,
                     events: [{ 'type' => 'close_companies' }],
                     discount: { '5' => 200 },
                   },
