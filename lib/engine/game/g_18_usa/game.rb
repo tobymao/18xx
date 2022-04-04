@@ -494,12 +494,12 @@ module Engine
           return true if self.class::SPECIAL_TILES.include?(to.name)
 
           if phase_5_or_later?
-            entity = selected_company || @round.current_entity
             # Non-track upgrades
             return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) if from.cities.empty?
 
             # City upgrades
             if from.color == :white
+              entity = selected_company&.owner || @round.current_entity
               colors = [:green]
               colors << :brown if !entity.operated? && home_hex_for(entity) == from.hex
               return colors.include?(to.color)
