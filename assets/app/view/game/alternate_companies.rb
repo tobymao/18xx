@@ -71,7 +71,7 @@ module View
         props[:style][:border] = '1px dashed' unless @game.company_available?(@company)
         props[:style][:display] = @display
 
-        company_name_str = "#{'★' * @game.company_stars[@company]} #{@company.name}"
+        company_name_str = "#{@game.level_symbol(@game.company_level[@company])} #{@company.name}"
 
         header = [
           h(:div, { style: element_style }, [
@@ -121,7 +121,7 @@ module View
           textAlign: 'left',
         }
 
-        groups = @game.company_synergies[@company].keys.group_by { |c| @game.synergy_value_by_star(@company, c) }
+        groups = @game.company_synergies[@company].keys.group_by { |c| @game.synergy_value_by_level(@company, c) }
 
         set = @company&.owner&.corporation? ? @company.owner.companies : []
 

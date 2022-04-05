@@ -412,7 +412,7 @@ module View
         }
 
         holdings = if @corporation.ipoed
-                     h(:div, holdings_props, [render_rs_cash, render_stars])
+                     h(:div, holdings_props, [render_rs_cash, render_rs_metric])
                    else
                      h(:div, holdings_props, 'Available to Form')
                    end
@@ -434,8 +434,12 @@ module View
         end
       end
 
-      def render_stars
-        h('div.bold', [h('div.nowrap', "#{@game.corporation_stars(@corporation, @corporation.cash)}★")])
+      def render_rs_metric
+        if @game.respond_to?(:corporation_stars)
+          h('div.bold', [h('div.nowrap', "#{@game.corporation_stars(@corporation)}★")])
+        else
+          h('div.bold', [h('div.nowrap', "Book: #{@game.format_currency(@game.book_value(@corporation))}")])
+        end
       end
 
       def render_rs_income

@@ -68,9 +68,7 @@ module Engine
           end
 
           def help_str(max)
-            "Dividend per share. Range: From #{@game.format_currency(0)}"\
-              " to #{@game.format_currency(max)}. Issued shares: #{@game.num_issued(current_entity)}."\
-              " Stars on share price: #{@game.target_stars(current_entity)}★"
+            @game.dividend_help_str(current_entity, max)
           end
 
           def variable_max
