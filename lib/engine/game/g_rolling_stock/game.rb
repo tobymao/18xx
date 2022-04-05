@@ -690,7 +690,7 @@ module Engine
         def find_new_price(current, target, diff)
           if diff.zero?
             current
-          elsif target.corporations.empty?
+          elsif target.corporations.empty? || target.end_game_trigger? || target.price.zero?
             target
           elsif diff.positive?
             next_price_to_right(target)
