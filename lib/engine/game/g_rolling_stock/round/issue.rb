@@ -8,11 +8,11 @@ module Engine
       module Round
         class Issue < Engine::Round::Operating
           def name
-            'Phase 8 - Issue Shares'
+            'Issue Shares'
           end
 
           def self.short_name
-            'IssR'
+            'ISS'
           end
 
           def setup

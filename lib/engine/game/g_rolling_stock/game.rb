@@ -99,12 +99,8 @@ module Engine
         CAPITALIZATION = :incremental
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Max stock price in phase 1 or 7 or end card flipped in phase 7',
+          custom: 'Max stock price in phase 3 or 10 or end card flipped in phase 10',
         )
-
-        PHASES = [
-          { name: 'unused', train_limit: 1, tiles: [:yellow], operating_rounds: 1 },
-        ].freeze
 
         STAR_COLORS = {
           #     main color text     card color standard color
@@ -162,6 +158,8 @@ module Engine
         }.freeze
 
         SEPARATE_WRAP_UP = true
+
+        def init_phase; end
 
         def num_phases
           self.class::SEPARATE_WRAP_UP ? 10 : 9

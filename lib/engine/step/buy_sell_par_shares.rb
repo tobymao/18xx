@@ -272,6 +272,7 @@ module Engine
       def purchasable_companies(entity)
         return [] if bought? ||
           !entity.cash.positive? ||
+          !@game.phase ||
           !@game.phase.status.include?('can_buy_companies_from_other_players')
 
         @game.purchasable_companies(entity)

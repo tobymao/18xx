@@ -12,11 +12,11 @@ module Engine
           end
 
           def self.short_name
-            'Closing'
+            'CLO'
           end
 
           def name
-            'Phase 4 - Closing'
+            'Closing'
           end
 
           def unordered?
