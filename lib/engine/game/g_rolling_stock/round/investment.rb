@@ -8,11 +8,11 @@ module Engine
       module Round
         class Investment < Engine::Round::Stock
           def name
-            'Phase 1 - Investment'
+            'Investment'
           end
 
           def self.short_name
-            'IR'
+            'INV'
           end
 
           def finish_round; end

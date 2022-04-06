@@ -546,7 +546,7 @@ module View
             },
           }
           cost_rows << h(:tr, tr_props, [
-            h(:td, level_props, ('★' * (idx + 1)).to_s),
+            h(:td, level_props, @game.level_symbol(idx + 1)),
             h(:td, td_props, @game.format_currency(cost)),
           ])
         end

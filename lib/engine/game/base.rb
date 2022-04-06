@@ -518,7 +518,7 @@ module Engine
         @cities = (@hexes.map(&:tile) + @tiles).map(&:cities).flatten
 
         @phase = init_phase
-        @operating_rounds = @phase.operating_rounds
+        @operating_rounds = @phase&.operating_rounds
 
         @round_history = []
         setup_preround
@@ -2318,7 +2318,7 @@ module Engine
           bank: @bank.broken?,
           stock_market: @stock_market.max_reached?,
           final_train: @depot.empty?,
-          final_phase: @phase.phases.last == @phase.current,
+          final_phase: @phase&.phases&.last == @phase&.current,
           custom: custom_end_game_reached?,
         }.select { |_, t| t }
 
@@ -2835,6 +2835,10 @@ module Engine
 
       def phase_valid?
         true
+      end
+
+      def market_par_bars(_price)
+        []
       end
     end
   end

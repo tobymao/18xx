@@ -167,8 +167,11 @@ module Engine
 
           def can_sell?(entity, bundle)
             return unless bundle
+            return false unless entity == bundle.owner
+            return false unless bundle.shares.one?
 
-            entity == bundle.owner && bundle.shares.one?
+            # No receivership in version 1
+            @game.rs_version == 2 || can_dump?(entity, bundle)
           end
 
           def sell_shares(_entity, bundle, swap: nil)
