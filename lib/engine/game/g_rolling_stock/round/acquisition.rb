@@ -14,11 +14,11 @@ module Engine
           end
 
           def self.short_name
-            'Acquisition'
+            'ACQ'
           end
 
           def name
-            'Phase 3 - Acquisition'
+            'Acquisition'
           end
 
           def unordered?

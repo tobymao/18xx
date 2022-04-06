@@ -321,7 +321,8 @@ module View
           card_style[:border] = '1px solid'
         end
 
-        children = [render_title, render_rs_holdings, render_shares, render_rs_income]
+        children = [render_title, render_rs_holdings, render_shares]
+        children << render_rs_income if @corporation.ipoed
 
         abilities_to_display = @corporation.all_abilities.select(&:description)
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
@@ -410,7 +411,11 @@ module View
           },
         }
 
-        holdings = h(:div, holdings_props, [render_rs_cash, render_stars])
+        holdings = if @corporation.ipoed
+                     h(:div, holdings_props, [render_rs_cash, render_rs_metric])
+                   else
+                     h(:div, holdings_props, 'Available to Form')
+                   end
 
         h('div.corp__holdings', holdings_row_props, [
           h(:div, sym_props, @corporation.name),
@@ -429,8 +434,12 @@ module View
         end
       end
 
-      def render_stars
-        h('div.bold', [h('div.nowrap', "#{@game.corporation_stars(@corporation, @corporation.cash)}★")])
+      def render_rs_metric
+        if @game.respond_to?(:corporation_stars)
+          h('div.bold', [h('div.nowrap', "#{@game.corporation_stars(@corporation)}★")])
+        else
+          h('div.bold', [h('div.nowrap', "Book: #{@game.format_currency(@game.book_value(@corporation))}")])
+        end
       end
 
       def render_rs_income

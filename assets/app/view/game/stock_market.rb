@@ -169,6 +169,21 @@ module View
         props
       end
 
+      def par_bars(colors)
+        bar_style = {
+          border: '1px solid black',
+          height: '3px',
+          margin: '1px',
+        }
+
+        bars = colors.map do |color|
+          bar_style[:backgroundColor] = color
+
+          h(:div, { style: bar_style })
+        end
+        h(:div, bars)
+      end
+
       def grid_1d
         row = @game.stock_market.market.first.map do |price|
           tokens = price.corporations.map { |corporation| h(:img, token_props(corporation)) }
@@ -177,10 +192,13 @@ module View
           box_style[:height] = box_height_1d
           box_style = box_style.merge('margin-right': '10px') unless price.normal_movement?
 
-          h(:div, { style: cell_style(box_style, price.types) }, [
-            grid_1d_price(price),
-            h(:div, { style: TOKEN_STYLE_1D }, tokens),
-          ])
+          elements = [grid_1d_price(price)]
+          unless (colors = @game.market_par_bars(price)).empty?
+            elements << par_bars(colors)
+          end
+          elements << h(:div, { style: TOKEN_STYLE_1D }, tokens)
+
+          h(:div, { style: cell_style(box_style, price.types) }, elements)
         end
 
         # Wrap if the row too long

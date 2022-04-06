@@ -16,7 +16,7 @@ module Engine
           end
 
           def name
-            'Phase 9 - IPO'
+            'IPO'
           end
 
           # need Par view

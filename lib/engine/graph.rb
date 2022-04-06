@@ -115,9 +115,11 @@ module Engine
       if @home_as_token
         home_hexes = Array(corporation.coordinates).map { |h| @game.hex_by_id(h) }
         home_hexes.each do |hex|
-          hex.tile.city_towns.each do |ct|
-            hex.neighbors.each { |e, _| hexes[hex][e] = true }
-            nodes[ct] = true
+          hex.neighbors.each { |e, _| hexes[hex][e] = true }
+          if corporation.city
+            Array(corporation.city).map { |c_idx| hex.tile.cities[c_idx] }.compact.each { |c| nodes[c] = true }
+          else
+            hex.tile.city_towns.each { |ct| nodes[ct] = true }
           end
         end
       end
