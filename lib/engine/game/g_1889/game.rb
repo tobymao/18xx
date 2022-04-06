@@ -424,7 +424,7 @@ module Engine
             simple_logo: '1889/UR.alt',
             tokens: [0, 40, 40],
             coordinates: 'B7',
-            color: '#7b352a',
+            color: '#6f533e',
             reservation_color: nil,
           },
         ].freeze
