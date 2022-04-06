@@ -1635,7 +1635,10 @@ module Engine
               @log << "#{loan_str} #{corporation.name} pays #{format_currency(loan)}"
               corporation.spend(loan, @bank)
             end
-            corporation.loans.clear
+            corporation.loans.dup.each do |l|
+              corporation.loans.delete(l)
+              @loans << l
+            end
           end
 
           tokens = []
