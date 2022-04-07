@@ -817,7 +817,7 @@ module Engine
 
         def pass_entity(user)
           return super unless @round.unordered?
-          return @round.entities.find { |e| !e.passed? } unless user
+          return super unless user
 
           player_by_id(user['id']) || super
         end

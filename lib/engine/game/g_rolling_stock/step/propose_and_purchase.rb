@@ -161,7 +161,7 @@ module Engine
             }
             @round.offers << offer
 
-            corp_owner = company.owner.corporation? ? " (owned by #{responder.name})" : ''
+            corp_owner = company.owner.corporation? ? " (#{responder.name})" : ''
             @log << "#{corporation.name} (#{proposer.name}) offers to purchase #{company.sym} from"\
                     " #{company.owner.name}#{corp_owner} for #{@game.format_currency(price)}"
           end
@@ -327,7 +327,7 @@ module Engine
                 "purchase #{offer[:company].sym} (Foreign Investor) for "\
                 "#{@game.format_currency(foreign_price(offer[:responder_list][0], offer[:company]))}?"
             else
-              corp_owner = offer[:company].owner.corporation? ? " (owned by #{offer[:responder].name})" : ''
+              corp_owner = offer[:company].owner.corporation? ? " (#{offer[:responder].name})" : ''
               "#{offer[:corporation].name} (#{offer[:proposer].name}) offers to purchase #{offer[:company].sym} "\
                 "from #{offer[:company].owner.name}#{corp_owner} for #{@game.format_currency(offer[:price])}"
             end

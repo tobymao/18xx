@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
+require 'lib/storage'
 require 'view/game/actionable'
 
 module View
