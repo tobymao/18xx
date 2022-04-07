@@ -206,6 +206,10 @@ module Engine
       hexes.default = nil
       hexes.transform_values!(&:keys)
 
+      # connected_hexes - hexes in which this corporation can lay track
+      # connected_nodes - hexes in which this corporation can token
+      # reachable_hexes - hexes in which this corporation can run
+
       @routes[corporation] = routes
       @connected_hexes[corporation] = hexes
       @connected_nodes[corporation] = nodes
