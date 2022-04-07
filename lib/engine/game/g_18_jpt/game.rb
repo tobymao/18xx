@@ -114,7 +114,7 @@ module Engine
           {
             name: '5',
             distance: 5,
-            price: 500,
+            price: 450,
             num: 2,
             events: [{ 'type' => 'close_companies' }],
           },
@@ -127,7 +127,7 @@ module Engine
           {
             name: 'D',
             distance: 999,
-            price: 900,
+            price: 1100,
             num: 99,
             available_on: '6',
           },
