@@ -47,7 +47,7 @@ module Engine
              500 550 600e],
         ].freeze
 
-        SELL_MOVEMENT = :left_per_if_pres_else_left_one
+        SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
@@ -648,13 +648,9 @@ module Engine
         end
 
         def company_status_str(company)
-          bidbox_minors.each_with_index do |c, index|
-            return "Bid box #{index + 1}" if c == company
-          end
+          index = bidbox_minors.index(company) || bidbox_concessions.index(company)
+          return "Bid box #{index + 1}" if index
 
-          bidbox_concessions.each_with_index do |c, index|
-            return "Bid box #{index + 1}" if c == company
-          end
           nil
         end
 
