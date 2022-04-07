@@ -161,8 +161,9 @@ module Engine
             }
             @round.offers << offer
 
-            @log << "#{corporation.name} (#{proposer.name}) offers to purchase #{company.sym} from #{responder.name} "\
-                    "for #{@game.format_currency(price)}"
+            corp_owner = company.owner.corporation? ? " (owned by #{responder.name})" : ''
+            @log << "#{corporation.name} (#{proposer.name}) offers to purchase #{company.sym} from"\
+                    " #{company.owner.name}#{corp_owner} for #{@game.format_currency(price)}"
           end
 
           # Offering to buy from FI requires asking all companies with higher share price first
@@ -190,7 +191,7 @@ module Engine
 
             @log << "#{corporation.name} (#{proposer.name}) proposes to purchase #{company.sym} from the Foreign Investor "\
                     "for #{@game.format_currency(price)}"
-            @log << "#{responder_list[0].name} (#{responder.name}) has right of first refusal"
+            @log << "#{responder_list[0].name} (#{responder.name}) has the right to intervene"
           end
 
           def build_responder_list(proposer, corporation, company)
@@ -240,11 +241,11 @@ module Engine
 
             if accept
               @round.offers.delete(offer)
-              @log << "#{corporation.name} (#{responder.name}) preempts purchase of #{company.sym} by "\
+              @log << "#{corporation.name} (#{responder.name}) intervenes on purchase of #{company.sym} by "\
                       "#{original_corp.name} (#{proposer&.name || 'Receivership'})"
               acquire_company(corporation, company, price)
             else
-              @log << "#{corporation.name} (#{responder.name}) refuses right of purchase of #{company.sym}"
+              @log << "#{corporation.name} (#{responder.name}) refuses to intervene on purchase of #{company.sym}"
 
               next_responder!(offer)
             end
@@ -322,12 +323,13 @@ module Engine
 
           def offer_text(offer)
             if offer[:company].owner == @game.foreign_investor
-              "Right of Refusal -> Purchase #{offer[:company].sym} (Foreign Investor) for "\
-                "#{@game.format_currency(foreign_price(offer[:responder_list][0], offer[:company]))} by "\
-                "#{offer[:responder_list][0].name} (#{offer[:responder].name})"
+              "#{offer[:responder_list][0].name} (#{offer[:responder].name}) may "\
+                "purchase #{offer[:company].sym} (Foreign Investor) for "\
+                "#{@game.format_currency(foreign_price(offer[:responder_list][0], offer[:company]))}?"
             else
-              "Offer: From #{offer[:proposer].name} -> purchase #{offer[:company].sym} (#{offer[:responder].name}) "\
-                "for #{@game.format_currency(offer[:price])}"
+              corp_owner = offer[:company].owner.corporation? ? " (owned by #{offer[:responder].name})" : ''
+              "#{offer[:corporation].name} (#{offer[:proposer].name}) offers to purchase #{offer[:company].sym} "\
+                "from #{offer[:company].owner.name}#{corp_owner} for #{@game.format_currency(offer[:price])}"
             end
           end
         end

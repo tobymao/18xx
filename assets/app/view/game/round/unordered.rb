@@ -42,7 +42,13 @@ module View
               border: '1px solid',
               borderRadius: '5px',
               marginBottom: '0.5rem',
-              padding: '0.2rem 0.5rem 0.2rem 0.5rem',
+              padding: '0.2rem 0.2rem 0.2rem 0.5rem',
+            },
+          }
+
+          buttons_props = {
+            style: {
+              display: 'inline-block',
             },
           }
 
@@ -71,9 +77,9 @@ module View
                 ))
               end
 
-              line << h(:div, [
-                h(:button, { on: { click: accept } }, 'Accept'),
-                h(:button, { on: { click: reject } }, 'Reject'),
+              line << h(:div, buttons_props, [
+                h(:button, { style: { margin: '0.1rem 0.1rem 0.1rem 0.2rem' }, on: { click: accept } }, 'Accept'),
+                h(:button, { style: { margin: '0.1rem 0.1rem 0.1rem 0.2rem' }, on: { click: reject } }, 'Reject'),
               ])
             else
               offer_props[:style][:background] = color_for(:bg2)

@@ -321,7 +321,7 @@ module View
           card_style[:border] = '1px solid'
         end
 
-        children = [render_title, render_rs_holdings, render_shares]
+        children = [render_title('white'), render_rs_holdings, render_shares]
         children << render_rs_income if @corporation.ipoed
 
         abilities_to_display = @corporation.all_abilities.select(&:description)
