@@ -561,7 +561,7 @@ module Engine
             secr[:abilities] << { type: 'blocks_hexes', owner_type: nil, hexes: ['W21'] }
             PAR_BY_CORPORATION['SECR'] = 67
             lbsc = corps.find { |corp| corp[:sym] == 'LBSC' }
-            lbsc[:abilities] = nil
+            lbsc[:abilities] = []
           end
           add_entities(corps, R3_CORPORATIONS) if @regionals[3]
           add_entities(corps, K5_CORPORATIONS) if @kits[5]

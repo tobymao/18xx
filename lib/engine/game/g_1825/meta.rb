@@ -155,7 +155,6 @@ module Engine
           units = {}
           kits = {}
           regionals = {}
-          dbvariants = {}
 
           units[1] = true if optional_rules.include?(:unit_1)
           units[1] = true if optional_rules.include?(:unit_12)
@@ -180,8 +179,6 @@ module Engine
           regionals[1] = true if optional_rules.include?(:r1)
           regionals[2] = true if optional_rules.include?(:r2)
           regionals[3] = true if optional_rules.include?(:r3)
-
-          dbvariants[2] = true if optional_rules.include?(:db2)
 
           if !units[1] && !units[2] && !units[3] && !optional_rules.empty?
             return 'Must select at least one Unit if using other options'
