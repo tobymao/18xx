@@ -66,7 +66,7 @@ module Engine
           'X22' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:30,slots:2;path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=P',
+            'code' => 'city=revenue:30,slots:2;path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=MEM;icon=image:18_dixie/P.brown',
           },
           '442' => {
             'count' => 1,
@@ -86,12 +86,12 @@ module Engine
           '598' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:2;path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=P',
+            'code' => 'city=revenue:40,slots:2;path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=NSH;icon=image:18_dixie/P.brown',
           },
           '599' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:2;path=a:2,b:_0;path=a:4,b:_0;path=a:0,b:_0;label=P',
+            'code' => 'city=revenue:40,slots:2;path=a:2,b:_0;path=a:4,b:_0;path=a:0,b:_0;label=;label=CHT;icon=image:18_dixie/P.brown',
           },
 
           'X30' => {
