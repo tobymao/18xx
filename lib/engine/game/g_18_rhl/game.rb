@@ -210,6 +210,21 @@ module Engine
           },
         ].freeze
 
+        def compute_stops(route, train = nil)
+          return super if route.train.name != '8' || check_distance_doesnt_throws_game_error(route)
+
+          []
+        end
+
+        def check_distance_doesnt_throws_game_error(route)
+          begin
+            check_distance(route, route.visited_stops)
+          rescue GameError
+            return false
+          end
+          true
+        end
+
         def game_trains
           trains = self.class::TRAINS
           return trains unless optional_ratingen_variant
