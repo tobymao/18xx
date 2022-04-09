@@ -382,6 +382,7 @@ module Engine
           new_share = Share.new(ndem, percent: 10, index: @number_ndem_shares)
           new_share.counts_for_limit = false
           @share_pool.transfer_shares(new_share.to_bundle, @share_pool, allow_president_change: false)
+          @_shares[new_share.id] = new_share
           @number_ndem_shares += 1
         end
 
