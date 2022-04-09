@@ -788,6 +788,12 @@ module Engine
           },
         }.freeze
 
+        DB2_HEXES = {
+          white: {
+            ['W23'] => 'city=revenue:0',
+          },
+        }.freeze
+
         UNIT1_OFFMAP_HEXES = {
           gray: {
             %w[Q7
@@ -887,6 +893,7 @@ module Engine
 
         def game_hexes
           ghexes = {}
+          append_game_hexes(ghexes, DB2_HEXES) if @optional_rules.include?(:db2)
           append_game_hexes(ghexes, R1_HEXES) if @regionals[1]
           append_game_hexes(ghexes, R2_HEXES) if @regionals[2]
           append_game_hexes(ghexes, R3_HEXES) if @regionals[3]
