@@ -74,6 +74,10 @@ module Engine
             if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
               raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
             end
+            if (tile.name == '888' || tile.name == '887') &&
+               action.hex.id == 'Q13' && (entity.name != 'NS')
+              raise GameError, 'Only the NS can place tiles 887/888 on Q13'
+            end
 
             check_adjacent(old_tile.hex) if @round.num_laid_track.positive?
 

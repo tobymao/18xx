@@ -489,18 +489,22 @@ module Engine
         }.freeze
         # rubocop:enable Layout/LineLength
 
+        # This includes upgrades for the DB1 kit tiles 887/888. This does not
+        # affect the game without it since none of them are present.
         DIT_UPGRADES = {
           # gentle curve to three curves with a halt
           '8' => %w[11],
           # yellow double-dit to green K or X city
-          '1' => %w[14],
-          '2' => %w[15],
-          '55' => %w[14],
-          '56' => %w[15],
+          '1' => %w[14 888],
+          '2' => %w[15 887],
+          '55' => %w[14 888],
+          '56' => %w[15 887],
           '69' => %w[119],
-          '114' => %w[15],
+          '114' => %w[15 887],
           '198' => %w[119],
           '199' => %w[119],
+          '887' => %w[63 166],
+          '888' => %w[63 166],
           # yellow single-dit to green city (also brown/green city)
           '3' => %w[12 14 15 119],
           '4' => %w[14 15 119],
@@ -544,6 +548,20 @@ module Engine
           append_game_tiles(gtiles, K5_TILES) if @kits[5]
           append_game_tiles(gtiles, K6_TILES) if @kits[6]
           append_game_tiles(gtiles, D1_TILES) if @optional_rules.include?(:d1)
+          gtiles = db1_tiles(gtiles) if @optional_rules.include?(:db1)
+          gtiles
+        end
+
+        def db1_tiles(gtiles)
+          gtiles.delete('87')
+          gtiles.delete('88')
+          eightysevens = ((@units[1] ? 2 : 0) + (@units[3] ? 1 : 0))
+          gtiles['887'] = eightysevens
+          gtiles['888'] = eightysevens
+          if @units[3]
+            gtiles['14'] -= 1
+            gtiles['15'] -= 1
+          end
           gtiles
         end
 
