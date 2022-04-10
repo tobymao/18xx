@@ -75,7 +75,7 @@ module Engine
               raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
             end
             if (tile.name == '888' || tile.name == '887') &&
-               action.hex.id == 'Q13' && (entity.name != 'NS')
+               (action.hex.id == 'Q13') && (entity.name != 'NS')
               raise GameError, 'Only the NS can place tiles 887/888 on Q13'
             end
 
