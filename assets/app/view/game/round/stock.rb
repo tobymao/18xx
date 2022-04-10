@@ -31,6 +31,8 @@ module View
           @selected_corporation ||= @step.selected_corporation if @step.respond_to?(:selected_corporation)
           @auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
           @selected_corporation ||= @auctioning_corporation
+          @auctioning_company = @step.auctioning_company if @step.respond_to?(:auctioning_company)
+          @selected_company ||= @auctioning_company
           @mergeable_entity = @step.mergeable_entity if @step.respond_to?(:mergeable_entity)
           @price_protection = @step.price_protection if @step.respond_to?(:price_protection)
           @selected_corporation ||= @price_protection&.corporation
@@ -385,7 +387,7 @@ module View
             },
           }
           children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
-          children << h(TrainSchedule, game: @game)
+          children << h(TrainSchedule, game: @game) unless @game.depot.trains.empty?
           h(:div, props, children)
         end
       end

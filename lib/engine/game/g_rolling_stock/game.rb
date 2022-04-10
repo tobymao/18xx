@@ -11,8 +11,8 @@ module Engine
         include_meta(GRollingStock::Meta)
         include Entities
 
-        attr_reader :foreign_investor, :company_deck, :company_level, :company_synergies, :cost_level,
-                    :cost_table, :offering
+        attr_reader :foreign_investor, :company_deck, :company_highlight, :company_level, :company_synergies,
+                    :cost_level, :cost_table, :offering
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -103,13 +103,13 @@ module Engine
         )
 
         STAR_COLORS = {
-          #     main color text     card color standard color
-          1 => ['#cd5c5c', 'white', '#f8ecec', :red],
-          2 => ['#ffa500', 'black', '#fff7e5', :orange],
-          3 => ['#ffff33', 'black', '#ffffe5', :yellow],
-          4 => ['#90ee90', 'black', '#e8fce8', :green],
-          5 => ['#add8e6', 'black', '#ecf7f8', :blue],
-          6 => ['#9370db', 'white', '#efecf9', :purple],
+          #     main color text     card color standard color highlight text
+          1 => ['#cd5c5c', 'white', '#f8ecec', :red,          'yellow'],
+          2 => ['#ffa500', 'black', '#fff7e5', :orange,       'red'],
+          3 => ['#ffff33', 'black', '#ffffe5', :yellow,       'red'],
+          4 => ['#90ee90', 'black', '#e8fce8', :green,        'red'],
+          5 => ['#add8e6', 'black', '#ecf7f8', :blue,         'red'],
+          6 => ['#9370db', 'white', '#efecf9', :purple,       'red'],
         }.freeze
 
         LEVEL_SYMBOLS = {
@@ -170,6 +170,7 @@ module Engine
         end
 
         def setup
+          @company_highlight = {} # only used in RS Stars
           @company_level = self.class::COMPANIES.to_h { |c| [company_by_id(c[:sym]), c[:level]] }
           @company_synergies = self.class::COMPANIES.to_h do |c|
             [company_by_id(c[:sym]), c[:synergies].to_h { |oc| [company_by_id(oc), true] }]
@@ -648,8 +649,20 @@ module Engine
 
           return unless @cost_level < new_cost
 
+          old_cost = @cost_level
           @cost_level = new_cost
           @log << "New cost of ownership: #{cost_level_str}"
+
+          disable_auto_close_pass if @cost_table[old_cost][0] != @cost_table[new_cost][0]
+        end
+
+        def disable_auto_close_pass
+          @programmed_actions.reject! do |entity, action|
+            if action.is_a?(Engine::Action::ProgramClosePass) && !action.unconditional
+              player_log(entity, "Programmed action '#{action}' removed due to operating cost change")
+              true
+            end
+          end
         end
 
         def cost_level_str
@@ -804,7 +817,7 @@ module Engine
 
         def pass_entity(user)
           return super unless @round.unordered?
-          return @round.entities.find { |e| !e.passed? } unless user
+          return super unless user
 
           player_by_id(user['id']) || super
         end
@@ -903,6 +916,24 @@ module Engine
 
         def level_symbol(level)
           self.class::LEVEL_SYMBOLS[level]
+        end
+
+        def show_game_cert_limit?
+          false
+        end
+
+        def sellable_bundles(player, corporation)
+          return [] unless @round.active_step.respond_to?(:can_sell?)
+
+          bundles = bundles_for_corporation(player, corporation).map do |bundle|
+            bundle.share_price = next_price_to_left(bundle.corporation.share_price).price
+            bundle
+          end
+          bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
+        end
+
+        def available_programmed_actions
+          [Action::ProgramClosePass]
         end
       end
     end

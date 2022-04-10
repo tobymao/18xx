@@ -104,6 +104,7 @@ module Engine
           5.times do |stars|
             matching = @companies.select { |c| @company_level[c] == (stars + 1) }
             highest = matching.max_by(&:value)
+            @company_highlight[highest] = true
             drawn = matching.reject { |c| c == highest }.sort_by { rand }.take(num_to_draw(players, stars + 1))
             drawn << highest
             deck.concat(drawn.sort_by { rand })

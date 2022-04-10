@@ -35,6 +35,7 @@ module View
             Engine::Action::ProgramIndependentMines => ->(settings) { render_independent_mines(settings) },
             Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
             Engine::Action::ProgramSharePass => ->(settings) { render_share_pass(settings) },
+            Engine::Action::ProgramClosePass => ->(settings) { render_close_pass(settings) },
           }.freeze
 
           if !(available = @game.available_programmed_actions).empty?
@@ -175,6 +176,10 @@ module View
 
       def render_share_pass(settings)
         h(AutoAction::SharePass, game: @game, sender: sender, settings: settings)
+      end
+
+      def render_close_pass(settings)
+        h(AutoAction::ClosePass, game: @game, sender: sender, settings: settings)
       end
 
       def enable_independent_mines(form)

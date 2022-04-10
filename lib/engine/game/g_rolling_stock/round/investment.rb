@@ -16,6 +16,10 @@ module Engine
           end
 
           def finish_round; end
+
+          def show_auto?
+            false
+          end
         end
       end
     end
