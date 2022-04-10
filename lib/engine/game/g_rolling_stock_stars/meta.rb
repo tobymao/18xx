@@ -10,7 +10,7 @@ module Engine
         include Game::Meta
         include GRollingStock::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         DEPENDS_ON = 'RollingStock'
 
         GAME_ALIASES = ['Rolling Stock Stars'].freeze
