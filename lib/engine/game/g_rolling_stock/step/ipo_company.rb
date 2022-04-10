@@ -87,7 +87,7 @@ module Engine
             if par_price >= company.value
               par_price - company.value
             else
-              (share_price.price * 2) - company.value
+              (par_price * 2) - company.value
             end
           end
 

@@ -649,7 +649,7 @@ module Engine
 
           return unless @cost_level < new_cost
 
-          old_cost = new_cost
+          old_cost = @cost_level
           @cost_level = new_cost
           @log << "New cost of ownership: #{cost_level_str}"
 
@@ -933,7 +933,7 @@ module Engine
         end
 
         def available_programmed_actions
-          [Action::ProgramSharePass, Action::ProgramClosePass]
+          [Action::ProgramClosePass]
         end
       end
     end
