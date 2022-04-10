@@ -504,6 +504,7 @@ module View
         table_props = {
           style: {
             backgroundColor: 'white',
+            color: 'black',
             margin: '0',
             border: '1px solid',
             borderCollapse: 'collapse',
@@ -511,12 +512,12 @@ module View
         }
         tr_props = {
           style: {
-            border: '1px solid',
+            border: '1px solid black',
           },
         }
         th_props = {
           style: {
-            border: '1px solid',
+            border: '1px solid black',
           },
         }
 
@@ -526,9 +527,10 @@ module View
           style: {
             display: 'inline-block',
             backgroundColor: @game.class::STAR_COLORS[@game.cost_level]&.[](0) || 'white',
+            color: 'black',
             padding: '20px 60px 20px 60px',
             border: '1px solid',
-            borderRadius: '5px',
+            borderRadius: '10px',
           },
         }
 

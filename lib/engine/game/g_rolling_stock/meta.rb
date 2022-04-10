@@ -16,14 +16,16 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'http://rabenste.in/rollingstock/rules.pdf'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/Rolling-Stock'
+        AUTOROUTE = false
 
-        PLAYER_RANGE = [3, 5].freeze
+        PLAYER_RANGE = [2, 6].freeze
 
         GAME_VARIANTS = [
           sym: :stars,
           name: 'Rolling Stock Stars',
           title: 'Rolling Stock Stars',
           desc: 'Latest version of Rolling Stock',
+          default: true,
         ].freeze
 
         OPTIONAL_RULES = [

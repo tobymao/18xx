@@ -83,33 +83,12 @@ module Engine
           self.class::COST_OF_OWNERSHIP
         end
 
-        def num_to_draw(players, stars)
-          if players.size == 6
-            8
-          elsif stars != 2 || players.size < 4
-            players.size
-          elsif players.size == 4
-            5
-          else
-            7
-          end
-        end
-
         def setup_preround
           @phase_counter = 0
         end
 
-        def setup_company_deck
-          deck = []
-          5.times do |stars|
-            matching = @companies.select { |c| @company_level[c] == (stars + 1) }
-            highest = matching.max_by(&:value)
-            @company_highlight[highest] = true
-            drawn = matching.reject { |c| c == highest }.sort_by { rand }.take(num_to_draw(players, stars + 1))
-            drawn << highest
-            deck.concat(drawn.sort_by { rand })
-          end
-          deck
+        def num_levels
+          5
         end
 
         def synergy_value_by_level(company_a, company_b)
