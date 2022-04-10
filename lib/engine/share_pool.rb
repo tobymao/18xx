@@ -172,6 +172,7 @@ module Engine
 
       corporation.share_holders[owner] -= bundle.percent
       corporation.share_holders[to_entity] += bundle.percent
+      corporation.share_holders.delete(owner) if corporation.share_holders[owner].zero?
 
       if swap
         # Need to handle this separately as transfer and swap
@@ -180,6 +181,7 @@ module Engine
         corporation.share_holders[swap.owner] -= swap.percent
         corporation.share_holders[swap_to_entity] += swap.percent
         move_share(swap, swap_to_entity)
+        corporation.share_holders.delete(swap.owner) if corporation.share_holders[swap.owner].zero?
       end
 
       if corporation.capitalization == :escrow && receiver == corporation
@@ -202,7 +204,7 @@ module Engine
       return unless allow_president_change
 
       # check if we need to change presidency
-      max_shares = presidency_check_shares(corporation).values.max
+      max_shares = presidency_check_shares(corporation).values.max || 0
 
       # handle selling president's share to the pool
       # if partial, move shares from pool to old president
