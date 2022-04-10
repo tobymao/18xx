@@ -57,6 +57,7 @@ services:
     volumes:
       - ./public:/public
       - /etc/18xxgames/ssl:/etc/18xxgames/ssl
+      - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
       - rack
       - rack_backup
