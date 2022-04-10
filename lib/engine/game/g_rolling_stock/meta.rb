@@ -8,15 +8,14 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
         GAME_TITLE = 'Rolling Stock'
         GAME_SUBTITLE = ''
         GAME_DESIGNER = 'Björn Rabenstein'
-        GAME_LOCATION = 'n/a'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'http://rabenste.in/rollingstock/rules.pdf'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/RollingStock'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/Rolling-Stock'
 
         PLAYER_RANGE = [3, 5].freeze
 
