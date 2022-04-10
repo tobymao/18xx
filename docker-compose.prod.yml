@@ -56,7 +56,7 @@ services:
       - 127.0.0.1:8080:8080
     volumes:
       - ./public:/public
-      - /etc/18xxgames/ssl:/etc/letsencrypt/live/18xx.games
+      - /etc/letsencrypt/live/18xx.games
     depends_on:
       - rack
       - rack_backup
