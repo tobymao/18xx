@@ -15,7 +15,7 @@ module Engine
         GAME_DESIGNER = 'Björn Rabenstein'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'http://rabenste.in/rollingstock/rules.pdf'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/RollingStock'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/Rolling-Stock'
 
         PLAYER_RANGE = [3, 5].freeze
 

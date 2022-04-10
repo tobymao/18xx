@@ -15,7 +15,7 @@ module Engine
 
         GAME_ALIASES = ['Rolling Stock Stars'].freeze
         GAME_IS_VARIANT_OF = GRollingStock::Meta
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/RollingStock'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/Rolling-Stock'
         GAME_RULES_URL = 'https://github.com/beorn7/rolling_stock/blob/master/rules.pdf'
         GAME_SUBTITLE = nil
         GAME_TITLE = 'Rolling Stock Stars'
