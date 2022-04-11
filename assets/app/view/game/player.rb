@@ -46,11 +46,9 @@ module View
       end
 
       def render_title
-        bg_color = if setting_for(:show_player_colors, @game)
-                     player_colors(@game.players)[@player]
-                   else
-                     color_for(:bg2)
-                   end
+        bg_color = setting_for(:show_player_colors, @game) && player_colors(@game.players)[@player]
+        bg_color ||= color_for(:bg2)
+
         props = {
           style: {
             padding: '0.4rem',

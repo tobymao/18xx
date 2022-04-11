@@ -36,7 +36,9 @@ module View
         inputs << render_game_type
         inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
                                                    container_style: { paddingLeft: '0.5rem' })
-        inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
+        if selected_game_or_variant::AUTOROUTE
+          inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
+        end
         inputs << h(:p, [render_input('Random Seed', id: :seed, placeholder: 'Optional random seed', label_style: @label_style)])
         inputs << render_game_info
       when :hotseat
@@ -119,6 +121,7 @@ module View
         uncheck_optional_rules
         @optional_rules = []
 
+        preselect_variant(@selected_game)
         update_inputs
       end
 
@@ -151,6 +154,12 @@ module View
       div_props[:style] = { display: 'none' } if @mode == :json
 
       h(:div, div_props, inputs)
+    end
+
+    def preselect_variant(game)
+      game.game_variants.map do |_sym, variant|
+        @selected_variant = variant if variant[:default]
+      end
     end
 
     def uncheck_game_variant

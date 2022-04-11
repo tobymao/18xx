@@ -197,22 +197,31 @@ module Engine
         end
 
         def num_to_draw(players, level)
-          if level != 2 || players.size < 4
-            players.size + 1
-          elsif players.size == 4
-            6
-          else
+          if players.size == 6
             8
+          elsif level != 2 || players.size < 4
+            players.size
+          elsif players.size == 4
+            5
+          else
+            7
           end
+        end
+
+        def num_levels
+          @optional_rules&.include?(:short) ? 5 : 6
         end
 
         def setup_company_deck
           deck = []
-          num = @optional_rules&.include?(:short) ? 5 : 6
-          num.times do |level|
-            matching = @companies.select { |c| @company_level[c] == (level + 1) }
-            drawn = matching.sort_by { rand }.take(num_to_draw(players, level + 1))
-            deck.concat(drawn)
+          num = num_levels
+          num.times do |stars|
+            matching = @companies.select { |c| @company_level[c] == (stars + 1) }
+            highest = matching.max_by(&:value)
+            @company_highlight[highest] = true
+            drawn = matching.reject { |c| c == highest }.sort_by { rand }.take(num_to_draw(players, stars + 1))
+            drawn << highest
+            deck.concat(drawn.sort_by { rand })
           end
           deck
         end
