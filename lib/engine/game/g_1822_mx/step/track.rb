@@ -70,7 +70,6 @@ module Engine
           end
 
           def potential_tiles(entity, hex)
-            print("potential_tiles:#{hex.id}")
             tiles = super
             if @game.can_hold_builder_cubes?(hex.tile)
               cube_tile = @game.tile_by_id('BC-0')
