@@ -356,7 +356,7 @@ module Engine
         def sorted_corporations
           available_corporations = super
           ndem = corporation_by_id('NDEM')
-          available_corporations << ndem
+          available_corporations << ndem unless available_corporations.include? ndem
           available_corporations
         end
 

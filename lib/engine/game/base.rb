@@ -1075,7 +1075,7 @@ module Engine
           stock_market.move_left(corporation) if was_president
         when :left_per_10_if_pres_else_left_one
           spaces = if was_president
-                     ((bundle.percent - (swap ? swap.percent : 0)) / 10).round(0, half: down)
+                     ((bundle.percent - (swap ? swap.percent : 0)) / 10).round(0)
                    else
                      1
                    end

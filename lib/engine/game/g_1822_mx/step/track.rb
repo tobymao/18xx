@@ -11,7 +11,9 @@ module Engine
             if current_entity.id == 'NDEM'
               @ndem = @game.corporation_by_id('NDEM')
               @ndem_tiles_laid = []
-              @ndem_tile_layers = @game.players.select { |p| @ndem.player_share_holders.include?(p) }
+              @ndem_tile_layers = @game.players.select do |p|
+                @ndem.player_share_holders.include?(p) && @ndem.player_share_holders[p].positive?
+              end
               if @ndem_tile_layers.length.positive?
                 @ndem_route_runner = @ndem_tile_layers[0]
                 @game.ndem_acting_player = @ndem_tile_layers[0]
