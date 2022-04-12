@@ -70,6 +70,7 @@ module Engine
           end
 
           def potential_tiles(entity, hex)
+            print("potential_tiles:#{hex.id}")
             tiles = super
             if @game.can_hold_builder_cubes?(hex.tile)
               cube_tile = @game.tile_by_id('BC-0')
@@ -81,6 +82,12 @@ module Engine
           def legal_tile_rotation?(entity, hex, tile)
             return true if hex.tile.name == tile.name && hex.tile.rotation == tile.rotation
             return true if tile.id == 'BC-0'
+
+            super
+          end
+
+          def available_hex(entity, hex)
+            return hex_neighbors(entity, hex) if @game.can_hold_builder_cubes?(hex.tile)
 
             super
           end
