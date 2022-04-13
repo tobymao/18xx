@@ -560,7 +560,7 @@ module Engine
           append_game_tiles(gtiles, K5_TILES) if @kits[5]
           append_game_tiles(gtiles, K6_TILES) if @kits[6]
           append_game_tiles(gtiles, D1_TILES) if @optional_rules.include?(:d1)
-          gtiles = db1_tiles(gtiles) if @optional_rules.include?(:db1)
+          db1_tiles(gtiles) if @optional_rules.include?(:db1)
           gtiles
         end
 
