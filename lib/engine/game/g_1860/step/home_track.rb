@@ -62,7 +62,12 @@ module Engine
             pass!
           end
 
+          def get_tile_lay(_entity)
+            { lay: true, upgrade: false, cost: 0, upgrade_cost: 0, cannot_reuse_same_hex: false }
+          end
+
           def process_lay_tile(action)
+            @round.num_laid_track = 0
             lay_tile_action(action)
             @round.pending_tracks.shift
           end
