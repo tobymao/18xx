@@ -49,6 +49,7 @@ module Engine
 
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
+        EXTRA_TRAIN_PERMANENTS = %w[2P LP 3/2P].freeze
         PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
@@ -356,7 +357,7 @@ module Engine
         def sorted_corporations
           available_corporations = super
           ndem = corporation_by_id('NDEM')
-          available_corporations << ndem
+          available_corporations << ndem unless available_corporations.include?(ndem)
           available_corporations
         end
 
