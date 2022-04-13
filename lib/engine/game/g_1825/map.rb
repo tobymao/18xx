@@ -487,6 +487,11 @@ module Engine
           },
           '200' => 2,
         }.freeze
+
+        DB1_UNIT3_ANTITILES = {
+          '14' => -1,
+          '15' => -1,
+        }.freeze
         # rubocop:enable Layout/LineLength
 
         # This includes upgrades for the DB1 kit tiles 887/888. This does not
@@ -532,6 +537,13 @@ module Engine
             else
               gtiles[k] = v.dup
             end
+            number = gtiles[k].is_a?(Hash) ? gtiles[k]['count'] : gtiles[k]
+            # this was if number<=0 raise GameError ... end but rubocop gives
+            # a complaint that seems frankly barking to me
+            next if number.positive?
+            raise GameError, "negative number of tile #{k}" if number.negative?
+
+            gtiles.delete(k)
           end
         end
 
@@ -558,10 +570,7 @@ module Engine
           eightysevens = ((@units[1] ? 2 : 0) + (@units[3] ? 1 : 0))
           gtiles['887'] = eightysevens
           gtiles['888'] = eightysevens
-          if @units[3]
-            gtiles['14'] -= 1
-            gtiles['15'] -= 1
-          end
+          append_game_tiles(gtiles, DB1_UNIT3_ANTITILES) if @units[3]
           gtiles
         end
 
