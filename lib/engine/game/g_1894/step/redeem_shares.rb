@@ -18,7 +18,9 @@ module Engine
           def process_buy_shares(action)
             super
 
-            action.bundle.shares.first.buyable = false
+            action.bundle.shares.each do |share|
+              share.buyable = false
+            end
             @round.redeem_cash[action.entity] = 0
           end
 

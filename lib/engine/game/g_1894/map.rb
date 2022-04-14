@@ -126,6 +126,16 @@ module Engine
             'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:3.5;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;path=a:4,b:_1',
           },
+          'X16' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;label=R',
+          },
+          'X17' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=SQ',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -187,7 +197,7 @@ module Engine
             ['A8'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0;'\
             'icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
             ['A10'] => 'city=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0,lanes:2;path=a:5,b:_0;',
-            ['B5'] => 'path=a:1,b:5;',
+            ['B5'] => 'path=a:1,b:5;path=a:1,b:6;path=a:5,b:6',
             ['D1'] => 'town=revenue:20;path=a:3,b:_0;path=a:5,b:_0',
             ['F11'] => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
             ['G18'] => 'path=a:0,b:2;',
@@ -200,7 +210,7 @@ module Engine
                        'path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;border=edge:4',
             ['C18'] => 'offboard=revenue:30,hide:1,groups:Netherdlands;path=a:0,b:_0;border=edge:1',
             ['I2'] => 'offboard=revenue:30;label=Est +30;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            ['I18'] => 'offboard=revenue:0,hide:1;label=x2;path=a:1,b:_0;path=a:2,b:_00',
+            ['I18'] => 'offboard=revenue:0,hide:1;label=Largest;path=a:1,b:_0;path=a:2,b:_00',
           },
         }.freeze
       end
