@@ -698,7 +698,7 @@ module Engine
         end
 
         def ipo_companies
-          @companies.select { |c| c.owner&.player? && c.owner != @foreign_investor }.sort_by(&:value)
+          @companies.select { |c| c.owner&.player? && c.owner != @foreign_investor }.sort_by(&:value).reverse
         end
 
         def available_par_prices(company)
