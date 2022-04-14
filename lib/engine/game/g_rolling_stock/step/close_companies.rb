@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
+require_relative '../../../step/programmer'
 
 module Engine
   module Game
     module GRollingStock
       module Step
         class CloseCompanies < Engine::Step::Base
+          include Engine::Step::Programmer
+
           def actions(entity)
             return [] unless @round.entities.include?(entity)
 
@@ -87,6 +90,17 @@ module Engine
 
           def blocking?
             true
+          end
+
+          def auto_actions(entity)
+            programmed_auto_actions(entity)
+          end
+
+          def activate_program_close_pass(entity, _program)
+            available_actions = actions(entity)
+            return unless available_actions.include?('pass')
+
+            [Action::Pass.new(entity)]
           end
         end
       end

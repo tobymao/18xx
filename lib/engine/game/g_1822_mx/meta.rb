@@ -12,7 +12,7 @@ module Engine
         DEV_STAGE = :prealpha
         DEPENDS_ON = '1822'
 
-        GAME_SUBTITLE = 'MHA_GAME_SUBTITLE'
+        GAME_SUBTITLE = 'The Railways of Mexico'
         GAME_DESIGNER = 'Scott Peterson'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822MX'
         GAME_LOCATION = 'Mexico'

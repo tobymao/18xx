@@ -6,7 +6,7 @@ WORKDIR /18xx
 
 RUN if [ "$RACK_ENV" = "development" ]; \
     then \
-      curl -s https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.14.8.tgz | tar xz; \
+      curl -s https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.14.36.tgz | tar xz; \
       mv package/bin/esbuild /usr/local/bin && rm -rf package; \
     fi;
 

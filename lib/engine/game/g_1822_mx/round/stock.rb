@@ -52,6 +52,14 @@ module Engine
             ## Find the correct minor in the corporations and close it
             @game.replace_minor_with_ndem(company)
           end
+
+          def sold_out?(corporation)
+            corporation.id != 'NDEM' && super
+          end
+
+          def sold_out_stock_movement(corp)
+            @game.stock_market.move_right(corp)
+          end
         end
       end
     end

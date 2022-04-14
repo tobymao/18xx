@@ -32,6 +32,12 @@ module View
           margin: '0 0.5rem',
         }
 
+        box_style = {
+          margin: '1px',
+        }
+
+        box_style[:color] = @game.company_colors(@company)[4] if @game.company_highlight[@company]
+
         label_style = {
           fontSize: '60%',
           fontWeight: 'normal',
@@ -58,6 +64,7 @@ module View
             margin: '0.5rem 5px 0 0',
             textAlign: 'center',
             fontWeight: 'bold',
+            color: 'black',
             backgroundColor: @game.company_colors(@company)[2],
           },
           on: { click: ->(event) { select_company(event) } },
@@ -65,17 +72,16 @@ module View
 
         if selected?
           props[:style][:backgroundColor] = 'lightblue'
-          props[:style][:color] = 'black'
           props[:style][:border] = '1px solid'
         end
         props[:style][:border] = '1px dashed' unless @game.company_available?(@company)
         props[:style][:display] = @display
 
-        company_name_str = "#{'★' * @game.company_stars[@company]} #{@company.name}"
+        company_name_str = "#{@game.level_symbol(@game.company_level[@company])} #{@company.name}"
 
         header = [
           h(:div, { style: element_style }, [
-            h(:div, @game.company_header(@company)),
+            h(:div, { style: box_style }, @game.company_header(@company)),
             h(:div, { style: label_style }, 'Company'),
           ]),
           h(:div, { style: element_style }, [
@@ -121,7 +127,7 @@ module View
           textAlign: 'left',
         }
 
-        groups = @game.company_synergies[@company].keys.group_by { |c| @game.synergy_value_by_star(@company, c) }
+        groups = @game.company_synergies[@company].keys.group_by { |c| @game.synergy_value_by_level(@company, c) }
 
         set = @company&.owner&.corporation? ? @company.owner.companies : []
 
@@ -148,16 +154,16 @@ module View
         h(:div, synergy_lines)
       end
 
-      def render_symbol(synergy, higher, highlight)
+      def render_symbol(synergy, higher, border)
         text = synergy.sym
-        stroke_width = highlight ? 2 : 1
+        stroke_width = border ? 2 : 1
 
         circle_attrs = {
           cx: "#{CIRCLE_SIZE / 2}px",
           cy: "#{CIRCLE_SIZE / 2}px",
           r: "#{(CIRCLE_SIZE - stroke_width) / 2}px",
           fill: @game.company_colors(synergy)[0],
-          stroke: highlight ? 'black' : 'rgba(0,0,0,0.2)',
+          stroke: border ? 'black' : 'rgba(0,0,0,0.2)',
           'stroke-width': "#{stroke_width}px",
         }
 
@@ -169,7 +175,7 @@ module View
           rx: '3px',
           ry: '3px',
           fill: @game.company_colors(synergy)[0],
-          stroke: highlight ? 'black' : 'rgba(0,0,0,0.2)',
+          stroke: border ? 'black' : 'rgba(0,0,0,0.2)',
           'stroke-width': "#{stroke_width}px",
           transform: 'rotate(45)',
         }
@@ -179,7 +185,7 @@ module View
           y: "#{SYMBOL_SIZE / 2}px",
           'dominant-baseline': 'central',
           'text-anchor': 'middle',
-          fill: @game.company_colors(synergy)[1],
+          fill: @game.company_colors(synergy)[@game.company_highlight[synergy] ? 4 : 1],
           'font-size': (SYMBOL_FONT_SIZE[text.length]).to_s,
         }
 

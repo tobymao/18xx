@@ -518,7 +518,7 @@ module Engine
         @cities = (@hexes.map(&:tile) + @tiles).map(&:cities).flatten
 
         @phase = init_phase
-        @operating_rounds = @phase.operating_rounds
+        @operating_rounds = @phase&.operating_rounds
 
         @round_history = []
         setup_preround
@@ -1073,6 +1073,13 @@ module Engine
           stock_market.move_down(corporation) if was_president
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
+        when :left_per_10_if_pres_else_left_one
+          spaces = if was_president
+                     ((bundle.percent - (swap ? swap.percent : 0)) / 10).round(0)
+                   else
+                     1
+                   end
+          spaces.times { @stock_market.move_left(corporation) }
         when :none
           nil
         else
@@ -2318,7 +2325,7 @@ module Engine
           bank: @bank.broken?,
           stock_market: @stock_market.max_reached?,
           final_train: @depot.empty?,
-          final_phase: @phase.phases.last == @phase.current,
+          final_phase: @phase&.phases&.last == @phase&.current,
           custom: custom_end_game_reached?,
         }.select { |_, t| t }
 
@@ -2835,6 +2842,10 @@ module Engine
 
       def phase_valid?
         true
+      end
+
+      def market_par_bars(_price)
+        []
       end
     end
   end

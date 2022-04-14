@@ -363,17 +363,17 @@ module Engine
         def cache_objects
           super
 
-          self.class.define_method('share_by_id') do |id|
+          self.class.define_method(:share_by_id) do |id|
             if id&.start_with?('mainline')
               id = id.sub('mainline', mainline.id)
             elsif id&.start_with?('shortline')
               id = id.sub('shortline', shortline.id)
             end
 
-            instance_variable_get('@_shares')[id]
+            instance_variable_get(:@_shares)[id]
           end
 
-          self.class.define_method('corporation_by_id') do |id|
+          self.class.define_method(:corporation_by_id) do |id|
             case id
             when 'mainline'
               id = mainline.id
@@ -381,7 +381,7 @@ module Engine
               id = shortline.id
             end
 
-            instance_variable_get('@_corporations')[id]
+            instance_variable_get(:@_corporations)[id]
           end
         end
 

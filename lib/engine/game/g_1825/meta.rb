@@ -118,6 +118,16 @@ module Engine
             short_name: 'StrictBank',
             desc: 'Do not increase bank size based on number of minors and kits',
           },
+          {
+            sym: :db1,
+            short_name: 'DB1',
+            desc: 'Dave Berry variant 1: allow double-dits to upgrade to 887/888',
+          },
+          {
+            sym: :db2,
+            short_name: 'DB2',
+            desc: 'Dave Berry variant 2: SECR Changes for Unit 1',
+          },
         ].freeze
 
         MUTEX_RULES = [
@@ -187,6 +197,8 @@ module Engine
           return 'Cannot use extra Unit 3 trains without Unit 3' if !units[3] && optional_rules.include?(:u3p)
           return 'Cannot use K1 or K6 with D1' if (kits[1] || kits[6]) && optional_rules.include?(:d1)
           return 'Cannot use both bank options' if optional_rules.include?(:big_bank) && optional_rules.include?(:strict_bank)
+          return 'Variant DB1 not useful in a Unit 2 only game' if !units[1] && !units[3] && optional_rules.include?(:db1)
+          return 'Variant DB2 is for Unit 1' if !units[1] && optional_rules.include?(:db2)
 
           nil
         end

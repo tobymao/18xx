@@ -40,7 +40,7 @@ module Engine
       G18LosAngeles1 => ['18 Los Angeles', '18LA1'],
       G18LosAngeles => ['18 Los Angeles 2', '18LA', '18LA2'],
     }.each do |game_module, fuzzy_titles|
-      expected_title = game_module.const_get('Meta').title
+      expected_title = game_module.const_get(:Meta).title
 
       describe 'closest_title' do
         fuzzy_titles.each do |fuzzy|

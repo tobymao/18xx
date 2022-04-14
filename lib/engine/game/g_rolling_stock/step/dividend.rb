@@ -25,7 +25,6 @@ module Engine
           def skip!
             return super if !current_entity.corporation? || !current_entity.receivership?
 
-            @log << "#{current_entity.name} is in receivership and pays #{@game.format_currency(0)}"
             process_dividend(Action::Dividend.new(current_entity, kind: 'variable', amount: 0))
           end
 
@@ -35,12 +34,11 @@ module Engine
 
             raise GameError, "Illegal dividend amount #{amount}" unless amount <= @game.max_dividend_per_share(entity)
 
+            receiver = entity.receivership? ? ' (in receivership)' : ''
+            @log << "#{entity.name}#{receiver} pays #{@game.format_currency(amount)} per share"
             @game.players.each { |p| payout_player(entity, p, amount) }
             payout_market(entity, amount)
-
-            diff = @game.corporation_stars(entity, entity.cash) - @game.target_stars(entity)
-            new_price = @game.star_diff_price(entity, diff)
-            @game.move_to_price(entity, new_price)
+            @game.dividend_price_movement(entity)
 
             pass!
           end
@@ -71,9 +69,7 @@ module Engine
           end
 
           def help_str(max)
-            "Dividend per share. Range: From #{@game.format_currency(0)}"\
-              " to #{@game.format_currency(max)}. Issued shares: #{@game.num_issued(current_entity)}."\
-              " Stars on share price: #{@game.target_stars(current_entity)}★"
+            @game.dividend_help_str(current_entity, max)
           end
 
           def variable_max
