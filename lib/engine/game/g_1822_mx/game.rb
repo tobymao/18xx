@@ -47,7 +47,9 @@ module Engine
              500 550 600e],
         ].freeze
 
+        SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
+        EXTRA_TRAIN_PERMANENTS = %w[2P LP 3/2P].freeze
         PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
@@ -77,6 +79,58 @@ module Engine
           'P18' => { acquire: %i[major], phase: 3 },
         }.freeze
 
+        COMPANY_SHORT_NAMES = {
+          'P1' => 'P1 (5-Train)',
+          'P2' => 'P2 (Permanent 2T)',
+          'P3' => 'P3 (Permanent 3/2T)',
+          'P4' => 'P4 (Permanent LT)',
+          'P5' => 'P5 (Pullman)',
+          'P6' => 'P6 (Pullman)',
+          'P7' => 'P7 (Double Cash)',
+          'P8' => 'P8 (Adv. Tile Lay)',
+          'P9' => 'P9 (Extra Tile Lay)',
+          'P10' => 'P10 (Builder Cubes)',
+          'P11' => 'P11 (Builder Cubes)',
+          'P12' => 'P12 (Remove Town)',
+          'P13' => 'P13 (Remove Town)',
+          'P14' => 'P14 (Mail Contract)',
+          'P15' => 'P15 (Mail Contract)',
+          'P16' => 'P16 (Stock Drop)',
+          'P17' => 'P17 (Small Port)',
+          'P18' => 'P18 (Large Port)',
+          'C1' => 'FCM',
+          'C2' => 'MC',
+          'C3' => 'CHP',
+          'C4' => 'FNM',
+          'C5' => 'MIR',
+          'C6' => 'FCP',
+          'C7' => 'IRM',
+          'M1' => '1',
+          'M2' => '2',
+          'M3' => '3',
+          'M4' => '4',
+          'M5' => '5',
+          'M6' => '6',
+          'M7' => '7',
+          'M8' => '8',
+          'M9' => '9',
+          'M10' => '10',
+          'M11' => '11',
+          'M12' => '12',
+          'M13' => '13',
+          'M14' => '14',
+          'M15' => '15',
+          'M16' => '16',
+          'M17' => '17',
+          'M18' => '18',
+          'M19' => '19',
+          'M20' => '20',
+          'M21' => '21',
+          'M22' => '22',
+          'M23' => '23',
+          'M24' => '24',
+        }.freeze
+
         def port_company?(entity)
           entity.id == 'P17' || entity.id == 'P18'
         end
@@ -87,6 +141,10 @@ module Engine
 
         BIDDING_BOX_START_PRIVATE = 'P1'
         BIDDING_BOX_START_MINOR = nil
+
+        def init_graph
+          Graph.new(self, home_as_token: true)
+        end
 
         TRAINS = [
           {
@@ -243,7 +301,7 @@ module Engine
             G1822MX::Step::Route,
             G1822MX::Step::Dividend,
             G1822::Step::BuyTrain,
-            G1822::Step::MinorAcquisition,
+            G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
             G1822::Step::IssueShares,
@@ -299,7 +357,7 @@ module Engine
         def sorted_corporations
           available_corporations = super
           ndem = corporation_by_id('NDEM')
-          available_corporations << ndem
+          available_corporations << ndem unless available_corporations.include?(ndem)
           available_corporations
         end
 
@@ -325,6 +383,7 @@ module Engine
           new_share = Share.new(ndem, percent: 10, index: @number_ndem_shares)
           new_share.counts_for_limit = false
           @share_pool.transfer_shares(new_share.to_bundle, @share_pool, allow_president_change: false)
+          @_shares[new_share.id] = new_share
           @number_ndem_shares += 1
         end
 
@@ -590,8 +649,11 @@ module Engine
           company.close!
         end
 
-        def company_status_str
-          ''
+        def company_status_str(company)
+          index = bidbox_minors.index(company) || bidbox_concessions.index(company)
+          return "Bid box #{index + 1}" if index
+
+          nil
         end
 
         def terrain?(tile, terrain)

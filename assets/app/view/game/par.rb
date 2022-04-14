@@ -47,8 +47,9 @@ module View
           flags = at_limit ? ' L' : ''
 
           flags += " / #{@game.total_shares_to_float(@corporation, share_price.price)}" if @game.class::VARIABLE_FLOAT_PERCENTAGES
+          no_shares = step.respond_to?(:par_price_only) && step.par_price_only(@corporation, share_price)
 
-          text = if @corporation.presidents_percent < 100
+          text = if @corporation.presidents_percent < 100 && !no_shares
                    "#{@game.par_price_str(share_price)} (#{purchasable_shares}#{flags})"
                  else
                    @game.par_price_str(share_price)

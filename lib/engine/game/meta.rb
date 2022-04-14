@@ -8,6 +8,7 @@ module Engine
       DEV_STAGE = :prealpha
       PROTOTYPE = false
       DEPENDS_ON = nil
+      AUTOROUTE = true
 
       # game title variations
       GAME_TITLE = nil # canonical title stored in database, defaults to '18xx' part of 'G18xx' module name

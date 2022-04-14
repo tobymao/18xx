@@ -25,8 +25,8 @@ module Engine
 
         CURRENCY_FORMAT_STR = '¥%d'
 
-        BANK_CASH = 10_000
-        SMALL_BANK_CASH = 9_000
+        PROTOTYPE_BANK_CASH = 10_000
+        BANK_CASH = 9_000
 
         CERT_LIMIT = { 2 => 20, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
@@ -172,19 +172,39 @@ module Engine
 
         BEIJING_HEX = 'C9'
 
-        MUST_BID_INCREMENT_MULTIPLE = false # FIXME: check with Lonny
-        ONLY_HIGHEST_BID_COMMITTED = false # FIXME: check with Lonny
-        TRACK_RESTRICTION = :permissive # FIXME: check with Lonny
+        MUST_BID_INCREMENT_MULTIPLE = false
+        ONLY_HIGHEST_BID_COMMITTED = false
+        TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
         EBUY_OTHER_VALUE = false
 
+        def prototype?
+          !@optional_rules || @optional_rules&.empty?
+        end
+
+        def log_optional_rules
+          if @optional_rules.empty?
+            @log << ' * Playing with prototype (not final) rules, North map'
+            return
+          end
+
+          @log << 'Optional rules used in this game:'
+          self.class::OPTIONAL_RULES.each do |o_r|
+            next unless @optional_rules.include?(o_r[:sym])
+
+            @log << " * #{o_r[:short_name]}: #{o_r[:desc]}"
+          end
+
+          @log << ' * (Playing with deprecated option)' if @optional_rules.include?(:small_bank)
+        end
+
         def setup
           setup_company_price_50_to_150_percent
-          @corporations.each { |c| c.float_percent = 60 } if @optional_rules&.include?(:small_bank)
+          @corporations.each { |c| c.float_percent = 50 } if prototype?
         end
 
         def init_bank
-          cash = @optional_rules&.include?(:small_bank) ? self.class::SMALL_BANK_CASH : self.class::BANK_CASH
+          cash = prototype? ? self.class::PROTOTYPE_BANK_CASH : self.class::BANK_CASH
 
           Bank.new(cash, log: @log)
         end

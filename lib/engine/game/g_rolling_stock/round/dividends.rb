@@ -8,11 +8,11 @@ module Engine
       module Round
         class Dividends < Engine::Round::Operating
           def name
-            'Phase 6 - Dividends'
+            'Dividends'
           end
 
           def self.short_name
-            'DR'
+            'DIV'
           end
 
           def setup

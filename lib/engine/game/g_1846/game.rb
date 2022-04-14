@@ -214,6 +214,20 @@ module Engine
         # Two tiles can be laid, only one upgrade
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend < 1/2 stock value', '1 ←'],
+            ['Dividend > 1/2 stock value and < stock value', 'none'],
+            ['Dividend ≥ stock value', '1 →'],
+            ['Dividend ≥ 2× stock value', '2 →'],
+            ['Dividend ≥ 3× stock value and stock value is at least 165', '3 →'],
+            ['Corporation director sells any number of shares', '1 ←'],
+            ['Corporation has any shares in market at end of SR', '1 ←'],
+            ['Corporation is sold out at end of SR', '1 →'],
+          ]
+        end
+
         def ipo_name(_entity = nil)
           'Treasury'
         end

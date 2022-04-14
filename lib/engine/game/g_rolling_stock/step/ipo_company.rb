@@ -80,7 +80,15 @@ module Engine
           end
 
           def get_par_prices(company, _corporation)
-            @game.available_par_prices(company).select { |p| (p.price - company.value) <= company.owner&.cash }
+            @game.available_par_prices(company).select { |p| cost_to_ipo(p.price, company) <= company.owner&.cash }
+          end
+
+          def cost_to_ipo(par_price, company)
+            if par_price >= company.value
+              par_price - company.value
+            else
+              (par_price * 2) - company.value
+            end
           end
 
           def ipo_type(_entity)
@@ -93,6 +101,10 @@ module Engine
 
           def available_par_cash(company, _corporation, _share_price)
             company.owner.cash
+          end
+
+          def par_price_only(_corporation, _price)
+            true
           end
         end
       end

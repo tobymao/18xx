@@ -142,7 +142,7 @@ module View
         h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
       end
 
-      def render_title
+      def render_title(bg = nil)
         title_row_props = {
           style: {
             grid: '1fr / auto 1fr auto',
@@ -163,6 +163,7 @@ module View
             borderRadius: '0.5rem',
           },
         }
+        logo_props[:style][:background] = bg if bg
         children = [h(:img, logo_props), h('div.title', @corporation.full_name)]
 
         if @corporation.system?

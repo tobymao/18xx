@@ -4,6 +4,7 @@ require 'game_manager'
 require 'lib/connection'
 require 'lib/params'
 require 'lib/settings'
+require 'lib/storage'
 require_tree './game'
 
 module View
@@ -428,9 +429,13 @@ module View
         if @round.stock?
           h(Game::Round::Stock, game: @game)
         elsif @round.unordered?
-          h(Game::Round::Unordered, game: @game, user: @user, hotseat: @game_data[:mode] == :hotseat)
+          h(Game::Round::Unordered, game: @game, user: @user, hotseat: hotseat_or_master)
         end
       end
+    end
+
+    def hotseat_or_master
+      @game_data[:mode] == :hotseat || Lib::Storage[@game.id]&.dig('master_mode')
     end
 
     def render_game
@@ -443,7 +448,11 @@ module View
       children << h(Game::EntityOrder, round: @round)
       unless @game.finished
         children << h(Game::Abilities, user: @user, game: @game)
-        children << h(Game::Pass, actions: current_entity_actions)
+        children << if @game.round.unordered? && hotseat_or_master
+                      h(Game::MasterPass)
+                    else
+                      h(Game::Pass, actions: current_entity_actions)
+                    end
         children << h(Game::Help, game: @game)
       end
       children << render_action
@@ -454,7 +463,7 @@ module View
     def current_entity_actions
       @current_entity_actions ||= if !@game.round.unordered?
                                     @game.round.actions_for(@game.round.active_step&.current_entity) || []
-                                  elsif @game_data[:mode] == :hotseat
+                                  elsif hotseat_or_master
                                     @game.round.entities.flat_map { |e| @game.round.actions_for(e) }.uniq.compact
                                   else
                                     @game.round.actions_for(@game.player_by_id(@user['id'])) || []

@@ -8,16 +8,33 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
+        GAME_TITLE = 'Rolling Stock'
         GAME_SUBTITLE = ''
         GAME_DESIGNER = 'Björn Rabenstein'
-        GAME_LOCATION = 'n/a'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://github.com/beorn7/rolling_stock/blob/master/rules.pdf'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/RollingStock'
+        GAME_RULES_URL = 'http://rabenste.in/rollingstock/rules.pdf'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/Rolling-Stock'
+        AUTOROUTE = false
 
         PLAYER_RANGE = [2, 6].freeze
+
+        GAME_VARIANTS = [
+          sym: :stars,
+          name: 'Rolling Stock Stars',
+          title: 'Rolling Stock Stars',
+          desc: 'Latest version of Rolling Stock',
+          default: true,
+        ].freeze
+
+        OPTIONAL_RULES = [
+          {
+            sym: :short,
+            short_name: 'Short Game',
+            desc: 'Shorter game with reduced company deck',
+          },
+        ].freeze
       end
     end
   end

@@ -432,7 +432,7 @@ module Engine
 
     def compute_other_paths
       other_paths = @game.compute_other_paths(@routes, self)
-      @routes.each { |r| r.instance_variable_set('@paths', nil) }
+      @routes.each { |r| r.instance_variable_set(:@paths, nil) }
       other_paths
     end
 

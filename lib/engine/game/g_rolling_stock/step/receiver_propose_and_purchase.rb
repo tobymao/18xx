@@ -52,12 +52,13 @@ module Engine
 
           def add_next_receiver_offer
             while (prop = create_receiver_offer)
+              price = foreign_price(prop[:corporation], prop[:company])
               if prop[:responder_list].empty?
-                acquire_company(prop[:corporation], prop[:company], prop[:price])
+                acquire_company(prop[:corporation], prop[:company], price)
               else
                 @round.offers << prop
                 @log << "#{prop[:corporation].name} (Receivership) proposes to purchase #{prop[:company].sym} from the "\
-                        "Foreign Investor for #{@game.format_currency(prop[:price])}"
+                        "Foreign Investor for #{@game.format_currency(price)}"
                 @log << "#{prop[:responder_list][0].name} (#{prop[:responder].name}) has right of first refusal"
 
                 break
