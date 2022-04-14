@@ -23,6 +23,7 @@ module Engine
 
             if @game.class::GREEN_CITY_TILES.include?(old_tile.name)
               tokens =  old_tile.cities.flat_map(&:tokens).compact
+              tokens.each { |t| t.price = 0 }
               @game.save_tokens(tokens)
               @game.save_tokens_hex(hex)
 

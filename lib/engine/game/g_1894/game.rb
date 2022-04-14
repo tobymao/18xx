@@ -181,7 +181,7 @@ module Engine
                     name: '6',
                     distance: 6,
                     price: 600,
-                    num: 3,
+                    num: 2,
                     events: [{ 'type' => 'close_companies' }],
                     discount: { '5' => 200 },
                   },
@@ -197,6 +197,7 @@ module Engine
                     distance: 999,
                     price: 900,
                     num: 20,
+                    available_on: 'Gray',
                     discount: { '5' => 200, '6' => 300, '7' => 375 },
                   }].freeze
 
@@ -248,12 +249,14 @@ module Engine
         FERRY_MARKER_COST = 60
 
         PARIS_HEX = 'G4'
-        SQG_HEX = 'G10'
         LE_SUD_HEX = 'I2'
         LUXEMBOURG_HEX = 'I18'
-
         AMIENS_HEX = 'E6'
         AMIENS_TILE = 'X3'
+        ROUEN_HEX = 'D3'
+        ROUEN_TILE = 'X16'
+        SQ_HEX = 'G10'
+        SQ_TILE = 'X17'
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
 
@@ -315,6 +318,14 @@ module Engine
           paris_tiles_names = %w[X1 X4 X5 X7 X8]
           paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
+
+          @players.each do |player|
+            share_pool.transfer_shares(plm.ipo_shares.last.to_bundle, player)
+          end
+
+          if @players.size == 3
+            share_pool.transfer_shares(plm.ipo_shares.last.to_bundle, share_pool)
+          end
         end
 
         def init_stock_market
@@ -362,10 +373,10 @@ module Engine
             tile.cities.each { |c| c.add_slot }
           end
 
-          return unless action.hex.id == SQG_HEX
+          return unless action.hex.id == SQ_HEX
 
           sqg = company_by_id('SQG')
-          sqg.revenue = get_current_revenue(tile.cities[0].revenue)
+          sqg.revenue = 1.5 * get_current_revenue(tile.cities[0].revenue)
           @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
         end
 
@@ -379,6 +390,8 @@ module Engine
         end
 
         def redeemable_shares(entity)
+          return bundles_for_corporation(share_pool, entity).reject { |bundle| bundle.shares.size > 2 || entity.cash < bundle.price } if entity.share_price.type == :unlimited
+
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
         end
@@ -409,7 +422,11 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return to.name == AMIENS_TILE if from.hex.name == AMIENS_HEX && from.color == :white
+          return to.name == ROUEN_TILE if from.hex.name == ROUEN_HEX && from.color == :white
+          return to.name == SQ_TILE if from.hex.name == SQ_HEX && from.color == :white
           return GREEN_CITY_TILES.include?(to.name) if from.hex.name == AMIENS_HEX && from.color == :yellow
+          return GREEN_CITY_TILES.include?(to.name) if from.hex.name == ROUEN_HEX && from.color == :yellow
+          return GREEN_CITY_TILES.include?(to.name) if from.hex.name == SQ_HEX && from.color == :yellow
           return BROWN_CITY_14_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
@@ -437,23 +454,32 @@ module Engine
           revenue = super
           revenue += pc_bonus(route.corporation, stops)
           revenue += est_le_sud_bonus(route.corporation, stops)
-          revenue += luxembourg_value(stops)
+          revenue += luxembourg_value(route.corporation, stops)
 
           raise GameError, 'Train visits Paris more than once' if route.hexes.count { |h| h.id == PARIS_HEX } > 1
 
           revenue
         end
 
-        def pc_bonus(corp, stops)
-          corp.assigned?('PC') && stops.any? { |s| s.hex.assigned?('PC') } ? 10 : 0
+        def pc_bonus(corporation, stops)
+          corporation.assigned?('PC') && stops.any? { |s| s.hex.assigned?('PC') } ? 10 : 0
         end
 
-        def est_le_sud_bonus(corp, stops)
-          corp.id == 'Est' && stops.any? { |s| s.hex.id == LE_SUD_HEX } ? 30 : 0
+        def est_le_sud_bonus(corporation, stops)
+          is_est_running_to_le_sud(corporation, stops) ? 30 : 0
         end
 
-        def luxembourg_value(stops)
-          stops.any? { |s| s.hex.id == LUXEMBOURG_HEX } ? stops.map { |s| get_current_revenue(s.revenue) }.max : 0
+        def luxembourg_value(corporation, stops)
+          return 0 unless stops.any? { |s| s.hex.id == LUXEMBOURG_HEX }
+
+          revenues = stops.map { |s| get_current_revenue(s.revenue) }
+          revenues << 60 if is_est_running_to_le_sud(corporation, stops)
+
+          revenues.max
+        end
+
+        def is_est_running_to_le_sud(corporation, stops)
+          corporation.id == 'Est' && stops.any? { |s| s.hex.id == LE_SUD_HEX }
         end
 
         def get_current_revenue(revenue)
