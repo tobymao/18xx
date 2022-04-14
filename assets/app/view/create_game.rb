@@ -122,6 +122,7 @@ module View
         @optional_rules = []
 
         preselect_variant(@selected_game)
+        preselect_optional_rules(@selected_game)
         update_inputs
       end
 
@@ -160,6 +161,14 @@ module View
       game.game_variants.map do |_sym, variant|
         @selected_variant = variant if variant[:default]
       end
+    end
+
+    def preselect_optional_rules(game)
+      @visible_optional_rules = []
+      game::OPTIONAL_RULES.map do |o_r|
+        @optional_rules << o_r[:sym] if o_r[:default]
+      end
+      store(:optional_rules, @optional_rules, skip: true)
     end
 
     def uncheck_game_variant
@@ -251,7 +260,11 @@ module View
           label_text,
           type: 'checkbox',
           id: o_r[:sym],
-          attrs: { value: o_r[:sym], disabled: !@visible_optional_rules.find { |vo_r| vo_r[:sym] == o_r[:sym] } },
+          attrs: {
+            value: o_r[:sym],
+            checked: @optional_rules.include?(o_r[:sym]),
+            disabled: !@visible_optional_rules.find { |vo_r| vo_r[:sym] == o_r[:sym] },
+          },
           on: { input: toggle_optional_rule(o_r[:sym]) },
         )])
       end.compact

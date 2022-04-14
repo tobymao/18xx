@@ -20,11 +20,33 @@ module Engine
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
           {
+            sym: :north,
+            short_name: '1888-N',
+            desc: 'North Map (3-6 players)',
+            players: [3, 4, 5, 6],
+            default: true,
+          },
+          {
             sym: :small_bank,
             short_name: 'Smaller Bank, 60% float',
-            desc: 'Use bank of ¥9000, require 60% to float',
+            desc: '1888-N rules - Use bank of ¥9000, require 60% to float',
+            hidden: true,
           },
         ].freeze
+
+        def self.check_options(options, _num_players)
+          optional_rules = (options || []).map(&:to_sym)
+          return 'WARNING: No option selected. Will use North map with prototype rules' if optional_rules.empty?
+        end
+
+        def self.min_players(optional_rules, _num_players)
+          optional_rules = (optional_rules || []).map(&:to_sym)
+          if optional_rules.include?(:north)
+            3
+          else
+            2
+          end
+        end
       end
     end
   end

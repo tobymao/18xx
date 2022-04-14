@@ -107,7 +107,7 @@ module Engine
 
         CORPORATIONS = [
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'JHR',
             name: 'Jingha Railway',
             logo: '1888/JHR',
@@ -120,7 +120,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'SSL',
             name: 'Shenshan Line',
             logo: '1888/SSL',
@@ -133,7 +133,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'CDL',
             name: 'Changda Line',
             logo: '1888/CDL',
@@ -145,7 +145,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'HJR',
             name: 'Hanji Ralwway',
             logo: '1888/HJR',
@@ -157,7 +157,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'TJL',
             name: 'Taijiao Line',
             logo: '1888/TJL',
@@ -169,7 +169,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'LYR',
             name: 'Lanyan Railway',
             logo: '1888/LYR',
@@ -181,7 +181,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'JZR',
             name: 'Jingzhan Railway',
             logo: '1888/JZR',
@@ -194,7 +194,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'ZDR',
             name: 'Zidong Railway',
             logo: '1888/ZDR',
