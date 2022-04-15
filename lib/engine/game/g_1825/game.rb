@@ -597,11 +597,13 @@ module Engine
           @highest_layer = 0
           @layer_by_corp = {}
 
-          pars = @corporations.map { |c| PAR_BY_CORPORATION[c.name] }.compact.uniq.sort.reverse
-          @corporations.each do |corp|
-            next unless PAR_BY_CORPORATION[corp.name]
+          @par_by_corporation = game_par_values
 
-            @layer_by_corp[corp] = pars.index(PAR_BY_CORPORATION[corp.name]) + 1
+          pars = @corporations.map { |c| @par_by_corporation[c.name] }.compact.uniq.sort.reverse
+          @corporations.each do |corp|
+            next unless @par_by_corporation[corp.name]
+
+            @layer_by_corp[corp] = pars.index(@par_by_corporation[corp.name]) + 1
           end
           @minor_trigger_layer = pars.include?(71) ? pars.index(71) + 2 : pars.index(76) + 2
           @max_layers = @layer_by_corp.values.max
@@ -770,7 +772,7 @@ module Engine
 
         def par_prices(corp)
           if major?(corp)
-            price = PAR_BY_CORPORATION[corp.name]
+            price = @par_by_corporation[corp.name]
             stock_market.par_prices.select { |p| p.price == price }
           else
             minor_par_prices(corp)
