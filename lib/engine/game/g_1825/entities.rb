@@ -505,6 +505,12 @@ module Engine
           'LBSC' => 67,
         }.freeze
 
+        def game_par_values
+          par_values = PAR_BY_CORPORATION.dup
+          par_values['SECR'] = 67 if @optional_rules.include?(:db2)
+          par_values
+        end
+
         REQUIRED_TRAIN = {
           'GNoS' => '5',
           'HR' => 'U3',
@@ -559,7 +565,6 @@ module Engine
           if @optional_rules.include?(:db2)
             secr = corps.find { |corp| corp[:sym] == 'SECR' }
             secr[:abilities] << { type: 'blocks_hexes', owner_type: nil, hexes: ['W21'] }
-            PAR_BY_CORPORATION['SECR'] = 67
             lbsc = corps.find { |corp| corp[:sym] == 'LBSC' }
             lbsc[:abilities] = []
           end
