@@ -731,7 +731,7 @@ module Engine
             ['E9'] => 'city=revenue:0;upgrade=cost:80,terrain:water',
             ['F4'] => 'town=revenue:0;upgrade=cost:140,terrain:mountain|water',
             ['F6'] => 'town=revenue:0',
-            ['F8'] => 'town=revenue:0town=revenue:0;upgrade=cost:120,terrain:water',
+            ['F8'] => 'town=revenue:0;town=revenue:0;upgrade=cost:120,terrain:water',
             ['G3'] => 'city=revenue:0',
             ['G7'] => 'town=revenue:0;town=revenue:0',
             ['H4'] => 'town=revenue:0;town=revenue:0',
