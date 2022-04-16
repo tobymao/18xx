@@ -178,6 +178,18 @@ module Engine
             *rows,
           ]
         end
+
+        def share_card_description
+          'Target Stars by Share Price'
+        end
+
+        def share_card_array(price)
+          return [] if price.price.zero? || price.end_game_trigger?
+
+          (2..7).map do |idx|
+            [idx.to_s, "#{(idx * price.price / 10.0).round}★"]
+          end
+        end
       end
     end
   end

@@ -976,6 +976,18 @@ module Engine
         def show_player_percent?(_player)
           false
         end
+
+        def share_card_description
+          'Target Book Value by Share Price'
+        end
+
+        def share_card_array(price)
+          return [] if price.price.zero? || price.end_game_trigger?
+
+          (2..10).map do |idx|
+            [idx.to_s, format_currency(idx * price.price)]
+          end
+        end
       end
     end
   end
