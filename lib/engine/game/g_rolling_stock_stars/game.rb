@@ -138,7 +138,7 @@ module Engine
           diff = corporation_stars(corporation, cash) - target_stars(corporation)
           diff = [[diff, 2].min, -2].max
 
-          target = if diff > -2 || diff < 2
+          target = if diff > -2 && diff < 2
                      @stock_market.share_price(r, c + diff)
                    elsif diff == 2
                      right.end_game_trigger? ? right : @stock_market.share_price(r, c + 2)

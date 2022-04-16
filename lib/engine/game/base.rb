@@ -2847,6 +2847,10 @@ module Engine
       def market_par_bars(_price)
         []
       end
+
+      def show_player_percent?(_player)
+        true
+      end
     end
   end
 end
