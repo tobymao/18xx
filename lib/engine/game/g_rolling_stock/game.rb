@@ -645,8 +645,10 @@ module Engine
           @offering - @on_deck
         end
 
-        def responder_order
-          eligible = @corporations.select { |corp| corp.floated? && !corp.receivership? }
+        def responder_order(buyer)
+          eligible = @corporations.select do |corp|
+            corp.floated? && (!corp.receivership? || corp == buyer)
+          end
           oversea_corp, others = eligible.partition { |corp| abilities(corp, :overseas) }
           (oversea_corp + others.sort).compact
         end
