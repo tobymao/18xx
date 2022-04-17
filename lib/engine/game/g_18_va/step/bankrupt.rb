@@ -53,7 +53,7 @@ module Engine
             # restricted from buying any trains
             @game.active_step.last_share_sold_price = nil
 
-            if player.companies.empty?
+            unless player.companies.empty?
               @log << "#{player.name}'s companies close: #{player.companies.map(&:sym).join(', ')}"
               player.companies.dup.each(&:close!)
             end
