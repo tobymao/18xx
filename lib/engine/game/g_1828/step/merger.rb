@@ -415,6 +415,7 @@ module Engine
               if sources.any? && sources.first.player? && (players = sources.select do |s|
                                                              @players.include?(s)
                                                            end).size > 1
+                @log << ("#{entity.name} chooses player to trade #{@target.name} share to for #{@merger.name} share")
                 @player_choice =
                   PlayerChoice.new(step_description: "Trade #{@target.name} share for #{@merger.name} share",
                                    choice_description: 'Choose player',
