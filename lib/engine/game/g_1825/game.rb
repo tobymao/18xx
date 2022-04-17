@@ -443,6 +443,7 @@ module Engine
             raise OptionError, 'Variant DB1 not useful in a Unit 2 only game'
           end
           raise OptionError, 'Variant DB2 is for Unit 1' if !units[1] && optional_rules.include?(:db2)
+          raise OptionError, 'Unit 4 requires Unit 3' if optional_rules.include?(:unit_4) && !units[3]
 
           p_range = case @units.keys.sort.map(&:to_s).join
                     when '1'
@@ -702,6 +703,18 @@ module Engine
           return false if tile.name == '166' && !phase_color_cache.include?(:gray)
 
           phase_color_cache.include?(tile.color)
+        end
+
+        def location_name(coord)
+          unless @location_names
+            @location_names = LOCATION_NAMES.dup
+            if optional_rules.include?(:unit_4)
+              @location_names['A5'] = 'Inverness'
+              @location_names['C3'] = 'Fort William'
+              @location_names.delete('B8')
+            end
+          end
+          @location_names[coord]
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
