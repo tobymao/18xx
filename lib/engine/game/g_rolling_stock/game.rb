@@ -186,6 +186,18 @@ module Engine
           @log << 'No cost of ownership'
           @cost_table = init_cost_table
           @synergy_income = {}
+
+          add_default_autopass
+        end
+
+        # enable conditiional auto-pass for everyone at the start
+        def add_default_autopass
+          @players.each do |player|
+            @programmed_actions[player] = Engine::Action::ProgramClosePass.new(
+              player,
+              unconditional: false,
+            )
+          end
         end
 
         def setup_preround
@@ -658,19 +670,31 @@ module Engine
 
           return unless @cost_level < new_cost
 
-          old_cost = @cost_level
           @cost_level = new_cost
           @log << "New cost of ownership: #{cost_level_str}"
 
-          disable_auto_close_pass if @cost_table[old_cost][0] != @cost_table[new_cost][0]
+          @log << 'Some companies have negative income' if @players.any? { |p| any_negative_companies?(p) }
+          disable_auto_close_pass
         end
 
         def disable_auto_close_pass
           @programmed_actions.reject! do |entity, action|
-            if action.is_a?(Engine::Action::ProgramClosePass) && !action.unconditional
-              player_log(entity, "Programmed action '#{action}' removed due to operating cost change")
-              true
-            end
+            next unless action.is_a?(Engine::Action::ProgramClosePass) &&
+                !action.unconditional &&
+                any_negative_companies?(entity)
+
+            player_log(entity, "Programmed action '#{action}' removed due to negative company income")
+            true
+          end
+        end
+
+        def any_negative_companies?(player)
+          return false unless player.player?
+          return true if player.companies.any? { |c| company_income(c).negative? }
+
+          @corporations.any? do |corp|
+            corp.owner == player &&
+              corp.companies.any? { |c| company_income(c).negative? }
           end
         end
 
@@ -943,6 +967,26 @@ module Engine
 
         def available_programmed_actions
           [Action::ProgramClosePass]
+        end
+
+        def ipo_name(_corp)
+          'Unissued'
+        end
+
+        def show_player_percent?(_player)
+          false
+        end
+
+        def share_card_description
+          'Target Book Value by Share Price'
+        end
+
+        def share_card_array(price)
+          return [] if price.price.zero? || price.end_game_trigger?
+
+          (2..10).map do |idx|
+            [idx.to_s, format_currency(idx * price.price)]
+          end
         end
       end
     end
