@@ -988,6 +988,13 @@ module Engine
             [idx.to_s, format_currency(idx * price.price)]
           end
         end
+
+        def result
+          result_players
+            .sort_by { |p| [player_value(p), -@players.index(p)] }
+            .reverse
+            .to_h { |p| [p.name, player_value(p)] }
+        end
       end
     end
   end
