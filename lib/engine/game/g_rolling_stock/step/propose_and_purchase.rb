@@ -280,7 +280,7 @@ module Engine
               offer[:responder] = responder_list[0].owner
               raise GameError, 'Receivership corp cannot respond' unless offer[:responder].player?
 
-              @log << "#{responder_list[0].name} (#{next_repsonder}) has next right of refusal"
+              @log << "#{responder_list[0].name} (#{offer[:responder].name}) has next right of refusal"
             end
           end
 
