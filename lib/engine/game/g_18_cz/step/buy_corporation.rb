@@ -133,7 +133,7 @@ module Engine
           end
 
           def price_range(_corporation, corporation_to_buy)
-            max_price = (corporation_to_buy.share_price.price * 1.5).ceil
+            max_price = (corporation_to_buy.share_price.price * 1.5).floor
             min_price = (corporation_to_buy.share_price.price * 0.5).ceil
             [min_price, max_price]
           end
