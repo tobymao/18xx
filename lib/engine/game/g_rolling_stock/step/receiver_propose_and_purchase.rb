@@ -71,6 +71,16 @@ module Engine
             return unless receiver
 
             responder_list = build_responder_list(nil, receiver, company)
+            raise GameError, "no possible responders for #{company.sym}" if responder_list.empty?
+
+            price = foreign_price(receiver, company)
+            if responder_list.one?
+              # either receiver is OS, or receiver has highest share price of corps that can afford company
+              raise GameError, 'Receiver not in responder_list' unless responder_list[0] == receiver
+
+              acquire_company(receiver, company, price)
+              return create_receiver_offer
+            end
 
             {
               proposer: nil,
