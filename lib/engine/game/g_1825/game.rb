@@ -706,15 +706,18 @@ module Engine
         end
 
         def location_name(coord)
-          unless @location_names
-            @location_names = LOCATION_NAMES.dup
-            if optional_rules.include?(:unit_4)
-              @location_names['A5'] = 'Inverness'
-              @location_names['C3'] = 'Fort William'
-              @location_names.delete('B8')
-            end
-          end
+          @location_names ||= game_location_names
           @location_names[coord]
+        end
+
+        def game_location_names
+          locations = LOCATION_NAMES.dup
+          if optional_rules.include?(:unit_4)
+            locations['A5'] = 'Inverness'
+            locations['C3'] = 'Fort William'
+            locations.delete('B8')
+          end
+          locations
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
