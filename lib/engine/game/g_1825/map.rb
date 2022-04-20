@@ -7,6 +7,15 @@ module Engine
         LAYOUT = :pointy
 
         LOCATION_NAMES = {
+          # unit 4
+          # Inverness is moved to A5 in location_name in game.rb
+          'c8' => 'Wick',
+          'a2' => 'Ullapool',
+          'a4' => 'Dingwall',
+          'a6' => 'Invergordon',
+          'a8' => 'Elgin',
+          'a12' => 'Fraserburgh',
+          'B0' => 'Malaig',
           # unit 3
           'B8' => 'Inverness',
           'B12' => 'Aberdeen',
@@ -761,6 +770,39 @@ module Engine
           },
         }.freeze
 
+        UNIT4_HEXES = {
+          white: {
+            %w[b7
+               A7
+               A9
+               A11
+               A13
+               B4
+               B10
+               C1] => '',
+            %w[c6
+               b3
+               b5
+               A3
+               B2
+               B6
+               B8
+               C5] => 'upgrade=cost:100,terrain:mountain',
+            %w[c8
+               A5
+               B12] => 'city=revenue:0',
+            %w[a2
+               a4
+               a6
+               C3] => 'town=revenue:0',
+          },
+          sepia: {
+            %w[a8
+               a12] => 'town=revenue:10;path=a:0,b:_0;path=a:5,b:_0',
+            ['B0'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0',
+          },
+        }.freeze
+
         R1_HEXES = {
           white: {
             %w[R6
@@ -921,6 +963,7 @@ module Engine
         def game_hexes
           ghexes = {}
           append_game_hexes(ghexes, DB2_HEXES) if @optional_rules.include?(:db2)
+          append_game_hexes(ghexes, UNIT4_HEXES) if @optional_rules.include?(:unit_4)
           append_game_hexes(ghexes, R1_HEXES) if @regionals[1]
           append_game_hexes(ghexes, R2_HEXES) if @regionals[2]
           append_game_hexes(ghexes, R3_HEXES) if @regionals[3]

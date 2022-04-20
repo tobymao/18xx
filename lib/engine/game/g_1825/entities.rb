@@ -568,6 +568,11 @@ module Engine
             lbsc = corps.find { |corp| corp[:sym] == 'LBSC' }
             lbsc[:abilities] = []
           end
+          # Move HR with Unit 4
+          if @optional_rules.include?(:unit_4)
+            hr = corps.find { |corp| corp[:sym] == 'HR' }
+            hr[:coordinates] = 'A5'
+          end
           add_entities(corps, R3_CORPORATIONS) if @regionals[3]
           add_entities(corps, K5_CORPORATIONS) if @kits[5]
           add_entities(corps, K7_CORPORATIONS) if @kits[7]
