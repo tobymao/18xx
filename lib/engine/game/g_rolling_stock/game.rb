@@ -490,8 +490,8 @@ module Engine
 
         def reorder_by_cash
           # this should break ties in favor of the closest to previous PD
-          pd_player = @players.max_by(&:cash)
-          @players.rotate!(@players.index(pd_player))
+          old_order = @players.dup
+          @players.sort_by! { |p| [-p.cash, old_order.index(p)] }
           @log << "Player order: #{@players.map(&:name).join(', ')}"
         end
 
@@ -834,8 +834,9 @@ module Engine
           clear_synergy_income(owner) if owner.corporation?
           return if !owner.corporation? || !abilities(owner, :junkyard_scrappers)
 
-          @bank.spend(owner, company.revenue)
-          @log << "#{owner.name} receives #{format_currency(company.revenue)} as a scrapping bonus"
+          bonus = company.revenue * 2
+          @bank.spend(bonus, owner)
+          @log << "#{owner.name} receives #{format_currency(bonus)} as a scrapping bonus"
         end
 
         def close_corporation(corporation, quiet: false)
