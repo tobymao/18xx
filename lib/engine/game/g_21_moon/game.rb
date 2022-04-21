@@ -805,10 +805,12 @@ module Engine
 
         def close_corporation(corporation, quiet: false)
           # move any shares owned by the corp to the market, ignoring 50% market limit
-          corporation.shares_by_corporation.each do |other, _|
-            shares = corporation.shares_of(other)
-            shares.each do |share|
-              @share_pool.transfer_shares(share.to_bundle, @share_pool)
+          if corporation.corporation?
+            corporation.shares_by_corporation.each do |other, _|
+              shares = corporation.shares_of(other)
+              shares.each do |share|
+                @share_pool.transfer_shares(share.to_bundle, @share_pool)
+              end
             end
           end
 
