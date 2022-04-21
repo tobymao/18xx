@@ -773,20 +773,36 @@ module Engine
           end
           revenue += 10 if company_by_id('P8').owner == corporation && !(stop_hexes & @p8_hexes).empty?
 
-          if corporation.companies.include?(company_by_id('P17'))
-            stop_hex_ids = stop_hexes.map(&:id)
-            if (GNR_FULL_BONUS_HEXES - stop_hex_ids).empty?
-              revenue += GNR_FULL_BONUS
-            elsif (GNR_HALF_BONUS_HEXES - stop_hex_ids).empty?
-              revenue += GNR_HALF_BONUS
-            end
+          if corporation.companies.include?(company_by_id('P17')) && gnr_route?(route, stops)
+            revenue += gnr_revenue(route, stops)
           end
+
+          revenue
+        end
+
+        def gnr_route?(route, stops)
+          route.routes.max_by { |r| gnr_revenue(r, r == route ? stops : route.stops) } == route
+        end
+
+        def gnr_revenue(route, stops)
+          revenue = 0
+          stop_hex_ids = stops.map { |stop| stop.hex.id }
+
+          if (GNR_FULL_BONUS_HEXES - stop_hex_ids).empty?
+            revenue = GNR_FULL_BONUS
+          elsif (GNR_HALF_BONUS_HEXES - stop_hex_ids).empty?
+            revenue = GNR_HALF_BONUS
+          end
+
           revenue
         end
 
         def revenue_str(route)
           stop_hexes = route.stops.map(&:hex)
-          route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
+          str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
+          str += " + GNR Bonus" if gnr_route?(route, route.stops)
+
+          str
         end
 
         def compute_stops(route)
