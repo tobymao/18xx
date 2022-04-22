@@ -16,7 +16,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with one coal mine marker. When placing a yellow '\
                   'tile in a coal hex pointing to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes can be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  May not start or end a route at a coal mine.',
             sym: 'P1',
@@ -343,7 +343,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with two coal mine markers. When placing a yellow '\
                   'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes can be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  May not start or end a route at a coal mine.',
             sym: 'P18',
@@ -581,7 +581,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with three coal mine markers. When placing a yellow '\
                   'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes can be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  May not start or end a route at a coal mine.',
             sym: 'P28',
