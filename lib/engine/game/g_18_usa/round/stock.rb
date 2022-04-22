@@ -29,6 +29,7 @@ module Engine
 
           def setup
             @buy_sell_par_shares_step = @steps.find { |step| step.class.to_s.include?('BuySellParShares') }
+            super
           end
 
           def after_process_before_skip(action)
