@@ -516,13 +516,10 @@ module Engine
             ability =
               abilities_to_lay_resource_tile(hex, hex.tile, entity.companies).values.find { |a| a.discount.positive? }
           end
-          
-          if !ability
-            ability =
-              entity.all_abilities.find { |a| a.type == :tile_discount && a.terrain && tile.terrain.include?(a.terrain) }
-          end
 
-          upgrade_cost = tile.upgrades.sum { |upgrade| upgrade.cost }
+          ability ||= entity.all_abilities.find { |a| a.type == :tile_discount && a.terrain && tile.terrain.include?(a.terrain) }
+
+          upgrade_cost = tile.upgrades.sum(&:cost)
           return upgrade_cost unless ability
 
           log_cost_discount(spender, ability, ability.discount)
@@ -781,9 +778,7 @@ module Engine
           end
           revenue += 10 if company_by_id('P8').owner == corporation && !(stop_hexes & @p8_hexes).empty?
 
-          if corporation.companies.include?(company_by_id('P17')) && gnr_route?(route, stops)
-            revenue += gnr_revenue(route, stops)
-          end
+          revenue += gnr_revenue(route, stops) if corporation.companies.include?(company_by_id('P17')) && gnr_route?(route, stops)
 
           revenue
         end
@@ -792,7 +787,7 @@ module Engine
           route.routes.max_by { |r| gnr_revenue(r, r == route ? stops : route.stops) } == route
         end
 
-        def gnr_revenue(route, stops)
+        def gnr_revenue(_route, stops)
           revenue = 0
           stop_hex_ids = stops.map { |stop| stop.hex.id }
 
@@ -808,7 +803,7 @@ module Engine
         def revenue_str(route)
           stop_hexes = route.stops.map(&:hex)
           str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
-          str += " + GNR Bonus" if gnr_route?(route, route.stops)
+          str += ' + GNR Bonus' if gnr_route?(route, route.stops)
 
           str
         end
