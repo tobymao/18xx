@@ -510,15 +510,23 @@ module Engine
         end
 
         def upgrade_cost(tile, hex, entity, spender)
-          cost = super
-          return cost if !resource_tile?(hex.tile) || tile.color != :white
+          entity = entity.owner if !entity.corporation? && entity.owner&.corporation?
 
-          corp = entity.corporation ? entity : entity.owner
-          ability = abilities_to_lay_resource_tile(hex, hex.tile, corp.companies).values.find do |a|
-            a.discount.positive?
+          if hex.tile.color == :yellow && resource_tile?(hex.tile)
+            ability =
+              abilities_to_lay_resource_tile(hex, hex.tile, entity.companies).values.find { |a| a.discount.positive? }
           end
-          cost -= [cost, ability.discount].min if ability
-          cost
+          
+          if !ability
+            ability =
+              entity.all_abilities.find { |a| a.type == :tile_discount && a.terrain && tile.terrain.include?(a.terrain) }
+          end
+
+          upgrade_cost = tile.upgrades.sum { |upgrade| upgrade.cost }
+          return upgrade_cost unless ability
+
+          log_cost_discount(spender, ability, ability.discount)
+          upgrade_cost - ability.discount
         end
 
         def owns_p15?(entity)
