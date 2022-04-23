@@ -737,11 +737,11 @@ module Engine
         end
 
         def sp_revenue(routes)
-          routes_revenue(routes.select { |r| @train_base[r.train] == :sp })
+          routes_revenue(routes.select { |r| @train_base[r.train] == :sp && !r.train.owner.receivership? })
         end
 
         def lb_revenue(routes)
-          routes_revenue(routes.select { |r| @train_base[r.train] == :lb })
+          routes_revenue(routes.select { |r| @train_base[r.train] == :lb || r.train.owner.receivership? })
         end
 
         def submit_revenue_str(routes, _render_halts)
@@ -805,10 +805,12 @@ module Engine
 
         def close_corporation(corporation, quiet: false)
           # move any shares owned by the corp to the market, ignoring 50% market limit
-          corporation.shares_by_corporation.each do |other, _|
-            shares = corporation.shares_of(other)
-            shares.each do |share|
-              @share_pool.transfer_shares(share.to_bundle, @share_pool)
+          if corporation.corporation?
+            corporation.shares_by_corporation.each do |other, _|
+              shares = corporation.shares_of(other)
+              shares.each do |share|
+                @share_pool.transfer_shares(share.to_bundle, @share_pool)
+              end
             end
           end
 

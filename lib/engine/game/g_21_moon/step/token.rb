@@ -7,6 +7,12 @@ module Engine
     module G21Moon
       module Step
         class Token < Engine::Step::Token
+          def actions(entity)
+            return [] if entity.corporation? && entity.receivership?
+
+            super
+          end
+
           def process_place_token(action)
             super
 

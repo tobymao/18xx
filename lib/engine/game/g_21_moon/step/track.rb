@@ -7,6 +7,12 @@ module Engine
     module G21Moon
       module Step
         class Track < Engine::Step::Track
+          def actions(entity)
+            return [] if entity.corporation? && entity.receivership?
+
+            super
+          end
+
           def setup
             super
 
