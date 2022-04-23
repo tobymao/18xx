@@ -53,9 +53,10 @@ module Engine
             @game.active_step.last_share_issued_price = nil
             @game.active_step.last_share_sold_price = nil
 
+            # leave OLS token on board
             @game.minors
               .select { |minor| minor.owner == player }
-              .each { |minor| @game.close_corporation(minor, quiet: true) }
+              .each(&:close!)
 
             if player.companies.any?
               @log << "#{player.name}'s companies close: #{player.companies.map(&:sym).join(', ')}"
