@@ -42,7 +42,7 @@ module Engine
               bundle = ShareBundle.new(shares)
               @game.share_pool.sell_shares(bundle, allow_president_change: true)
 
-              if corporation.owner == player && corporation.share_price.price.positive?
+              if corporation.owner == player && corporation.share_price.price.positive? && corporation != corp
                 @log << "-- #{corporation.name} enters receivership (it has no president) --"
                 corporation.owner = @game.share_pool
               end
@@ -53,22 +53,22 @@ module Engine
             @game.active_step.last_share_issued_price = nil
             @game.active_step.last_share_sold_price = nil
 
+            # leave OLS token on board
             @game.minors
               .select { |minor| minor.owner == player }
-              .each { |minor| @game.close_corporation(minor, quiet: true) }
+              .each(&:close!)
 
             if player.companies.any?
               @log << "#{player.name}'s companies close: #{player.companies.map(&:sym).join(', ')}"
               player.companies.dup.each(&:close!)
             end
 
-            @log << "#{@game.format_currency(player.cash)} is transferred from "\
-                    "#{player.name} to #{corp.name}"
-            player.spend(player.cash, corp) if player.cash.positive?
-
             @game.corporations.dup.each do |corporation|
               @game.close_corporation(corporation) if corporation.share_price&.type == :close
             end
+
+            # close the trainless corporation
+            @game.close_corporation(corp)
 
             @game.declare_bankrupt(player)
           end
