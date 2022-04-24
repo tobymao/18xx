@@ -514,7 +514,7 @@ module Engine
 
           if hex.tile.color == :yellow && resource_tile?(hex.tile)
             ability =
-              abilities_to_lay_resource_tile(hex, hex.tile, entity.companies).values.find { |a| a.discount.positive? }
+              abilities_to_lay_resource_tile(hex, hex.tile, entity.companies).values.flatten.compact.find { |a| a.discount.positive? }
           end
 
           ability ||= entity.all_abilities.find { |a| a.type == :tile_discount && a.terrain && tile.terrain.include?(a.terrain) }
