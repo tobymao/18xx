@@ -510,15 +510,20 @@ module Engine
         end
 
         def upgrade_cost(tile, hex, entity, spender)
-          cost = super
-          return cost if !resource_tile?(hex.tile) || tile.color != :white
+          entity = entity.owner if !entity.corporation? && entity.owner&.corporation?
 
-          corp = entity.corporation ? entity : entity.owner
-          ability = abilities_to_lay_resource_tile(hex, hex.tile, corp.companies).values.find do |a|
-            a.discount.positive?
+          if hex.tile.color == :yellow && resource_tile?(hex.tile)
+            ability =
+              abilities_to_lay_resource_tile(hex, hex.tile, entity.companies).values.find { |a| a.discount.positive? }
           end
-          cost -= [cost, ability.discount].min if ability
-          cost
+
+          ability ||= entity.all_abilities.find { |a| a.type == :tile_discount && a.terrain && tile.terrain.include?(a.terrain) }
+
+          upgrade_cost = tile.upgrades.sum(&:cost)
+          return upgrade_cost unless ability
+
+          log_cost_discount(spender, ability, ability.discount)
+          upgrade_cost - ability.discount
         end
 
         def owns_p15?(entity)
@@ -773,20 +778,34 @@ module Engine
           end
           revenue += 10 if company_by_id('P8').owner == corporation && !(stop_hexes & @p8_hexes).empty?
 
-          if corporation.companies.include?(company_by_id('P17'))
-            stop_hex_ids = stop_hexes.map(&:id)
-            if (GNR_FULL_BONUS_HEXES - stop_hex_ids).empty?
-              revenue += GNR_FULL_BONUS
-            elsif (GNR_HALF_BONUS_HEXES - stop_hex_ids).empty?
-              revenue += GNR_HALF_BONUS
-            end
+          revenue += gnr_revenue(route, stops) if corporation.companies.include?(company_by_id('P17')) && gnr_route?(route, stops)
+
+          revenue
+        end
+
+        def gnr_route?(route, stops)
+          route.routes.max_by { |r| gnr_revenue(r, r == route ? stops : route.stops) } == route
+        end
+
+        def gnr_revenue(_route, stops)
+          revenue = 0
+          stop_hex_ids = stops.map { |stop| stop.hex.id }
+
+          if (GNR_FULL_BONUS_HEXES - stop_hex_ids).empty?
+            revenue = GNR_FULL_BONUS
+          elsif (GNR_HALF_BONUS_HEXES - stop_hex_ids).empty?
+            revenue = GNR_HALF_BONUS
           end
+
           revenue
         end
 
         def revenue_str(route)
           stop_hexes = route.stops.map(&:hex)
-          route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
+          str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
+          str += ' + GNR Bonus' if gnr_route?(route, route.stops)
+
+          str
         end
 
         def compute_stops(route)
