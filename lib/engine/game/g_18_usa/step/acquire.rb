@@ -38,7 +38,7 @@ module Engine
           end
 
           def acquire_post_loan
-            return if can_scrap_train?(@buyer)
+            return if can_scrap_train?(@buyer) && @game.num_corp_trains(@buyer) <= @game.train_limit(@buyer)
 
             super
           end

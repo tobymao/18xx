@@ -1821,10 +1821,13 @@ module Engine
         train.rusted = true
       end
 
+      def num_corp_trains(entity)
+        self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? entity.trains.size : entity.trains.count { |t| !t.obsolete }
+      end
+
       def crowded_corps
         @crowded_corps ||= (minors + corporations).select do |c|
-          trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
-          trains > train_limit(c)
+          num_corp_trains(c) > train_limit(c)
         end
       end
 
