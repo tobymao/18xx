@@ -514,13 +514,15 @@ module Engine
 
           if hex.tile.color == :yellow && resource_tile?(hex.tile)
             ability =
-              abilities_to_lay_resource_tile(hex, hex.tile, entity.companies).values.find { |a| a.discount.positive? }
+              abilities_to_lay_resource_tile(hex, hex.tile, entity.companies).values.flatten.compact.find do |a|
+                a.discount.positive?
+              end
           end
 
           ability ||= entity.all_abilities.find { |a| a.type == :tile_discount && a.terrain && tile.terrain.include?(a.terrain) }
 
           upgrade_cost = tile.upgrades.sum(&:cost)
-          return upgrade_cost unless ability
+          return upgrade_cost if upgrade_cost.zero? || !ability
 
           log_cost_discount(spender, ability, ability.discount)
           upgrade_cost - ability.discount
