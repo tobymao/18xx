@@ -391,6 +391,7 @@ module Engine
         chains_b.each do |b|
           next if (middle = (a[:nodes] & b[:nodes])).empty?
           next unless (b[:paths] & a[:paths]).empty?
+          next unless middle.one?
 
           left = (a[:nodes] - middle)[0]
           right = (b[:nodes] - middle)[0]
