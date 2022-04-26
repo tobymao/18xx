@@ -117,6 +117,10 @@ module Engine
         false
       end
 
+      def pass?
+        false
+      end
+
       def visit_cost
         0
       end
