@@ -120,6 +120,20 @@ module Engine
                               loc: params['loc'])
         cache << city
         city
+      when 'pass'
+        pass = Part::Pass.new(params['revenue'],
+                              slots: params['slots'],
+                              groups: params['groups'],
+                              hide: params['hide'],
+                              visit_cost: params['visit_cost'],
+                              route: params['route'],
+                              format: params['format'],
+                              boom: params['boom'],
+                              loc: params['loc'],
+                              color: params['color'],
+                              size: params['size'])
+        cache << pass
+        pass
       when 'town'
         town = Part::Town.new(params['revenue'],
                               groups: params['groups'],
