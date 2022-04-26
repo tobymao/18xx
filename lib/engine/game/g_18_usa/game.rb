@@ -532,6 +532,10 @@ module Engine
           entity.companies.find { |c| c.id == 'P15' }
         end
 
+        def owns_gnr?(entity)
+          entity.companies.find { |c| c.id == 'P17' }
+        end
+
         def p6_offboard_revenue
           @p6_offboard_revenue ||= 'yellow_30|green_40|brown_50|gray_80'
         end
@@ -780,16 +784,18 @@ module Engine
           end
           revenue += 10 if company_by_id('P8').owner == corporation && !(stop_hexes & @p8_hexes).empty?
 
-          revenue += gnr_revenue(route, stops) if corporation.companies.include?(company_by_id('P17')) && gnr_route?(route, stops)
+          revenue += gnr_revenue(stops) if gnr_route?(route, stops)
 
           revenue
         end
 
         def gnr_route?(route, stops)
-          route.routes.max_by { |r| gnr_revenue(r, r == route ? stops : route.stops) } == route
+          return false if !owns_gnr?(route.train.owner) || gnr_revenue(stops).zero?
+
+          route.routes.max_by { |r| gnr_revenue(r == route ? stops : r.stops) } == route
         end
 
-        def gnr_revenue(_route, stops)
+        def gnr_revenue(stops)
           revenue = 0
           stop_hex_ids = stops.map { |stop| stop.hex.id }
 
