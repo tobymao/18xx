@@ -36,6 +36,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        MUST_BUY_TRAIN = :always
+
         MARKET = [
           ['', '', '95', '100', '110', '120', '130', '145', '160', '180', '200', '225', '250', '275',
            '300', '330', '360', '400'],
