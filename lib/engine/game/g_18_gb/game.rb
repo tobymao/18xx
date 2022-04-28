@@ -102,57 +102,62 @@ module Engine
           'only_pres_drop' => ['Only pres. sales drop', 'Only sales by corporation presidents drop the share price'],
         ).freeze
 
-        PHASES = [
-          {
-            name: '2+1',
-            train_limit: { '5-share': 3, '10-share': 4 },
-            tiles: [:yellow],
-            operating_rounds: 2,
-          },
-          {
-            name: '3+1',
-            on: '3+1',
-            train_limit: { '5-share': 3, '10-share': 4 },
-            tiles: %i[yellow green],
-            operating_rounds: 2,
-          },
-          {
-            name: '4+2',
-            on: '4+2',
-            train_limit: { '5-share': 2, '10-share': 3 },
-            tiles: %i[yellow green blue],
-            operating_rounds: 2,
-          },
-          {
-            name: '5+2',
-            on: '5+2',
-            train_limit: { '5-share': 2, '10-share': 3 },
-            tiles: %i[yellow green blue brown],
-            operating_rounds: 2,
-          },
-          {
-            name: '4X',
-            on: '4X',
-            train_limit: 2,
-            tiles: %i[yellow green blue brown],
-            operating_rounds: 2,
-          },
-          {
-            name: '5X',
-            on: '5X',
-            train_limit: 2,
-            tiles: %i[yellow green blue brown],
-            operating_rounds: 2,
-          },
-          {
-            name: '6X',
-            on: '6X',
-            train_limit: 2,
-            tiles: %i[yellow green blue brown gray],
-            status: ['only_pres_drop'],
-            operating_rounds: 2,
-          },
-        ].freeze
+        def game_phases
+          three = second_ed_playtest? ? '3+2' : '3+1'
+          five = second_ed_playtest? ? '3X' : '5+2'
+
+          [
+            {
+              name: '2+1',
+              train_limit: { '5-share': 3, '10-share': 4 },
+              tiles: [:yellow],
+              operating_rounds: 2,
+            },
+            {
+              name: three,
+              on: three,
+              train_limit: { '5-share': 3, '10-share': 4 },
+              tiles: %i[yellow green],
+              operating_rounds: 2,
+            },
+            {
+              name: '4+2',
+              on: '4+2',
+              train_limit: { '5-share': 2, '10-share': 3 },
+              tiles: %i[yellow green blue],
+              operating_rounds: 2,
+            },
+            {
+              name: five,
+              on: five,
+              train_limit: { '5-share': 2, '10-share': 3 },
+              tiles: %i[yellow green blue brown],
+              operating_rounds: 2,
+            },
+            {
+              name: '4X',
+              on: '4X',
+              train_limit: 2,
+              tiles: %i[yellow green blue brown],
+              operating_rounds: 2,
+            },
+            {
+              name: '5X',
+              on: '5X',
+              train_limit: 2,
+              tiles: %i[yellow green blue brown],
+              operating_rounds: 2,
+            },
+            {
+              name: '6X',
+              on: '6X',
+              train_limit: 2,
+              tiles: %i[yellow green blue brown gray],
+              status: ['only_pres_drop'],
+              operating_rounds: 2,
+            },
+          ].freeze
+        end
 
         TRAINS = [
           {
@@ -288,6 +293,146 @@ module Engine
             available_on: '5X',
           },
         ].freeze
+
+        TRAINS_2E = [
+          {
+            name: '2+1',
+            distance: [
+              {
+                'nodes' => ['town'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+              {
+                'nodes' => %w[city offboard town],
+                'pay' => 2,
+                'visit' => 2,
+              },
+            ],
+            price: 80,
+            rusts_on: '4+2',
+          },
+          {
+            name: '3+2',
+            distance: [
+              {
+                'nodes' => ['town'],
+                'pay' => 2,
+                'visit' => 2,
+              },
+              {
+                'nodes' => %w[city offboard town],
+                'pay' => 3,
+                'visit' => 3,
+              },
+            ],
+            price: 200,
+            rusts_on: '4X',
+            events: [
+              {
+                'type' => 'float_60',
+              },
+            ],
+          },
+          {
+            name: '4+2',
+            distance: [
+              {
+                'nodes' => ['town'],
+                'pay' => 2,
+                'visit' => 2,
+              },
+              {
+                'nodes' => %w[city offboard town],
+                'pay' => 4,
+                'visit' => 4,
+              },
+            ],
+            price: 300,
+            rusts_on: '6X',
+          },
+          {
+            name: '3X',
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 3,
+                'visit' => 3,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
+            ],
+            price: 500,
+            events: [
+              {
+                'type' => 'float_10_share',
+              },
+            ],
+          },
+          {
+            name: '4X',
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 4,
+                'visit' => 4,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
+            ],
+            price: 550,
+            available_on: '3X',
+          },
+          {
+            name: '5X',
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 5,
+                'visit' => 5,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
+            ],
+            price: 650,
+            available_on: '4X',
+          },
+          {
+            name: '6X',
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 6,
+                'visit' => 6,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
+            ],
+            price: 700,
+            events: [
+              {
+                'type' => 'remove_unstarted',
+              },
+            ],
+            available_on: '5X',
+          },
+        ].freeze
+
+        def game_trains
+          second_ed_playtest? ? self.class::TRAINS_2E : self.class::TRAINS
+        end
 
         def init_scenario(optional_rules)
           num_players = @players.size
