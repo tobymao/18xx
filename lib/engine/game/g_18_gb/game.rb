@@ -314,15 +314,28 @@ module Engine
           optional_rules
         end
 
+        def second_ed_playtest?
+          @optional_rules&.include?(:second_ed_test)
+        end
+
         def optional_hexes
-          case @scenario['map']
-          when '2NS'
-            self.class::HEXES_2P_NS
-          when '2EW'
-            self.class::HEXES_2P_EW
-          else
-            self.class::HEXES
-          end
+          hexes = case @scenario['map']
+                  when '2NS'
+                    self.class::HEXES_2P_NS
+                  when '2EW'
+                    self.class::HEXES_2P_EW
+                  else
+                    self.class::HEXES
+                  end
+          return hexes unless second_ed_playtest?
+
+          ns_bonus = {
+            red: {
+              ['C8'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/south;icon=image:18_gb/north',
+            },
+          }.freeze
+
+          hexes.merge(ns_bonus) { |_, a, b| a.merge(b) }
         end
 
         def num_trains(train)
