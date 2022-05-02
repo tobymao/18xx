@@ -154,7 +154,7 @@ module Engine
     end
 
     def bank_at_limit?(corporation)
-      preferred_percent_of(corporation) >= @game.class::MARKET_SHARE_LIMIT
+      common_percent_of(corporation) >= @game.class::MARKET_SHARE_LIMIT
     end
 
     def transfer_shares(bundle, to_entity,

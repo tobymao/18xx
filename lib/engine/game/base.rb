@@ -1737,6 +1737,10 @@ module Engine
         'IPO Reserved'
       end
 
+      def share_flags(_shares)
+        nil
+      end
+
       def corporation_show_loans?(_corporation)
         true
       end

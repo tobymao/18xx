@@ -322,7 +322,7 @@ module View
             step&.last_acted_upon?(@corporation, entity),
             !@corporation.holding_ok?(entity, 1),
             entity.shares_of(@corporation).count(&:double_cert),
-            @game.respond_to?(:share_flags) && @game&.share_flags(entity.shares_of(@corporation)),
+            @game&.share_flags(entity.shares_of(@corporation)),
           ]
         end
 
@@ -415,7 +415,7 @@ module View
         if player_rows.any? || @corporation.num_market_shares.positive?
           at_limit = @game.share_pool.bank_at_limit?(@corporation)
           double_certs = @game.share_pool.shares_of(@corporation).count(&:double_cert)
-          other_flags = @game.respond_to?(:share_flags) && @game.share_flags(@game.share_pool.shares_of(@corporation))
+          other_flags = @game.share_flags(@game.share_pool.shares_of(@corporation))
 
           flags = (@corporation.receivership? ? '*' : '') + ('d' * double_certs) + (at_limit ? 'L' : '') + (other_flags || '')
 

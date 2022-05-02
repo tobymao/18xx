@@ -66,7 +66,9 @@ module Engine
       "<Share: #{@corporation.id} #{@percent}%>"
     end
 
-    def preferred_percent
+    # The commonly used percent; percent held of a corporation not counting preferred shares
+    # Preferred shares don't count towards the normal percentage holding limit of a corporations stock
+    def common_percent
       return 0 if @preferred
 
       @percent

@@ -33,7 +33,7 @@ module Engine
     end
 
     # Same as percent_of, except preferred shares don't count
-    def preferred_percent_of(corporation)
+    def common_percent_of(corporation)
       return 0 unless corporation
 
       shares_by_corporation[corporation].reject(&:preferred).sum(&:percent)

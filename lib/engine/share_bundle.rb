@@ -67,8 +67,8 @@ module Engine
     end
 
     # Percent of shares not counting preferred shares
-    def preferred_percent
-      @preferred_percent ||= @shares.reject(&:preferred).sum(&:percent)
+    def common_percent
+      @common_percent ||= @shares.reject(&:preferred).sum(&:percent)
     end
   end
 end
