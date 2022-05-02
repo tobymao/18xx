@@ -18,6 +18,7 @@ module View
     def render_notification
       message = <<~MESSAGE
 
+        <p>18Carolinas, 18NewEngland and 18NewEngland2 are now in production.</p>
         <p><a href='https://github.com/tobymao/18xx/wiki/18USA'>18USA</a> is in beta.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on

@@ -9,9 +9,10 @@ module View
       class SingleRevenue < Snabberb::Component
         needs :revenue
         needs :transform, default: 'translate(0 0)'
+        needs :force, default: nil
 
         def render
-          return h(:g) if @revenue.zero?
+          return h(:g) if @revenue.zero? && !@force
 
           circle_props = {
             attrs: {
