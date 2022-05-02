@@ -27,8 +27,9 @@ module Engine
 
           def setup
             return if current_entity != @game.ndem
+
             # Don't need to make sure NdeM has tokens.  It starts with one.
-            @available_ndem_tokens = @game.ndem.tokens.select(&:used).to_h { |t| [t, ndem_token_cost(t)] } 
+            @available_ndem_tokens = @game.ndem.tokens.select(&:used).to_h { |t| [t, ndem_token_cost(t)] }
             @token_up_for_bid = nil
             @player_step_order = @game.players.dup
             @remaining_choosers = @player_step_order.select { |p| player_can_purchase_any_token?(p) }
@@ -47,7 +48,7 @@ module Engine
           end
 
           def description
-            'MHA_Description' # MHA
+            'NDEM Privatization'
           end
 
           def base_city_revenue(city)
@@ -156,7 +157,8 @@ module Engine
             @auction_winner = nil
           end
 
-          def max_player_bid(player)
+          def max_player_bid(_player)
+            print("max_player_bid:#{max_bid_for_token(@remaining_bidders[0])}")
             max_bid_for_token(@remaining_bidders[0])
           end
 
@@ -185,6 +187,14 @@ module Engine
           end
 
           def process_bid(action)
+            if action.price > max_bid_for_token(@remaining_bidders[0])
+              raise GameError,
+                    "#{@remaining_choosers[0].name} can bid a maximum of " \
+                    "#{@game.format_currency(max_bid_for_token(@remaining_bidders[0]))}"
+            elsif action.price % min_increment != 0
+              raise GameError, "Bids must be in increments of #{@game.format_currency(min_increment)}"
+            end
+
             @log << "#{@remaining_bidders[0].name} bids #{@game.format_currency(action.price)}"
             @current_high_bid = action.price
             @available_ndem_tokens[@token_up_for_bid] = @current_high_bid + min_increment
@@ -243,6 +253,11 @@ module Engine
             @token_up_for_bid = nil
             @player_step_order.append(@player_step_order.shift)
             @remaining_choosers = @player_step_order.select { |p| player_can_purchase_any_token?(p) }
+          end
+
+          def auto_actions(entity)
+            print("auto_actions:#{entity}")
+            print('have auto_auction complete step') if @remaining_choosers.empty?
           end
         end
       end
