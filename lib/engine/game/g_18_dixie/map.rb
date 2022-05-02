@@ -102,13 +102,13 @@ module Engine
             %w[F10] => 'town=revenue:0;upgrade=cost:40,terrain:river',
 
             %w[D12 E7 F6 F14 G13 H8 J6 J10 K17 L22] => 'city=revenue:0',
-            %w[G23] => 'city=revenue:0;icon=image:18_dixie/AUG.brown,sticky:1',
-            %w[H10] => 'city=revenue:0;icon=image:18_dixie/BHM.green,sticky:1',
-            %w[M7] => 'city=revenue:0;icon=image:18_dixie/MOB.green,sticky:1',
-            %w[I19] => 'city=revenue:0;icon=image:18_dixie/MAC.brown,sticky:1',
-            %w[C11] => 'city=revenue:0;icon=image:18_dixie/NSH.green,sticky:1',
-            %w[L24] => 'city=revenue:0;icon=image:18_dixie/BRU.brown,sticky:1',
-            %w[E3] => 'city=revenue:0;icon=image:18_dixie/MEM.green,sticky:1',
+            %w[G23] => 'city=revenue:0;future_label=label:Aug,color:brown',
+            %w[H10] => 'city=revenue:0;future_label=label:Bhm,color:green',
+            %w[M7] => 'city=revenue:0;future_label=label:Mob,color:green',
+            %w[I19] => 'city=revenue:0;future_label=label:Mac,color:brown',
+            %w[C11] => 'city=revenue:0;future_label=label:Nash,color:green',
+            %w[L24] => 'city=revenue:0;future_label=label:Bru,color:brown',
+            %w[E3] => 'city=revenue:0;future_label=label:Mem,color:green',
             %w[D6] => 'city=revenue:20',
             %w[G17] => 'city=revenue:0,slots:3;label=Atl',
             %w[J16] => 'city=revenue:0;upgrade=cost:20,terrain:river',
@@ -118,7 +118,7 @@ module Engine
           yellow: {
             ['J12'] => 'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;path=a:3,b:_0;label=Mgm',
             ['F16'] => 'town=revenue:10;path=a:2,b:_0;path=a:5,b:_0',
-            ['E15'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0;icon=image:18_dixie/CHT.green,sticky:1',
+            ['E15'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0;future_label=label:Chat,color:green',
           },
         }.freeze
       end
