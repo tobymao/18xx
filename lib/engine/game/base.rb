@@ -1511,6 +1511,9 @@ module Engine
       end
 
       def upgrades_to_correct_label?(from, to)
+        # If the from tile has a future label and the to tile is the color for it use that, otherwise use the from's label
+        return from.future_label.label == to.label.to_s if from.future_label && to.color == from.future_label.color
+
         from.label == to.label
       end
 
