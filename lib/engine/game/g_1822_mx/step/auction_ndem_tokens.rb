@@ -30,8 +30,9 @@ module Engine
 
             # Don't need to make sure NdeM has tokens.  It starts with one.
             @available_ndem_tokens = @game.ndem.tokens.select(&:used).to_h { |t| [t, ndem_token_cost(t)] }
-            @token_up_for_bid = nil
             @player_step_order = @game.players.dup
+
+            @token_up_for_bid = nil
             @remaining_choosers = @player_step_order.select { |p| player_can_purchase_any_token?(p) }
           end
 
@@ -40,7 +41,7 @@ module Engine
           end
 
           def active?
-            ndem_closing? && !@remaining_choosers.empty?
+            ndem_closing?
           end
 
           def blocking?
@@ -95,8 +96,10 @@ module Engine
           end
 
           def process_pass(action)
-            if !@token_up_for_bid
-              process_pass_remove_token(action)
+            if @remaining_choosers.empty?
+              process_pass_end_round
+            elsif !@token_up_for_bid
+              process_pass_remove_token
             else
               process_pass_bid(action)
             end
@@ -131,12 +134,12 @@ module Engine
             @game.ndem.tokens.include?(token)
           end
 
-          def process_pass_remove_token(_action)
+          def process_pass_remove_token
             @log << "#{@remaining_choosers[0].name} passes picking an NDEM token to auction"
             @remaining_choosers.shift
-            return unless @remaining_choosers.empty?
+          end
 
-            # MHA other case for this - no valid bidders
+          def process_pass_end_round
             @game.ndem_state = :closed
             @log << "#{@game.ndem.name} closes"
             @game.ndem.close!
@@ -148,7 +151,6 @@ module Engine
               raise GameError, "#{@remaining_choosers} does not have a company that can purchase token at #{action.city.hex.id}"
             end
 
-            # MHA - check to make sure this player can purchase this token
             @game.log << "#{@remaining_choosers[0].name} has chosen NDEM token at #{action.city.hex.id} for auction"
             @remaining_bidders = get_player_list(start_player: @remaining_choosers[0])
             @remaining_bidders.select! { |p| player_can_purchase_token?(p, @token_up_for_bid) }
@@ -158,7 +160,6 @@ module Engine
           end
 
           def max_player_bid(_player)
-            print("max_player_bid:#{max_bid_for_token(@remaining_bidders[0])}")
             max_bid_for_token(@remaining_bidders[0])
           end
 
@@ -256,8 +257,7 @@ module Engine
           end
 
           def auto_actions(entity)
-            print("auto_actions:#{entity}")
-            print('have auto_auction complete step') if @remaining_choosers.empty?
+            return [Engine::Action::Pass.new(entity)] if @remaining_choosers.empty?
           end
         end
       end
