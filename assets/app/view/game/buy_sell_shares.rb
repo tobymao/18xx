@@ -86,7 +86,7 @@ module View
           h(Button::BuyShare,
             share: share,
             entity: @current_entity,
-            percentages_available: @pool_shares.size)
+            percentages_available: @pool_shares.group_by(&:percent).size)
         end
       end
 
@@ -97,7 +97,7 @@ module View
           h(Button::BuyShare,
             share: share,
             entity: @current_entity,
-            percentages_available: @ipo_shares.size,
+            percentages_available: @ipo_shares.group_by(&:percent).size,
             source: @game.ipo_name(share.corporation))
         end
       end
@@ -109,7 +109,7 @@ module View
           h(Button::BuyShare,
             share: share,
             entity: @current_entity,
-            percentages_available: @treasury_shares.size,
+            percentages_available: @treasury_shares.group_by(&:percent).size,
             source: 'Treasury')
         end
       end
@@ -125,7 +125,7 @@ module View
             h(Button::BuyShare,
               share: share,
               entity: @current_entity,
-              percentages_available: @ipo_shares.size,
+              percentages_available: @ipo_shares.group_by(&:percent).size,
               source: share.corporation.name,
               prefix: button_prefix)
           end
@@ -146,7 +146,7 @@ module View
               entity: @current_entity,
               purchase_for: target,
               borrow_from: @current_entity,
-              percentages_available: @ipo_shares.size,
+              percentages_available: @ipo_shares.group_by(&:percent).size,
               source: @game.ipo_name(share.corporation))
           end
 
@@ -158,7 +158,7 @@ module View
               entity: @current_entity,
               purchase_for: target,
               borrow_from: @current_entity,
-              percentages_available: @treasury_shares.size,
+              percentages_available: @treasury_shares.group_by(&:percent).size,
               source: 'Treasury')
           end
 
@@ -170,7 +170,7 @@ module View
               entity: @current_entity,
               purchase_for: target,
               borrow_from: @current_entity,
-              percentages_available: @pool_shares.size)
+              percentages_available: @pool_shares.group_by(&:percent).size)
           end
 
           ipo_shares + treasury_shares + pool_shares
@@ -197,7 +197,7 @@ module View
             share: share,
             swap_share: swap_share,
             entity: @current_entity,
-            percentages_available: shares.size,
+            percentages_available: shares.group_by(&:percent).size,
             source: source)
         end
       end
@@ -255,7 +255,7 @@ module View
             share: share,
             entity: entity,
             partial_percent: @game.exchange_partial_percent(share),
-            percentages_available: shares.size,
+            percentages_available: shares.group_by(&:percent).size,
             prefix: "Exchange #{name} for ",
             source: source)
         end

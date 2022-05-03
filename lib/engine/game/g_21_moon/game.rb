@@ -1048,6 +1048,11 @@ module Engine
             ],
           ]
         end
+
+        def share_flags(shares)
+          step = @round.active_step
+          step.share_flags(shares) if step.respond_to?(:share_flags)
+        end
       end
     end
   end
