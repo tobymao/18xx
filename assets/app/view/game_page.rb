@@ -412,8 +412,6 @@ module View
           h(Game::Round::Stock, game: @game)
         elsif current_entity_actions.include?('bid')
           h(Game::Round::Auction, game: @game, user: @user)
-        elsif current_entity_actions.include?('choose')
-          h(Game::Round::Choices, game: @game)
         else
           h(Game::Round::Operating, game: @game)
         end
