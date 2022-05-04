@@ -533,7 +533,7 @@ module Engine
 
         def game_companies
           scenario_comps = @scenario['companies']
-          self.class::COMPANIES.select { |comp| scenario_comps.include?(comp[:sym]) }
+          all_companies.select { |comp| scenario_comps.include?(comp[:sym]) }
         end
 
         def game_corporations

@@ -18,6 +18,12 @@ module Engine
             return [token, nil] unless special_ability
 
             corporation = token.corporation
+
+            unless special_ability.from_owner
+              token = Engine::Token.new(corporation)
+              corporation.tokens << token
+            end
+
             if @game.token_graph_for_entity(corporation).reachable_hexes(corporation)[hex]
               token.price = special_ability.price(token)
             elsif special_ability.teleport_price
@@ -28,12 +34,14 @@ module Engine
           end
 
           def switch_for_expensive_token(token)
+            return token if @game.second_ed_playtest?
             return token unless token.price.zero?
 
             current_entity.tokens.reject(&:used).max_by(&:price)
           end
 
           def process_place_token(action)
+            puts "from_owner: #{ability(action.entity).from_owner}"
             hex = action.city.hex
             city_string = hex.tile.cities.size > 1 ? " city #{action.city.index}" : ''
             raise GameError, "Cannot place token on #{hex.name}#{city_string}" unless available_hex(action.entity, hex)
