@@ -574,6 +574,8 @@ module Engine
           @tiers = tiers
           @insolvent_corps = []
           @train_bought = false
+
+          @corporations.each { |corp| place_home_token(corp) } if second_ed_playtest?
         end
 
         def event_float_60!
