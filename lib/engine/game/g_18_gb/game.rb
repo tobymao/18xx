@@ -588,11 +588,17 @@ module Engine
           @corporations.reject(&:floated?).each { |c| convert_to_ten_share(c) }
         end
 
+        def remove_corporation(corporation)
+          token = corporation.tokens.first(&:used).dup
+          close_corporation(corporation, quiet: true)
+          token.city.place_token(corporation, token, check_tokenable: false) if second_ed_playtest?
+        end
+
         def event_remove_unstarted!
           @log << '-- Event: Unstarted corporations are removed --'
           remove_trains = @depot.trains.select { |t| t.name == '6X' }
           @corporations.reject(&:floated?).each do |corporation|
-            close_corporation(corporation, quiet: true)
+            remove_corporation(corporation)
             if (train = remove_trains.pop)
               @depot.remove_train(train)
               @log << "#{corporation.id} closes, removing a 6X train"
