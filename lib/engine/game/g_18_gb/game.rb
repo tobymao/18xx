@@ -79,14 +79,22 @@ module Engine
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           unlimited: 'May buy shares from IPO in excess of 60%',
+          multiple_buy: 'President may buy two shares per turn',
         )
 
         MARKET = [
           %w[50o 55o 60o 65o 70p 75p 80p 90p 100p 115 130 145 160 180 200 220 240 265 290 320 350e 380e],
         ].freeze
+        MARKET_2E = [
+          %w[50b 55b 60b 65b 70p 75p 80p 90p 100p 115 130 145 160 180 200 220 240 265 290 320 350e 380e],
+        ].freeze
+        def game_market
+          second_ed_playtest? ? MARKET_2E : MARKET
+        end
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           unlimited: :olive,
+          multiple_buy: :olive,
         )
 
         EVENTS_TEXT = {
