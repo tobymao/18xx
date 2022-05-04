@@ -471,6 +471,24 @@ module Engine
           @optional_rules&.include?(:second_ed_test)
         end
 
+        def end_game_restrictions?
+          @optional_rules&.include?(:second_ed_test)
+        end
+
+        def trigger_end_game_restrictions
+          return unless end_game_restrictions?
+          return if @end_game_near
+
+          @log << '-- Event: End game restrictions are now in place (no more tokens may be placed, no shares may be sold) --'
+          @end_game_near = true
+        end
+
+        def end_game_restrictions_active?
+          return false unless end_game_restrictions?
+
+          @end_game_near
+        end
+
         def optional_hexes
           hexes = case @scenario['map']
                   when '2NS'
@@ -582,6 +600,7 @@ module Engine
           @tiers = tiers
           @insolvent_corps = []
           @train_bought = false
+          @end_game_near = false
 
           @corporations.each { |corp| place_home_token(corp) } if second_ed_playtest?
         end
@@ -1073,6 +1092,7 @@ module Engine
 
         def or_round_finished
           depot.export! unless @train_bought
+          trigger_end_game_restrictions if @depot.upcoming.size <= 3
         end
 
         def end_now?(after)

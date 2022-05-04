@@ -7,6 +7,12 @@ module Engine
     module G18GB
       module Step
         class SpecialToken < Engine::Step::SpecialToken
+          def actions(entity)
+            return [] if @game.end_game_restrictions_active?
+
+            super
+          end
+
           def available_tokens(_entity)
             super(current_entity)
           end

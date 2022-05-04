@@ -129,6 +129,12 @@ module Engine
             corporation&.type == :'5-share' && corporation&.president?(player) && corporation&.operated?
           end
 
+          def can_sell_any?(entity)
+            return false if @game.end_game_restrictions_active?
+
+            super
+          end
+
           def can_sell?(entity, bundle)
             return if converted?
             return super unless @game.class::PRESIDENT_SALES_TO_MARKET

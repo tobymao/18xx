@@ -23,6 +23,12 @@ module Engine
             actions
           end
 
+          def can_place_token?(entity)
+            return false if @game.end_game_restrictions_active?
+
+            super
+          end
+
           def can_use_company_abilities?(entity)
             return false unless entity == current_entity
 
