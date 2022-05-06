@@ -998,6 +998,10 @@ module Engine
             .reverse
             .to_h { |p| [p.name, player_value(p)] }
         end
+
+        def companies_sort(companies)
+          companies.sort_by(&:value).reverse
+        end
       end
     end
   end
