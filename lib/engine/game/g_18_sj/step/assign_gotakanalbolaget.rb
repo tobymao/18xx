@@ -33,11 +33,6 @@ module Engine
             ability = ability(entity)
             target = action.target
             assign_gkb_bonus(entity, target, ability, amount(ability))
-
-            return unless ability.count == 1
-
-            last_target = @game.gkb_hexes.find { |h| !@game.gkb_hex_assigned?(h) }
-            assign_gkb_bonus(entity, last_target, ability, 20)
           end
 
           def blocks?
@@ -59,7 +54,14 @@ module Engine
           end
 
           def amount(ability)
-            ability.count == 3 ? 50 : 30
+            case ability.count
+            when 3
+              50
+            when 2
+              30
+            else
+              20
+            end
           end
         end
       end

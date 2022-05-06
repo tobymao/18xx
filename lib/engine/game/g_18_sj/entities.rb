@@ -26,7 +26,8 @@ module Engine
             value: 40,
             revenue: 15,
             desc: 'When Göta kanalbolag is purchsed by a corporation The president of the corporation places the '\
-                  'three Göta kanal bonus tokens (50/30/20), one on each Göta kanalbolag hex (E8, C8, and C16).'\
+                  'three Göta kanal bonus tokens (50/30/20) on up to three of the Göta kanalbolag hexes (E8, C8, C12'\
+                  ' and C16).'\
                   '  When this corporation operates, if any of the hexes are included in a route, the route is '\
                   'increased by the sum of all Göta kanal bonuses that are reached by that route. After operating '\
                   'trains, the largest numbered Göta kanal bonus token that was included in a route is removed from '\
@@ -37,7 +38,7 @@ module Engine
               {
                 type: 'assign_hexes',
                 when: 'owning_corp_or_turn',
-                hexes: %w[C8 C16 E8],
+                hexes: %w[C8 C12 C16 E8],
                 count: 3,
                 owner_type: 'corporation',
               },

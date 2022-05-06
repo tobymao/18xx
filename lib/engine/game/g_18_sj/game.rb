@@ -253,7 +253,7 @@ module Engine
           'GKB20' => '/icons/18_sj/20.svg',
         }.freeze
 
-        GKB_HEXES = %w[C8 C16 E8].freeze
+        GKB_HEXES = %w[C8 C12 C16 E8].freeze
 
         def gkb_hexes
           @gkb_hexes ||= GKB_HEXES.map { |h| hex_by_id(h) }
