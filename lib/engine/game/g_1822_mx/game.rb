@@ -526,7 +526,6 @@ module Engine
         end
 
         def operating_order
-          # print("operating_order")
           ndem, others = @corporations.select(&:floated?).sort.partition { |c| c.id == 'NDEM' }
           minors, majors = others.sort.partition { |c| c.type == :minor }
           minors + majors + ndem
