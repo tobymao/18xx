@@ -47,7 +47,6 @@ module Engine
           end
 
           def process_place_token(action)
-            puts "from_owner: #{ability(action.entity).from_owner}"
             hex = action.city.hex
             city_string = hex.tile.cities.size > 1 ? " city #{action.city.index}" : ''
             raise GameError, "Cannot place token on #{hex.name}#{city_string}" unless available_hex(action.entity, hex)
