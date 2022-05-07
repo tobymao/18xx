@@ -950,10 +950,9 @@ module Engine
           when 'S11'
             subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', 'plus_ten_twenty', true)
             subsidy.close!
-          when 'S12', 'S13', 'S14', 'S15'
+          when *self.class::CASH_SUBSIDIES
             @log << "Subsidy contributes #{format_currency(subsidy.value)}"
             @bank.spend(subsidy.value, corporation.owner)
-            subsidy.close!
           when 'S16'
             if subsidy.abilities.first.hexes.empty?
               @log << "#{subsidy.name} has NO RESOURCES and closes"
