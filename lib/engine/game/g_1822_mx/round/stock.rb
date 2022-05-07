@@ -45,12 +45,17 @@ module Engine
           end
 
           def remove_minor_and_first_train(company)
-            train = @game.depot.upcoming.first
-            @game.log << "No bids on minor #{company.id}, it will close and a #{train.name} train is given to the NdeM"
-            @game.send_train_to_ndem(train)
-
-            ## Find the correct minor in the corporations and close it
-            @game.replace_minor_with_ndem(company)
+            if @game.ndem_state == :open
+              train = @game.depot.upcoming.first
+              @game.log << "No bids on minor #{company.id}, it will close and a #{train.name} train is given to the NdeM"
+              @game.send_train_to_ndem(train)
+              @game.replace_minor_with_ndem(company)
+            else
+              @game.log << "No bids on minor #{company.id}, it will close"
+              minor = @game.find_corporation(company)
+              @game.close_corporation(minor)
+              @game.companies.delete(company)
+            end
           end
 
           def sold_out?(corporation)

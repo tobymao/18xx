@@ -700,13 +700,16 @@ module Engine
         end
 
         def end_game!
-          company = company_by_id(self.class::COMPANY_OSTH)
-          if company && @tax_haven.value.positive?
-            # Make sure tax havens value is correct
-            company.value = @tax_haven.value
-          end
-
+          finalize_end_game_values
           super
+        end
+
+        def finalize_end_game_values
+          company = company_by_id(self.class::COMPANY_OSTH)
+          return unless company && @tax_haven.value.positive?
+
+          # Make sure tax havens value is correct
+          company.value = @tax_haven.value
         end
 
         def entity_can_use_company?(entity, company)

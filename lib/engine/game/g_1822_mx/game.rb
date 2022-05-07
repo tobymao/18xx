@@ -371,7 +371,6 @@ module Engine
         end
 
         def replace_minor_with_ndem(company)
-          # return if @ndem_state == :closed # MHA - fix
           # Remove minor
           @companies.delete(company)
           @log << "-- #{company.sym} is removed from the game and replaced with NdeM"
@@ -410,11 +409,6 @@ module Engine
                               @companies.index { |c| c.id == 'M15' },
                               @companies.index { |c| c.id == 'M17' }].min
           replace_minor_with_ndem(@companies[ndem_minor_index])
-
-          # MHA - Testing
-          # m14_index = @companies.index { |c| c.id == 'M14' }
-          # m14 = @companies.delete_at(m14_index)
-          # @companies.insert(0, m14)
 
           # bidboxes need to be re-setup if this minor was in the top 4
           setup_bidboxes
@@ -537,8 +531,11 @@ module Engine
         def operating_order
           ndem, others = @corporations.select(&:floated?).sort.partition { |c| c.id == 'NDEM' }
           minors, majors = others.sort.partition { |c| c.type == :minor }
-          if @ndem_state == :closing
+          case @ndem_state
+          when :closing
             ndem + minors + majors
+          when :closed
+            minors + majors
           else
             minors + majors + ndem
           end
@@ -748,10 +745,12 @@ module Engine
             trains = c.trains.count { |t| !extra_train?(t) }
             crowded = trains > train_limit(c)
             crowded |= extra_train_permanent_count(c) > 1
-            # crowded |= extra_train_pullman_count(c) > 1
+            crowded |= extra_train_pullman_count(c) > 1
             crowded
           end
         end
+
+        def finalize_end_game_values; end
       end
     end
   end
