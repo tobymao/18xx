@@ -443,6 +443,7 @@ module Engine
             raise OptionError, 'Variant DB1 not useful in a Unit 2 only game'
           end
           raise OptionError, 'Variant DB2 is for Unit 1' if !units[1] && optional_rules.include?(:db2)
+          raise OptionError, 'Variant DB3 is for Unit 3' if !units[3] && optional_rules.include?(:db3)
           raise OptionError, 'Unit 4 requires Unit 3' if optional_rules.include?(:unit_4) && !units[3]
 
           p_range = case @units.keys.sort.map(&:to_s).join
@@ -717,12 +718,17 @@ module Engine
             locations['C3'] = 'Fort William'
             locations.delete('B8')
           end
+          locations['G7'] = if optional_rules.include?(:db3)
+                              'Falkirk & Airdrie'
+                            else
+                              'Coatbridge & Airdrie'
+                            end
           locations
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           # handle special-case upgrades
-          return true if force_dit_upgrade?(from, to)
+          return true if force_upgrade?(from, to)
           return false if illegal_upgrade?(from, to) # only really needed for upgrades shown on tile manifest
 
           # deal with striped tiles
@@ -738,8 +744,8 @@ module Engine
           super
         end
 
-        def force_dit_upgrade?(from, to)
-          return false unless (list = DIT_UPGRADES[from.name])
+        def force_upgrade?(from, to)
+          return false unless (list = EXTRA_UPGRADES[from.name])
 
           list.include?(to.name)
         end

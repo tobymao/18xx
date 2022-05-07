@@ -31,10 +31,13 @@ module Engine
           'F10' => 'Anstruther',
           'G3' => 'Greenock',
           'G5' => 'Glasgow',
-          'G7' => 'Coatbridge & Airdrie',
+          # G7 now handled in game.rb for variant DB3
           'G9' => 'Edinburgh & Leith',
+          'G13' => 'Berwick',
           'H4' => 'Kilmarnock & Ayr',
           'H6' => 'Motherwell',
+          'H10' => 'Galashiels',
+          'I13' => 'Morpeth & Blythe',
           'J2' => 'Stranraer',
           'J6' => 'Dumfries',
           'J10' => 'Carlisle',
@@ -501,11 +504,17 @@ module Engine
           '14' => -1,
           '15' => -1,
         }.freeze
+
+        DB3_TILES = {
+          '58' => 1,
+          '206' => 1,
+        }.freeze
+
         # rubocop:enable Layout/LineLength
 
-        # This includes upgrades for the DB1 kit tiles 887/888. This does not
-        # affect the game without it since none of them are present.
-        DIT_UPGRADES = {
+        # This includes upgrades for the DB1 kit tiles 887/888 and DB3 #206.
+        # Games without DB kits lack those tiles so are unaffected.
+        EXTRA_UPGRADES = {
           # gentle curve to three curves with a halt
           '8' => %w[11],
           # yellow double-dit to green K or X city
@@ -520,9 +529,11 @@ module Engine
           '887' => %w[63 166],
           '888' => %w[63 166],
           # yellow single-dit to green city (also brown/green city)
-          '3' => %w[12 14 15 119],
-          '4' => %w[14 15 119],
-          '58' => %w[12 13 14 15 119],
+          '3' => %w[12 14 15 119 206],
+          '4' => %w[14 15 119 206],
+          '58' => %w[12 13 14 15 119 206],
+          # not a dit at all but a yellow city, how exciting
+          '115' => '206',
           # HACK: for 119 (green/brown tile that upgrades to gray)
           '119' => %w[51],
         }.freeze
@@ -570,6 +581,7 @@ module Engine
           append_game_tiles(gtiles, K6_TILES) if @kits[6]
           append_game_tiles(gtiles, D1_TILES) if @optional_rules.include?(:d1)
           db1_tiles(gtiles) if @optional_rules.include?(:db1)
+          append_game_tiles(gtiles, DB3_TILES) if @optional_rules.include?(:db3)
           gtiles
         end
 
@@ -863,6 +875,19 @@ module Engine
           },
         }.freeze
 
+        DB3_HEXES = {
+          white: {
+            ['I9'] => '',
+            ['J6'] => 'town=revenue:0',
+            ['G13'] => 'city=revenue:0',
+            ['H10'] => 'town=revenue:0;upgrade=cost:100,terrain:mountain',
+            ['F4'] => 'town=revenue:0;border=edge:0,type:impassable;upgrade=cost:100,terrain:mountain',
+          },
+          sepia: {
+            ['F2'] => 'town=revenue:10,loc:4;path=a:4,b:_0;path=a:3,b:_0;town=revenue:10,loc:5;path=a:5,b:_1',
+          },
+        }.freeze
+
         UNIT1_OFFMAP_HEXES = {
           gray: {
             %w[Q7
@@ -963,6 +988,7 @@ module Engine
         def game_hexes
           ghexes = {}
           append_game_hexes(ghexes, DB2_HEXES) if @optional_rules.include?(:db2)
+          append_game_hexes(ghexes, DB3_HEXES) if @optional_rules.include?(:db3)
           append_game_hexes(ghexes, UNIT4_HEXES) if @optional_rules.include?(:unit_4)
           append_game_hexes(ghexes, R1_HEXES) if @regionals[1]
           append_game_hexes(ghexes, R2_HEXES) if @regionals[2]
