@@ -76,7 +76,7 @@ module Engine
           {
             sym: :k1,
             short_name: 'K1',
-            desc: 'Extension Kit 1 - Suplementary Tiles',
+            desc: 'Extension Kit 1 - Supplementary Tiles',
           },
           {
             sym: :k2,
