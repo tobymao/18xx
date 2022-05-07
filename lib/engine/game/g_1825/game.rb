@@ -694,7 +694,7 @@ module Engine
           @corporations.any? { |c| c.owner == player }
         end
 
-        def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
           phase_color_cache ||= @phase.tiles
 
           # 119 upgrades from yellow in phase 3

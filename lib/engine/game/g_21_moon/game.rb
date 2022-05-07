@@ -445,7 +445,7 @@ module Engine
           @crossed_rift = true
         end
 
-        def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
           return true if tile.name == T_TILE
 
           phase_color_cache ||= @phase.tiles
