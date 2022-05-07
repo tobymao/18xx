@@ -443,29 +443,71 @@ module View
       end
 
       def render_rs_income
-        body_props = {
+        section_props = {
+          style: {
+            display: 'grid',
+          },
+        }
+
+        income_props = {
           style: {
             fontSize: '80%',
           },
         }
 
-        rows = []
-        rows << h(:tr, [h('td.left', 'Company Revenue:'),
-                        h(:td, @game.format_currency(@corporation.companies.sum(&:revenue)))])
-        rows << h(:tr, [h('td.left', 'Synergies:'),
-                        h(:td, @game.format_currency(@game.synergy_income(@corporation)))])
-        rows << h(:tr, [h('td.left', 'Cost of Ownership:'),
-                        h(:td, @game.format_currency(@corporation.companies.sum { |c| @game.operating_cost(c) }))])
-        if (extra = @game.ability_income(@corporation)).positive?
-          rows << h(:tr, [h('td.left', 'Ability Income:'), h(:td, @game.format_currency(extra))])
-        end
+        row_props = {
+          style: {
+            height: '0',
+            lineHeight: '0',
+            margin: '0',
+            padding: '0',
+            border: '0',
+            borderSpacing: '0',
+          },
+        }
 
-        h(:table, [
+        rows = []
+        rows << h(:tr, row_props, [h('td.left', 'Company Revenue:'),
+                                   h('td.right', @game.format_currency(@corporation.companies.sum(&:revenue)))])
+        rows << h(:tr, row_props, [h('td.left', 'Synergies:'),
+                                   h('td.right', @game.format_currency(@game.synergy_income(@corporation)))])
+        rows << h(:tr, row_props, [h('td.left', 'Cost of Ownership:'),
+                                   h('td.right',
+                                     @game.format_currency(@corporation.companies.sum { |c| @game.operating_cost(c) }))])
+        rows << if (extra = @game.ability_income(@corporation)).positive?
+                  h(:tr, row_props, [h('td.left', 'Ability Income:'), h('td.right', @game.format_currency(extra))])
+                else
+                  h(:tr, row_props, ['', ''])
+                end
+
+        income_table = h(:table, income_props, [
           h(:thead, [
             h(:tr, [h('th.left', 'Income'),
-                    h(:th, @game.format_currency(@game.total_income(@corporation)))]),
+                    h('th.right', @game.format_currency(@game.total_income(@corporation)))]),
           ]),
-          h(:tbody, body_props, rows),
+          h(:tbody, rows),
+        ])
+
+        movement_props = {
+          style: {
+            fontSize: '80%',
+          },
+        }
+
+        header, *lines = @game.movement_chart(@corporation)
+        rows = lines.map do |r|
+          h(:tr, row_props, [h('td.left', r[0]), h('td.right', r[1])])
+        end
+        movement_table = h(:table, movement_props, [
+          h(:thead, [
+            h(:tr, [h('th.left', header[0]), h('th.right', header[1])]),
+          ]),
+          h(:tbody, rows),
+        ])
+
+        h(:div, section_props, [
+          h(:div, { style: { gridColumnStart: 1 } }, [income_table]),
+          h(:div, { style: { gridColumnStart: 2 } }, [movement_table]),
         ])
       end
     end
