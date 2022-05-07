@@ -749,7 +749,9 @@ module Engine
 
         def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
           phase_color_cache ||= @phase.tiles
-          return phase_color_cache.include?(:green) if hex&.tile&.towns&.empty? == false && tile.color == :yellow
+          if hex&.tile&.color == :yellow && hex.tile.towns.empty? == false && tile.color == :yellow
+            return phase_color_cache.include?(:green)
+          end
 
           super
         end
