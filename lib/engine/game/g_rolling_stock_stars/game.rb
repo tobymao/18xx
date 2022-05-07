@@ -190,6 +190,23 @@ module Engine
             [idx.to_s, "#{(idx * price.price / 10.0).round}★"]
           end
         end
+
+        def movement_chart(corporation)
+          stars = target_stars(corporation)
+          price = corporation.share_price
+          two_right = two_prices_to_right(price)&.price
+          one_right = one_price_to_right(price)&.price
+          one_left = one_price_to_left(price)&.price
+          two_left = two_prices_to_left(price)&.price
+
+          chart = [%w[Stars Price]]
+          chart <<  ["#{stars + 2} ★", format_currency(two_right)] if two_right
+          chart <<  ["#{stars + 1} ★", format_currency(one_right)] if one_right
+          chart << ["#{[stars - 1, 0].max} ★", format_currency(one_left)] if one_left
+          chart << ["#{[stars - 2, 0].max} ★", format_currency(two_left)] if two_left
+          chart << ['', ''] while chart.size < 5
+          chart
+        end
       end
     end
   end

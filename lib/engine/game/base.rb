@@ -2861,6 +2861,10 @@ module Engine
       def show_player_percent?(_player)
         true
       end
+
+      def companies_sort(companies)
+        companies
+      end
     end
   end
 end
