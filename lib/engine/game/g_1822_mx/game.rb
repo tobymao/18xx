@@ -295,7 +295,7 @@ module Engine
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
+            G1822MX::Step::DiscardTrain,
             G1822MX::Step::SpecialChoose,
             G1822MX::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -307,7 +307,7 @@ module Engine
             G1822::Step::BuyTrain,
             G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
+            G1822MX::Step::DiscardTrain,
             G1822::Step::IssueShares,
             G1822MX::Step::CashOutNdem,
             G1822MX::Step::AuctionNdemTokens,
@@ -371,6 +371,7 @@ module Engine
         end
 
         def replace_minor_with_ndem(company)
+          # return if @ndem_state == :closed # MHA - fix
           # Remove minor
           @companies.delete(company)
           @log << "-- #{company.sym} is removed from the game and replaced with NdeM"
@@ -380,7 +381,10 @@ module Engine
           # Replace token
           city = hex_by_id(corporation.coordinates).tile.cities[corporation.city]
           city.remove_reservation!(corporation)
-          city.place_token(ndem, ndem.find_token_by_type)
+          # Use exchange_token instead of place_token because we don't want to do the
+          # error checking - we are allowed to have two NdeM tokens in the same city
+          # which would be prevented by place_token
+          city.exchange_token(ndem.find_token_by_type)
           graph.clear
 
           # Add a stock certificate
@@ -406,6 +410,11 @@ module Engine
                               @companies.index { |c| c.id == 'M15' },
                               @companies.index { |c| c.id == 'M17' }].min
           replace_minor_with_ndem(@companies[ndem_minor_index])
+
+          # MHA - Testing
+          # m14_index = @companies.index { |c| c.id == 'M14' }
+          # m14 = @companies.delete_at(m14_index)
+          # @companies.insert(0, m14)
 
           # bidboxes need to be re-setup if this minor was in the top 4
           setup_bidboxes
@@ -526,10 +535,13 @@ module Engine
         end
 
         def operating_order
-          # print("operating_order")
           ndem, others = @corporations.select(&:floated?).sort.partition { |c| c.id == 'NDEM' }
           minors, majors = others.sort.partition { |c| c.type == :minor }
-          minors + majors + ndem
+          if @ndem_state == :closing
+            ndem + minors + majors
+          else
+            minors + majors + ndem
+          end
         end
 
         def active_players
@@ -617,6 +629,10 @@ module Engine
 
         def can_upgrade_one_phase_ahead?(entity)
           entity.id == 'P8'
+        end
+
+        def must_be_on_terrain?(_entity)
+          false
         end
 
         def company_ability_extra_track?(company)
@@ -716,7 +732,25 @@ module Engine
         end
 
         def ndem
-          corporation_by_id('NDEM')
+          @ndem ||= corporation_by_id('NDEM')
+        end
+
+        def extra_train_pullman_count(corporation)
+          corporation.trains.count { |train| extra_train_pullman?(train) }
+        end
+
+        def extra_train_pullman?(train)
+          train.name == self.class::EXTRA_TRAIN_PULLMAN
+        end
+
+        def crowded_corps
+          @crowded_corps ||= corporations.select do |c|
+            trains = c.trains.count { |t| !extra_train?(t) }
+            crowded = trains > train_limit(c)
+            crowded |= extra_train_permanent_count(c) > 1
+            # crowded |= extra_train_pullman_count(c) > 1
+            crowded
+          end
         end
       end
     end

@@ -99,7 +99,7 @@ module Engine
 
             # If player have choosen the tile lay option on the Edinburgh and Glasgow Railway company,
             # only rough terrain, hill or mountains are valid hexes
-            if entity.id == @game.class::COMPANY_EGR
+            if @game.must_be_on_terrain?(entity)
               tile_terrain = hex.tile.upgrades.any? do |upgrade|
                 %i[mountain hill swamp].any? { |t| upgrade.terrains.include?(t) }
               end

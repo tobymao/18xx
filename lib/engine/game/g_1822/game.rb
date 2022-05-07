@@ -1875,6 +1875,10 @@ module Engine
           entity.id == self.class::COMPANY_BER
         end
 
+        def must_be_on_terrain?(entity)
+          entity.id == self.class::COMPANY_EGR
+        end
+
         def must_remove_town?(entity)
           entity.id == self.class::COMPANY_MTONR
         end
