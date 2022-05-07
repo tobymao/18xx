@@ -21,6 +21,14 @@ module Engine
           def round_state
             { bought_trains: [] }
           end
+
+          def ebuy_president_can_contribute?(corporation)
+            corporation.receivership? ? false : super
+          end
+
+          def president_may_contribute?(entity, _shell = nil)
+            entity.receivership? ? false : super
+          end
         end
       end
     end
