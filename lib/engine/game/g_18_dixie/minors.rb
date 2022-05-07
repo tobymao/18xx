@@ -17,6 +17,27 @@ module Engine
         M11_SYM = '11'
         M12_SYM = '12'
         M13_SYM = '13'
+
+        MINOR_EXCHANGE_OPTIONS = {
+          M1_SYM => %w[SR],
+          M2_SYM => %w[L&N SR],
+          M3_SYM => %w[Fr],
+          M4_SYM => %w[WRA],
+          M5_SYM => %w[SAL],
+          M6_SYM => %w[ACL],
+          M7_SYM => %w[L&N],
+          M8_SYM => %w[CoG],
+          M9_SYM => %w[L&N],
+          M10_SYM => %w[IC],
+          M11_SYM => %w[IC],
+          M12_SYM => %w[Fr CoG WRA],
+          M13_SYM => %w[ACL CoG Fr IC L&N SAL SR WRA],
+        }.freeze
+
+        def minor_exchange_options(minor)
+          MINOR_EXCHANGE_OPTIONS[minor.id]&.map { |c_id| corporation_by_id(c_id) }
+        end
+
         MINORS = [
           {
             sym: ' 1',
@@ -167,7 +188,7 @@ module Engine
             coordinates: %w[D12 E15],
             logo: '18_mag/9',
             simple_logo: '18_mag/9.alt',
-            tokens: [0],
+            tokens: [0, 40],
             shares: [100],
             name: 'Nashville, Chattanooga & St. Louis Railway',
             color: 'black',
@@ -189,7 +210,7 @@ module Engine
             coordinates: 'E3',
             logo: '18_mag/10',
             simple_logo: '18_mag/10.alt',
-            tokens: [0],
+            tokens: [0, 40],
             shares: [100],
             name: 'Gulf, Mobile & Ohio Railroad',
             color: 'black',
@@ -207,7 +228,7 @@ module Engine
             coordinates: 'M7',
             logo: '18_mag/11',
             simple_logo: '18_mag/11.alt',
-            tokens: [0],
+            tokens: [0, 40],
             shares: [100],
             name: 'Mobile & Ohio Railroad',
             color: 'black',
@@ -225,7 +246,7 @@ module Engine
             coordinates: %w[F6 F14],
             logo: '18_mag/12',
             simple_logo: '18_mag/12.alt',
-            tokens: [0],
+            tokens: [0, 40],
             shares: [100],
             name: 'Memphis & Charleston RR',
             color: 'black',
@@ -233,7 +254,7 @@ module Engine
               {
                 type: 'description',
                 description: 'Closes at the end of OR3.1* ▼',
-                desc_detail: 'Is exchanged for a preferred share of Cog, Frisco, or WRA, '\
+                desc_detail: 'Is exchanged for a preferred share of CoG, Frisco, or WRA, '\
                              'which gets the minor\'s token and treasury',
               },
               {

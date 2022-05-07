@@ -185,7 +185,7 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            return super unless @game.force_dit_upgrade?(hex.tile, tile)
+            return super unless @game.force_upgrade?(hex.tile, tile)
 
             # basically a simplified version of the super except with a modified path check to allow dits to upgrade to cities
             return false unless @game.legal_tile_rotation?(entity, hex, tile)

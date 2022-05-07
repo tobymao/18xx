@@ -109,6 +109,16 @@ module Engine
               can_gain?(entity, bundle)
           end
 
+          def can_buy_multiple?(entity, corporation, owner)
+            bought = num_shares_bought(corporation)
+            owned = entity.num_shares_of(corporation)
+            super && corporation&.president?(entity) && bought < 2 && owned > 2
+          end
+
+          def num_shares_bought(corporation)
+            @round.current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
+          end
+
           def can_convert_any?(entity)
             return if bought? || converted? || sold?
 
@@ -117,6 +127,12 @@ module Engine
 
           def can_convert?(player, corporation)
             corporation&.type == :'5-share' && corporation&.president?(player) && corporation&.operated?
+          end
+
+          def can_sell_any?(entity)
+            return false if @game.end_game_restrictions_active?
+
+            super
           end
 
           def can_sell?(entity, bundle)

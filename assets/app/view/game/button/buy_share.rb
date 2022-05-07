@@ -30,7 +30,9 @@ module View
           text = @prefix.to_s
           text += " #{@partial_percent}% of" if @partial_percent
           text += " #{bundle.percent}%" if show_percentage
-          text += " #{@source} Share"
+          text += " #{@source}"
+          text += ' Preferred' if @share.preferred
+          text += ' Share'
           text += " (#{reduced_price} + #{@swap_share.percent}% Share)" if @swap_share
           text += " (#{@game.format_currency(modified_price)})" if modified_price
           text += " for #{@purchase_for.name}" if @purchase_for

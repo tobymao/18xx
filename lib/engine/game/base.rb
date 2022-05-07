@@ -1511,6 +1511,9 @@ module Engine
       end
 
       def upgrades_to_correct_label?(from, to)
+        # If the from tile has a future label and the to tile is the color for it use that, otherwise use the from's label
+        return from.future_label.label == to.label.to_s if from.future_label && to.color == from.future_label.color
+
         from.label == to.label
       end
 
@@ -1737,6 +1740,10 @@ module Engine
         'IPO Reserved'
       end
 
+      def share_flags(_shares)
+        nil
+      end
+
       def corporation_show_loans?(_corporation)
         true
       end
@@ -1949,7 +1956,7 @@ module Engine
 
       def skip_route_track_type; end
 
-      def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
+      def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
         phase_color_cache ||= @phase.tiles
         phase_color_cache.include?(tile.color)
       end
@@ -2551,7 +2558,7 @@ module Engine
       def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
         colors = Array(@phase.phases.last[:tiles])
         @all_tiles
-          .select { |t| tile_color_valid_for_phase?(t, phase_color_cache: colors) }
+          .select { |t| tile_valid_for_phase?(t, phase_color_cache: colors) }
           .uniq(&:name)
           .select { |t| upgrades_to?(tile, t, selected_company: selected_company) }
           .reject(&:blocks_lay)
@@ -2733,10 +2740,11 @@ module Engine
       end
 
       def ability_blocking_step
+        supported_steps = [Step::Tracker, Step::BuyTrain]
         @round.steps.find do |step|
-          # currently, abilities only care about Tracker, the is_a? check could
-          # be expanded to a list of possible classes/modules when needed
-          step.is_a?(Step::Tracker) && !step.passed? && step.active? && step.blocks?
+          # currently, abilities only care about Tracker and BuyTrain. The is_a?
+          # check can be expanded to include more classes/modules when needed
+          supported_steps.any? { |s| step.is_a?(s) } && !step.passed? && step.active? && step.blocks?
         end
       end
 
@@ -2853,6 +2861,10 @@ module Engine
 
       def show_player_percent?(_player)
         true
+      end
+
+      def companies_sort(companies)
+        companies
       end
     end
   end

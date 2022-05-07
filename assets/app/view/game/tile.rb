@@ -74,6 +74,7 @@ module View
         large, normal = @tile.icons.partition(&:large)
         children << render_tile_part(Part::Icons) unless normal.empty?
         children << render_tile_part(Part::LargeIcons) unless large.empty?
+        children << render_tile_part(Part::FutureLabel) if @tile.future_label
 
         children << render_tile_part(Part::Assignments) unless @tile.hex&.assignments&.empty?
         # borders should always be the top layer

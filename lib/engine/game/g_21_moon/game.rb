@@ -445,7 +445,7 @@ module Engine
           @crossed_rift = true
         end
 
-        def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
           return true if tile.name == T_TILE
 
           phase_color_cache ||= @phase.tiles
@@ -1047,6 +1047,11 @@ module Engine
               { text: '10', props: { style: { border: '1px solid' } } },
             ],
           ]
+        end
+
+        def share_flags(shares)
+          step = @round.active_step
+          step.share_flags(shares) if step.respond_to?(:share_flags)
         end
       end
     end

@@ -76,7 +76,7 @@ module Engine
           {
             sym: :k1,
             short_name: 'K1',
-            desc: 'Extension Kit 1 - Suplementary Tiles',
+            desc: 'Extension Kit 1 - Supplementary Tiles',
           },
           {
             sym: :k2,
@@ -132,6 +132,11 @@ module Engine
             sym: :db2,
             short_name: 'DB2',
             desc: 'Dave Berry variant 2: SECR Changes for Unit 1',
+          },
+          {
+            sym: :db3,
+            short_name: 'DB3',
+            desc: 'Dave Berry variant 3: Unit 3 map revision',
           },
         ].freeze
 
@@ -207,6 +212,7 @@ module Engine
           return 'Cannot use both bank options' if optional_rules.include?(:big_bank) && optional_rules.include?(:strict_bank)
           return 'Variant DB1 not useful in a Unit 2 only game' if !units[1] && !units[3] && optional_rules.include?(:db1)
           return 'Variant DB2 is for Unit 1' if !units[1] && optional_rules.include?(:db2)
+          return 'Variant DB3 is for Unit 3' if !units[3] && optional_rules.include?(:db3)
           return 'Unit 4 requires Unit 3' if units4 && !units[3]
 
           nil

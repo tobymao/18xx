@@ -70,6 +70,7 @@ module Engine
               {
                 type: 'train_discount',
                 owner_type: 'corporation',
+                when: 'buy_train',
                 discount: 0.5,
                 trains: %w[2H 4H 6H],
                 count: 1,
@@ -78,6 +79,7 @@ module Engine
               {
                 type: 'train_discount',
                 owner_type: 'corporation',
+                when: 'buy_train',
                 discount: 200,
                 trains: %w[12H],
                 count: 1,
