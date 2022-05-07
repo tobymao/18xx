@@ -95,7 +95,7 @@ module Engine
       end
 
       if price.zero?
-        transfer_shares(bundle, entity)
+        transfer_shares(bundle, entity, allow_president_change: allow_president_change)
       else
         receiver = if (%i[escrow incremental].include?(corporation.capitalization) && bundle.owner.corporation?) ||
                        (bundle.owner.corporation? && !corporation.ipo_is_treasury?) ||
@@ -154,7 +154,7 @@ module Engine
     end
 
     def bank_at_limit?(corporation)
-      percent_of(corporation) >= @game.class::MARKET_SHARE_LIMIT
+      common_percent_of(corporation) >= @game.class::MARKET_SHARE_LIMIT
     end
 
     def transfer_shares(bundle, to_entity,

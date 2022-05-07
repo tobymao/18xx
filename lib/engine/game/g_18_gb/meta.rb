@@ -21,6 +21,13 @@ module Engine
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
           {
+            sym: :second_ed_test,
+            short_name: '2E Playtest changes',
+            title: '2E Playtest changes',
+            desc: 'Play with the proposed extra set of 2E changes (see wiki)',
+            default: true,
+          },
+          {
             sym: :two_player_ew,
             short_name: '2P EW',
             title: '2P East-West Scenario',

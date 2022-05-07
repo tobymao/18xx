@@ -626,6 +626,7 @@ module Engine
         ].freeze
 
         NO_SUBSIDIES = %w[S1 S2 S3 S4 S5 S6 S7].freeze
+        CASH_SUBSIDIES = %w[S12 S13 S14 S15].freeze
 
         SUBSIDIES = [
           # Temporarily commenting out the first two subsidies to guarantee all "interesting" subsidies

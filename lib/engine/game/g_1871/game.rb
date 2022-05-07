@@ -335,7 +335,7 @@ module Engine
 
         # Let the Union Bank owner act for the bank in an operating round
         def acting_for_entity(entity)
-          return entity&.owner unless entity == @union_bank
+          return entity&.owner unless entity&.owner == @union_bank
 
           bank_company = company_by_id('UB')
           bank_company.owner
@@ -652,14 +652,16 @@ module Engine
             return
           end
 
-          new_share_percent = (100 / @peir_shares.size).ceil
+          new_share_percent = (100.0 / @peir_shares.size).round(2)
           @peir.forced_share_percent = new_share_percent
-          @log << "PEIR shares are now worth #{new_share_percent}%"
           peir.share_holders.clear
           @peir_shares.each do |share|
             share.percent = new_share_percent
             peir.share_holders[share.owner] ||= 0
             peir.share_holders[share.owner] += new_share_percent
+          end
+          peir.share_holders.each do |owner, amount|
+            @log << "#{owner.name} now owns #{amount}% of the PEIR"
           end
 
           peir.owner = peir_owner

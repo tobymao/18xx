@@ -32,6 +32,13 @@ module Engine
       shares_by_corporation[corporation].sum(&:percent)
     end
 
+    # Same as percent_of, except preferred shares don't count
+    def common_percent_of(corporation)
+      return 0 unless corporation
+
+      shares_by_corporation[corporation].reject(&:preferred).sum(&:percent)
+    end
+
     def presidencies
       @shares_by_corporation.select { |_c, shares| shares.any?(&:president) }.keys
     end

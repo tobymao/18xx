@@ -178,6 +178,15 @@ module Engine
       end
       @tile.icons = @tile.icons.select(&:preprinted)
 
+      if @tile.future_label
+        if @tile.future_label&.color != tile.color
+          @tile.future_label.sticker = tile.future_label
+          tile.future_label = @tile.future_label
+        end
+        # restore old tile's future_label
+        @tile.future_label = @tile.future_label.sticker
+      end
+
       tile.reservations = @tile.reservations
       @tile.reservations = []
 
