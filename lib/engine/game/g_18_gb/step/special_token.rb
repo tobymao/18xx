@@ -7,6 +7,12 @@ module Engine
     module G18GB
       module Step
         class SpecialToken < Engine::Step::SpecialToken
+          def actions(entity)
+            return [] if @game.end_game_restrictions_active?
+
+            super
+          end
+
           def available_tokens(_entity)
             super(current_entity)
           end
@@ -18,6 +24,12 @@ module Engine
             return [token, nil] unless special_ability
 
             corporation = token.corporation
+
+            unless special_ability.from_owner
+              token = Engine::Token.new(corporation)
+              corporation.tokens << token
+            end
+
             if @game.token_graph_for_entity(corporation).reachable_hexes(corporation)[hex]
               token.price = special_ability.price(token)
             elsif special_ability.teleport_price
@@ -28,6 +40,7 @@ module Engine
           end
 
           def switch_for_expensive_token(token)
+            return token if @game.second_ed_playtest?
             return token unless token.price.zero?
 
             current_entity.tokens.reject(&:used).max_by(&:price)
