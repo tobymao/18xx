@@ -23,7 +23,7 @@ module Engine
       end
 
       def ability_timing
-        %w[buying_train owning_corp_or_turn]
+        %w[%current_step% buying_train owning_corp_or_turn]
       end
 
       def room?(entity, _shell = nil)

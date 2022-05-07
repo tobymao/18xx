@@ -2740,10 +2740,11 @@ module Engine
       end
 
       def ability_blocking_step
+        supported_steps = [Step::Tracker, Step::BuyTrain]
         @round.steps.find do |step|
-          # currently, abilities only care about Tracker, the is_a? check could
-          # be expanded to a list of possible classes/modules when needed
-          step.is_a?(Step::Tracker) && !step.passed? && step.active? && step.blocks?
+          # currently, abilities only care about Tracker and BuyTrain. The is_a?
+          # check can be expanded to include more classes/modules when needed
+          supported_steps.any? { |s| step.is_a?(s) } && !step.passed? && step.active? && step.blocks?
         end
       end
 
