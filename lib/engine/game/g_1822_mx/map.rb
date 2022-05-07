@@ -141,7 +141,7 @@ module Engine
           green: {
             ['N25'] =>
               'city=revenue:30,slots:1;city=revenue:30,slots:1;city=revenue:30,slots:1;'\
-              'path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:4,b:_1;path=a:3,b:_2'\
+              'path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:4,b:_1;path=a:3,b:_2;'\
               'label=Y',
           },
           gray: {

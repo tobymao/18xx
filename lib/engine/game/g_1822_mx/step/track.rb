@@ -90,6 +90,26 @@ module Engine
 
             super
           end
+
+          def update_token!(action, entity, tile, old_tile)
+            tile.cities.each do |c|
+              present_corps = []
+              tokens_to_delete = []
+              c.tokens.compact.each do |t|
+                if present_corps.include?(t.corporation)
+                  tokens_to_delete << t
+                else
+                  present_corps << t.corporation
+                end
+              end
+              tokens_to_delete.compact.each do |t|
+                @log << "Extra token for #{t.corporation.name} is removed"
+                t.destroy!
+              end
+            end
+
+            super
+          end
         end
       end
     end
