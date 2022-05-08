@@ -1329,7 +1329,9 @@ module Engine
         end
 
         def city_tokened_by?(city, entity)
-          return @graph.connected_nodes(entity)[city] if entity.id == 'C&P'
+          if entity.id == 'C&P' && @round.current_operator == entity
+            return true if @round.laid_hexes.include?(city.hex)
+          end
 
           super
         end
