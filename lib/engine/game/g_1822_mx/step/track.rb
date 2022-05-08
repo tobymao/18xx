@@ -8,11 +8,10 @@ module Engine
       module Step
         class Track < Engine::Game::G1822::Step::Track
           def setup
-            if current_entity.id == 'NDEM'
-              @ndem = @game.corporation_by_id('NDEM')
+            if current_entity == @game.ndem
               @ndem_tiles_laid = []
               @ndem_tile_layers = @game.players.select do |p|
-                @ndem.player_share_holders.include?(p) && @ndem.player_share_holders[p].positive?
+                @game.ndem.player_share_holders.include?(p) && @game.ndem.player_share_holders[p].positive?
               end
               if @ndem_tile_layers.length.positive?
                 @ndem_route_runner = @ndem_tile_layers[0]
@@ -25,19 +24,19 @@ module Engine
           end
 
           def actions(entity)
-            return [] if @ndem && @ndem_tile_layers.empty?
+            return [] if current_entity == @game.ndem && @ndem_tile_layers.empty?
 
             super
           end
 
           def active?
-            return super unless @ndem
+            return super unless current_entity == @game.ndem
 
             !@ndem_tile_layers.empty? || !acted
           end
 
           def pass!
-            if @ndem
+            if current_entity == @game.ndem
               @ndem_tiles_laid << @round.laid_hexes
               @ndem_tile_layers.shift
               if @ndem_tile_layers.empty?
@@ -56,7 +55,7 @@ module Engine
           end
 
           def process_lay_tile(action)
-            @log << "Tile placement for NDEM by #{@game.ndem_acting_player.name}" if @ndem
+            @log << "Tile placement for NDEM by #{@game.ndem_acting_player.name}" if current_entity == @game.ndem
             action.tile.label = 'T' if action.hex.tile.label.to_s == 'T'
             if action.tile.id == 'BC-0'
               @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
@@ -109,6 +108,10 @@ module Engine
             end
 
             super
+          end
+
+          def home_token_counts_as_tile_lay?(_entity)
+            false
           end
         end
       end

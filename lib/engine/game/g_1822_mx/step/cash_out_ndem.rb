@@ -50,7 +50,7 @@ module Engine
           end
 
           def description
-            '' # MHA
+            'Cashing out NdeM'
           end
         end
       end
