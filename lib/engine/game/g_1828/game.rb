@@ -1517,7 +1517,7 @@ module Engine
         end
 
         def check_connected(route, corporation)
-          if route_includes_coalfields?(route) && !coal_marker?(current_entity)
+          if route_includes_coalfields?(route) && !coal_marker?(corporation)
             raise GameError, 'route to Virginia Coalfields requires Coal Marker'
           end
 
