@@ -1514,16 +1514,31 @@ module Engine
           new_market_price
         end
 
-        def check_distance(route, visits)
+        def check_connected(route, corporation)
           if route_includes_coalfields?(route) && !coal_marker?(current_entity)
-            raise GameError, 'Cannot run to Virginia Coalfields without a Coal Marker'
+            raise GameError, 'route to Virginia Coalfields requires Coal Marker'
           end
+
+          raise GameError, 'route must include laid tile' if corporation.id == 'C&P' && !route_uses_tile_lay(route)
 
           super
         end
 
         def route_includes_coalfields?(route)
-          route.connection_hexes.flatten.include?(VA_COALFIELDS_HEX)
+          route.connection_hexes.flatten.include?(self.class::VA_COALFIELDS_HEX)
+        end
+
+        def route_uses_tile_lay(route)
+          stops = route.visited_stops
+          tile = @round.laid_hexes.first&.tile
+
+          return !(stops & tile.nodes).empty? unless tile.nodes.empty?
+
+          tile.paths.each do |path|
+            path.walk { |p| return true unless (stops & p.nodes).empty? }
+          end
+
+          false
         end
       end
     end
