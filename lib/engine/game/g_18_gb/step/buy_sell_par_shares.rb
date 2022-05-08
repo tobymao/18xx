@@ -42,7 +42,11 @@ module Engine
           end
 
           def description
-            'Sell then Buy Shares, or Convert Corporations'
+            if @game.end_game_restrictions_active?
+              'Buy Shares or Convert Corporations'
+            else
+              'Sell then Buy Shares, or Convert Corporations'
+            end
           end
 
           def abilities(entity, **kwargs, &block)
