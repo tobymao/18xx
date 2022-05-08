@@ -1329,9 +1329,7 @@ module Engine
         end
 
         def city_tokened_by?(city, entity)
-          if entity.id == 'C&P' && @round.current_operator == entity
-            return true if @round.laid_hexes.include?(city.hex)
-          end
+          return true if entity.id == 'C&P' && @round.current_operator == entity && @round.laid_hexes.include?(city.hex)
 
           super
         end
