@@ -1886,6 +1886,10 @@ module Engine
           entity.id == self.class::COMPANY_MTONR
         end
 
+        def home_token_counts_as_tile_lay?(entity)
+          entity.id == self.class::MINOR_14_ID
+        end
+
         def game_end_check
           # Once the game end has been determined, it's set in stone
           @game_end_reason ||= compute_game_end

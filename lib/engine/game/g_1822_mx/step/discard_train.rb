@@ -9,10 +9,10 @@ module Engine
         class DiscardTrain < Engine::Game::G1822::Step::DiscardTrain
           def trains(corporation)
             if @game.extra_train_pullman_count(corporation) > 1
-              return corporation.trains.select { |t| @game.extra_train_pullman?(t) }
+              corporation.trains.select { |t| @game.extra_train_pullman?(t) } + super
+            else
+              super
             end
-
-            super
           end
         end
       end

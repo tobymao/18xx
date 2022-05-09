@@ -380,10 +380,7 @@ module Engine
           # Replace token
           city = hex_by_id(corporation.coordinates).tile.cities[corporation.city]
           city.remove_reservation!(corporation)
-          # Use exchange_token instead of place_token because we don't want to do the
-          # error checking - we are allowed to have two NdeM tokens in the same city
-          # which would be prevented by place_token
-          city.exchange_token(ndem.find_token_by_type)
+          city.place_token(ndem, ndem.find_token_by_type, check_tokenable: false)
           graph.clear
 
           # Add a stock certificate
@@ -629,6 +626,10 @@ module Engine
         end
 
         def must_be_on_terrain?(_entity)
+          false
+        end
+
+        def home_token_counts_as_tile_lay?(_entity)
           false
         end
 

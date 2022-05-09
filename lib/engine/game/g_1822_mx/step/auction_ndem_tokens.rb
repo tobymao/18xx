@@ -259,11 +259,13 @@ module Engine
           end
 
           def auto_actions(entity)
-            return [Engine::Action::Pass.new(entity)] if @remaining_choosers.empty?
-
-            if !@token_up_for_bid
-              return [Engine::Action::Pass.new(entity)] unless player_can_purchase_any_token?(@remaining_choosers[0])
-            elsif !player_can_purchase_token?(@remaining_bidders[0], @token_up_for_bid) && !auction_over?
+            # Pass under the following conditions:
+            # - There are no players left to choose a token for auction
+            # - There is no token up for bid, and the current chooser cannot purchase any remaining tokens
+            # - There is a token up for bid, the next bidder cannot purchase it, but the auction is not over
+            if @remaining_choosers.empty? ||
+              (!@token_up_for_bid && !player_can_purchase_any_token?(@remaining_choosers[0])) ||
+              (@token_up_for_bid && !player_can_purchase_token?(@remaining_bidders[0], @token_up_for_bid) && !auction_over?)
               [Engine::Action::Pass.new(entity)]
             end
           end

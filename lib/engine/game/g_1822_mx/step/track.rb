@@ -109,10 +109,6 @@ module Engine
 
             super
           end
-
-          def home_token_counts_as_tile_lay?(_entity)
-            false
-          end
         end
       end
     end

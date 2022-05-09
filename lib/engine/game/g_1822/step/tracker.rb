@@ -10,13 +10,9 @@ module Engine
 
         def can_lay_tile?(entity)
           # Special case for minor 14, the first OR its hometoken placement counts as tile lay
-          return false if entity.corporation? && home_token_counts_as_tile_lay?(entity) && !entity.operated?
+          return false if entity.corporation? && @game.home_token_counts_as_tile_lay?(entity) && !entity.operated?
 
           super
-        end
-
-        def home_token_counts_as_tile_lay?(entity)
-          entity.id == @game.class::MINOR_14_ID
         end
 
         def check_track_restrictions!(entity, old_tile, new_tile)
