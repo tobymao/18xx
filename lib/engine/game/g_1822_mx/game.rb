@@ -479,6 +479,11 @@ module Engine
           privates.delete(p1)
           privates.unshift(p1)
 
+          # Move Minor 18 to the end so that it's not in the initial auction
+          m18 = minors.find { |c| c.id == 'M18' }
+          minors.delete(m18)
+          minors.push(m18)
+
           # Clear and add the companies in the correct randomize order sorted by type
           @companies.clear
           @companies.concat(minors)
