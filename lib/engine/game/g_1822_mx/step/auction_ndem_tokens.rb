@@ -31,9 +31,8 @@ module Engine
             # Don't need to make sure NdeM has tokens.  It starts with one.
             @available_ndem_tokens = @game.ndem.tokens.select(&:used).to_h { |t| [t, ndem_token_cost(t)] }
             @player_step_order = @game.players.dup
-
             @token_up_for_bid = nil
-            @remaining_choosers = @player_step_order.select { |p| player_can_purchase_any_token?(p) }
+            @remaining_choosers = @player_step_order.dup
           end
 
           def ndem_closing?
@@ -146,14 +145,15 @@ module Engine
           end
 
           def process_remove_token(action)
-            @token_up_for_bid = action.city.tokens[action.slot]
-            unless player_can_purchase_token?(@remaining_choosers[0], @token_up_for_bid)
-              raise GameError, "#{@remaining_choosers} does not have a company that can purchase token at #{action.city.hex.id}"
+            unless player_can_purchase_token?(@remaining_choosers[0], action.city.tokens[action.slot])
+              raise GameError,
+                    "#{@remaining_choosers[0].name} does not have a company that can purchase a token at #{action.city.hex.id}"
             end
+
+            @token_up_for_bid = action.city.tokens[action.slot]
 
             @game.log << "#{@remaining_choosers[0].name} has chosen NDEM token at #{action.city.hex.id} for auction"
             @remaining_bidders = get_player_list(start_player: @remaining_choosers[0])
-            @remaining_bidders.select! { |p| player_can_purchase_token?(p, @token_up_for_bid) }
             @current_high_bid = 0
             @current_high_bidder = nil
             @auction_winner = nil
@@ -201,7 +201,6 @@ module Engine
             @available_ndem_tokens[@token_up_for_bid] = @current_high_bid + min_increment
             @current_high_bidder = @remaining_bidders[0]
             @remaining_bidders.append(@remaining_bidders.shift)
-            @remaining_bidders.select! { |p| player_can_purchase_token?(p, @token_up_for_bid) }
             @game.ndem_acting_player = @remaining_bidders[0] unless @remaining_bidders.empty?
             check_auction_over
           end
@@ -213,9 +212,12 @@ module Engine
             check_auction_over
           end
 
+          def auction_over?
+            @remaining_bidders.size.zero? || (@remaining_bidders.size == 1 && @remaining_bidders[0] == @current_high_bidder)
+          end
+
           def check_auction_over
-            return if @remaining_bidders.size > 1
-            return if @remaining_bidders.size == 1 && @remaining_bidders[0] != @current_high_bidder
+            return unless auction_over?
 
             @log << "#{@current_high_bidder.name} wins the auction"
             @auction_winner = @current_high_bidder
@@ -253,11 +255,19 @@ module Engine
             @available_ndem_tokens.delete(@token_up_for_bid)
             @token_up_for_bid = nil
             @player_step_order.append(@player_step_order.shift)
-            @remaining_choosers = @player_step_order.select { |p| player_can_purchase_any_token?(p) }
+            @remaining_choosers = @player_step_order.dup
           end
 
           def auto_actions(entity)
-            return [Engine::Action::Pass.new(entity)] if @remaining_choosers.empty?
+            # Pass under the following conditions:
+            # - There are no players left to choose a token for auction
+            # - There is no token up for bid, and the current chooser cannot purchase any remaining tokens
+            # - There is a token up for bid, the next bidder cannot purchase it, but the auction is not over
+            if @remaining_choosers.empty? ||
+              (!@token_up_for_bid && !player_can_purchase_any_token?(@remaining_choosers[0])) ||
+              (@token_up_for_bid && !player_can_purchase_token?(@remaining_bidders[0], @token_up_for_bid) && !auction_over?)
+              [Engine::Action::Pass.new(entity)]
+            end
           end
         end
       end

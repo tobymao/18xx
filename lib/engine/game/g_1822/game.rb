@@ -700,13 +700,16 @@ module Engine
         end
 
         def end_game!
-          company = company_by_id(self.class::COMPANY_OSTH)
-          if company && @tax_haven.value.positive?
-            # Make sure tax havens value is correct
-            company.value = @tax_haven.value
-          end
-
+          finalize_end_game_values
           super
+        end
+
+        def finalize_end_game_values
+          company = company_by_id(self.class::COMPANY_OSTH)
+          return unless company && @tax_haven.value.positive?
+
+          # Make sure tax havens value is correct
+          company.value = @tax_haven.value
         end
 
         def entity_can_use_company?(entity, company)
@@ -1875,8 +1878,16 @@ module Engine
           entity.id == self.class::COMPANY_BER
         end
 
+        def must_be_on_terrain?(entity)
+          entity.id == self.class::COMPANY_EGR
+        end
+
         def must_remove_town?(entity)
           entity.id == self.class::COMPANY_MTONR
+        end
+
+        def home_token_counts_as_tile_lay?(entity)
+          entity.id == self.class::MINOR_14_ID
         end
 
         def game_end_check

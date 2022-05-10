@@ -295,7 +295,7 @@ module Engine
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
+            G1822MX::Step::DiscardTrain,
             G1822MX::Step::SpecialChoose,
             G1822MX::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -307,7 +307,7 @@ module Engine
             G1822::Step::BuyTrain,
             G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
+            G1822MX::Step::DiscardTrain,
             G1822::Step::IssueShares,
             G1822MX::Step::CashOutNdem,
             G1822MX::Step::AuctionNdemTokens,
@@ -380,7 +380,7 @@ module Engine
           # Replace token
           city = hex_by_id(corporation.coordinates).tile.cities[corporation.city]
           city.remove_reservation!(corporation)
-          city.place_token(ndem, ndem.find_token_by_type)
+          city.place_token(ndem, ndem.find_token_by_type, check_tokenable: false)
           graph.clear
 
           # Add a stock certificate
@@ -528,7 +528,14 @@ module Engine
         def operating_order
           ndem, others = @corporations.select(&:floated?).sort.partition { |c| c.id == 'NDEM' }
           minors, majors = others.sort.partition { |c| c.type == :minor }
-          minors + majors + ndem
+          case @ndem_state
+          when :closing
+            ndem + minors + majors
+          when :closed
+            minors + majors
+          else
+            minors + majors + ndem
+          end
         end
 
         def active_players
@@ -616,6 +623,14 @@ module Engine
 
         def can_upgrade_one_phase_ahead?(entity)
           entity.id == 'P8'
+        end
+
+        def must_be_on_terrain?(_entity)
+          false
+        end
+
+        def home_token_counts_as_tile_lay?(_entity)
+          false
         end
 
         def company_ability_extra_track?(company)
@@ -715,8 +730,28 @@ module Engine
         end
 
         def ndem
-          corporation_by_id('NDEM')
+          @ndem ||= corporation_by_id('NDEM')
         end
+
+        def extra_train_pullman_count(corporation)
+          corporation.trains.count { |train| extra_train_pullman?(train) }
+        end
+
+        def extra_train_pullman?(train)
+          train.name == self.class::EXTRA_TRAIN_PULLMAN
+        end
+
+        def crowded_corps
+          @crowded_corps ||= corporations.select do |c|
+            trains = c.trains.count { |t| !extra_train?(t) }
+            crowded = trains > train_limit(c)
+            crowded |= extra_train_permanent_count(c) > 1
+            crowded |= extra_train_pullman_count(c) > 1
+            crowded
+          end
+        end
+
+        def finalize_end_game_values; end
       end
     end
   end

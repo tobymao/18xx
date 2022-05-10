@@ -10,7 +10,7 @@ module Engine
 
         def can_lay_tile?(entity)
           # Special case for minor 14, the first OR its hometoken placement counts as tile lay
-          return false if entity.corporation? && entity.id == @game.class::MINOR_14_ID && !entity.operated?
+          return false if entity.corporation? && @game.home_token_counts_as_tile_lay?(entity) && !entity.operated?
 
           super
         end
