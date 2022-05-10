@@ -272,6 +272,7 @@ module Engine
       @junction&.clear!
       @_paths = nil
       @_exits = nil
+      @_exit_count = nil
       @preferred_city_town_edges = nil
       self
     end
@@ -286,6 +287,21 @@ module Engine
 
     def exits
       @_exits ||= @edges.map { |e| rotate(e.num, @rotation) }.uniq
+    end
+
+    def converging_exit?(num)
+      exit_count[num] > 1
+    end
+
+    def exit_count
+      @_exit_count ||= compute_exit_count
+    end
+
+    def compute_exit_count
+      count = []
+      ALL_EDGES.each { |e| count[e] = 0 }
+      @edges.each { |edge| count[rotate(edge.num, @rotation)] += 1 }
+      count
     end
 
     def ignore_gauge_walk=(val)

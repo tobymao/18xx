@@ -33,7 +33,7 @@ module Engine
       # visited_paths: a hashset of visited Paths
       # counter: a hash tracking edges and junctions to avoid reuse
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
-      # tile_type: if :lawson don't undo visited nodes
+      # converging_path: When true, some predecessor path was part of a converging switch
       #
       # This method recursively bubbles up yielded values from nested Node::Walk and Path::Walk calls
       def walk(
@@ -43,7 +43,7 @@ module Engine
         skip_paths: nil,
         counter: Hash.new(0),
         skip_track: nil,
-        tile_type: :normal,
+        converging_path: true,
         &block
       )
         return if visited[self]
@@ -58,8 +58,8 @@ module Engine
             visited: visited_paths,
             skip_paths: skip_paths,
             counter: counter,
-            tile_type: tile_type,
-          ) do |path, vp, ct|
+            converging: converging_path,
+          ) do |path, vp, ct, converging|
             ret = yield path, vp, visited
             next if ret == :abort
             next if path.terminal?
@@ -75,14 +75,14 @@ module Engine
                 visited_paths: vp,
                 skip_track: skip_track,
                 skip_paths: skip_paths,
-                tile_type: tile_type,
+                converging_path: converging_path || converging,
                 &block
               )
             end
           end
         end
 
-        visited.delete(self) unless tile_type == :lawson
+        visited.delete(self) if converging_path
       end
     end
   end

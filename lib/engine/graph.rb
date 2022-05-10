@@ -162,7 +162,7 @@ module Engine
         local_nodes = {}
 
         node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
-                  skip_paths: skip_paths, tile_type: @game.class::TILE_TYPE) do |path, _, _|
+                  skip_paths: skip_paths, converging_path: false) do |path, _, _|
           next if paths[path]
 
           paths[path] = true
