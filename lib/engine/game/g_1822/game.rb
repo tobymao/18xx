@@ -529,13 +529,6 @@ module Engine
 
         attr_accessor :bidding_token_per_player, :player_debts
 
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
-          upgrades = super
-          return upgrades unless tile_manifest
-
-          upgrades
-        end
-
         def bank_sort(corporations)
           corporations.reject { |c| c.type == :minor }.sort_by(&:name)
         end
