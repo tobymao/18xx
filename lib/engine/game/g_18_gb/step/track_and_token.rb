@@ -23,6 +23,16 @@ module Engine
             actions
           end
 
+          def description
+            @game.end_game_restrictions_active? ? 'Lay Track' : 'Place a Token or Lay Track'
+          end
+
+          def pass_description
+            verb = @acted ? 'Done' : 'Skip'
+            actions = @game.end_game_restrictions_active? ? 'Track' : 'Token/Track'
+            "#{verb} (#{actions})"
+          end
+
           def can_place_token?(entity)
             return false if @game.end_game_restrictions_active?
 

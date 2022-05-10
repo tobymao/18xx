@@ -42,7 +42,11 @@ module Engine
           end
 
           def description
-            'Sell then Buy Shares, or Convert Corporations'
+            if @game.end_game_restrictions_active?
+              'Buy Shares or Convert Corporations'
+            else
+              'Sell then Buy Shares, or Convert Corporations'
+            end
           end
 
           def abilities(entity, **kwargs, &block)
@@ -129,13 +133,8 @@ module Engine
             corporation&.type == :'5-share' && corporation&.president?(player) && corporation&.operated?
           end
 
-          def can_sell_any?(entity)
-            return false if @game.end_game_restrictions_active?
-
-            super
-          end
-
           def can_sell?(entity, bundle)
+            return if @game.end_game_restrictions_active?
             return if converted?
             return super unless @game.class::PRESIDENT_SALES_TO_MARKET
             return unless bundle
