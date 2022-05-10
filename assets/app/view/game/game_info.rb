@@ -558,7 +558,87 @@ module View
           ]),
         ])
 
+        # show target book/stars for each share price
+        status << h(:h3, @game.share_card_description)
+        sorted_prices = @game.prices.keys.sort
+        share_cards = sorted_prices.map { |p| share_card(@game.prices[p]) }
+        status << h(:div, share_cards)
+
         status
+      end
+
+      def share_card(price)
+        share_card_props = {
+          style: {
+            display: 'inline-block',
+            backgroundColor: 'white',
+            color: 'black',
+            border: '1px solid',
+            borderRadius: '5px',
+            padding: '5px',
+            margin: '0 0 5px 5px',
+          },
+        }
+
+        price_color = if price.price.zero?
+                        'red'
+                      elsif price.end_game_trigger?
+                        'darkgreen'
+                      else
+                        'black'
+                      end
+
+        price_props = {
+          style: {
+            display: 'inline-block',
+            color: price_color,
+            fontSize: '200%',
+            width: '50%',
+          },
+        }
+
+        max_div_props = {
+          style: {
+            display: 'inline-block',
+            backgroundColor: 'lightgray',
+            fontSize: '70%',
+            width: '30%',
+            margin: '0 0 0 0.5rem',
+          },
+        }
+
+        table_props = {
+          style: {
+            fontSize: '70%',
+          },
+        }
+
+        th_props = {
+          style: {
+            backgroundColor: 'lightgray',
+          },
+        }
+
+        children = []
+        price_info = []
+        price_info << h(:div, price_props, price.price)
+        price_info << h(:div, max_div_props, "Max Div: #{@game.format_currency((price.price / 3).to_i)}")
+        children << h(:div, price_info)
+
+        rows = [h(:tr, [h(:th, th_props, 'Shares'), h(:th, th_props, 'Target')])]
+        @game.share_card_array(price).each do |r|
+          rows << h(:tr, [
+            h(:td, r[0]),
+            h(:td, r[1]),
+          ])
+        end
+        children << h(:div, [
+          h(:table, table_props, [
+            h(:tbody, rows),
+          ]),
+        ])
+
+        h(:div, share_card_props, children)
       end
     end
   end

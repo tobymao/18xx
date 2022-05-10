@@ -53,7 +53,7 @@ module Engine
 
             corporation.spend(total, player)
             @log << "#{player.name} has #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"\
-                    " and recieves #{@game.format_currency(total)}"
+                    " and receives #{@game.format_currency(total)}"
           end
 
           def payout_market(corporation, amount)
@@ -65,7 +65,7 @@ module Engine
             total = num_shares * amount
             corporation.spend(total, @game.bank)
             @log << "The Market has #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"\
-                    " and recieves #{@game.format_currency(total)}"
+                    " and receives #{@game.format_currency(total)}"
           end
 
           def help_str(max)

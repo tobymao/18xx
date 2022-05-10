@@ -11,7 +11,7 @@ module Engine
             return [] if !entity.operator? || entity.runnable_trains.empty? || !@game.can_run_route?(entity)
 
             actions = %w[run_routes]
-            actions << 'choose' if can_move?(entity)
+            actions << 'choose' if can_move?(entity) && !entity.receivership?
             actions
           end
 

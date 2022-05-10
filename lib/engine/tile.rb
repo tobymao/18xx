@@ -15,10 +15,9 @@ module Engine
     include Config::Tile
 
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
-                  :name, :opposite, :reservations, :upgrades, :color
-    attr_reader :borders, :cities, :edges, :junction, :nodes, :labels,
-                :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
-                :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
+                  :name, :opposite, :reservations, :upgrades, :color, :future_label
+    attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
+                :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -120,6 +119,20 @@ module Engine
                               loc: params['loc'])
         cache << city
         city
+      when 'pass'
+        pass = Part::Pass.new(params['revenue'],
+                              slots: params['slots'],
+                              groups: params['groups'],
+                              hide: params['hide'],
+                              visit_cost: params['visit_cost'],
+                              route: params['route'],
+                              format: params['format'],
+                              boom: params['boom'],
+                              loc: params['loc'],
+                              color: params['color'],
+                              size: params['size'])
+        cache << pass
+        pass
       when 'town'
         town = Part::Town.new(params['revenue'],
                               groups: params['groups'],
@@ -174,6 +187,8 @@ module Engine
         Part::Frame.new(params['color'], params['color2'])
       when 'stripes'
         Part::Stripes.new(params['color'])
+      when 'future_label'
+        Part::FutureLabel.new(params['label'], params['color'])
       end
     end
 
@@ -220,6 +235,7 @@ module Engine
       @reservation_blocks = opts[:reservation_blocks] || false
       @unlimited = opts[:unlimited] || false
       @labels = []
+      @future_label = nil
       @opposite = nil
       @hidden = opts[:hidden] || false
       @id = "#{@name}-#{@index}"
@@ -573,6 +589,8 @@ module Engine
           @frame = part
         elsif part.stripes?
           @stripes = part
+        elsif part.future_label?
+          @future_label = part
         else
           raise "Part #{part} not separated."
         end

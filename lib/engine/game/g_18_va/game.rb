@@ -796,6 +796,13 @@ module Engine
           @corporations << corporation
         end
 
+        def reset_corporation(corporation)
+          new_corp = super
+          # Need to reconvert 5-share corporations if the forced conversions event happened. Brown tiles are a good signal.
+          convert(new_corp) if new_corp.type == :five_share && @phase.tiles.include?(:brown)
+          new_corp
+        end
+
         def convert(corporation)
           before = corporation.total_shares
           shares = @_shares.values.select { |share| share.corporation == corporation }

@@ -16,7 +16,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with one coal mine marker. When placing a yellow '\
                   'tile in a coal hex pointing to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes can be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  May not start or end a route at a coal mine.',
             sym: 'P1',
@@ -94,10 +94,10 @@ module Engine
             revenue: 0,
             desc: 'Comes with one ore marker. When placing a yellow '\
                   'tile in a mining hex pointing to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  A tile lay action may be used to increase the revenue bonus to $20 in phase 3. '\
-                  '  May not start or end a route at an ore mine.',
+                  'token to avoid $15 terrain fee. Marked yellow hexes cannot be '\
+                  'upgraded. Hexes pay $10 extra revenue and do not count as a '\
+                  'stop. A tile upgrade action may be used to increase the revenue bonus to $20 in phase 3. '\
+                  ' May not start or end a route at an ore mine.',
             sym: 'P4',
             abilities: [
               {
@@ -343,7 +343,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with two coal mine markers. When placing a yellow '\
                   'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes can be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  May not start or end a route at a coal mine.',
             sym: 'P18',
@@ -481,10 +481,10 @@ module Engine
             revenue: 0,
             desc: 'Comes with two ore markers. When placing a yellow '\
                   'tile in a mining hex pointing to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  A tile lay action may be used to increase the revenue bonus to $20 in phase 3. '\
-                  '  May not start or end a route at an ore mine.',
+                  'token to avoid $15 terrain fee. Marked yellow hexes cannot be '\
+                  'upgraded. Hexes pay $10 extra revenue and do not count as a '\
+                  'stop. A tile upgrade action may be used to increase the revenue bonus to $20 in phase 3. '\
+                  ' May not start or end a route at an ore mine.',
             sym: 'P24',
             abilities: [
               {
@@ -532,7 +532,7 @@ module Engine
                   'revenue center requirement for coal, ore, and oil markers and can receive bridge tokens. Rural junctions '\
                   'are not towns and do not count against the number of stops for a train and furthermore they may not be the '\
                   'start or end of a route. Rural junctions may never be upgraded; a train may not run through the same rural '\
-                  'junction twice',
+                  'junction twice. Rural junctions may not be placed next to each other.',
             sym: 'P26',
             abilities: [
               {
@@ -581,7 +581,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with three coal mine markers. When placing a yellow '\
                   'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes can be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
                   'stop.  May not start or end a route at a coal mine.',
             sym: 'P28',
@@ -626,6 +626,7 @@ module Engine
         ].freeze
 
         NO_SUBSIDIES = %w[S1 S2 S3 S4 S5 S6 S7].freeze
+        CASH_SUBSIDIES = %w[S12 S13 S14 S15].freeze
 
         SUBSIDIES = [
           # Temporarily commenting out the first two subsidies to guarantee all "interesting" subsidies

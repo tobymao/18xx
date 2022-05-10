@@ -23,7 +23,10 @@ module Engine
           end
 
           def can_buy_train?(entity, _shell = nil)
-            @game.pullmans_available? && entity.runnable_trains.none? { |t| @game.pullman_train?(t) }
+            @game.pullmans_available? &&
+              entity.trains.none? { |t| @game.pullman_train?(t) } &&
+              @game.num_corp_trains(entity) < @game.train_limit(entity) &&
+              super
           end
 
           def buyable_trains(entity)

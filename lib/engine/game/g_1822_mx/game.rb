@@ -13,7 +13,7 @@ module Engine
         include G1822MX::Entities
         include G1822MX::Map
 
-        attr_accessor :ndem_acting_player, :number_ndem_shares
+        attr_accessor :ndem_acting_player, :number_ndem_shares, :ndem_state
 
         CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
 
@@ -49,6 +49,7 @@ module Engine
 
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
+        EXTRA_TRAINS = %w[2P P+ LP 3/2P].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP 3/2P].freeze
         PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
@@ -227,6 +228,9 @@ module Engine
               {
                 'type' => 'phase_revenue',
               },
+              {
+                'type' => 'close_ndem',
+              },
             ],
           },
           {
@@ -291,7 +295,7 @@ module Engine
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
+            G1822MX::Step::DiscardTrain,
             G1822MX::Step::SpecialChoose,
             G1822MX::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -303,8 +307,10 @@ module Engine
             G1822::Step::BuyTrain,
             G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
+            G1822MX::Step::DiscardTrain,
             G1822::Step::IssueShares,
+            G1822MX::Step::CashOutNdem,
+            G1822MX::Step::AuctionNdemTokens,
           ], round_num: round_num)
         end
 
@@ -351,12 +357,11 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          entity.trains.empty? && entity.id != 'NDEM'
+          entity.id != 'NDEM' && super
         end
 
         def sorted_corporations
           available_corporations = super
-          ndem = corporation_by_id('NDEM')
           available_corporations << ndem unless available_corporations.include?(ndem)
           available_corporations
         end
@@ -371,12 +376,11 @@ module Engine
           @log << "-- #{company.sym} is removed from the game and replaced with NdeM"
 
           corporation = corporation_from_company(company)
-          ndem = corporation_by_id('NDEM')
 
           # Replace token
           city = hex_by_id(corporation.coordinates).tile.cities[corporation.city]
           city.remove_reservation!(corporation)
-          city.place_token(ndem, ndem.find_token_by_type)
+          city.place_token(ndem, ndem.find_token_by_type, check_tokenable: false)
           graph.clear
 
           # Add a stock certificate
@@ -389,7 +393,6 @@ module Engine
 
         def setup_ndem
           @number_ndem_shares = 3
-          ndem = corporation_by_id('NDEM')
 
           # Make the NDEM shares not count against the cert limit and move them to the bank pool
           ndem.shares_by_corporation[ndem].each { |share| share.counts_for_limit = false }
@@ -411,11 +414,12 @@ module Engine
           ndem.ipoed = true
           ndem.owner = @share_pool # Not clear this is needed
           after_par(ndem) # Not clear this is needed
+
+          @ndem_state = :open
         end
 
         def send_train_to_ndem(train)
           depot.remove_train(train)
-          ndem = corporation_by_id('NDEM')
           phase.next! while phase.next_on.include?(train.sym) # Also trigger events
           train.events.each do |event|
             send("event_#{event['type']}!")
@@ -506,6 +510,15 @@ module Engine
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
 
+        def event_close_ndem!
+          @log << '-- Event: Ndem privatizing --'
+          @ndem_state = :closing
+          return unless @round.is_a?(Engine::Round::Operating)
+
+          ndem = @round.entities.pop
+          @round.entities.insert(@round.entity_index + 1, ndem)
+        end
+
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           return super unless bundle.corporation == corporation_by_id('NDEM')
 
@@ -515,7 +528,14 @@ module Engine
         def operating_order
           ndem, others = @corporations.select(&:floated?).sort.partition { |c| c.id == 'NDEM' }
           minors, majors = others.sort.partition { |c| c.type == :minor }
-          minors + majors + ndem
+          case @ndem_state
+          when :closing
+            ndem + minors + majors
+          when :closed
+            minors + majors
+          else
+            minors + majors + ndem
+          end
         end
 
         def active_players
@@ -603,6 +623,14 @@ module Engine
 
         def can_upgrade_one_phase_ahead?(entity)
           entity.id == 'P8'
+        end
+
+        def must_be_on_terrain?(_entity)
+          false
+        end
+
+        def home_token_counts_as_tile_lay?(_entity)
+          false
         end
 
         def company_ability_extra_track?(company)
@@ -700,6 +728,30 @@ module Engine
 
           super
         end
+
+        def ndem
+          @ndem ||= corporation_by_id('NDEM')
+        end
+
+        def extra_train_pullman_count(corporation)
+          corporation.trains.count { |train| extra_train_pullman?(train) }
+        end
+
+        def extra_train_pullman?(train)
+          train.name == self.class::EXTRA_TRAIN_PULLMAN
+        end
+
+        def crowded_corps
+          @crowded_corps ||= corporations.select do |c|
+            trains = c.trains.count { |t| !extra_train?(t) }
+            crowded = trains > train_limit(c)
+            crowded |= extra_train_permanent_count(c) > 1
+            crowded |= extra_train_pullman_count(c) > 1
+            crowded
+          end
+        end
+
+        def finalize_end_game_values; end
       end
     end
   end

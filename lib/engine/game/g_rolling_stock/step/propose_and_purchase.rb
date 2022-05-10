@@ -94,16 +94,21 @@ module Engine
             @round.offers.dup.each do |prop|
               company = prop[:company]
               corporation = prop[:corporation]
-              price = prop[:price]
+              price = company.owner == @game.foreign_investor ? foreign_price(corporation, company) : prop[:price]
               responder_list = prop[:responder_list]
               if @round.transacted_companies[company] || (corporation.cash - @round.transacted_cash[corporation]) < price
                 @round.offers.delete(prop)
               elsif responder_list
+                # while we're here, do some sanity checking
+                raise GameError, 'Empty responder list' if responder_list.empty?
+                raise GameError, 'Corporation not last in responder list' unless responder_list.last == corporation
+
                 # toss any right-of-refusal corps that can't afford the company
                 # - this may trigger a purchase
                 first = responder_list[0]
                 responder_list.dup.each do |corp|
-                  responder_list.delete(corp) if (corp.cash - @round.transacted_cash[corp]) < price
+                  rprice = company.owner == @game.foreign_investor ? foreign_price(corp, company) : prop[:price]
+                  responder_list.delete(corp) if (corp.cash - @round.transacted_cash[corp]) < rprice
                 end
                 next_responder!(prop) if responder_list[0] != first
               end
@@ -176,7 +181,7 @@ module Engine
             responder_list = build_responder_list(proposer, corporation, company)
 
             raise GameError, "no possible responders for #{company.sym}" if responder_list.empty?
-            return acquire_company(corporation, company, price) if responder_list[0].owner == proposer
+            return acquire_company(corporation, company, price) if responder_list.one?
 
             responder = responder_list[0].owner
 
@@ -194,16 +199,21 @@ module Engine
             @log << "#{responder_list[0].name} (#{responder.name}) has the right to intervene"
           end
 
+          # this is only used when proposing a purchase from the Foreign Investor
+          #
           def build_responder_list(proposer, corporation, company)
             return [corporation] if @game.abilities(corporation, :overseas)
 
-            responder_list = @game.responder_order.reject do |c|
+            responder_list = @game.responder_order(corporation).reject do |c|
               (!@game.abilities(c, :overseas) && c.share_price.price < corporation.share_price.price) ||
                 (c.cash - @round.transacted_cash[c]) < foreign_price(c, company)
             end
 
             # ignore corporations owned by proposer at top of list except for the one wanting to buy
             responder_list.shift while proposer && responder_list[0].owner == proposer && responder_list.size > 1
+
+            # sanity check
+            raise GameError, 'Corporation not last in responder list' unless responder_list.last == corporation
 
             responder_list
           end
@@ -255,15 +265,21 @@ module Engine
             responder_list = offer[:responder_list]
             proposer = offer[:proposer]
             company = offer[:company]
+            corporation = offer[:corporation]
+            raise GameError, 'Empty responder list' if !responder_list || responder_list.empty?
 
             # ignore corporations owned by proposer at top of list except for the one wanting to buy
             responder_list.shift while proposer && responder_list[0]&.owner == proposer && responder_list.size > 1
 
-            if responder_list[0]&.owner == proposer
+            if responder_list.one?
+              raise GameError, 'Corporation not in responder_list' unless responder_list[0] == corporation
+
               @round.offers.delete(offer)
-              acquire_company(offer[:corporation], company, foreign_price(offer[:corporation], company))
+              acquire_company(corporation, company, foreign_price(corporation, company))
             else
               offer[:responder] = responder_list[0].owner
+              raise GameError, 'Receivership corp cannot respond' unless offer[:responder].player?
+
               @log << "#{responder_list[0].name} (#{offer[:responder].name}) has next right of refusal"
             end
           end
@@ -323,7 +339,7 @@ module Engine
 
           def offer_text(offer)
             if offer[:company].owner == @game.foreign_investor
-              "#{offer[:responder_list][0].name} (#{offer[:responder].name}) may "\
+              "Will #{offer[:responder_list][0].name} (#{offer[:responder].name}) "\
                 "purchase #{offer[:company].sym} (Foreign Investor) for "\
                 "#{@game.format_currency(foreign_price(offer[:responder_list][0], offer[:company]))}?"
             else

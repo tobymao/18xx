@@ -69,6 +69,10 @@ module Engine
         false
       end
 
+      def future_label?
+        false
+      end
+
       def path?
         false
       end
@@ -114,6 +118,10 @@ module Engine
       end
 
       def partition?
+        false
+      end
+
+      def pass?
         false
       end
 

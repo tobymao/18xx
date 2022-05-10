@@ -90,7 +90,7 @@ module View
                 if real_tile
                   tiles.delete(real_tile)
                   [real_tile, nil]
-                elsif !@game.tile_color_valid_for_phase?(tile, phase_color_cache: phase_colors)
+                elsif !@game.tile_valid_for_phase?(tile, hex: @tile_selector.hex, phase_color_cache: phase_colors)
                   [tile, 'Later Phase']
                 elsif @game.tiles.none? { |t| t.name == tile.name }
                   [tile, 'None Left']

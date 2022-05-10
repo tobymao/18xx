@@ -696,8 +696,6 @@ module Engine
         end
 
         def town_to_city_upgrade?(from, to)
-          return false unless @phase.tiles.include?(:green)
-
           case from.name
           when '3'
             to.name == '5'
@@ -747,6 +745,15 @@ module Engine
 
           terrain_cost -= TILE_COST if terrain_cost.positive?
           terrain_cost - discounts
+        end
+
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
+          phase_color_cache ||= @phase.tiles
+          if hex&.tile&.color == :yellow && hex.tile.towns.empty? == false && tile.color == :yellow
+            return phase_color_cache.include?(:green)
+          end
+
+          super
         end
 
         def route_distance(route)

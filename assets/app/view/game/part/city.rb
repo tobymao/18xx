@@ -219,6 +219,16 @@ module View
 
         CENTER_REVENUE_EDGE_PRIORITY = [1, 2, 3, 4, 0, 5].freeze
 
+        PASS_RADIUS = {
+          1 => 40,
+          2 => 48,
+          3 => 60,
+        }.freeze
+
+        MULTI_SLOT_PASS_FACTOR = 1.2
+        MULTI_SLOT_PASS_OFFSET = 8
+        PASS_OUTLINE = 4
+
         def preferred_render_locations
           if @edge
             weights = EDGE_CITY_REGIONS[@edge]
@@ -307,6 +317,7 @@ module View
           end
 
           children = []
+          children << render_pass if @city.pass?
           children << render_box(slots.size) if slots.size.between?(2, 7)
           children.concat(slots)
 
@@ -326,7 +337,7 @@ module View
           return if revenues.size > 1
 
           revenue = revenues.first
-          return if revenue.zero?
+          return if revenue.zero? && (!@city.pass? || @tile.paths.empty?)
 
           regions = []
 
@@ -372,7 +383,8 @@ module View
             h(:g, { attrs: { transform: "translate(#{displacement} 0) rotate(#{-revert_angle})" } }, [
               h(Part::SingleRevenue,
                 revenue: revenue,
-                transform: rotation_for_layout),
+                transform: rotation_for_layout,
+                force: @city.pass?),
             ]),
           ])
         end
@@ -380,6 +392,37 @@ module View
         def render_box(slots)
           element, attrs = BOX_ATTRS[slots]
           h(element, attrs: attrs)
+        end
+
+        def triangle_points(radius, yoffset = 0)
+          Array.new(3) do |idx|
+            "#{Math.cos(((idx * 120) + 30) / 180 * Math::PI) * radius},"\
+              "#{(Math.sin(((idx * 120) + 30) / 180 * Math::PI) * radius) + yoffset}"
+          end.join
+        end
+
+        def render_pass
+          if @city.slots == 1
+            radius = (PASS_RADIUS[@city.size] || 40)
+            yoffset = 0
+          else
+            radius =  (PASS_RADIUS[@city.size] || 40) * MULTI_SLOT_PASS_FACTOR
+            yoffset = MULTI_SLOT_PASS_OFFSET
+          end
+          outer_pass_attrs = {
+            fill: 'white',
+            stroke: 'white',
+            points: triangle_points(radius + PASS_OUTLINE, yoffset),
+          }
+          inner_pass_attrs = {
+            fill: @city.color,
+            color: 'black',
+            points: triangle_points(radius, yoffset),
+          }
+          h(:g, [
+            h(:polygon, attrs: outer_pass_attrs),
+            h(:polygon, attrs: inner_pass_attrs),
+          ])
         end
       end
     end

@@ -19,7 +19,7 @@ module View
           owned_companies = step.choices[current_entity]
         end
 
-        companies = owned_companies.flat_map do |c|
+        companies = @game.companies_sort(owned_companies).flat_map do |c|
           h(Company, company: c, layout: :table)
         end
 

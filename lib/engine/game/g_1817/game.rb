@@ -248,7 +248,7 @@ module Engine
 
         COMPANIES = [
           {
-            name: 'Pittsburgh Steel Mill',
+            name: 'P4 - Pittsburgh Steel Mill',
             value: 40,
             revenue: 0,
             desc: 'Owning corp may place special Pittsburgh yellow tile during '\
@@ -271,7 +271,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Mountain Engineers',
+            name: 'P3 - Mountain Engineers',
             value: 40,
             revenue: 0,
             desc: 'Owning company receives $20 after laying a yellow tile in a '\
@@ -289,7 +289,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Ohio Bridge Company',
+            name: 'P2 - Ohio Bridge Company',
             value: 40,
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the '\
@@ -315,7 +315,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Union Bridge Company',
+            name: 'P8 - Union Bridge Company',
             value: 80,
             revenue: 0,
             desc: 'Comes with two $10 bridge token that may be placed by the '\
@@ -341,7 +341,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Train Station',
+            name: 'P7 - Train Station',
             value: 80,
             revenue: 0,
             desc: 'Provides an additional station marker for the owning corp, awarded at time of purchase',
@@ -356,7 +356,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Minor Coal Mine',
+            name: 'P1 - Minor Coal Mine',
             value: 30,
             revenue: 0,
             desc: 'Comes with one coal mine marker.  When placing a yellow '\
@@ -393,7 +393,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Coal Mine',
+            name: 'P5 - Coal Mine',
             value: 60,
             revenue: 0,
             desc: 'Comes with two coal mine markers.  When placing a yellow '\
@@ -430,7 +430,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Major Coal Mine',
+            name: 'P10 - Major Coal Mine',
             value: 90,
             revenue: 0,
             desc: 'Comes with three coal mine markers.  When placing a yellow '\
@@ -467,7 +467,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Minor Mail Contract',
+            name: 'P6 - Minor Mail Contract',
             value: 60,
             revenue: 0,
             desc: 'Pays owning corp $10 at the start of each operating round, '\
@@ -484,7 +484,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Mail Contract',
+            name: 'P9 - Mail Contract',
             value: 90,
             revenue: 0,
             desc: 'Pays owning corp $15 at the start of each operating round, '\
@@ -501,7 +501,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Major Mail Contract',
+            name: 'P11 - Major Mail Contract',
             value: 120,
             revenue: 0,
             desc: 'Pays owning corp $20 at the start of each operating round, '\
@@ -515,6 +515,113 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
+            color: nil,
+          },
+        ].freeze
+
+        VOLATILITY_COMPANIES = [
+          {
+            name: 'P12 - Loan Shark',
+            value: 60,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P12',
+            color: nil,
+          },
+          {
+            name: 'P13 - Ponzi Scheme',
+            value: 100,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P13',
+            color: nil,
+          },
+          {
+            name: 'P14 - Inventor',
+            value: 70,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P14',
+            color: nil,
+          },
+          {
+            name: 'P15 - Scrapper',
+            value: 40,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P15',
+            color: nil,
+          },
+          {
+            name: 'P16 - Buffalo Rail Center',
+            value: 40,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P16',
+            color: nil,
+          },
+          {
+            name: 'P17 - Toledo Industry',
+            value: 40,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P17',
+            color: nil,
+          },
+          {
+            name: 'P18 - Express Track',
+            value: 30,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P18',
+            color: nil,
+          },
+          {
+            name: 'P19 - Efficient Track',
+            value: 40,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P19',
+            color: nil,
+          },
+          {
+            name: 'P20 - Golden Parachute',
+            value: 100,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P20',
+            color: nil,
+          },
+          {
+            name: 'P21 - Station Subsidy',
+            value: 70,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P21',
+            color: nil,
+          },
+          {
+            name: 'P22 - Country Ranch',
+            value: 30,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P22',
+            color: nil,
+          },
+          {
+            name: 'P23 - Rural Ranch',
+            value: 60,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P23',
+            color: nil,
+          },
+          {
+            name: 'P24 - Indianapolis Market',
+            value: 40,
+            revenue: 0,
+            desc: 'TODO',
+            sym: 'P24',
             color: nil,
           },
         ].freeze
@@ -951,6 +1058,12 @@ module Engine
           super
         end
 
+        def game_companies
+          companies = self.class::COMPANIES
+          companies += self.class::VOLATILITY_COMPANIES if option_volatility_expansion?
+          companies
+        end
+
         def available_programmed_actions
           [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end
@@ -973,6 +1086,10 @@ module Engine
 
         def option_modern_trains?
           @optional_rules&.include?(:modern_trains)
+        end
+
+        def option_volatility_expansion?
+          @optional_rules&.include?(:volatility)
         end
 
         def ipo_name(_entity = nil)

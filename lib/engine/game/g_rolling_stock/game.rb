@@ -186,6 +186,18 @@ module Engine
           @log << 'No cost of ownership'
           @cost_table = init_cost_table
           @synergy_income = {}
+
+          add_default_autopass
+        end
+
+        # enable conditiional auto-pass for everyone at the start
+        def add_default_autopass
+          @players.each do |player|
+            @programmed_actions[player] = Engine::Action::ProgramClosePass.new(
+              player,
+              unconditional: false,
+            )
+          end
         end
 
         def setup_preround
@@ -478,8 +490,8 @@ module Engine
 
         def reorder_by_cash
           # this should break ties in favor of the closest to previous PD
-          pd_player = @players.max_by(&:cash)
-          @players.rotate!(@players.index(pd_player))
+          old_order = @players.dup
+          @players.sort_by! { |p| [-p.cash, old_order.index(p)] }
           @log << "Player order: #{@players.map(&:name).join(', ')}"
         end
 
@@ -633,8 +645,10 @@ module Engine
           @offering - @on_deck
         end
 
-        def responder_order
-          eligible = @corporations.select { |corp| corp.floated? && !corp.receivership? }
+        def responder_order(buyer)
+          eligible = @corporations.select do |corp|
+            corp.floated? && (!corp.receivership? || corp == buyer)
+          end
           oversea_corp, others = eligible.partition { |corp| abilities(corp, :overseas) }
           (oversea_corp + others.sort).compact
         end
@@ -658,19 +672,31 @@ module Engine
 
           return unless @cost_level < new_cost
 
-          old_cost = @cost_level
           @cost_level = new_cost
           @log << "New cost of ownership: #{cost_level_str}"
 
-          disable_auto_close_pass if @cost_table[old_cost][0] != @cost_table[new_cost][0]
+          @log << 'Some companies have negative income' if @players.any? { |p| any_negative_companies?(p) }
+          disable_auto_close_pass
         end
 
         def disable_auto_close_pass
           @programmed_actions.reject! do |entity, action|
-            if action.is_a?(Engine::Action::ProgramClosePass) && !action.unconditional
-              player_log(entity, "Programmed action '#{action}' removed due to operating cost change")
-              true
-            end
+            next unless action.is_a?(Engine::Action::ProgramClosePass) &&
+                !action.unconditional &&
+                any_negative_companies?(entity)
+
+            player_log(entity, "Programmed action '#{action}' removed due to negative company income")
+            true
+          end
+        end
+
+        def any_negative_companies?(player)
+          return false unless player.player?
+          return true if player.companies.any? { |c| company_income(c).negative? }
+
+          @corporations.any? do |corp|
+            corp.owner == player &&
+              corp.companies.any? { |c| company_income(c).negative? }
           end
         end
 
@@ -788,6 +814,34 @@ module Engine
           new_price
         end
 
+        def one_price_to_left(price)
+          r, c = price.coordinates
+          return nil if (c - 1).negative?
+
+          @stock_market.share_price(r, c - 1)
+        end
+
+        def two_prices_to_left(price)
+          r, c = price.coordinates
+          return nil if (c - 2).negative?
+
+          @stock_market.share_price(r, c - 2)
+        end
+
+        def one_price_to_right(price)
+          r, c = price.coordinates
+          return nil if c + 1 >= @stock_market.market[r].size
+
+          @stock_market.share_price(r, c + 1)
+        end
+
+        def two_prices_to_right(price)
+          r, c = price.coordinates
+          return nil if c + 2 >= @stock_market.market[r].size
+
+          @stock_market.share_price(r, c + 2)
+        end
+
         def move_to_price(corporation, new_price)
           current_price = corporation.share_price
           return if current_price.price == new_price.price
@@ -808,8 +862,9 @@ module Engine
           clear_synergy_income(owner) if owner.corporation?
           return if !owner.corporation? || !abilities(owner, :junkyard_scrappers)
 
-          @bank.spend(owner, company.revenue)
-          @log << "#{owner.name} receives #{format_currency(company.revenue)} as a scrapping bonus"
+          bonus = company.revenue * 2
+          @bank.spend(bonus, owner)
+          @log << "#{owner.name} receives #{format_currency(bonus)} as a scrapping bonus"
         end
 
         def close_corporation(corporation, quiet: false)
@@ -943,6 +998,54 @@ module Engine
 
         def available_programmed_actions
           [Action::ProgramClosePass]
+        end
+
+        def ipo_name(_corp)
+          'Unissued'
+        end
+
+        def show_player_percent?(_player)
+          false
+        end
+
+        def share_card_description
+          'Target Book Value by Share Price'
+        end
+
+        def share_card_array(price)
+          return [] if price.price.zero? || price.end_game_trigger?
+
+          (2..10).map do |idx|
+            [idx.to_s, format_currency(idx * price.price)]
+          end
+        end
+
+        def result
+          result_players
+            .sort_by { |p| [player_value(p), -@players.index(p)] }
+            .reverse
+            .to_h { |p| [p.name, player_value(p)] }
+        end
+
+        def companies_sort(companies)
+          companies.sort_by(&:value).reverse
+        end
+
+        def movement_chart(corporation)
+          num = num_issued(corporation)
+          price = corporation.share_price
+          two_right = two_prices_to_right(price)&.price
+          one_right = one_price_to_right(price)&.price
+          one_left = one_price_to_left(price)&.price
+          two_left = two_prices_to_left(price)&.price
+
+          chart = [%w[Value Price]]
+          chart <<  ["$#{num * one_right} - ∞", "$#{two_right}"] if two_right
+          chart <<  ["$#{num * price.price} - $#{(num * one_right) - 1}", "$#{one_right}"] if one_right
+          chart <<  ["$#{num * one_left} - $#{(num * price.price) - 1}", "$#{one_left}"] if one_left
+          chart <<  ["$0 - $#{(num * one_left) - 1}", "$#{two_left}"] if two_left
+          chart << ['', ''] while chart.size < 5
+          chart
         end
       end
     end
