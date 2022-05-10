@@ -139,8 +139,8 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
-          'A4' => 'Ireland',
-          'A10' => 'England',
+          'A4' => 'Great Britain',
+          'A10' => 'London',
           'B3' => 'Le Havre',
           'B9' => 'Calais',
           'B11' => 'Dunkerque',
@@ -198,14 +198,14 @@ module Engine
             'icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
             ['A10'] => 'city=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0,lanes:2;path=a:5,b:_0;',
             ['B5'] => 'path=a:1,b:5;path=a:1,b:6;path=a:5,b:6',
-            ['D1'] => 'town=revenue:20;path=a:3,b:_0;path=a:5,b:_0',
+            ['D1'] => 'town=revenue:10;path=a:3,b:_0;path=a:5,b:_0',
             ['F11'] => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
             ['G18'] => 'path=a:0,b:2;',
             ['I16'] => 'path=a:1,b:4;path=a:1,b:2;',
           },
           red: {
-            ['A2'] => 'offboard=revenue:50,hide:1,groups:Ireland;path=a:0,b:_0;border=edge:4',
-            ['A4'] => 'offboard=revenue:50,groups:Ireland;path=a:0,b:_0;border=edge:1',
+            ['A2'] => 'offboard=revenue:50,hide:1,groups:GreatBritain;path=a:0,b:_0;border=edge:4',
+            ['A4'] => 'offboard=revenue:50,groups:GreatBritain;path=a:0,b:_0;border=edge:1',
             ['C16'] => 'offboard=revenue:30,groups:Netherlands;'\
                        'path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;border=edge:4',
             ['C18'] => 'offboard=revenue:30,hide:1,groups:Netherdlands;path=a:0,b:_0;border=edge:1',

@@ -53,8 +53,8 @@ module Engine
             sym: 'PC',
             value: 100,
             revenue: 15,
-            desc: 'Owning corporation may place a +10 marker in England (A10). For this corporation only, the value'\
-                  ' of England is increased by 10.',
+            desc: 'Owning corporation may place a +10 marker in London (A10). For this corporation only, the value'\
+                  ' of London is increased by 10.',
             abilities: [{
               type: 'assign_hexes',
               when: 'owning_corp_or_turn',

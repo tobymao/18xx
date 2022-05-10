@@ -243,8 +243,8 @@ module Engine
           'late_corporations_available' => ['Late corporations available', 'Late corporations can be opened'],
         ).freeze
 
-        ENGLAND_HEX = 'A10'
-        ENGLAND_FERRY_SUPPLY = 'A8'
+        LONDON_HEX = 'A10'
+        LONDON_FERRY_SUPPLY = 'A8'
         FERRY_MARKER_ICON = 'ferry'
         FERRY_MARKER_COST = 60
 
@@ -312,7 +312,7 @@ module Engine
 
           @ferry_marker_ability =
             Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
-          block_england
+          block_london
 
           plm = corporation_by_id('PLM')
           paris_tiles_names = %w[X1 X4 X5 X7 X8]
@@ -489,15 +489,15 @@ module Engine
         end
 
         def check_distance(route, _visits)
-          if route.connection_hexes.flatten.include?(ENGLAND_HEX) && !ferry_marker?(current_entity)
-            raise GameError, 'Cannot run to England without a Ferry marker'
+          if route.connection_hexes.flatten.include?(LONDON_HEX) && !ferry_marker?(current_entity)
+            raise GameError, 'Cannot run to London without a Ferry marker'
           end
 
           super
         end
 
         def ferry_marker_available?
-          hex_by_id(ENGLAND_FERRY_SUPPLY).tile.icons.any? { |icon| icon.name == FERRY_MARKER_ICON }
+          hex_by_id(LONDON_FERRY_SUPPLY).tile.icons.any? { |icon| icon.name == FERRY_MARKER_ICON }
         end
 
         def ferry_marker?(entity)
@@ -510,8 +510,8 @@ module Engine
           entity.all_abilities.select { |ability| ability.description == @ferry_marker_ability.description }
         end
 
-        def connected_to_england?(entity)
-          graph.reachable_hexes(entity).include?(hex_by_id(ENGLAND_HEX))
+        def connected_to_london?(entity)
+          graph.reachable_hexes(entity).include?(hex_by_id(LONDON_HEX))
         end
 
         def can_buy_ferry_marker?(entity)
@@ -520,7 +520,7 @@ module Engine
           ferry_marker_available? &&
             !ferry_marker?(entity) &&
             buying_power(entity) >= FERRY_MARKER_COST &&
-            connected_to_england?(entity)
+            connected_to_london?(entity)
         end
 
         def buy_ferry_marker(entity)
@@ -530,18 +530,18 @@ module Engine
           entity.add_ability(@ferry_marker_ability.dup)
           @log << "#{entity.name} buys a ferry marker for $#{FERRY_MARKER_COST}"
 
-          tile_icons = hex_by_id(ENGLAND_FERRY_SUPPLY).tile.icons
+          tile_icons = hex_by_id(LONDON_FERRY_SUPPLY).tile.icons
           tile_icons.delete_at(tile_icons.find_index { |icon| icon.name == FERRY_MARKER_ICON })
 
           graph.clear
         end
 
-        def block_england
-          england = hex_by_id(ENGLAND_HEX).tile.cities.first
+        def block_london
+          london = hex_by_id(LONDON_HEX).tile.cities.first
 
-          england.instance_variable_set(:@game, self)
+          london.instance_variable_set(:@game, self)
 
-          def england.blocks?(corporation)
+          def london.blocks?(corporation)
             !@game.ferry_marker?(corporation)
           end
         end
