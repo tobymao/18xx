@@ -151,7 +151,7 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 7 },
+        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 8 },
                   {
                     name: '3',
                     distance: 3,
@@ -373,10 +373,13 @@ module Engine
             tile.cities.each { |c| c.add_slot }
           end
 
-          return unless action.hex.id == SQ_HEX
+          #return unless action.hex.id == SQ_HEX
+          if action.hex.id != SQ_HEX || tile.color == :yellow
+            return
+          end
 
           sqg = company_by_id('SQG')
-          sqg.revenue = 1.5 * get_current_revenue(tile.cities[0].revenue)
+          sqg.revenue = 2 * get_current_revenue(tile.cities[0].revenue)
           @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
         end
 
@@ -422,11 +425,11 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return to.name == AMIENS_TILE if from.hex.name == AMIENS_HEX && from.color == :white
-          return to.name == ROUEN_TILE if from.hex.name == ROUEN_HEX && from.color == :white
-          return to.name == SQ_TILE if from.hex.name == SQ_HEX && from.color == :white
+          #return to.name == ROUEN_TILE if from.hex.name == ROUEN_HEX && from.color == :white
+          #return to.name == SQ_TILE if from.hex.name == SQ_HEX && from.color == :white
           return GREEN_CITY_TILES.include?(to.name) if from.hex.name == AMIENS_HEX && from.color == :yellow
-          return GREEN_CITY_TILES.include?(to.name) if from.hex.name == ROUEN_HEX && from.color == :yellow
-          return GREEN_CITY_TILES.include?(to.name) if from.hex.name == SQ_HEX && from.color == :yellow
+          #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == ROUEN_HEX && from.color == :yellow
+          #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == SQ_HEX && from.color == :yellow
           return BROWN_CITY_14_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
