@@ -296,7 +296,7 @@ module Engine
               'count' => 2,
               'color' => 'gray',
               'code' =>
-                'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
+                'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
             },
           'X17' =>
             {
