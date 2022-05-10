@@ -166,8 +166,8 @@ module Engine
 
         HEXES = {
           white: {
-            %w[C4 C8 D5 E2 E8 E18 F1 F3 F7 F9 F17 G8 H1 H3 H11 I4 I10] => '',
-            %w[B1 B7 C2 C10 D7 D9 E4 G6 H5 H9 I12] => 'upgrade=cost:60,terrain:water',
+            %w[C4 C8 D5 D7 D9 E2 E18 F1 F3 F7 F9 F17 G8 H1 H3 H11 I4 I10 I12] => '',
+            %w[B1 B7 C2 C8 C10 E8 G6 H5 H9] => 'upgrade=cost:60,terrain:water',
             %w[B3 B9 B11 D3 D15 E6 E10 E16 G10 H17] => 'city=revenue:0',
             ['B13'] => 'border=edge:5,type:mountain',
             ['C12'] => 'border=edge:4,type:mountain;border=edge:5,type:mountain',
@@ -179,7 +179,7 @@ module Engine
             ['F13'] => 'upgrade=cost:60,terrain:water;'\
                        'border=edge:0,type:mountain;border=edge:2,type:mountain',
             ['G4'] => 'city=revenue:0;city=revenue:0;label=P',
-            ['G12'] => 'border=edge:3,type:mountain;border=edge:4,type:mountain',
+            ['G12'] => 'upgrade=cost:60,terrain:water;border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['G14'] => 'city=revenue:0;border=edge:0,type:mountain;border=edge:1,type:mountain',
             ['H15'] => 'upgrade=cost:60,terrain:water;border=edge:0,type:mountain;border=edge:1,type:mountain',
             ['I14'] => 'border=edge:3,type:mountain',
@@ -190,15 +190,16 @@ module Engine
           yellow: {
             ['D17'] => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0',
             ['G2'] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0',
-            ['I6'] => 'path=a:1,b:3;stub=edge:2',
+            ['I6'] => 'path=a:1,b:3',
             ['I8'] => 'city=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           gray: {
             ['A8'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0;'\
-            'icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
+                      'icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
             ['A10'] => 'city=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0,lanes:2;path=a:5,b:_0',
             ['B5'] => 'path=a:1,b:5;path=a:1,b:6;path=a:5,b:6',
             ['D1'] => 'town=revenue:10;path=a:4,b:_0',
+            ['E4'] => 'town=revenue:yellow_10|brown_30,visit_cost:0;label=extra;path=a:2,b:_0;path=a:4,b:_0',
             ['F11'] => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
             ['G18'] => 'path=a:0,b:2;',
             ['I16'] => 'path=a:1,b:4;path=a:1,b:2;',
@@ -210,7 +211,7 @@ module Engine
                        'path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;border=edge:4',
             ['C18'] => 'offboard=revenue:30,hide:1,groups:Netherdlands;path=a:0,b:_0;border=edge:1',
             ['I2'] => 'offboard=revenue:30;label=Est +30;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            ['I18'] => 'offboard=revenue:0,hide:1;label=Largest;path=a:1,b:_0;path=a:2,b:_00',
+            ['I18'] => 'offboard=revenue:0,hide:1;label=Largest+10;path=a:1,b:_0;path=a:2,b:_00',
           },
         }.freeze
       end
