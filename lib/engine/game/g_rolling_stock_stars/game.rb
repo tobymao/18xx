@@ -138,7 +138,7 @@ module Engine
           diff = corporation_stars(corporation, cash) - target_stars(corporation)
           diff = [[diff, 2].min, -2].max
 
-          target = if diff > -2 || diff < 2
+          target = if diff > -2 && diff < 2
                      @stock_market.share_price(r, c + diff)
                    elsif diff == 2
                      right.end_game_trigger? ? right : @stock_market.share_price(r, c + 2)
@@ -177,6 +177,35 @@ module Engine
             ['Div', 'Cash', 'Stars', 'Target Price', 'New Price'],
             *rows,
           ]
+        end
+
+        def share_card_description
+          'Target Stars by Share Price'
+        end
+
+        def share_card_array(price)
+          return [] if price.price.zero? || price.end_game_trigger?
+
+          (2..7).map do |idx|
+            [idx.to_s, "#{(idx * price.price / 10.0).round}★"]
+          end
+        end
+
+        def movement_chart(corporation)
+          stars = target_stars(corporation)
+          price = corporation.share_price
+          two_right = two_prices_to_right(price)&.price
+          one_right = one_price_to_right(price)&.price
+          one_left = one_price_to_left(price)&.price
+          two_left = two_prices_to_left(price)&.price
+
+          chart = [%w[Stars Price]]
+          chart <<  ["#{stars + 2} ★", format_currency(two_right)] if two_right
+          chart <<  ["#{stars + 1} ★", format_currency(one_right)] if one_right
+          chart << ["#{[stars - 1, 0].max} ★", format_currency(one_left)] if one_left
+          chart << ["#{[stars - 2, 0].max} ★", format_currency(two_left)] if two_left
+          chart << ['', ''] while chart.size < 5
+          chart
         end
       end
     end

@@ -177,6 +177,15 @@ module Engine
             @game.float_minor(sym, action.entity) unless sym[0] == 'P'
             @round.next_entity_index!
           end
+
+          def pool_shares(corporation)
+            shares = []
+            preferred_share = @game.share_pool.shares_by_corporation[corporation].find(&:preferred)
+            normal_share = @game.share_pool.shares_by_corporation[corporation].find { |s| !s.preferred }
+            shares << preferred_share if preferred_share
+            shares << normal_share if normal_share
+            shares
+          end
         end
       end
     end

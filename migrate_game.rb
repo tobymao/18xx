@@ -50,10 +50,8 @@ def repair(game, original_actions, actions, broken_action)
   elsif game.is_a?(Engine::Game::G18USA::Game)
     if broken_action['type'] == 'pass'
       actions.delete(broken_action)
-    elsif broken_action['type'] == 'bid' && prev_action['type'] == 'pass'
+    elsif prev_action['type'] == 'pass'
       actions.delete(prev_action)
-    else
-      add_pass.call
     end
     return
   elsif broken_action['type'] == 'buy_tokens'

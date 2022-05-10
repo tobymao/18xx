@@ -29,6 +29,37 @@ module Engine
             end
           end
 
+          def skip!
+            if current_entity.corporation? && current_entity.receivership? && current_entity.trains.empty?
+              receivership_buy!(current_entity)
+              return
+            end
+
+            super
+          end
+
+          def receivership_buy!(entity)
+            if entity.cash < @game.depot.min_depot_price
+              pass!
+              @log << "#{entity.name} is in receivership and cannot afford a train"
+              @log << "#{entity.name} goes bankrupt"
+              @game.close_corporation(entity)
+              return
+            end
+
+            train = @game.depot.min_depot_train
+            source = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
+            price = train.price
+
+            @log << "#{entity.name} (in receivership) buys a #{train.name} train for "\
+                    "#{@game.format_currency(price)} from #{source}"
+
+            @game.buy_train(entity, train, price)
+            @game.phase.buying_train!(entity, train)
+            @game.assign_base(train, :lb)
+            pass!
+          end
+
           # "issue" is a misnomer - it refers to any shares in a corp's treasury
           def can_issue?(entity)
             return false unless entity.corporation?

@@ -13,7 +13,7 @@ module View
         def description
           'Automatically pass in the close companies phase.'\
             ' This will persist from turn to turn.'\
-            ' It will deactivate itself when operting costs increase, unless configured not do so.'\
+            ' It will deactivate itself when you control a company with negative income, unless configured not do so.'\
         end
 
         def render
@@ -21,7 +21,7 @@ module View
 
           children = [h(:h3, name), h(:p, description)]
 
-          children << render_checkbox('Continue to pass even if operating costs change',
+          children << render_checkbox('Continue to pass even when one of your companies has negative income',
                                       'cr_unconditional',
                                       form,
                                       !!@settings&.unconditional)

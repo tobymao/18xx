@@ -7,6 +7,12 @@ module Engine
     module G21Moon
       module Step
         class Track < Engine::Step::Track
+          def actions(entity)
+            return [] if entity.corporation? && entity.receivership?
+
+            super
+          end
+
           def setup
             super
 
@@ -53,8 +59,10 @@ module Engine
           # this is where we see whether the track extends from LB, SP or both
           #
           def check_track_restrictions!(entity, old_tile, new_tile)
-            @lb_connected = new_tile.paths.any? { |np| @game.lb_graph.connected_paths(entity)[np] }
-            @sp_connected = new_tile.paths.any? { |np| @game.sp_graph.connected_paths(entity)[np] }
+            unless @game.loading
+              @lb_connected = new_tile.paths.any? { |np| @game.lb_graph.connected_paths(entity)[np] }
+              @sp_connected = new_tile.paths.any? { |np| @game.sp_graph.connected_paths(entity)[np] }
+            end
 
             check_border_crossing(entity, new_tile)
 

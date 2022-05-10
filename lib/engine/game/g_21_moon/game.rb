@@ -445,7 +445,7 @@ module Engine
           @crossed_rift = true
         end
 
-        def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
           return true if tile.name == T_TILE
 
           phase_color_cache ||= @phase.tiles
@@ -737,11 +737,11 @@ module Engine
         end
 
         def sp_revenue(routes)
-          routes_revenue(routes.select { |r| @train_base[r.train] == :sp })
+          routes_revenue(routes.select { |r| @train_base[r.train] == :sp && !r.train.owner.receivership? })
         end
 
         def lb_revenue(routes)
-          routes_revenue(routes.select { |r| @train_base[r.train] == :lb })
+          routes_revenue(routes.select { |r| @train_base[r.train] == :lb || r.train.owner.receivership? })
         end
 
         def submit_revenue_str(routes, _render_halts)
@@ -801,6 +801,20 @@ module Engine
           BONUS_LOCATIONS.each do |bonus, hexid|
             hex_by_id(hexid).tile.location_name = "Bonus Tokens: #{@bonuses_left[bonus]}"
           end
+        end
+
+        def close_corporation(corporation, quiet: false)
+          # move any shares owned by the corp to the market, ignoring 50% market limit
+          if corporation.corporation?
+            corporation.shares_by_corporation.each do |other, _|
+              shares = corporation.shares_of(other)
+              shares.each do |share|
+                @share_pool.transfer_shares(share.to_bundle, @share_pool)
+              end
+            end
+          end
+
+          super
         end
 
         def timeline
@@ -1033,6 +1047,11 @@ module Engine
               { text: '10', props: { style: { border: '1px solid' } } },
             ],
           ]
+        end
+
+        def share_flags(shares)
+          step = @round.active_step
+          step.share_flags(shares) if step.respond_to?(:share_flags)
         end
       end
     end

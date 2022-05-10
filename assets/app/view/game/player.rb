@@ -228,10 +228,11 @@ module View
         children = []
         children << h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]) unless @hide_logo
 
+        show_percent = @game.show_player_percent?(@player)
         president_marker = corporation.president?(@player) ? '*' : ''
         double_markers = 'd' * shares.count(&:double_cert)
         children << h(:td, td_props, corporation.name + president_marker + double_markers)
-        children << h('td.right', td_props, "#{shares.sum(&:percent)}%")
+        children << h('td.right', td_props, show_percent ? "#{shares.sum(&:percent)}%" : shares.size.to_s)
         h('tr.row', children)
       end
 

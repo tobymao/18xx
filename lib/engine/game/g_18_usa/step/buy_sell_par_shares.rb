@@ -174,10 +174,17 @@ module Engine
           def par_corporation
             return unless @corporation_size
 
-            @remaining_bid_amount = 0
+            entity = @winning_bid.entity
             corporation = @winning_bid.corporation
+            if (cash_subsidy = corporation.companies.find { |c| @game.class::CASH_SUBSIDIES.include?(c.id) })
+              entity.spend(cash_subsidy.value - @remaining_bid_amount, @game.bank) if @remaining_bid_amount < cash_subsidy.value
+              cash_subsidy.close!
+            else
+              corporation.companies.find { |c| c.name == 'No Subsidy' }&.close!
+            end
+
+            @remaining_bid_amount = 0
             @game.bank.spend(corporation.cash.abs, corporation) if corporation.cash.negative?
-            corporation.companies.find { |c| c.name == 'No Subsidy' }&.close!
             if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver && @game.hex_by_id('E11').tile.name == 'X04s'
               @round.pending_tracks << {
                 entity: corporation,
