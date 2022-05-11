@@ -275,15 +275,6 @@ module Engine
             abilities: [],
             color: nil,
           },
-          {
-            name: 'Stock turn token',
-            sym: 'ST7',
-            value: 0,
-            revenue: 0,
-            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
-            abilities: [],
-            color: nil,
-          },
         ].freeze
 
         CORPORATIONS = [

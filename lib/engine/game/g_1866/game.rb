@@ -429,14 +429,12 @@ module Engine
               4 => 28,
               5 => 23,
               6 => 19,
-              7 => 16,
             },
             'starting_cash' => {
               3 => 900,
               4 => 675,
               5 => 540,
               6 => 450,
-              7 => 385,
             },
             'train_count' => {
               'L' => 20,
@@ -452,7 +450,7 @@ module Engine
               'M' => 5,
             },
             'infrastructure_count' => 5,
-            'companies' => %w[C1 C2 C3 C4 C5 C6 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'companies' => %w[C1 C2 C3 C4 C5 C6 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6],
             'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
             'national_corporations' => %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
             'corporation_count' => 13,
@@ -477,14 +475,12 @@ module Engine
               4 => 21,
               5 => 17,
               6 => 14,
-              7 => 12,
             },
             'starting_cash' => {
               3 => 800,
               4 => 600,
               5 => 480,
               6 => 400,
-              7 => 340,
             },
             'train_count' => {
               'L' => 20,
@@ -500,7 +496,7 @@ module Engine
               'M' => 3,
             },
             'infrastructure_count' => 3,
-            'companies' => %w[C1 C2 C4 C6 M1 M2 M3 M4 M5 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'companies' => %w[C1 C2 C4 C6 M1 M2 M3 M4 M5 ST1 ST2 ST3 ST4 ST5 ST6],
             'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SBB GL NRS L P],
             'national_corporations' => %w[GB FR BNL CH DE PRU HAN BAV WTB SAX],
             'corporation_count' => 9,
@@ -522,14 +518,12 @@ module Engine
               4 => 21,
               5 => 17,
               6 => 14,
-              7 => 12,
             },
             'starting_cash' => {
               3 => 800,
               4 => 600,
               5 => 480,
               6 => 400,
-              7 => 340,
             },
             'train_count' => {
               'L' => 20,
@@ -545,7 +539,7 @@ module Engine
               'M' => 3,
             },
             'infrastructure_count' => 3,
-            'companies' => %w[C3 C4 C6 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'companies' => %w[C3 C4 C6 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6],
             'corporations' => %w[KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS],
             'national_corporations' => %w[AHE BNL CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
             'corporation_count' => 9,
@@ -566,14 +560,12 @@ module Engine
               4 => 21,
               5 => 17,
               6 => 14,
-              7 => 12,
             },
             'starting_cash' => {
               3 => 800,
               4 => 600,
               5 => 480,
               6 => 400,
-              7 => 340,
             },
             'train_count' => {
               'L' => 20,
@@ -589,7 +581,7 @@ module Engine
               'M' => 3,
             },
             'infrastructure_count' => 3,
-            'companies' => %w[C2 C3 C5 C6 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6 ST7],
+            'companies' => %w[C2 C3 C5 C6 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6],
             'corporations' => %w[PLM MIDI OU CPS SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
             'national_corporations' => %w[FR AHE ESP CH IT K2S SAR LV PAP TUS],
             'corporation_count' => 9,
@@ -2215,7 +2207,7 @@ module Engine
             5
           when 4
             4
-          when 5, 6, 7
+          when 5, 6
             3
           end
         end
