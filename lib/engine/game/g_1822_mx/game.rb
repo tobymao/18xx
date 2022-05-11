@@ -652,7 +652,7 @@ module Engine
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          return true if from.color == 'blue' && to.color == 'blue'
+          return true if from.color == :blue && to.color == :blue
 
           super
         end
@@ -698,9 +698,9 @@ module Engine
 
         def max_builder_cubes(tile)
           max = 0
-          max += 2 if terrain?(tile, 'mountain')
-          max += 1 if terrain?(tile, 'hill')
-          max += 1 if terrain?(tile, 'river')
+          max += 2 if terrain?(tile, :mountain)
+          max += 1 if terrain?(tile, :hill)
+          max += 1 if terrain?(tile, :river)
           max
         end
 
@@ -716,15 +716,14 @@ module Engine
         def upgrade_cost(tile, hex, entity, spender)
           cost = super
           num_cubes = current_builder_cubes(tile)
-          if num_cubes >= 2 && terrain?(tile, 'mountain')
+          if num_cubes >= 2 && terrain?(tile, :mountain)
             num_cubes -= 2
             cost -= 80
-          end
-          if num_cubes >= 1 && terrain?(tile, 'hill')
+          elsif num_cubes >= 1 && terrain?(tile, :hill)
             num_cubes -= 1
             cost -= 40
           end
-          cost -= 20 if num_cubes >= 1 && terrain?(tile, 'river')
+          cost -= 20 if num_cubes >= 1 && terrain?(tile, :river)
           cost
         end
 

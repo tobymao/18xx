@@ -29,7 +29,7 @@ module Engine
             return { share_direction: :left, share_times: 1 } unless revenue.positive?
 
             price = entity.share_price.price
-            times = (revenue / price).to_i
+            times = (revenue.to_f / price).floor
             if times.positive?
               { share_direction: :right, share_times: times }
             else
