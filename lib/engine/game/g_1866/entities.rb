@@ -853,14 +853,6 @@ module Engine
             city: 1,
             reservation_color: '#cb7745',
           },
-          {
-            sym: 'P',
-            name: 'Paris reservation',
-            tokens: [],
-            coordinates: %w[J6 J6 J6],
-            city: [0, 2, 5],
-            reservation_color: '#cb7745',
-          },
         ].freeze
       end
     end

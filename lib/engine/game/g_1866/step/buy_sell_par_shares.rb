@@ -67,13 +67,11 @@ module Engine
             return [@game.forced_formation_par_prices(corp).last] if @game.germany_or_italy_national?(corp)
 
             par_type = @game.phase_par_type
-            par_prices = @game.par_prices_sorted.select do |p|
+            @game.par_prices_sorted.select do |p|
               multiplier = corp.nil? || @game.major_national_corporation?(corp) ? 1 : 2
               p.types.include?(par_type) && (p.price * multiplier) <= entity.cash &&
                 @game.can_par_share_price?(p, corp)
             end
-            par_prices.reject! { |p| p.price == @game.class::MAX_PAR_VALUE } if par_prices.size > 1
-            par_prices
           end
 
           def log_pass(entity)

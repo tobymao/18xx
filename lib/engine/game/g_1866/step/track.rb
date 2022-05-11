@@ -54,7 +54,7 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            return true if hex.name == @game.class::PARIS_HEX || hex.name == @game.class::LONDON_HEX
+            return true if hex.name == @game.class::LONDON_HEX
 
             super
           end
@@ -88,11 +88,6 @@ module Engine
             # Special case for London
             if hex.name == @game.class::LONDON_HEX && hex.tile.color == :brown && action.tile.color == :gray
               hex.tile.cities[1].remove_all_reservations!
-            end
-
-            # Special case for Paris
-            if hex.name == @game.class::PARIS_HEX && hex.tile.color == :brown && action.tile.color == :gray
-              [0, 2, 5].each { |city| hex.tile.cities[city].remove_all_reservations! }
             end
 
             super

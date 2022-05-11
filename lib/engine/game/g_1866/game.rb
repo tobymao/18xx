@@ -6,6 +6,7 @@ require_relative 'map'
 require_relative '../base'
 require_relative '../../loan'
 require_relative '../interest_on_loans'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
@@ -15,6 +16,7 @@ module Engine
         include G1866::Entities
         include G1866::Map
         include InterestOnLoans
+        include CitiesPlusTownsRouteDistanceStr
 
         GAME_END_CHECK = {
           stock_market: :current_round,
@@ -60,7 +62,7 @@ module Engine
           %w[0c 10 20 30 40 45 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
              200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[0c 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
-             200pxzw 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
+             200w 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
           %w[0P 0P 0P 0P 0P 0P 0P 0P 0P 0P],
         ].freeze
 
@@ -405,7 +407,7 @@ module Engine
           {
             name: 'P',
             distance: 99,
-            price: 80,
+            price: 75,
           },
           {
             name: 'H',
@@ -462,11 +464,11 @@ module Engine
               'IT' => %w[SSFL IFT SFAI],
             },
             'region_corporations_maxcount' => {
-              'GB' => 2,
+              'GB' => 3,
               'FR' => 3,
-              'AHE' => 2,
-              'DE' => 2,
-              'IT' => 2,
+              'AHE' => 3,
+              'DE' => 3,
+              'IT' => 3,
             },
           },
           'nes' => {
@@ -606,21 +608,24 @@ module Engine
         }.freeze
 
         C_TILE_UPGRADE = {
-          'C1' => 'C6',
-          'C2' => 'C7',
-          'C3' => 'C8',
-          'C4' => 'C9',
-          'C5' => 'C10',
-          'C6' => 'C11',
-          'C7' => 'C12',
-          'C8' => 'C13',
-          'C9' => 'C14',
-          'C10' => 'C15',
-          'C11' => 'C16',
-          'C12' => 'C17',
-          'C13' => 'C18',
-          'C14' => 'C19',
-          'C15' => 'C20',
+          'C1' => 'C7',
+          'C2' => 'C8',
+          'C3' => 'C9',
+          'C4' => 'C10',
+          'C5' => 'C11',
+          'C6' => 'C12',
+          'C7' => 'C13',
+          'C8' => 'C14',
+          'C9' => 'C15',
+          'C10' => 'C16',
+          'C11' => 'C17',
+          'C12' => 'C18',
+          'C13' => 'C19',
+          'C14' => 'C20',
+          'C15' => 'C21',
+          'C16' => 'C22',
+          'C17' => 'C23',
+          'C18' => 'C24',
         }.freeze
 
         COMPANY_STARTING_BID = {
@@ -686,6 +691,7 @@ module Engine
         }.freeze
 
         DOUBLE_HEX = %w[G15 G19 J12 J18 K5].freeze
+        E_TRAINS = %w[3E 4E 5E 6E].freeze
 
         ENTITY_STATUS_TEXT = {
           'DE' => 'Converted by PRU president or force convert in phase 5',
@@ -719,10 +725,6 @@ module Engine
 
         LONDON_HEX = 'F6'
         LONDON_TILE = 'L1'
-        PARIS_HEX = 'J6'
-        PARIS_TILE = 'P1'
-
-        MAX_PAR_VALUE = 200
 
         MINOR_COMPANIES = %w[M1 M2 M3 M4 M5 M6 M7 M8 M9 M10].freeze
         MINOR_COMPANY_CORPORATION = {
@@ -1258,9 +1260,8 @@ module Engine
         def price_movement_chart
           [
             ['Market Action', 'Movement'],
-            ['ST action pass', '3 →'],
-            ['ST action sell (with no buy)', '2 →'],
-            ['ST action buy', '1 →'],
+            ['ST action pass', '2 →'],
+            ['ST action sell or buy', '1 →'],
             ['ST action sell and buy', 'none'],
             ['Dividend 0', '1 ←'],
             ['Dividend > 0', 'none'],
@@ -1369,9 +1370,6 @@ module Engine
 
           @london_reservation_entity = corporation_by_id('L')
           @corporations.delete(@london_reservation_entity)
-
-          @paris_reservation_entity = corporation_by_id('P')
-          @corporations.delete(@paris_reservation_entity)
 
           @current_turn = 'ISR'
 
@@ -1541,9 +1539,6 @@ module Engine
           # London
           return to.name == self.class::LONDON_TILE if from.hex.name == self.class::LONDON_HEX && from.color == :brown
 
-          # Paris
-          return to.name == self.class::PARIS_TILE if from.hex.name == self.class::PARIS_HEX && from.color == :brown
-
           # C-tiles
           return C_TILE_UPGRADE[from.name] == to.name if from.label.to_s == 'C' && %i[yellow green brown].include?(from.color)
 
@@ -1594,10 +1589,9 @@ module Engine
         end
 
         def can_par_share_price?(share_price, corporation)
-          return (share_price.corporations.empty? || share_price.price == self.class::MAX_PAR_VALUE) unless corporation
+          return share_price.corporations.empty? unless corporation
 
-          share_price.corporations.none? { |c| c.type != :stock_turn_corporation } ||
-            share_price.price == self.class::MAX_PAR_VALUE
+          share_price.corporations.none? { |c| c.type != :stock_turn_corporation }
         end
 
         def can_take_loan?(entity)
@@ -1623,18 +1617,7 @@ module Engine
 
           if corporation.loans.size.positive?
             loan = corporation.loans.size * loan_value
-            corporation_cash = corporation.cash - loan
-            loan_str = "#{corporation.name} have loans of value #{format_currency(loan)}."
-            if corporation_cash.negative?
-              player = corporation.owner
-              @log << "#{loan_str} #{corporation.name} pays #{format_currency(corporation.cash)}, and #{player.name}"\
-                      " have to contribute #{format_currency(corporation_cash.abs)}"
-              player_spend(player, corporation_cash.abs)
-              corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
-            else
-              @log << "#{loan_str} #{corporation.name} pays #{format_currency(loan)}"
-              corporation.spend(loan, @bank)
-            end
+            @log << "The bank settles #{corporation.name} loans of value #{format_currency(loan)}"
             corporation.loans.dup.each do |l|
               corporation.loans.delete(l)
               @loans << l
@@ -1792,11 +1775,9 @@ module Engine
 
         def forced_formation_par_prices(corporation)
           par_type = phase_par_type
-          par_prices = par_prices_sorted.select do |p|
+          par_prices_sorted.select do |p|
             p.types.include?(par_type) && can_par_share_price?(p, corporation)
           end
-          par_prices.reject! { |p| p.price == self.class::MAX_PAR_VALUE } if par_prices.size > 1
-          par_prices
         end
 
         def hex_is_port?(hex)
@@ -1843,6 +1824,7 @@ module Engine
             stops = route.visited_stops
             phase = route.phase
             train = route.train
+            e_train = self.class::E_TRAINS.include?(train.name)
             train_multiplier = train.obsolete ? 0.5 : 1
 
             # Transit hub & palace_car
@@ -1851,7 +1833,7 @@ module Engine
             stops.each do |stop|
               next if !stop || (!stop.city? && !stop.offboard?)
 
-              palace_car_revenue += 10
+              palace_car_revenue += 10 if !e_train || (e_train && stop.tokened_by?(entity))
               next if !stop.city? || !stop.tokened_by?(entity)
 
               stop_base_revenue = stop.route_base_revenue(phase, train)
@@ -2233,10 +2215,8 @@ module Engine
             5
           when 4
             4
-          when 5, 6
+          when 5, 6, 7
             3
-          when 7
-            2
           end
         end
 
