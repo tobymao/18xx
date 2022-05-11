@@ -135,7 +135,7 @@ module Engine
             name: 'Köping-Hults järnväg',
             value: 140,
             revenue: 0,
-            desc: 'Buy gives control to minor corporation with same name. The minor starts with a 2 train '\
+            desc: 'Buy gives control of minor corporation with same name. The minor starts with a 2 train '\
                   'and a home token and splits revenue evenly with owner. The minor may never buy or sell trains.'\
                   '  KHJ pays no revenue after the 2 train are rusted.',
             sym: 'KHJ',
