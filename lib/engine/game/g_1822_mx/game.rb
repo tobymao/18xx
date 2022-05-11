@@ -421,20 +421,19 @@ module Engine
         end
 
         def send_train_to_ndem(train)
-          depot.remove_train(train)
-          phase.next! while phase.next_on.include?(train.sym) # Also trigger events
-          train.events.each do |event|
-            send("event_#{event['type']}!")
-          end
-          train.events.clear
           if train.name == 'L' && phase.name == '2'
             train.variant = '2'
             @log << 'L Train given to NDEM is flipped to a 2 Train'
           end
-          ndem.trains.shift while ndem.trains.length >= phase.train_limit(ndem)
-          train.owner = ndem
-          ndem.trains << train
-        end
+
+          buy_train(ndem, train, :free)
+          phase.buying_train!(ndem, train)
+          while ndem.trains.length > phase.train_limit(ndem)
+            t = ndem.trains.shift
+            rust(t)
+          end
+        end          
+
 
         def setup
           # Setup the bidding token per player
