@@ -432,8 +432,7 @@ module Engine
             t = ndem.trains.shift
             rust(t)
           end
-        end          
-
+        end
 
         def setup
           # Setup the bidding token per player
