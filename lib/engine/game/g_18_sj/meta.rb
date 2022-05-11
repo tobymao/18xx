@@ -16,9 +16,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18SJ'
         GAME_LOCATION = 'Sweden and Norway'
         GAME_PUBLISHER = :self_published
-        GAME_RULES_URL = 'https://cdn.fbsbx.com/v/t59.2708-21/279939909_494748305728726_6506703077215187468_n.pdf/'\
-                         '18SJ-Rules-Wennman-v0.92.pdf?_nc_cat=105&ccb=1-6&_nc_sid=0cab14&_nc_ohc=sBPaJrIhnkkAX-dUyK2'\
-                         '&_nc_ht=cdn.fbsbx.com&oh=03_AVIlN9BOtWlHLkvoTB256JQAE1C1fJFBkh5HI3pFXO9icg&oe=627D771F&dl=1'
+        GAME_RULES_URL = 'https://drive.google.com/file/d/1xALoL0n92l187h01aE176wMdFod090Fy/view'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
