@@ -29,7 +29,7 @@ module Engine
                         purple: '#832e9a')
 
         attr_reader :drafted_companies, :parred_corporations
-        attr_accessor :rj_token
+        attr_accessor :rj_token, :use_che_discount
 
         ASSIGNMENT_TOKENS = {
           'LAC' => '/icons/18_los_angeles/lac_token.svg',
@@ -99,6 +99,8 @@ module Engine
           4 => 10,
           5 => 11,
         }.freeze
+
+        CHE_DISCOUNT = 20
 
         def setup
           super
@@ -222,10 +224,10 @@ module Engine
             G1846::Step::Bankrupt,
             Engine::Step::Assign,
             G18LosAngeles::Step::SpecialToken,
-            G1846::Step::SpecialTrack,
+            G18LosAngeles::Step::SpecialTrack,
             G1846::Step::BuyCompany,
             G1846::Step::IssueShares,
-            G1846::Step::TrackAndToken,
+            G18LosAngeles::Step::TrackAndToken,
             Engine::Step::Route,
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -278,6 +280,23 @@ module Engine
 
         def rj
           @rj ||= company_by_id('RJ')
+        end
+
+        def che
+          @che ||= company_by_id('CHE2')
+        end
+
+        def upgrade_cost(tile, _hex, entity, spender)
+          @use_che_discount ||= che&.owner == entity && !tile.upgrades.empty?
+
+          cost = super
+          return cost unless @use_che_discount
+
+          discount = self.class::CHE_DISCOUNT
+          @log << "#{spender.name} receives a discount of "\
+                  "#{format_currency(discount)} from "\
+                  "#{che.name}"
+          cost - discount
         end
 
         def block_for_steamboat?

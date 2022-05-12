@@ -46,7 +46,9 @@ module Engine
               end
             end
 
-            token.price * min_distance unless min_distance == 999
+            cost = token.price * min_distance
+            cost += @game.class::NYC_TOKEN_COST if @game.second_edition? && hex == @game.nyc_hex
+            cost
           end
         end
       end

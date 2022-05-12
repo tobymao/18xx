@@ -522,25 +522,12 @@ module Engine
         UPGRADABLE_S_YELLOW_CITY_TILE = '57'
         UPGRADABLE_S_YELLOW_ROTATIONS = [2, 5].freeze
         UPGRADABLE_S_HEX_NAME = 'D35'
-        UPGRADABLE_T_YELLOW_CITY_TILES = %w[5 6].freeze
-        UPGRADABLE_T_HEX_NAMES = %w[B43 K42 M42].freeze
 
         UPGRADE_COST_L_TO_2 = 80
 
         include StubsAreRestricted
 
         attr_accessor :bidding_token_per_player, :player_debts
-
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
-          upgrades = super
-          return upgrades unless tile_manifest
-
-          upgrades |= [@green_s_tile] if self.class::UPGRADABLE_S_YELLOW_CITY_TILE == tile.name
-          upgrades |= [@green_t_tile] if self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(tile.name)
-          upgrades |= [@sharp_city, @gentle_city] if self.class::UPGRADABLE_T_HEX_NAMES.include?(tile.hex.name)
-
-          upgrades
-        end
 
         def bank_sort(corporations)
           corporations.reject { |c| c.type == :minor }.sort_by(&:name)
@@ -1230,24 +1217,9 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # Check the S hex and potential upgrades
+          # This is needed because the S tile upgrade removes the town in yellow
           if self.class::UPGRADABLE_S_HEX_NAME == from.hex.name && from.color == :white
             return self.class::UPGRADABLE_S_YELLOW_CITY_TILE == to.name
-          end
-
-          if self.class::UPGRADABLE_S_HEX_NAME == from.hex.name &&
-            self.class::UPGRADABLE_S_YELLOW_CITY_TILE == from.name
-            return to.name == 'X3'
-          end
-
-          # Check the T hexes and potential upgrades
-          if self.class::UPGRADABLE_T_HEX_NAMES.include?(from.hex.name) && from.color == :white
-            return self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(to.name)
-          end
-
-          if self.class::UPGRADABLE_T_HEX_NAMES.include?(from.hex.name) &&
-            self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(from.name)
-            return to.name == '405'
           end
 
           # Special case for Middleton Railway where we remove a town from a tile
