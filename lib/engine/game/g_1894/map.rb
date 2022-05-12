@@ -200,7 +200,7 @@ module Engine
             ['A10'] => 'city=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0,lanes:2;path=a:5,b:_0',
             ['B5'] => 'path=a:1,b:5;path=a:1,b:0;path=a:5,b:0',
             ['C18'] => 'path=a:0,b:1;',
-            ['D1'] => 'town=revenue:10;path=a:4,b:_0',
+            ['D1'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0',
             ['E4'] => 'town=revenue:yellow_10|brown_30,visit_cost:0;label=extra;path=a:2,b:_0;path=a:4,b:_0',
             ['F11'] => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
             ['G18'] => 'path=a:0,b:2;',

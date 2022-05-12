@@ -465,11 +465,19 @@ module Engine
         end
 
         def pc_bonus(corporation, stops)
-          corporation.assigned?('PC') && stops.any? { |s| s.hex.assigned?('PC') } ? 10 : 0
+          is_pc_owner_running_to_london(corporation, stops) ? 10 : 0
         end
 
         def est_le_sud_bonus(corporation, stops)
           is_est_running_to_le_sud(corporation, stops) ? 30 : 0
+        end
+
+        def is_est_running_to_le_sud(corporation, stops)
+          corporation.id == 'Est' && stops.any? { |s| s.hex.id == LE_SUD_HEX }
+        end
+
+        def is_pc_owner_running_to_london(corporation, stops)
+          corporation.assigned?('PC') && stops.any? { |s| s.hex.assigned?('PC') }
         end
 
         def luxembourg_value(corporation, stops)
@@ -477,12 +485,9 @@ module Engine
 
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
           revenues << 60 if is_est_running_to_le_sud(corporation, stops)
+          revenues << get_current_revenue(hex_by_id(LONDON_HEX).tile.cities[0].revenue) + 10 if is_pc_owner_running_to_london(corporation, stops)
 
-          revenues.max
-        end
-
-        def is_est_running_to_le_sud(corporation, stops)
-          corporation.id == 'Est' && stops.any? { |s| s.hex.id == LE_SUD_HEX }
+          revenues.max + 10
         end
 
         def get_current_revenue(revenue)
