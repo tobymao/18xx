@@ -675,6 +675,8 @@ module Engine
         end
 
         def place_home_token(corporation)
+          return if corporation.tokens.first&.used
+
           if second_edition? && corporation.id == 'NY&H'
             @log << "#{corporation.name} spends #{format_currency(NYC_TOKEN_COST)} on NYC token fee"
             corporation.spend(NYC_TOKEN_COST, @bank)
