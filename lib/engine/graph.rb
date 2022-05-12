@@ -158,10 +158,14 @@ module Engine
       tokens.keys.each do |node|
         return nil if routes[:route_train_purchase] && routes_only
 
-        visited = tokens.reject { |token, _| token == node }
+        visited = []
+        tokens.reject { |token, _| token == node }.keys.each do |t_node|
+          t_node.force_visited(visited)
+        end
+        visited_paths = []
         local_nodes = {}
 
-        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
+        node.walk(visited: visited, corporation: walk_corporation, visited_paths: visited_paths, skip_track: @skip_track,
                   skip_paths: skip_paths, converging_path: false) do |path, _, _|
           next if paths[path]
 

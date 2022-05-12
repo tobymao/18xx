@@ -5,6 +5,23 @@ module Engine
     class Node < Base
       attr_accessor :lanes
 
+      BITS_PER_GROUP = 52 # max safe JS integer
+
+      def self.node_counter
+        @@node_counter ||= 0
+      end
+
+      def self.next_node_index
+        idx = node_counter
+        @@node_counter = idx + 1
+        idx
+      end
+
+      def self.init_visited
+        # ((@@node_counter.div(BITS_PER_GROUP)) + 1).times.map { |i| 0 }
+        []
+      end
+
       def clear!
         @paths = nil
         @exits = nil
@@ -24,6 +41,40 @@ module Engine
 
       def rect?
         false
+      end
+
+      def visited?(visited)
+        if visited.is_a?(Hash)
+          visited[self]
+        else
+          visited[@node_group] = 0 unless visited[@node_group]
+          ((visited[@node_group] >> @node_index) & 1) == 1
+        end
+      end
+
+      def mark_visited(visited)
+        if visited.is_a?(Hash)
+          visited[self] = true
+        else
+          visited[@node_group] |= (1 << @node_index)
+        end
+      end
+
+      def force_visited(visited)
+        if visited.is_a?(Hash)
+          visited[self] = true
+        else
+          visited[@node_group] = 0 unless visited[@node_group]
+          visited[@node_group] |= (1 << @node_index)
+        end
+      end
+
+      def unmark_visited(visited)
+        if visited.is_a?(Hash)
+          visited.delete(self)
+        else
+          visited[@node_group] = (visited[@node_group] | (1 << @node_index)) ^ (1 << @node_index)
+        end
       end
 
       # Explore the paths and nodes reachable from this node
@@ -46,9 +97,9 @@ module Engine
         converging_path: true,
         &block
       )
-        return if visited[self]
+        return if visited?(visited)
 
-        visited[self] = true
+        mark_visited(visited)
 
         paths.each do |node_path|
           next if node_path.track == skip_track
@@ -82,7 +133,7 @@ module Engine
           end
         end
 
-        visited.delete(self) if converging_path
+        unmark_visited(visited) if converging_path
       end
     end
   end

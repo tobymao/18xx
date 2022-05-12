@@ -18,6 +18,9 @@ module Engine
         @loc = opts[:loc]
 
         @route = (opts[:route] || :mandatory).to_sym
+        full_index = Engine::Part::Node.next_node_index
+        @node_group = full_index.div(BITS_PER_GROUP)
+        @node_index = full_index % BITS_PER_GROUP
       end
 
       # number, or something like "yellow_30|green_40|brown_50|gray_70|diesel_90"

@@ -14,6 +14,17 @@ module Engine
       MATCHES_NARROW = %i[narrow dual].freeze
       LANE_INDEX = 1
       LANE_WIDTH = 0
+      BITS_PER_GROUP = 52 # max safe JS integer
+
+      def self.path_counter
+        @@path_counter ||= 0
+      end
+
+      def self.next_path_index
+        idx = path_counter
+        @@path_counter = idx + 1
+        idx
+      end
 
       def self.decode_lane_spec(x_lane)
         if x_lane
@@ -67,6 +78,9 @@ module Engine
         @ignore = ignore
         @ignore_gauge_walk = ignore_gauge_walk
         @ignore_gauge_compare = ignore_gauge_compare
+        full_index = Engine::Part::Path.next_path_index
+        @path_group = full_index.div(BITS_PER_GROUP)
+        @path_index = full_index % BITS_PER_GROUP
 
         separate_parts
       end
@@ -122,6 +136,32 @@ module Engine
         false
       end
 
+      # visited? must be called before mark or unmark
+      def visited?(visited)
+        if visited.is_a?(Hash)
+          visited[self]
+        else
+          visited[@path_group] = 0 unless visited[@path_group]
+          ((visited[@path_group] >> @path_index) & 1) == 1
+        end
+      end
+
+      def mark_visited(visited)
+        if visited.is_a?(Hash)
+          visited[self] = true
+        else
+          visited[@path_group] |= (1 << @path_index)
+        end
+      end
+
+      def unmark_visited(visited)
+        if visited.is_a?(Hash)
+          visited.delete(self)
+        else
+          visited[@path_group] = (visited[@path_group] | (1 << @path_index)) ^ (1 << @path_index)
+        end
+      end
+
       # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
       # jskip: An junction to ignore. May be useful on complex tiles
       # visited: a hashset of visited Paths. Used to avoid repeating track segments.
@@ -138,12 +178,12 @@ module Engine
         converging: true,
         &block
       )
-        return if visited[self] || skip_paths&.key?(self)
+        return if visited?(visited) || skip_paths&.key?(self)
         return if @junction && counter[@junction] > 1
         return if edges.sum { |edge| counter[edge.id] }.positive?
         return if track == skip_track
 
-        visited[self] = true
+        mark_visited(visited)
         counter[@junction] += 1 if @junction
 
         yield self, visited, counter, converging
@@ -174,7 +214,7 @@ module Engine
           counter[edge_id] -= 1
         end
 
-        visited.delete(self) if converging
+        unmark_visited(visited) if converging
         counter[@junction] -= 1 if @junction
       end
 
