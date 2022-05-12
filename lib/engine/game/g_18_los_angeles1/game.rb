@@ -50,7 +50,7 @@ module Engine
 
         def game_companies
           @game_companies ||=
-            self.class::COMPANIES + (G18LosAngeles::Game::COMPANIES.slice(0, 11).map do |company|
+            self.class::COMPANIES + (G18LosAngeles::Game::COMPANIES.slice(0, 10).map do |company|
                                        self.class::COMPANIES_1E[company[:sym]] || company
                                      end)
         end
@@ -91,6 +91,24 @@ module Engine
         def after_bid; end
 
         def draft_finished?; end
+
+        def operating_round(round_num)
+          @round_num = round_num
+          G1846::Round::Operating.new(self, [
+            G1846::Step::Bankrupt,
+            Engine::Step::Assign,
+            G18LosAngeles::Step::SpecialToken,
+            G1846::Step::SpecialTrack,
+            G1846::Step::BuyCompany,
+            G1846::Step::IssueShares,
+            G1846::Step::TrackAndToken,
+            Engine::Step::Route,
+            G1846::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G1846::Step::BuyTrain,
+            [G1846::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
 
         def stock_round
           Engine::Round::Stock.new(self, [

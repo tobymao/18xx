@@ -27,11 +27,7 @@ module Engine
             ],
             color: nil,
           },
-        ].freeze
-
-        # companies with different properties in 1st Edition
-        COMPANIES_1E = {
-          'CHE' => {
+          {
             name: 'Chino Hills Excavation',
             value: 60,
             revenue: 20,
@@ -48,7 +44,10 @@ module Engine
             ],
             color: nil,
           },
+        ].freeze
 
+        # companies with different properties in 1st Edition
+        COMPANIES_1E = {
           'LAC' => {
             name: 'Los Angeles Citrus',
             value: 60,
