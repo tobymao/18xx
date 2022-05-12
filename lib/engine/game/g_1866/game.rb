@@ -58,11 +58,11 @@ module Engine
 
         MARKET = [
           %w[0c 10 20 30 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
-             200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
+             200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560e 600e],
           %w[0c 10 20 30 40 45 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
-             200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
+             200 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560e 600e],
           %w[0c 10 20 30 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
-             200w 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560em 600e],
+             200w 220 240 260 280 300 325 350 375 400 430 460e 490e 520e 560e 600e],
           %w[0P 0P 0P 0P 0P 0P 0P 0P 0P 0P],
         ].freeze
 
@@ -85,9 +85,7 @@ module Engine
                                               par: 'Yellow phase (L/2) par',
                                               par_1: 'Green phase (3/4) par',
                                               par_2: 'Brown phase (5/6) par',
-                                              par_3: 'Gray phase (8/10) par',
-                                              endgame: 'End game corporations/nationals',
-                                              max_price: 'End game stock turn tokens').freeze
+                                              par_3: 'Gray phase (8/10) par').freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
@@ -820,7 +818,6 @@ module Engine
         SHARE_PRICE_SUFFIX = ['T', 'M', 'B', ''].freeze
 
         STOCK_TURN_TOKEN_PREFIX = 'ST'
-        STOCK_TURN_TOKEN_END_GAME = 600
 
         attr_reader :scenario, :game_end_triggered_corporation, :game_end_triggered_round,
                     :major_national_formed, :major_national_formed_round, :player_sold_shares
@@ -1016,8 +1013,7 @@ module Engine
             reached
           end
           @st_max_reached ||= @stock_turn_token_in_play.values.flatten.any? do |c|
-            reached = !c.closed? && c.share_price.end_game_trigger? &&
-              c.share_price.price == self.class::STOCK_TURN_TOKEN_END_GAME
+            reached = !c.closed? && c.share_price.end_game_trigger?
             @game_end_triggered_corporation ||= c if reached
             reached
           end
