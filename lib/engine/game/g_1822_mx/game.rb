@@ -33,6 +33,8 @@ module Engine
           'IRM' => 3,
         }.freeze
 
+        STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
+
         STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18
                                 C1 C2 C3 C4 C5 C6 C7 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15
                                 M16 M17 M18 M19 M20 M21 M22 M23 M24].freeze
@@ -43,7 +45,7 @@ module Engine
         CURRENCY_FORMAT_STR = '$%d'
 
         MARKET = [
-          %w[5 10 15 20 25 30 35 40 45 50px 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450
+          %w[5 10 15 20 25 30 35 40 45 50p 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450
              500 550 600e],
         ].freeze
 
@@ -419,19 +421,17 @@ module Engine
         end
 
         def send_train_to_ndem(train)
-          depot.remove_train(train)
-          phase.next! while phase.next_on.include?(train.sym) # Also trigger events
-          train.events.each do |event|
-            send("event_#{event['type']}!")
-          end
-          train.events.clear
           if train.name == 'L' && phase.name == '2'
             train.variant = '2'
             @log << 'L Train given to NDEM is flipped to a 2 Train'
           end
-          ndem.trains.shift while ndem.trains.length >= phase.train_limit(ndem)
-          train.owner = ndem
-          ndem.trains << train
+
+          buy_train(ndem, train, :free)
+          phase.buying_train!(ndem, train)
+          while ndem.trains.length > phase.train_limit(ndem)
+            t = ndem.trains.shift
+            rust(t)
+          end
         end
 
         def setup
@@ -476,6 +476,11 @@ module Engine
           p1 = privates.find { |c| c.id == bidbox_start_private }
           privates.delete(p1)
           privates.unshift(p1)
+
+          # Move Minor 18 to the end so that it's not in the initial auction
+          m18 = minors.find { |c| c.id == 'M18' }
+          minors.delete(m18)
+          minors.push(m18)
 
           # Clear and add the companies in the correct randomize order sorted by type
           @companies.clear
@@ -647,7 +652,7 @@ module Engine
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          return true if from.color == 'blue' && to.color == 'blue'
+          return true if from.color == :blue && to.color == :blue
 
           super
         end
@@ -693,9 +698,9 @@ module Engine
 
         def max_builder_cubes(tile)
           max = 0
-          max += 2 if terrain?(tile, 'mountain')
-          max += 1 if terrain?(tile, 'hill')
-          max += 1 if terrain?(tile, 'river')
+          max += 2 if terrain?(tile, :mountain)
+          max += 1 if terrain?(tile, :hill)
+          max += 1 if terrain?(tile, :river)
           max
         end
 
@@ -711,15 +716,14 @@ module Engine
         def upgrade_cost(tile, hex, entity, spender)
           cost = super
           num_cubes = current_builder_cubes(tile)
-          if num_cubes >= 2 && terrain?(tile, 'mountain')
+          if num_cubes >= 2 && terrain?(tile, :mountain)
             num_cubes -= 2
             cost -= 80
-          end
-          if num_cubes >= 1 && terrain?(tile, 'hill')
+          elsif num_cubes >= 1 && terrain?(tile, :hill)
             num_cubes -= 1
             cost -= 40
           end
-          cost -= 20 if num_cubes >= 1 && terrain?(tile, 'river')
+          cost -= 20 if num_cubes >= 1 && terrain?(tile, :river)
           cost
         end
 
