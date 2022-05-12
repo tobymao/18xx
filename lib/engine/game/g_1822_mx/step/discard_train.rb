@@ -21,7 +21,6 @@ module Engine
             @game.remove_train(action.train)
             @log << "#{action.entity.name} discards #{action.train.name}, #{action.train.name} is removed from the game"
           end
-
         end
       end
     end
