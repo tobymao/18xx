@@ -48,7 +48,6 @@ module Engine
 
           def process_lay_tile(action)
             @log << "Tile placement for NDEM by #{@ndem_tile_layers[0].name}" if current_entity == @game.ndem
-            print('process_lay_tile')
             action.tile.label = 'T' if action.hex.tile.label.to_s == 'T'
             if action.tile.id == 'BC-0'
               @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
