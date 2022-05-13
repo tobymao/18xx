@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/special_choose'
+require_relative '../../g_1822/step/special_choose'
 
 module Engine
   module Game
