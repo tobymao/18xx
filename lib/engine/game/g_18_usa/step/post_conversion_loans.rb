@@ -11,8 +11,6 @@ module Engine
           include ScrapTrainModule
           def actions(entity)
             actions = super
-            return actions if actions.empty?
-
             actions << 'scrap_train' if can_scrap_train?(entity)
             actions
           end
