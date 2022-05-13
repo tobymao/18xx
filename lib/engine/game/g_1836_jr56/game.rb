@@ -401,11 +401,7 @@ module Engine
           },
         ].freeze
 
-        # These cities upgrade to the common BarrieLondon green tile,
-        #  but upgrade to specialized brown tiles
-        BARRIE_HEX = 'I3'
-        LONDON_HEX = 'H6'
-        HAMILTON_HEX = 'E5'
+        HAMILTON_HEX = 'A1' # Don't use; the future_label renders nicely in 1836jr56
         DESTINATIONS = {
           'NBDS' => 'E5',
           'HSM' => 'E11',
@@ -443,11 +439,11 @@ module Engine
           yellow: {
             ['D6'] =>
                      'city=revenue:40;path=a:0,b:_0;path=a:_0,b:5;label=T;upgrade=cost:40,terrain:water',
-            ['E5'] => 'city=revenue:0;city=revenue:0;label=OO',
+            ['E5'] => 'city=revenue:0;city=revenue:0;label=OO;future_label=label:H,color:gray',
             %w[E11 H10] =>
             'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:40,terrain:water',
-            ['H6'] => 'city=revenue:30;path=a:1,b:_0;path=a:_0,b:3;label=B',
-            ['I3'] => 'city=revenue:30;path=a:0,b:_0;path=a:_0,b:4;label=B',
+            ['H6'] => 'city=revenue:30;path=a:1,b:_0;path=a:_0,b:3;label=B-L;future_label=label:Lon,color:brown',
+            ['I3'] => 'city=revenue:30;path=a:0,b:_0;path=a:_0,b:4;label=B-L;future_label=label:Bar,color:brown',
           },
           blue: {
             %w[E3 G1] =>
@@ -461,7 +457,6 @@ module Engine
           },
         }.freeze
 
-        LAKE_HEXES = [].freeze
         LAYOUT = :pointy
 
         SELL_BUY_ORDER = :sell_buy_sell
