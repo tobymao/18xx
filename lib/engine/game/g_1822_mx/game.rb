@@ -549,6 +549,11 @@ module Engine
           super
         end
 
+        def next_turn!
+          @ndem_acting_player = nil
+          super
+        end
+
         def set_private_revenues
           @companies.each do |c|
             next unless c.owner
