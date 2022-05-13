@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1822MX
       module Step
-        class SpecialChoose < Engine::Step::SpecialChoose
+        class SpecialChoose < Engine::Game::G1822::Step::SpecialChoose
           def process_choose_ability(action)
             return unless action.choice == 'close_p16'
 
