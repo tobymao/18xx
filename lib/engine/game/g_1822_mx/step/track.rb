@@ -13,12 +13,6 @@ module Engine
               @ndem_tile_layers = @game.players.select do |p|
                 @game.ndem.player_share_holders.include?(p) && @game.ndem.player_share_holders[p].positive?
               end
-              if @ndem_tile_layers.length.positive?
-                @ndem_route_runner = @ndem_tile_layers[0]
-                @game.ndem_acting_player = @ndem_tile_layers[0]
-              else
-                @ndem_route_runner = @game.players[0]
-              end
             end
             super
           end
@@ -41,13 +35,11 @@ module Engine
               @ndem_tile_layers.shift
               if @ndem_tile_layers.empty?
                 @round.laid_hexes = @ndem_tiles_laid
-                @game.ndem_acting_player = @ndem_route_runner # Setup for route step
                 super
               else
                 @round.num_laid_track = 0
                 @round.upgraded_track = false
                 @round.laid_hexes = []
-                @game.ndem_acting_player = @ndem_tile_layers[0]
               end
             else
               super
@@ -55,7 +47,8 @@ module Engine
           end
 
           def process_lay_tile(action)
-            @log << "Tile placement for NDEM by #{@game.ndem_acting_player.name}" if current_entity == @game.ndem
+            @log << "Tile placement for NDEM by #{@ndem_tile_layers[0].name}" if current_entity == @game.ndem
+            print('process_lay_tile')
             action.tile.label = 'T' if action.hex.tile.label.to_s == 'T'
             if action.tile.id == 'BC-0'
               @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
@@ -108,6 +101,12 @@ module Engine
             end
 
             super
+          end
+
+          def ndem_acting_player
+            return nil if current_entity != @game.ndem
+
+            @ndem_tile_layers.length.positive? ? @ndem_tile_layers[0] : nil
           end
         end
       end

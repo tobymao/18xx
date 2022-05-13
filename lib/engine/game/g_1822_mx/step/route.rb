@@ -7,8 +7,14 @@ module Engine
     module G1822MX
       module Step
         class Route < Engine::Game::G1822::Step::Route
+          def ndem_acting_player
+            return nil if current_entity != @game.ndem
+
+            @game.players.find { |p| @game.ndem.player_share_holders.include?(p) && @game.ndem.player_share_holders[p].positive? }
+          end
+
           def help
-            return super unless current_entity.id == 'NDEM'
+            return super unless current_entity == @game.ndem
 
             'NDEM has no president.  The shareholder in highest priority will run the '\
               'trains.  If there are no shareholders, the player with priority will do so.'
