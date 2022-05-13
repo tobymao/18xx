@@ -782,12 +782,6 @@ module Engine
           @last_revenue[entity] = major_revenue(entity)
         end
 
-        def city_tokened_by?(city, entity)
-          return super unless entity.type == :city
-
-          true
-        end
-
         def revenue_for(route, stops)
           # without city or with tokened city
           base_revenue = stops.sum do |stop|
