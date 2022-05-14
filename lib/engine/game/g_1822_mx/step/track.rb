@@ -49,6 +49,9 @@ module Engine
           def process_lay_tile(action)
             @log << "Tile placement for NDEM by #{@ndem_tile_layers.first.name}" if current_entity == @game.ndem
             if action.tile.id == 'BC-0'
+              tile_lay = get_tile_lay(action.entity)
+              raise GameError, 'Cannot lay a builder cube now' unless tile_lay && tile_lay[:lay]
+
               @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
               action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
               @round.num_laid_track += 1
