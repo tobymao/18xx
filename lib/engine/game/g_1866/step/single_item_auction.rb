@@ -133,7 +133,7 @@ module Engine
           def get_par_prices(entity, corp = nil)
             par_type = @game.phase_par_type
             @game.par_prices_sorted.select do |p|
-              multiplier = corp.nil? ? 1 : 2
+              multiplier = corp ? 2 : 1
               p.types.include?(par_type) && (p.price * multiplier) <= entity.cash &&
                 @game.can_par_share_price?(p, corp)
             end

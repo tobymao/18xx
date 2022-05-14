@@ -334,7 +334,7 @@ module View
           }
 
           corporations = []
-          @step.par_corporations(@current_entity).map do |corporation|
+          @step.par_corporations(@current_entity).each do |corporation|
             children = []
             children << h(Corporation, corporation: corporation)
             children << render_ipo_input if @selected_corporation == corporation
