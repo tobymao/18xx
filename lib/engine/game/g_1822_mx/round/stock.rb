@@ -14,7 +14,6 @@ module Engine
             player = bid.entity
             company = @game.company_by_id('M18')
             company.owner = player
-            player.companies << company
 
             minor = @game.find_corporation(company)
             minor.reservation_color = :white

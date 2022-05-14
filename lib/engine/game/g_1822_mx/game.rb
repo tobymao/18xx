@@ -544,7 +544,9 @@ module Engine
         end
 
         def active_players
-          return [@ndem_acting_player] if @ndem_acting_player
+          if current_entity == ndem && @round.active_step.respond_to?(:ndem_acting_player)
+            return [@round.active_step.ndem_acting_player]
+          end
 
           super
         end
