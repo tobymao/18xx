@@ -103,8 +103,6 @@ module Engine
           end
 
           def ndem_acting_player
-            return nil if current_entity != @game.ndem
-
             @ndem_tile_layers&.first
           end
         end

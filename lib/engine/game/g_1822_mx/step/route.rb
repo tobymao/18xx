@@ -8,8 +8,6 @@ module Engine
       module Step
         class Route < Engine::Game::G1822::Step::Route
           def ndem_acting_player
-            return nil if current_entity != @game.ndem
-
             @game.players.find { |p| @game.ndem.player_share_holders[p]&.positive? } || @game.players.first
           end
 
