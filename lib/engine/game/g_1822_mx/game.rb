@@ -342,15 +342,6 @@ module Engine
           G1822MX::SharePool.new(self)
         end
 
-        def upgrades_to_correct_label?(from, to)
-          # If the previous hex is white with a 'T', allow upgrades to 5 or 6
-          if from.hex.tile.label.to_s == 'T' && from.hex.tile.color == :white
-            return true if to.name == '5'
-            return true if to.name == '6'
-          end
-          super
-        end
-
         def stock_round
           G1822MX::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,

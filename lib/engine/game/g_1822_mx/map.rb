@@ -109,7 +109,7 @@ module Engine
             %w[B3 D9 D15 E8 F13 G6 G22 J13 J15 K20 N27 O32 P27] =>
               'city=revenue:0',
             %w[B1 J9 L37 L39 P23] =>
-              'city=revenue:0;label=T',
+              'city=revenue:0;future_label=label:T,color:green',
             %w[F15 H11 K24] =>
               'city=revenue:0;upgrade=cost:20,terrain:river',
             ['I18'] =>
