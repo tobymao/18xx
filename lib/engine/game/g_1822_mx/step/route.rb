@@ -10,7 +10,7 @@ module Engine
           def ndem_acting_player
             return nil if current_entity != @game.ndem
 
-            @game.players.find { |p| @game.ndem.player_share_holders.include?(p) && @game.ndem.player_share_holders[p].positive? }
+            @game.players.find { |p| @game.ndem.player_share_holders[p]&.positive? } || @game.players.first
           end
 
           def help
