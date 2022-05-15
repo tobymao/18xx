@@ -13,7 +13,7 @@ module Engine
             routes = action.routes
             super
 
-            return unless entity == @game.gkb.owner
+            return if !@game.gkb || entity != @game.gkb.owner
 
             gbd = []
             routes.each { |r| gbd.concat(@game.gkb_bonuses_details(r)) }
