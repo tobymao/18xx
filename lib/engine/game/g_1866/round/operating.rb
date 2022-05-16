@@ -86,7 +86,7 @@ module Engine
               @entities_orginal.each_with_index do |e, idx|
                 next if e[:type] == :minor_national
 
-                if @game.germany_or_italy_national?(c) || @game.stock_turn_corporation?(c)
+                if @game.germany_or_italy_national?(c)
                   @operated_entities[c.id] = true
                   index = idx
                   break
