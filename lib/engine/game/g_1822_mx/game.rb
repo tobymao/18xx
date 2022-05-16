@@ -371,7 +371,7 @@ module Engine
           corporation = corporation_from_company(company)
 
           # Replace token
-          city = hex_by_id(corporation.coordinates).tile.cities[corporation.city]
+          city = hex_by_id(corporation.coordinates).tile.cities.find { |c| c.reserved_by?(corporation) }
           city.remove_reservation!(corporation)
           city.place_token(ndem, ndem.find_token_by_type, check_tokenable: false)
           graph.clear
