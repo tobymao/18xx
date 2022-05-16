@@ -1086,7 +1086,7 @@ module Engine
         def gkb_bonus(route)
           bonus = { revenue: 0 }
 
-          return bonus if route.train.owner != gkb.owner
+          return bonus if !gkb || route.train.owner != gkb.owner
 
           gkb_bonuses_details(route).each do |gbd|
             bonus[:revenue] += gbd[:amount]
