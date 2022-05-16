@@ -312,7 +312,7 @@ module View
             },
           }
 
-          @selected_corporation = @step.auctioning if @step.auctioning&.corporation?
+          @selected_corporation = @step.auctioning if @step.auctioning.is_a?(Engine::Corporation)
 
           @step.available.select(&:corporation?).map do |corporation|
             children = []
