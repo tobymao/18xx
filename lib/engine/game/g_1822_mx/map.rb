@@ -143,12 +143,14 @@ module Engine
               'city=revenue:30,slots:1;city=revenue:30,slots:1;city=revenue:30,slots:1;'\
               'path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:4,b:_1;path=a:3,b:_2;'\
               'label=Y',
+            %w[C16 E22] =>
+              'junction;path=a:0,b:_0,terminal:1',
           },
           gray: {
             ['A2'] =>
               'city=revenue:yellow_30|green_40|brown_60|gray_80,slots:2;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
             ['C8'] =>
-              'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0;path=a:5,b:_0',
+              'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
             ['C14'] =>
               'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
             ['F23'] =>
