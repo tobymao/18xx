@@ -899,7 +899,7 @@ module Engine
           },
           {
             sym: '10',
-            name: 'Grand Junction Railway',
+            name: 'Potosi Central Railroad',
             logo: '1822/10',
             tokens: [0],
             type: 'minor',
