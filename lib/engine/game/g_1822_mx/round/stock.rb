@@ -14,10 +14,10 @@ module Engine
             player = bid.entity
             company = @game.company_by_id('M18')
             company.owner = player
-            player.companies << company
 
             minor = @game.find_corporation(company)
             minor.reservation_color = :white
+            minor.ipoed = true
 
             share_price = @game.stock_market.par_prices.find { |pp| pp.price == 50 }
             @game.stock_market.set_par(minor, share_price)
