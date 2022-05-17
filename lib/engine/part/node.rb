@@ -10,8 +10,7 @@ module Engine
       def self.init_visited
         @@node_walk_counter ||= 0
         @@node_walk_counter += 1
-        @@node_counter = 0
-        []
+        [@@node_walk_counter, 0]
       end
 
       def clear!
@@ -40,11 +39,12 @@ module Engine
         if visited.is_a?(Hash)
           visited[self]
         else
-          unless @node_walk_signature == @@node_walk_counter
-            @node_walk_signature = @@node_walk_counter
-            @node_group = @@node_counter.div(BITS_PER_GROUP)
-            @node_index = @@node_counter % BITS_PER_GROUP
-            @@node_counter += 1
+          unless @node_walk_signature == visited[0]
+            @node_walk_signature = visited[0]
+            full_index = visited[1]
+            @node_group = full_index.div(BITS_PER_GROUP) + 2
+            @node_index = full_index % BITS_PER_GROUP
+            visited[1] += 1
           end
           visited[@node_group] = 0 unless visited[@node_group]
           ((visited[@node_group] >> @node_index) & 1) == 1

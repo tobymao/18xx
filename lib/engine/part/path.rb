@@ -19,8 +19,7 @@ module Engine
       def self.init_visited
         @@path_walk_counter ||= 0
         @@path_walk_counter += 1
-        @@path_counter = 0
-        []
+        [@@path_walk_counter, 0]
       end
 
       def self.decode_lane_spec(x_lane)
@@ -138,11 +137,12 @@ module Engine
         if visited.is_a?(Hash)
           visited[self]
         else
-          unless @path_walk_signature == @@path_walk_counter
-            @path_walk_signature = @@path_walk_counter
-            @path_group = @@path_counter.div(BITS_PER_GROUP)
-            @path_index = @@path_counter % BITS_PER_GROUP
-            @@path_counter += 1
+          unless @path_walk_signature == visited[0]
+            @path_walk_signature = visited[0]
+            full_index = visited[1]
+            @path_group = full_index.div(BITS_PER_GROUP) + 2
+            @path_index = full_index % BITS_PER_GROUP
+            visited[1] += 1
           end
           visited[@path_group] = 0 unless visited[@path_group]
           ((visited[@path_group] >> @path_index) & 1) == 1
