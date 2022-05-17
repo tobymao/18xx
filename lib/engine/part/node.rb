@@ -5,20 +5,12 @@ module Engine
     class Node < Base
       attr_accessor :lanes
 
-      BITS_PER_GROUP = 52 # max safe JS integer
-
-      def self.node_counter
-        @@node_counter ||= 0
-      end
-
-      def self.next_node_index
-        idx = node_counter
-        @@node_counter = idx + 1
-        idx
-      end
+      BITS_PER_GROUP = 52 # max safe JS integer size
 
       def self.init_visited
-        # ((@@node_counter.div(BITS_PER_GROUP)) + 1).times.map { |i| 0 }
+        @@node_walk_counter ||= 0
+        @@node_walk_counter += 1
+        @@node_counter = 0
         []
       end
 
@@ -43,10 +35,17 @@ module Engine
         false
       end
 
+      # visited? must be called before mark and unmark
       def visited?(visited)
         if visited.is_a?(Hash)
           visited[self]
         else
+          unless @node_walk_signature == @@node_walk_counter
+            @node_walk_signature = @@node_walk_counter
+            @node_group = @@node_counter.div(BITS_PER_GROUP)
+            @node_index = @@node_counter % BITS_PER_GROUP
+            @@node_counter += 1
+          end
           visited[@node_group] = 0 unless visited[@node_group]
           ((visited[@node_group] >> @node_index) & 1) == 1
         end
@@ -64,8 +63,7 @@ module Engine
         if visited.is_a?(Hash)
           visited[self] = true
         else
-          visited[@node_group] = 0 unless visited[@node_group]
-          visited[@node_group] |= (1 << @node_index)
+          visited[@node_group] |= (1 << @node_index) unless visited?(visited)
         end
       end
 

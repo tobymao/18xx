@@ -14,16 +14,13 @@ module Engine
       MATCHES_NARROW = %i[narrow dual].freeze
       LANE_INDEX = 1
       LANE_WIDTH = 0
-      BITS_PER_GROUP = 52 # max safe JS integer
+      BITS_PER_GROUP = 52 # max safe JS integer size
 
-      def self.path_counter
-        @@path_counter ||= 0
-      end
-
-      def self.next_path_index
-        idx = path_counter
-        @@path_counter = idx + 1
-        idx
+      def self.init_visited
+        @@path_walk_counter ||= 0
+        @@path_walk_counter += 1
+        @@path_counter = 0
+        []
       end
 
       def self.decode_lane_spec(x_lane)
@@ -78,9 +75,9 @@ module Engine
         @ignore = ignore
         @ignore_gauge_walk = ignore_gauge_walk
         @ignore_gauge_compare = ignore_gauge_compare
-        full_index = Engine::Part::Path.next_path_index
-        @path_group = full_index.div(BITS_PER_GROUP)
-        @path_index = full_index % BITS_PER_GROUP
+        @path_walk_signature = nil
+        @path_group = nil
+        @path_index = nil
 
         separate_parts
       end
@@ -141,6 +138,12 @@ module Engine
         if visited.is_a?(Hash)
           visited[self]
         else
+          unless @path_walk_signature == @@path_walk_counter
+            @path_walk_signature = @@path_walk_counter
+            @path_group = @@path_counter.div(BITS_PER_GROUP)
+            @path_index = @@path_counter % BITS_PER_GROUP
+            @@path_counter += 1
+          end
           visited[@path_group] = 0 unless visited[@path_group]
           ((visited[@path_group] >> @path_index) & 1) == 1
         end
