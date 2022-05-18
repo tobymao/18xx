@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'part/path'
+require_relative 'bitvector'
 
 module Engine
   class Graph
@@ -17,6 +18,7 @@ module Engine
       @no_blocking = opts[:no_blocking] || false
       @skip_track = opts[:skip_track]
       @check_tokens = opts[:check_tokens]
+      @walk_id = 0
     end
 
     def clear
@@ -158,10 +160,11 @@ module Engine
       tokens.keys.each do |node|
         return nil if routes[:route_train_purchase] && routes_only
 
-        visited = Engine::Part::Node.init_visited
-        visited_paths = Engine::Part::Path.init_visited
+        @walk_id += 1
+        visited = BitVector.new(self, @walk_id)
+        visited_paths = BitVector.new(self, @walk_id)
         tokens.reject { |token, _| token == node }.keys.each do |t_node|
-          t_node.force_visited(visited)
+          visited[t_node] = true
         end
         local_nodes = {}
 

@@ -5,7 +5,7 @@ require_relative 'node'
 module Engine
   module Part
     class RevenueCenter < Node
-      attr_accessor :groups
+      attr_accessor :groups, :walk_graph, :walk_id, :bit_group, :bit_index
       attr_reader :hide, :revenue, :revenue_to_render, :visit_cost, :route, :loc
 
       PHASES = %i[yellow green brown gray diesel].freeze
@@ -18,9 +18,12 @@ module Engine
         @loc = opts[:loc]
 
         @route = (opts[:route] || :mandatory).to_sym
-        @node_walk_signature = nil
-        @node_group = nil
-        @node_index = nil
+
+        # used by walk when using a BitVector
+        @walk_graph = nil
+        @walk_id = nil
+        @bit_group = nil
+        @bit_index = nil
       end
 
       # number, or something like "yellow_30|green_40|brown_50|gray_70|diesel_90"

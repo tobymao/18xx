@@ -7,20 +7,13 @@ module Engine
     class Path < Base
       attr_reader :a, :b, :city, :edges, :exit_lanes, :junction, :lanes, :nodes, :offboard,
                   :stops, :terminal, :town, :track, :ignore
-      attr_accessor :ignore_gauge_walk, :ignore_gauge_compare
+      attr_accessor :ignore_gauge_walk, :ignore_gauge_compare, :walk_graph, :walk_id, :bit_group, :bit_index
 
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
       MATCHES_BROAD = %i[broad dual].freeze
       MATCHES_NARROW = %i[narrow dual].freeze
       LANE_INDEX = 1
       LANE_WIDTH = 0
-      BITS_PER_GROUP = 52 # max safe JS integer size
-
-      def self.init_visited
-        @@path_walk_counter ||= 0
-        @@path_walk_counter += 1
-        [@@path_walk_counter, 0]
-      end
 
       def self.decode_lane_spec(x_lane)
         if x_lane
@@ -74,9 +67,12 @@ module Engine
         @ignore = ignore
         @ignore_gauge_walk = ignore_gauge_walk
         @ignore_gauge_compare = ignore_gauge_compare
-        @path_walk_signature = nil
-        @path_group = nil
-        @path_index = nil
+
+        # used by walk when using a BitVector
+        @walk_graph = nil
+        @walk_id = nil
+        @bit_group = nil
+        @bit_index = nil
 
         separate_parts
       end
@@ -132,42 +128,9 @@ module Engine
         false
       end
 
-      # visited? must be called before mark or unmark
-      def visited?(visited)
-        if visited.is_a?(Hash)
-          visited[self]
-        else
-          unless @path_walk_signature == visited[0]
-            @path_walk_signature = visited[0]
-            full_index = visited[1]
-            @path_group = full_index.div(BITS_PER_GROUP) + 2
-            @path_index = full_index % BITS_PER_GROUP
-            visited[1] += 1
-          end
-          visited[@path_group] = 0 unless visited[@path_group]
-          ((visited[@path_group] >> @path_index) & 1) == 1
-        end
-      end
-
-      def mark_visited(visited)
-        if visited.is_a?(Hash)
-          visited[self] = true
-        else
-          visited[@path_group] |= (1 << @path_index)
-        end
-      end
-
-      def unmark_visited(visited)
-        if visited.is_a?(Hash)
-          visited.delete(self)
-        else
-          visited[@path_group] = (visited[@path_group] | (1 << @path_index)) ^ (1 << @path_index)
-        end
-      end
-
       # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
       # jskip: An junction to ignore. May be useful on complex tiles
-      # visited: a hashset of visited Paths. Used to avoid repeating track segments.
+      # visited: a hashset or BitVector of visited Paths. Used to avoid repeating track segments.
       # counter: a hash tracking edges and junctions to avoid reuse
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
       # converging: When true, some predecessor path was part of a converging switch
@@ -181,12 +144,12 @@ module Engine
         converging: true,
         &block
       )
-        return if visited?(visited) || skip_paths&.key?(self)
+        return if visited[self] || skip_paths&.key?(self)
         return if @junction && counter[@junction] > 1
         return if edges.sum { |edge| counter[edge.id] }.positive?
         return if track == skip_track
 
-        mark_visited(visited)
+        visited[self] = true
         counter[@junction] += 1 if @junction
 
         yield self, visited, counter, converging
@@ -217,7 +180,7 @@ module Engine
           counter[edge_id] -= 1
         end
 
-        unmark_visited(visited) if converging
+        visited.delete(self) if converging
         counter[@junction] -= 1 if @junction
       end
 
