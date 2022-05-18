@@ -29,6 +29,7 @@ module Engine
       when :city
         @city&.tokens&.map! { |t| t == self ? nil : t }
         @city&.extra_tokens&.delete(self)
+        @city&.prune_extra_slots!
       when :hex
         @hex.remove_token(self)
       end
