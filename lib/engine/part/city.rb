@@ -168,14 +168,6 @@ module Engine
         remove_tokens!
         @tokens = Array.new(@slots)
       end
-
-      def prune_extra_slots!
-        if @tokens.size > @slots
-          tokens = @tokens.compact.dup
-          @tokens = Array.new([tokens.size + @reservations.count(&:itself), @slots].max)
-          @tokens.map!.with_index { |_,i| @reservations[i] ? nil : tokens.shift }
-        end
-      end
     end
   end
 end
