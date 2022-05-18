@@ -33,7 +33,7 @@ module Engine
       if target.walk_graph != @graph || target.walk_id != @id
         target.walk_graph = @graph
         target.walk_id = @id
-        target.bit_group = @next_index.div(BITS_PER_GROUP)
+        target.bit_group = @next_index / BITS_PER_GROUP
         target.bit_index = @next_index % BITS_PER_GROUP
         @next_index += 1
       end

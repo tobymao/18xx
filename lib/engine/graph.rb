@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'part/path'
-require_relative 'bitvector'
+require_relative 'bit_vector'
 
 module Engine
   class Graph
