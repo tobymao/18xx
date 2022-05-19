@@ -19,9 +19,6 @@ module View
       message = <<~MESSAGE
 
         <p><a href='https://github.com/tobymao/18xx/wiki/18LosAngeles#2nd-edition'>18 Los Angeles 2</a> is in alpha.</p>
-        <p><a href='https://github.com/tobymao/18xx/wiki/18SJ'>18SJ</a> version 0.92 is now available. Alpha next?</p>
-        <p><a href='https://github.com/tobymao/18xx/wiki/1822MX'>1822MX</a> is in alpha.</p>
-        <p>18Carolinas, 18NewEngland and 18NewEngland2 are now in production.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
