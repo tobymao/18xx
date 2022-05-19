@@ -39,6 +39,10 @@ module Engine
       @shares.find(&:president)
     end
 
+    def preferred
+      @shares.any?(&:preferred)
+    end
+
     def price_per_share
       @share_price || @shares.first.price_per_share
     end
