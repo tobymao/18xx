@@ -693,13 +693,13 @@ module Engine
           blue: {
             %w[A5 AK1] =>
               'junction;path=a:0,b:_0,terminal:1',
-            ['M5'] =>
+            %w[a6 M5] =>
               'junction;path=a:5,b:_0,terminal:1',
             %w[S17 AB26 AN10 AP10] =>
               'junction;path=a:2,b:_0,terminal:1',
             %w[R18 V20 AM11 AO11] =>
               'junction;path=a:3,b:_0,terminal:1',
-            %w[F18 U19] =>
+            %w[a8 F18 U19] =>
               'junction;path=a:4,b:_0,terminal:1',
             ['AN8'] =>
               'junction;path=a:1,b:_0,terminal:1;junction;path=a:3,b:_0,terminal:1',
