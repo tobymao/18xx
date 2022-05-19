@@ -68,12 +68,6 @@ module Engine
         @ignore_gauge_walk = ignore_gauge_walk
         @ignore_gauge_compare = ignore_gauge_compare
 
-        # used by walk when using a BitVector
-        @walk_graph = nil
-        @walk_id = nil
-        @bit_group = nil
-        @bit_index = nil
-
         separate_parts
       end
 
@@ -130,7 +124,7 @@ module Engine
 
       # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
       # jskip: An junction to ignore. May be useful on complex tiles
-      # visited: a hashset or BitVector of visited Paths. Used to avoid repeating track segments.
+      # visited: a hashset of visited Paths. Used to avoid repeating track segments.
       # counter: a hash tracking edges and junctions to avoid reuse
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
       # converging: When true, some predecessor path was part of a converging switch

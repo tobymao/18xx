@@ -18,12 +18,6 @@ module Engine
         @loc = opts[:loc]
 
         @route = (opts[:route] || :mandatory).to_sym
-
-        # used by walk when using a BitVector
-        @walk_graph = nil
-        @walk_id = nil
-        @bit_group = nil
-        @bit_index = nil
       end
 
       # number, or something like "yellow_30|green_40|brown_50|gray_70|diesel_90"

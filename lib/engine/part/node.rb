@@ -28,9 +28,9 @@ module Engine
 
       # Explore the paths and nodes reachable from this node
       #
-      # visited: a hashset or BitVector of visited Nodes
+      # visited: a hashset of visited Nodes
       # corporation: If set don't walk on adjacent nodes which are blocked for the passed corporation
-      # visited_paths: a hashset or BitVector of visited Paths
+      # visited_paths: a hashset of visited Paths
       # counter: a hash tracking edges and junctions to avoid reuse
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
       # converging_path: When true, some predecessor path was part of a converging switch
