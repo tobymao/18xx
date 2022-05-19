@@ -294,14 +294,11 @@ module Engine
     end
 
     def exit_count
-      @_exit_count ||= compute_exit_count
-    end
-
-    def compute_exit_count
-      count = []
-      ALL_EDGES.each { |e| count[e] = 0 }
-      @edges.each { |edge| count[rotate(edge.num, @rotation)] += 1 }
-      count
+      @_exit_count ||= begin
+        counts = Hash.new(0)
+        @edges.each { |edge| counts[rotate(edge.num, @rotation)] += 1 }
+        counts
+      end
     end
 
     def ignore_gauge_walk=(val)
