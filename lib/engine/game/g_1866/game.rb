@@ -449,7 +449,7 @@ module Engine
             },
             'infrastructure_count' => 5,
             'companies' => %w[C1 C2 C3 C4 C5 C6 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L],
             'national_corporations' => %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
             'corporation_count' => 13,
             'region_corporations' => {
@@ -495,7 +495,7 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[C1 C2 C4 C6 M1 M2 M3 M4 M5 ST1 ST2 ST3 ST4 ST5 ST6],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SBB GL NRS L P],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SBB GL NRS L],
             'national_corporations' => %w[GB FR BNL CH DE PRU HAN BAV WTB SAX],
             'corporation_count' => 9,
             'region_corporations' => {
@@ -505,9 +505,9 @@ module Engine
               'BNL' => %w[GL NRS],
             },
             'region_corporations_maxcount' => {
-              'GB' => 2,
+              'GB' => 3,
               'FR' => 3,
-              'DE' => 2,
+              'DE' => 3,
             },
           },
           'ces' => {
@@ -547,9 +547,9 @@ module Engine
               'IT' => %w[SSFL IFT SFAI],
             },
             'region_corporations_maxcount' => {
-              'AHE' => 2,
-              'DE' => 2,
-              'IT' => 2,
+              'AHE' => 3,
+              'DE' => 3,
+              'IT' => 3,
             },
           },
           'ses' => {
@@ -580,7 +580,7 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[C2 C3 C5 C6 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6],
-            'corporations' => %w[PLM MIDI OU CPS SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
+            'corporations' => %w[PLM MIDI OU CPS SB BH FNR SSFL IFT SFAI SBB ZPB MZA],
             'national_corporations' => %w[FR AHE ESP CH IT K2S SAR LV PAP TUS],
             'corporation_count' => 9,
             'region_corporations' => {
@@ -591,8 +591,8 @@ module Engine
             },
             'region_corporations_maxcount' => {
               'FR' => 3,
-              'AHE' => 2,
-              'IT' => 2,
+              'AHE' => 3,
+              'IT' => 3,
             },
           },
         }.freeze
