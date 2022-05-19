@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'part/path'
-require_relative 'bit_vector'
 
 module Engine
   class Graph
@@ -18,7 +17,6 @@ module Engine
       @no_blocking = opts[:no_blocking] || false
       @skip_track = opts[:skip_track]
       @check_tokens = opts[:check_tokens]
-      @walk_id = 0
     end
 
     def clear

@@ -5,7 +5,7 @@ require_relative 'node'
 module Engine
   module Part
     class RevenueCenter < Node
-      attr_accessor :groups, :walk_graph, :walk_id, :bit_group, :bit_index
+      attr_accessor :groups
       attr_reader :hide, :revenue, :revenue_to_render, :visit_cost, :route, :loc
 
       PHASES = %i[yellow green brown gray diesel].freeze
