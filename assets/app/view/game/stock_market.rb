@@ -242,17 +242,29 @@ module View
       end
 
       def grid_2d
-        @game.stock_market.market.flat_map do |row_prices|
-          row = row_prices.map do |price|
+        @game.stock_market.market.each_with_index.map do |row_prices, i|
+          row = row_prices.each_with_index.map do |price, j|
             if price
               corporations = price.corporations
               num = corporations.size
               spacing = num > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num - 1) : 0
               tokens = corporations.map.with_index { |corp, index| h(:img, token_props(corp, index, num, spacing)) }
 
+              if j.zero? && ((i + 1) != @game.stock_market.market.length)
+                align = { left: 0, bottom: 0 }
+                arrow = '⭣'
+              elsif ((j + 1) == row_prices.length) && !i.zero?
+                align = { right: 0, top: 0 }
+                arrow = '⭡'
+              else
+                align = {}
+                arrow = ''
+              end
+
               h(:div, { style: cell_style(@box_style_2d, price.types) }, [
                 h('div.xsmall_font', price.price),
                 h(:div, tokens),
+                h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow),
               ])
             else
               h(:div, { style: @space_style_2d }, '')
