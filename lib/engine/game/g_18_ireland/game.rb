@@ -286,7 +286,7 @@ module Engine
             bonus = 0
             nodes = { stop => true }
 
-            stop.walk(skip_track: :broad, tile_type: self.class::TILE_TYPE) do |path, _, _|
+            stop.walk(skip_track: :broad) do |path, _, _|
               abort = nil
               path.nodes.each do |p_node|
                 next if nodes[p_node]
@@ -375,7 +375,7 @@ module Engine
           paths = {}
 
           @graph.connected_nodes(entity).keys.each do |node|
-            node.walk(skip_track: :broad, tile_type: self.class::TILE_TYPE) do |path, _, _|
+            node.walk(skip_track: :broad) do |path, _, _|
               next if paths[path]
 
               paths[path] = true

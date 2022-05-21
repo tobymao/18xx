@@ -127,15 +127,15 @@ module Engine
       # visited: a hashset of visited Paths. Used to avoid repeating track segments.
       # counter: a hash tracking edges and junctions to avoid reuse
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
-      # tile_type: if :lawson don't undo visited paths
+      # converging: When true, some predecessor path was part of a converging switch
       def walk(
         skip: nil,
         jskip: nil,
         visited: {},
         skip_paths: nil,
         counter: Hash.new(0),
-        tile_type: :normal,
         skip_track: nil,
+        converging: true,
         &block
       )
         return if visited[self] || skip_paths&.key?(self)
@@ -146,11 +146,11 @@ module Engine
         visited[self] = true
         counter[@junction] += 1 if @junction
 
-        yield self, visited, counter
+        yield self, visited, counter, converging
 
         if @junction && @junction != jskip
           @junction.paths.each do |jp|
-            jp.walk(jskip: @junction, visited: visited, counter: counter, tile_type: tile_type, &block)
+            jp.walk(jskip: @junction, visited: visited, counter: counter, converging: converging, &block)
           end
         end
 
@@ -168,13 +168,13 @@ module Engine
             next if !@ignore_gauge_walk && !tracks_match?(np, dual_ok: true)
 
             np.walk(skip: np_edge, visited: visited, counter: counter, skip_track: skip_track,
-                    tile_type: tile_type, &block)
+                    converging: converging || @tile.converging_exit?(edge), &block)
           end
 
           counter[edge_id] -= 1
         end
 
-        visited.delete(self) unless tile_type == :lawson
+        visited.delete(self) if converging
         counter[@junction] -= 1 if @junction
       end
 
