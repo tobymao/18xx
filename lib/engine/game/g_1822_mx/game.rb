@@ -45,8 +45,8 @@ module Engine
         CURRENCY_FORMAT_STR = '$%d'
 
         MARKET = [
-          %w[5y 10y 15y 20y 25y 30y 35y 40y 45y 50p 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450
-             500 550 600e],
+          %w[5y 10y 15y 20y 25y 30y 35y 40y 45y 50p 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330
+             360 400 450 500 550 600e],
         ].freeze
 
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
