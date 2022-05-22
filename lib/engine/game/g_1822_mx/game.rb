@@ -145,6 +145,8 @@ module Engine
         BIDDING_BOX_START_PRIVATE = 'P1'
         BIDDING_BOX_START_MINOR = nil
 
+        DOUBLE_HEX = %w[D35 F7 H21 H37].freeze
+
         def init_graph
           Graph.new(self, home_as_token: true)
         end
