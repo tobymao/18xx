@@ -32,8 +32,8 @@ module Engine
         attr_reader :tile_layers
 
         BANK_CASH = 99_999
-        STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440, 6 => 367 }.freeze
-        CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12, 6 => 10 }.freeze
+        STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440 }.freeze
+        CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12 }.freeze
 
         POOL_SHARE_DROP = :each
         CAPITALIZATION = :incremental
@@ -48,20 +48,30 @@ module Engine
         MUST_BUY_TRAIN = :always
 
         MARKET = [
-          %w[64 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525 560],
-          %w[60y 64 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525],
-          %w[55y 60y 64 68 72 76 82p 90 100 110 120 140 160 180 200 225 250 275 300 325],
-          %w[50o 55y 60y 64 68 72 76p 82 90 100 110 120 140 160 180 200],
-          %w[40o 50o 55y 60y 64 68 72p 76 82 90 100 110 120],
-          %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90],
-          %w[20b 30b 40o 50o 55y 60y 64 68 72],
-          ['', '20b', '30b', '40o', '50o', '55y', '60y'],
+          [''] + %w[82 90 100 110z 120z 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525 560],
+          %w[72 76 82 90x 100x 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490],
+          %w[68 72 76 82p 90 100 110 120 140 160 180 200 225 250 275 300 325 350],
+          %w[64 68 72 76p 82 90 100 110 120 140 160 180 200 225],
+          %w[60 64 68 72p 76 82 90 100 110 120 140],
+          %w[55 60 64 68p 72 76 82 90 100],
+          %w[50 55 60 64 68 72 76],
+          %w[40 50 55 60 64 68],
         ].freeze
 
-        LATE_CORPORATIONS = %w[C&N DPR FEMV LNP OSL].freeze
+        STOCKMARKET_COLORS = {
+          par: :yellow,
+          par_1: :green,
+          par_2: :brown,
+        }.freeze
+
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'company starting values',
+                                              par_1: 'additional starting values in phase 3+',
+                                              par_2: 'additional starting values in phase 5+').freeze
+
+        LATE_CORPORATIONS = %w[C&N DPR LNP OSL].freeze
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'all_corps_available' => ['All Corporations Available',
-                                    'C&N, DPR, FEMV, LNP, OSL are now available to start'],
+                                    'C&N, DPR, LNP, OSL are now available to start'],
           'full_capitalization' => ['Full Capitalization',
                                     'Railroads now float at 60% and receive full capitalization'],
           'rust_coal_dt_2' => ['Remove Phase 2 Coal DTs', 'Remove Phase 2 Coal Development Tokens'],
@@ -72,7 +82,7 @@ module Engine
         ).freeze
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'all_corps_available' => ['All Corporations Available',
-                                    'C&N, DPR, FEMV, LNP, OSL are available to start'],
+                                    'C&N, DPR, LNP, OSL are available to start'],
           'full_capitalization' =>
             ['Full Capitalization', 'Railroads float at 60% and receive full capitalization'],
         ).freeze
@@ -166,12 +176,12 @@ module Engine
         end
 
         def init_round_finished
-          p10_company.revenue = 0
-          p10_company.desc = 'Pays $40 revenue ONLY in green phases. Closes, '\
-                             'becomes LHP train at phase 5.'
+          p8_company.revenue = 0
+          p8_company.desc = 'Pays $40 revenue ONLY in green phases. Closes, '\
+                            'becomes LHP train at phase 5.'
 
-          p11_company.close!
-          @log << "#{p11_company.name} closes"
+          p9_company.close!
+          @log << "#{p9_company.name} closes"
         end
 
         def event_all_corps_available!
@@ -242,27 +252,27 @@ module Engine
           @p1_company ||= company_by_id('P1')
         end
 
-        def p7_company
-          @p7_company ||= company_by_id('P7')
+        def p5_company
+          @p5_company ||= company_by_id('P5')
+        end
+
+        def p8_company
+          @p8_company ||= company_by_id('P8')
+        end
+
+        def p9_company
+          @p9_company ||= company_by_id('P9')
         end
 
         def p10_company
           @p10_company ||= company_by_id('P10')
         end
 
-        def p11_company
-          @p11_company ||= company_by_id('P11')
-        end
-
-        def p12_company
-          @p12_company ||= company_by_id('P12')
-        end
-
         def track_points_available(entity)
           return 0 unless (corporation = entity).corporation?
 
-          p7_point = p7_company.owner == corporation ? 1 : 0
-          TRACK_POINTS + p7_point - @track_points_used[corporation]
+          p5_point = p5_company.owner == corporation ? 1 : 0
+          TRACK_POINTS + p5_point - @track_points_used[corporation]
         end
 
         def tile_lays(entity)
@@ -293,12 +303,12 @@ module Engine
           end
         end
 
-        def isr_payout_companies(p12_bidders)
+        def isr_payout_companies(p10_bidders)
           payout_companies
-          bidders = p12_bidders.map(&:name).sort
+          bidders = p10_bidders.map(&:name).sort
           @log << "#{bidders.join(', ')} collect#{bidders.one? ? 's' : ''} $5 "\
-                  "for their bid#{bidders.one? ? '' : 's'} on #{p12_company.name}"
-          p12_bidders.each { |p| @bank.spend(5, p) }
+                  "for their bid#{bidders.one? ? '' : 's'} on #{p10_company.name}"
+          p10_bidders.each { |p| @bank.spend(5, p) }
         end
 
         def isr_company_choices
