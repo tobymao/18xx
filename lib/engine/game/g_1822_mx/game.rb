@@ -641,7 +641,7 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          route.train.name == '3/2P' ? (revenue / 2).round(-1) : revenue
+          route.train.name.start_with?('3/2P') ? (revenue / 2).round(-1) : revenue
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
