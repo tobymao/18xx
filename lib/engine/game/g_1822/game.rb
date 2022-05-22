@@ -365,7 +365,7 @@ module Engine
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
-        DOUBLE_HEX = %w[D35 F7 H21 H37].freeze
+        DOUBLE_HEX = %w[L19 M22 M26].freeze
         CARDIFF_HEX = 'F35'
         LONDON_HEX = 'M38'
         ENGLISH_CHANNEL_HEX = 'P43'
