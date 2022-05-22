@@ -37,6 +37,7 @@ module Engine
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
         HOME_TOKEN_TIMING = :par
+        NEXT_SR_PLAYER_ORDER = :first_to_pass
 
         TRACK_POINTS = 6
         YELLOW_POINT_COST = 2
@@ -139,6 +140,11 @@ module Engine
           update_cache(:minors)
         end
 
+        def init_stock_market
+          G1868WY::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
         def operating_round(round_num)
           G1868WY::Round::Operating.new(self, [
             G1868WY::Step::DevelopmentToken,
@@ -164,10 +170,6 @@ module Engine
         end
 
         def init_round_finished
-          p8_company.revenue = 0
-          p8_company.desc = 'Pays $40 revenue ONLY in green phases. Closes, '\
-                            'becomes LHP train at phase 5.'
-
           p9_company.close!
           @log << "#{p9_company.name} closes"
         end
@@ -288,14 +290,6 @@ module Engine
               @log << 'Wind River Canyon turns gray; it can never be upgraded'
             end
           end
-        end
-
-        def isr_payout_companies(p10_bidders)
-          payout_companies
-          bidders = p10_bidders.map(&:name).sort
-          @log << "#{bidders.join(', ')} collect#{bidders.one? ? 's' : ''} $5 "\
-                  "for their bid#{bidders.one? ? '' : 's'} on #{p10_company.name}"
-          p10_bidders.each { |p| @bank.spend(5, p) }
         end
 
         def isr_company_choices
@@ -583,7 +577,7 @@ module Engine
             case @round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
-              reorder_players
+              reorder_players(:first_to_pass, log_player_order: true)
               new_operating_round
             when G1868WY::Round::Operating
               if @round.round_num < @operating_rounds
@@ -599,9 +593,13 @@ module Engine
               end
             when init_round.class
               init_round_finished
-              reorder_players
+              reorder_players(:most_cash, log_player_order: true)
               new_stock_round
             end
+        end
+
+        def player_value(player)
+          player.value - player.companies.sum(&:value)
         end
 
         def sellable_bundles(player, corporation)
