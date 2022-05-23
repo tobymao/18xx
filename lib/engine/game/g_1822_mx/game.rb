@@ -45,8 +45,8 @@ module Engine
         CURRENCY_FORMAT_STR = '$%d'
 
         MARKET = [
-          %w[5 10 15 20 25 30 35 40 45 50p 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450
-             500 550 600e],
+          %w[5y 10y 15y 20y 25y 30y 35y 40y 45y 50p 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330
+             360 400 450 500 550 600e],
         ].freeze
 
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
@@ -144,6 +144,8 @@ module Engine
 
         BIDDING_BOX_START_PRIVATE = 'P1'
         BIDDING_BOX_START_MINOR = nil
+
+        DOUBLE_HEX = %w[L19 M22 M26].freeze
 
         def init_graph
           Graph.new(self, home_as_token: true)
@@ -641,7 +643,7 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          route.train.name == '3/2P' ? (revenue / 2).round(-1) : revenue
+          route.train.name.start_with?('3/2P') ? (revenue / 2).round(-1) : revenue
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
