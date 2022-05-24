@@ -242,24 +242,32 @@ module View
       end
 
       def grid_2d
-        @game.stock_market.market.each_with_index.map do |row_prices, i|
-          row = row_prices.each_with_index.map do |price, j|
+        # Need to peek at row below to know if sitting on ledge.
+        @game.stock_market.market.push([]).each_cons(2).each_with_index.map do |rows, row_i|
+          row_prices, next_row = rows
+          first_price=true
+
+          row = row_prices.each_with_index.map do |price, col_i|
             if price
               corporations = price.corporations
               num = corporations.size
               spacing = num > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num - 1) : 0
               tokens = corporations.map.with_index { |corp, index| h(:img, token_props(corp, index, num, spacing)) }
 
-              if j.zero? && ((i + 1) != @game.stock_market.market.length)
-                align = { left: 0, bottom: 0 }
-                arrow = '⭣'
-              elsif ((j + 1) == row_prices.length) && !i.zero?
+              # first cell on left, not on bottom row, has price in cell below
+              if first_price && !next_row.empty? && next_row[col_i]
+                  align = { left: 0, bottom: 0 }
+                  arrow = '⭣'
+              # last cell on right, not top row
+              elsif ((col_i + 1) == row_prices.length) && !row_i.zero?
                 align = { right: 0, top: 0 }
                 arrow = '⭡'
               else
                 align = {}
                 arrow = ''
               end
+
+              first_price = false
 
               h(:div, { style: cell_style(@box_style_2d, price.types) }, [
                 h('div.xsmall_font', price.price),
