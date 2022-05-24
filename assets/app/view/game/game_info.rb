@@ -22,7 +22,7 @@ module View
 
         case @layout
         when :discarded_trains
-          @depot.discarded.empty? ? '' : discarded_trains
+          @depot.discarded.empty? ? 'No Trains in Bank Pool' : discarded_trains
         when :upcoming_trains
           @game.train_power? ? power_summary : h(TrainSchedule, game: @game)
         else
@@ -35,7 +35,7 @@ module View
           children = []
         else
           children = @game.train_power? ? power : trains
-          children.concat(discarded_trains) unless @depot.discarded.empty?
+          children.concat(discarded_trains)
         end
         if @game.phase_valid?
           children.concat(phases)
@@ -320,25 +320,29 @@ module View
       end
 
       def discarded_trains
-        rows = @depot.discarded.group_by(&:name).map do |_sym, trains|
-          train = trains.first
-          h(:tr, [
-            h(:td, train.name),
-            h(:td, @game.format_currency(train.price)),
-            h('td.right', trains.size),
+        if @depot.discarded.empty?
+          table = h(:div, "None")
+        else
+          rows = @depot.discarded.group_by(&:name).map do |_sym, trains|
+            train = trains.first
+            h(:tr, [
+              h(:td, train.name),
+              h(:td, @game.format_currency(train.price)),
+              h('td.right', trains.size),
+            ])
+          end
+
+          table = h(:table, [
+            h(:thead, [
+              h(:tr, [
+                h(:th, 'Type'),
+                h(:th, 'Price'),
+                h(:th, 'Available'),
+              ]),
+            ]),
+            h(:tbody, rows),
           ])
         end
-
-        table = h(:table, [
-          h(:thead, [
-            h(:tr, [
-              h(:th, 'Type'),
-              h(:th, 'Price'),
-              h(:th, 'Available'),
-            ]),
-          ]),
-          h(:tbody, rows),
-        ])
 
         if @layout == :discarded_trains
           h(:div, { style: { display: 'grid', justifyItems: 'center' } }, [
