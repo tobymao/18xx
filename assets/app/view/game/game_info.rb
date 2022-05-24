@@ -321,7 +321,7 @@ module View
 
       def discarded_trains
         if @depot.discarded.empty?
-          table = h(:div, "None")
+          table = h(:p, {style: {padding: "0 0.3rem"}}, "None")
         else
           rows = @depot.discarded.group_by(&:name).map do |_sym, trains|
             train = trains.first
