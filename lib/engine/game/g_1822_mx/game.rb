@@ -312,7 +312,7 @@ module Engine
             G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822MX::Step::DiscardTrain,
-            G1822::Step::IssueShares,
+            G1822MX::Step::IssueShares,
             G1822MX::Step::CashOutNdem,
             G1822MX::Step::AuctionNdemTokens,
           ], round_num: round_num)
@@ -751,6 +751,12 @@ module Engine
         end
 
         def finalize_end_game_values; end
+
+        def reduced_bundle_price_for_market_drop(bundle)
+          directions = (1..bundle.num_shares).map { |_| :left }
+          bundle.share_price = @stock_market.find_share_price(bundle.corporation, directions).price
+          bundle
+        end
       end
     end
   end
