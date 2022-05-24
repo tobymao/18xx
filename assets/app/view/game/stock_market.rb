@@ -245,7 +245,7 @@ module View
         # Need to peek at row below to know if sitting on ledge.
         @game.stock_market.market.push([]).each_cons(2).each_with_index.map do |rows, row_i|
           row_prices, next_row = rows
-          first_price=true
+          first_price = true
 
           row = row_prices.each_with_index.map do |price, col_i|
             if price
@@ -256,8 +256,8 @@ module View
 
               # first cell on left, not on bottom row, has price in cell below
               if first_price && !next_row.empty? && next_row[col_i]
-                  align = { left: 0, bottom: 0 }
-                  arrow = '⭣'
+                align = { left: 0, bottom: 0 }
+                arrow = '⭣'
               # last cell on right, not top row
               elsif ((col_i + 1) == row_prices.length) && !row_i.zero?
                 align = { right: 0, top: 0 }
