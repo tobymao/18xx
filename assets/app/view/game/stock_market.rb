@@ -259,7 +259,7 @@ module View
                 align = { left: 0, bottom: 0 }
                 arrow = '⭣'
               # last cell on right, not top row
-              elsif ((col_i + 1) == row_prices.length) && !row_i.zero?
+              elsif ((col_i + 1) == row_prices.size) && !row_i.zero?
                 align = { right: 0, top: 0 }
                 arrow = '⭡'
               else
