@@ -411,6 +411,11 @@ module Engine
           after_par(ndem) # Not clear this is needed
 
           @ndem_state = :open
+
+          n = ndem
+          def n.counts_for_limit
+            false
+          end
         end
 
         def send_train_to_ndem(train)
