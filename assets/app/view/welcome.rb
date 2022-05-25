@@ -19,16 +19,15 @@ module View
       message = <<~MESSAGE
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
-        <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
+        <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. Join the
+        <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx Slack</a>.
+        to chat about 18xx and the website.
+        </p>
         <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,
         and other information about all the games, along with an FAQ.</p>
 
         <p>Support our publishers: #{Lib::Publisher.link_list.join}.</p>
         <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
-
-        <p>Join the
-        <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx Slack</a>.
-        </p>
       MESSAGE
 
       props = {
