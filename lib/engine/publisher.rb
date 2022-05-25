@@ -15,6 +15,7 @@ module Engine
       gmt_games: {
         name: 'GMT Games',
         url: 'https://www.gmtgames.com/',
+        hidden: true,
       },
       golden_spike: {
         name: 'Golden Spike Games',
@@ -55,6 +56,7 @@ module Engine
       lookout: {
         name: 'Lookout Games',
         url: 'https://lookout-spiele.de/',
+        hidden: true,
       },
       marflow_games: {
         name: 'Marflow Games',
@@ -63,6 +65,7 @@ module Engine
       loserdogs: {
         name: 'Loserdogs',
         url: 'http://tanisan.com/ld/',
+        hidden: true,
       },
     }.freeze
   end

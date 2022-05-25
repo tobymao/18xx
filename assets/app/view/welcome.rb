@@ -17,8 +17,6 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-
-        <p><a href='https://github.com/tobymao/18xx/wiki/18LosAngeles#2nd-edition'>18 Los Angeles 2</a> is in alpha.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
@@ -30,10 +28,7 @@ module View
 
         <p>Join the
         <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx Slack</a>.
-        Chat about 18xx in the <a href='https://18xxgames.slack.com/archives/C68J3MK2A'>#general</a> channel.
-        Discussion of the 18xx.games site is in the
-        <a href='https://18xxgames.slack.com/archives/CV3R3HPUZ'>#18xxgames</a> channel and the developers can be
-        found in the <a href='https://18xxgames.slack.com/archives/C012K0CNY5C'>#18xxgamesdev</a> channel.</p>
+        </p>
       MESSAGE
 
       props = {
