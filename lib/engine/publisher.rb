@@ -30,8 +30,8 @@ module Engine
         url: 'http://ohley.de/english/',
         hidden: true,
       },
-      sea_horse: {
-        name: 'Sea Horse Laser & Design',
+      seahorse: {
+        name: 'Seahorse Laser & Design',
         url: 'https://www.etsy.com/shop/SeahorseLaserDesign?section_id=24360565',
         hidden: true,
       },
