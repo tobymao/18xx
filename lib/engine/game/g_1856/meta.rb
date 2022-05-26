@@ -15,7 +15,7 @@ module Engine
         GAME_LOCATION = 'Ontario, Canada'
         GAME_RULES_URL = 'https://www.google.com/search?q=1856+rules'
 
-        GAME_PUBLISHER = 'Mayfair Games'
+        GAME_PUBLISHER = :mayfair
 
         PLAYER_RANGE = [3, 6].freeze
         OPTIONAL_RULES = [
