@@ -481,8 +481,8 @@ module Engine
             revenue: 20,
             desc: 'Blocks Adrian & Ann Arbor (E7) while owned by a player. ' \
                   'A yellow track tile is placed at E7 when purchased by a company. ' \
-                  'Owning company may (once) place a second yellow track tile at $20 as ' \
-                  'part of its normal track build.',
+                  'Owning company may (once) place one additional yellow track tile ' \
+                  'at $20 as part of its normal track build.',
             sym: 'E&K',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['E7'] },
                         {
@@ -628,7 +628,7 @@ module Engine
             abilities: [
             {
               type: 'description',
-              description: 'Place a second yellow tile for $40',
+              description: 'Place one additional yellow tile for $40',
             },
           ],
             reservation_color: nil,
@@ -752,7 +752,7 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: 'Place a second yellow tile for $40',
+                description: 'Place one additional yellow tile for $40',
               },
             ],
             reservation_color: nil,
@@ -1329,7 +1329,7 @@ module Engine
         end
 
         def city_tokened_by?(city, entity)
-          return @graph.connected_nodes(entity)[city] if entity.id == 'C&P'
+          return true if entity.id == 'C&P' && @round.current_operator == entity && @round.laid_hexes.include?(city.hex)
 
           super
         end
@@ -1514,16 +1514,31 @@ module Engine
           new_market_price
         end
 
-        def check_distance(route, visits)
-          if route_includes_coalfields?(route) && !coal_marker?(current_entity)
-            raise GameError, 'Cannot run to Virginia Coalfields without a Coal Marker'
+        def check_connected(route, corporation)
+          if route_includes_coalfields?(route) && !coal_marker?(corporation)
+            raise GameError, 'route to Virginia Coalfields requires Coal Marker'
           end
+
+          raise GameError, 'route must include laid tile' if corporation.id == 'C&P' && !route_uses_tile_lay(route)
 
           super
         end
 
         def route_includes_coalfields?(route)
-          route.connection_hexes.flatten.include?(VA_COALFIELDS_HEX)
+          route.connection_hexes.flatten.include?(self.class::VA_COALFIELDS_HEX)
+        end
+
+        def route_uses_tile_lay(route)
+          stops = route.visited_stops
+          tile = @round.laid_hexes.first&.tile
+
+          return !(stops & tile.nodes).empty? unless tile.nodes.empty?
+
+          tile.paths.each do |path|
+            path.walk { |p| return true unless (stops & p.nodes).empty? }
+          end
+
+          false
         end
       end
     end

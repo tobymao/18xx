@@ -248,9 +248,25 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           'SB' => '/icons/18_sj/sb_token.svg',
+          'GKB50' => '/icons/18_sj/50.svg',
+          'GKB30' => '/icons/18_sj/30.svg',
+          'GKB20' => '/icons/18_sj/20.svg',
         }.freeze
 
-        GKB_HEXES = %w[C8 C16 E8].freeze
+        GKB_HEXES = %w[C8 C12 C16 E8].freeze
+
+        def gkb_hexes
+          @gkb_hexes ||= GKB_HEXES.map { |h| hex_by_id(h) }
+        end
+
+        def gkb_hex_assigned?(hex)
+          ASSIGNMENT_TOKENS.each do |id, _|
+            next if id == 'SB'
+
+            return true if hex.assigned?(id)
+          end
+          false
+        end
 
         EDELSWARD_PLAYER_ID = -1
 
@@ -333,7 +349,7 @@ module Engine
         end
 
         def find_company(companies, collection)
-          sym = collection[rand % collection.size]
+          sym = select(collection)
           to_find = companies.find { |comp| comp.sym == sym }
           @log << "Could not find company with sym='#{sym}' in #{@companies}" unless to_find
           to_find
@@ -508,6 +524,7 @@ module Engine
           G18SJ::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
+            G18SJ::Step::AssignGotaKanalbolaget,
             G18SJ::Step::AssignSveabolaget,
             G18SJ::Step::SpecialTrack,
             G18SJ::Step::BuyCompany,
@@ -878,6 +895,17 @@ module Engine
           @players.reject { |p| bot_player?(p) }.min_by { |p| [p.value, @players.index(p)] }
         end
 
+        def gkb_bonuses_details(route)
+          gkb_bonuses = []
+          route.stops.each do |s|
+            next unless gkb_hex_assigned?(s.hex)
+
+            key = ASSIGNMENT_TOKENS.find { |id, _| s.hex.assigned?(id) }.first
+            gkb_bonuses << { hex: s.hex, key: key, amount: key.sub('GKB', '').to_i }
+          end
+          gkb_bonuses
+        end
+
         private
 
         def main_line_hex?(hex)
@@ -917,6 +945,7 @@ module Engine
 
         def nationalize_major(major)
           @log << "#{major.name} is nationalized"
+          @log << "#{major.name} closes and its tokens becomes #{@sj.name} tokens"
 
           remove_reservation(major)
           transfer_home_token(@sj, major)
@@ -951,7 +980,6 @@ module Engine
 
           major.spend(major.cash, @bank) if major.cash.positive?
           major.close!
-          @log << "#{major.name} closes and its tokens becomes #{@sj.name} tokens"
 
           # Cert limit changes as the number of corporations decrease
           @log << "Certificate limit is now #{cert_limit}"
@@ -962,7 +990,7 @@ module Engine
 
           if tokened_hex_by(city.hex, target_corporation)
             @log << "#{merged.name}'s token in #{token.city.hex.name} is removed "\
-                    "as there is already a #{target_corporation.name} token there"
+                    "as there is already an #{target_corporation.name} token there"
             token.remove!
           else
             @log << "#{merged.name}'s token in #{city.hex.name} is replaced with an #{target_corporation.name} token"
@@ -1058,25 +1086,16 @@ module Engine
         def gkb_bonus(route)
           bonus = { revenue: 0 }
 
-          return bonus if !route.abilities || route.abilities.empty?
-          raise GameError, "Only one ability supported: #{route.abilities}" if route.abilities.size > 1
+          return bonus if !gkb || route.train.owner != gkb.owner
 
-          ability = abilities(route.train.owner, route.abilities.first, time: 'route')
-          raise GameError, "Cannot find ability #{route.abilities.first}" unless ability
-
-          bonuses = route.stops.count { |s| ability.hexes.include?(s.hex.name) }
-          if bonuses.positive?
-            amount = case ability.count
-                     when 3
-                       50
-                     when 2
-                       30
-                     else
-                       20
-                     end
-            bonus[:revenue] = amount * bonuses
-            bonus[:description] = 'GKB'
-            bonus[:description] += "x#{bonuses}" if bonuses > 1
+          gkb_bonuses_details(route).each do |gbd|
+            bonus[:revenue] += gbd[:amount]
+            details = "#{gbd[:key]}(#{gbd[:hex].name})"
+            if bonus[:description]
+              bonus[:description] += " + #{details}"
+            else
+              bonus[:description] = details
+            end
           end
 
           bonus

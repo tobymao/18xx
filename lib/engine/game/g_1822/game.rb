@@ -568,15 +568,13 @@ module Engine
           tracks_by_type = Hash.new { |h, k| h[k] = [] }
 
           # Check local train not use the same token more then one time
-          local_token_hex = []
+          local_cities = []
 
           # Merthyr Tydfil and Pontypool
           merthyr_tydfil_pontypool = {}
 
           routes.each do |route|
-            if route.train.local? && !route.chains.empty?
-              local_token_hex.concat(route.visited_stops.select(&:city?).map { |n| n.hex.id })
-            end
+            local_cities.concat(route.visited_stops.select(&:city?)) if route.train.local? && !route.chains.empty?
 
             route.paths.each do |path|
               a = path.a
@@ -606,8 +604,8 @@ module Engine
             end
           end
 
-          local_token_hex.group_by(&:itself).each do |k, v|
-            raise GameError, "Local train can only use the token on #{k} once" if v.size > 1
+          local_cities.group_by(&:itself).each do |k, v|
+            raise GameError, "Local train can only use each token on #{k.hex.id} once" if v.size > 1
           end
 
           # Check Merthyr Tydfil and Pontypool, only one of the 2 tracks may be used

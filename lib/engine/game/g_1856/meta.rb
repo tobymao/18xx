@@ -15,8 +15,7 @@ module Engine
         GAME_LOCATION = 'Ontario, Canada'
         GAME_RULES_URL = 'https://www.google.com/search?q=1856+rules'
 
-        # See: https://www.facebook.com/groups/1824321454265528/permalink/4157468544284129
-        GAME_PUBLISHER = :sea_horse
+        GAME_PUBLISHER = :mayfair
 
         PLAYER_RANGE = [3, 6].freeze
         OPTIONAL_RULES = [

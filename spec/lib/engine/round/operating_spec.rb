@@ -550,7 +550,6 @@ module Engine
           hexes = {
             hex_j3 => [5],
             hex_j5 => [4],
-            hex_k4 => [0, 1, 2],
             hex_k6 => [0, 3],
             hex_k8 => [1, 2, 3, 4],
             hex_l7 => [1],

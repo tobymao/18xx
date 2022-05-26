@@ -11,12 +11,12 @@ module Engine
         DEV_STAGE = :production
         PROTOTYPE = true
 
-        GAME_SUBTITLE = 'Let There Be Rail (version 0.8)'
+        GAME_SUBTITLE = 'Railways in the Frozen North (version 0.92)'
         GAME_DESIGNER = 'Örjan Wennman'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18SJ'
-        GAME_LOCATION = 'Sweden and Norway'
+        GAME_LOCATION = 'Sweden'
         GAME_PUBLISHER = :self_published
-        GAME_RULES_URL = 'https://drive.google.com/file/d/1Tgmq2RX0u4ykJKfemLHKrZLimVY9LVOJ/view?usp=drivesdk'
+        GAME_RULES_URL = 'https://drive.google.com/file/d/1xALoL0n92l187h01aE176wMdFod090Fy/view'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [

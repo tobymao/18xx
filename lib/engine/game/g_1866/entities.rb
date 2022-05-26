@@ -275,15 +275,6 @@ module Engine
             abilities: [],
             color: nil,
           },
-          {
-            name: 'Stock turn token',
-            sym: 'ST7',
-            value: 0,
-            revenue: 0,
-            desc: 'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.',
-            abilities: [],
-            color: nil,
-          },
         ].freeze
 
         CORPORATIONS = [
@@ -851,14 +842,6 @@ module Engine
             tokens: [],
             coordinates: 'F6',
             city: 1,
-            reservation_color: '#cb7745',
-          },
-          {
-            sym: 'P',
-            name: 'Paris reservation',
-            tokens: [],
-            coordinates: %w[J6 J6 J6],
-            city: [0, 2, 5],
             reservation_color: '#cb7745',
           },
         ].freeze

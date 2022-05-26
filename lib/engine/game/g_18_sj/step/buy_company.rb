@@ -36,11 +36,20 @@ module Engine
             # If owner don't have token in KHJ home, transfer it to owner
             @game.transfer_home_token(buyer, minor) unless duplicate_count.positive?
 
-            transfer_trains(buyer, minor)
+            if minor.trains.size.zero?
+              transfer_trains(buyer, minor)
+            else
+              khj_train = minor.trains.first
+              transfer_trains(buyer, minor)
+              @log << 'The former KHJ train cannot be operated more this OR (see rule 7.3)'
+              khj_train.operated = true
+            end
 
             transfer_money(buyer, minor)
 
             minor.close!
+
+            @game.graph.clear_graph_for(minor)
 
             # Close company as it no longer has any effect
             action.company.close!
