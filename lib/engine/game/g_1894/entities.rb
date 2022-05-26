@@ -43,8 +43,7 @@ module Engine
           {
             name: 'Ligne de Saint-Quentin à Guise',
             sym: 'SQG',
-            value: 70,
-            revenue: 10,
+            value: 90,
             desc: 'Revenue is equal to twice the revenue of Saint-Quentin (G10) if Saint-Quentin is green or brown, otherwise it\'s 0 F.'\
                   ' Closes in gray phase.',
             abilities: [{ type: 'close', on_phase: 'Gray' },],
@@ -81,7 +80,7 @@ module Engine
           {
             name: 'PLM major shareholding',
             sym: 'PLMMS',
-            value: 180,
+            value: 200,
             revenue: 25,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' PLM without further payment. This private company may not be sold to any corporation, and does'\
@@ -169,8 +168,10 @@ module Engine
             text_color: 'black',
             abilities: [
               {
-                type: 'description',
-                description: 'Value of Le Sud increased by 30',
+                type: 'hex_bonus',
+                amount: 0,
+                description: 'Value of Le Sud (I2) increased by 30.',
+                hexes: ['I2'],
               },
             ],
           },

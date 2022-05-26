@@ -166,7 +166,7 @@ module Engine
 
         HEXES = {
           white: {
-            %w[C4 C8 D5 D7 D9 E2 E18 F1 F3 F7 F9 F17 G8 H1 H3 H11 I4 I10 I12] => '',
+            %w[C4 D5 D7 D9 E2 E18 F1 F3 F7 F9 F17 G8 H1 H3 H11 I4 I10 I12] => '',
             %w[B1 B7 C2 C8 C10 E8 G6 H5 H9] => 'upgrade=cost:60,terrain:water',
             %w[B3 B9 B11 D3 D15 E6 E10 E16 G10 H17] => 'city=revenue:0',
             ['B13'] => 'border=edge:5,type:mountain',
@@ -195,9 +195,9 @@ module Engine
           },
           gray: {
             ['A2'] => 'path=a:5,b:0;path=a:0,b:4;',
-            ['A8'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0;'\
+            ['A8'] => 'path=a:0,b:4;path=a:5,b:4;'\
                       'icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
-            ['A10'] => 'city=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0,lanes:2;path=a:5,b:_0',
+            ['A10'] => 'city=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
             ['B5'] => 'path=a:1,b:5;path=a:1,b:0;path=a:5,b:0',
             ['C18'] => 'path=a:0,b:1;',
             ['D1'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0',
@@ -209,7 +209,7 @@ module Engine
           red: {
             ['A4'] => 'offboard=revenue:50;path=a:0,b:_0;path=a:1,b:_0',
             ['C16'] => 'offboard=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            ['I2'] => 'offboard=revenue:30;label=Est +30;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            ['I2'] => 'offboard=revenue:30;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             ['I18'] => 'offboard=revenue:0,hide:1;label=Largest+10;path=a:1,b:_0;path=a:2,b:_00',
           },
         }.freeze

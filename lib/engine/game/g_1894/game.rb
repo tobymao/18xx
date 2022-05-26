@@ -17,7 +17,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%d F'
 
-        BANK_CASH = 6000
+        BANK_CASH = 99_999
 
         CERT_LIMIT = { 3 => 99, 4 => 99 }.freeze
 
@@ -28,10 +28,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[60o
-             67
-             71
-             76
+          %w[76
              82
              90
              100p
@@ -46,11 +43,8 @@ module Engine
              285
              325
              375
-             425],
-          %w[53o
-             60o
-             66
-             70
+             425e],
+          %w[70
              76
              82
              90p
@@ -66,10 +60,7 @@ module Engine
              275
              300
              330],
-          %w[46o
-             55o
-             60o
-             65
+          %w[65
              70
              76
              82p
@@ -82,10 +73,7 @@ module Engine
              170
              190
              210],
-          %w[39o
-             48o
-             54o
-             60o
+          %w[60o
              66
              71
              76p
@@ -95,13 +83,13 @@ module Engine
              110
              120
              130],
-          %w[32o 41o 48o 55o 62 67 71p 76 82 90 100],
-          %w[25o 34o 42o 50o 58o 65 67p 71 75 80],
-          %w[18o 27o 36o 45o 54o 63 67 69 70],
-          %w[10o 20o 30o 40o 50o 60o 67 68],
-          ['', '10o', '20o', '30o', '40o', '50o', '60o'],
-          ['', '', '10o', '20o', '30o', '40o', '50o'],
-          ['', '', '', '10o', '20o', '30o', '40o'],
+          %w[55o 62 67 71p 76 82 90 100],
+          %w[50o 58o 65 67p 71 75 80],
+          %w[45o 54o 63 67 69 70],
+          %w[40o 50o 60o 67 68],
+          ['30o', '40o', '50o', '60o'],
+          ['20o', '30o', '40o', '50o'],
+          ['10o', '20o', '30o', '40o'],
         ].freeze
 
         PHASES = [{ name: 'Yellow', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
@@ -197,7 +185,6 @@ module Engine
                     distance: 999,
                     price: 900,
                     num: 20,
-                    available_on: 'Gray',
                     discount: { '5' => 200, '6' => 300, '7' => 375 },
                   }].freeze
 
@@ -216,7 +203,8 @@ module Engine
 
         GAME_END_CHECK = {
           bankrupt: :immediate,
-          bank: :full_or,
+          stock_market: :immediate,
+          final_phase: :one_more_full_or_set,
         }.freeze
 
         SELL_BUY_ORDER = :sell_buy
@@ -274,6 +262,8 @@ module Engine
         BELGIAN_LATE_CORPORATIONS = %w[B1 B2].freeze
         BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 H17].freeze
 
+        DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
+
         def stock_round
           G1894::Round::Stock.new(self, [
             G1894::Step::BuySellParShares,
@@ -328,6 +318,28 @@ module Engine
           end
         end
 
+        def init_hexes(companies, corporations)
+          hexes = super
+
+          @corporations.each do |corporation|
+            next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
+
+            dest_hexes = dest_abilities.map(&:hexes).flatten
+
+            hexes
+              .select { |h| dest_hexes.include?(h.name) }
+              .each { |h| h.assign!(corporation) }
+          end
+
+          hexes
+        end
+
+        def assignment_tokens(assignment)
+          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
+
+          super
+        end
+
         def init_stock_market
           Engine::StockMarket.new(self.class::MARKET, [],
                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
@@ -358,8 +370,6 @@ module Engine
 
         def init_round_finished
           @players.rotate!(@round.entity_index)
-
-          company_by_id('SQG').revenue = 0
         end
 
         def action_processed(action)
