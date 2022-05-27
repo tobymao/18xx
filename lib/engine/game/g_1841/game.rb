@@ -36,7 +36,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = 'L.%d'
         BANK_CASH = 14_400
-        CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11, 7 => 10, 8 => 0 }.freeze
+        CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11, 7 => 10, 8 => 9 }.freeze
         STARTING_CASH = { 3 => 1120, 4 => 840, 5 => 672, 7 => 480, 8 => 420 }.freeze
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false

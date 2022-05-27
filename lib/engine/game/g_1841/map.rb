@@ -9,6 +9,7 @@ module Engine
       module Map
         LAYOUT = :flat
 
+        # rubocop:disable Layout/LineLength
         TILES = {
           '1' => 1,
           '2' => 1,
@@ -66,23 +67,73 @@ module Engine
           '207' => 2,
           '208' => 2,
           '216' => 2,
-          # '601' => 1,
-          '602' => 1,
-          '603' => 1,
+          '601' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:10,loc:center;town=revenue:20;path=a:0,b:_0;path=a:_1,b:4;path=a:_0,b:_1;label=V',
+          },
+          '602' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:10,loc:center;town=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:_1,b:4;path=a:_0,b:_1;label=V',
+          },
+          '603' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:20,loc:center;town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:_1,b:4;path=a:_0,b:_1;label=V',
+          },
           '604' => 1,
           '605' => 1,
           '606' => 1,
           '607' => 1,
           '609' => 1,
-          '610' => 2,
+          '610' =>
+          {
+            'count' => 2,
+            'color' => 'brown',
+            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:3,b:_0',
+          },
           '611' => 3,
           '612' => 1,
-          '613' => 3,
-          '614' => 4,
-          '615' => 1,
-          '616' => 1,
-          '617' => 1,
-          '618' => 1,
+          '613' =>
+          {
+            'count' => 3,
+            'color' => 'green',
+            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:3,b:_0;upgrade=cost:50',
+          },
+          '614' =>
+          {
+            'count' => 4,
+            'color' => 'green',
+            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:2,b:_0;upgrade=cost:50',
+          },
+          '615' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:1,b:_0;upgrade=cost:50',
+          },
+          '616' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
+          '617' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+          },
+          '618' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
           '619' => 2,
           '621' => 2,
           '622' => 2,
@@ -98,9 +149,9 @@ module Engine
           '632' => 1,
           '633' => 1,
         }.freeze
+        # rubocop:enable Layout/LineLength
 
         LOCATION_NAMES = {
-          A1: 'Lausanne & Lötschberg',
           A6: 'Lyon',
           A8: 'Fréjus',
           C6: 'Aosta',
