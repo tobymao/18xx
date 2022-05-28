@@ -99,14 +99,14 @@ module Engine
                 @game.remove_exchange_token(entity)
                 token = Engine::Token.new(entity)
                 entity.tokens << token
-                entity.add_ability(@game.london_extra_token_ability)
+                entity.add_ability(@game.minor_14_token_ability)
 
                 @round.pending_tokens << {
                   entity: entity,
-                  hexes: [@game.hex_by_id(@game.class::LONDON_HEX)],
+                  hexes: [@game.hex_by_id(@game.class::MINOR_14_HOME_HEX)],
                   token: token,
                 }
-                receiving << "a token on hex #{@game.class::LONDON_HEX}"
+                receiving << "a token on hex #{@game.class::MINOR_14_HOME_HEX}"
               else
                 minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities[@selected_minor.city || 0]
                 minor_city.reservations.delete(@selected_minor)
@@ -214,7 +214,7 @@ module Engine
               # to an extra check of connected_nodes. This is very costly.
               # Try all 6 cities in london to see if there is atleast one connection
               connected_nodes = @game.graph.connected_nodes(entity)
-              found_connected_city = @game.hex_by_id(@game.class::LONDON_HEX).tile.cities.any? do |c|
+              found_connected_city = @game.hex_by_id(@game.class::MINOR_14_HOME_HEX).tile.cities.any? do |c|
                 connected_nodes[c]
               end
             else
