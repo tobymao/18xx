@@ -9,6 +9,8 @@ module Engine
       ACTIONS = %w[choose_ability].freeze
 
       def actions(entity)
+        return [] unless entity.company?
+
         action = abilities(entity)
         return [] unless action
 
