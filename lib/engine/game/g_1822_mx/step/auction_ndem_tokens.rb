@@ -10,17 +10,11 @@ module Engine
           ACTIONS = %w[pass].freeze
           def actions(entity)
             if current_entity == entity
-              if !@token_up_for_bid
-                @game.ndem_acting_player = @remaining_choosers[0]
-                return %w[remove_token pass]
-              elsif @auction_winner
-                return %w[merge]
-              elsif @current_high_bidder
-                return %w[bid pass]
-              else
-                return %w[bid]
-              end
+              return %w[remove_token pass] unless @token_up_for_bid
+              return %w[merge] if @auction_winner
+              return %w[bid pass] if @current_high_bidder
 
+              return %w[bid]
             end
             ACTIONS
           end
@@ -201,14 +195,12 @@ module Engine
             @available_ndem_tokens[@token_up_for_bid] = @current_high_bid + min_increment
             @current_high_bidder = @remaining_bidders[0]
             @remaining_bidders.append(@remaining_bidders.shift)
-            @game.ndem_acting_player = @remaining_bidders[0] unless @remaining_bidders.empty?
             check_auction_over
           end
 
           def process_pass_bid(_action)
             @log << "#{@remaining_bidders[0].name} passes"
             @remaining_bidders.shift
-            @game.ndem_acting_player = @remaining_bidders[0]
             check_auction_over
           end
 
@@ -221,7 +213,6 @@ module Engine
 
             @log << "#{@current_high_bidder.name} wins the auction"
             @auction_winner = @current_high_bidder
-            @game.ndem_acting_player = @auction_winner
           end
 
           def merge_name(_entity = nil)
@@ -254,6 +245,7 @@ module Engine
 
             @available_ndem_tokens.delete(@token_up_for_bid)
             @token_up_for_bid = nil
+            @auction_winner = nil
             @player_step_order.append(@player_step_order.shift)
             @remaining_choosers = @player_step_order.dup
           end
@@ -268,6 +260,13 @@ module Engine
               (@token_up_for_bid && !player_can_purchase_token?(@remaining_bidders[0], @token_up_for_bid) && !auction_over?)
               [Engine::Action::Pass.new(entity)]
             end
+          end
+
+          def ndem_acting_player
+            return @auction_winner if @auction_winner
+            return @remaining_bidders[0] if @token_up_for_bid
+
+            @remaining_choosers[0]
           end
         end
       end

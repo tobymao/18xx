@@ -137,7 +137,7 @@ module Engine
               name: 'Liverpool & Manchester',
               value: 45,
               revenue: 15,
-              desc: 'The LM gives a bonus of £10 for Liverpool (E14). The owner of the LM may use this bonus for any trains ' \
+              desc: 'The LM gives a bonus of £20 for Liverpool (E14). The owner of the LM may use this bonus for any trains ' \
                     'run by corporations that they control, from the time that the LM closes until the end of the game.',
               sym: 'LM',
               color: nil,
@@ -157,7 +157,7 @@ module Engine
                   type: 'hex_bonus',
                   when: 'owning_playing_or_turn',
                   owner_type: 'player',
-                  amount: 10,
+                  amount: 20,
                   hexes: ['E14'],
                 },
               ],

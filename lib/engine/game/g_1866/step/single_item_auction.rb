@@ -174,13 +174,14 @@ module Engine
           end
 
           def pass_entity(entity, silent = false)
+            current_auctioning = @auctioning
             winning_bid = highest_bid(@auctioning)
             if silent
               remove_from_auction(entity)
             else
               pass_auction(entity)
             end
-            return if winning_bid || @active_bidders.size == initial_auction_entities.size
+            return if winning_bid || current_auctioning != @auctioning || @active_bidders.size == initial_auction_entities.size
 
             entity.pass!
             next_entity!
