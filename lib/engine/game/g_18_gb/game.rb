@@ -479,7 +479,7 @@ module Engine
           return unless end_game_restrictions?
           return if @end_game_near
 
-          @log << '-- Event: End game restrictions are now in place (no more tokens may be placed, no shares may be sold) --'
+          @log << '-- Event: End game restrictions are now in place: no more tokens may be placed --'
           @end_game_near = true
         end
 
@@ -1092,7 +1092,7 @@ module Engine
 
         def or_round_finished
           depot.export! unless @train_bought
-          trigger_end_game_restrictions if @depot.upcoming.size <= 3
+          trigger_end_game_restrictions if @depot.upcoming.size <= 2
         end
 
         def end_now?(after)
