@@ -90,6 +90,8 @@ module Engine
           'M30' => '30',
         }.freeze
 
+        CURRENCY_FORMAT_STR = '$%d'
+
         EXCHANGE_TOKENS = {
           'CNoR' => 3,
           'CPR' => 4,
@@ -108,7 +110,8 @@ module Engine
              245 270 300 330 360 400 450 500 550 600 650 700e],
         ].freeze
 
-        MINOR_14_ID = nil
+        MINOR_14_ID = '13'
+        MINOR_14_HOME_HEX = 'AC21'
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
@@ -150,6 +153,12 @@ module Engine
 
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
                                    CNoR CPR GNWR GT GTP GWR ICR NTR PGE QMOO].freeze
+
+        def format_currency(val)
+          return super if (val % 1).zero?
+
+          format('$%.1<val>f', val: val)
+        end
 
         def setup_destinations
           @corporations.each do |c|

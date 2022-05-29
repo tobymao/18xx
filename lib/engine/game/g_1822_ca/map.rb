@@ -633,11 +633,11 @@ module Engine
               'city=revenue:20,slots:2;city=revenue:20;city=revenue:20;city=revenue:20;path=a:1,b:_0;path=a:2,b:_0;'\
               'path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;upgrade=cost:20;label=W',
             ['Z28'] =>
-              'city=revenue:0;label=A',
+              'city=revenue:0;future_label=label:A,color:green',
             ['AA15'] =>
               'city=revenue:0;border=edge:3,type:water,cost:20;border=edge:4,type:water,cost:20',
             ['AB24'] =>
-              'city=revenue:0;label=B',
+              'city=revenue:0;future_label=label:B,color:green',
             ['AC21'] =>
               'city=revenue:20;city=revenue:20;path=a:1,b:_0;path=a:3,b:_1;upgrade=cost:20;label=T;'\
               'border=edge:0,type:impassable',
@@ -656,9 +656,9 @@ module Engine
               'border=edge:0,type:water,cost:40;border=edge:4,type:water,cost:40;'\
               'border=edge:5,type:water,cost:40',
             ['AN6'] =>
-              'city=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable;label=L',
+              'city=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable;future_label=label:L,color:brown',
             ['AO3'] =>
-              'city=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;label=L',
+              'city=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;future_label=label:L,color:brown',
           },
           gray: {
             ['C15'] =>
@@ -672,6 +672,10 @@ module Engine
               'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             %w[T10 T12 T14] =>
               'junction;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            %w[Q19 R20 S21 T22 U23 V24 W25 X26] =>
+              'path=a:2,b:5',
+            ['Y27'] =>
+              'path=a:0,b:2',
             ['Y29'] =>
               'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;'\
               'path=a:3,b:_0;path=a:4,b:_0,lanes:2',
@@ -693,20 +697,16 @@ module Engine
           blue: {
             %w[A5 AK1] =>
               'junction;path=a:0,b:_0,terminal:1',
-            ['M5'] =>
+            %w[a6 M5] =>
               'junction;path=a:5,b:_0,terminal:1',
             %w[S17 AB26 AN10 AP10] =>
               'junction;path=a:2,b:_0,terminal:1',
             %w[R18 V20 AM11 AO11] =>
               'junction;path=a:3,b:_0,terminal:1',
-            %w[F18 U19] =>
+            %w[a8 F18 U19] =>
               'junction;path=a:4,b:_0,terminal:1',
             ['AN8'] =>
               'junction;path=a:1,b:_0,terminal:1;junction;path=a:3,b:_0,terminal:1',
-            %w[Q19 R20 S21 T22 U23 V24 W25 X26] =>
-              'path=a:2,b:5',
-            ['Y27'] =>
-              'path=a:0,b:2',
           },
         }.freeze
       end
