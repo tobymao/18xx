@@ -923,7 +923,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G1822::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
@@ -1866,7 +1866,7 @@ module Engine
         end
 
         def compute_game_end
-          return [:bank, @round.is_a?(Round::Operating) ? :full_or : :current_or] if @bank.broken?
+          return [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or] if @bank.broken?
 
           return %i[stock_market current_or] if @stock_market.max_reached?
         end
