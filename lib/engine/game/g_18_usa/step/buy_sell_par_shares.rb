@@ -22,7 +22,7 @@ module Engine
           def auto_actions(entity)
             return [Engine::Action::Pass.new(entity)] if @auctioning && max_bid(entity, @auctioning) < min_bid(@auctioning)
 
-            []
+            super
           end
 
           def min_increment
@@ -199,6 +199,12 @@ module Engine
             return unless @pending_winning_bid
 
             win_bid(@pending_winning_bid[:winner], @pending_winning_bid[:company])
+          end
+
+          def action_is_shenanigan?(entity, other_entity, action, corporation, corp_buying)
+            return 'Train Scrapped' if action.is_a?(Action::ScrapTrain)
+
+            super
           end
         end
       end
