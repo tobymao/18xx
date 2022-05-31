@@ -49,7 +49,8 @@ services:
 
   nginx:
     restart: always
-    build: ./nginx/
+    build:
+      context: ./nginx/
     ports:
       - 80:80
       - 443:443
