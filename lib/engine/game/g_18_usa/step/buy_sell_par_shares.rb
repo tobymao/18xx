@@ -22,7 +22,7 @@ module Engine
           def auto_actions(entity)
             return [Engine::Action::Pass.new(entity)] if @auctioning && max_bid(entity, @auctioning) < min_bid(@auctioning)
 
-            []
+            super
           end
 
           def min_increment
@@ -34,12 +34,22 @@ module Engine
           end
 
           def validate_bid(entity, corporation, bid)
+            return if @game.loading
+
             max_bid = max_bid(entity, corporation)
             raise GameError, "Invalid bid, maximum bidding power is #{max_bid}" if bid > max_bid
+
+            cash = entity.cash + city_subsidy_value(corporation)
+            return if cash >= bid
+
+            options = available_company_options(entity).map(&:sum)
+            return if options.any? { |option| option <= bid && (option + cash) >= bid }
+
+            raise GameError, 'Invalid bid, no combination of privates and cash add up to bid amount'
           end
 
           def max_bid(entity, corporation = nil)
-            super + (corporation&.tokens&.first&.used ? city_subsidy(corporation)&.value || 0 : max_city_subsidy)
+            super + city_subsidy_value(corporation)
           end
 
           def max_city_subsidy
@@ -97,8 +107,10 @@ module Engine
             par_corporation if available_subsidiaries(winner.entity).none?
           end
 
-          def city_subsidy(corporation)
-            corporation.companies.find { |c| c.value.positive? }
+          def city_subsidy_value(corporation)
+            return max_city_subsidy if !corporation || !corporation.tokens.first.used
+
+            corporation.companies.find { |c| c.value.positive? }&.value || 0
           end
 
           def available_subsidiaries(entity)
@@ -199,6 +211,12 @@ module Engine
             return unless @pending_winning_bid
 
             win_bid(@pending_winning_bid[:winner], @pending_winning_bid[:company])
+          end
+
+          def action_is_shenanigan?(entity, other_entity, action, corporation, corp_buying)
+            return 'Train Scrapped' if action.is_a?(Action::ScrapTrain)
+
+            super
           end
         end
       end
