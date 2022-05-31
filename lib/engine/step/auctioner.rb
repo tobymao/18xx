@@ -71,6 +71,10 @@ module Engine
         bids[company]&.find { |b| b.entity == player }&.price || 0
       end
 
+      def may_bid?(_company)
+        true
+      end
+
       def min_bid(_company)
         # Minimum a bid that an entity can bid
         raise NotImplementedError

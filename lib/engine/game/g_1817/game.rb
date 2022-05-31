@@ -626,6 +626,8 @@ module Engine
           },
         ].freeze
 
+        VOLATILITY_CITY_TILE_COMPANIES = %w[PSM P16 P17 P24].freeze
+
         CORPORATIONS = [
           {
             float_percent: 20,
@@ -1612,10 +1614,22 @@ module Engine
           entity.total_shares.to_s
         end
 
+        def empty_auction_slot
+          @empty_auction_slot ||= Engine::Company.new(sym: '', name: '', value: nil, revenue: nil, desc: '', color: 'LightGrey')
+        end
+
+        def company_header(company)
+          return 'EMPTY SLOT' if company == empty_auction_slot
+
+          super
+        end
+
         private
 
         def new_auction_round
-          log << "Seed Money for initial auction is #{format_currency(self.class::SEED_MONEY)}" unless @round
+          if !@round && !option_volatility_expansion?
+            log << "Seed Money for initial auction is #{format_currency(self.class::SEED_MONEY)}"
+          end
           Engine::Round::Auction.new(self, [
             G1817::Step::SelectionAuction,
           ])
