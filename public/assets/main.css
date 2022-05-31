@@ -340,6 +340,7 @@ text.number {
   border: 1px solid gainsboro;
   border-radius: 0.7rem;
   align-self: start;
+  min-height: 100px;
 }
 .game.card {
   margin: 0 0.5rem 0.5rem 0;
