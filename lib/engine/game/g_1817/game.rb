@@ -532,7 +532,7 @@ module Engine
             name: 'P13 - Ponzi Scheme',
             value: 100,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'This private company does nothing.',
             sym: 'P13',
             color: nil,
           },
