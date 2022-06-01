@@ -251,7 +251,7 @@ module Engine
             name: 'P4 - Pittsburgh Steel Mill',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place special Pittsburgh yellow tile during '\
+            desc: 'Owning corp may place special Pittsburgh (F13) yellow tile during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
                   'reserved, and the power is lost if another company builds there first.',
             sym: 'PSM',
@@ -556,16 +556,46 @@ module Engine
             name: 'P16 - Buffalo Rail Center',
             value: 40,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Owning corp may place special Buffalo (C14) yellow tile during '\
+                  'tile-laying, regardless of connectivity.  The hex is not '\
+                  'reserved, and the power is lost if another company builds there first.',
             sym: 'P16',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: ['C14'],
+                tiles: ['X00'],
+                when: 'track',
+                owner_type: 'corporation',
+                count: 1,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                special: true,
+              },
+            ],
             color: nil,
           },
           {
             name: 'P17 - Toledo Industry',
             value: 40,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Owning corp may place special Toledo (D7) yellow tile during '\
+                  'tile-laying, regardless of connectivity.  The hex is not '\
+                  'reserved, and the power is lost if another company builds there first.',
             sym: 'P17',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: ['D7'],
+                tiles: ['X00'],
+                when: 'track',
+                owner_type: 'corporation',
+                count: 1,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                special: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -620,8 +650,23 @@ module Engine
             name: 'P24 - Indianapolis Market',
             value: 40,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Owning corp may place special Indianapolis (F3) yellow tile during '\
+                  'tile-laying, regardless of connectivity.  The hex is not '\
+                  'reserved, and the power is lost if another company builds there first.',
             sym: 'P24',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: ['F3'],
+                tiles: ['X00'],
+                when: 'track',
+                owner_type: 'corporation',
+                count: 1,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                special: true,
+              },
+            ],
             color: nil,
           },
         ].freeze
@@ -993,8 +1038,6 @@ module Engine
         LAYOUT = :pointy
 
         TRAIN_STATION_PRIVATE_NAME = 'TS'
-        PITTSBURGH_PRIVATE_NAME = 'PSM'
-        PITTSBURGH_PRIVATE_HEX = 'F13'
 
         MUST_BID_INCREMENT_MULTIPLE = true
         SEED_MONEY = 200
@@ -1045,6 +1088,7 @@ module Engine
         LOAN_INTEREST_INCREMENTS = 5
 
         include InterestOnLoans
+        attr_accessor :pittsburgh_private
         attr_reader :owner_when_liquidated, :stock_prices_start_merger
 
         def timeline
@@ -1101,6 +1145,20 @@ module Engine
         def init_stock_market
           @owner_when_liquidated = {}
           super
+        end
+
+        def setup_preround
+          if option_volatility_expansion?
+            city_tile_companies = @companies.select { |c| @game.class::VOLATILITY_CITY_TILE_COMPANIES.include?(c.id) }
+            city_tile_companies.sort_by! { rand }
+            @pittsburgh_private = city_tile_companies.shift
+            city_tile_companies.each do |c|
+              c.close!
+              @companies.delete(c)
+            end
+          else
+            @pittsburgh_private = company_by_id('PSM')
+          end
         end
 
         def loans_per_increment(_increment)

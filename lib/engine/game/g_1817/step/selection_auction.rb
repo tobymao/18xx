@@ -84,15 +84,11 @@ module Engine
 
           def setup_tiered_auction
             if @game.option_volatility_expansion?
-              @companies.sort_by! { @game.rand }
-
-              # Pick "Pittsburgh" company
-              city_privates, @companies = @companies.partition { |c| @game.class::VOLATILITY_CITY_TILE_COMPANIES.include?(c.id) }
-              @companies.unshift(city_privates.shift)
-              city_privates.each(&:close!)
-
               # Create Company Pyramid
               companies = @companies.dup
+              companies.sort_by! { @game.rand }
+              companies.delete(@game.pittsburgh_private)
+              companies.unshift(@game.pittsburgh_private)
               @tiered_companies = 6.times.with_index.map { |i| companies.shift(i + 1) }
             else
               @tiered_companies = [@companies.dup]
