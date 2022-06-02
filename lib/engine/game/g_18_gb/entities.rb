@@ -4,6 +4,40 @@ module Engine
   module Game
     module G18GB
       module Entities
+        def liverpool_and_manchester
+          bonus = second_ed_playtest? ? 30 : 20
+          desc = "The LM gives a bonus of £#{bonus} for Liverpool (E14). The owner of the LM may use this bonus for any trains " \
+                 'run by corporations that they control, from the time that the LM closes until the end of the game.'
+          {
+            name: 'Liverpool & Manchester',
+            value: 45,
+            revenue: 15,
+            desc: desc,
+            sym: 'LM',
+            color: nil,
+            abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['F15'],
+              },
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'any',
+                choices: { close: 'Close LM' },
+              },
+              {
+                type: 'hex_bonus',
+                when: 'owning_playing_or_turn',
+                owner_type: 'player',
+                amount: bonus,
+                hexes: ['E14'],
+              },
+            ],
+          }
+        end
+
         def all_companies
           [
             {
@@ -133,35 +167,7 @@ module Engine
                 },
               ],
             },
-            {
-              name: 'Liverpool & Manchester',
-              value: 45,
-              revenue: 15,
-              desc: 'The LM gives a bonus of £20 for Liverpool (E14). The owner of the LM may use this bonus for any trains ' \
-                    'run by corporations that they control, from the time that the LM closes until the end of the game.',
-              sym: 'LM',
-              color: nil,
-              abilities: [
-                {
-                  type: 'blocks_hexes',
-                  owner_type: 'player',
-                  hexes: ['F15'],
-                },
-                {
-                  type: 'choose_ability',
-                  owner_type: 'player',
-                  when: 'any',
-                  choices: { close: 'Close LM' },
-                },
-                {
-                  type: 'hex_bonus',
-                  when: 'owning_playing_or_turn',
-                  owner_type: 'player',
-                  amount: 20,
-                  hexes: ['E14'],
-                },
-              ],
-            },
+            liverpool_and_manchester,
             {
               name: 'Leicester & Swannington',
               value: 30,
