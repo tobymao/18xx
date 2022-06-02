@@ -467,6 +467,7 @@ module Engine
         MINOR_GREEN_UPGRADE = %w[yellow green].freeze
 
         MINOR_14_ID = '14'
+        MINOR_14_HOME_HEX = 'M38'
 
         PLUS_EXPANSION_BIDBOX_1 = %w[P1 P3 P4 P13 P14 P19].freeze
         PLUS_EXPANSION_BIDBOX_2 = %w[P2 P5 P8 P10 P11 P12 P21].freeze
@@ -753,7 +754,7 @@ module Engine
         end
 
         def home_token_locations(corporation)
-          [hex_by_id(self.class::LONDON_HEX)] if corporation.id == self.class::MINOR_14_ID
+          [hex_by_id(self.class::MINOR_14_HOME_HEX)] if corporation.id == self.class::MINOR_14_ID
         end
 
         def ipo_name(_entity = nil)
@@ -923,7 +924,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G1822::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
@@ -1092,7 +1093,7 @@ module Engine
           @green_t_tile ||= @tiles.find { |t| t.name == '405' }
 
           # Initialize the extra city which minor 14 might add
-          @london_extra_city_index = nil
+          @minor_14_city_index = nil
 
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
@@ -1260,12 +1261,12 @@ module Engine
         end
 
         def after_place_pending_token(city)
-          return unless city.hex.name == self.class::LONDON_HEX
+          return unless city.hex.name == self.class::MINOR_14_HOME_HEX
 
           # Save the extra token city index in london. We need this if we acquire the minor 14 and chooses to remove
           # the token from london. The city where the 14's home token used to be is now open for other companies to
           # token. If we do an upgrade to london, make sure this city still is open.
-          @london_extra_city_index = city.tile.cities.index { |c| c == city }
+          @minor_14_city_index = city.tile.cities.index { |c| c == city }
         end
 
         def after_lay_tile(hex, old_tile, tile)
@@ -1285,7 +1286,7 @@ module Engine
           end
 
           # If we upgraded london, check if we need to add the extra slot from minor 14
-          upgrade_london(hex) if hex.name == self.class::LONDON_HEX
+          upgrade_minor_14_home_hex(hex) if hex.name == self.class::MINOR_14_HOME_HEX
 
           # If we upgraded the english channel to brown, upgrade france as well since we got 2 lanes to france.
           return unless hex.name == self.class::ENGLISH_CHANNEL_HEX && tile.color == :brown
@@ -1679,7 +1680,7 @@ module Engine
           self.class::BIDDING_TOKENS[@players.size.to_s]
         end
 
-        def london_extra_token_ability
+        def minor_14_token_ability
           Engine::Ability::Token.new(type: 'token', hexes: [], price: 20, cheater: 1)
         end
 
@@ -1831,10 +1832,10 @@ module Engine
           hex_by_id(self.class::FRANCE_HEX).tile = france_tile
         end
 
-        def upgrade_london(hex)
-          return unless @london_extra_city_index
+        def upgrade_minor_14_home_hex(hex)
+          return unless @minor_14_city_index
 
-          extra_city = hex.tile.cities[@london_extra_city_index]
+          extra_city = hex.tile.cities[@minor_14_city_index]
           return unless extra_city.tokens.size == 1
 
           extra_city.tokens[extra_city.normal_slots] = nil
@@ -1866,7 +1867,7 @@ module Engine
         end
 
         def compute_game_end
-          return [:bank, @round.is_a?(Round::Operating) ? :full_or : :current_or] if @bank.broken?
+          return [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or] if @bank.broken?
 
           return %i[stock_market current_or] if @stock_market.max_reached?
         end
@@ -1954,7 +1955,7 @@ module Engine
           @company_trains['P19'] = find_and_remove_train_by_id('LP-0', buyable: false)
 
           # Setup the minor 14 ability
-          corporation_by_id(self.class::MINOR_14_ID).add_ability(london_extra_token_ability) if self.class::MINOR_14_ID
+          corporation_by_id(self.class::MINOR_14_ID).add_ability(minor_14_token_ability) if self.class::MINOR_14_ID
         end
 
         def setup_destinations

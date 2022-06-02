@@ -84,24 +84,8 @@ module Engine
       end
 
       def recalculate_order
-        # Selling shares may have caused the corporations that haven't operated yet
-        # to change order. Re-sort only them.
-        index = @entity_index + 1
-        @entities[index..-1] = @entities[index..-1].sort if index < @entities.size - 1
-
-        @entities.pop while @entities.last&.corporation? &&
-          @entities.last.share_price&.liquidation? &&
-          @entities.size > index
-      end
-
-      def recalculate_majors_order
-        # Recalculate order only for major companies
-        index = @entity_index + 1
-        return unless index < @entities.size - 1
-
-        # Find the first major corporation after current operating entity.
-        index += @entities[index..-1].find_index { |c| c.type == :major } || 0
-        @entities[index..-1] = @entities[index..-1].sort
+        unsorted_corps = @entities.pop(@entities.size - @entity_index - 1)
+        @entities.concat(@game.operating_order.select { |e| unsorted_corps.include?(e) })
       end
 
       def operating?

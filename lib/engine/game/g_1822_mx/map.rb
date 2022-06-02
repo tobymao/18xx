@@ -121,7 +121,8 @@ module Engine
               'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:hill;upgrade=cost:20,terrain:river;stub=edge:5',
 
             ['N23'] =>
-              'city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;'\
+              'city=revenue:20,groups:MexicoCity;city=revenue:20,groups:MexicoCity;city=revenue:20,groups:MexicoCity;'\
+              'city=revenue:20,groups:MexicoCity;city=revenue:20,groups:MexicoCity;city=revenue:20,groups:MexicoCity;'\
               'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;'\
               'label=MC',
           },
@@ -161,16 +162,22 @@ module Engine
               'city=revenue:yellow_20|green_30|brown_40|gray_50,slots:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
           },
           blue: {
-            %w[F7 H5] =>
+            ['H5'] =>
               'junction;path=a:3,b:_0,terminal:1',
-            ['G8'] =>
-              'junction;path=a:1,b:_0,terminal:1',
-            %w[H9 J7 J11] =>
+            ['J7'] =>
               'junction;path=a:4,b:_0,terminal:1',
-            %w[I10 M28] =>
+            ['M28'] =>
               'junction;path=a:0,b:_0,terminal:1',
             %w[M40 Q28] =>
               'junction;path=a:2,b:_0,terminal:1',
+            ['F7'] =>
+              'junction;path=a:3,b:_0,terminal:1;icon=image:anchor',
+            ['G8'] =>
+              'junction;path=a:1,b:_0,terminal:1;icon=image:anchor',
+            %w[H9 J11] =>
+              'junction;path=a:4,b:_0,terminal:1;icon=image:anchor',
+            ['I10'] =>
+              'junction;path=a:0,b:_0,terminal:1;icon=image:anchor',
           },
         }.freeze
 
@@ -209,7 +216,13 @@ module Engine
           '546' => 4,
           '611' => 7,
           '60' => 2,
-          '455' => 2,
+          '455' =>
+            {
+              'count' => 2,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            },
           'X20' =>
             {
               'count' => 1,
@@ -312,7 +325,7 @@ module Engine
               'count' => 2,
               'color' => 'gray',
               'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             },
           'X23' =>
             {

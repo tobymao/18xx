@@ -677,7 +677,7 @@ module Engine
           gray: {
             ['B30'] => 'path=a:1,b:0',
             ['C23'] => 'town=revenue:yellow_30|green_40|brown_50|gray_60;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0',
-            ['C25'] => 'town=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_0',
+            ['C25'] => 'town=revenue:yellow_20|green_30|brown_40|gray_40;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_0',
           },
           yellow: {
             ['D28'] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_0;label=NY',

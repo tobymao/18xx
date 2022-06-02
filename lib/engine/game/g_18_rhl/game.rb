@@ -545,7 +545,7 @@ module Engine
 
           if optional_promotion_tiles
             # Essen can be upgraded to gray
-            return to.name == 'Essen' if from.color == :brown && from.name == '216'
+            return to.name == 'Essen' if from.color == :brown && from.name == '216' && from.hex.name == 'D13'
 
             # Dusseldorf and Cologne can be upgraded to gray 932V
             return to.name == '932V' if from.color == :brown && %w[F9 I10].include?(from.hex.name)
