@@ -110,9 +110,10 @@ module Engine
         hex.lay(tile)
 
         # Impassable hex is no longer impassible, update neighbors
-        if @game.class::IMPASSABLE_HEX_COLORS.include?(old_tile.color)
+        if @game.class::IMPASSABLE_HEX_COLORS.include?(old_tile.color) 
           hex.all_neighbors.each do |direction, neighbor|
             next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
+            next if !tile.exits.include?(direction)
 
             neighbor.neighbors[neighbor.neighbor_direction(hex)] = hex
             hex.neighbors[direction] = neighbor
