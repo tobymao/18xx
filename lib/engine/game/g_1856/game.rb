@@ -1803,6 +1803,9 @@ module Engine
           home_token = corp.tokens.first
           home_city = home_token.city
 
+          # For example, the THB's home token, when replaced with a CGR token, could need to be relaid, so the
+          # new token should have a zeroed out price
+          token.price = 0
           replace_token(corp, home_token, token)
           home_city
         end
