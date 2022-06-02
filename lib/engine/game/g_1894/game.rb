@@ -394,9 +394,12 @@ module Engine
         end
 
         def issuable_shares(entity)
-          return [] if entity.num_ipo_reserved_shares < 1 || entity.num_ipo_shares - entity.num_ipo_reserved_shares != 0
+          puts entity.num_ipo_reserved_shares
+          puts entity.num_ipo_shares
+          # if the corporation has more redeemed shares than are left in IPO
+          return [] unless entity.num_ipo_reserved_shares > entity.num_ipo_shares - entity.num_ipo_reserved_shares
 
-          bundle = Engine::ShareBundle.new(entity.shares_of(entity))
+          bundle = Engine::ShareBundle.new(entity.reserved_shares)
           bundle.share_price = 100
 
           [bundle]

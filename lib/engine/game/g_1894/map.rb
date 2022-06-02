@@ -42,7 +42,7 @@ module Engine
           '57' => 7,
           '58' => 3,
           '69' => 1,
-          '70' => 1,
+          '70' => 2,
           '118' => 2,
           '619' => 4,
           '624' => 1,
@@ -197,7 +197,7 @@ module Engine
             ['A2'] => 'path=a:5,b:0;path=a:0,b:4;',
             ['A8'] => 'path=a:0,b:4;path=a:5,b:4;'\
                       'icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
-            ['A10'] => 'city=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
+            ['A10'] => 'town=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
             ['B5'] => 'path=a:1,b:5;path=a:1,b:0;path=a:5,b:0',
             ['C18'] => 'path=a:0,b:1;',
             ['D1'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0',
