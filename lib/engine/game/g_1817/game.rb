@@ -519,6 +519,9 @@ module Engine
           },
         ].freeze
 
+        RANCH_HEXES = %w[B3 B11 B15 B19 B21 B23 C4 C16 C18 D5 D13 D15 D17 E4
+                         E6 E8 E10 E12 E14 F5 F7 F11 G2 G4 G8 G10 H5 H7 I2 I4].freeze
+
         VOLATILITY_COMPANIES = [
           {
             name: 'P12 - Loan Shark',
@@ -634,16 +637,54 @@ module Engine
             name: 'P22 - Country Ranch',
             value: 30,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Comes with one ranch token. When placing a yellow '\
+                  'track tile towards an adjacent revenue center, a ranch '\
+                  'token may also be placed, provided the tile is neither '\
+                  'adjacent to a B-City or Chicago or Atlanta nor in or East '\
+                  'of a montain in that hex row. The ranch token increases the '\
+                  'value of any route through the hex by $10. The yellow tile '\
+                  'underlying the ranch token may not be ugpraded. May not '\
+                  'start or end a route at a ranch token.',
             sym: 'P22',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: RANCH_HEXES,
+                tiles: %w[7 8 9],
+                when: 'track',
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 1,
+              },
+            ],
             color: nil,
           },
           {
             name: 'P23 - Rural Ranch',
             value: 60,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Comes with two ranch tokens. When placing a yellow '\
+                  'track tile towards an adjacent revenue center, a ranch '\
+                  'token may also be placed, provided the tile is neither '\
+                  'adjacent to a B-City or Chicago or Atlanta nor in or East '\
+                  'of a montain in that hex row. The ranch token increases the '\
+                  'value of any route through the hex by $10. The yellow tile '\
+                  'underlying the ranch token may not be ugpraded. May not '\
+                  'start or end a route at a ranch token.',
             sym: 'P23',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: RANCH_HEXES,
+                tiles: %w[7 8 9],
+                when: 'track',
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 2,
+              },
+            ],
             color: nil,
           },
           {
@@ -671,6 +712,8 @@ module Engine
           },
         ].freeze
 
+        MINE_COMPANIES = %w[MINC CM MAJC].freeze
+        RANCH_COMPANIES = %w[P22 P23].freeze
         VOLATILITY_CITY_TILE_COMPANIES = %w[PSM P16 P17 P24].freeze
 
         CORPORATIONS = [
@@ -1054,6 +1097,7 @@ module Engine
         ASSIGNMENT_TOKENS = {
           'bridge' => '/icons/1817/bridge_token.svg',
           'mine' => '/icons/1817/mine_token.svg',
+          'ranch' => '/icons/1817/ranch_token.svg',
         }.freeze
 
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
@@ -1149,7 +1193,7 @@ module Engine
 
         def setup_preround
           if option_volatility_expansion?
-            city_tile_companies = @companies.select { |c| @game.class::VOLATILITY_CITY_TILE_COMPANIES.include?(c.id) }
+            city_tile_companies = @companies.select { |c| self.class::VOLATILITY_CITY_TILE_COMPANIES.include?(c.id) }
             city_tile_companies.sort_by! { rand }
             @pittsburgh_private = city_tile_companies.shift
             city_tile_companies.each do |c|
@@ -1157,7 +1201,7 @@ module Engine
               @companies.delete(c)
             end
           else
-            @pittsburgh_private = company_by_id('PSM')
+            @pittsburgh_private = @companies.find { |c| c.id == 'PSM' }
           end
         end
 
@@ -1636,6 +1680,11 @@ module Engine
             raise GameError, 'Route cannot start or end with a mine'
           end
 
+          ranch = 'ranch'
+          if route.hexes.first.assigned?(ranch) || route.hexes.last.assigned?(ranch)
+            raise GameError, 'Route cannot start or end with a ranch'
+          end
+
           if option_modern_trains? && [7, 8].include?(route.train.distance)
             per_token = route.train.distance == 7 ? 10 : 20
             revenue += stops.sum do |stop|
@@ -1646,6 +1695,7 @@ module Engine
           end
 
           revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(mine) }
+          revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(ranch) }
           revenue
         end
 
@@ -1680,6 +1730,18 @@ module Engine
           return 'EMPTY SLOT' if company == empty_auction_slot
 
           super
+        end
+
+        def mine_company?(company)
+          self.class::MINE_COMPANIES.include?(company.id)
+        end
+
+        def ranch_company?(company)
+          self.class::RANCH_COMPANIES.include?(company.id)
+        end
+
+        def b_city_tile?(tile)
+          tile.label&.to_s == 'B'
         end
 
         private

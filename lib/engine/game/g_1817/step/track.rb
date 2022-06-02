@@ -10,6 +10,7 @@ module Engine
         class Track < Engine::Step::Track
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             raise GameError, 'Cannot upgrade mines' if action.hex.assigned?('mine')
+            raise GameError, 'Cannot upgrade ranches' if action.hex.assigned?('ranch')
 
             super
 

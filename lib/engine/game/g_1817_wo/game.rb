@@ -589,7 +589,7 @@ module Engine
 
         def setup_preround
           super
-          @pittsburgh_private = company_by_id('PSM')
+          @pittsburgh_private = @companies.find { |c| c.id == 'PSM' }
         end
 
         def setup
