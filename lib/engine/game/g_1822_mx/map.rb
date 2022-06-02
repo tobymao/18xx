@@ -121,7 +121,8 @@ module Engine
               'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:hill;upgrade=cost:20,terrain:river;stub=edge:5',
 
             ['N23'] =>
-              'city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;'\
+              'city=revenue:20,groups:MexicoCity;city=revenue:20,groups:MexicoCity;city=revenue:20,groups:MexicoCity;'\
+              'city=revenue:20,groups:MexicoCity;city=revenue:20,groups:MexicoCity;city=revenue:20,groups:MexicoCity;'\
               'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;'\
               'label=MC',
           },
