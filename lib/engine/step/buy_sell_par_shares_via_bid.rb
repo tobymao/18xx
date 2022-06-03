@@ -6,7 +6,7 @@ require_relative 'passable_auction'
 module Engine
   module Step
     class BuySellParSharesViaBid < BuySellParShares
-      # Common code between 1867 and 18Ireland for auctioning corporations via bid
+      # Common code between 1867, 18Ireland, and 1877: Stockholm Tramways for auctioning corporations via bid
       include Engine::Step::PassableAuction
 
       def actions(entity)
@@ -65,7 +65,7 @@ module Engine
           @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
         else
           @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
-          @game.place_home_token(action.corporation)
+          @game.place_home_token(action.corporation) if @game.class::HOME_TOKEN_TIMING == :par
         end
         super(action)
 

@@ -947,7 +947,7 @@ module Engine
 
         LAYOUT = :flat
 
-        HOME_TOKEN_TIMING = :float
+        HOME_TOKEN_TIMING = :par
         MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always # mostly true, needs custom code
         POOL_SHARE_DROP = :none
