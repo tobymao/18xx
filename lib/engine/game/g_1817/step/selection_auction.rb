@@ -77,7 +77,7 @@ module Engine
 
           def setup
             setup_auction
-            @companies = @game.companies.dup
+            @companies = @game.companies.reject(&:closed?).dup
             setup_tiered_auction
             @seed_money = @game.option_volatility_expansion? ? nil : @game.class::SEED_MONEY
           end
