@@ -13,7 +13,7 @@ module Engine
           FIRST_SR_ACTIONS = %w[buy_company pass].freeze
           EXCHANGE_ACTIONS = %w[buy_shares pass].freeze
           SELL_COMPANY_ACTIONS = %w[sell_company pass].freeze
-          BUY_MINOR_ACTIONS = %w[buy_corporation pass].freeze
+          BUY_COMPANY_ACTIONS = %w[buy_corporation pass].freeze
 
           def actions(entity)
             return EXCHANGE_ACTIONS if entity == @game.fdsd && @game.rag.ipoed
@@ -29,7 +29,7 @@ module Engine
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
             result.concat(EXCHANGE_ACTIONS) if can_exchange?(entity)
             result.concat(SELL_COMPANY_ACTIONS) if can_sell_any_companies?(entity)
-            result.concat(BUY_MINOR_ACTIONS) if can_buy_company?(entity)
+            result.concat(BUY_COMPANY_ACTIONS) if can_buy_company?(entity)
             result
           end
 
@@ -41,7 +41,7 @@ module Engine
           end
 
           def buyable_company?(player, company)
-            return false if first_sr_passed?(player) || sold? || bought?
+            return false if first_sr_passed?(player) || bought?
             return false if @game.bond?(company) && @round.players_sold[player][:bond]
 
             player.cash >= company.value
