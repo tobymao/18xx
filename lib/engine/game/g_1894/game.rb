@@ -21,7 +21,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 99, 4 => 99 }.freeze
 
-        STARTING_CASH = { 3 => 650, 4 => 550 }.freeze
+        STARTING_CASH = { 3 => 650, 4 => 540 }.freeze
 
         CAPITALIZATION = :full
 
@@ -145,7 +145,7 @@ module Engine
                     distance: 3,
                     price: 160,
                     rusts_on: '5',
-                    num: 5,
+                    num: 6,
                     discount: { '2' => 40 },
                   },
                   {
@@ -247,7 +247,6 @@ module Engine
         SQ_TILE = 'X17'
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
-
         GREEN_CITY_14_TILE = '14'
         BROWN_CITY_14_UPGRADES_TILES = %w[X14 X15 36].freeze
         GREEN_CITY_15_TILE = '15'
@@ -575,15 +574,22 @@ module Engine
           to_remove = @depot.trains.reverse.find { |t| t.name == '5' }
           @depot.forget_train(to_remove)
           @log << "Removing #{to_remove.name} train"
+
+          # to_remove = @depot.trains.reverse.find { |t| t.name == '6' }
+          # @depot.forget_train(to_remove)
+          # @log << "Removing #{to_remove.name} train"
         end
 
         def remove_extra_late_corporations
+          to_remove = @late_corporations.select { |c| c.id == 'B2' }
+          @late_corporations.delete(to_remove)
+          @log << 'Removing B2 late corporation'
+
           return unless @players.size == 3
 
-          to_remove = @late_corporations.select { |c| %w[F2 B2].include?(c.id) }
-          @late_corporations.delete(to_remove[0])
-          @late_corporations.delete(to_remove[1])
-          @log << 'Removing F2 and B2 late corporations'
+          to_remove = @late_corporations.select { |c| c.id == 'F2' }
+          @late_corporations.delete(to_remove)
+          @log << 'Removing F2 late corporation'
         end
 
         def plm_corporation
