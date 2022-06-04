@@ -634,7 +634,8 @@ module Engine
                    'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;border=edge:0',
           },
           yellow: {
-            %w[F15 M4] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0',
+            %w[M4] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;label=B-L;future_label=label:Bar,color:brown',
+            %w[F15] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;label=B-L;future_label=label:Lon,color:brown',
             ['N11'] =>
             'city=revenue:30;city=revenue:30;label=T;path=a:1,b:_0;path=a:4,b:_1',
             %w[I12 N17] => 'city=revenue:0;city=revenue:0;label=OO',
@@ -650,9 +651,9 @@ module Engine
           white: {
             %w[H15 G12 I8 J13 D17 J11 J15 K8 O16] =>
                      'city=revenue:0',
-            %w[B19 L13 P9] => 'city=revenue:0;label=L',
-            %w[C14 F17 O18] => 'city=revenue:0;label=L;icon=image:port,sticky:1',
-            ['N3'] => 'city=revenue:0;label=L;upgrade=cost:40,terrain:water',
+            %w[B19 L13 P9] => 'city=revenue:0;future_label=label:L,color:brown',
+            %w[C14 F17 O18] => 'city=revenue:0;future_label=label:L,color:brown;icon=image:port,sticky:1',
+            ['N3'] => 'city=revenue:0;future_label=label:L,color:brown;upgrade=cost:40,terrain:water',
             %w[J9 K16 L9 M6 N9 H11] => 'town=revenue:0',
             %w[D19 H17 J5 M18] => 'town=revenue:0;icon=image:port,sticky:1',
             %w[I14 F13 M10] => 'town=revenue:0;town=revenue:0',
@@ -711,15 +712,9 @@ module Engine
         attr_accessor :borrowed_trains, :national_ever_owned_permanent, :false_national_president,
                       :nationalization_train_discard_trigger
 
-        # These plain city hexes upgrade to L tiles in brown
-        LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
         BROWN_OO_TILES = %w[64 65 66 67 68].freeze
         PORT_HEXES = %w[C14 D19 E18 F17 F9 H17 H7 H5 J17 J5 K2 M18 O18].freeze
 
-        # These cities upgrade to the common BarrieLondon green tile,
-        #  but upgrade to specialized brown tiles
-        BARRIE_HEX = 'M4'
-        LONDON_HEX = 'F15'
         HAMILTON_HEX = 'L15'
 
         TUNNEL_TOKEN_HEX = 'A14'
@@ -1099,17 +1094,6 @@ module Engine
           return gray_phase? if to.name == '9' && from.name == '4'
           return gray_phase? if to.name == '8' && from.name == '58'
 
-          # Certain green cities upgrade to other labels
-          return to.name == '127' if from.color == :green && from.hex.name == self.class::BARRIE_HEX
-          return to.name == '126' if from.color == :green && from.hex.name == self.class::LONDON_HEX
-          # You may lay the brown 5-spoke L if and only if it is laid on a L hex -
-          # NOT EVEN IF YOU GREEN A DOUBLE DIT ON A LAKE EDTGE
-          return to.name == '125' if from.color == :green && self.class::LAKE_HEXES.include?(from.hex.name)
-          # The L hexes on the map start as plain yellow cities
-          return %w[5 6 57].include?(to.name) if self.class::LAKE_HEXES.include?(from.hex.name) && from.color == :white
-          # B,L to B-L
-          return to.name == '121' if from.color == :yellow &&
-              [self.class::BARRIE_HEX, self.class::LONDON_HEX].include?(from.hex.name)
           # Hamilton OO upgrade is yet another case of ignoring labels in upgrades
           return to.name == '123' if from.color == :brown && from.hex.name == self.class::HAMILTON_HEX
 
@@ -1819,6 +1803,9 @@ module Engine
           home_token = corp.tokens.first
           home_city = home_token.city
 
+          # For example, the THB's home token, when replaced with a CGR token, could need to be relaid, so the
+          # new token should have a zeroed out price
+          token.price = 0
           replace_token(corp, home_token, token)
           home_city
         end

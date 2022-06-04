@@ -19,7 +19,7 @@ if [[ $1 == 'podman' ]]; then
   db_uid=1000
   mapped_db_uid=$(($(grep "^$USER:" /etc/subuid | cut -d: -f2) - 1 + db_uid))
   find db/data -prune -type d ! -user $mapped_db_uid -exec \
-       sudo chown -R $mapped_db_uid:$mapped_db_uid \;
+       sudo chown -R $mapped_db_uid:$mapped_db_uid "{}" \;
 else
   find db/data -prune -type d -user root -exec \
        sudo chown -R "$USER":"$USER" \;

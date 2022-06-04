@@ -11,6 +11,12 @@ module Engine
           def cash_crisis_player
             @game.cash_crisis_player
           end
+
+          def start_operating
+            entity = @entities[@entity_index]
+            @current_operator = entity
+            super
+          end
         end
       end
     end

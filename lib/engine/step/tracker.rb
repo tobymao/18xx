@@ -92,12 +92,8 @@ module Engine
         old_tile = hex.tile
         graph = @game.graph_for_entity(entity)
 
-        (@game.companies + @game.minors + @game.corporations).each do |company|
-          break if @game.loading
-          next if company.closed? || company == entity
-          next unless (ability = @game.abilities(company, :blocks_hexes))
-
-          raise GameError, "#{hex.id} is blocked by #{company.name}" if @game.hex_blocked_by_ability?(entity, ability, hex)
+        if !@game.loading && (blocking_ability = ability_blocking_hex(entity, hex))
+          raise GameError, "#{hex.id} is blocked by #{blocking_ability.owner.name}"
         end
 
         tile.rotate!(rotation)
@@ -403,6 +399,17 @@ module Engine
         end
       end
 
+      def ability_blocking_hex(entity, hex)
+        (@game.companies + @game.minors + @game.corporations).each do |company|
+          next if company.closed? || company == entity
+          next unless (ability = @game.abilities(company, :blocks_hexes))
+
+          return ability if @game.hex_blocked_by_ability?(entity, ability, hex)
+        end
+
+        nil
+      end
+
       def tracker_available_hex(entity, hex)
         connected = hex_neighbors(entity, hex)
         return nil unless connected
@@ -414,6 +421,7 @@ module Engine
         return nil if color == :white && !tile_lay[:lay]
         return nil if color != :white && !tile_lay[:upgrade]
         return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
+        return nil if ability_blocking_hex(entity, hex)
 
         connected
       end

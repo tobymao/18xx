@@ -104,7 +104,7 @@ module Engine
 
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
-          next unless city.tokened_by?(corporation)
+          next unless @game.city_tokened_by?(city, corporation)
           next if @check_tokens && @game.skip_token?(self, corporation, city)
 
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
@@ -162,7 +162,7 @@ module Engine
         local_nodes = {}
 
         node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
-                  skip_paths: skip_paths, tile_type: @game.class::TILE_TYPE) do |path, _, _|
+                  skip_paths: skip_paths, converging_path: false) do |path, _, _|
           next if paths[path]
 
           paths[path] = true

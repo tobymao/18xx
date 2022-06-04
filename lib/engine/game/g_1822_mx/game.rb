@@ -45,8 +45,8 @@ module Engine
         CURRENCY_FORMAT_STR = '$%d'
 
         MARKET = [
-          %w[5 10 15 20 25 30 35 40 45 50p 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450
-             500 550 600e],
+          %w[5y 10y 15y 20y 25y 30y 35y 40y 45y 50p 60px 70px 80px 90px 100px 110 120 135 150 165 180 200 220 245 270 300 330
+             360 400 450 500 550 600e],
         ].freeze
 
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
@@ -144,6 +144,8 @@ module Engine
 
         BIDDING_BOX_START_PRIVATE = 'P1'
         BIDDING_BOX_START_MINOR = nil
+
+        DOUBLE_HEX = %w[L19 M22 M26].freeze
 
         def init_graph
           Graph.new(self, home_as_token: true)
@@ -293,7 +295,7 @@ module Engine
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
         def operating_round(round_num)
-          G1822::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
@@ -310,7 +312,7 @@ module Engine
             G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822MX::Step::DiscardTrain,
-            G1822::Step::IssueShares,
+            G1822MX::Step::IssueShares,
             G1822MX::Step::CashOutNdem,
             G1822MX::Step::AuctionNdemTokens,
           ], round_num: round_num)
@@ -342,15 +344,6 @@ module Engine
           G1822MX::SharePool.new(self)
         end
 
-        def upgrades_to_correct_label?(from, to)
-          # If the previous hex is white with a 'T', allow upgrades to 5 or 6
-          if from.hex.tile.label.to_s == 'T' && from.hex.tile.color == :white
-            return true if to.name == '5'
-            return true if to.name == '6'
-          end
-          super
-        end
-
         def stock_round
           G1822MX::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
@@ -380,7 +373,7 @@ module Engine
           corporation = corporation_from_company(company)
 
           # Replace token
-          city = hex_by_id(corporation.coordinates).tile.cities[corporation.city]
+          city = hex_by_id(corporation.coordinates).tile.cities.find { |c| c.reserved_by?(corporation) }
           city.remove_reservation!(corporation)
           city.place_token(ndem, ndem.find_token_by_type, check_tokenable: false)
           graph.clear
@@ -418,6 +411,11 @@ module Engine
           after_par(ndem) # Not clear this is needed
 
           @ndem_state = :open
+
+          n = ndem
+          def n.counts_for_limit
+            false
+          end
         end
 
         def send_train_to_ndem(train)
@@ -544,7 +542,9 @@ module Engine
         end
 
         def active_players
-          return [@ndem_acting_player] if @ndem_acting_player
+          if current_entity == ndem && @round.active_step.respond_to?(:ndem_acting_player)
+            return [@round.active_step.ndem_acting_player]
+          end
 
           super
         end
@@ -601,7 +601,7 @@ module Engine
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
           adjust_p7_revenue(company) if company.id == 'P7'
           company.revenue = -10 if company.id == 'P16'
-          company.revenue = 0 if cube_company?(company)
+          company.revenue = 0 if cube_company?(company) || self.class::PRIVATE_MAIL_CONTRACTS.include?(company.id)
         end
 
         def reorder_players(_order = nil)
@@ -648,7 +648,7 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          route.train.name == '3/2P' ? (revenue / 2).round(-1) : revenue
+          route.train.name.start_with?('3/2P') ? (revenue / 2).round(-1) : revenue
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
@@ -756,6 +756,11 @@ module Engine
         end
 
         def finalize_end_game_values; end
+
+        def reduced_bundle_price_for_market_drop(bundle)
+          bundle.share_price = @stock_market.find_share_price(bundle.corporation, [:left] * bundle.num_shares).price
+          bundle
+        end
       end
     end
   end

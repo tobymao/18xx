@@ -1965,6 +1965,10 @@ module Engine
         entity&.company? ? entity.owner : entity
       end
 
+      def company_header(_company)
+        'PRIVATE COMPANY'
+      end
+
       private
 
       def init_graph

@@ -165,6 +165,8 @@ module Engine
 
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
+        NEXT_SR_PLAYER_ORDER = :most_cash
+
         STOCKMARKET_COLORS = {
           par_1: :yellow,
           par_2: :green,

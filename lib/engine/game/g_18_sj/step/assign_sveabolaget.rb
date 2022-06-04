@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/assign'
-require_relative '../../../game_error'
 
 module Engine
   module Game

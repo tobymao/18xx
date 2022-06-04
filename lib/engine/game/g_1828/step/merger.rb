@@ -186,6 +186,7 @@ module Engine
             @players = @round.entities.rotate(@round.entities.index(@round.acting_player)) if !@players || @players.empty?
 
             while (player = @players.first)
+              @trade_order = @round.entities.rotate(@round.entities.index(player))
               hide_odd_share(player)
               exchange_pairs(player)
               restore_odd_share(player)
@@ -201,7 +202,8 @@ module Engine
           def enter_exchange_singles_state
             @players = @round.entities.rotate(@round.entities.index(@round.acting_player) + 1) if !@players || @players.empty?
 
-            while @players.any?
+            until @players.empty?
+              @trade_order = @players
               exchange_singles(@players.first)
               return if @player_choice
 
@@ -399,12 +401,12 @@ module Engine
             source = nil
 
             if @player_selection
-              source = @players.find { |p| p.name == @player_selection }
+              source = @trade_order.find { |p| p.name == @player_selection }
               @player_selection = nil
             elsif entity.num_shares_of(@merger) >= num_needed
               source = entity
             else
-              sources = [@discard, @players[1..-1], @merger, @game.share_pool].flatten.compact.select do |src|
+              sources = [@discard, @trade_order[1..-1], @merger, @game.share_pool].flatten.compact.select do |src|
                 merger_shares = src.shares_of(@merger).reject(&:president)
                 target_shares = src.shares_of(@target).reject(&:president)
 
@@ -413,7 +415,7 @@ module Engine
 
               # If exchanging with another player, check to see if there are options to choose from
               if sources.any? && sources.first.player? && (players = sources.select do |s|
-                                                             @players.include?(s)
+                                                             @trade_order.include?(s)
                                                            end).size > 1
                 @log << ("#{entity.name} chooses player to trade #{@target.name} share to for #{@merger.name} share")
                 @player_choice =

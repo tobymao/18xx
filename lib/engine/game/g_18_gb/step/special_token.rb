@@ -13,7 +13,11 @@ module Engine
             super
           end
 
-          def available_tokens(_entity)
+          def available_tokens(entity)
+            ability = ability(entity)
+            return [] unless ability
+            return [Engine::Token.new(current_entity)] if ability&.type == :token && !ability&.from_owner
+
             super(current_entity)
           end
 
@@ -51,7 +55,7 @@ module Engine
             city_string = hex.tile.cities.size > 1 ? " city #{action.city.index}" : ''
             raise GameError, "Cannot place token on #{hex.name}#{city_string}" unless available_hex(action.entity, hex)
 
-            token = switch_for_expensive_token(action.token)
+            token = switch_for_expensive_token(action.token || available_tokens(action.entity).first)
             action.city.remove_reservation!(action.entity)
 
             place_token(

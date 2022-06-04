@@ -4,6 +4,7 @@ require 'view/game/actionable'
 require 'view/game/company'
 require 'view/game/par'
 require 'view/game/players'
+require 'view/game/stock_market'
 
 module View
   module Game
@@ -31,7 +32,7 @@ module View
 
           store(:before_process_pass, -> { hide! }, skip: true) if @current_actions.include?('pass')
 
-          if @current_actions.include?('par') && @step.companies_pending_par
+          if @current_actions.include?('par') && @step.respond_to?(:companies_pending_par) && @step.companies_pending_par
             h(:div, render_company_pending_par)
           else
             h(:div, [
@@ -40,8 +41,10 @@ module View
               *render_companies,
               *render_minors,
               *render_corporations,
+              render_par_corporations,
               render_players,
               render_map,
+              render_stock_market,
             ].compact)
           end
         end
@@ -163,7 +166,7 @@ module View
                     })
 
           buttons = []
-          if @step.min_bid(company) <= @step.max_place_bid(@current_entity, company)
+          if @step.may_bid?(company) && @step.min_bid(company) <= @step.max_place_bid(@current_entity, company)
             bid_str = @step.respond_to?(:bid_str) ? @step.bid_str(company) : 'Place Bid'
             buttons << h(:button, { on: { click: -> { create_bid(company, input) } } }, bid_str)
           end
@@ -309,7 +312,7 @@ module View
             },
           }
 
-          @selected_corporation = @step.auctioning if @step.auctioning
+          @selected_corporation = @step.auctioning if @step.auctioning.is_a?(Engine::Corporation)
 
           @step.available.select(&:corporation?).map do |corporation|
             children = []
@@ -318,6 +321,26 @@ module View
             children << render_corp_choose_input if @selected_corporation == corporation && corporation.ipoed
             h(:div, props, children)
           end.compact
+        end
+
+        def render_par_corporations
+          return nil if !@current_actions.include?('par') || !@step.respond_to?(:par_corporations)
+
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          corporations = []
+          @step.par_corporations(@current_entity).each do |corporation|
+            children = []
+            children << h(Corporation, corporation: corporation)
+            children << render_ipo_input if @selected_corporation == corporation
+            corporations << h(:div, props, children)
+          end
+          h(:div, props, corporations)
         end
 
         def render_ipo_input
@@ -441,6 +464,13 @@ module View
           return nil unless show
 
           h(Game::Map, game: @game, opacity: 1.0)
+        end
+
+        def render_stock_market
+          show = (@step.respond_to?(:show_stock_market?) && @step.show_stock_market?)
+          return nil unless show
+
+          h(StockMarket, game: @game, show_bank: false)
         end
       end
     end

@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         DEPENDS_ON = '1846'
 
         GAME_DESIGNER = 'Anthony Fryer'
