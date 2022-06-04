@@ -551,8 +551,15 @@ module Engine
             name: 'P15 - Scrapper',
             value: 40,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Owning corp receives compensation for each train it owns that become '\
+                  'obsolete and are eliminated (2 - $30, 2+ - $30, 3 - $75, 4 - $150).',
             sym: 'P15',
+            abilities: [
+              {
+                type: 'train_scrapper',
+                scrap_value: { '2': 30, '2+': 30, '3': 75, '4': 150 },
+              },
+            ],
             color: nil,
           },
           {
@@ -1858,6 +1865,17 @@ module Engine
           @final_operating_rounds = @round.round_num == 2 ? 3 : 2
           game_end_check
           @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
+        end
+
+        def rust(train)
+          owner = train.owner
+          super
+          abilities(owner, :train_scrapper, include_companies: true) do |a|
+            if (scrap_value = a.scrap_value(train)).positive?
+              @log << "#{owner.name} receives #{format_currency(scrap_value)} for #{train.name}"
+              @bank.spend(scrap_value, owner)
+            end
+          end
         end
       end
     end
