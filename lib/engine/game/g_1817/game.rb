@@ -612,7 +612,11 @@ module Engine
             name: 'P18 - Express Track',
             value: 30,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Owning corp must pay $10 to perform the first tile operation each '\
+                  'operating round. The corp may perform a second tile operation for '\
+                  'free. The corp may skip all tile operations to avoid the $10 fee. '\
+                  'If combined with Efficient Track (P19), both first and second track '\
+                  'operations are free.',
             sym: 'P18',
             color: nil,
           },
@@ -620,7 +624,9 @@ module Engine
             name: 'P19 - Efficient Track',
             value: 40,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Owning corp may perform a second tile operation for $10, insetad of '\
+                  'the normal $20. If combined with Express Track (P18), both first and '\
+                  'second track operations are free.',
             sym: 'P19',
             color: nil,
           },
@@ -1317,6 +1323,19 @@ module Engine
           super.reject { |c| c.share_price.liquidation? }
         end
 
+        def tile_lays(entity)
+          actions = super
+          if entity.companies.include?(express_track_private) && entity.companies.include?(efficient_track_private)
+            actions[1][:cost] = 0
+          elsif entity.companies.include?(express_track_private)
+            actions[0][:cost] = 10
+            actions[1][:cost] = 0
+          elsif entity.companies.include?(efficient_track_private)
+            actions[1][:cost] = 10
+          end
+          actions
+        end
+
         def home_token_locations(corporation)
           hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
@@ -1751,6 +1770,17 @@ module Engine
           tile.label&.to_s == 'B'
         end
 
+        def rust(train)
+          owner = train.owner
+          super
+          abilities(owner, :train_scrapper, include_companies: true) do |a|
+            if (scrap_value = a.scrap_value(train)).positive?
+              @log << "#{owner.name} receives #{format_currency(scrap_value)} for #{train.name}"
+              @bank.spend(scrap_value, owner)
+            end
+          end
+        end
+
         private
 
         def new_auction_round
@@ -1867,15 +1897,12 @@ module Engine
           @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
         end
 
-        def rust(train)
-          owner = train.owner
-          super
-          abilities(owner, :train_scrapper, include_companies: true) do |a|
-            if (scrap_value = a.scrap_value(train)).positive?
-              @log << "#{owner.name} receives #{format_currency(scrap_value)} for #{train.name}"
-              @bank.spend(scrap_value, owner)
-            end
-          end
+        def express_track_private
+          @express_track_private ||= company_by_id('P18')
+        end
+
+        def efficient_track_private
+          @efficient_track_private ||= company_by_id('P19')
         end
       end
     end
