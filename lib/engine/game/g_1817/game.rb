@@ -547,7 +547,9 @@ module Engine
             name: 'P14 - Inventor',
             value: 70,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'The bank pays the owning corp when the first type of each train '\
+                  'is purchased or exported (2 - $20, 2+ - $0, 3 - $30, 4 - $40, '\
+                  '5 - $50, 6 - $60, 7 - $70, 8 - $80).',
             sym: 'P14',
             color: nil,
           },
@@ -1778,16 +1780,33 @@ module Engine
         def rust(train)
           owner = train.owner
           super
+          return unless owner&.corporation?
+
           abilities(owner, :train_scrapper, include_companies: true) do |a|
             if (scrap_value = a.scrap_value(train)).positive?
-              @log << "#{owner.name} receives #{format_currency(scrap_value)} for #{train.name}"
+              @log << "#{owner.name} collects #{format_currency(scrap_value)} from #{a.owner.name} for #{train.name}"
               @bank.spend(scrap_value, owner)
             end
           end
         end
 
+        def remove_train(train)
+          from_depot = train.from_depot?
+          super
+          return unless inventor_private&.owner&.corporation?
+          return if !from_depot || @depot.trains.find { |t| t.name == train.name } != train
+          return unless (payout = inventor_payout(train)).positive?
+
+          @log << "#{inventor_private.owner.name} collects #{format_currency(payout)} from #{inventor_private.name}"
+          @bank.spend(payout, inventor_private.owner)
+        end
+
         def loan_shark_private
           @loan_share_private ||= company_by_id('P12')
+        end
+
+        def inventor_private
+          @inventor_private ||= company_by_id('P14')
         end
 
         def express_track_private
@@ -1798,8 +1817,13 @@ module Engine
           @efficient_track_private ||= company_by_id('P19')
         end
 
-        def train_subsidy_private
-          @train_subsidy_private ||= company_by_id('P21')
+        def station_subsidy_private
+          @station_subsidy_private ||= company_by_id('P21')
+        end
+
+        def inventor_payout(train)
+          @payouts ||= { '2': 20, '2+': 0, '3': 30, '4': 40, '5': 50, '6': 60, '7': 70, '8': 80 }
+          @payouts[train.name]
         end
 
         private

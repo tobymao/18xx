@@ -21,14 +21,14 @@ module Engine
     def export!
       train = @upcoming.first
       @game.log << "-- Event: A #{train.name} train exports --"
-      remove_train(train)
+      @game.remove_train(train)
       @game.phase.buying_train!(nil, train)
     end
 
     def export_all!(name)
       @game.log << "-- Event: All #{name} trains are exported --"
       while (train = @upcoming.first).name == name
-        remove_train(train)
+        @game.remove_train(train)
         @game.phase.buying_train!(nil, train)
       end
     end

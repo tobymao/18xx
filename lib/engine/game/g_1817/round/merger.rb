@@ -57,7 +57,7 @@ module Engine
 
           def token_cost(corporation)
             cost = (tokens_needed || 0) * 50
-            cost -= 50 if corporation.companies.include?(@game.token_subsidy_private)
+            cost -= 50 if corporation.companies.include?(@game.station_subsidy_private)
             cost
           end
 
