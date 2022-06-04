@@ -378,10 +378,6 @@ module Engine
 
           tile = hex_by_id(action.hex.id).tile
 
-          if BROWN_CITY_UPGRADES_TILES.include?(tile.name)
-            tile.cities.each { |c| c.add_slot }
-          end
-
           #return unless action.hex.id == SQ_HEX
           if action.hex.id != SQ_HEX || tile.color == :yellow
             return
@@ -393,8 +389,6 @@ module Engine
         end
 
         def issuable_shares(entity)
-          puts entity.num_ipo_reserved_shares
-          puts entity.num_ipo_shares
           # if the corporation has more redeemed shares than are left in IPO
           return [] unless entity.num_ipo_reserved_shares > entity.num_ipo_shares - entity.num_ipo_reserved_shares
 
@@ -454,7 +448,9 @@ module Engine
         end
 
         def saved_tokens
-          @saved_tokens
+          return [] if @saved_tokens == nil
+
+          @saved_tokens.sort_by { |t| operating_order.index(t[:entity]) }
         end
 
         def save_tokens_hex(hex)

@@ -1,57 +1,74 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
-require_relative '../../../step/buy_sell_par_shares'
 
 module Engine
   module Game
     module G1894
       module Step
         class UpdateTokens < Engine::Step::Base
+          ACTIONS = %w[place_token].freeze
+
           def actions(entity)
-            @saved_tokens = @game.saved_tokens
-            hex = @game.saved_tokens_hex
+            return [] unless entity == current_entity
 
-            return [] unless @saved_tokens
-
-            @saved_tokens.sort_by! { |t| @game.operating_order.index(t.corporation) }
-
-            @saved_tokens.each do |token|
-              if token != nil
-                @round.pending_tokens << {
-                  entity: token.corporation,
-                  hexes: [@game.saved_tokens_hex],
-                  token: token,
-                }
-                @log << "#{token.corporation.name} must choose city for token"
-                @saved_tokens.delete(token)
-                @game.save_tokens(@saved_tokens)
-              end
-            end
+            ACTIONS
+          end
+    
+          def active?
+            pending_entity
           end
 
+          def active_entities
+            [pending_entity]
+          end
+    
+          def current_entity
+            pending_entity
+          end
+    
           def pending_entity
-            @game.saved_tokens[0].token.corporation if @game.saved_tokens.any?
+            pending_token[:entity]
           end
-
+    
+          def token
+            pending_token[:token]
+          end
+    
+          def pending_token
+            @game.saved_tokens&.first || {}
+          end
+    
           def description
-            'Choose city for token'
+            "Choose city for station marker in #{@game.saved_tokens_hex.name}"
+          end
+    
+          def available_hex(_entity, hex)
+            pending_token[:hexes].include?(hex)
+          end
+    
+          def available_tokens(_entity)
+            [token]
+          end
+    
+          def process_place_token(action)
+            # the action is faked and doesn't represent the actual token laid
+            hex = action.city.hex
+            raise GameError, "Cannot place token on #{hex.name} as the hex is not available" unless available_hex(action.entity, hex)
+            cheater = action.city.tokens.count { |t| t != nil }
+            action.city.place_token(action.entity, token, free: true, check_tokenable: false, cheater: cheater)
+            saved_tokens = @game.saved_tokens
+            saved_tokens.shift
+            @game.save_tokens(saved_tokens)
+            @game.save_tokens_hex(nil) if saved_tokens.size == 0
           end
 
-          # def process_hex_token(action)
-          #   @saved_tokens.each do |token|
-          #     @round.pending_tokens << {
-          #       entity: token.corporation,
-          #       hexes: [@game.saved_tokens_hex],
-          #       token: token,
-          #     }
-          #     @log << "#{token.corporation.name} must choose city for token"
-          #     @saved_tokens.delete(token)
-          #   end
-          # end
+          def token_cost_override(_entity, _city_hex, _slot, _token)
+            nil
+          end
 
-          def skip!
-            pass!
+          def can_replace_token?(_entity, _token)
+            true
           end
         end
       end
