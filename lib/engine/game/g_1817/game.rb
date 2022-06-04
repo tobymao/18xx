@@ -527,7 +527,11 @@ module Engine
             name: 'P12 - Loan Shark',
             value: 60,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Owning corp receives $60 along with this company. The owning '\
+                  'corp must pay $10 during the "Pay Loan Interest" phase of each '\
+                  'operating round. Failure to pay the $10 results in liquidation. '\
+                  'The loan shark remains in force for the entire game, unless the '\
+                  "bank purchases the owning corp's assets through liquidation.",
             sym: 'P12',
             color: nil,
           },
@@ -1275,7 +1279,7 @@ module Engine
         end
 
         def interest_owed(entity)
-          interest_owed_for_loans(entity.loans.size)
+          interest_owed_for_loans(entity.loans.size) + (entity.companies.include?(loan_shark_private) ? 10 : 0)
         end
 
         def interest_change
@@ -1780,6 +1784,10 @@ module Engine
               @bank.spend(scrap_value, owner)
             end
           end
+        end
+
+        def loan_shark_private
+          @loan_share_private ||= company_by_id('P12')
         end
 
         def express_track_private

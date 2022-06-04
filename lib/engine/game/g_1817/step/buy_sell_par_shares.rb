@@ -323,6 +323,11 @@ module Engine
 
           def use_on_assign_abilities(company)
             corporation = company.owner
+            if company == @game.loan_shark_private
+              loan_value = 60
+              @log << "#{corporation.name} receives #{@game.format_currency(loan_value)}"
+              @game.bank.spend(loan_value, corporation)
+            end
             @game.abilities(company, :additional_token) do |ability|
               corporation.tokens << Engine::Token.new(corporation)
               ability.use!
