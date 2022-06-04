@@ -253,7 +253,7 @@ module Engine
             revenue: 0,
             desc: 'Owning corp may place special Pittsburgh (F13) yellow tile during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
-                  'reserved, and the power is lost if another company builds there first.',
+                  'reserved, and the power is lost if another corp builds there first.',
             sym: 'PSM',
             abilities: [
             {
@@ -274,7 +274,7 @@ module Engine
             name: 'P3 - Mountain Engineers',
             value: 40,
             revenue: 0,
-            desc: 'Owning company receives $20 after laying a yellow tile in a '\
+            desc: 'Owning corp receives $20 after laying a yellow tile in a '\
                   'mountain hex.  Any fees must be paid first.',
             sym: 'ME',
             abilities: [
@@ -471,7 +471,7 @@ module Engine
             value: 60,
             revenue: 0,
             desc: 'Pays owning corp $10 at the start of each operating round, '\
-                  'as long as the company has at least one train.',
+                  'as long as the corp has at least one train.',
             sym: 'MINM',
             abilities: [
               {
@@ -488,7 +488,7 @@ module Engine
             value: 90,
             revenue: 0,
             desc: 'Pays owning corp $15 at the start of each operating round, '\
-                  'as long as the company has at least one train.',
+                  'as long as the corp has at least one train.',
             sym: 'MAIL',
             abilities: [
               {
@@ -505,7 +505,7 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'Pays owning corp $20 at the start of each operating round, '\
-                  'as long as the company has at least one train.',
+                  'as long as the corp has at least one train.',
             sym: 'MAJM',
             abilities: [
               {
@@ -527,7 +527,7 @@ module Engine
             name: 'P12 - Loan Shark',
             value: 60,
             revenue: 0,
-            desc: 'Owning corp receives $60 along with this company. The owning '\
+            desc: 'Owning corp receives $60 along with this private company. The owning '\
                   'corp must pay $10 during the "Pay Loan Interest" phase of each '\
                   'operating round. Failure to pay the $10 results in liquidation. '\
                   'The loan shark remains in force for the entire game, unless the '\
@@ -574,7 +574,7 @@ module Engine
             revenue: 0,
             desc: 'Owning corp may place special Buffalo (C14) yellow tile during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
-                  'reserved, and the power is lost if another company builds there first.',
+                  'reserved, and the power is lost if another corp builds there first.',
             sym: 'P16',
             abilities: [
               {
@@ -597,7 +597,7 @@ module Engine
             revenue: 0,
             desc: 'Owning corp may place special Toledo (D7) yellow tile during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
-                  'reserved, and the power is lost if another company builds there first.',
+                  'reserved, and the power is lost if another corp builds there first.',
             sym: 'P17',
             abilities: [
               {
@@ -640,7 +640,9 @@ module Engine
             name: 'P20 - Golden Parachute',
             value: 100,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'The President of the corp owning this private company is paid $100 from the '\
+                  'bank when the Golden Parachute ownership is transferred to a corp '\
+                  'with a different player as president, or discarded to the bank.',
             sym: 'P20',
             color: nil,
           },
@@ -713,7 +715,7 @@ module Engine
             revenue: 0,
             desc: 'Owning corp may place special Indianapolis (F3) yellow tile during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
-                  'reserved, and the power is lost if another company builds there first.',
+                  'reserved, and the power is lost if another corp builds there first.',
             sym: 'P24',
             abilities: [
               {
@@ -1815,6 +1817,10 @@ module Engine
 
         def efficient_track_private
           @efficient_track_private ||= company_by_id('P19')
+        end
+
+        def golden_parachute_private
+          @golden_parachute_private ||= company_by_id('P20')
         end
 
         def station_subsidy_private

@@ -149,6 +149,13 @@ module Engine
           end
 
           def post_win_bid(winner, corporation)
+            if corporation.companies.include?(@game.golden_parachute_private) &&
+                (!winner || winner.corporation.owner != corporation.owner)
+              golden_parachute_value = 100
+              @game.log << "#{corporation.owner.name} collects #{@game.format_currency(golden_parachute_value)} "\
+                           "from #{@game.golden_parachute_private.name}"
+              @game.bank.spend(golden_parachute_value, corporation.owner)
+            end
             if winner
               m = mergeable(winner.corporation)
               process_acquire(m.first) if m.one?
