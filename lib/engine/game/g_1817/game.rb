@@ -642,7 +642,8 @@ module Engine
             name: 'P21 - Station Subsidy',
             value: 70,
             revenue: 0,
-            desc: 'TODO',
+            desc: 'Owning corp receives $50 every time it converts (not merges) to a '\
+                  '5-share or 10-share corp.',
             sym: 'P21',
             color: nil,
           },
@@ -1781,6 +1782,18 @@ module Engine
           end
         end
 
+        def express_track_private
+          @express_track_private ||= company_by_id('P18')
+        end
+
+        def efficient_track_private
+          @efficient_track_private ||= company_by_id('P19')
+        end
+
+        def train_subsidy_private
+          @train_subsidy_private ||= company_by_id('P21')
+        end
+
         private
 
         def new_auction_round
@@ -1895,14 +1908,6 @@ module Engine
           @final_operating_rounds = @round.round_num == 2 ? 3 : 2
           game_end_check
           @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
-        end
-
-        def express_track_private
-          @express_track_private ||= company_by_id('P18')
-        end
-
-        def efficient_track_private
-          @efficient_track_private ||= company_by_id('P19')
         end
       end
     end
