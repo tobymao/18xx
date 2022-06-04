@@ -60,7 +60,6 @@ module Engine
             saved_tokens = @game.saved_tokens
             saved_tokens.shift
             @game.save_tokens(saved_tokens)
-            @game.save_tokens_hex(nil) if saved_tokens.size == 0
           end
 
           def token_cost_override(_entity, _city_hex, _slot, _token)

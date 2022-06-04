@@ -270,7 +270,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G1894::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
@@ -445,6 +445,7 @@ module Engine
 
         def save_tokens(tokens)
           @saved_tokens = tokens
+          save_tokens_hex(nil) if tokens == nil || tokens.size == 0 
         end
 
         def saved_tokens

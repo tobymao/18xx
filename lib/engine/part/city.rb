@@ -17,17 +17,6 @@ module Engine
         @extra_tokens = []
         @reservations = []
         @boom = opts[:boom]
-        @additional_slots = 0
-      end
-
-      def add_slot
-        @additional_slots = @additional_slots + 1
-        @tokens << nil
-      end
-
-      def remove_slot
-        @additional_slots = @additional_slots - 1
-        @tokens.pop
       end
 
       def slots(all: false)
@@ -35,7 +24,7 @@ module Engine
       end
 
       def normal_slots
-        @slots + @additional_slots
+        @slots
       end
 
       def remove_tokens!
