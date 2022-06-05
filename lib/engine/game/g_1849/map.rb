@@ -108,6 +108,7 @@ module Engine
           'A13' => 'Milazzo',
           'B14' => 'Messina',
           'C1' => 'Trapani',
+          'C3' => 'Alcamo',
           'C5' => 'Palermo',
           'C9' => 'St. Stefano',
           'C15' => 'Calabria',
