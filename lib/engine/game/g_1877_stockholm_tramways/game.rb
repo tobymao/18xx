@@ -131,8 +131,9 @@ module Engine
 
         CAPITALIZATION = :full
         HOME_TOKEN_TIMING = :float
-        SELL_AFTER = :after_ipo
+        SELL_AFTER = :round
         SELL_BUY_ORDER = :sell_buy
+        MUST_SELL_IN_BLOCKS = true
         MARKET_SHARE_LIMIT = 100
         MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always
@@ -193,6 +194,15 @@ module Engine
 
         def available_to_start?(corporation)
           @phase.available?(@starting_phase[corporation]) && !@sl
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          corporation = bundle.corporation
+          price = corporation.share_price.price
+
+          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
+          (bundle.num_shares + 1).div(2).times { @stock_market.move_left(corporation) }
+          log_share_price(corporation, price)
         end
 
         def operating_round(round_num)

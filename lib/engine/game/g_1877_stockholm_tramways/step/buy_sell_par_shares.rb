@@ -101,6 +101,7 @@ module Engine
             entity = action.entity
             @game.stock_market.set_par(corporation, share_price)
             share = @game.share_pool.shares_by_corporation[corporation].first
+            @round.players_bought[entity][corporation] += share.percent
             buy_shares(entity, share.to_bundle)
             @game.after_par(corporation)
             track_action(action, action.corporation)
