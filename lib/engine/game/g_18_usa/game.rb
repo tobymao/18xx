@@ -221,6 +221,10 @@ module Engine
           @tiles.find { |t| t.name == name }
         end
 
+        def setup_preround
+          randomize_privates
+        end
+
         def setup
           @rhq_tile = tile_by_name('X23')
           @yellow_plain_tiles ||= @all_tiles.select { |t| YELLOW_PLAIN_TRACK_TILES.include?(t.name) }
@@ -250,7 +254,6 @@ module Engine
 
           setup_train_roster
 
-          randomize_privates
           @subsidies = SUBSIDIES.dup
           setup_resource_subsidy
           randomize_subsidies
@@ -322,10 +325,7 @@ module Engine
           end
 
           @log << "Removing #{to_remove.map(&:name).join(', ')}"
-          to_remove.each do |company|
-            company.close!
-            @round.active_step.companies.delete(company)
-          end
+          to_remove.each(&:close!)
         end
 
         def setup_resource_subsidy

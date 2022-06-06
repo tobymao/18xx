@@ -689,11 +689,13 @@ module Engine
 
         LAYOUT = :pointy
 
-        PITTSBURGH_PRIVATE_NAME = 'DTC'
-        PITTSBURGH_PRIVATE_HEX = 'F14'
-
         SEED_MONEY = 150
         LOANS_PER_INCREMENT = 4
+
+        def setup_preround
+          super
+          @pittsburgh_private = @companies.find { |c| c.id == 'DTC' }
+        end
       end
     end
   end

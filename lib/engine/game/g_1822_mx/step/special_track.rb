@@ -7,8 +7,12 @@ module Engine
     module G1822MX
       module Step
         class SpecialTrack < Engine::Game::G1822::Step::SpecialTrack
+          PORT_TILES = %w[P1-0 P2-0].freeze
+
           def potential_tiles(entity, hex)
             if @game.port_company?(entity)
+              return [] if PORT_TILES.include?(hex.tile.id)
+
               tile_ability = abilities(entity)
               tile = @game.tiles.find { |t| t.name == tile_ability.tiles[0] }
               return [tile]
@@ -60,7 +64,11 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            return hex.tile.color == :blue ? [hex.tile.exits] : nil if @game.port_company?(entity)
+            if @game.port_company?(entity)
+              return [hex.tile.exits] if hex.tile.color == :blue && !PORT_TILES.include?(hex.tile.id)
+
+              return nil
+            end
             if @game.cube_company?(entity)
               return @game.can_hold_builder_cubes?(hex.tile) && @game.graph.connected_hexes(entity.owner)[hex]
             end

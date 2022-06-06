@@ -113,6 +113,7 @@ module Engine
         if @game.class::IMPASSABLE_HEX_COLORS.include?(old_tile.color)
           hex.all_neighbors.each do |direction, neighbor|
             next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
+            next unless tile.exits.include?(direction)
 
             neighbor.neighbors[neighbor.neighbor_direction(hex)] = hex
             hex.neighbors[direction] = neighbor
