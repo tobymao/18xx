@@ -1752,9 +1752,7 @@ module Engine
         !corporation.minor?
       end
 
-      def abilities(
-        entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil, include_companies: false, &block
-      )
+      def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
         return nil unless entity
 
         active_abilities = entity.all_abilities.select do |ability|
@@ -1769,15 +1767,7 @@ module Engine
             ability_usable?(ability)
         end
 
-        active_abilities.each { |a| yield a, a.owner } if block
-
-        if include_companies
-          active_abilities.concat(
-            entity.companies.flat_map do |c|
-              abilities(c, type, time: time, on_phase: on_phase, passive_ok: passive_ok, strict_time: strict_time, &block)
-            end
-          )
-        end
+        active_abilities.each { |a| yield a, a.owner } if block_given?
 
         return nil if active_abilities.empty?
         return active_abilities.first if active_abilities.one?

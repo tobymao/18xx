@@ -306,8 +306,8 @@ module Engine
             value: 70,
             revenue: 0,
             desc: 'The bank pays the owning corp when the first type of each train '\
-                  'is purchased or exported (2 - $20, 2+ - $0, 3 - $30, 4 - $40, '\
-                  '5 - $50, 6 - $60, 7 - $70, 8 - $80).',
+                  'is purchased or exported (2: $20, 2+: $0, 3: $30, 4: $40, '\
+                  '5: $50, 6: $60, 7: $70, 8: $80).',
             sym: 'P14',
             color: nil,
           },
@@ -316,12 +316,12 @@ module Engine
             value: 40,
             revenue: 0,
             desc: 'Owning corp receives compensation for each train it owns that become '\
-                  'obsolete and are eliminated (2 - $30, 2+ - $30, 3 - $75, 4 - $150).',
+                  'obsolete and are eliminated (2: $30, 2+: $30, 3: $75, 4: $150).',
             sym: 'P15',
             abilities: [
               {
                 type: 'train_scrapper',
-                scrap_value: { '2': 30, '2+': 30, '3': 75, '4': 150 },
+                scrap_values: { '2': 30, '2+': 30, '3': 75, '4': 150 },
               },
             ],
             color: nil,

@@ -409,7 +409,7 @@ module Engine
         end
 
         def tile_lays(entity)
-          actions = super
+          actions = super.map(&:dup)
           if entity.companies.include?(express_track_private) && entity.companies.include?(efficient_track_private)
             actions[1][:cost] = 0
           elsif entity.companies.include?(express_track_private)
@@ -860,7 +860,7 @@ module Engine
           super
           return unless owner&.corporation?
 
-          abilities(owner, :train_scrapper, include_companies: true) do |a|
+          abilities(owner, 'train_scrapper') do |a|
             if (scrap_value = a.scrap_value(train)).positive?
               @log << "#{owner.name} collects #{format_currency(scrap_value)} from #{a.owner.name} for #{train.name}"
               @bank.spend(scrap_value, owner)
@@ -881,6 +881,10 @@ module Engine
 
         def loan_shark_private
           @loan_share_private ||= company_by_id('P12')
+        end
+
+        def ponzi_scheme_private
+          @ponzi_scheme_private ||= company_by_id('P13')
         end
 
         def inventor_private
@@ -904,8 +908,8 @@ module Engine
         end
 
         def inventor_payout(train)
-          @payouts ||= { '2': 20, '2+': 0, '3': 30, '4': 40, '5': 50, '6': 60, '7': 70, '8': 80 }
-          @payouts[train.name]
+          @payouts ||= { '2' => 20, '2+' => 0, '3' => 30, '4' => 40, '5' => 50, '6' => 60, '7' => 70, '8' => 80 }
+          @payouts[train.name] || 0
         end
 
         private

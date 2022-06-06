@@ -41,13 +41,16 @@ module Engine
             return @tokens_needed = nil if @tokens_needed.zero?
 
             cost = token_cost(corporation)
-            return unless cost.positive?
             return if needs_money?(corporation)
 
-            corporation.spend(cost, @game.bank)
             tokens_needed.times { corporation.tokens << Engine::Token.new(corporation, price: 0) }
-            @log << "#{corporation.name} pays #{@game.format_currency(cost)}"\
-                    " for #{tokens_needed} token#{tokens_needed > 1 ? 's' : ''}"
+            if cost.positive?
+              corporation.spend(cost, @game.bank)
+              @log << "#{corporation.name} pays #{@game.format_currency(cost)}"\
+                      " for #{tokens_needed} token#{tokens_needed > 1 ? 's' : ''}"
+            else
+              @log << "#{corporation.name} acquires #{tokens_needed} token#{tokens_needed > 1 ? 's' : ''}"
+            end
             @tokens_needed = nil
           end
 
