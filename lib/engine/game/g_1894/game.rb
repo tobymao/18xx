@@ -169,7 +169,7 @@ module Engine
                     name: '6',
                     distance: 6,
                     price: 600,
-                    num: 2,
+                    num: 3,
                     events: [{ 'type' => 'close_companies' }],
                     discount: { '5' => 200 },
                   },
@@ -378,7 +378,6 @@ module Engine
 
           tile = hex_by_id(action.hex.id).tile
 
-          #return unless action.hex.id == SQ_HEX
           if action.hex.id != SQ_HEX || tile.color == :yellow
             return
           end
@@ -555,9 +554,6 @@ module Engine
 
         def block_london
           london = hex_by_id(LONDON_HEX).tile.cities.first
-
-          london.instance_variable_set(:@game, self)
-
           def london.blocks?(corporation)
             !@game.ferry_marker?(corporation)
           end
