@@ -73,6 +73,10 @@ module View
           border.type == :impassable ? '10' : '8'
         end
 
+        def border_dash(border)
+          border.dashed && '20'
+        end
+
         def render_cost(border)
           edges = EDGES[border.edge]
 
@@ -114,6 +118,7 @@ module View
                             **EDGES[border.edge],
                             stroke: color(border),
                             'stroke-width': border_width(border),
+                            'stroke-dasharray': border_dash(border),
                           })
             children << render_cost(border) if border.cost
           end

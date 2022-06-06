@@ -197,6 +197,35 @@ module Engine
           { lay: true, upgrade: true, cost: 0 },
         ].freeze
 
+        def setup
+          modify_regions(2, true)
+        end
+
+        def modify_regions(phase, add)
+          REGIONS_BY_PHASE[phase].each do |coord, edges|
+            hex = hex_by_id(coord)
+            edges.each do |edge|
+              if add
+                add_region(hex, edge)
+                add_region(hex.neighbors[edge], Hex.invert(edge))
+              else
+                remove_region(hex, edge)
+                remover_region(hex.neighbors[edge], Hex.invert(edge))
+              end
+            end
+          end
+        end
+
+        def add_region(hex, edge)
+          remove_region(hex, edge)
+          hex.tile.borders << Part::Border.new(edge, 'region', nil, 'black', 1)
+        end
+
+        def remove_region(hex, edge)
+          old = hex.tile.borders.find { |b| b.edge == edge }
+          hex.tile.borders.delete(old) if old
+        end
+
         def transfer_share(share, new_owner)
           corp = share.corporation
           corp.share_holders[share.owner] -= share.percent
