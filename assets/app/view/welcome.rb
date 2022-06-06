@@ -17,6 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>1817 Volatility Expansion is now in alpha.</p>
         <p>Rolling Stock and Rolling Stock Stars are now in beta.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
