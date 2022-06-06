@@ -388,7 +388,7 @@ module Engine
             name: 'P19 - Efficient Track',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may perform a second tile operation for $10, insetad of '\
+            desc: 'Owning corp may perform a second tile operation for $10, instead of '\
                   'the normal $20. If combined with Express Track (P18), both first and '\
                   'second track operations are free.',
             sym: 'P19',
@@ -421,9 +421,9 @@ module Engine
                   'track tile towards an adjacent revenue center, a ranch '\
                   'token may also be placed, provided the tile is neither '\
                   'adjacent to a B-City or Chicago or Atlanta nor in or East '\
-                  'of a montain in that hex row. The ranch token increases the '\
+                  'of a mountain in that hex row. The ranch token increases the '\
                   'value of any route through the hex by $10. The yellow tile '\
-                  'underlying the ranch token may not be ugpraded. May not '\
+                  'underlying the ranch token may not be upgraded. May not '\
                   'start or end a route at a ranch token.',
             sym: 'P22',
             abilities: [
@@ -448,9 +448,9 @@ module Engine
                   'track tile towards an adjacent revenue center, a ranch '\
                   'token may also be placed, provided the tile is neither '\
                   'adjacent to a B-City or Chicago or Atlanta nor in or East '\
-                  'of a montain in that hex row. The ranch token increases the '\
+                  'of a mountain in that hex row. The ranch token increases the '\
                   'value of any route through the hex by $10. The yellow tile '\
-                  'underlying the ranch token may not be ugpraded. May not '\
+                  'underlying the ranch token may not be upgraded. May not '\
                   'start or end a route at a ranch token.',
             sym: 'P23',
             abilities: [
