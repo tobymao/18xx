@@ -582,13 +582,15 @@ module Engine
 
         LAYOUT = :flat
 
-        PITTSBURGH_PRIVATE_NAME = 'PSM'
-        PITTSBURGH_PRIVATE_HEX = 'I6'
-
         SEED_MONEY = 100
         EVENTS_TEXT = G1817::Game::EVENTS_TEXT.merge('nieuw_zeeland_available' => ['Nieuw Zealand opens for new IPOs'])
         MAX_LOAN = 65
         LOANS_PER_INCREMENT = 3
+
+        def setup_preround
+          super
+          @pittsburgh_private = @companies.find { |c| c.id == 'PSM' }
+        end
 
         def setup
           super

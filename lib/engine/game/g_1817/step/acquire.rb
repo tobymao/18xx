@@ -179,6 +179,8 @@ module Engine
           end
 
           def process_bank_liquidate(acquired_corp)
+            process_golden_parachute(acquired_corp, nil)
+
             tokens = acquired_corp.tokens.map do |token|
               id = token.city&.hex&.id
               token.remove!
@@ -211,6 +213,8 @@ module Engine
             @buyer = buyer
 
             receiving = []
+
+            process_golden_parachute(acquired_corp, buyer)
 
             # Step 6, sell treasury shares to the market
             if @mode == :offered
@@ -492,6 +496,15 @@ module Engine
             # Has the corporation entered acquisition and liquidation this round?
             %i[acquisition liquidation].include?(corporation.share_price.type) &&
             corporation.share_price.type != @game.stock_prices_start_merger[corporation].type
+          end
+
+          def process_golden_parachute(target, buyer)
+            return if !target.companies.include?(@game.golden_parachute_private) || buyer&.owner == target.owner
+
+            golden_parachute_value = 100
+            @game.log << "#{target.owner.name} collects #{@game.format_currency(golden_parachute_value)} "\
+                         "from #{@game.golden_parachute_private.name}"
+            @game.bank.spend(golden_parachute_value, target.owner)
           end
 
           def setup_auction

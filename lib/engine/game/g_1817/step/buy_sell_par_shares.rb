@@ -323,6 +323,11 @@ module Engine
 
           def use_on_assign_abilities(company)
             corporation = company.owner
+            if company == @game.loan_shark_private
+              loan_value = 60
+              @log << "#{corporation.name} collects #{@game.format_currency(loan_value)} from #{company.name}"
+              @game.bank.spend(loan_value, corporation)
+            end
             @game.abilities(company, :additional_token) do |ability|
               corporation.tokens << Engine::Token.new(corporation)
               ability.use!
@@ -353,6 +358,10 @@ module Engine
                     "and #{@corporation_size} shares"
 
             try_buy_tokens(corporation)
+            if corporation.companies.include?(@game.ponzi_scheme_private)
+              @game.log << "#{@game.ponzi_scheme_private.name} closes"
+              @game.ponzi_scheme_private.close!
+            end
 
             @auctioning = nil
             @winning_bid = nil
