@@ -101,6 +101,7 @@ module Engine
 
           def may_bid?(company)
             return false if company == @game.empty_auction_slot
+            return false unless @tiered_companies[-1].include?(company)
 
             super
           end
