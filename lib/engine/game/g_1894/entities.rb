@@ -45,7 +45,7 @@ module Engine
             sym: 'SQG',
             value: 90,
             desc: 'Revenue is equal to twice the revenue of Saint-Quentin (G10) if Saint-Quentin is green or brown, otherwise it\'s 0 F.'\
-                  ' Closes in purple                            phase.',
+                  ' Closes in purple phase.',
             abilities: [{ type: 'close', on_phase: 'Purple' },],
           },
           {

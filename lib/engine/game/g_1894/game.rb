@@ -123,6 +123,7 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
+                    status: ['can_buy_companies'],
                   },
                   {
                     name: 'Gray',
@@ -170,22 +171,22 @@ module Engine
                     distance: 6,
                     price: 600,
                     num: 3,
-                    events: [{ 'type' => 'close_companies' }],
                     discount: { '5' => 200 },
                   },
                   {
                     name: '7',
                     distance: 7,
-                    price: 750,
+                    price: 700,
                     num: 3,
+                    events: [{ 'type' => 'close_companies' }],
                     discount: { '6' => 300 },
                   },
                   {
                     name: 'D',
                     distance: 999,
-                    price: 900,
+                    price: 800,
                     num: 20,
-                    discount: { '5' => 200, '6' => 300, '7' => 375 },
+                    discount: { '5' => 200, '6' => 300, '7' => 350 },
                   }].freeze
 
         LAYOUT = :pointy
@@ -231,10 +232,10 @@ module Engine
           'late_corporations_available' => ['Late corporations available', 'Late corporations can be opened'],
         ).freeze
 
-        LONDON_HEX = 'A10'
+        LONDON_HEX = 'B9'
         LONDON_FERRY_SUPPLY = 'A8'
         FERRY_MARKER_ICON = 'ferry'
-        FERRY_MARKER_COST = 60
+        FERRY_MARKER_COST = 50
 
         PARIS_HEX = 'G4'
         LE_SUD_HEX = 'I2'
@@ -554,6 +555,7 @@ module Engine
 
         def block_london
           london = hex_by_id(LONDON_HEX).tile.cities.first
+
           def london.blocks?(corporation)
             !@game.ferry_marker?(corporation)
           end

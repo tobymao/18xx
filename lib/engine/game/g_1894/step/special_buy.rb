@@ -30,7 +30,7 @@ module Engine
 
           def setup
             super
-            @ferry_marker ||= Item.new(description: 'Ferry marker', cost: 60)
+            @ferry_marker ||= Item.new(description: 'Ferry marker', cost: Engine::Game::G1894::Game::FERRY_MARKER_COST)
           end
         end
       end
