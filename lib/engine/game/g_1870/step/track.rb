@@ -18,21 +18,21 @@ module Engine
           end
 
           def process_lay_tile(action)
-            old_tile = action.hex.tile
+            old_future_label = action.hex.tile.future_label
 
             super
 
-            old_tile.label = nil if %i[yellow green].include?(old_tile.color)
-            old_tile.label = 'P' if old_tile.id == '170'
+            return if action.tile.color != 'brown'
 
-            return if action.tile.color == 'gray'
-
-            if action.tile.hex.id == 'B11'
-              action.tile.label = 'K P'
-            elsif action.tile.hex.id == 'C18'
-              action.tile.label = 'P L'
-            elsif %w[J3 J5 N17].include?(action.tile.hex.id)
-              action.tile.label = 'P'
+            case action.tile.hex.id
+            when 'B11'
+              action.tile.future_label = old_future_label
+              action.tile.future_label.label = 'K'
+              action.tile.future_label.color = 'gray'
+            when 'C18'
+              action.tile.future_label = old_future_label
+              action.tile.future_label.color = 'gray'
+              action.tile.future_label.label = 'L'
             end
           end
         end

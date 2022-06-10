@@ -9,8 +9,7 @@ module Engine
     # sticker - has this future label been put on the tile by someone else, or did it come with this?
     # nil if original; original FutureLabel if it has been modified
     class FutureLabel < Base
-      attr_accessor :sticker
-      attr_reader :color, :label
+      attr_accessor :sticker, :color, :label
 
       def initialize(label = nil, color = nil)
         @label = label
