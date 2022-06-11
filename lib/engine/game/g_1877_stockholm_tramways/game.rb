@@ -4,6 +4,9 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'step/buy_sell_par_shares'
+require_relative 'step/buy_train'
+require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -128,9 +131,11 @@ module Engine
 
         CAPITALIZATION = :full
         HOME_TOKEN_TIMING = :float
-        SELL_AFTER = :after_ipo
+        SELL_AFTER = :round
         SELL_BUY_ORDER = :sell_buy
+        MUST_SELL_IN_BLOCKS = true
         MARKET_SHARE_LIMIT = 100
+        MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always
 
         GAME_END_CHECK = { stock_market: :current_round, custom: :current_or }.freeze
@@ -139,8 +144,65 @@ module Engine
            'sl_trigger' => ['SL Trigger', 'SL will form at end of OR, game ends at end of following OR set'],
          ).freeze
 
+        def setup
+          @sl = nil
+          @offer_order = @corporations.sort_by { rand }
+          @corporations.each do |corporation|
+            shares = ShareBundle.new(corporation.shares)
+            share_pool.transfer_shares(shares, share_pool, price: 0, allow_president_change: true)
+          end
+
+          @starting_phase = {}
+          @offer_order.take(5).each do |corporation|
+            @starting_phase[corporation] = '2'
+          end
+          @offer_order.slice(5, 4).each do |corporation|
+            @starting_phase[corporation] = '3'
+            corporation.reservation_color = '#009a54c0'
+          end
+          @offer_order.slice(9, 3).each do |corporation|
+            @starting_phase[corporation] = '6'
+            corporation.reservation_color = '#cb7745c0'
+          end
+        end
+
+        def update_reservations
+          @corporations.each do |corporation|
+            corporation.reservation_color = nil if @phase.available?(@starting_phase[corporation])
+          end
+        end
+
         def init_round
           stock_round
+        end
+
+        def stock_round
+          Round::Stock.new(self, [G1877StockholmTramways::Step::BuySellParShares])
+        end
+
+        def can_par?(_corp, _entity)
+          true
+        end
+
+        def ipoable_corporations
+          ready_corporations.reject(&:ipoed)
+        end
+
+        def ready_corporations
+          @offer_order.select { |corp| available_to_start?(corp) || corp.ipoed }
+        end
+
+        def available_to_start?(corporation)
+          @phase.available?(@starting_phase[corporation]) && !@sl
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          corporation = bundle.corporation
+          price = corporation.share_price.price
+
+          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
+          (bundle.num_shares + 1).div(2).times { @stock_market.move_left(corporation) }
+          log_share_price(corporation, price)
         end
 
         def operating_round(round_num)

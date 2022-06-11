@@ -585,8 +585,8 @@ module Engine
           [@share_pool.shares_of(entity).find { |s| s.price <= entity.cash }&.to_bundle].compact
         end
 
-        def check_sale_timing(_entity, corporation)
-          return true if corporation == nyc_corporation && @nyc_formed
+        def check_sale_timing(_entity, bundle)
+          return true if bundle.corporation == nyc_corporation && @nyc_formed
 
           super
         end

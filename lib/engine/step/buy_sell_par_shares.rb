@@ -64,6 +64,8 @@ module Engine
         {
           # What the player has sold/shorted since the start of the round
           players_sold: Hash.new { |h, k| h[k] = {} },
+          # What the player has bought since the start of the round
+          players_bought: Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = 0 } },
           # Actions taken by the player on this turn
           current_actions: [],
           # If the player has already bought some share from IPO
@@ -114,7 +116,7 @@ module Engine
 
         corporation = bundle.corporation
 
-        timing = @game.check_sale_timing(entity, corporation)
+        timing = @game.check_sale_timing(entity, bundle)
 
         timing &&
           !(@game.class::TURN_SELL_LIMIT && (bundle.percent + sold_this_turn(corporation)) > @game.class::TURN_SELL_LIMIT) &&
@@ -164,6 +166,7 @@ module Engine
       end
 
       def process_buy_shares(action)
+        @round.players_bought[action.entity][action.bundle.corporation] += action.bundle.percent
         @round.bought_from_ipo = true if action.bundle.owner.corporation?
         buy_shares(action.purchase_for || action.entity, action.bundle, swap: action.swap, borrow_from: action.borrow_from)
         track_action(action, action.bundle.corporation)
@@ -182,6 +185,7 @@ module Engine
 
         @game.stock_market.set_par(corporation, share_price)
         share = corporation.ipo_shares.first
+        @round.players_bought[entity][corporation] += share.percent
         buy_shares(entity, share.to_bundle)
         @game.after_par(corporation)
         track_action(action, action.corporation)
@@ -351,7 +355,8 @@ module Engine
 
           # If the player can sell shares or they're passing
           # they may wish to manipulate share price
-          "Corporation #{corporation.name} parred" if !corp_buying || @game.check_sale_timing(entity, corporation)
+          "Corporation #{corporation.name} parred" if !corp_buying ||
+            @game.check_sale_timing(entity, Share.new(corporation).to_bundle)
         when Action::BuyShares
           # Redeeming a share from a player is definitely shenanigans (equivalent to the player selling).
           # The code doesn't have access to where the share came from, so it could potentially be market,
