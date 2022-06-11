@@ -8,7 +8,19 @@ module Engine
       module Step
         class SpecialToken < Engine::Step::SpecialToken
           def actions(entity)
-            return [] if entity.company? && entity.owner.player?
+            # WSRC must be owned by player
+            # WSRC token must be at token time.
+            # Order is:
+            # Track <--
+            # Token
+            # Route
+            # Interest <--
+            # Dividend/Withold
+
+            # Doing the token during route is fine, we can use paid interest as a way to gate this
+            # We also need to check that track has been done
+            return [] if (entity.company? && entity.owner.player?) ||
+              @round.paid_interest[entity&.owner] || !@round.after_track[entity&.owner]
 
             super
           end
