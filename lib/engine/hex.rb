@@ -178,11 +178,10 @@ module Engine
       end
       @tile.icons = @tile.icons.select(&:preprinted)
 
+      tile.future_label.sticker = tile.future_label if tile.future_label
       if @tile.future_label
-        if @tile.future_label&.color != tile.color
-          @tile.future_label.sticker = tile.future_label
-          tile.future_label = @tile.future_label
-        end
+        # future label transfers over
+        tile.future_label = @tile.future_label if @tile.future_label.color != tile.color.to_s
         # restore old tile's future_label
         @tile.future_label = @tile.future_label.sticker
       end

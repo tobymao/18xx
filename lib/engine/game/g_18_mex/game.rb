@@ -95,7 +95,14 @@ module Engine
             'code' =>
             'town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:40,terrain:mountain;label=P;border=edge:2',
           },
-          '480' => 1,
+          '480' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' =>
+            'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
+            'label=G;future_label=color:gray',
+          },
           '481' => 1,
           '482' => 1,
           '483' => 1,
@@ -575,7 +582,9 @@ module Engine
             %w[D3 M10] => 'city=revenue:0;upgrade=cost:60,terrain:mountain',
             %w[D9 H11 N7 T11 T13] => 'upgrade=cost:20,terrain:water',
             %w[F11 G4 H7 K10 L7 M8 R9] => '',
-            %w[G10 I4 O8] => 'city=revenue:0;upgrade=cost:20,terrain:water',
+            %w[G10] => 'city=revenue:0;upgrade=cost:20,terrain:water',
+            %w[I4] => 'city=revenue:0;upgrade=cost:20,terrain:water;future_label=label:L,color:green',
+            %w[O8] => 'city=revenue:0;upgrade=cost:20,terrain:water;future_label=label:G,color:brown',
             %w[G12 K12] => 'upgrade=cost:40,terrain:swamp',
             %w[I8 I10] => 'city=revenue:0',
             %w[J5 L9 P7] => 'town=revenue:0',
@@ -736,7 +745,6 @@ module Engine
           # Needed for special handling of minors in case inital auction not completed
           @stock_round_initiated = false
 
-          @brown_g_tile ||= @tiles.find { |t| t.name == '480' }
           @gray_tile ||= @tiles.find { |t| t.name == '455' }
           @green_l_tile ||= @tiles.find { |t| t.name == '475' }
 
@@ -1127,11 +1135,6 @@ module Engine
           # Copper Canyon cannot be upgraded
           return false if from.name == '470'
 
-          # Guadalajara (O8) can only be upgraded to #480 in brown, and #455 in gray
-          return to.name == '480' if from.color == :green && from.hex.name == 'O8'
-          return to.name == '455' if from.color == :brown && from.hex.name == 'O8'
-          return to.name == '475' if from.color == :yellow && from.hex.name == 'I4'
-
           super
         end
 
@@ -1139,20 +1142,7 @@ module Engine
           # Copper Canyon cannot be upgraded
           return [] if tile.name == '470'
 
-          upgrades = super
-
-          return upgrades unless tile_manifest
-
-          # Tile manifest for standard green cities should show G tile as an option
-          upgrades |= [@brown_g_tile] if @brown_g_tile && STANDARD_GREEN_CITY_TILES.include?(tile.name)
-
-          # Tile manifest for Guadalajara brown (the G tile) should show gray tile as an option
-          upgrades |= [@gray_tile] if @gray_tile && tile.name == '480'
-
-          # Tile manifest for standard yellow cities with curve should show Los Mochos green tile as an option
-          upgrades |= [@green_l_tile] if @green_l_tile && CURVED_YELLOW_CITY.include?(tile.name)
-
-          upgrades
+          super
         end
 
         def tile_lays(entity)
