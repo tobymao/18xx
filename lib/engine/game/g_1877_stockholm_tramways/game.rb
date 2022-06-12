@@ -16,6 +16,8 @@ module Engine
         include Entities
         include Map
 
+        attr_accessor :sl
+
         register_colors(black: '#000000')
 
         CURRENCY_FORMAT_STR = '%dkr'
@@ -158,11 +160,11 @@ module Engine
           end
           @offer_order.slice(5, 4).each do |corporation|
             @starting_phase[corporation] = '3'
-            corporation.reservation_color = '#009a54c0'
+            corporation.reservation_color = '#009a54'
           end
           @offer_order.slice(9, 3).each do |corporation|
             @starting_phase[corporation] = '6'
-            corporation.reservation_color = '#cb7745c0'
+            corporation.reservation_color = '#cb7745'
           end
         end
 
@@ -207,11 +209,13 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Engine::Step::Track,
-            Engine::Step::Token,
+            G1877StockholmTramways::Step::AcquireStart,
+            G1877StockholmTramways::Step::Track,
+            G1877StockholmTramways::Step::Token,
             Engine::Step::Route,
             G1877StockholmTramways::Step::Dividend,
-            Engine::Step::BuyTrain,
+            G1877StockholmTramways::Step::BuyTrain,
+            G1877StockholmTramways::Step::AcquireEnd,
           ], round_num: round_num)
         end
 
@@ -291,6 +295,128 @@ module Engine
 
         def compute_other_paths(_, _)
           []
+        end
+
+        def start_merge(corp, other)
+          old_price = corp.share_price
+          new_price = compute_merger_share_price(corp, other)
+          @log << "New share price: #{format_currency(new_price.price)}"
+
+          old_price.corporations.delete(corp)
+          new_price.corporations << corp
+          corp.share_price = new_price
+
+          holders = share_holder_list(corp, other)
+
+          holders.each do |player, _|
+            player.shares_of(corp).dup.each { |share| transfer_share(share, @share_pool) }
+            player.shares_of(other).dup.each { |share| transfer_share(share, @share_pool) }
+          end
+
+          holders.each do |player, share_percent|
+            if share_percent % 10 != 0
+              if player.cash >= new_price.price / 2 && @share_pool.shares_of(corp).sum(&:percent) > share_percent
+                player.spend(new_price.price / 2, @bank)
+                share_percent += 5
+                @log << "#{player.name} buys his odd share for #{format_currency(new_price.price / 2)}"
+              else
+                @bank.spend(new_price.price / 2, player)
+                share_percent -= 5
+                @log << "#{player.name} sells his odd share for #{format_currency(new_price.price / 2)}"
+              end
+            end
+
+            transfer_share(corp.presidents_share, player) if player == corp.owner && share_percent >= 20
+
+            while player.shares_of(corp).sum(&:percent) < share_percent && !@share_pool.shares_of(corp).empty?
+              transfer_share(@share_pool.shares_of(corp).first, player)
+            end
+          end
+
+          other.spend(other.cash, corp) if other.cash.positive?
+          other.trains.each { |train| train.owner = corp }
+          corp.trains.concat(other.trains)
+          @log << "Transferred trains and treasury from #{other.name} to #{corp.name}"
+
+          replace_tokens(corp, other)
+
+          remove_corporation!(other)
+
+          return unless corp.owner.shares_of(corp).sum(&:percent) < 20
+
+          @log << "No player owns the president's certificate of #{corp.name}"
+          remove_corporation!(corp)
+        end
+
+        def share_holder_list(corp, other)
+          plist = @players.rotate(@players.index(corp.owner)).map do |player|
+            [player, (player.shares_of(corp).sum(&:percent) + player.shares_of(other).sum(&:percent)) / 2]
+          end
+          plist.select { |_, share_percent| share_percent.positive? }
+        end
+
+        def find_valid_share_price(price)
+          @stock_market.market.first.max_by { |p| p.price <= price ? p.price : 0 }
+        end
+
+        def compute_merger_share_price(corp_a, corp_b)
+          prices = [corp_a.share_price.price, corp_b.share_price.price].sort
+          find_valid_share_price(prices.first + (prices.last / 2))
+        end
+
+        def transfer_share(share, new_owner)
+          corp = share.corporation
+          corp.share_holders[share.owner] -= share.percent
+          corp.share_holders[new_owner] += share.percent
+          share.owner.shares_by_corporation[corp].delete(share)
+          new_owner.shares_by_corporation[corp] << share
+          share.owner = new_owner
+        end
+
+        def replace_tokens(corp, other)
+          @hexes.each do |hex|
+            hex.tile.cities.each do |city|
+              next unless city.tokened_by?(other)
+
+              token = city.tokens.find { |t| t&.corporation == other }
+              if hex.tile.cities.any? { |c| c.tokened_by?(corp) }
+                token.destroy!
+                @log << "Removed co-located #{other.name} token in #{hex.id} (#{hex.location_name})"
+              else
+                swap_token(corp, other, token)
+              end
+            end
+          end
+        end
+
+        def swap_token(corp, other, old_token)
+          new_token = corp.next_token
+          city = old_token.city
+          new_token.place(city)
+          city.tokens[city.tokens.find_index(old_token)] = new_token
+          other.tokens.delete(old_token)
+          @log << "Replaced #{other.name} token in #{city.hex.id} with #{corp.name} token"
+        end
+
+        def remove_corporation!(corporation)
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+
+          @hexes.each do |hex|
+            hex.tile.cities.each do |city|
+              next unless city.tokened_by?(corporation)
+
+              token = city.tokens.find { |t| t&.corporation == corporation }
+              token.destroy!
+            end
+          end
+
+          @corporations.delete(corporation)
+          @starting_phase.delete(corporation)
+          corporation.close!
+
+          @log << "#{corporation.name} is removed from the game"
         end
       end
     end
