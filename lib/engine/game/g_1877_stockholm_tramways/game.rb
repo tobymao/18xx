@@ -314,22 +314,23 @@ module Engine
           end
 
           holders.each do |player, share_percent|
+            transfer_share(corp.presidents_share, player) if player == corp.owner && share_percent >= 20
+
+            while player.shares_of(corp).sum(&:percent) <= share_percent - 10
+              transfer_share(@share_pool.shares_of(corp).first, player)
+            end
+          end
+
+          holders.each do |player, share_percent|
             if share_percent % 10 != 0
-              if player.cash >= new_price.price / 2 && @share_pool.shares_of(corp).sum(&:percent) > share_percent
+              if player.cash >= new_price.price / 2 && !@share_pool.shares_of(corp).empty?
                 player.spend(new_price.price / 2, @bank)
-                share_percent += 5
+                transfer_share(@share_pool.shares_of(corp).first, player)
                 @log << "#{player.name} buys his odd share for #{format_currency(new_price.price / 2)}"
               else
                 @bank.spend(new_price.price / 2, player)
-                share_percent -= 5
                 @log << "#{player.name} sells his odd share for #{format_currency(new_price.price / 2)}"
               end
-            end
-
-            transfer_share(corp.presidents_share, player) if player == corp.owner && share_percent >= 20
-
-            while player.shares_of(corp).sum(&:percent) < share_percent && !@share_pool.shares_of(corp).empty?
-              transfer_share(@share_pool.shares_of(corp).first, player)
             end
           end
 

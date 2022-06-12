@@ -37,7 +37,10 @@ module Engine
 
           def auto_actions(entity)
             if @finish_action
-              return [Engine::Action::Pass.new(entity)] if entity.cash < @finish_corporation.share_price.price / 2
+              if entity.cash < @finish_corporation.share_price.price / 2 ||
+                  @game.share_pool.shares_of(@finish_corporation).empty?
+                return [Engine::Action::Pass.new(entity)]
+              end
             elsif mergeable(entity).empty?
               return [Engine::Action::Pass.new(entity)]
             end
@@ -59,6 +62,8 @@ module Engine
 
           def log_pass(entity)
             return super unless @finish_action
+
+            return if @game.share_pool.shares_of(@finish_corporation).empty?
 
             @log << "#{entity.name} skips buying additional shares"
           end
