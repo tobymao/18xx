@@ -79,9 +79,12 @@ module Engine
 
           def process_merge(action)
             @log << "#{action.entity.name} will acquire #{action.corporation.name}"
-            @game.start_merge(action.entity, action.corporation)
-            @finish_action = %w[buy_shares pass]
-            @finish_corporation = action.entity
+            if @game.merge(action.entity, action.corporation)
+              @finish_action = %w[buy_shares pass]
+              @finish_corporation = action.entity
+            else
+              @merge_finished = true
+            end
           end
 
           def can_buy?(entity, bundle)

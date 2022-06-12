@@ -297,7 +297,7 @@ module Engine
           []
         end
 
-        def start_merge(corp, other)
+        def merge(corp, other)
           old_price = corp.share_price
           new_price = compute_merger_share_price(corp, other)
           @log << "New share price: #{format_currency(new_price.price)}"
@@ -321,6 +321,8 @@ module Engine
             end
           end
 
+          may_buy_half_price = true
+
           holders.each do |player, share_percent|
             if share_percent % 10 != 0
               if player.cash >= new_price.price / 2 && !@share_pool.shares_of(corp).empty?
@@ -330,6 +332,7 @@ module Engine
               else
                 @bank.spend(new_price.price / 2, player)
                 @log << "#{player.name} sells his odd share for #{format_currency(new_price.price / 2)}"
+                may_buy_half_price = false if player == corp.owner
               end
             end
           end
@@ -343,10 +346,11 @@ module Engine
 
           remove_corporation!(other)
 
-          return unless corp.owner.shares_of(corp).sum(&:percent) < 20
+          return may_buy_half_price unless corp.owner.shares_of(corp).sum(&:percent) < 20
 
           @log << "No player owns the president's certificate of #{corp.name}"
           remove_corporation!(corp)
+          false
         end
 
         def share_holder_list(corp, other)
