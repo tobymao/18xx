@@ -70,6 +70,7 @@ class Api
         r.post 'edit' do
           user.update_settings(r.params)
           user.save
+          MessageBus.publish('/test_notification', user.id) if r['test_webhook_notification']
           user.to_h(for_user: true)
         end
 
