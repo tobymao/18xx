@@ -1681,7 +1681,7 @@ module Engine
         end
 
         def minor_14_token_ability
-          Engine::Ability::Token.new(type: 'token', hexes: [], price: 20, cheater: 1)
+          Engine::Ability::Token.new(type: 'token', hexes: [], price: 20)
         end
 
         def mail_contract_bonus(entity, routes)
@@ -1757,8 +1757,7 @@ module Engine
 
         def place_destination_token(entity, hex, token)
           city = hex.tile.cities.first
-          cheater_slot = city.available_slots.positive? ? 0 : city.slots
-          city.place_token(entity, token, free: true, check_tokenable: false, cheater: cheater_slot)
+          city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
 
           ability = entity.all_abilities.find { |a| a.type == :destination }
@@ -1953,9 +1952,6 @@ module Engine
           @company_trains['P13'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P14'] = find_and_remove_train_by_id('P+-1', buyable: false)
           @company_trains['P19'] = find_and_remove_train_by_id('LP-0', buyable: false)
-
-          # Setup the minor 14 ability
-          corporation_by_id(self.class::MINOR_14_ID).add_ability(minor_14_token_ability) if self.class::MINOR_14_ID
         end
 
         def setup_destinations

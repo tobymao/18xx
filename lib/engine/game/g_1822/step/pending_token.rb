@@ -27,6 +27,8 @@ module Engine
             end
 
             connected = action.entity.id != @game.class::MINOR_14_ID
+            city.tokens << nil if action.entity.id == @game.class::MINOR_14_ID
+            city.tokens << nil unless city.get_slot(action.entity)
             place_token(token.corporation, city, token, connected: connected, extra_action: true,
                                                         check_tokenable: false)
             @round.pending_tokens.shift

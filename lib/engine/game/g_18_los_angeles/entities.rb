@@ -174,7 +174,7 @@ module Engine
                 count: 1,
                 extra_action: true,
                 from_owner: true,
-                cheater: 0,
+                cheater: true,
                 special_only: true,
                 discount: 0,
                 hexes: %w[A2 A4 A6 A8 B5 B7 B9 B11 B13 C2 C4 C6 C8 C12 D5 D7 D9
