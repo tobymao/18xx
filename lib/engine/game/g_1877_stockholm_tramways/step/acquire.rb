@@ -60,6 +60,12 @@ module Engine
             mergeable(entity).any?
           end
 
+          def pass_description
+            return 'Done (Buy Shares for Half Price)' if @finish_action
+
+            super
+          end
+
           def log_pass(entity)
             return super unless @finish_action
 
@@ -75,6 +81,10 @@ module Engine
               @merge_finished = true
             end
             super
+          end
+
+          def log_skip(entity)
+            super unless @game.sl
           end
 
           def process_merge(action)

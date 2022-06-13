@@ -4,9 +4,15 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'round/train'
+require_relative 'step/acquire_end'
+require_relative 'step/acquire_start'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/buy_train'
 require_relative 'step/dividend'
+require_relative 'step/token'
+require_relative 'step/track'
+require_relative 'step/trainless_buy_train'
 
 module Engine
   module Game
@@ -128,6 +134,7 @@ module Engine
             distance: 10,
             price: 700,
             num: 32,
+            events: [{ 'type' => 'sl_trigger' }],
           },
         ].freeze
 
@@ -139,8 +146,13 @@ module Engine
         MARKET_SHARE_LIMIT = 100
         MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always
+        TRAIN_PRICE_MULTIPLE = 5
 
-        GAME_END_CHECK = { stock_market: :current_round, custom: :current_or }.freeze
+        GAME_END_CHECK = { stock_market: :current_round, custom: :full_or }.freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'SL forms'
+        )
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
            'sl_trigger' => ['SL Trigger', 'SL will form at end of OR, game ends at end of following OR set'],
@@ -148,6 +160,8 @@ module Engine
 
         def setup
           @sl = nil
+          @sl_triggered = nil
+
           @offer_order = @corporations.sort_by { rand }
           @corporations.each do |corporation|
             shares = ShareBundle.new(corporation.shares)
@@ -178,8 +192,54 @@ module Engine
           stock_round
         end
 
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when G1877StockholmTramways::Round::Train
+              @turn += 1
+              remove_trainless
+              new_stock_round
+            when Engine::Round::Operating
+              if @sl_triggered
+                form_sl
+                or_round_finished
+                or_set_finished
+                new_train_round
+              elsif @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            end
+        end
+
+        def form_sl
+          @log << '-- SL Formed --'
+
+          @sl_triggered = false
+          @sl = true
+
+          @corporations.reject(&:ipoed).dup.each { |c| remove_corporation!(c) }
+        end
+
+        def remove_trainless
+          @log << '-- Trainless Corporations are Removed from the Game --'
+
+          @corporations.select { |c| c.trains.empty? }.dup.each { |c| remove_corporation!(c) }
+
+          @sl = true
+        end
+
         def stock_round
-          Round::Stock.new(self, [G1877StockholmTramways::Step::BuySellParShares])
+          Engine::Round::Stock.new(self, [G1877StockholmTramways::Step::BuySellParShares])
         end
 
         def can_par?(_corp, _entity)
@@ -203,12 +263,12 @@ module Engine
           price = corporation.share_price.price
 
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-          (bundle.num_shares + 1).div(2).times { @stock_market.move_left(corporation) }
+          (bundle.num_shares + 1).div(2).times { @stock_market.move_left(corporation) } unless @sl
           log_share_price(corporation, price)
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G1877StockholmTramways::Step::AcquireStart,
             G1877StockholmTramways::Step::Track,
             G1877StockholmTramways::Step::Token,
@@ -217,6 +277,22 @@ module Engine
             G1877StockholmTramways::Step::BuyTrain,
             G1877StockholmTramways::Step::AcquireEnd,
           ], round_num: round_num)
+        end
+
+        def new_train_round
+          @log << '-- Trainless Corporations may Buy Trains --'
+          G1877StockholmTramways::Round::Train.new(self, [
+            G1877StockholmTramways::Step::TrainlessBuyTrain,
+          ])
+        end
+
+        def event_sl_trigger!
+          @sl_triggered = true
+          @log << '-- Event: SL will form at end of current OR --'
+        end
+
+        def custom_end_game_reached?
+          @sl
         end
 
         def game_route_revenue(stop, phase, train)
@@ -404,6 +480,8 @@ module Engine
         end
 
         def remove_corporation!(corporation)
+          @log << "#{corporation.name} is removed from the game" if corporation.ipoed
+
           corporation.share_holders.keys.each do |share_holder|
             share_holder.shares_by_corporation.delete(corporation)
           end
@@ -420,8 +498,6 @@ module Engine
           @corporations.delete(corporation)
           @starting_phase.delete(corporation)
           corporation.close!
-
-          @log << "#{corporation.name} is removed from the game"
         end
       end
     end
