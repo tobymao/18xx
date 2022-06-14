@@ -321,7 +321,7 @@ module Engine
             abilities: [
               {
                 type: 'train_scrapper',
-                scrap_values: { '2': 30, '2+': 30, '3': 75, '4': 150 },
+                scrap_values: { '2' => 30, '2+' => 30, '3' => 75, '4' => 150 },
               },
             ],
             color: nil,
