@@ -77,7 +77,7 @@ module Engine
             @log << "#{corp.name} buys a #{cheapest.name} train for #{cheapest.price} from #{source}, "\
                     "using previous president's cash of #{format(president_contribution)}, the treasury "\
                     "of #{format(remaining)} and the Bank paying the remaining #{format(price)}"
-            corp.spend(remaining, @game.bank)
+            corp.spend(remaining, @game.bank) if remaining.positive?
             @game.buy_train(corp, cheapest, :free)
             @game.phase.buying_train!(corp, cheapest)
             fee = 100

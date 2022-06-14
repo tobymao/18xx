@@ -69,28 +69,6 @@ module Engine
             color: nil,
           },
           {
-            name: 'Chino Hills Excavation',
-            value: 50,
-            revenue: 20,
-            desc: 'Reduces, for the owning corporation, the total terrain cost for all tile lays by $20.',
-            sym: 'CHE',
-            abilities: [
-              {
-                type: 'tile_discount',
-                discount: 20,
-                terrain: 'mountain',
-                owner_type: 'corporation',
-              },
-              {
-                type: 'tile_discount',
-                discount: 20,
-                terrain: 'water',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
             name: 'Los Angeles Citrus',
             value: 60,
             revenue: 15,
@@ -232,12 +210,42 @@ module Engine
             color: nil,
           },
           {
+            name: 'Chino Hills Excavation',
+            value: 50,
+            revenue: 20,
+            desc: 'Reduces, for the owning corporation, the total terrain cost for all tile lays by $20.',
+            sym: 'CHE2',
+            abilities: [],
+            color: nil,
+          },
+          {
             name: 'Angeles Public Dump',
             sym: 'APD',
             value: 40,
             revenue: 10,
-            desc: '',
-            abilities: [],
+            desc: 'Place the -20 station token in any location except for Los Angeles or Long Beach. '\
+                  'This token cannot be used by any corporation and reduces revenue in its location '\
+                  'by $20 for all corporations and minors.',
+            abilities: [
+              {
+                type: 'token',
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                hexes: %w[
+                  A4 A6 A8 B5 B9 B11 B13 C4 C8 C12 D5 D7 D9 D11 D13
+                  E4 E6 E10 E12 F9 F11 F13
+                ],
+                price: 0,
+                teleport_price: 0,
+                count: 1,
+                extra_action: true,
+                special_only: true,
+
+                # allow the dump token to be placed next to a real station token
+                # belonging to the owning corporation
+                check_tokenable: false,
+              },
+            ],
           },
           {
             name: 'Los Angeles Paving',
@@ -278,6 +286,7 @@ module Engine
                 teleport_price: 0,
                 count: 1,
                 extra_action: true,
+                special_only: true,
               },
             ],
           },

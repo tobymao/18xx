@@ -14,10 +14,10 @@ module Engine
             player = bid.entity
             company = @game.company_by_id('M18')
             company.owner = player
-            player.companies << company
 
             minor = @game.find_corporation(company)
             minor.reservation_color = :white
+            minor.ipoed = true
 
             share_price = @game.stock_market.par_prices.find { |pp| pp.price == 50 }
             @game.stock_market.set_par(minor, share_price)
@@ -45,12 +45,17 @@ module Engine
           end
 
           def remove_minor_and_first_train(company)
-            train = @game.depot.upcoming.first
-            @game.log << "No bids on minor #{company.id}, it will close and a #{train.name} train is given to the NdeM"
-            @game.send_train_to_ndem(train)
-
-            ## Find the correct minor in the corporations and close it
-            @game.replace_minor_with_ndem(company)
+            if @game.ndem_state == :open
+              train = @game.depot.upcoming.first
+              @game.log << "No bids on minor #{company.id}, it will close and a #{train.name} train is given to the NdeM"
+              @game.send_train_to_ndem(train)
+              @game.replace_minor_with_ndem(company)
+            else
+              @game.log << "No bids on minor #{company.id}, it will close"
+              minor = @game.find_corporation(company)
+              @game.close_corporation(minor)
+              @game.companies.delete(company)
+            end
           end
 
           def sold_out?(corporation)

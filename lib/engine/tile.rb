@@ -15,10 +15,9 @@ module Engine
     include Config::Tile
 
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
-                  :name, :opposite, :reservations, :upgrades, :color
-    attr_reader :borders, :cities, :edges, :junction, :nodes, :labels,
-                :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
-                :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
+                  :name, :opposite, :reservations, :upgrades, :color, :future_label
+    attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
+                :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -188,6 +187,8 @@ module Engine
         Part::Frame.new(params['color'], params['color2'])
       when 'stripes'
         Part::Stripes.new(params['color'])
+      when 'future_label'
+        Part::FutureLabel.new(params['label'], params['color'])
       end
     end
 
@@ -234,6 +235,7 @@ module Engine
       @reservation_blocks = opts[:reservation_blocks] || false
       @unlimited = opts[:unlimited] || false
       @labels = []
+      @future_label = nil
       @opposite = nil
       @hidden = opts[:hidden] || false
       @id = "#{@name}-#{@index}"
@@ -270,6 +272,7 @@ module Engine
       @junction&.clear!
       @_paths = nil
       @_exits = nil
+      @_exit_count = nil
       @preferred_city_town_edges = nil
       self
     end
@@ -284,6 +287,18 @@ module Engine
 
     def exits
       @_exits ||= @edges.map { |e| rotate(e.num, @rotation) }.uniq
+    end
+
+    def converging_exit?(num)
+      exit_count[num] > 1
+    end
+
+    def exit_count
+      @_exit_count ||= begin
+        counts = Hash.new(0)
+        @edges.each { |edge| counts[rotate(edge.num, @rotation)] += 1 }
+        counts
+      end
     end
 
     def ignore_gauge_walk=(val)
@@ -587,6 +602,8 @@ module Engine
           @frame = part
         elsif part.stripes?
           @stripes = part
+        elsif part.future_label?
+          @future_label = part
         else
           raise "Part #{part} not separated."
         end

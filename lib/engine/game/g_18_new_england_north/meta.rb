@@ -10,14 +10,14 @@ module Engine
         include Game::Meta
         include G18NewEngland::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
         PROTOTYPE = true
         DEPENDS_ON = '18NewEngland'
 
         GAME_ALIASES = ['18NewEngland 2'].freeze
         GAME_IS_VARIANT_OF = G18NewEngland::Meta
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18NewEnglandNorth'
-        GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/18NewEnglandNorth'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18NewEngland-2:-Northern-States'
+        GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/18NewEngland-2:-Northern-States'
         GAME_SUBTITLE = nil
         GAME_TITLE = '18NewEngland 2: Northern States'
 

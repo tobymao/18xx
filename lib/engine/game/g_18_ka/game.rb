@@ -839,11 +839,7 @@ module Engine
           'TiTaN' => [%w[E24 F25]],
         }.freeze
 
-        # These cities upgrade to the common BarrieLondon green tile,
-        #  but upgrade to specialized brown tiles
-        BARRIE_HEX = 'I3'
-        LONDON_HEX = 'H6'
-        HAMILTON_HEX = 'E5'
+        HAMILTON_HEX = 'A1' # Don't use
         HEXES = {
           gray: {
             ['A10'] => 'path=a:0,b:4',
@@ -926,8 +922,6 @@ module Engine
             %w[I16] => 'city=revenue:0;label=E;upgrade=cost:40,terrain:water',
           },
         }.freeze
-
-        LAKE_HEXES = [].freeze
 
         EXTRA_TRAIN_PULLMAN = %w[+1 +2 +3 +4 +5].freeze
         SELL_BUY_ORDER = :sell_buy_sell

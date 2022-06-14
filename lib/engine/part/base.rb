@@ -69,6 +69,10 @@ module Engine
         false
       end
 
+      def future_label?
+        false
+      end
+
       def path?
         false
       end

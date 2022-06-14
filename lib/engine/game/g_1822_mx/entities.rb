@@ -10,7 +10,7 @@ module Engine
             sym: 'P1',
             value: 0,
             revenue: 5,
-            desc: 'MAJOR, Phase 5. 5-Train. Once a company acquires it, this is a notmal 5-train that is subject to '\
+            desc: 'MAJOR, Phase 5. 5-Train. Once a company acquires it, this is a normal 5-train that is subject to '\
                   'all of the normal rules.  It is not a "special train" and is not subject to the rules that are '\
                   'specific to special trains.  A company can acquire this private company at the start of its turn, '\
                   'even if it is already at it\'s train limit, as this counts as an acquisition action, not a train '\
@@ -899,7 +899,7 @@ module Engine
           },
           {
             sym: '10',
-            name: 'Grand Junction Railway',
+            name: 'Potosi Central Railroad',
             logo: '1822/10',
             tokens: [0],
             type: 'minor',

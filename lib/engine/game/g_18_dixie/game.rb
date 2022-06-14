@@ -10,6 +10,7 @@ require_relative 'trains'
 require_relative 'minors'
 require_relative 'companies'
 require_relative '../base'
+require_relative '../../share_bundle'
 require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
@@ -54,6 +55,7 @@ module Engine
 
         def setup
           @recently_floated = []
+          setup_preferred_shares
           @minors.each do |minor|
             train = @depot.upcoming[0]
             train.buyable = false
@@ -94,10 +96,57 @@ module Engine
           ].freeze
         end
 
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              or_round_finished
+              # Store the share price of each corp to determine if they can be acted upon in the AR
+              @stock_prices_start_merger = @corporations.to_h { |corp| [corp, corp.share_price] }
+
+              if closing_minors
+                @log << "-- #{round_description('Minor Exchanges', @round.round_num)} --"
+                G18Dixie::Round::Merger.new(self, [
+                  G18Dixie::Step::Conversion,
+                ], round_num: @round.round_num)
+              elsif @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_set_finished
+                new_stock_round
+              end
+            when G18Dixie::Round::Merger
+              # 18Dixie merger round handles minor mergers ("closures / share exchanges")
+              closing_minors.each { |minor| close_unstarted_minor_maybe(minor) }
+              release_preferred_shares if "#{@turn}.#{@round.round_num}" == '3.1'
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
+        def ipo_reserved_name(_entity = nil)
+          'IPO Preferred'
+        end
+
         # OR Stuff
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
           Engine::Step::Bankrupt,
+          G18Dixie::Step::HomeToken,
           Engine::Step::Exchange,
           Engine::Step::SpecialTrack,
           Engine::Step::BuyCompany,
@@ -120,15 +169,38 @@ module Engine
             @depot.reclaim_all!('2')
             make_minor_available(M13_SYM)
             %w[P8 P9 P10].each { |company_id| add_private(company_by_id(company_id)) }
-
-          when '2.1'
-            [M1_SYM, M2_SYM, M3_SYM, M4_SYM].each { |m_id| close_minor(m_id) }
           when '3.2'
-            [M5_SYM, M6_SYM, M7_SYM, M8_SYM].each { |m_id| close_minor(m_id) }
             %w[P8 P9 P10].each { |company_id| put_private_in_pool(company_by_id(company_id)) }
-          when '3.1'
-            [M9_SYM, M10_SYM, M11_SYM, M12_SYM, M13_SYM].each { |m_id| close_minor(m_id) }
           end
+        end
+
+        def home_token_locations(corporation)
+          hexes.select { |hex| corporation.coordinates.include?(hex.coordinates) }
+        end
+
+        def closing_minors
+          turn = "#{@turn}.#{@round.round_num}"
+          case turn
+          when '2.1'
+            return [M1_SYM, M2_SYM, M3_SYM, M4_SYM].map { |m_id| minor_by_id(m_id) }
+          when '2.2'
+            return [M5_SYM, M6_SYM, M7_SYM, M8_SYM].map { |m_id| minor_by_id(m_id) }
+          when '3.1'
+            return [M9_SYM, M10_SYM, M11_SYM, M12_SYM, M13_SYM].map { |m_id| minor_by_id(m_id) }
+          end
+          []
+        end
+
+        # the unstarted minor could be started & closed, hence, maybe
+        def close_unstarted_minor_maybe(minor)
+          return if minor.closed?
+
+          @log << "Unstarted minor #{minor.name} is removed from the game"
+          # Minors don't have cash until they run, so no cash to transfer
+          # Minors don't have tokens until they first operate, so unstarted minors don't have home tokens to transfer
+
+          company_by_id(minor.id).close!
+          minor.close!
         end
 
         def tile_lays(entity)
@@ -156,23 +228,76 @@ module Engine
           @minors.select(&:floated?) + corporations
         end
 
-        def close_minor(minor_id)
-          minor = minor_by_id(minor_id)
-          return if minor.closed?
+        def exchange_minor(minor, major)
+          share = preferred_shares_by_major.to_h[major].find { |s| s.owner == major }
+          share.buyable = true
+          # Don't exchange presidency unless parred
+          @share_pool.buy_shares(minor.owner, share, exchange: :free, allow_president_change: major.ipoed)
+          close_minor(minor, major)
+        end
 
+        def close_minor(minor, _corporation)
           @log << "#{minor.name} closes"
-          company_by_id(minor_id).close!
+          company_by_id(minor.id)&.close!
           minor.close!
         end
 
         # SR stuff
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
           Engine::Step::DiscardTrain,
           Engine::Step::Exchange,
           Engine::Step::SpecialTrack,
           G18Dixie::Step::BuySellParShares,
           ])
+        end
+
+        def share_flags(shares)
+          return if shares.empty?
+
+          'P' * shares.count(&:preferred)
+        end
+
+        def preferred_share_slices_by_major(m_id)
+          {
+            'ACL' => (8...9),
+            'CoG' => (7...9),
+            'Fr' => (7...9),
+            'IC' => (7...9),
+            'L&N' => (6...9),
+            'SAL' => (8...9),
+            'SR' => (7...9),
+            'WRA' => (7...9),
+          }.freeze[m_id]
+        end
+
+        def preferred_shares_by_major
+          @preferred_shares_by_major ||= %w[ACL CoG Fr IC L&N SAL SR WRA].map do |c|
+            [corporation_by_id(c), corporation_by_id(c).shares.slice(preferred_share_slices_by_major(c))]
+          end
+        end
+
+        def setup_preferred_shares
+          preferred_shares_by_major.each { |_corp, shares| shares.each { |s| setup_preferred_share(s) } }
+        end
+
+        def release_preferred_shares
+          @log << 'Unclaimed preferred shares in IPO are put into the open market'
+          preferred_shares_by_major.each { |corp, shares| shares.each { |s| release_preferred_share_maybe(s, corp) } }
+        end
+
+        # Release the share to the open market if it's still in IPO, otherwise do nothing
+        def release_preferred_share_maybe(share, major)
+          return unless share.owner == major
+
+          # Don't exchange presidency unless parred
+          share.buyable = true
+          @share_pool.buy_shares(@share_pool, share, exchange: :free, allow_president_change: major.ipoed)
+        end
+
+        def setup_preferred_share(share)
+          share.buyable = false
+          share.preferred = true
         end
 
         def bidding_power(player)

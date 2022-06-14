@@ -18,7 +18,7 @@ module View
       needs :start_pos, default: [1, 1]
 
       X_OFFSET = 100
-      LETTERS = ('A'..'Z').to_a.freeze
+      LETTERS = ('A'..'Z').to_a + ('AA'..'AZ').to_a
 
       def render
         attrs = {

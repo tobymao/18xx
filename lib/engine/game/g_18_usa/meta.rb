@@ -16,7 +16,7 @@ module Engine
         GAME_LOCATION = 'United States'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = {
-          '18USA' => 'https://boardgamegeek.com/filepage/145024/18usa-rules',
+          '18USA Rules' => 'https://boardgamegeek.com/filepage/238949/18usa-rules-all-aboard-games-2022',
           '1817 Rules' =>
                 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view',
         }.freeze

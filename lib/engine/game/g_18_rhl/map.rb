@@ -245,33 +245,33 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:3,loc:center;town=revenue:20,loc:4;path=a:0,b:_0;path=a:1,b:_0;'\
-                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DU',
+                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:_1,b:_0;path=a:5,b:_0;label=DU',
           },
           '950' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:30,slots:2,loc:center;town=revenue:10,loc:4;path=a:0,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Moers',
+                      'path=a:3,b:_0;path=a:4,b:_1;path=a:_1,b:_0;path=a:5,b:_0;label=Moers',
           },
           '1910' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:10,loc:4;path=a:0,b:2;path=a:0,b:_0;path=a:2,b:_0;label=Ratingen',
+            'code' => 'city=revenue:10,loc:4;path=a:0,b:2;path=a:0,b:_0;path=a:2,b:_0;label=R',
           },
           '1911' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:20,loc:4;path=a:0,b:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=Ratingen',
+            'code' => 'city=revenue:20,loc:4;path=a:0,b:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=R',
           },
           'Essen' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:3,loc:center;town=revenue:20,loc:4;path=a:0,b:_0;path=a:1,b:_0;'\
-                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Essen',
+                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:_1,b:_0;path=a:5,b:_0;label=Essen',
           },
         }.freeze
 
@@ -375,7 +375,8 @@ module Engine
           e12_configuration = 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:mountain'
           if optional_ratingen_variant
             e10_configuration += ';stub=edge:0;stub=edge:2;city=revenue:0'
-            e12_configuration += ';stub=edge:1;icon=image:1893/green_hex;icon=image:18_rhl/white_wooden_cube,sticky:1'
+            e12_configuration += ';stub=edge:1;icon=image:1893/green_hex;label=R;'\
+                                 'icon=image:18_rhl/white_wooden_cube,sticky:1'
           end
           {
             red: {

@@ -13,7 +13,7 @@ module Engine
         DEV_STAGE = :production
         DEPENDS_ON = '18 Los Angeles 2'
 
-        GAME_PUBLISHER = %i[traxx sea_horse].freeze
+        GAME_PUBLISHER = %i[traxx seahorse].freeze
 
         GAME_RULES_URL = {
           '18 Los Angeles 1st Edition Rules' =>

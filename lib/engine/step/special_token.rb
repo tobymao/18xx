@@ -52,12 +52,21 @@ module Engine
         city_string = hex.tile.cities.size > 1 ? " city #{action.city.index}" : ''
         raise GameError, "Cannot place token on #{hex.name}#{city_string}" unless available_hex(entity, hex)
 
+        special_ability = ability(entity)
+        check_tokenable =
+          if special_ability.respond_to?(:check_tokenable)
+            special_ability.check_tokenable
+          else
+            true
+          end
+
         place_token(
           @game.token_owner(entity),
           action.city,
           action.token,
           connected: false,
-          special_ability: ability(entity),
+          special_ability: special_ability,
+          check_tokenable: check_tokenable,
         )
 
         teleport_complete if @round.teleported

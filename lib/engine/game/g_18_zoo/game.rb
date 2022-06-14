@@ -165,6 +165,8 @@ module Engine
 
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
+        NEXT_SR_PLAYER_ORDER = :most_cash
+
         STOCKMARKET_COLORS = {
           par_1: :yellow,
           par_2: :green,
@@ -770,11 +772,10 @@ module Engine
               blocked_by = index
             end
 
-            is_j_train = %w[4J 2J].include?(current_route.train.name)
             distance = current_route.train.distance
-            next if is_j_train || current_route.train.owner != a_tip_of_sugar.owner
+            next if %w[1S 4J 2J].include?(current_route.train.name) || current_route.train.owner != a_tip_of_sugar.owner
 
-            cities_visited = cities_visited(current_route, visits, is_j_train)
+            cities_visited = cities_visited(current_route, visits, false)
 
             next unless distance < cities_visited
             raise GameError, 'Only one train can use "A tip of sugar"' if train_with_sugar

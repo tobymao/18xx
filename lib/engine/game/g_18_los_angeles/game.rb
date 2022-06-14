@@ -29,7 +29,7 @@ module Engine
                         purple: '#832e9a')
 
         attr_reader :drafted_companies, :parred_corporations
-        attr_accessor :rj_token
+        attr_accessor :dump_token, :rj_token, :use_che_discount
 
         ASSIGNMENT_TOKENS = {
           'LAC' => '/icons/18_los_angeles/lac_token.svg',
@@ -99,6 +99,12 @@ module Engine
           4 => 10,
           5 => 11,
         }.freeze
+
+        CHE_DISCOUNT = 20
+
+        DUMP_PENALTY = 20
+        DUMP_PENALTY_WESTMINSTER = 10
+        WESTMINSTER_HEX = 'F9'
 
         def setup
           super
@@ -222,10 +228,10 @@ module Engine
             G1846::Step::Bankrupt,
             Engine::Step::Assign,
             G18LosAngeles::Step::SpecialToken,
-            G1846::Step::SpecialTrack,
+            G18LosAngeles::Step::SpecialTrack,
             G1846::Step::BuyCompany,
             G1846::Step::IssueShares,
-            G1846::Step::TrackAndToken,
+            G18LosAngeles::Step::TrackAndToken,
             Engine::Step::Route,
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -278,6 +284,27 @@ module Engine
 
         def rj
           @rj ||= company_by_id('RJ')
+        end
+
+        def che
+          @che ||= company_by_id('CHE2')
+        end
+
+        def upgrade_cost(tile, _hex, entity, spender)
+          @use_che_discount ||= che&.owner == entity && !tile.upgrades.empty?
+
+          cost = super
+          return cost unless @use_che_discount
+
+          discount = self.class::CHE_DISCOUNT
+          @log << "#{spender.name} receives a discount of "\
+                  "#{format_currency(discount)} from "\
+                  "#{che.name}"
+          cost - discount
+        end
+
+        def dump_company
+          @dump_company ||= company_by_id('APD')
         end
 
         def block_for_steamboat?
@@ -398,6 +425,36 @@ module Engine
           @log << "-- Event: #{rj_token.corporation.id}'s \"RJ\" token removed from #{rj_token.hex.id} --"
           rj_token.destroy!
           @rj_token = nil
+        end
+
+        def dump_corp
+          @dump_corp ||= Corporation.new(
+            sym: 'DUMP',
+            name: 'Dump',
+            logo: '18_los_angeles/dump',
+            tokens: [0],
+          )
+        end
+
+        def dump_penalty(route, stops)
+          return 0 unless (dump_stop = @dump_token && stops&.find { |s| s.hex == @dump_token.hex })
+          return DUMP_PENALTY unless dump_stop.hex.id == WESTMINSTER_HEX
+
+          # Westminster (F9) has a base value of $10 and the Dump can reduce
+          # that to $0 but not -$10; however, if Westminster is getting the
+          # bonus $40 value from the LA Steamship (steamboat), then the Dump
+          # does reduce the total from $50 to $30
+          steamboat&.owner == route.corporation && dump_stop.hex.assigned?(steamboat.id) ? DUMP_PENALTY : DUMP_PENALTY_WESTMINSTER
+        end
+
+        def revenue_for(route, stops)
+          super - dump_penalty(route, stops)
+        end
+
+        def revenue_str(route)
+          str = super
+          str += ' - $20 (Dump)' if dump_penalty(route, route.stops).positive?
+          str
         end
       end
     end

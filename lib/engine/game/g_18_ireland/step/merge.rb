@@ -261,7 +261,7 @@ module Engine
               new_home = c1.tokens.first.city
               connected = [c1]
               visited = {}
-              new_home.walk(skip_track: :narrow, tile_type: @game.class::TILE_TYPE) do |path, _, _|
+              new_home.walk(skip_track: :narrow) do |path, _, _|
                 next if visited[path]
 
                 visited[path] = true

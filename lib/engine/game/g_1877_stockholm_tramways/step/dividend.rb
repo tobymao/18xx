@@ -23,6 +23,10 @@ module Engine
               { share_direction: :left, share_times: 1 }
             end
           end
+
+          def holder_for_corporation(_)
+            @game.bank
+          end
         end
       end
     end

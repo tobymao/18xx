@@ -312,7 +312,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G18NewEngland::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G18NewEngland::Step::Bankrupt,
             G18NewEngland::Step::RedeemShares,
             G18NewEngland::Step::Track,

@@ -140,9 +140,8 @@ module Engine
 
             bought = bought?
             sold = sold?
-            times = 3
-            times = 2 if sold
-            times = 1 if bought
+            times = 2
+            times = 1 if bought || sold
             times = 0 if bought && sold
             return unless times.positive?
 

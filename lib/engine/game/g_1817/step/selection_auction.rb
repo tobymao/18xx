@@ -10,6 +10,7 @@ module Engine
         class SelectionAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
           ACTIONS = %w[bid pass].freeze
+          ACTIONS_NO_PASS = %w[bid].freeze
 
           attr_reader :companies, :seed_money
 
@@ -64,8 +65,10 @@ module Engine
 
           def actions(entity)
             return [] if @companies.empty?
+            return [] unless entity == current_entity
+            return ACTIONS_NO_PASS if @game.option_volatility_expansion? && !@auctioning
 
-            entity == current_entity ? ACTIONS : []
+            ACTIONS
           end
 
           def min_increment
@@ -74,11 +77,38 @@ module Engine
 
           def setup
             setup_auction
-            @companies = @game.companies.dup
-            @seed_money = @game.class::SEED_MONEY
+            @companies = @game.companies.reject(&:closed?).dup
+            setup_tiered_auction
+            @seed_money = @game.option_volatility_expansion? ? nil : @game.class::SEED_MONEY
+          end
+
+          def setup_tiered_auction
+            if @game.option_volatility_expansion?
+              # Create Company Pyramid
+              companies = @companies.dup
+              companies.sort_by! { @game.rand }
+              companies.delete(@game.pittsburgh_private)
+              companies.unshift(@game.pittsburgh_private)
+              @tiered_companies = 6.times.with_index.map { |i| companies.shift(i + 1) }
+            else
+              @tiered_companies = [@companies.dup]
+            end
+          end
+
+          def tiered_auction_companies
+            @tiered_companies
+          end
+
+          def may_bid?(company)
+            return false if company == @game.empty_auction_slot
+            return false unless @tiered_companies[-1].include?(company)
+
+            super
           end
 
           def starting_bid(company)
+            return 0 if @game.option_volatility_expansion?
+
             [0, company.value - @seed_money].max
           end
 
@@ -117,6 +147,7 @@ module Engine
 
           def win_bid(winner, _company)
             player = winner.entity
+            @last_auction_winner = player
             company = winner.company
             price = winner.price
             company.owner = player
@@ -127,7 +158,6 @@ module Engine
               @seed_money -= seed
             end
             player.spend(price, @game.bank) if price.positive?
-            @companies.delete(company)
             @log <<
               if @seed_money && seed.positive?
                 "#{player.name} wins the auction for #{company.name} "\
@@ -137,6 +167,34 @@ module Engine
                 "#{player.name} wins the auction for #{company.name} "\
                   "with a bid of #{@game.format_currency(price)}"
               end
+            company_auction_finished(company)
+          end
+
+          def company_auction_finished(company)
+            @companies.delete(company)
+            return @tiered_companies[0].delete(company) unless @game.option_volatility_expansion?
+
+            @tiered_companies.each do |row|
+              next unless (index = row.index(company))
+
+              row[index] = @game.empty_auction_slot
+              remove_company_from_slot(row, index - 1) if company_in_slot?(row, index - 1) && !company_in_slot?(row, index - 2)
+              remove_company_from_slot(row, index + 1) if company_in_slot?(row, index + 1) && !company_in_slot?(row, index + 2)
+              @tiered_companies.delete(row) if row.all? { |c| c == @game.empty_auction_slot }
+              break
+            end
+          end
+
+          def company_in_slot?(row, index)
+            !index.negative? && row[index] && row[index] != @game.empty_auction_slot
+          end
+
+          def remove_company_from_slot(row, index)
+            company = row[index]
+            company.close!
+            @companies.delete(company)
+            @log << "#{company.name} removed"
+            row[index] = @game.empty_auction_slot
           end
 
           def all_passed!
@@ -149,7 +207,8 @@ module Engine
           def resolve_bids
             super
             entities.each(&:unpass!)
-            @round.goto_entity!(@auction_triggerer)
+            start_player = @game.option_volatility_expansion? && @last_auction_winner ? @last_auction_winner : @auction_triggerer
+            @round.goto_entity!(start_player)
             next_entity!
           end
         end

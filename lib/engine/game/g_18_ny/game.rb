@@ -50,6 +50,8 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
 
+        NYC_TOKEN_COST = 40
+
         # These symbols upgrade to plain tiles in these colours
         PLAIN_SYMBOL_UPGRADES = {
           yellow: %w[Br R S],
@@ -253,9 +255,6 @@ module Engine
                 case corp[:sym]
                 when 'B&A'
                   corp[:tokens] = [0, 20, 20, 20]
-                  change_president_certificate_to_30_percent(corp)
-                when 'RWO'
-                  change_president_certificate_to_30_percent(corp)
                 when 'NYNH'
                   corp[:tokens] = [0, 20, 20, 20]
                   corp[:sym] = 'NH'
@@ -267,12 +266,18 @@ module Engine
           @game_corporations
         end
 
-        def change_president_certificate_to_30_percent(corporation)
-          corporation[:shares] = [30, 10, 10, 10, 10, 10, 10, 10]
-          corporation[:float_percent] = 30
-          corporation[:abilities] = corporation[:abilities].dup || []
-          corporation[:abilities] << { type: 'description', description: "30% President's Certificate" }
-          corporation
+        def game_companies
+          unless @game_companies
+            @game_companies = super.dup
+            if second_edition?
+              @game_companies.map! do |c|
+                company = c.dup
+                company[:value] = 170 if company[:sym] == 'DPC'
+                company
+              end
+            end
+          end
+          @game_companies
         end
 
         def location_name(coord)
@@ -344,6 +349,10 @@ module Engine
 
         def albany_hex
           @albany_hex ||= hex_by_id('F20')
+        end
+
+        def nyc_hex
+          @nyc_hex ||= hex_by_id('J20')
         end
 
         def second_edition?
@@ -576,8 +585,8 @@ module Engine
           [@share_pool.shares_of(entity).find { |s| s.price <= entity.cash }&.to_bundle].compact
         end
 
-        def check_sale_timing(_entity, corporation)
-          return true if corporation == nyc_corporation && @nyc_formed
+        def check_sale_timing(_entity, bundle)
+          return true if bundle.corporation == nyc_corporation && @nyc_formed
 
           super
         end
@@ -665,6 +674,16 @@ module Engine
           @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }
         end
 
+        def place_home_token(corporation)
+          return if corporation.tokens.first&.used
+
+          if second_edition? && corporation.id == 'NY&H'
+            @log << "#{corporation.name} spends #{format_currency(NYC_TOKEN_COST)} on NYC token fee"
+            corporation.spend(NYC_TOKEN_COST, @bank)
+          end
+          super
+        end
+
         def tile_lay(_hex, old_tile, new_tile)
           if old_tile.label
             # add label to new tile, if this is a plain lay on a label.
@@ -696,8 +715,6 @@ module Engine
         end
 
         def town_to_city_upgrade?(from, to)
-          return false unless @phase.tiles.include?(:green)
-
           case from.name
           when '3'
             to.name == '5'
@@ -747,6 +764,15 @@ module Engine
 
           terrain_cost -= TILE_COST if terrain_cost.positive?
           terrain_cost - discounts
+        end
+
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
+          phase_color_cache ||= @phase.tiles
+          if hex&.tile&.color == :yellow && hex.tile.towns.empty? == false && tile.color == :yellow
+            return phase_color_cache.include?(:green)
+          end
+
+          super
         end
 
         def route_distance(route)
@@ -977,8 +1003,11 @@ module Engine
 
         def emergency_issuable_bundles(corp)
           bundles = bundles_for_corporation(corp, corp)
+          cash_needed = @depot.depot_trains.first.variants.map { |_, v| v[:price] }.max - corp.cash
+          return [] if cash_needed.negative?
 
-          num_issuable_shares = [5, corp.num_player_shares].min - corp.num_market_shares
+          max_issuable_shares = [5, corp.num_player_shares].min - corp.num_market_shares
+          num_issuable_shares = [max_issuable_shares, (corp.share_price.price / cash_needed.to_f).ceil].min
           bundles.reject { |bundle| bundle.num_shares > num_issuable_shares }.sort_by(&:price)
         end
 

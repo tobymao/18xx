@@ -39,6 +39,10 @@ module Engine
       @shares.find(&:president)
     end
 
+    def preferred
+      @shares.any?(&:preferred)
+    end
+
     def price_per_share
       @share_price || @shares.first.price_per_share
     end
@@ -64,6 +68,11 @@ module Engine
 
     def ==(other)
       [shares, percent, share_price] == [other.shares, other.percent, other.share_price]
+    end
+
+    # Percent of shares not counting preferred shares
+    def common_percent
+      @common_percent ||= @shares.reject(&:preferred).sum(&:percent)
     end
   end
 end

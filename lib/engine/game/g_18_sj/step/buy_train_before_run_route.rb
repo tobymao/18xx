@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_train'
+require_relative '../../../game_error'
 require_relative 'buy_train_action'
 
 module Engine
@@ -10,8 +11,13 @@ module Engine
         class BuyTrainBeforeRunRoute < Engine::Step::BuyTrain
           include BuyTrainAction
 
+          MV_ACTIONS = %w[buy_train pass].freeze
+
           def actions(entity)
-            ability(entity) && can_buy_train?(entity) ? %w[buy_train pass] : []
+            mv_ability = ability(entity)
+            return MV_ACTIONS if mv_ability&.count&.positive? && can_buy_train?(entity)
+
+            []
           end
 
           def round_state
@@ -22,6 +28,8 @@ module Engine
 
           def process_buy_train(action)
             from_depot = action.train.from_depot?
+            raise GameError, 'Premature buys are only allowed from the Depot' unless from_depot
+
             buy_train_action(action)
 
             @round.bought_trains << corporation if from_depot && @round.respond_to?(:bought_trains)
@@ -30,8 +38,20 @@ module Engine
             pass! unless can_buy_train?(action.entity)
           end
 
+          def pass!
+            super
+            return if @round.premature_trains_bought.empty?
+
+            ability = ability(@game.motala_verkstad.owner)
+            return unless ability
+
+            ability.use!
+            ability.desc_detail = "After use #{@game.motala_verkstad.name} has no longer any special use"
+          end
+
           def help
-            "Owning #{@game.motala_verkstad.name} gives the ability to buy trains before running any routes."
+            "Owning #{@game.motala_verkstad.name} gives the ability to buy trains from the Depot "\
+              'before running any routes.'
           end
 
           def ability(entity)

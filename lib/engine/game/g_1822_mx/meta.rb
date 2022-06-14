@@ -9,7 +9,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         DEPENDS_ON = '1822'
 
         GAME_SUBTITLE = 'The Railways of Mexico'
@@ -17,7 +17,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822MX'
         GAME_LOCATION = 'Mexico'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/219065/1822-railways-great-britain-rules'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/206630/1822mx-rules'
         GAME_TITLE = '1822MX'
 
         PLAYER_RANGE = [3, 5].freeze

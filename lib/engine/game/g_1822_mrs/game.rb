@@ -174,13 +174,13 @@ module Engine
             ['I42'] =>
               'city=revenue:0;border=edge:1,type:impassable',
             ['D35'] =>
-              'city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_0,b:_1;label=S',
+              'city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_0,b:_1;future_label=label:S,color:green',
             ['M38'] =>
               'city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;'\
               'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;'\
               'label=L',
             %w[K42 M42] =>
-              'city=revenue:0;label=T',
+              'city=revenue:0;future_label=label:T,color:green',
             %w[L19 Q30] =>
               'city=revenue:0;upgrade=cost:20,terrain:swamp',
             %w[H23 H33] =>

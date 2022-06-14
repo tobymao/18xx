@@ -79,14 +79,22 @@ module Engine
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           unlimited: 'May buy shares from IPO in excess of 60%',
+          multiple_buy: 'President may buy two shares per turn',
         )
 
         MARKET = [
           %w[50o 55o 60o 65o 70p 75p 80p 90p 100p 115 130 145 160 180 200 220 240 265 290 320 350e 380e],
         ].freeze
+        MARKET_2E = [
+          %w[50b 55b 60b 65b 70p 75p 80p 90p 100p 115 130 145 160 180 200 220 240 265 290 320 350e 380e],
+        ].freeze
+        def game_market
+          second_ed_playtest? ? MARKET_2E : MARKET
+        end
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           unlimited: :olive,
+          multiple_buy: :olive,
         )
 
         EVENTS_TEXT = {
@@ -102,57 +110,62 @@ module Engine
           'only_pres_drop' => ['Only pres. sales drop', 'Only sales by corporation presidents drop the share price'],
         ).freeze
 
-        PHASES = [
-          {
-            name: '2+1',
-            train_limit: { '5-share': 3, '10-share': 4 },
-            tiles: [:yellow],
-            operating_rounds: 2,
-          },
-          {
-            name: '3+1',
-            on: '3+1',
-            train_limit: { '5-share': 3, '10-share': 4 },
-            tiles: %i[yellow green],
-            operating_rounds: 2,
-          },
-          {
-            name: '4+2',
-            on: '4+2',
-            train_limit: { '5-share': 2, '10-share': 3 },
-            tiles: %i[yellow green blue],
-            operating_rounds: 2,
-          },
-          {
-            name: '5+2',
-            on: '5+2',
-            train_limit: { '5-share': 2, '10-share': 3 },
-            tiles: %i[yellow green blue brown],
-            operating_rounds: 2,
-          },
-          {
-            name: '4X',
-            on: '4X',
-            train_limit: 2,
-            tiles: %i[yellow green blue brown],
-            operating_rounds: 2,
-          },
-          {
-            name: '5X',
-            on: '5X',
-            train_limit: 2,
-            tiles: %i[yellow green blue brown],
-            operating_rounds: 2,
-          },
-          {
-            name: '6X',
-            on: '6X',
-            train_limit: 2,
-            tiles: %i[yellow green blue brown gray],
-            status: ['only_pres_drop'],
-            operating_rounds: 2,
-          },
-        ].freeze
+        def game_phases
+          three = second_ed_playtest? ? '3+2' : '3+1'
+          five = second_ed_playtest? ? '3X' : '5+2'
+
+          [
+            {
+              name: '2+1',
+              train_limit: { '5-share': 3, '10-share': 4 },
+              tiles: [:yellow],
+              operating_rounds: 2,
+            },
+            {
+              name: three,
+              on: three,
+              train_limit: { '5-share': 3, '10-share': 4 },
+              tiles: %i[yellow green],
+              operating_rounds: 2,
+            },
+            {
+              name: '4+2',
+              on: '4+2',
+              train_limit: { '5-share': 2, '10-share': 3 },
+              tiles: %i[yellow green blue],
+              operating_rounds: 2,
+            },
+            {
+              name: five,
+              on: five,
+              train_limit: { '5-share': 2, '10-share': 3 },
+              tiles: %i[yellow green blue brown],
+              operating_rounds: 2,
+            },
+            {
+              name: '4X',
+              on: '4X',
+              train_limit: 2,
+              tiles: %i[yellow green blue brown],
+              operating_rounds: 2,
+            },
+            {
+              name: '5X',
+              on: '5X',
+              train_limit: 2,
+              tiles: %i[yellow green blue brown],
+              operating_rounds: 2,
+            },
+            {
+              name: '6X',
+              on: '6X',
+              train_limit: 2,
+              tiles: %i[yellow green blue brown gray],
+              status: ['only_pres_drop'],
+              operating_rounds: 2,
+            },
+          ].freeze
+        end
 
         TRAINS = [
           {
@@ -289,6 +302,146 @@ module Engine
           },
         ].freeze
 
+        TRAINS_2E = [
+          {
+            name: '2+1',
+            distance: [
+              {
+                'nodes' => ['town'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+              {
+                'nodes' => %w[city offboard town],
+                'pay' => 2,
+                'visit' => 2,
+              },
+            ],
+            price: 80,
+            rusts_on: '4+2',
+          },
+          {
+            name: '3+2',
+            distance: [
+              {
+                'nodes' => ['town'],
+                'pay' => 2,
+                'visit' => 2,
+              },
+              {
+                'nodes' => %w[city offboard town],
+                'pay' => 3,
+                'visit' => 3,
+              },
+            ],
+            price: 200,
+            rusts_on: '4X',
+            events: [
+              {
+                'type' => 'float_60',
+              },
+            ],
+          },
+          {
+            name: '4+2',
+            distance: [
+              {
+                'nodes' => ['town'],
+                'pay' => 2,
+                'visit' => 2,
+              },
+              {
+                'nodes' => %w[city offboard town],
+                'pay' => 4,
+                'visit' => 4,
+              },
+            ],
+            price: 300,
+            rusts_on: '6X',
+          },
+          {
+            name: '3X',
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 3,
+                'visit' => 3,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
+            ],
+            price: 500,
+            events: [
+              {
+                'type' => 'float_10_share',
+              },
+            ],
+          },
+          {
+            name: '4X',
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 4,
+                'visit' => 4,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
+            ],
+            price: 550,
+            available_on: '3X',
+          },
+          {
+            name: '5X',
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 5,
+                'visit' => 5,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
+            ],
+            price: 650,
+            available_on: '4X',
+          },
+          {
+            name: '6X',
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 6,
+                'visit' => 6,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
+            ],
+            price: 700,
+            events: [
+              {
+                'type' => 'remove_unstarted',
+              },
+            ],
+            available_on: '5X',
+          },
+        ].freeze
+
+        def game_trains
+          second_ed_playtest? ? self.class::TRAINS_2E : self.class::TRAINS
+        end
+
         def init_scenario(optional_rules)
           num_players = @players.size
           two_east_west = optional_rules.include?(:two_player_ew)
@@ -314,15 +467,46 @@ module Engine
           optional_rules
         end
 
+        def second_ed_playtest?
+          @optional_rules&.include?(:second_ed_test)
+        end
+
+        def end_game_restrictions?
+          @optional_rules&.include?(:second_ed_test)
+        end
+
+        def trigger_end_game_restrictions
+          return unless end_game_restrictions?
+          return if @end_game_near
+
+          @log << '-- Event: End game restrictions are now in place: no more tokens may be placed --'
+          @end_game_near = true
+        end
+
+        def end_game_restrictions_active?
+          return false unless end_game_restrictions?
+
+          @end_game_near
+        end
+
         def optional_hexes
-          case @scenario['map']
-          when '2NS'
-            self.class::HEXES_2P_NS
-          when '2EW'
-            self.class::HEXES_2P_EW
-          else
-            self.class::HEXES
-          end
+          hexes = case @scenario['map']
+                  when '2NS'
+                    self.class::HEXES_2P_NS
+                  when '2EW'
+                    self.class::HEXES_2P_EW
+                  else
+                    self.class::HEXES
+                  end
+          return hexes unless second_ed_playtest?
+
+          ns_bonus = {
+            red: {
+              ['C8'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/south;icon=image:18_gb/north',
+            },
+          }.freeze
+
+          hexes.merge(ns_bonus) { |_, a, b| a.merge(b) }
         end
 
         def num_trains(train)
@@ -375,7 +559,7 @@ module Engine
 
         def game_companies
           scenario_comps = @scenario['companies']
-          self.class::COMPANIES.select { |comp| scenario_comps.include?(comp[:sym]) }
+          all_companies.select { |comp| scenario_comps.include?(comp[:sym]) }
         end
 
         def game_corporations
@@ -416,6 +600,9 @@ module Engine
           @tiers = tiers
           @insolvent_corps = []
           @train_bought = false
+          @end_game_near = false
+
+          @corporations.each { |corp| place_home_token(corp) } if second_ed_playtest?
         end
 
         def event_float_60!
@@ -428,11 +615,17 @@ module Engine
           @corporations.reject(&:floated?).each { |c| convert_to_ten_share(c) }
         end
 
+        def remove_corporation(corporation)
+          token = corporation.tokens.first(&:used).dup
+          close_corporation(corporation, quiet: true)
+          token.city.place_token(corporation, token, check_tokenable: false) if second_ed_playtest?
+        end
+
         def event_remove_unstarted!
           @log << '-- Event: Unstarted corporations are removed --'
           remove_trains = @depot.trains.select { |t| t.name == '6X' }
           @corporations.reject(&:floated?).each do |corporation|
-            close_corporation(corporation, quiet: true)
+            remove_corporation(corporation)
             if (train = remove_trains.pop)
               @depot.remove_train(train)
               @log << "#{corporation.id} closes, removing a 6X train"
@@ -899,6 +1092,7 @@ module Engine
 
         def or_round_finished
           depot.export! unless @train_bought
+          trigger_end_game_restrictions if @depot.upcoming.size <= 2
         end
 
         def end_now?(after)

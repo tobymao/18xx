@@ -467,6 +467,7 @@ module Engine
         MINOR_GREEN_UPGRADE = %w[yellow green].freeze
 
         MINOR_14_ID = '14'
+        MINOR_14_HOME_HEX = 'M38'
 
         PLUS_EXPANSION_BIDBOX_1 = %w[P1 P3 P4 P13 P14 P19].freeze
         PLUS_EXPANSION_BIDBOX_2 = %w[P2 P5 P8 P10 P11 P12 P21].freeze
@@ -522,25 +523,12 @@ module Engine
         UPGRADABLE_S_YELLOW_CITY_TILE = '57'
         UPGRADABLE_S_YELLOW_ROTATIONS = [2, 5].freeze
         UPGRADABLE_S_HEX_NAME = 'D35'
-        UPGRADABLE_T_YELLOW_CITY_TILES = %w[5 6].freeze
-        UPGRADABLE_T_HEX_NAMES = %w[B43 K42 M42].freeze
 
         UPGRADE_COST_L_TO_2 = 80
 
         include StubsAreRestricted
 
         attr_accessor :bidding_token_per_player, :player_debts
-
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
-          upgrades = super
-          return upgrades unless tile_manifest
-
-          upgrades |= [@green_s_tile] if self.class::UPGRADABLE_S_YELLOW_CITY_TILE == tile.name
-          upgrades |= [@green_t_tile] if self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(tile.name)
-          upgrades |= [@sharp_city, @gentle_city] if self.class::UPGRADABLE_T_HEX_NAMES.include?(tile.hex.name)
-
-          upgrades
-        end
 
         def bank_sort(corporations)
           corporations.reject { |c| c.type == :minor }.sort_by(&:name)
@@ -581,15 +569,13 @@ module Engine
           tracks_by_type = Hash.new { |h, k| h[k] = [] }
 
           # Check local train not use the same token more then one time
-          local_token_hex = []
+          local_cities = []
 
           # Merthyr Tydfil and Pontypool
           merthyr_tydfil_pontypool = {}
 
           routes.each do |route|
-            if route.train.local? && !route.chains.empty?
-              local_token_hex.concat(route.visited_stops.select(&:city?).map { |n| n.hex.id })
-            end
+            local_cities.concat(route.visited_stops.select(&:city?)) if route.train.local? && !route.chains.empty?
 
             route.paths.each do |path|
               a = path.a
@@ -619,8 +605,8 @@ module Engine
             end
           end
 
-          local_token_hex.group_by(&:itself).each do |k, v|
-            raise GameError, "Local train can only use the token on #{k} once" if v.size > 1
+          local_cities.group_by(&:itself).each do |k, v|
+            raise GameError, "Local train can only use each token on #{k.hex.id} once" if v.size > 1
           end
 
           # Check Merthyr Tydfil and Pontypool, only one of the 2 tracks may be used
@@ -700,13 +686,16 @@ module Engine
         end
 
         def end_game!
-          company = company_by_id(self.class::COMPANY_OSTH)
-          if company && @tax_haven.value.positive?
-            # Make sure tax havens value is correct
-            company.value = @tax_haven.value
-          end
-
+          finalize_end_game_values
           super
+        end
+
+        def finalize_end_game_values
+          company = company_by_id(self.class::COMPANY_OSTH)
+          return unless company && @tax_haven.value.positive?
+
+          # Make sure tax havens value is correct
+          company.value = @tax_haven.value
         end
 
         def entity_can_use_company?(entity, company)
@@ -765,7 +754,7 @@ module Engine
         end
 
         def home_token_locations(corporation)
-          [hex_by_id(self.class::LONDON_HEX)] if corporation.id == self.class::MINOR_14_ID
+          [hex_by_id(self.class::MINOR_14_HOME_HEX)] if corporation.id == self.class::MINOR_14_ID
         end
 
         def ipo_name(_entity = nil)
@@ -935,7 +924,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G1822::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
@@ -1104,7 +1093,7 @@ module Engine
           @green_t_tile ||= @tiles.find { |t| t.name == '405' }
 
           # Initialize the extra city which minor 14 might add
-          @london_extra_city_index = nil
+          @minor_14_city_index = nil
 
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
@@ -1227,24 +1216,9 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # Check the S hex and potential upgrades
+          # This is needed because the S tile upgrade removes the town in yellow
           if self.class::UPGRADABLE_S_HEX_NAME == from.hex.name && from.color == :white
             return self.class::UPGRADABLE_S_YELLOW_CITY_TILE == to.name
-          end
-
-          if self.class::UPGRADABLE_S_HEX_NAME == from.hex.name &&
-            self.class::UPGRADABLE_S_YELLOW_CITY_TILE == from.name
-            return to.name == 'X3'
-          end
-
-          # Check the T hexes and potential upgrades
-          if self.class::UPGRADABLE_T_HEX_NAMES.include?(from.hex.name) && from.color == :white
-            return self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(to.name)
-          end
-
-          if self.class::UPGRADABLE_T_HEX_NAMES.include?(from.hex.name) &&
-            self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(from.name)
-            return to.name == '405'
           end
 
           # Special case for Middleton Railway where we remove a town from a tile
@@ -1287,12 +1261,12 @@ module Engine
         end
 
         def after_place_pending_token(city)
-          return unless city.hex.name == self.class::LONDON_HEX
+          return unless city.hex.name == self.class::MINOR_14_HOME_HEX
 
           # Save the extra token city index in london. We need this if we acquire the minor 14 and chooses to remove
           # the token from london. The city where the 14's home token used to be is now open for other companies to
           # token. If we do an upgrade to london, make sure this city still is open.
-          @london_extra_city_index = city.tile.cities.index { |c| c == city }
+          @minor_14_city_index = city.tile.cities.index { |c| c == city }
         end
 
         def after_lay_tile(hex, old_tile, tile)
@@ -1312,7 +1286,7 @@ module Engine
           end
 
           # If we upgraded london, check if we need to add the extra slot from minor 14
-          upgrade_london(hex) if hex.name == self.class::LONDON_HEX
+          upgrade_minor_14_home_hex(hex) if hex.name == self.class::MINOR_14_HOME_HEX
 
           # If we upgraded the english channel to brown, upgrade france as well since we got 2 lanes to france.
           return unless hex.name == self.class::ENGLISH_CHANNEL_HEX && tile.color == :brown
@@ -1706,7 +1680,7 @@ module Engine
           self.class::BIDDING_TOKENS[@players.size.to_s]
         end
 
-        def london_extra_token_ability
+        def minor_14_token_ability
           Engine::Ability::Token.new(type: 'token', hexes: [], price: 20, cheater: 1)
         end
 
@@ -1858,10 +1832,10 @@ module Engine
           hex_by_id(self.class::FRANCE_HEX).tile = france_tile
         end
 
-        def upgrade_london(hex)
-          return unless @london_extra_city_index
+        def upgrade_minor_14_home_hex(hex)
+          return unless @minor_14_city_index
 
-          extra_city = hex.tile.cities[@london_extra_city_index]
+          extra_city = hex.tile.cities[@minor_14_city_index]
           return unless extra_city.tokens.size == 1
 
           extra_city.tokens[extra_city.normal_slots] = nil
@@ -1875,8 +1849,16 @@ module Engine
           entity.id == self.class::COMPANY_BER
         end
 
+        def must_be_on_terrain?(entity)
+          entity.id == self.class::COMPANY_EGR
+        end
+
         def must_remove_town?(entity)
           entity.id == self.class::COMPANY_MTONR
+        end
+
+        def home_token_counts_as_tile_lay?(entity)
+          entity.id == self.class::MINOR_14_ID
         end
 
         def game_end_check
@@ -1885,7 +1867,7 @@ module Engine
         end
 
         def compute_game_end
-          return [:bank, @round.is_a?(Round::Operating) ? :full_or : :current_or] if @bank.broken?
+          return [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or] if @bank.broken?
 
           return %i[stock_market current_or] if @stock_market.max_reached?
         end
@@ -1973,7 +1955,7 @@ module Engine
           @company_trains['P19'] = find_and_remove_train_by_id('LP-0', buyable: false)
 
           # Setup the minor 14 ability
-          corporation_by_id(self.class::MINOR_14_ID).add_ability(london_extra_token_ability) if self.class::MINOR_14_ID
+          corporation_by_id(self.class::MINOR_14_ID).add_ability(minor_14_token_ability) if self.class::MINOR_14_ID
         end
 
         def setup_destinations

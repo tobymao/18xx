@@ -262,7 +262,7 @@ module Engine
       connection_data.each do |c|
         right = c[:right]
         cycles[c[:left]] = true
-        raise ReusesCity, "Cannot use #{right.hex.name} (#{right.inspect}) twice" if cycles[right]
+        raise ReusesCity, "Cannot use #{right.hex.name} twice" if cycles[right]
 
         cycles[right] = true
       end

@@ -177,13 +177,11 @@ module Engine
           'J20' => 'New York',
           'J22' => 'Hempstead',
           'J26' => 'Long Island',
-          'K17' => 'Philadelphia',
+          'K15' => 'Philadelphia',
           'K19' => 'Brooklyn',
         }.freeze
 
         SECOND_EDITION_LOCATION_NAMES = {
-          'K15' => 'Philadelphia',
-          'K17' => nil,
           'K19' => 'Staten Island',
           'K21' => 'Brooklyn',
         }.freeze
@@ -195,6 +193,70 @@ module Engine
         COAL_LOCATIONS = [%w[F0 G1], %w[H2 H4], %w[H6 H8 H10], ['H12'], %w[I13 J14], %w[K15 K17]].freeze
 
         HEXES = {
+          red: {
+            %w[A11] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_80,groups:Ottawa;path=a:5,b:_0;border=edge:4',
+            %w[A13] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_80,groups:Ottawa,hide:1;' \
+                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1',
+            %w[A15] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Montreal,hide:1;' \
+                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1,type:divider;border=edge:4',
+            %w[A17] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Montreal;' \
+                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1;border=edge:4',
+            %w[A19] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Montreal,hide:1;' \
+                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1;border=edge:4',
+            %w[A21] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,hide:1;path=a:0,b:_0;' \
+                       'offboard=revenue:yellow_10|green_20|brown_40|gray_60,hide:1;path=a:5,b:_1;' \
+                       'border=edge:1;border=edge:4;partition=a:0,b:3,type:divider',
+            %w[A23] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_60,groups:Burlington;' \
+                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1',
+            %w[A25] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Montpelier,hide:1;' \
+                       'path=a:0,b:_0;border=edge:1,type:divider;border=edge:5',
+            %w[B26] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Montpelier,hide:1;' \
+                       'path=a:1,b:_0;border=edge:0;border=edge:2',
+            %w[C25] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Montpelier;' \
+                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;border=edge:3',
+            %w[D0] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Toronto;' \
+                      'path=a:4,b:_0;border=edge:5',
+            %w[E1] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Toronto,hide:1;path=a:3,b:_0;' \
+                      'path=a:4,b:_0;border=edge:2;border=edge:4,type:water,cost:80',
+            %w[D26] => 'border=edge:0;border=edge:2,type:divider',
+            %w[E25] => 'path=a:1,b:5;path=a:2,b:5;border=edge:3;border=edge:5',
+            %w[F26] => 'city=revenue:yellow_20|green_40|brown_80|gray_100,groups:Springfield,loc:2;' \
+                       'path=a:1,b:_0;path=a:2,b:_0;border=edge:2',
+            %w[F0] => 'offboard=revenue:yellow_10|green_20|brown_50|gray_100,groups:Jamestown,hide:1;' \
+                      'path=a:4,b:_0;border=edge:3,type:divider;border=edge:5',
+            %w[G1] => 'offboard=revenue:yellow_10|green_20|brown_50|gray_100,groups:Jamestown;' \
+                      'path=a:3,b:_0;path=a:4,b:_0;border=edge:2',
+            %w[H2] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Pittsburgh,hide:1;' \
+                      'path=a:3,b:_0;border=edge:2,type:divider;border=edge:4',
+            %w[H4] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Pittsburgh;' \
+                      'path=a:2,b:_0;path=a:3,b:_0;border=edge:1',
+            %w[H6] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Williamsport,hide:1;' \
+                      'path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:divider;border=edge:4',
+            %w[H8] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Williamsport;' \
+                      'path=a:2,b:_0;path=a:3,b:_0;border=edge:1;border=edge:4',
+            %w[H10] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Williamsport,hide:1;' \
+                       'path=a:2,b:_0;path=a:3,b:_0;border=edge:1',
+            %w[H12] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
+                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1,type:divider',
+            %w[G25] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Hartford;' \
+                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:divider;border=edge:5',
+            %w[H26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Hartford,hide:1;' \
+                       'path=a:1,b:_0;border=edge:2',
+            %w[I25] => 'city=revenue:yellow_20|green_30|brown_40|gray_80;' \
+                       'path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:divider',
+            %w[J26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80;path=a:1,b:_0;border=edge:2,type:divider',
+            %w[I13] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50,groups:Allentown,hide:1;' \
+                       'path=a:3,b:_0;path=a:4,b:_0;border=edge:2,type:divider;border=edge:5',
+            %w[J14] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50,groups:Allentown;' \
+                       'path=a:3,b:_0;path=a:4,b:_0;border=edge:2',
+            %w[K15] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia;' \
+                       'path=a:3,b:_0;border=edge:2,type:divider;border=edge:4',
+            %w[K17] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia,hide:1;' \
+                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1',
+          },
+          blue: {
+            %w[B10 C1 C3 C5 C7 C9 K23 K25] => '',
+          },
           white: {
             %w[B14 F4 F24 G7 G11 H24] => '',
             %w[K21] => '',
@@ -260,80 +322,12 @@ module Engine
             %w[F20] => 'label=A;city=revenue:40;upgrade=cost:80,terrain:water;path=a:0,b:_0;path=a:2,b:_0',
             %w[J20] => 'label=N;city=revenue:50;upgrade=cost:80,terrain:water;path=a:3,b:_0',
           },
-          red: {
-            %w[A11] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_80,groups:Ottawa;path=a:5,b:_0;border=edge:4',
-            %w[A13] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_80,groups:Ottawa,hide:1;' \
-                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1',
-            %w[A15] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Montreal,hide:1;' \
-                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1,type:divider;border=edge:4',
-            %w[A17] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Montreal;' \
-                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1;border=edge:4',
-            %w[A19] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Montreal,hide:1;' \
-                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1;border=edge:4',
-            %w[A21] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,hide:1;path=a:0,b:_0;' \
-                       'offboard=revenue:yellow_10|green_20|brown_40|gray_60,hide:1;path=a:5,b:_1;' \
-                       'border=edge:1;border=edge:4;partition=a:0,b:3,type:divider',
-            %w[A23] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_60,groups:Burlington;' \
-                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1',
-            %w[A25] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Montpelier,hide:1;' \
-                       'path=a:0,b:_0;border=edge:1,type:divider;border=edge:5',
-            %w[B26] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Montpelier,hide:1;' \
-                       'path=a:1,b:_0;border=edge:0;border=edge:2',
-            %w[C25] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Montpelier;' \
-                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;border=edge:3',
-            %w[D0] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Toronto;' \
-                      'path=a:4,b:_0;border=edge:5',
-            %w[E1] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Toronto,hide:1;path=a:3,b:_0;' \
-                      'path=a:4,b:_0;border=edge:2;border=edge:4,type:water,cost:80',
-            %w[D26] => 'border=edge:0;border=edge:2,type:divider',
-            %w[E25] => 'path=a:1,b:5;path=a:2,b:5;border=edge:3;border=edge:5',
-            %w[F26] => 'city=revenue:yellow_20|green_40|brown_80|gray_100,groups:Springfield,loc:2;' \
-                       'path=a:1,b:_0;path=a:2,b:_0;border=edge:2',
-            %w[F0] => 'offboard=revenue:yellow_10|green_20|brown_50|gray_100,groups:Jamestown,hide:1;' \
-                      'path=a:4,b:_0;border=edge:3,type:divider;border=edge:5',
-            %w[G1] => 'offboard=revenue:yellow_10|green_20|brown_50|gray_100,groups:Jamestown;' \
-                      'path=a:3,b:_0;path=a:4,b:_0;border=edge:2',
-            %w[H2] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Pittsburgh,hide:1;' \
-                      'path=a:3,b:_0;border=edge:2,type:divider;border=edge:4',
-            %w[H4] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Pittsburgh;' \
-                      'path=a:2,b:_0;path=a:3,b:_0;border=edge:1',
-            %w[H6] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Williamsport,hide:1;' \
-                      'path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:divider;border=edge:4',
-            %w[H8] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Williamsport;' \
-                      'path=a:2,b:_0;path=a:3,b:_0;border=edge:1;border=edge:4',
-            %w[H10] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Williamsport,hide:1;' \
-                       'path=a:2,b:_0;path=a:3,b:_0;border=edge:1',
-            %w[H12] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
-                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1,type:divider',
-            %w[G25] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Hartford;' \
-                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:divider;border=edge:5',
-            %w[H26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Hartford,hide:1;' \
-                       'path=a:1,b:_0;border=edge:2',
-            %w[I25] => 'city=revenue:yellow_20|green_30|brown_40|gray_80;' \
-                       'path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:divider',
-            %w[J26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80;path=a:1,b:_0;border=edge:2,type:divider',
-            %w[I13] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50,groups:Allentown,hide:1;' \
-                       'path=a:3,b:_0;path=a:4,b:_0;border=edge:2,type:divider;border=edge:5',
-            %w[J14] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50,groups:Allentown;' \
-                       'path=a:3,b:_0;path=a:4,b:_0;border=edge:2',
-            %w[K15] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia,hide:1;' \
-                       'path=a:3,b:_0;border=edge:2,type:divider;border=edge:4',
-            %w[K17] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia;' \
-                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1',
-          },
-          blue: {
-            %w[B10 C1 C3 C5 C7 C9 K23 K25] => '',
-          },
         }.freeze
 
         SECOND_EDITION_HEXES = {
-          white: {
-            %w[K19] => 'town=revenue:0;border=edge:2,type:water,cost:40;border=edge:4,type:water,cost:80',
-            %w[K21] => 'label=Br;city=revenue:0;border=edge:1,type:water,cost:80',
-          },
           red: {
             %w[D0] => 'town=revenue:yellow_20|green_40|brown_80|gray_100;path=a:4,b:_0;path=a:5,b:_0;border=edge:5',
-            %w[E1] => 'path=a:3,b:2;path=a:4,b:2;border=edge:2;border=edge:4,type:water,cost:80',
+            %w[E1] => 'path=a:3,b:2;path=a:4,b:2;border=edge:2;border=edge:2;border=edge:4,type:water,cost:80',
             %w[H6] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Williamsport,hide:1;' \
                       'path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:divider;border=edge:4',
             %w[H8] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Williamsport;' \
@@ -341,13 +335,17 @@ module Engine
             %w[H10] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Williamsport,hide:1;' \
                        'path=a:2,b:_0;path=a:3,b:_0;border=edge:1',
             %w[J26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:1,b:_0;border=edge:2,type:divider',
-            %w[K15] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia;' \
-                       'path=a:3,b:_0;border=edge:2,type:divider;border=edge:4',
             %w[K17] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia,hide:1;' \
                        'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;border=edge:4,type:water,cost:40',
           },
           blue: {
             %w[K23] => 'junction;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
+          },
+          white: {
+            %w[J18] => 'city=revenue:0;border=edge:5,type:water,cost:40',
+            %w[K19] => 'town=revenue:0;border=edge:1,type:water,cost:40;border=edge:2,type:water,cost:40;' \
+                       'border=edge:4,type:water,cost:80',
+            %w[K21] => 'label=Br;city=revenue:0;border=edge:1,type:water,cost:80',
           },
         }.freeze
       end

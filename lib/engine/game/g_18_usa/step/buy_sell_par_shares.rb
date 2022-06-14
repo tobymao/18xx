@@ -22,7 +22,7 @@ module Engine
           def auto_actions(entity)
             return [Engine::Action::Pass.new(entity)] if @auctioning && max_bid(entity, @auctioning) < min_bid(@auctioning)
 
-            []
+            super
           end
 
           def min_increment
@@ -34,12 +34,22 @@ module Engine
           end
 
           def validate_bid(entity, corporation, bid)
+            return if @game.loading
+
             max_bid = max_bid(entity, corporation)
             raise GameError, "Invalid bid, maximum bidding power is #{max_bid}" if bid > max_bid
+
+            cash = entity.cash + city_subsidy_value(corporation)
+            return if cash >= bid
+
+            options = available_company_options(entity).map(&:sum)
+            return if options.any? { |option| option <= bid && (option + cash) >= bid }
+
+            raise GameError, 'Invalid bid, no combination of privates and cash add up to bid amount'
           end
 
           def max_bid(entity, corporation = nil)
-            super + (corporation&.tokens&.first&.used ? city_subsidy(corporation)&.value || 0 : max_city_subsidy)
+            super + city_subsidy_value(corporation)
           end
 
           def max_city_subsidy
@@ -97,8 +107,10 @@ module Engine
             par_corporation if available_subsidiaries(winner.entity).none?
           end
 
-          def city_subsidy(corporation)
-            corporation.companies.find { |c| c.value.positive? }
+          def city_subsidy_value(corporation)
+            return max_city_subsidy if !corporation || !corporation.tokens.first.used
+
+            corporation.companies.find { |c| c.value.positive? }&.value || 0
           end
 
           def available_subsidiaries(entity)
@@ -174,10 +186,17 @@ module Engine
           def par_corporation
             return unless @corporation_size
 
-            @remaining_bid_amount = 0
+            entity = @winning_bid.entity
             corporation = @winning_bid.corporation
+            if (cash_subsidy = corporation.companies.find { |c| @game.class::CASH_SUBSIDIES.include?(c.id) })
+              entity.spend(cash_subsidy.value - @remaining_bid_amount, @game.bank) if @remaining_bid_amount < cash_subsidy.value
+              cash_subsidy.close!
+            else
+              corporation.companies.find { |c| c.name == 'No Subsidy' }&.close!
+            end
+
+            @remaining_bid_amount = 0
             @game.bank.spend(corporation.cash.abs, corporation) if corporation.cash.negative?
-            corporation.companies.find { |c| c.name == 'No Subsidy' }&.close!
             if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver && @game.hex_by_id('E11').tile.name == 'X04s'
               @round.pending_tracks << {
                 entity: corporation,
@@ -192,6 +211,12 @@ module Engine
             return unless @pending_winning_bid
 
             win_bid(@pending_winning_bid[:winner], @pending_winning_bid[:company])
+          end
+
+          def action_is_shenanigan?(entity, other_entity, action, corporation, corp_buying)
+            return 'Train Scrapped' if action.is_a?(Action::ScrapTrain)
+
+            super
           end
         end
       end

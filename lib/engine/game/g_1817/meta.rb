@@ -33,6 +33,11 @@ module Engine
             short_name: 'Modern Trains',
             desc: '7 & 8 trains earn $10 & $20 respectively for each station marker of the corporation',
           },
+          {
+            sym: :volatility,
+            short_name: 'Volatility Expansion (Alpha)',
+            desc: '13 additional private companies and a modified initial auction',
+          },
         ].freeze
       end
     end

@@ -109,7 +109,7 @@ module View
 
           player_owned = @game.player_sort(@game.corporations.select(&:owner))
           children = players.map do |p|
-            companies = p.companies.map { |c| render_company(c) }
+            companies = @game.companies_sort(p.companies).map { |c| render_company(c) }
             corps = player_owned[p]&.map { |c| render_corporation(c) }
 
             h(:div, [
@@ -157,7 +157,7 @@ module View
         end
 
         def render_corporation(corp)
-          subsidiaries = corp.companies.map { |c| render_company(c) }
+          subsidiaries = @game.companies_sort(corp.companies).map { |c| render_company(c) }
           h(:div, [h(Corporation, corporation: corp, show_companies: false), *subsidiaries])
         end
       end

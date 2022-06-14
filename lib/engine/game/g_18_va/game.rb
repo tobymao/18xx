@@ -495,11 +495,11 @@ module Engine
             %w[C4 C8 C12 D9 E2 E8] => 'city=revenue:0',
             %w[F7] => 'city=revenue:0;border=edge:4,type:impassable',
             %w[F3] => 'city=revenue:0;border=edge:0,type:impassable;border=edge:1,type:impassable',
-            %w[F13] => 'city=revenue:0;label=P;border=edge:4,type:impassable',
-            %w[H3] => 'city=revenue:0;label=P',
-            %w[F5] => 'city=revenue:0;label=P;border=edge:3,type:impassable',
-            %w[G4] => 'city=revenue:0;label=Was',
-            %w[F11] => 'city=revenue:0;label=Ric',
+            %w[F13] => 'city=revenue:0;future_label=color:brown,label:P;border=edge:4,type:impassable',
+            %w[H3] => 'city=revenue:0;future_label=color:brown,label:P',
+            %w[F5] => 'city=revenue:0;future_label=color:brown,label:P;border=edge:3,type:impassable',
+            %w[G4] => 'city=revenue:0;future_label=color:brown,label:Was',
+            %w[F11] => 'city=revenue:0;future_label=color:brown,label:Ric',
           },
           yellow: {
             %w[H5] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;border=edge:1,type:impassable',
@@ -849,23 +849,6 @@ module Engine
           @bank.spend(funding, corporation)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
-        end
-
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
-          return to.name == '170ric' if from.color == :green && from.hex.name == self.class::RIC_HEX
-          return to.name == '170was' if from.color == :green && from.hex.name == self.class::WAS_HEX
-          return to.name == '170' if from.color == :green && self.class::P_HEXES.include?(from.hex.name)
-          return %w[5 6 57].include?(to.name) if self.class::PORT_HEXES.include?(from.hex.name) && from.color == :white
-
-          super
-        end
-
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
-          upgrades = super
-          return upgrades unless tile_manifest
-
-          upgrades |= tiles.select { |t| %w[170 170ric 170was].include?(t.name) } if %w[14 15].include?(tile.name)
-          upgrades
         end
 
         def ipo_name(_entity = nil)
