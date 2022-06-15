@@ -32,6 +32,7 @@ module Engine
         STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440 }.freeze
         CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12 }.freeze
 
+        SELL_AFTER = :any_time
         POOL_SHARE_DROP = :each
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
@@ -601,6 +602,19 @@ module Engine
               reorder_players
               new_stock_round
             end
+        end
+
+        def sellable_bundles(player, corporation)
+          bundles = super
+
+          unless corporation.operated?
+            bundles.each do |bundle|
+              directions = [:down] * bundle.num_shares
+              bundle.share_price = stock_market.find_share_price(corporation, directions).price
+            end
+          end
+
+          bundles
         end
       end
     end

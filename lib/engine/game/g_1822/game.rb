@@ -1778,7 +1778,7 @@ module Engine
         end
 
         def reduced_bundle_price_for_market_drop(bundle)
-          directions = (1..bundle.num_shares).map { |_| :up }
+          directions = (1..bundle.num_shares).map { |_| :down }
           bundle.share_price = @stock_market.find_share_price(bundle.corporation, directions).price
           bundle
         end

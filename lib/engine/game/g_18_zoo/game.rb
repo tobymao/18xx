@@ -869,7 +869,7 @@ module Engine
         def share_price_updated(entity, revenue)
           direction = if revenue >= threshold(entity)
                         r, c = entity.share_price.coordinates
-                        c + 1 < stock_market.market[r].size ? :right : :down
+                        c + 1 < stock_market.market[r].size ? :right : :up
                       else
                         :stay
                       end
