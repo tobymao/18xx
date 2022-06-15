@@ -31,7 +31,7 @@ module Engine
             max_price: 45,
             desc: 'When this private is bought by a company, the president of the company may choose to add or remove '\
                   'a 3/4/5/6 train to/from the depot. If a train is added, it must be of the '\
-                  'current phase or later.',
+                  'current phase or later. This will close the company.',
             abilities: [],
             color: nil,
           },
@@ -56,7 +56,7 @@ module Engine
             min_price: 1,
             max_price: 90,
             desc: 'The owning corporation may place the +20 marker on a mineral or Home Base hex. The +20 '\
-                  'token lasts until the end of the game.',
+                  'token lasts until the end of the game. This will close the company',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -96,7 +96,7 @@ module Engine
             max_price: 150,
             desc: 'The owning player or corporation may take one share from the pool for free (may be '\
                   'used once per game, cannot be used in first stock round). In addition, mountain terrain is '\
-                  'discounted to 10 cost when owned by a corporation',
+                  'discounted to 10 cost when owned by a corporation. Exchanging closes this company.',
             abilities: [
               {
                 type: 'exchange',
