@@ -27,8 +27,7 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            if (tile.name == @game.class::BROWN_DOUBLE_BOOMCITY_TILE) ||
-               ((upgrades = @game.class::TILE_UPGRADES[hex.tile.name]) && upgrades.include?(tile.name))
+            if (upgrades = @game.class::TILE_UPGRADES[hex.tile.name]) && upgrades.include?(tile.name)
               hex.tile.exits & tile.exits == hex.tile.exits
             else
               super
