@@ -94,9 +94,9 @@ module Engine
         when :right
           c += 1
         when :down
-          r -= 1 if r.positive?
-        when :up
           r += 1
+        when :up
+          r -= 1 if r.positive?
         end
         price = share_price(r, c)
         break unless price

@@ -773,7 +773,7 @@ module Engine
 
           unless corporation.operated?
             bundles.each do |bundle|
-              directions = [:up] * bundle.num_shares
+              directions = [:down] * bundle.num_shares
               bundle.share_price = stock_market.find_share_price(corporation, directions).price
             end
           end
