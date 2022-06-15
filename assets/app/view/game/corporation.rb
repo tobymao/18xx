@@ -313,12 +313,21 @@ module View
 
       def entities_rows(entities)
         step = @game.round.active_step
+
+        players_in_order = @game.players.map(&:name)
+
+        unless @corporation.owner.nil?
+          player_index = players_in_order.find_index(@corporation.owner.name)
+          players_in_order = players_in_order.rotate(player_index) unless player_index.nil?
+        end
+
         entity_info = entities.map do |entity|
           [
             entity,
             @corporation.president?(entity),
             entity.num_shares_of(@corporation, ceil: false),
             step&.did_sell?(@corporation, entity),
+            entity.player? ? players_in_order.find_index(entity.name) : 0,
             step&.last_acted_upon?(@corporation, entity),
             !@corporation.holding_ok?(entity, 1),
             entity.shares_of(@corporation).count(&:double_cert),
@@ -334,8 +343,8 @@ module View
 
         entity_info
         .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
-        .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
-        .map do |entity, president, num_shares, did_sell, last_acted_upon, at_limit, double_certs, other_flags|
+        .sort_by { |_, president, num_shares, _, prio_index| [president ? 0 : 1, -num_shares, prio_index] }
+        .map do |entity, president, num_shares, did_sell, _, last_acted_upon, at_limit, double_certs, other_flags|
           flags = (president ? '*' : '') + ('d' * double_certs) + (at_limit ? 'L' : '') + (other_flags || '')
 
           type = entity.player? ? 'tr.player' : 'tr.corp'
