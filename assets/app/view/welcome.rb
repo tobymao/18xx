@@ -17,6 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>18 Los Angeles 2 is now in beta.</p>
         <p>1817 Volatility Expansion is now in alpha.</p>
         <p>Rolling Stock and Rolling Stock Stars are now in beta.</p>
         <p>18VA is now in production.</p>

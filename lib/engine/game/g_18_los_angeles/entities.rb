@@ -72,7 +72,7 @@ module Engine
             name: 'Los Angeles Citrus',
             value: 60,
             revenue: 15,
-            desc: 'The owning corporation may assign Los Angeles Citrus to Oxnard (B1), Yorba Linda '\
+            desc: 'The owning corporation may assign Los Angeles Citrus to Oxnard (B1), LAX (D1), Yorba Linda '\
                   '(D13), or Irvine (F15), to add $30 to all routes it runs to this location.',
             sym: 'LAC',
             abilities: [
@@ -97,7 +97,7 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'The owning corporation may assign the Los Angeles Steamship to Oxnard (B1), '\
-                  'Santa Monica (C2), or Westminster (F9), to add $20 per port symbol to all '\
+                  'Santa Monica (C2), LAX (D1), or Westminster (F9), to add $20 per port symbol to all '\
                   'routes it runs to this location.',
             sym: 'LAS',
             abilities: [
