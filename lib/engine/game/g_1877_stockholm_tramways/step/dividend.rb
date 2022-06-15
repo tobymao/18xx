@@ -7,6 +7,12 @@ module Engine
     module G1877StockholmTramways
       module Step
         class Dividend < Engine::Step::Dividend
+          def auto_actions(entity)
+            return [Action::Dividend.new(entity, kind: 'payout')] if @game.sl
+
+            super
+          end
+
           def share_price_change(entity, revenue = 0)
             if revenue.positive?
               price = entity.share_price.price

@@ -12,6 +12,10 @@ module Engine
 
             super
           end
+
+          def log_skip(entity)
+            super unless @game.sl
+          end
         end
       end
     end

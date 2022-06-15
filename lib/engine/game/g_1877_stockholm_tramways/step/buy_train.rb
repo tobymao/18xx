@@ -24,6 +24,10 @@ module Engine
             super
           end
 
+          def log_skip(entity)
+            super unless @game.sl && !entity.trains.empty?
+          end
+
           def process_buy_train(action)
             if action.train.owned_by_corporation?
               min, max = spend_minmax(action.entity, action.train)

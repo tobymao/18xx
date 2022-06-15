@@ -37,7 +37,10 @@ module Engine
 
           def auto_actions(entity)
             if @finish_action
-              return [Engine::Action::Pass.new(entity)] if entity.cash < @finish_corporation.share_price.price / 2
+              if entity.cash < @finish_corporation.share_price.price / 2 ||
+                  @game.share_pool.shares_of(@finish_corporation).empty?
+                return [Engine::Action::Pass.new(entity)]
+              end
             elsif mergeable(entity).empty?
               return [Engine::Action::Pass.new(entity)]
             end
@@ -57,8 +60,16 @@ module Engine
             mergeable(entity).any?
           end
 
+          def pass_description
+            return 'Done (Buy Shares for Half Price)' if @finish_action
+
+            super
+          end
+
           def log_pass(entity)
             return super unless @finish_action
+
+            return if @game.share_pool.shares_of(@finish_corporation).empty?
 
             @log << "#{entity.name} skips buying additional shares"
           end
@@ -72,11 +83,18 @@ module Engine
             super
           end
 
+          def log_skip(entity)
+            super unless @game.sl
+          end
+
           def process_merge(action)
             @log << "#{action.entity.name} will acquire #{action.corporation.name}"
-            @game.start_merge(action.entity, action.corporation)
-            @finish_action = %w[buy_shares pass]
-            @finish_corporation = action.entity
+            if @game.merge(action.entity, action.corporation)
+              @finish_action = %w[buy_shares pass]
+              @finish_corporation = action.entity
+            else
+              @merge_finished = true
+            end
           end
 
           def can_buy?(entity, bundle)
