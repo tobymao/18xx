@@ -1328,6 +1328,12 @@ module Engine
           super
         end
 
+        def check_route_token(route, token)
+          return true if route.corporation.id == 'C&P'
+
+          super
+        end
+
         def city_tokened_by?(city, entity)
           return true if entity.id == 'C&P' && @round.current_operator == entity && @round.laid_hexes.include?(city.hex)
 

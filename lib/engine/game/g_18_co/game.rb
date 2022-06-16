@@ -1528,7 +1528,7 @@ module Engine
           return bundle if bundle.num_shares == 1
 
           new_price = (0..bundle.num_shares - 1).sum do |max_drops|
-            @stock_market.find_share_price(bundle.corporation, (1..max_drops).map { |_| :up }).price
+            @stock_market.find_share_price(bundle.corporation, (1..max_drops).map { |_| :down }).price
           end
 
           bundle.share_price = new_price / bundle.num_shares

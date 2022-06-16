@@ -92,9 +92,9 @@ module Engine
                 remove_cheapest!
                 @passed_on_cheapest = {}
               end
-            when @game.p11_company
-              @log << 'Companies pay out (all players passed or bid on P12)'
-              @game.isr_payout_companies(@bidders[@game.p12_company])
+            when @game.p9_company
+              @log << 'Companies pay out (all players passed or bid on P10)'
+              @game.isr_payout_companies(@bidders[@game.p10_company])
               @passed_on_cheapest = {}
             else
               remove_cheapest!
