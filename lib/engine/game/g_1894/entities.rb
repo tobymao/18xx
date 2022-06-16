@@ -99,7 +99,7 @@ module Engine
             logo: '1894/Ouest',
             simple_logo: '1894/Ouest.alt',
             tokens: [0, 40, 60, 80, 100],
-            max_ownership_percent: 70,
+            max_ownership_percent: 60,
             coordinates: 'D3',
             color: '#4682b4',
           },
