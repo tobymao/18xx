@@ -768,7 +768,7 @@ module Engine
             ['P2'] => 'city=revenue:0;upgrade=cost:20,terrain:water',
             %w[F18 M7] => 'city=revenue:0;upgrade=cost:40,terrain:water',
             %w[B4 D20 M19 N10] => 'city=revenue:0;label=Y',
-            ['G15'] => 'city=revenue:0;label=Y;label=Kh',
+            ['G15'] => 'city=revenue:0;label=Y;future_label=label:Kh,color:gray',
             %w[C11 D12 M11] => 'upgrade=cost:80,terrain:water',
             %w[E15 E19 F16 I15 J16 J18] => 'upgrade=cost:40,terrain:water',
             %w[C17 C19 D10 J6 L6 N6 O5 P4] => 'upgrade=cost:20,terrain:water',
@@ -833,9 +833,6 @@ module Engine
         ).freeze
         GREEN_CORPORATIONS = %w[MB Y V TR SV E].freeze
 
-        # This is Kh in 1861
-        HEX_WITH_O_LABEL = %w[G15].freeze
-        HEX_UPGRADES_FOR_O = %w[201 202 207 208 621 622 623 801 640].freeze
         BONUS_CAPITALS = %w[H8].freeze
         BONUS_REVENUE = 'Q3'
         NATIONAL_RESERVATIONS = %w[E1 H8].freeze
