@@ -358,7 +358,7 @@ module Engine
             revenue: 10,
             desc: 'MAJOR, Phase 3. Replace a spike going to water with this tile. Lay this tile on '\
                   'a spike that does not already have a port. The spike now counts as a 40 '\
-                  '(gren)/50 (brown)/60 (gray) and is treated like a gray off-board area for '\
+                  '(green)/50 (brown)/60 (gray) and is treated like a gray off-board area for '\
                   'counting train runs for all companies. This is in addition to the company’s '\
                   'normal tile placement and the company does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
