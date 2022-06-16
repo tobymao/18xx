@@ -912,6 +912,12 @@ module Engine
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
+        def company_header(company)
+          return 'MINOR RAILWAY' if company.id[0] == self.class::COMPANY_MINOR_PREFIX
+
+          super
+        end
+
         def must_buy_train?(entity)
           entity.trains.none? { |t| !extra_train?(t) } &&
           !depot.depot_trains.empty?
