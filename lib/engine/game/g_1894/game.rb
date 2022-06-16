@@ -4,7 +4,7 @@ require_relative '../base'
 require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
-require_relative '../stubs_are_restricted'
+require_relative 'stock_market'
 
 module Engine
   module Game
@@ -170,7 +170,8 @@ module Engine
                     name: '6',
                     distance: 6,
                     price: 600,
-                    num: 3,
+                    num: 2,
+                    events: [{ 'type' => 'close_companies' }],
                     discount: { '5' => 200 },
                   },
                   {
@@ -178,7 +179,6 @@ module Engine
                     distance: 7,
                     price: 700,
                     num: 3,
-                    events: [{ 'type' => 'close_companies' }],
                     discount: { '6' => 300 },
                   },
                   {
@@ -341,7 +341,7 @@ module Engine
         end
 
         def init_stock_market
-          Engine::StockMarket.new(self.class::MARKET, [],
+          G1894::StockMarket.new(self.class::MARKET, [],
                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
