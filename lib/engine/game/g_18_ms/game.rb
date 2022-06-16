@@ -175,7 +175,6 @@ module Engine
           'remove_tokens' => ['Remove Tokens', 'New Orleans route bonus removed']
         ).freeze
 
-        HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze
         COMPANY_1_AND_2 = %w[AGS BS].freeze
 
         def chattanooga_hex
@@ -393,16 +392,6 @@ module Engine
               @log << "Route bonus is removed from #{get_location_name(hex_name)} (#{hex_name})"
             end
           end
-        end
-
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # Only allow tile gray tile (446) in Montgomery (E11) or Birmingham (C9)
-          return to.name == '446' if from.color == :brown && HEXES_FOR_GRAY_TILE.include?(from.hex.name)
-
-          # Only allow tile Mobile City brown tile in Mobile City hex (H6)
-          return to.name == 'X31b' if from.color == :green && from.hex.name == 'H6'
-
-          super
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)

@@ -950,7 +950,9 @@ module Engine
         value
       end
 
-      def check_sale_timing(entity, corporation)
+      def check_sale_timing(entity, bundle)
+        corporation = bundle.corporation
+
         case self.class::SELL_AFTER
         when :first
           @turn > 1 || @round.operating?
@@ -960,6 +962,9 @@ module Engine
           corporation.operated?
         when :p_any_operate
           corporation.operated? || corporation.president?(entity)
+        when :round
+          @round.stock? &&
+            corporation.share_holders[entity] - @round.players_bought[entity][corporation] >= bundle.percent
         when :any_time
           true
         else
@@ -1512,7 +1517,7 @@ module Engine
 
       def upgrades_to_correct_label?(from, to)
         # If the from tile has a future label and the to tile is the color for it use that, otherwise use the from's label
-        return from.future_label.label == to.label.to_s if from.future_label && to.color.to_s == from.future_label.color
+        return from.future_label.label == to.label&.to_s if from.future_label && to.color.to_s == from.future_label.color
 
         from.label == to.label
       end

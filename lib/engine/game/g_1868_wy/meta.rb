@@ -18,7 +18,7 @@ module Engine
         GAME_TITLE = '1868 Wyoming'
         GAME_FULL_TITLE = '1868: Boom and Bust in the Coal Mines and Oil Fields of Wyoming'
 
-        PLAYER_RANGE = [3, 6].freeze
+        PLAYER_RANGE = [3, 5].freeze
       end
     end
   end

@@ -379,7 +379,11 @@ module Engine
 
         def after_sell_company(buyer, company, _price, _seller)
           return ols_swap(buyer) if company.sym == 'OLS'
-          return unc_start(buyer) if company.sym == 'UNC'
+          return unless company.sym == 'UNC'
+
+          @log << "#{company.name} will close"
+          company.close!
+          unc_start(buyer)
         end
 
         def ols_start(player)
@@ -527,7 +531,7 @@ module Engine
           Engine::Round::Operating.new(self, [
             G21Moon::Step::Bankrupt,
             Engine::Step::BuyCompany,
-            Engine::Step::Assign,
+            G21Moon::Step::Assign,
             Engine::Step::HomeToken,
             G21Moon::Step::SpecialTrack,
             G21Moon::Step::TrainMod,

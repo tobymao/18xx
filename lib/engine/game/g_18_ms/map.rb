@@ -103,7 +103,9 @@ module Engine
             %w[E7 F2 F6 F8 G1 G7] => 'upgrade=cost:20,terrain:water',
             ['H2'] => 'upgrade=cost:40,terrain:water',
             ['H8'] => 'town=revenue:0;upgrade=cost:20,terrain:water',
-            %w[C7 C9 E5 E9 E11 H6] => 'city=revenue:0',
+            %w[C7 E5 E9] => 'city=revenue:0',
+            %w[H6] => 'city=revenue:0;future_label=label:Mob,color:brown',
+            %w[C9 E11] => 'city=revenue:0;future_label=label:BM,color:gray',
             %w[B2 C5 D6 G3 H4] => 'town=revenue:0',
           },
           red: {
