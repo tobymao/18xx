@@ -230,9 +230,6 @@ module Engine
             ],
             events: [
               {
-                'type' => 'phase_revenue',
-              },
-              {
                 'type' => 'close_ndem',
               },
             ],
