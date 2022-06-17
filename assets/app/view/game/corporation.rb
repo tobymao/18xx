@@ -311,14 +311,19 @@ module View
         result.index('.') ? result : "#{result}.0"
       end
 
-      def entities_rows(entities)
+      def entities_rows(entities, pres_transfer_order = false)
         step = @game.round.active_step
 
-        players_in_order = @game.players.map(&:name)
-
-        unless @corporation.owner.nil?
-          player_index = players_in_order.find_index(@corporation.owner.name)
-          players_in_order = players_in_order.rotate(player_index) unless player_index.nil?
+        if pres_transfer_order
+          # For player rows, create an array of names, rotate that array so
+          # the owner is at index 0, and use the resulting order to sort
+          # player names when they have the same number of shares. This results
+          # in the listed order showing the correct transfer of presidency.
+          players_in_order = entities.map(&:name)
+          unless @corporation.owner.nil?
+            player_index = players_in_order.find_index(@corporation.owner.name)
+            players_in_order = players_in_order.rotate(player_index) unless player_index.nil?
+          end
         end
 
         entity_info = entities.map do |entity|
@@ -327,7 +332,7 @@ module View
             @corporation.president?(entity),
             entity.num_shares_of(@corporation, ceil: false),
             step&.did_sell?(@corporation, entity),
-            entity.player? ? players_in_order.find_index(entity.name) : 0,
+            pres_transfer_order ? players_in_order.find_index(entity.name) : 0,
             step&.last_acted_upon?(@corporation, entity),
             !@corporation.holding_ok?(entity, 1),
             entity.shares_of(@corporation).count(&:double_cert),
@@ -343,7 +348,7 @@ module View
 
         entity_info
         .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
-        .sort_by { |_, president, num_shares, _, prio_index| [president ? 0 : 1, -num_shares, prio_index] }
+        .sort_by { |_, president, num_shares, _, transfer_index| [president ? 0 : 1, -num_shares, transfer_index] }
         .map do |entity, president, num_shares, did_sell, _, last_acted_upon, at_limit, double_certs, other_flags|
           flags = (president ? '*' : '') + ('d' * double_certs) + (at_limit ? 'L' : '') + (other_flags || '')
 
@@ -369,7 +374,7 @@ module View
           },
         }
 
-        player_rows = entities_rows(@game.players)
+        player_rows = entities_rows(@game.players, true)
 
         other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation && !c.treasury_as_holding })
 
