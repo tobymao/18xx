@@ -316,7 +316,7 @@ module View
 
         if pres_transfer_order
           # For player rows, create an array of names, rotate that array so
-          # the owner is at index 0, and use the resulting order to sort
+          # the president is at index 0, and use the resulting order to sort
           # player names when they have the same number of shares. This results
           # in the listed order showing the correct transfer of presidency.
           players_in_order = entities.map(&:name)
