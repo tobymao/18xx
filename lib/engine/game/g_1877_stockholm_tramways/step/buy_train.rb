@@ -83,7 +83,7 @@ module Engine
             (train.price / 25).ceil * 5
           end
 
-          def president_may_contribute?(entity)
+          def president_may_contribute?(entity, _)
             entity.trains.empty?
           end
 
