@@ -24,7 +24,7 @@ module Engine
 
             corporation = bundle.corporation
 
-            timing = @game.check_sale_timing(entity, corporation)
+            timing = @game.check_sale_timing(entity, bundle)
 
             timing &&
               !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&

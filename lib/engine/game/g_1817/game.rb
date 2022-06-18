@@ -860,7 +860,7 @@ module Engine
           super
           return unless owner&.corporation?
 
-          abilities(owner, 'train_scrapper') do |a|
+          abilities(owner, :train_scrapper) do |a|
             if (scrap_value = a.scrap_value(train)).positive?
               @log << "#{owner.name} collects #{format_currency(scrap_value)} from #{a.owner.name} for #{train.name}"
               @bank.spend(scrap_value, owner)

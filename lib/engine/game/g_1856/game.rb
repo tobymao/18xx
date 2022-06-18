@@ -731,7 +731,6 @@ module Engine
 
         RIGHT_COST = 50
 
-        PRE_NATIONALIZATION_CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
         POST_NATIONALIZATION_CERT_LIMIT = {
           11 => { 3 => 28, 4 => 22, 5 => 18, 6 => 15 },
           10 => { 3 => 25, 4 => 20, 5 => 16, 6 => 14 },
@@ -1030,10 +1029,8 @@ module Engine
           @post_nationalization ? @corporations.size : @corporations.size - 1
         end
 
-        def cert_limit
-          return PRE_NATIONALIZATION_CERT_LIMIT[@players.size] unless @post_nationalization
-
-          POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
+        def update_cert_limit
+          @cert_limit = POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
         end
 
         def destination_connected?(corp)
@@ -1772,6 +1769,7 @@ module Engine
           # (It was artificially high to avoid forced discard triggering early)
           @nationalization_train_discard_trigger = true
           @post_nationalization = true
+          update_cert_limit
           @total_loans = 0
         end
 

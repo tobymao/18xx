@@ -121,7 +121,7 @@ module Engine
         open_slot = @tokens.find_index.with_index do |t, i|
           t.nil? && @reservations[i].nil?
         end
-        return [open_slot || @tokens.size, cheater].max if cheater
+        return open_slot || @tokens.size if cheater
 
         reservation || open_slot
       end

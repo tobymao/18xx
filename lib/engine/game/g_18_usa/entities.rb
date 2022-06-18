@@ -391,7 +391,7 @@ module Engine
               extra_action: true,
               from_owner: true,
               special_only: true,
-              cheater: 0,
+              cheater: true,
             ],
           },
           # P21
@@ -721,7 +721,7 @@ module Engine
                 price: 0,
                 count: 1,
                 from_owner: false,
-                cheater: 0,
+                cheater: true,
                 special_only: true,
                 hexes: [], # Determined in special_token step
               },

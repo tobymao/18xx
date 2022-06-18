@@ -11,10 +11,12 @@ module Engine
           attr_accessor :cash_crisis_player, :wsrc_activated
           attr_reader :paid_interest, :took_loan, :redeemed_loan,
                       :interest_penalty, :player_interest_penalty,
-                      :cash_crisis_due_to_interest, :cash_crisis_due_to_forced_repay
+                      :cash_crisis_due_to_interest, :cash_crisis_due_to_forced_repay,
+                      :after_track
 
           def after_setup
             @paid_interest = {}
+            @after_track = {}
             @redeemed_loan = {}
             @took_loan = {}
             @interest_penalty = {}
@@ -51,6 +53,7 @@ module Engine
             entity = @entities[@entity_index]
             @cash_crisis_player = entity.player
             pay_interest!(entity)
+            after_track[entity] = true if step_passed?(G1856::Step::Track)
             force_repay_loans!(entity)
             super
           end

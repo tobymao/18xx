@@ -62,6 +62,7 @@ module Engine
         # Check if the train is actually buyable in the current situation
         raise GameError, 'Not a buyable train' unless buyable_train_variants(train, entity).include?(train.variant)
         raise GameError, 'Must pay face value' if must_pay_face_value?(train, entity, price)
+        raise GameError, 'An entity cannot buy a train from itself' if train.owner == entity
 
         remaining = price - buying_power(entity)
         if remaining.positive? && president_may_contribute?(entity, action.shell)

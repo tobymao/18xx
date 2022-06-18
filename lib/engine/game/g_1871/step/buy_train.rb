@@ -32,7 +32,7 @@ module Engine
           # Override to allow companies to dump all of their treasury shares
           def can_sell?(entity, bundle)
             return false if entity != bundle.owner
-            return false unless @game.check_sale_timing(entity, bundle.corporation)
+            return false unless @game.check_sale_timing(entity, bundle)
             return false unless sellable_bundle?(bundle)
 
             # This is our new clause for 1871, if this is the corporation
