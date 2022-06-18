@@ -105,10 +105,12 @@ module Engine
           end
 
           def help
-            return 'Select NDEM token to auction' unless @token_up_for_bid
-            return "Bidding for NDEM token at #{@token_up_for_bid.city.hex.id}" unless @auction_winner
+            return "#{ndem_acting_player.name} is up to select an NDEM token to auction" unless @token_up_for_bid
+            unless @auction_winner
+              return "#{ndem_acting_player.name} is up to bid for the NDEM token at #{@token_up_for_bid.city.hex.id}"
+            end
 
-            'Choose company to buy NDEM token'
+            "#{ndem_acting_player.name} is choosing a company to buy NDEM token"
           end
 
           # Remove token methods
