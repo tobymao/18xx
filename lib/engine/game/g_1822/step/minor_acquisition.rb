@@ -108,7 +108,7 @@ module Engine
                 }
                 receiving << "a token on hex #{@game.class::MINOR_14_HOME_HEX}"
               else
-                minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities[@selected_minor.city || 0]
+                minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities.find { |c| c.reserved_by?(@selected_minor) }
                 minor_city.reservations.delete(@selected_minor)
 
                 if minor_city.tokened_by?(entity)
@@ -220,7 +220,7 @@ module Engine
             else
               minor_city = if !minor.owner || minor.owner == @bank
                              # Trying to acquire a bidbox minor. Trace route to its hometokenplace
-                             @game.hex_by_id(minor.coordinates).tile.cities[minor.city || 0]
+                             @game.hex_by_id(minor.coordinates).tile.cities.find { |c| c.reserved_by?(minor) }
                            else
                              # Minors only have one token, check if its connected
                              minor.tokens.first.city
