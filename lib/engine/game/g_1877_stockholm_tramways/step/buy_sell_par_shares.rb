@@ -133,7 +133,7 @@ module Engine
             if @finish_action
               [@finish_corporation]
             else
-              @game.ready_corporations
+              @game.sorted_corporations
             end
           end
         end
