@@ -293,7 +293,7 @@ module Engine
             # Don't count shares that have been sold and will go to yellow unless protected
             next 0 if @sell_queue.any? do |bundle, _|
               bundle.corporation == s.corporation &&
-                !stock_market.find_share_price(s.corporation, Array.new(bundle.num_shares, :up)).counts_for_limit
+                !stock_market.find_share_price(s.corporation, Array.new(bundle.num_shares, :down)).counts_for_limit
             end
 
             s.cert_size

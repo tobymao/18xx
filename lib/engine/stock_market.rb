@@ -85,7 +85,7 @@ module Engine
     def find_relative_share_price(share, directions)
       r, c = share.coordinates
 
-      prices = [share_price(r, c)]
+      price = share_price(r, c)
 
       Array(directions).each do |direction|
         case direction
@@ -94,16 +94,13 @@ module Engine
         when :right
           c += 1
         when :down
-          r -= 1 if r.positive?
-        when :up
           r += 1
+        when :up
+          r -= 1 if r.positive?
         end
-        price = share_price(r, c)
-        break unless price
-
-        prices << price
+        price = share_price(r, c) || price
       end
-      prices.last
+      price
     end
 
     def max_reached?

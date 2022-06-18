@@ -701,18 +701,14 @@ module Engine
         end
 
         def cost_level_str
-          case @cost_level
-          when 1, 2, 3
-            'None'
-          when 4
-            'Red = $2'
-          when 5
-            'Red, Orange = $4'
-          when 6
-            'Red, Orange, Yellow = $7'
-          else
-            'Red, Orange, Yellow, Green = $10'
-          end
+          level = @cost_table[@cost_level]
+          colors = %w[Red Orange Yellow Green Blue Purple]
+          non_zero_colors = level.each_with_index.map do |l, i|
+            l.positive? ? colors[i] : nil
+          end.compact
+          return 'None' unless level[0].positive?
+
+          "#{non_zero_colors.join(', ')} = $#{level[0]}"
         end
 
         def issuable_corporations

@@ -14,6 +14,8 @@ module Engine
 
           def process_par(action)
             super
+
+            @game.moved_this_turn << action.corporation
             @log << "#{action.entity.name} may buy up to two additional shares."
           end
 

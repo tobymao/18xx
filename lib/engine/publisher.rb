@@ -15,7 +15,6 @@ module Engine
       gmt_games: {
         name: 'GMT Games',
         url: 'https://www.gmtgames.com/',
-        hidden: true,
       },
       golden_spike: {
         name: 'Golden Spike Games',

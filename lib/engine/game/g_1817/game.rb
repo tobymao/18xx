@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative 'map'
+require_relative 'entities'
 require_relative '../../loan'
 require_relative '../base'
 require_relative '../interest_on_loans'
@@ -10,6 +12,8 @@ module Engine
     module G1817
       class Game < Game::Base
         include_meta(G1817::Meta)
+        include G1817::Entities
+        include G1817::Map
 
         register_colors(black: '#16190e',
                         blue: '#165633',
@@ -55,79 +59,7 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
-        TILE_TYPE = :lawson
-
         TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
-
-        TILES = {
-          '5' => 'unlimited',
-          '6' => 'unlimited',
-          '7' => 'unlimited',
-          '8' => 'unlimited',
-          '9' => 'unlimited',
-          '14' => 'unlimited',
-          '15' => 'unlimited',
-          '54' => 'unlimited',
-          '57' => 'unlimited',
-          '62' => 'unlimited',
-          '63' => 'unlimited',
-          '80' => 'unlimited',
-          '81' => 'unlimited',
-          '82' => 'unlimited',
-          '83' => 'unlimited',
-          '448' => 'unlimited',
-          '544' => 'unlimited',
-          '545' => 'unlimited',
-          '546' => 'unlimited',
-          '592' => 'unlimited',
-          '593' => 'unlimited',
-          '597' => 'unlimited',
-          '611' => 'unlimited',
-          '619' => 'unlimited',
-          'X00' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'yellow',
-            'code' =>
-            'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
-          },
-          'X30' =>
-          {
-            'count' => 'unlimited',
-            'color' => 'gray',
-            'code' =>
-            'city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY',
-          },
-        }.freeze
-
-        LOCATION_NAMES = {
-          'A20' => 'Montréal',
-          'A28' => 'Maritime Prov.',
-          'B5' => 'Lansing',
-          'B13' => 'Toronto',
-          'B17' => 'Rochester',
-          'C8' => 'Detroit',
-          'C14' => 'Buffalo',
-          'C22' => 'Albany',
-          'C26' => 'Boston',
-          'D1' => 'Chicago',
-          'D7' => 'Toledo',
-          'D9' => 'Cleveland',
-          'D19' => 'Scranton',
-          'E22' => 'New York',
-          'F3' => 'Indianapolis',
-          'F13' => 'Pittsburgh',
-          'F19' => 'Philadelphia',
-          'G6' => 'Cincinnati',
-          'G18' => 'Baltimore',
-          'H1' => 'St. Louis',
-          'H3' => 'Louisville',
-          'H9' => 'Charleston',
-          'I12' => 'Blacksburg',
-          'I16' => 'Richmond',
-          'J7' => 'Atlanta',
-          'J15' => 'Raleigh-Durham',
-        }.freeze
 
         MARKET = [
           %w[0l
@@ -246,755 +178,7 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
 
-        COMPANIES = [
-          {
-            name: 'P4 - Pittsburgh Steel Mill',
-            value: 40,
-            revenue: 0,
-            desc: 'Owning corp may place special Pittsburgh yellow tile during '\
-                  'tile-laying, regardless of connectivity.  The hex is not '\
-                  'reserved, and the power is lost if another company builds there first.',
-            sym: 'PSM',
-            abilities: [
-            {
-              type: 'tile_lay',
-              hexes: ['F13'],
-              tiles: ['X00'],
-              when: 'track',
-              owner_type: 'corporation',
-              count: 1,
-              consume_tile_lay: true,
-              closed_when_used_up: true,
-              special: true,
-            },
-          ],
-            color: nil,
-          },
-          {
-            name: 'P3 - Mountain Engineers',
-            value: 40,
-            revenue: 0,
-            desc: 'Owning company receives $20 after laying a yellow tile in a '\
-                  'mountain hex.  Any fees must be paid first.',
-            sym: 'ME',
-            abilities: [
-              {
-                type: 'tile_income',
-                income: 20,
-                terrain: 'mountain',
-                owner_type: 'corporation',
-                owner_only: true,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P2 - Ohio Bridge Company',
-            value: 40,
-            revenue: 0,
-            desc: 'Comes with one $10 bridge token that may be placed by the '\
-                  'owning corp in Louisville, Cincinnati, or Charleston, max one '\
-                  'token per city, regardless of connectivity.  Allows owning '\
-                  'corp to skip $10 river fee when placing yellow tiles.',
-            sym: 'OBC',
-            abilities: [
-              {
-                type: 'tile_discount',
-                discount: 10,
-                terrain: 'water',
-                owner_type: 'corporation',
-              },
-              {
-                type: 'assign_hexes',
-                hexes: %w[H3 G6 H9],
-                count: 1,
-                when: 'owning_corp_or_turn',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P8 - Union Bridge Company',
-            value: 80,
-            revenue: 0,
-            desc: 'Comes with two $10 bridge token that may be placed by the '\
-                  'owning corp in Louisville, Cincinnati, or Charleston, max '\
-                  'one token per city, regardless of connectivity.  Allows '\
-                  'owning corp to skip $10 river fee when placing yellow tiles.',
-            sym: 'UBC',
-            abilities: [
-              {
-                type: 'tile_discount',
-                discount: 10,
-                terrain: 'water',
-                owner_type: 'corporation',
-              },
-              {
-                type: 'assign_hexes',
-                hexes: %w[H3 G6 H9],
-                count: 2,
-                when: 'owning_corp_or_turn',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P7 - Train Station',
-            value: 80,
-            revenue: 0,
-            desc: 'Provides an additional station marker for the owning corp, awarded at time of purchase',
-            sym: 'TS',
-            abilities: [
-              {
-                type: 'additional_token',
-                count: 1,
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P1 - Minor Coal Mine',
-            value: 30,
-            revenue: 0,
-            desc: 'Comes with one coal mine marker.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can '\
-                  'place token to avoid $15 terrain fee.  Marked yellow hexes '\
-                  'cannot be upgraded.  Hexes pay $10 extra revenue and do not '\
-                  'count as a stop.  May not start or end a route at a coal mine.',
-            sym: 'MINC',
-            abilities: [
-              {
-                type: 'tile_lay',
-                hexes: %w[B25
-                          C20
-                          C24
-                          E18
-                          F15
-                          G12
-                          G14
-                          H11
-                          H13
-                          H15
-                          I8
-                          I10],
-                tiles: %w[7 8 9],
-                free: false,
-                when: 'track',
-                discount: 15,
-                consume_tile_lay: true,
-                closed_when_used_up: true,
-                owner_type: 'corporation',
-                count: 1,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P5 - Coal Mine',
-            value: 60,
-            revenue: 0,
-            desc: 'Comes with two coal mine markers.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can '\
-                  'place token to avoid $15 terrain fee.  Marked yellow hexes '\
-                  'cannot be upgraded.  Hexes pay $10 extra revenue and do not '\
-                  'count as a stop.  May not start or end a route at a coal mine.',
-            sym: 'CM',
-            abilities: [
-              {
-                type: 'tile_lay',
-                hexes: %w[B25
-                          C20
-                          C24
-                          E18
-                          F15
-                          G12
-                          G14
-                          H11
-                          H13
-                          H15
-                          I8
-                          I10],
-                tiles: %w[7 8 9],
-                free: false,
-                when: 'track',
-                discount: 15,
-                consume_tile_lay: true,
-                closed_when_used_up: true,
-                owner_type: 'corporation',
-                count: 2,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P10 - Major Coal Mine',
-            value: 90,
-            revenue: 0,
-            desc: 'Comes with three coal mine markers.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot '\
-                  'be upgraded.  Hexes pay $10 extra revenue and do not count '\
-                  'as a stop.  May not start or end a route at a coal mine.',
-            sym: 'MAJC',
-            abilities: [
-              {
-                type: 'tile_lay',
-                hexes: %w[B25
-                          C20
-                          C24
-                          E18
-                          F15
-                          G12
-                          G14
-                          H11
-                          H13
-                          H15
-                          I8
-                          I10],
-                tiles: %w[7 8 9],
-                free: false,
-                when: 'track',
-                discount: 15,
-                consume_tile_lay: true,
-                closed_when_used_up: true,
-                owner_type: 'corporation',
-                count: 3,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P6 - Minor Mail Contract',
-            value: 60,
-            revenue: 0,
-            desc: 'Pays owning corp $10 at the start of each operating round, '\
-                  'as long as the company has at least one train.',
-            sym: 'MINM',
-            abilities: [
-              {
-                type: 'revenue_change',
-                revenue: 10,
-                when: 'has_train',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P9 - Mail Contract',
-            value: 90,
-            revenue: 0,
-            desc: 'Pays owning corp $15 at the start of each operating round, '\
-                  'as long as the company has at least one train.',
-            sym: 'MAIL',
-            abilities: [
-              {
-                type: 'revenue_change',
-                revenue: 15,
-                when: 'has_train',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'P11 - Major Mail Contract',
-            value: 120,
-            revenue: 0,
-            desc: 'Pays owning corp $20 at the start of each operating round, '\
-                  'as long as the company has at least one train.',
-            sym: 'MAJM',
-            abilities: [
-              {
-                type: 'revenue_change',
-                revenue: 20,
-                when: 'has_train',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-        ].freeze
-
-        VOLATILITY_COMPANIES = [
-          {
-            name: 'P12 - Loan Shark',
-            value: 60,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P12',
-            color: nil,
-          },
-          {
-            name: 'P13 - Ponzi Scheme',
-            value: 100,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P13',
-            color: nil,
-          },
-          {
-            name: 'P14 - Inventor',
-            value: 70,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P14',
-            color: nil,
-          },
-          {
-            name: 'P15 - Scrapper',
-            value: 40,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P15',
-            color: nil,
-          },
-          {
-            name: 'P16 - Buffalo Rail Center',
-            value: 40,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P16',
-            color: nil,
-          },
-          {
-            name: 'P17 - Toledo Industry',
-            value: 40,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P17',
-            color: nil,
-          },
-          {
-            name: 'P18 - Express Track',
-            value: 30,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P18',
-            color: nil,
-          },
-          {
-            name: 'P19 - Efficient Track',
-            value: 40,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P19',
-            color: nil,
-          },
-          {
-            name: 'P20 - Golden Parachute',
-            value: 100,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P20',
-            color: nil,
-          },
-          {
-            name: 'P21 - Station Subsidy',
-            value: 70,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P21',
-            color: nil,
-          },
-          {
-            name: 'P22 - Country Ranch',
-            value: 30,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P22',
-            color: nil,
-          },
-          {
-            name: 'P23 - Rural Ranch',
-            value: 60,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P23',
-            color: nil,
-          },
-          {
-            name: 'P24 - Indianapolis Market',
-            value: 40,
-            revenue: 0,
-            desc: 'TODO',
-            sym: 'P24',
-            color: nil,
-          },
-        ].freeze
-
-        VOLATILITY_CITY_TILE_COMPANIES = %w[PSM P16 P17 P24].freeze
-
-        CORPORATIONS = [
-          {
-            float_percent: 20,
-            sym: 'A&S',
-            name: 'Alton & Southern Railway',
-            logo: '1817/AS',
-            simple_logo: '1817/AS.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#ee3e80',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'A&A',
-            name: 'Arcade and Attica',
-            logo: '1817/AA',
-            simple_logo: '1817/AA.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#904098',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'Belt',
-            name: 'Belt Railway of Chicago',
-            logo: '1817/Belt',
-            simple_logo: '1817/Belt.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            text_color: 'black',
-            color: '#f2a847',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'Bess',
-            name: 'Bessemer and Lake Erie Railroad',
-            logo: '1817/Bess',
-            simple_logo: '1817/Bess.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#16190e',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'B&A',
-            name: 'Boston and Albany Railroad',
-            logo: '1817/BA',
-            simple_logo: '1817/BA.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#ef4223',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'DL&W',
-            name: 'Delaware, Lackawanna and Western Railroad',
-            logo: '1817/DLW',
-            simple_logo: '1817/DLW.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#984573',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'J',
-            name: 'Elgin, Joliet and Eastern Railway',
-            logo: '1817/J',
-            simple_logo: '1817/J.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            text_color: 'black',
-            color: '#bedb86',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'GT',
-            name: 'Grand Trunk Western Railroad',
-            logo: '1817/GT',
-            simple_logo: '1817/GT.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#e48329',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'H',
-            name: 'Housatonic Railroad',
-            logo: '1817/H',
-            simple_logo: '1817/H.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            text_color: 'black',
-            color: '#bedef3',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'ME',
-            name: 'Morristown and Erie Railway',
-            logo: '1817/ME',
-            simple_logo: '1817/ME.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#ffdea8',
-            text_color: 'black',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'NYOW',
-            name: 'New York, Ontario and Western Railway',
-            logo: '1817/W',
-            simple_logo: '1817/W.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#0095da',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'NYSW',
-            name: 'New York, Susquehanna and Western Railway',
-            logo: '1817/S',
-            simple_logo: '1817/S.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#fff36b',
-            text_color: 'black',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'PSNR',
-            name: 'Pittsburgh, Shawmut and Northern Railroad',
-            logo: '1817/PSNR',
-            simple_logo: '1817/PSNR.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#0a884b',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'PLE',
-            name: 'Pittsburgh and Lake Erie Railroad',
-            logo: '1817/PLE',
-            simple_logo: '1817/PLE.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#00afad',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'PW',
-            name: 'Providence and Worcester Railroad',
-            logo: '1817/PW',
-            simple_logo: '1817/PW.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            text_color: 'black',
-            color: '#bec8cc',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'R',
-            name: 'Rutland Railroad',
-            logo: '1817/R',
-            simple_logo: '1817/R.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#165633',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'SR',
-            name: 'Strasburg Railroad',
-            logo: '1817/SR',
-            simple_logo: '1817/SR.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#e31f21',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'UR',
-            name: 'Union Railroad',
-            logo: '1817/UR',
-            simple_logo: '1817/UR.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#003d84',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'WT',
-            name: 'Warren & Trumbull Railroad',
-            logo: '1817/WT',
-            simple_logo: '1817/WT.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#e96f2c',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'WC',
-            name: 'West Chester Railroad',
-            logo: '1817/WC',
-            simple_logo: '1817/WC.alt',
-            shares: [100],
-            max_ownership_percent: 100,
-            tokens: [0],
-            always_market_price: true,
-            color: '#984d2d',
-            reservation_color: nil,
-          },
-        ].freeze
-
-        HEXES = {
-          red: {
-            ['A20'] =>
-                     'offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:5,b:_0;path=a:0,b:_0',
-            ['A28'] =>
-                   'offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:0,b:_0',
-            ['D1'] =>
-                   'offboard=revenue:yellow_30|green_50|brown_60|gray_80;path=a:4,b:_0;path=a:5,b:_0',
-            ['H1'] =>
-                   'offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            ['J7'] =>
-                   'offboard=revenue:yellow_30|green_50|brown_60|gray_80;path=a:2,b:_0;path=a:3,b:_0',
-            ['J15'] =>
-                   'offboard=revenue:yellow_20|green_30|brown_50|gray_60;path=a:2,b:_0;path=a:3,b:_0',
-          },
-          white: {
-            %w[B5 B17 C14 C22 F3 F13 F19 I16] => 'city=revenue:0',
-            ['D7'] => 'city=revenue:0;upgrade=cost:20,terrain:lake',
-            %w[D19 I12] => 'city=revenue:0;upgrade=cost:15,terrain:mountain',
-            %w[G6 H3 H9] => 'city=revenue:0;upgrade=cost:10,terrain:water',
-            %w[B25
-               C20
-               C24
-               E16
-               E18
-               F15
-               G12
-               G14
-               H11
-               H13
-               H15
-               I8
-               I10] => 'upgrade=cost:15,terrain:mountain',
-            %w[D13 E12 F11 G4 G10 H7] => 'upgrade=cost:10,terrain:water',
-            %w[B9 B27 D25 D27 G20 H17] => 'upgrade=cost:20,terrain:lake',
-            %w[B3
-               B7
-               B11
-               B15
-               B19
-               B21
-               B23
-               C4
-               C6
-               C16
-               C18
-               D3
-               D5
-               D15
-               D17
-               D21
-               D23
-               E2
-               E4
-               E6
-               E8
-               E10
-               E14
-               E20
-               F5
-               F7
-               F9
-               F17
-               F21
-               G2
-               G8
-               G16
-               H5
-               I2
-               I4
-               I6
-               I14] => '',
-            ['C10'] => 'border=edge:5,type:impassable',
-            ['D11'] => 'border=edge:2,type:impassable',
-          },
-          gray: {
-            ['B13'] =>
-                     'town=revenue:yellow_20|green_30|brown_40;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            ['D9'] =>
-            'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:5,b:_0;path=a:0,b:_0',
-            ['F1'] => 'junction;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-          },
-          yellow: {
-            ['C8'] =>
-                     'city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B;upgrade=cost:20,terrain:lake',
-            ['C26'] => 'city=revenue:30;path=a:3,b:_0;path=a:5,b:_0;label=B',
-            ['E22'] =>
-            'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_1;label=NY;upgrade=cost:20,terrain:lake',
-            ['G18'] => 'city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B',
-          },
-          blue: { ['C12'] => '' },
-        }.freeze
-
-        LAYOUT = :pointy
-
         TRAIN_STATION_PRIVATE_NAME = 'TS'
-        PITTSBURGH_PRIVATE_NAME = 'PSM'
-        PITTSBURGH_PRIVATE_HEX = 'F13'
 
         MUST_BID_INCREMENT_MULTIPLE = true
         SEED_MONEY = 200
@@ -1011,6 +195,7 @@ module Engine
         ASSIGNMENT_TOKENS = {
           'bridge' => '/icons/1817/bridge_token.svg',
           'mine' => '/icons/1817/mine_token.svg',
+          'ranch' => '/icons/1817/ranch_token.svg',
         }.freeze
 
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
@@ -1045,6 +230,7 @@ module Engine
         LOAN_INTEREST_INCREMENTS = 5
 
         include InterestOnLoans
+        attr_accessor :pittsburgh_private
         attr_reader :owner_when_liquidated, :stock_prices_start_merger
 
         def timeline
@@ -1103,6 +289,20 @@ module Engine
           super
         end
 
+        def setup_preround
+          if option_volatility_expansion?
+            city_tile_companies = @companies.select { |c| self.class::VOLATILITY_CITY_TILE_COMPANIES.include?(c.id) }
+            city_tile_companies.sort_by! { rand }
+            @pittsburgh_private = city_tile_companies.shift
+            city_tile_companies.each do |c|
+              c.close!
+              @companies.delete(c)
+            end
+          else
+            @pittsburgh_private = @companies.find { |c| c.id == 'PSM' }
+          end
+        end
+
         def loans_per_increment(_increment)
           self.class::LOANS_PER_INCREMENT
         end
@@ -1159,7 +359,7 @@ module Engine
         end
 
         def interest_owed(entity)
-          interest_owed_for_loans(entity.loans.size)
+          interest_owed_for_loans(entity.loans.size) + (entity.companies.include?(loan_shark_private) ? 10 : 0)
         end
 
         def interest_change
@@ -1206,6 +406,19 @@ module Engine
 
         def operating_order
           super.reject { |c| c.share_price.liquidation? }
+        end
+
+        def tile_lays(entity)
+          actions = super.map(&:dup)
+          if entity.companies.include?(express_track_private) && entity.companies.include?(efficient_track_private)
+            actions[1][:cost] = 0
+          elsif entity.companies.include?(express_track_private)
+            actions[0][:cost] = 10
+            actions[1][:cost] = 0
+          elsif entity.companies.include?(efficient_track_private)
+            actions[1][:cost] = 10
+          end
+          actions
         end
 
         def home_token_locations(corporation)
@@ -1578,6 +791,11 @@ module Engine
             raise GameError, 'Route cannot start or end with a mine'
           end
 
+          ranch = 'ranch'
+          if route.hexes.first.assigned?(ranch) || route.hexes.last.assigned?(ranch)
+            raise GameError, 'Route cannot start or end with a ranch'
+          end
+
           if option_modern_trains? && [7, 8].include?(route.train.distance)
             per_token = route.train.distance == 7 ? 10 : 20
             revenue += stops.sum do |stop|
@@ -1588,6 +806,7 @@ module Engine
           end
 
           revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(mine) }
+          revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(ranch) }
           revenue
         end
 
@@ -1622,6 +841,75 @@ module Engine
           return 'EMPTY SLOT' if company == empty_auction_slot
 
           super
+        end
+
+        def mine_company?(company)
+          self.class::MINE_COMPANIES.include?(company.id)
+        end
+
+        def ranch_company?(company)
+          self.class::RANCH_COMPANIES.include?(company.id)
+        end
+
+        def b_city_tile?(tile)
+          tile.label&.to_s == 'B'
+        end
+
+        def rust(train)
+          owner = train.owner
+          super
+          return unless owner&.corporation?
+
+          abilities(owner, :train_scrapper) do |a|
+            if (scrap_value = a.scrap_value(train)).positive?
+              @log << "#{owner.name} collects #{format_currency(scrap_value)} from #{a.owner.name} for #{train.name}"
+              @bank.spend(scrap_value, owner)
+            end
+          end
+        end
+
+        def remove_train(train)
+          from_depot = train.from_depot?
+          super
+          return unless inventor_private&.owner&.corporation?
+          return if !from_depot || @depot.trains.find { |t| t.name == train.name } != train
+          return unless (payout = inventor_payout(train)).positive?
+
+          @log << "#{inventor_private.owner.name} collects #{format_currency(payout)} from #{inventor_private.name}"
+          @bank.spend(payout, inventor_private.owner)
+        end
+
+        def loan_shark_private
+          @loan_share_private ||= company_by_id('P12')
+        end
+
+        def ponzi_scheme_private
+          @ponzi_scheme_private ||= company_by_id('P13')
+        end
+
+        def inventor_private
+          @inventor_private ||= company_by_id('P14')
+        end
+
+        def express_track_private
+          @express_track_private ||= company_by_id('P18')
+        end
+
+        def efficient_track_private
+          @efficient_track_private ||= company_by_id('P19')
+        end
+
+        def golden_parachute_private
+          @golden_parachute_private ||= company_by_id('P20')
+        end
+
+        def station_subsidy_private
+          @station_subsidy_private ||= company_by_id('P21')
+        end
+
+        def inventor_payout(train)
+          @payouts ||= { '2' => 20, '2+' => 0, '3' => 30, '4' => 40, '5' => 50, '6' => 60, '7' => 70, '8' => 80 }
+          @payouts[train.name] || 0
         end
 
         private

@@ -912,6 +912,12 @@ module Engine
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
+        def company_header(company)
+          return 'MINOR RAILWAY' if company.id[0] == self.class::COMPANY_MINOR_PREFIX
+
+          super
+        end
+
         def must_buy_train?(entity)
           entity.trains.none? { |t| !extra_train?(t) } &&
           !depot.depot_trains.empty?
@@ -1093,7 +1099,7 @@ module Engine
           @green_t_tile ||= @tiles.find { |t| t.name == '405' }
 
           # Initialize the extra city which minor 14 might add
-          @minor_14_city_index = nil
+          @minor_14_city_exit = nil
 
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
@@ -1263,10 +1269,11 @@ module Engine
         def after_place_pending_token(city)
           return unless city.hex.name == self.class::MINOR_14_HOME_HEX
 
-          # Save the extra token city index in london. We need this if we acquire the minor 14 and chooses to remove
+          # Save the extra token city exit in london. We need this if we acquire the minor 14 and chooses to remove
           # the token from london. The city where the 14's home token used to be is now open for other companies to
-          # token. If we do an upgrade to london, make sure this city still is open.
-          @minor_14_city_index = city.tile.cities.index { |c| c == city }
+          # token. If we do an upgrade to london, make sure this city still is open.  Save the exit instead of the
+          # index because the index can change
+          @minor_14_city_exit = city.hex.tile.paths.find { |p| p.city == city }.edges[0].num
         end
 
         def after_lay_tile(hex, old_tile, tile)
@@ -1681,7 +1688,7 @@ module Engine
         end
 
         def minor_14_token_ability
-          Engine::Ability::Token.new(type: 'token', hexes: [], price: 20, cheater: 1)
+          Engine::Ability::Token.new(type: 'token', hexes: [], price: 20)
         end
 
         def mail_contract_bonus(entity, routes)
@@ -1757,8 +1764,7 @@ module Engine
 
         def place_destination_token(entity, hex, token)
           city = hex.tile.cities.first
-          cheater_slot = city.available_slots.positive? ? 0 : city.slots
-          city.place_token(entity, token, free: true, check_tokenable: false, cheater: cheater_slot)
+          city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
 
           ability = entity.all_abilities.find { |a| a.type == :destination }
@@ -1778,7 +1784,7 @@ module Engine
         end
 
         def reduced_bundle_price_for_market_drop(bundle)
-          directions = (1..bundle.num_shares).map { |_| :up }
+          directions = (1..bundle.num_shares).map { |_| :down }
           bundle.share_price = @stock_market.find_share_price(bundle.corporation, directions).price
           bundle
         end
@@ -1833,9 +1839,9 @@ module Engine
         end
 
         def upgrade_minor_14_home_hex(hex)
-          return unless @minor_14_city_index
+          return unless @minor_14_city_exit
 
-          extra_city = hex.tile.cities[@minor_14_city_index]
+          extra_city = hex.tile.paths.find { |p| p.edges[0].num == @minor_14_city_exit }.city
           return unless extra_city.tokens.size == 1
 
           extra_city.tokens[extra_city.normal_slots] = nil
@@ -1953,9 +1959,6 @@ module Engine
           @company_trains['P13'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P14'] = find_and_remove_train_by_id('P+-1', buyable: false)
           @company_trains['P19'] = find_and_remove_train_by_id('LP-0', buyable: false)
-
-          # Setup the minor 14 ability
-          corporation_by_id(self.class::MINOR_14_ID).add_ability(minor_14_token_ability) if self.class::MINOR_14_ID
         end
 
         def setup_destinations

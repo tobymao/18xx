@@ -4,7 +4,6 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'trains'
-require_relative 'step/boom_track'
 require_relative 'step/buy_company'
 require_relative 'step/buy_train'
 require_relative 'step/development_token'
@@ -29,12 +28,11 @@ module Engine
         include CompanyPriceUpToFace
         include StubsAreRestricted
 
-        attr_reader :tile_layers
-
         BANK_CASH = 99_999
-        STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440, 6 => 367 }.freeze
-        CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12, 6 => 10 }.freeze
+        STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440 }.freeze
+        CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12 }.freeze
 
+        SELL_AFTER = :any_time
         POOL_SHARE_DROP = :each
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
@@ -48,20 +46,30 @@ module Engine
         MUST_BUY_TRAIN = :always
 
         MARKET = [
-          %w[64 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525 560],
-          %w[60y 64 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525],
-          %w[55y 60y 64 68 72 76 82p 90 100 110 120 140 160 180 200 225 250 275 300 325],
-          %w[50o 55y 60y 64 68 72 76p 82 90 100 110 120 140 160 180 200],
-          %w[40o 50o 55y 60y 64 68 72p 76 82 90 100 110 120],
-          %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90],
-          %w[20b 30b 40o 50o 55y 60y 64 68 72],
-          ['', '20b', '30b', '40o', '50o', '55y', '60y'],
+          [''] + %w[82 90 100 110z 120z 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525 560],
+          %w[72 76 82 90x 100x 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490],
+          %w[68 72 76 82p 90 100 110 120 140 160 180 200 225 250 275 300 325 350],
+          %w[64 68 72 76p 82 90 100 110 120 140 160 180 200 225],
+          %w[60 64 68 72p 76 82 90 100 110 120 140],
+          %w[55 60 64 68p 72 76 82 90 100],
+          %w[50 55 60 64 68 72 76],
+          %w[40 50 55 60 64 68],
         ].freeze
 
-        LATE_CORPORATIONS = %w[C&N DPR FEMV LNP OSL].freeze
+        STOCKMARKET_COLORS = {
+          par: :yellow,
+          par_1: :green,
+          par_2: :brown,
+        }.freeze
+
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'company starting values',
+                                              par_1: 'additional starting values in phase 3+',
+                                              par_2: 'additional starting values in phase 5+').freeze
+
+        LATE_CORPORATIONS = %w[C&N DPR LNP OSL].freeze
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'all_corps_available' => ['All Corporations Available',
-                                    'C&N, DPR, FEMV, LNP, OSL are now available to start'],
+                                    'C&N, DPR, LNP, OSL are now available to start'],
           'full_capitalization' => ['Full Capitalization',
                                     'Railroads now float at 60% and receive full capitalization'],
           'rust_coal_dt_2' => ['Remove Phase 2 Coal DTs', 'Remove Phase 2 Coal Development Tokens'],
@@ -72,19 +80,14 @@ module Engine
         ).freeze
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'all_corps_available' => ['All Corporations Available',
-                                    'C&N, DPR, FEMV, LNP, OSL are available to start'],
+                                    'C&N, DPR, LNP, OSL are available to start'],
           'full_capitalization' =>
             ['Full Capitalization', 'Railroads float at 60% and receive full capitalization'],
         ).freeze
 
-        BROWN_DOUBLE_BOOMCITY_TILE = 'B5BB'
-        GRAY_BOOMCITY_TILE = '5B'
-        GRAY_DOUBLE_BOOMCITY_TILE = '5BB'
-
         DTC_GHOST_TOWN = 0
         DTC_BOOMCITY = 3
         DTC_REVENUE = 4
-        DTC_DOUBLE_BOOMCITY = 5
 
         BOOMING_REVENUE_BONUS = 10
         BUSTED_REVENUE = {
@@ -126,11 +129,7 @@ module Engine
           @development_hexes = init_development_hexes
           @development_token_count = Hash.new(0)
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
-          @pending_boom_tile_lays = {}
-          @pending_gray_boom_tile_lays = { boom: [], double_boom: [] }
           @busters = {}
-
-          @tile_layers = {}
 
           @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
           @late_corps.each { |corp| corp.reservation_color = nil }
@@ -142,7 +141,6 @@ module Engine
 
         def operating_round(round_num)
           G1868WY::Round::Operating.new(self, [
-            G1868WY::Step::BoomTrack,
             G1868WY::Step::DevelopmentToken,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
@@ -166,12 +164,12 @@ module Engine
         end
 
         def init_round_finished
-          p10_company.revenue = 0
-          p10_company.desc = 'Pays $40 revenue ONLY in green phases. Closes, '\
-                             'becomes LHP train at phase 5.'
+          p8_company.revenue = 0
+          p8_company.desc = 'Pays $40 revenue ONLY in green phases. Closes, '\
+                            'becomes LHP train at phase 5.'
 
-          p11_company.close!
-          @log << "#{p11_company.name} closes"
+          p9_company.close!
+          @log << "#{p9_company.name} closes"
         end
 
         def event_all_corps_available!
@@ -242,27 +240,27 @@ module Engine
           @p1_company ||= company_by_id('P1')
         end
 
-        def p7_company
-          @p7_company ||= company_by_id('P7')
+        def p5_company
+          @p5_company ||= company_by_id('P5')
+        end
+
+        def p8_company
+          @p8_company ||= company_by_id('P8')
+        end
+
+        def p9_company
+          @p9_company ||= company_by_id('P9')
         end
 
         def p10_company
           @p10_company ||= company_by_id('P10')
         end
 
-        def p11_company
-          @p11_company ||= company_by_id('P11')
-        end
-
-        def p12_company
-          @p12_company ||= company_by_id('P12')
-        end
-
         def track_points_available(entity)
           return 0 unless (corporation = entity).corporation?
 
-          p7_point = p7_company.owner == corporation ? 1 : 0
-          TRACK_POINTS + p7_point - @track_points_used[corporation]
+          p5_point = p5_company.owner == corporation ? 1 : 0
+          TRACK_POINTS + p5_point - @track_points_used[corporation]
         end
 
         def tile_lays(entity)
@@ -289,16 +287,15 @@ module Engine
               action.hex.tile.color = :gray
               @log << 'Wind River Canyon turns gray; it can never be upgraded'
             end
-            @tile_layers[action.hex] = action.entity.player
           end
         end
 
-        def isr_payout_companies(p12_bidders)
+        def isr_payout_companies(p10_bidders)
           payout_companies
-          bidders = p12_bidders.map(&:name).sort
+          bidders = p10_bidders.map(&:name).sort
           @log << "#{bidders.join(', ')} collect#{bidders.one? ? 's' : ''} $5 "\
-                  "for their bid#{bidders.one? ? '' : 's'} on #{p12_company.name}"
-          p12_bidders.each { |p| @bank.spend(5, p) }
+                  "for their bid#{bidders.one? ? '' : 's'} on #{p10_company.name}"
+          p10_bidders.each { |p| @bank.spend(5, p) }
         end
 
         def isr_company_choices
@@ -387,9 +384,6 @@ module Engine
             @development_token_count[hex] += 1
             handle_boom!(hex)
           end
-
-          # gray tiles are limited, so handle them last
-          handle_gray_booms!
         end
 
         def handle_boom!(hex)
@@ -398,17 +392,10 @@ module Engine
             boomtown_to_boomcity!(hex)
           when DTC_REVENUE
             boomcity_increase_revenue!(hex)
-          when DTC_DOUBLE_BOOMCITY
-            boomcity_to_double_boomcity!(hex) if %i[brown gray].include?(hex.tile.color)
           end
         end
 
         def boomtown_to_boomcity!(hex, gray_checked: false)
-          if !gray_checked && hex.tile.color == :gray
-            @pending_gray_boom_tile_lays[:boom] << hex
-            return
-          end
-
           tile = hex.tile
 
           unless tile.preprinted
@@ -425,13 +412,9 @@ module Engine
             tile.city_towns << city
             tile.rotate!(0) # reset tile rendering
 
-          # more than one Boomtown in yellow, a choice must be made
-          elsif tile.towns.count(&:boom) > 1 && tile.color == :yellow
-            @pending_boom_tile_lays[hex] = boomcity_tiles(tile.name)
-
           # auto-upgrade the tile
           else
-            new_tile = boomcity_tiles(tile.name).first
+            new_tile = boomcity_tile(tile.name)
             boom_bust_autoreplace_tile!(new_tile, tile)
           end
         end
@@ -440,18 +423,6 @@ module Engine
           # actual logic for increased revenue is handled in `revenue_for()`
           @log << "#{hex.name} #{location_name(hex.name)} is Booming! Its revenue "\
                   "increases by #{format_currency(BOOMING_REVENUE_BONUS)}."
-        end
-
-        def boomcity_to_double_boomcity!(hex, gray_checked: false)
-          if !gray_checked && hex.tile.color == :gray
-            @pending_gray_boom_tile_lays[:double_boom] << hex
-            return
-          end
-
-          @log << "#{hex.name}) is Booming! The Boom City becomes a Double Boom City."
-
-          tile = hex.tile # {location_name(hex.name)}          new_tile = double_boomcity_tile(tile.name)
-          boom_bust_autoreplace_tile!(new_tile, tile)
         end
 
         def boom_bust_autoreplace_tile!(new_tile, tile)
@@ -467,103 +438,21 @@ module Engine
           hex.lay(new_tile)
         end
 
-        def gray_double_boomcity_tile_count
-          @tiles.count { |t| t.name == GRAY_DOUBLE_BOOMCITY_TILE }
+        def boomcity_tile(tile_name)
+          @tiles.find { |t| t.name == BOOMTOWN_TO_BOOMCITY_TILES[tile_name] && !t.hex }
         end
 
-        def gray_boomcity_tile_count
-          @tiles.count { |t| t.name == GRAY_BOOMCITY_TILE }
-        end
-
-        # gray Boom City tiles available in supply, plus how many will be made
-        # available by resolving pending upgrades to gray Double Boom City tiles
-        def gray_boomcity_tile_potential_count
-          gray_boomcity_tile_count +
-           [gray_double_boomcity_tile_count, @pending_gray_boom_tile_lays[:double_boom].size].min
-        end
-
-        # because gray tiles are limited, their counts could affect pending tile
-        # lays, so track them separately
-        def pending_boom_tile_lays
-          @pending_boom_tile_lays.merge(
-            @pending_gray_boom_tile_lays[:boom].to_h { |h| [h, boomcity_tiles(h.tile.name)] }
-          ).merge(
-            @pending_gray_boom_tile_lays[:double_boom].to_h { |h| [h, [double_boomcity_tile(h.tile.name)]] }
-          )
-        end
-
-        # * automatically lay gray Boom upgrades if enough tiles remain
-        # * if no such tiles remain, remove the pending gray lays from the list
-        #   of pending lays
-        # * if some such tiles remain, but not enough for all of the Booming
-        #   hexes, then they will be manually resolved by the BoomTrack step
-        def handle_gray_booms!
-          return if @pending_gray_boom_tile_lays.values.flatten.empty?
-
-          # clear gray double boom city actions, no tiles remain
-          if (num_double_boom_tiles = gray_double_boomcity_tile_count).zero?
-            @pending_gray_boom_tile_lays[:double_boom].clear
-
-          # there are enough gray double boom city tiles, automatically lay them
-          elsif num_double_boom_tiles >= @pending_gray_boom_tile_lays[:double_boom].size
-            @pending_gray_boom_tile_lays[:double_boom].each do |hex|
-              boomcity_to_double_boomcity!(hex, gray_checked: true)
-            end
-          end
-
-          # clear pending gray boom city tile lays, no tiles remain
-          if gray_boomcity_tile_potential_count.zero?
-            @pending_gray_boom_tile_lays[:boom].clear
-
-          # there are enough gray boom city tiles, automatically lay them
-          elsif gray_boomcity_tile_count >= @pending_gray_boom_tile_lays[:boom].size
-            @pending_gray_boom_tile_lays[:boom].each do |hex|
-              boomtown_to_boomcity!(hex, gray_checked: true)
-            end
-          end
-        end
-
-        def postprocess_boom_lay_tile(action)
-          hex = action.hex
-
-          if hex.tile.color == :gray
-            %i[boom double_boom].each do |kind|
-              handle_gray_booms! if @pending_gray_boom_tile_lays[kind].delete(hex)
-            end
-          end
-
-          @pending_boom_tile_lays.delete(hex)
-        end
-
-        def boomcity_tiles(tile_name)
-          (BOOMTOWN_TO_BOOMCITY_TILES[tile_name] || []).map { |n| @tiles.find { |t| t.name == n && !t.hex } }.compact
-        end
-
-        def double_boomcity_tile(tile_name)
-          @tiles.find { |t| t.name == "#{tile_name}B" && !t.hex }
-        end
-
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
-          @pending_boom_tile_lays[tile.hex] || super
+        def boomtown_tile(tile_name)
+          @tiles.find { |t| t.name == BOOMCITY_TO_BOOMTOWN_TILES[tile_name] && !t.hex }
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          hex = from.hex
-          if @pending_boom_tile_lays[hex]
-            from.name == to.name.downcase
+          return false unless boomer?(from) == boomer?(to)
+
+          if (upgrades = TILE_UPGRADES[from.name])
+            upgrades.include?(to.name)
           else
-            return false unless boomer?(from) == boomer?(to)
-
-            if (@development_token_count[hex] >= DTC_DOUBLE_BOOMCITY) &&
-               (from.color == :green) && (to.color == :brown)
-              return to.name == BROWN_DOUBLE_BOOMCITY_TILE
-            end
-
-            if (upgrades = TILE_UPGRADES[from.name])
-              upgrades.include?(to.name)
-            else
-              super
-            end
+            super
           end
         end
 
@@ -578,22 +467,6 @@ module Engine
 
             stop.route_revenue(route.phase, route.train) + (gets_bonus ? BOOMING_REVENUE_BONUS : 0)
           end
-        end
-
-        def active_players
-          return super if @pending_boom_tile_lays.empty?
-
-          # when a double Boomtown tile booms, the player who laid it gets to
-          # choose which of the two Boomtowns becomes the Boom City
-          @pending_boom_tile_lays.keys.map do |hex|
-            @tile_layers[hex]
-          end.uniq
-        end
-
-        def valid_actors(action)
-          return super if @pending_boom_tile_lays.empty?
-
-          [@tile_layers[action.hex]]
         end
 
         def decrement_development_token_count(tokened_hex)
@@ -642,8 +515,6 @@ module Engine
             to_ghost_town!(hex)
           elsif new_dtc < DTC_BOOMCITY
             boomcity_to_boomtown!(hex)
-          elsif new_dtc < DTC_DOUBLE_BOOMCITY
-            double_boomcity_to_boomcity!(hex)
           end
 
           @busters.delete(hex)
@@ -702,33 +573,9 @@ module Engine
             log_str += busting_return_tokens!(hex)
             @log << log_str
 
-            new_tile_name = hex.tile.name.downcase
-            if %i[brown gray].include?(hex.tile.color) &&
-               hex.tile.cities.first.slots == 2 &&
-               hex.original_tile.city_towns.size == 1
-              new_tile_name = new_tile_name.sub('bb', 'b')
-            end
-
-            tile = @tiles.find { |t| t.name == new_tile_name && !t.hex }
+            tile = boomtown_tile(hex.tile.name)
             boom_bust_autoreplace_tile!(tile, hex.tile)
           end
-        end
-
-        def double_boomcity_to_boomcity!(hex)
-          return unless %i[brown gray].include?(hex.tile.color)
-          return if hex.original_tile.city_towns.size == 2
-
-          city = hex.tile.cities.first
-          return unless city&.boom
-          return unless city.slots == 2
-
-          @log << "#{hex.name} #{location_name(hex.name)} Busts to a Boom City."
-          log_str += busting_return_tokens!(hex, all_tokens: false)
-          @log << log_str
-
-          new_tile_name = hex.tile.name.sub('BB', 'B')
-          tile = @tiles.find { |t| t.name == new_tile_name && !t.hex }
-          boom_bust_autoreplace_tile!(tile, hex.tile)
         end
 
         def next_round!
@@ -755,6 +602,19 @@ module Engine
               reorder_players
               new_stock_round
             end
+        end
+
+        def sellable_bundles(player, corporation)
+          bundles = super
+
+          unless corporation.operated?
+            bundles.each do |bundle|
+              directions = [:down] * bundle.num_shares
+              bundle.share_price = stock_market.find_share_price(corporation, directions).price
+            end
+          end
+
+          bundles
         end
       end
     end

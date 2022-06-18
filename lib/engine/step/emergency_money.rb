@@ -15,7 +15,7 @@ module Engine
 
       def can_sell?(entity, bundle)
         return false if entity != bundle.owner
-        return false unless @game.check_sale_timing(entity, bundle.corporation)
+        return false unless @game.check_sale_timing(entity, bundle)
         return false unless sellable_bundle?(bundle)
         return true if @game.class::EBUY_SELL_MORE_THAN_NEEDED
 

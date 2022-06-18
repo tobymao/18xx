@@ -9,6 +9,10 @@ module Engine
             @round.connection_runs.keys
           end
 
+          def active_entities
+            @round.connection_runs.keys.take(1)
+          end
+
           def current_entity
             @round.connection_runs.keys.first
           end
