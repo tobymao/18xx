@@ -119,6 +119,10 @@ module Engine
           def ndem_acting_player
             @ndem_tile_layers&.first
           end
+
+          def help
+            current_entity == @game.ndem ? "#{ndem_acting_player.name} is placing tiles for NdeM" : ''
+          end
         end
       end
     end

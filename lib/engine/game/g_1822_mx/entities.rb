@@ -165,6 +165,7 @@ module Engine
                 closed_when_used_up: true,
                 hexes: [],
                 tiles: [],
+                consume_tile_lay: false,
               },
             ],
             color: nil,
