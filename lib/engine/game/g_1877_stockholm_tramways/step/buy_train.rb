@@ -47,7 +47,6 @@ module Engine
 
             buy_train_action(action)
             pass! unless can_buy_train?(action.entity)
-            @game.update_reservations
           end
 
           def must_buy_train?(entity)
