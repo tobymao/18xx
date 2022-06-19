@@ -1841,6 +1841,17 @@ module Engine
           extra_city.tokens[extra_city.normal_slots] = nil
         end
 
+        # If this city is where M14 was placed, their minimum number of slots goes up by 1.
+        def min_city_slots(city)
+          return city.normal_slots unless city.hex.name == self.class::MINOR_14_HOME_HEX
+
+          if city.hex.tile.paths.find { |p| p.city == city }.edges[0].num == @minor_14_city_exit
+            city.normal_slots + 1
+          else
+            city.normal_slots
+          end
+        end
+
         def can_only_lay_plain_or_towns?(entity)
           entity.id == self.class::COMPANY_BER
         end

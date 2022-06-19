@@ -168,6 +168,14 @@ module Engine
         remove_tokens!
         @tokens = Array.new(@slots)
       end
+
+      def delete_token!(token, remove_slot: false)
+        if remove_slot
+          @tokens.delete(token)
+        else
+          @tokens.map! { |t| t == token ? nil : t }
+        end
+      end
     end
   end
 end
