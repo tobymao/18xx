@@ -108,7 +108,7 @@ module Engine
                 }
                 receiving << "a token on hex #{@game.class::MINOR_14_HOME_HEX}"
               else
-                minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities[@selected_minor.city || 0]
+                minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities.find { |c| c.reserved_by?(@selected_minor) }
                 minor_city.reservations.delete(@selected_minor)
 
                 if minor_city.tokened_by?(entity)
@@ -171,6 +171,7 @@ module Engine
               minor_city = @selected_minor.tokens.first.city
               if minor_city.tokened_by?(entity)
                 @game.move_exchange_token(entity)
+                remove_minor_token
                 receiving << "one token from exchange to available since #{entity.id} cant have 2 tokens "\
                              'in the same city'
               else
@@ -180,6 +181,7 @@ module Engine
               end
             when 'exchange'
               @game.move_exchange_token(entity)
+              remove_minor_token
               receiving << 'one token from exchange to available'
             end
 
@@ -188,6 +190,12 @@ module Engine
 
             # Close the minor, this also removes the minor token if the token choice of 'remove' is selected
             @game.close_corporation(@selected_minor)
+          end
+
+          def remove_minor_token
+            minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities.find { |c| c.tokened_by?(@selected_minor) }
+            minor_city.delete_token!(@selected_minor.tokens.first,
+                                     remove_slot: minor_city.slots > @game.min_city_slots(minor_city))
           end
 
           def process_choose(action)
@@ -220,7 +228,7 @@ module Engine
             else
               minor_city = if !minor.owner || minor.owner == @bank
                              # Trying to acquire a bidbox minor. Trace route to its hometokenplace
-                             @game.hex_by_id(minor.coordinates).tile.cities[minor.city || 0]
+                             @game.hex_by_id(minor.coordinates).tile.cities.find { |c| c.reserved_by?(minor) }
                            else
                              # Minors only have one token, check if its connected
                              minor.tokens.first.city
