@@ -417,10 +417,10 @@ module Engine
               if player.cash >= new_price.price / 2 && !@share_pool.shares_of(corp).empty?
                 player.spend(new_price.price / 2, @bank)
                 transfer_share(@share_pool.shares_of(corp).first, player)
-                @log << "#{player.name} buys his odd share for #{format_currency(new_price.price / 2)}"
+                @log << "#{player.name} buys an odd share for #{format_currency(new_price.price / 2)}"
               else
                 @bank.spend(new_price.price / 2, player)
-                @log << "#{player.name} sells his odd share for #{format_currency(new_price.price / 2)}"
+                @log << "#{player.name} sells an odd share for #{format_currency(new_price.price / 2)}"
                 may_buy_half_price = false if player == corp.owner
               end
             end
