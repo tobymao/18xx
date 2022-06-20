@@ -68,6 +68,10 @@ module Engine
           def finish_round
             @game.presidents_choice = :done
           end
+
+          def show_in_history?
+            false
+          end
         end
       end
     end
