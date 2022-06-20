@@ -289,6 +289,15 @@ module Engine
           },
         ].freeze
 
+        EVENTS_TEXT = {
+          'close_concessions' =>
+            ['Concessions close', 'All concessions close without compensation, major companies float at 50%'],
+          'full_capitalisation' =>
+            ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
+          'close_ndem' =>
+            ['NdeM privatization', 'NdeM privatized, runs one last time, auctions token'],
+        }.freeze
+
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
         def operating_round(round_num)
@@ -680,7 +689,7 @@ module Engine
         end
 
         def company_status_str(company)
-          index = bidbox_minors.index(company) || bidbox_concessions.index(company)
+          index = bidbox_minors.index(company) || bidbox_concessions.index(company) || bidbox_privates.index(company)
           return "Bid box #{index + 1}" if index
 
           nil
