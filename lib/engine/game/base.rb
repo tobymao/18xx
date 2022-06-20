@@ -760,6 +760,7 @@ module Engine
       end
 
       def store_player_info
+        return unless @round.show_in_history?
         @players.each do |p|
           p.history << PlayerInfo.new(@round.class.short_name, turn, @round.round_num, player_value(p))
         end
