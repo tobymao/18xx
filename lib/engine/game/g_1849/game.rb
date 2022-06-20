@@ -276,7 +276,7 @@ module Engine
             ['Dividend ≥ share price', '1 →'],
             ['Corporation sold out at end of SR', '1 ↑'],
             ['≥ 1 shares on market at end of SR', '1 ↓'],
-            ['Each share sold', '1 ↓']
+            ['Each share sold', '1 ↓'],
           ]
         end
 
