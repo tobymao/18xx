@@ -153,11 +153,9 @@ module Engine
             tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
             special = tile_ability.special if tile_ability.type == :tile_lay
             if @game.can_upgrade_one_phase_ahead?(entity)
-              if entity.owner.type == :major || hex.tile.color == :yellow
-                return tiles.compact.select { |t| @game.upgrades_to?(hex.tile, t, special) }
-              else
-                return []
-              end
+              return [] if entity.owner.type == :minor && !hex.tile.color == :yellow
+
+              return tiles.compact.select { |t| @game.upgrades_to?(hex.tile, t, special) }
             end
             tiles
               .compact
