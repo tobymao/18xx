@@ -196,6 +196,10 @@ module Engine
         false
       end
 
+      def show_in_history?
+        true
+      end
+
       private
 
       def skip_steps
