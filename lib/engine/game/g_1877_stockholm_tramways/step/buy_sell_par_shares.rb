@@ -18,7 +18,7 @@ module Engine
 
           def description
             if @finish_action&.include?('par')
-              'Par Company'
+              'Par Corporation'
             elsif @finish_action
               'Buy Additional Shares'
             else
