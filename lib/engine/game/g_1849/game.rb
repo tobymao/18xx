@@ -270,10 +270,13 @@ module Engine
 
         def price_movement_chart
           [
-            ['Dividend', 'Share Price Change'],
-            ['0 or withheld', '1 ←'],
-            ['< share price', 'none'],
-            ['≥ share price', '1 →'],
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price', '1 →'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+            ['≥ 1 shares on market at end of SR', '1 ↓'],
+            ['Each share sold', '1 ↓']
           ]
         end
 
