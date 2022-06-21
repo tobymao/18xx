@@ -682,6 +682,7 @@ module Engine
             share_pool.buy_shares(company.owner,
                                   share.to_bundle,
                                   exchange: company)
+            share.buyable = true
             company.close!
           end
 
