@@ -912,6 +912,12 @@ module Engine
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
+        def company_header(company)
+          return 'MINOR RAILWAY' if company.id[0] == self.class::COMPANY_MINOR_PREFIX
+
+          super
+        end
+
         def must_buy_train?(entity)
           entity.trains.none? { |t| !extra_train?(t) } &&
           !depot.depot_trains.empty?
@@ -1839,6 +1845,17 @@ module Engine
           return unless extra_city.tokens.size == 1
 
           extra_city.tokens[extra_city.normal_slots] = nil
+        end
+
+        # If this city is where M14 was placed, their minimum number of slots goes up by 1.
+        def min_city_slots(city)
+          return city.normal_slots unless city.hex.name == self.class::MINOR_14_HOME_HEX
+
+          if city.hex.tile.paths.find { |p| p.city == city }.edges[0].num == @minor_14_city_exit
+            city.normal_slots + 1
+          else
+            city.normal_slots
+          end
         end
 
         def can_only_lay_plain_or_towns?(entity)

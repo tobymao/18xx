@@ -171,21 +171,34 @@ module Engine
           @starting_phase = {}
           @offer_order.take(5).each do |corporation|
             @starting_phase[corporation] = '2'
+            corporation.reservation_color = '#ffff75'
           end
           @offer_order.slice(5, 4).each do |corporation|
             @starting_phase[corporation] = '3'
-            corporation.reservation_color = '#009a54'
+            corporation.reservation_color = '#a2f075'
           end
           @offer_order.slice(9, 3).each do |corporation|
             @starting_phase[corporation] = '6'
-            corporation.reservation_color = '#cb7745'
+            corporation.reservation_color = '#fba775'
           end
         end
 
-        def update_reservations
-          @corporations.each do |corporation|
-            corporation.reservation_color = nil if @phase.available?(@starting_phase[corporation])
-          end
+        def status_array(corporation)
+          start_phase = @starting_phase[corporation]
+          [["Phase available: #{start_phase}"]] unless @phase.available?(start_phase)
+        end
+
+        def sorted_corporations
+          ipoed, others = corporations.partition(&:ipoed)
+          ipoed.sort + others.sort.sort_by { |c| @offer_order.find_index(c) }
+        end
+
+        def bank_sort(corporations)
+          corporations.sort.sort_by { |c| @offer_order.find_index(c) }
+        end
+
+        def corporation_available?(entity)
+          entity.corporation? && ready_corporations.include?(entity)
         end
 
         def init_round
@@ -251,7 +264,7 @@ module Engine
         end
 
         def ready_corporations
-          @offer_order.select { |corp| available_to_start?(corp) || corp.ipoed }
+          @offer_order.select { |corporation| available_to_start?(corporation) || corporation.ipoed }
         end
 
         def available_to_start?(corporation)
@@ -404,10 +417,10 @@ module Engine
               if player.cash >= new_price.price / 2 && !@share_pool.shares_of(corp).empty?
                 player.spend(new_price.price / 2, @bank)
                 transfer_share(@share_pool.shares_of(corp).first, player)
-                @log << "#{player.name} buys his odd share for #{format_currency(new_price.price / 2)}"
+                @log << "#{player.name} buys an odd share for #{format_currency(new_price.price / 2)}"
               else
                 @bank.spend(new_price.price / 2, player)
-                @log << "#{player.name} sells his odd share for #{format_currency(new_price.price / 2)}"
+                @log << "#{player.name} sells an odd share for #{format_currency(new_price.price / 2)}"
                 may_buy_half_price = false if player == corp.owner
               end
             end
@@ -488,10 +501,9 @@ module Engine
 
           @hexes.each do |hex|
             hex.tile.cities.each do |city|
-              next unless city.tokened_by?(corporation)
+              city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!)
 
-              token = city.tokens.find { |t| t&.corporation == corporation }
-              token.destroy!
+              city.reservations.delete(corporation) if corporation.ipoed && city.reserved_by?(corporation)
             end
           end
 

@@ -101,7 +101,6 @@ module View
           values = @game.players.map do |p|
             p.history.find { |h2| h2.round == h.round }.value
           end
-          next if values == last_values
 
           delta_v = (last_values || Array.new(values.size, 0)).map(&:-@).zip(values).map(&:sum) if @delta_value
           last_values = values
