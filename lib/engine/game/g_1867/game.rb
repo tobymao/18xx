@@ -909,7 +909,7 @@ module Engine
             %w[D8 F8 E13 E15 C17 I15 N12] => 'city=revenue:0',
             ['G15'] => 'city=revenue:0;stub=edge:1',
             %w[E17 D16 O7] => 'city=revenue:0;label=Y',
-            ['J12'] => 'city=revenue:0;label=Y;label=O;upgrade=cost:20,terrain:water',
+            ['J12'] => 'city=revenue:0;label=Y;future_label=label:O,color:gray;upgrade=cost:20,terrain:water',
             ['L10'] => 'town=revenue:0;border=edge:5,type:water,cost:80;stub=edge:0',
             ['H14'] => 'town=revenue:0;border=edge:0,type:impassable',
             %w[C15 B18 H10 M13] => 'town=revenue:0',
@@ -958,8 +958,6 @@ module Engine
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
 
-        HEX_WITH_O_LABEL = %w[J12].freeze
-        HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 621 622 623 801 X8].freeze
         BONUS_CAPITALS = %w[F16 L12 O7].freeze
         BONUS_REVENUE = 'D2'
 
@@ -1323,15 +1321,6 @@ module Engine
 
         def corporation_size_name(entity)
           entity.type == :national ? 'Nat’l' : entity.type.capitalize
-        end
-
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # O labelled tile upgrades to Ys until Grey
-          return super unless self.class::HEX_WITH_O_LABEL.include?(from.hex.name)
-
-          return false unless self.class::HEX_UPGRADES_FOR_O.include?(to.name)
-
-          super(from, to, true)
         end
 
         def compute_stops(route)

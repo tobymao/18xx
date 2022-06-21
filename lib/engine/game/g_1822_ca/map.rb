@@ -503,7 +503,7 @@ module Engine
           'AD20' => 'Peterborough',
           'AE15' => 'Bytown (Ottawa)',
           'AE17' => 'Kingston',
-          'AF12' => 'Montreal',
+          'AF12' => 'Montréal',
           'AF16' => 'Prescott',
           'AG3' => 'Chicoutimi',
           'AG9' => 'Trois-Rivières',

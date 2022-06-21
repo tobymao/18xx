@@ -41,7 +41,10 @@ module Engine
             @in_process = true
             if @game.company_ability_extra_track?(entity)
               upgraded_extra_track = upgraded_track?(action.hex.tile, action.tile, action.hex)
-              raise GameError, 'Cannot lay an extra upgrade' if upgraded_extra_track && @extra_laided_track
+              if upgraded_extra_track && @extra_laided_track && abilities(action.entity).consume_tile_lay
+                raise GameError,
+                      'Cannot lay an extra upgrade'
+              end
 
               lay_tile(action, spender: spender)
               @round.laid_hexes << action.hex
@@ -150,8 +153,9 @@ module Engine
             tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
             special = tile_ability.special if tile_ability.type == :tile_lay
             if @game.can_upgrade_one_phase_ahead?(entity)
-              return tiles.compact
-                .select { |t| @game.upgrades_to?(hex.tile, t, special) }
+              return [] if entity.owner.type == :minor && !hex.tile.color == :yellow
+
+              return tiles.compact.select { |t| @game.upgrades_to?(hex.tile, t, special) }
             end
             tiles
               .compact
