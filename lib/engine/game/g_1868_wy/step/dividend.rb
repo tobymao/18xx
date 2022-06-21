@@ -11,7 +11,14 @@ module Engine
           include G1868WY::SkipCoalAndOil
 
           def share_price_change(entity, revenue = 0)
-            entity.minor? ? {} : super
+            return {} if entity.minor?
+            return { share_direction: :left, share_times: 1 } if revenue.zero?
+
+            if (times = [revenue.div(entity.share_price.price), 3].min).positive?
+              { share_direction: :right, share_times: times }
+            else
+              {}
+            end
           end
 
           def log_run_payout(entity, kind, revenue, action, payout)
