@@ -139,7 +139,7 @@ module View
 
         targets.flat_map do |target|
           ipo_shares = @ipo_shares.map do |share|
-            next unless @step.can_buy?(@current_entity, share.to_bundle, borrow_from: @current_entity)
+            next unless @step.can_buy?(target, share.to_bundle, borrow_from: @current_entity)
 
             h(Button::BuyShare,
               share: share,
