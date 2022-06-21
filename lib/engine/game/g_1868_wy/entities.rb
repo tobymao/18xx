@@ -41,18 +41,29 @@ module Engine
             coordinates: '',
             color: '#4D2674',
           ),
+          # rubocop:disable Layout/LineLength
           def_corporation(
             sym: 'LNP',
             name: 'Laramie, North Park and Pacific Railroad and Telegraph Company',
             coordinates: 'M21',
             color: '#FFC425',
             text_color: 'black',
+            abilities: [{
+              type: 'base',
+              description: 'Free Home Green Tile',
+              desc_detail: "If M21 does not have a green tile when LNP starts, the green tile is immediately placed for free (skipping yellow if necessary) and does not count against LNP's track points.",
+            }],
           ),
           def_corporation(
             sym: 'OSL',
             name: 'Oregon Short Line Railroad',
             coordinates: 'J6',
             color: '#492F24',
+            abilities: [{
+              type: 'base',
+              description: 'Free Home Green Tile',
+              desc_detail: "If J6 does not have a green tile when OSL starts, the green tile is immediately placed for free (skipping yellow if necessary) and does not count against OSL's track points.",
+            }],
           ),
           def_corporation(
             sym: 'RCL',
@@ -61,7 +72,6 @@ module Engine
             color: '#FFFFFF',
             text_color: 'black',
           ),
-          # rubocop:disable Layout/LineLength
           def_corporation(
             sym: 'UP',
             name: 'Union Pacific Railroad',
