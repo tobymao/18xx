@@ -35,6 +35,17 @@ module Engine
 
             (num * per_share).ceil
           end
+
+          def payout_shares(entity, revenue)
+            if entity&.share_price&.price == 400
+              extra_per_share = 40
+              @log << "#{entity.name} pays out an additional #{@game.format_currency(extra_per_share)} "\
+                      'per share for reaching maximum stock price'
+              super(entity, revenue + (extra_per_share * entity.total_shares))
+            else
+              super
+            end
+          end
         end
       end
     end
