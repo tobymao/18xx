@@ -10,13 +10,13 @@ module Engine
 
         def check_track_restrictions!(entity, old_tile, new_tile)
           return if @game.loading || !entity.operator?
-          return if @game.class::GREEN_CITY_TILES.include?(old_tile.name)
+          return if @game.class::BROWN_CITY_TILES.include?(new_tile.name)
 
           super
         end
 
         def legal_tile_rotation?(_entity, hex, tile)
-          if @game.class::BROWN_CITY_UPGRADES_TILES.include?(tile.name)
+          if @game.class::BROWN_CITY_TILES.include?(tile.name)
             old_paths = hex.tile.paths    
             new_paths = tile.paths
             new_exits = tile.exits

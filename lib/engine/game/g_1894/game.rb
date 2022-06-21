@@ -170,7 +170,7 @@ module Engine
                     name: '6',
                     distance: 6,
                     price: 600,
-                    num: 2,
+                    num: 3,
                     events: [{ 'type' => 'close_companies' }],
                     discount: { '5' => 200 },
                   },
@@ -178,7 +178,7 @@ module Engine
                     name: '7',
                     distance: 7,
                     price: 700,
-                    num: 3,
+                    num: 2,
                     discount: { '6' => 300 },
                   },
                   {
@@ -232,7 +232,7 @@ module Engine
           'late_corporations_available' => ['Late corporations available', 'Late corporations can be opened'],
         ).freeze
 
-        LONDON_HEX = 'B9'
+        LONDON_HEX = 'A10'
         LONDON_FERRY_SUPPLY = 'A8'
         FERRY_MARKER_ICON = 'ferry'
         FERRY_MARKER_COST = 50
@@ -240,6 +240,7 @@ module Engine
         PARIS_HEX = 'G4'
         LE_SUD_HEX = 'I2'
         LUXEMBOURG_HEX = 'I18'
+        CALAIS_HEX = 'B9'
         AMIENS_HEX = 'E6'
         AMIENS_TILE = 'X3'
         ROUEN_HEX = 'D3'
@@ -249,12 +250,12 @@ module Engine
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
-        BROWN_CITY_14_UPGRADES_TILES = %w[X14 X15 36].freeze
+        BROWN_CITY_14_UPGRADE_TILES = %w[X14 X15 36].freeze
         GREEN_CITY_15_TILE = '15'
-        BROWN_CITY_15_UPGRADES_TILES = %w[X12 35 118].freeze
+        BROWN_CITY_15_UPGRADE_TILES = %w[X12 35 118].freeze
         GREEN_CITY_619_TILE = '619'
-        BROWN_CITY_619_UPGRADES_TILES = %w[X10 X11 X13].freeze
-        BROWN_CITY_UPGRADES_TILES = %w[X10 X11 X12 X13 X14 X15 35 36 118]
+        BROWN_CITY_619_UPGRADE_TILES = %w[X10 X11 X13].freeze
+        BROWN_CITY_TILES = %w[X10 X11 X12 X13 X14 X15 35 36 118]
 
         REGULAR_CORPORATIONS = %w[PLM CAB Ouest Belge GR Nord Est].freeze
         FRENCH_LATE_CORPORATIONS = %w[F1 F2].freeze
@@ -426,7 +427,7 @@ module Engine
 
         def home_hex(corporation, hex)
           corporation.coordinates = hex
-          hex_by_id(hex).tile.add_reservation!(corporation, 0)
+          hex_by_id(hex).tile.add_reservation!(corporation)
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
@@ -436,9 +437,10 @@ module Engine
           return GREEN_CITY_TILES.include?(to.name) if from.hex.name == AMIENS_HEX && from.color == :yellow
           #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == ROUEN_HEX && from.color == :yellow
           #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == SQ_HEX && from.color == :yellow
-          return BROWN_CITY_14_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
-          return BROWN_CITY_15_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
-          return BROWN_CITY_619_UPGRADES_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
+          return BROWN_CITY_TILES.include?(to.name) if from.hex.tile.name == CALAIS_HEX
+          return BROWN_CITY_14_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
+          return BROWN_CITY_15_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
+          return BROWN_CITY_619_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
 
           super
         end
