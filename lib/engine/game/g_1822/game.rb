@@ -1086,7 +1086,7 @@ module Engine
           entity.runnable_trains.reject { |t| pullman_train?(t) }
         end
 
-        def setup
+         def setup
           @game_end_reason = nil
 
           # Setup the bidding token per player
@@ -2003,6 +2003,20 @@ module Engine
             corporation.add_ability(ability)
           end
         end
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price, < 2x share price ', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Minor Company Dividend > 0', '1 →'],
+            ['Each share sold', '1 ↓'],
+            ['Corporation sold out at end of SR (including P16 Tax Haven) ', '1 ↑'],
+          ]
+        end
+
       end
     end
   end
