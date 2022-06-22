@@ -30,6 +30,11 @@ module Engine
             {}
           end
 
+          def payout_per_share(entity, revenue)
+            # PEIR rounds up
+            (revenue / entity.total_shares).ceil
+          end
+
           def dividends_for_entity(entity, holder, per_share)
             num = holder.shares_of(entity).select(&:buyable).sum(&:percent) / entity.share_percent
 
