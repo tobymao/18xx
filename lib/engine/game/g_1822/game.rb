@@ -2011,9 +2011,9 @@ module Engine
             ['Dividend < share price', 'none'],
             ['Dividend ≥ share price, < 2x share price ', '1 →'],
             ['Dividend ≥ 2x share price', '2 →'],
-            ['Minor Company Dividend > 0', '1 →'],
+            ['Minor company dividend > 0', '1 →'],
             ['Each share sold', '1 ↓'],
-            ['Corporation sold out at end of SR (including P16 Tax Haven) ', '1 ↑'],
+            ['Corporation sold out at end of SR (including Tax Haven shares) ', '1 ↑'],
           ]
         end
 
