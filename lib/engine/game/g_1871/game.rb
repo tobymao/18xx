@@ -312,7 +312,13 @@ module Engine
         def after_buy_company(player, company, _price)
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
-              share_pool.buy_shares(player, share, exchange: :free)
+              if share.percent >= 20
+                # Don't let two 10% shares of the Mainline confer presidency;
+                # give it to the Mainline Concession winner by hand
+                share.corporation.owner = player
+                @log << "#{player.name} becomes the president of #{share.corporation.name}"
+              end
+              share_pool.buy_shares(player, share, exchange: :free, allow_president_change: false)
             end
           end
 
