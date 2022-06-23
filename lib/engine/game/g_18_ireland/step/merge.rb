@@ -148,7 +148,8 @@ module Engine
             @round.votes_needed = (@round.votes_available / 2.0).floor + 1
             voters = @round.to_vote.map { |p, _s| p.name }.join(', ')
             @game.log << "Shareholders (#{voters}) will now vote for proposed merge of "\
-                         "#{@round.merging.map(&:name).join(', ')}; #{@round.votes_needed} votes needed"
+                         "#{@round.merging.map(&:name).join(', ')}; "\
+                         "#{@round.votes_needed}/#{@round.votes_available} votes needed for success"
 
             @round.proposed_mergers[merging_sorted] = entity
 
