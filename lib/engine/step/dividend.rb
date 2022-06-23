@@ -156,7 +156,7 @@ module Engine
         # For any company without a share price, skip price movement
         return unless entity.share_price
 
-        prev = entity.share_price.price
+        old_price = entity.share_price
 
         right_times = 0
         Array(payout[:share_times]).zip(Array(payout[:share_direction])).each do |share_times, direction|
@@ -174,7 +174,7 @@ module Engine
             end
           end
         end
-        @game.log_share_price(entity, prev, right_times)
+        @game.log_share_price(entity, old_price, right_times)
       end
 
       def routes

@@ -17,9 +17,9 @@ module Engine
             if (bundle = @game.emergency_issuable_bundles(corp).max_by(&:num_shares))
               @game.share_pool.sell_shares(bundle)
 
-              price = corp.share_price.price
+              old_price = corp.share_price
               bundle.num_shares.times { @game.stock_market.move_left(corp) }
-              @game.log_share_price(corp, price)
+              @game.log_share_price(corp, old_price)
 
               @game.round.emergency_issued = true
             end
