@@ -687,13 +687,13 @@ module Engine
         def take_loan(entity, loan)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
 
-          price = entity.share_price.price
+          old_price = entity.share_price
           name = entity.name
           name += " (#{entity.owner.name})" if @round.is_a?(Engine::Round::Stock)
           @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
           @bank.spend(loan.amount, entity)
           loan_taken_stock_market_movement(entity)
-          log_share_price(entity, price)
+          log_share_price(entity, old_price)
           entity.loans << loan
           @loans.delete(loan)
         end
@@ -713,9 +713,9 @@ module Engine
           @loans << loan
           return unless adjust_share_price
 
-          price = entity.share_price.price
+          old_price = entity.share_price
           loan_payoff_stock_market_movement(entity)
-          log_share_price(entity, price)
+          log_share_price(entity, old_price)
         end
 
         def loan_payoff_stock_market_movement(entity)

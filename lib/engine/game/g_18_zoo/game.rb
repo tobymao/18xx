@@ -670,11 +670,12 @@ module Engine
         end
 
         def log_share_price(entity, from, additional_info = '')
-          to = entity.share_price.price
-          return unless from != to
+          from_price = from.price
+          to_price = entity.share_price.price
+          return unless from_price != to_price
 
-          @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                  "to #{format_currency(to)} #{additional_info}"
+          @log << "#{entity.name}'s share price changes from #{format_currency(from_price)} "\
+                  "to #{format_currency(to_price)} #{additional_info}"
         end
 
         def revenue_for(route, stops)

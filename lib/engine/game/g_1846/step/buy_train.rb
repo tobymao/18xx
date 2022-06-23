@@ -83,9 +83,9 @@ module Engine
 
             @game.share_pool.sell_shares(bundle)
 
-            price = corporation.share_price.price
+            old_price = corporation.share_price
             bundle.num_shares.times { @game.stock_market.move_left(corporation) }
-            @game.log_share_price(corporation, price)
+            @game.log_share_price(corporation, old_price)
 
             @round.emergency_issued = true
           end

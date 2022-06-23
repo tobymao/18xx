@@ -1058,7 +1058,7 @@ module Engine
 
       def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
         corporation = bundle.corporation
-        price = corporation.share_price.price
+        old_price = corporation.share_price
         was_president = corporation.president?(bundle.owner)
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
         case self.class::SELL_MOVEMENT
@@ -1092,7 +1092,7 @@ module Engine
         else
           raise NotImplementedError
         end
-        log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
+        log_share_price(corporation, old_price) if self.class::SELL_MOVEMENT != :none
       end
 
       def sold_out_increase?(_corporation)
@@ -1100,7 +1100,9 @@ module Engine
       end
 
       def log_share_price(entity, from, steps = nil)
-        to = entity.share_price.price
+        from_price = from.price
+        to = entity.share_price
+        to_price = to.price
         return unless from != to
 
         jumps = ''
@@ -1109,8 +1111,17 @@ module Engine
           jumps = " (#{steps} steps)" unless steps < 2
         end
 
-        @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                "to #{format_currency(to)}#{jumps}"
+        r1, c1 = from.coordinates
+        r2, c2 = to.coordinates
+        dirs = []
+        dirs << 'up' if r2 < r1
+        dirs << 'down' if r2 > r1
+        dirs << 'left' if c2 < c1
+        dirs << 'right' if c2 > c1
+        dir_str = dirs.join(' and ')
+
+        @log << "#{entity.name}'s share price moves #{dir_str} from #{format_currency(from_price)} "\
+                "to #{format_currency(to_price)}#{jumps}"
       end
 
       def share_jumps(steps)

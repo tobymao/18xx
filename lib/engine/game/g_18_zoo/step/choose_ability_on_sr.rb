@@ -140,9 +140,9 @@ module Engine
           @log << "#{current_entity.name} uses \"Whatsup\" for #{corporation.name}, "\
                   "paying #{@game.format_currency(train.price)} to buy a #{train.name}"
 
-          prev = corporation.share_price.price
+          old_price = corporation.share_price
           @game.stock_market.move_right(corporation)
-          @game.log_share_price(corporation, prev, '(whatsup bonus)')
+          @game.log_share_price(corporation, old_price, '(whatsup bonus)')
 
           @game.whatsup.close!
         end

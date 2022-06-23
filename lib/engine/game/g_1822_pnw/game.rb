@@ -550,9 +550,9 @@ module Engine
         def close_p16
           company = company_by_id('P16')
           @log << "#{company.name} closes"
-          from = company.owner.share_price.price
+          old_price = company.owner.share_price
           stock_market.move_left(company.owner)
-          log_share_price(company.owner, from)
+          log_share_price(company.owner, old_price)
           company.close!
         end
 

@@ -474,11 +474,11 @@ module Engine
 
         def handle_share_price_increase_for_newly_floated_corporations
           @newly_floated.each do |corp|
-            prev = corp.share_price.price
+            old_price = corp.share_price
 
             stock_market.move_up(corp)
-            @log << "The share price of the newly floated #{corp.name} increases" if prev != corp.share_price.price
-            log_share_price(corp, prev)
+            @log << "The share price of the newly floated #{corp.name} increases" if old_price.price != corp.share_price.price
+            log_share_price(corp, old_price)
           end
           @newly_floated = []
         end
