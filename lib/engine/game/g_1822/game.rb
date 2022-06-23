@@ -1086,7 +1086,7 @@ module Engine
           entity.runnable_trains.reject { |t| pullman_train?(t) }
         end
 
-         def setup
+        def setup
           @game_end_reason = nil
 
           # Setup the bidding token per player
@@ -2016,7 +2016,6 @@ module Engine
             ['Corporation sold out at end of SR (including Tax Haven shares) ', '1 ↑'],
           ]
         end
-
       end
     end
   end
