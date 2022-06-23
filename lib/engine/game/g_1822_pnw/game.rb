@@ -407,11 +407,6 @@ module Engine
           @companies.concat(stack_3)
           @companies.concat(privates)
 
-          print(stack_1.to_s)
-          print(stack_2.to_s)
-          print(stack_3.to_s)
-          print(@companies.to_s)
-
           # Set the min bid on the Concessions and Minors
           # @companies.each do |c|
           #  c.min_price = case c.id[0]

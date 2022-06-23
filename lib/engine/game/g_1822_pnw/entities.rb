@@ -569,7 +569,7 @@ module Engine
             sym: 'MA',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is O32.', # TODO
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is A22.',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -579,7 +579,7 @@ module Engine
             sym: 'MB',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L37.', # TODO
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is I12.',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -589,7 +589,7 @@ module Engine
             sym: 'MC',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is Q34.', # TODO
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is O10.',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -1032,7 +1032,7 @@ module Engine
             city: 2,
             color: '#000000',
             reservation_color: nil,
-            destination_coordinates: 'A22', ## TODO - needs a second destination
+            destination_coordinates: 'A22',
             destination_icon: '1822_pnw/CPR_DEST',
           },
           {
@@ -1058,7 +1058,7 @@ module Engine
             type: 'major',
             float_percent: 20,
             always_market_price: true,
-            coordinates: 'O8', # TODO: - also P9
+            coordinates: 'O8',
             city: 3,
             color: '#850040',
             reservation_color: nil,
@@ -1073,7 +1073,7 @@ module Engine
             type: 'major',
             float_percent: 20,
             always_market_price: true,
-            coordinates: 'O8', # TODO: - also P9
+            coordinates: 'O8',
             color: '#ff3600',
             reservation_color: nil,
             destination_coordinates: 'F23',
@@ -1105,7 +1105,7 @@ module Engine
             city: 5,
             color: '#004c6c',
             reservation_color: nil,
-            destination_coordinates: 'N23', # TODO: Also O22
+            destination_coordinates: 'O22',
             destination_icon: '1822_pnw/SWW_DEST',
           },
         ].freeze
