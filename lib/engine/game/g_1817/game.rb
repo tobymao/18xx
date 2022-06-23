@@ -880,30 +880,44 @@ module Engine
         end
 
         def loan_shark_private
+          return unless option_volatility_expansion?
+
           @loan_share_private ||= company_by_id('P12')
         end
 
         def ponzi_scheme_private
+          return unless option_volatility_expansion?
+
           @ponzi_scheme_private ||= company_by_id('P13')
         end
 
         def inventor_private
+          return unless option_volatility_expansion?
+
           @inventor_private ||= company_by_id('P14')
         end
 
         def express_track_private
+          return unless option_volatility_expansion?
+
           @express_track_private ||= company_by_id('P18')
         end
 
         def efficient_track_private
+          return unless option_volatility_expansion?
+
           @efficient_track_private ||= company_by_id('P19')
         end
 
         def golden_parachute_private
+          return unless option_volatility_expansion?
+
           @golden_parachute_private ||= company_by_id('P20')
         end
 
         def station_subsidy_private
+          return unless option_volatility_expansion?
+
           @station_subsidy_private ||= company_by_id('P21')
         end
 
