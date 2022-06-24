@@ -35,6 +35,10 @@ module Engine
             (revenue / entity.total_shares).ceil
           end
 
+          def half_pay_withhold_amount(_entity, revenue)
+            (revenue / 2).ceil
+          end
+
           def dividends_for_entity(entity, holder, per_share)
             num = holder.shares_of(entity).select(&:buyable).sum(&:percent) / entity.share_percent
 
