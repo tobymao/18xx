@@ -289,7 +289,7 @@ module Engine
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
@@ -571,19 +571,12 @@ module Engine
           nil
         end
 
-        def terrain?(tile, terrain)
-          tile.parts.each do |part|
-            return true if part.is_a?(Engine::Part::Upgrade) && (part.terrains[0] == terrain)
-          end
-          false
+        def total_terrain_cost(tile)
+          tile.upgrades.sum(&:cost)
         end
 
         def max_builder_cubes(tile)
-          max = 0
-          max += 2 if terrain?(tile, 'mountain')
-          max += 1 if terrain?(tile, 'hill')
-          max += 1 if terrain?(tile, 'river')
-          max
+          (total_terrain_cost(tile).to_f / 40.0).ceil
         end
 
         def current_builder_cubes(tile)
@@ -596,18 +589,7 @@ module Engine
 
         # Assume the company optimizes cost reduction from cubes
         def upgrade_cost(tile, hex, entity, spender)
-          cost = super
-          num_cubes = current_builder_cubes(tile)
-          if num_cubes >= 2 && terrain?(tile, 'mountain')
-            num_cubes -= 2
-            cost -= 80
-          end
-          if num_cubes >= 1 && terrain?(tile, 'hill')
-            num_cubes -= 1
-            cost -= 40
-          end
-          cost -= 20 if num_cubes >= 1 && terrain?(tile, 'river')
-          cost
+          [super - (40 * current_builder_cubes(tile)), 0].max
         end
       end
     end
