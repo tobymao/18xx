@@ -667,11 +667,15 @@ module Engine
             peir.share_holders[share.owner] += new_share_percent
           end
           peir.share_holders.each do |owner, amount|
-            @log << "#{owner.name} now owns #{100 * amount / (@peir_shares.size * new_share_percent)}% of the PEIR"
+            @log << "#{owner.name} now owns #{(100 * amount / (@peir_shares.size * new_share_percent)).round}% of the PEIR"
           end
 
-          peir.owner = peir_owner
-          @log << "PEIR is now operated by #{peir.owner.name}"
+          if (new_peir_owner = peir_owner) == peir.owner
+            @log << "PEIR is still operated by #{peir.owner.name}"
+          else
+            peir.owner = new_peir_owner
+            @log << "PEIR is now operated by #{peir.owner.name}"
+          end
         end
 
         # Once a corporation pars, add it to the tranches
@@ -776,7 +780,8 @@ module Engine
 
             next unless num_of_branch_shares.positive?
 
-            @log << "#{player.name} exchanges #{num_of_branch_shares} shares of #{corporation.name} for #{branch.name}"
+            shares_str = num_of_branch_shares == 1 ? 'share' : 'shares'
+            @log << "#{player.name} exchanges #{num_of_branch_shares} #{shares_str} of #{corporation.name} for #{branch.name}"
 
             shares.take(num_of_branch_shares).each do |share|
               share.transfer(corporation)
@@ -791,7 +796,8 @@ module Engine
           num_of_branch_shares = (shares.sum(&:percent) / 10 / 2).to_i
 
           if num_of_branch_shares.positive?
-            @log << "The market exchanges #{num_of_branch_shares} shares of #{corporation.name} for #{branch.name}"
+            shares_str = num_of_branch_shares == 1 ? 'share' : 'shares'
+            @log << "The market exchanges #{num_of_branch_shares} #{shares_str} of #{corporation.name} for #{branch.name}"
 
             shares.take(num_of_branch_shares).each do |share|
               share.transfer(corporation)
