@@ -16,12 +16,12 @@ module Engine
           def process_sell_shares(action)
             bundle = action.bundle
             corporation = bundle.corporation
-            price = corporation.share_price.price
+            old_price = corporation.share_price
             @game.share_pool.sell_shares(action.bundle)
             @game.player_sold_shares[corporation.owner][corporation] = true
 
             bundle.num_shares.times { @game.stock_market.move_left(corporation) }
-            @game.log_share_price(corporation, price)
+            @game.log_share_price(corporation, old_price)
             pass!
           end
 

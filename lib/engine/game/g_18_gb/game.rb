@@ -696,11 +696,11 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          old_price = corporation.share_price
           was_president = corporation.president?(bundle.owner)
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           bundle.num_shares.times { @stock_market.move_down(corporation) } if non_president_sales_drop_price? || was_president
-          log_share_price(corporation, price)
+          log_share_price(corporation, old_price)
         end
 
         def insolvent?(corp)
@@ -825,9 +825,9 @@ module Engine
 
           # update share price
           unless price_drops.zero?
-            prev = corporation.share_price.price
+            old_price = corporation.share_price
             price_drops.times { @stock_market.move_down(corporation) }
-            log_share_price(corporation, prev)
+            log_share_price(corporation, old_price)
           end
 
           # add new capital

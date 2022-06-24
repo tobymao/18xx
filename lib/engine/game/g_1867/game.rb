@@ -1201,12 +1201,12 @@ module Engine
           repay_loan(corporation, corporation.loans.first) while corporation.cash >= @loan_value && !corporation.loans.empty?
 
           # Move once automatically
-          price = corporation.share_price.price
+          old_price = corporation.share_price
           stock_market.move_left(corporation)
 
           nationalization_loan_movement(corporation)
           nationalization_transfer_assets(corporation)
-          log_share_price(corporation, price)
+          log_share_price(corporation, old_price)
 
           # Payout players for shares
           per_share = corporation.share_price.price

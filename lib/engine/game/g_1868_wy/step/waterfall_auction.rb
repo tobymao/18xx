@@ -7,6 +7,12 @@ module Engine
     module G1868WY
       module Step
         class WaterfallAuction < Engine::Step::WaterfallAuction
+          def help
+            return '' unless @choosing
+
+            "#{@choosing_player.name} won the auction for #{@auctioned_company.name}, now chooses one of:"
+          end
+
           def setup
             super
 
@@ -44,7 +50,7 @@ module Engine
             resolve_bids unless @bids[@cheapest].empty?
           end
 
-          def resolve_bids
+          def resolve_bids_for_company(company)
             super unless @choosing
           end
 
@@ -70,6 +76,8 @@ module Engine
               @company_choices = companies
             end
 
+            company.revenue = 0 if company == @game.p8_company
+
             @cheapest = @companies.first
             @passed_on_cheapest = {}
           end
@@ -93,8 +101,8 @@ module Engine
                 @passed_on_cheapest = {}
               end
             when @game.p9_company
-              @log << 'Companies pay out (all players passed or bid on P10)'
-              @game.isr_payout_companies(@bidders[@game.p10_company])
+              increase_discount!(@game.p10_company, 10) if @bids[@game.p10_company].empty?
+              increase_discount!(@game.p9_company, 10)
               @passed_on_cheapest = {}
             else
               remove_cheapest!

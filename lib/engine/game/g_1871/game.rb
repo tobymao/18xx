@@ -312,7 +312,13 @@ module Engine
         def after_buy_company(player, company, _price)
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
-              share_pool.buy_shares(player, share, exchange: :free)
+              if share.percent >= 20
+                # Don't let two 10% shares of the Mainline confer presidency;
+                # give it to the Mainline Concession winner by hand
+                share.corporation.owner = player
+                @log << "#{player.name} becomes the president of #{share.corporation.name}"
+              end
+              share_pool.buy_shares(player, share, exchange: :free, allow_president_change: false)
             end
           end
 
@@ -652,7 +658,7 @@ module Engine
             return
           end
 
-          new_share_percent = (100.0 / @peir_shares.size).round(2)
+          new_share_percent = 100 / @peir_shares.size
           @peir.forced_share_percent = new_share_percent
           peir.share_holders.clear
           @peir_shares.each do |share|
@@ -661,7 +667,7 @@ module Engine
             peir.share_holders[share.owner] += new_share_percent
           end
           peir.share_holders.each do |owner, amount|
-            @log << "#{owner.name} now owns #{amount}% of the PEIR"
+            @log << "#{owner.name} now owns #{100 * amount / (@peir_shares.size * new_share_percent)}% of the PEIR"
           end
 
           peir.owner = peir_owner
@@ -682,6 +688,7 @@ module Engine
             share_pool.buy_shares(company.owner,
                                   share.to_bundle,
                                   exchange: company)
+            share.buyable = true
             company.close!
           end
 

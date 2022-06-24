@@ -291,11 +291,11 @@ module Engine
 
             # Step 7b, unpaid loans affect stock price and may mean a corporation falls into acquisition.
             if @unpaid_loans.positive?
-              price = @buyer.share_price.price
+              old_price = @buyer.share_price
               @unpaid_loans.times do
                 @game.loan_taken_stock_market_movement(@buyer)
               end
-              @game.log_share_price(@buyer, price)
+              @game.log_share_price(@buyer, old_price)
               if @buyer.share_price.acquisition? && @round.offering.include?(@buyer)
                 # Can no longer be offered this round
                 @log << "#{@buyer.name} falls into acquisition and will not be offered for sale this round"

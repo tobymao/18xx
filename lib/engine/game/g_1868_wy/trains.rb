@@ -56,9 +56,9 @@ module Engine
 
         TRAINS = [
           def_train('2',  80, '2+2',  120, 7, rusts_on: '4', on: nil),
-          def_train('3', 180, '3+2',  220, 6, rusts_on: '6'),
+          def_train('3', 180, '3+2',  220, 6, rusts_on: '6', events: [{ 'type' => 'green_par' }]),
           def_train('4', 300, '4+3',  360, 6, rusts_on: '8', events: [{ 'type' => 'all_corps_available' }]),
-          def_train('5', 500, '5+4',  580, 5, events: [{ 'type' => 'full_capitalization' }]),
+          def_train('5', 500, '5+4',  580, 5, events: [{ 'type' => 'full_capitalization' }, { 'type' => 'brown_par' }]),
           def_train('6', 600, '6+5',  700, 3),
           def_train('7', 800, '7+5',  900, 2),
           def_train('8', 1000, '8+5', 1100, 15),
