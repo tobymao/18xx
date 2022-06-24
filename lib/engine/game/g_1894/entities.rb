@@ -191,22 +191,22 @@ module Engine
               },
             ],
           },
-          {
-            sym: 'F2',
-            name: 'French 2',
-            logo: '1894/F2',
-            simple_logo: '1894/F2.alt',
-            tokens: [0, 40],
-            max_ownership_percent: 60,
-            color: 'lime',
-            text_color: 'black',
-            abilities: [
-              {
-                type: 'description',
-                description: 'Home in an empty hex in France',
-              },
-            ],
-          },
+          # {
+          #   sym: 'F2',
+          #   name: 'French 2',
+          #   logo: '1894/F2',
+          #   simple_logo: '1894/F2.alt',
+          #   tokens: [0, 40],
+          #   max_ownership_percent: 60,
+          #   color: 'lime',
+          #   text_color: 'black',
+          #   abilities: [
+          #     {
+          #       type: 'description',
+          #       description: 'Home in an empty hex in France',
+          #     },
+          #   ],
+          # },
           {
             sym: 'B1',
             name: 'Belgian 1',
@@ -223,22 +223,22 @@ module Engine
               },
             ],
           },
-          {
-            sym: 'B2',
-            name: 'Belgian 2',
-            logo: '1894/B2',
-            simple_logo: '1894/B2.alt',
-            tokens: [0, 40],
-            max_ownership_percent: 60,
-            color: '#ffefdb',
-            text_color: 'black',
-            abilities: [
-              {
-                type: 'description',
-                description: 'Home in an empty hex in Belgium',
-              },
-            ],
-          },
+          # {
+          #   sym: 'B2',
+          #   name: 'Belgian 2',
+          #   logo: '1894/B2',
+          #   simple_logo: '1894/B2.alt',
+          #   tokens: [0, 40],
+          #   max_ownership_percent: 60,
+          #   color: '#ffefdb',
+          #   text_color: 'black',
+          #   abilities: [
+          #     {
+          #       type: 'description',
+          #       description: 'Home in an empty hex in Belgium',
+          #     },
+          #   ],
+          # },
         ].freeze
       end
     end

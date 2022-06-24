@@ -20,8 +20,9 @@ module Engine
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             hex = action.hex
             old_tile = hex.tile
+            new_tile = action.tile
 
-            if @game.class::GREEN_CITY_TILES.include?(old_tile.name)
+            if @game.class::BROWN_CITY_TILES.include?(new_tile.name)
               tokens =  old_tile.cities.flat_map(&:tokens).compact
               tokens_to_save = []
               tokens.each do |token|

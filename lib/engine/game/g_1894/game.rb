@@ -294,12 +294,13 @@ module Engine
 
         def setup
           @late_corporations, @corporations = @corporations.partition do |c|
-            %w[F1 F2 B1 B2].include?(c.id)
+            #%w[F1 F2 B1 B2].include?(c.id)
+            %w[F1 B1].include?(c.id)
           end
 
           @log << "-- Setting game up for #{@players.size} players --"
           remove_extra_trains
-          remove_extra_late_corporations
+          #remove_extra_late_corporations
 
           @ferry_marker_ability =
             Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
@@ -427,7 +428,7 @@ module Engine
 
         def home_hex(corporation, hex)
           corporation.coordinates = hex
-          hex_by_id(hex).tile.add_reservation!(corporation)
+          hex_by_id(hex).tile.add_reservation!(corporation, nil, reserve_city=false)
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
@@ -556,7 +557,8 @@ module Engine
         end
 
         def block_london
-          london = hex_by_id(LONDON_HEX).tile.cities.first
+          london = hex_by_id(LONDON_HEX).tile.towns.first
+          london.instance_variable_set(:@game, self)
 
           def london.blocks?(corporation)
             !@game.ferry_marker?(corporation)
