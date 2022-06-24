@@ -575,8 +575,15 @@ module Engine
           tile.upgrades.sum(&:cost)
         end
 
+        def can_place_river(tile)
+          @river_directions ||= { 'M4' => 5, 'N5' => 2 }
+          return false unless @river_directions.include?(tile.hex.id)
+
+          tile.paths.find { |p| p.edges[0].num == @river_directions[tile.hex.id] }.nil?
+        end
+
         def max_builder_cubes(tile)
-          (total_terrain_cost(tile).to_f / 40.0).ceil
+          ((total_terrain_cost(tile).to_f + (can_place_river(tile) ? 75.0 : 0.0)) / 40.0).ceil
         end
 
         def current_builder_cubes(tile)
@@ -587,9 +594,8 @@ module Engine
           current_builder_cubes(tile) < max_builder_cubes(tile)
         end
 
-        # Assume the company optimizes cost reduction from cubes
-        def upgrade_cost(tile, hex, entity, spender)
-          [super - (40 * current_builder_cubes(tile)), 0].max
+        def tile_cost_with_discount(tile, _hex, _entity, _spender, base_cost)
+          [base_cost - (40 * current_builder_cubes(tile)), 0].max
         end
       end
     end
