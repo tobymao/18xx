@@ -575,7 +575,7 @@ module Engine
 
         def corporate_round_finished
           @corporations.select { |c| c.floated? && c.type != :minor }.sort.each do |corp|
-            prev = corp.share_price.price
+            old_price = corp.share_price
 
             @stock_market.move_up(corp) if sold_out?(corp) && sold_out_increase?(corp)
             if corp.operated?
@@ -591,7 +591,7 @@ module Engine
               price_drops.times { @stock_market.move_down(corp) }
             end
 
-            log_share_price(corp, prev)
+            log_share_price(corp, old_price)
           end
         end
 

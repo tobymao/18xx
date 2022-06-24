@@ -2003,6 +2003,19 @@ module Engine
             corporation.add_ability(ability)
           end
         end
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price, < 2x share price ', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Minor company dividend > 0', '1 →'],
+            ['Each share sold', '1 ↓'],
+            ['Corporation sold out at end of SR (including Tax Haven shares) ', '1 ↑'],
+          ]
+        end
       end
     end
   end

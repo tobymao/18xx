@@ -9320,15 +9320,6 @@
       "entity_type": "player",
       "id": 758,
       "created_at": 1622015370,
-      "choice": "against",
-      "original_id": 933
-    },
-    {
-      "type": "choose",
-      "entity": 1689,
-      "entity_type": "player",
-      "id": 759,
-      "created_at": 1622028885,
       "auto_actions": [
         {
           "type": "pass",
@@ -9338,7 +9329,7 @@
         }
       ],
       "choice": "against",
-      "original_id": 934
+      "original_id": 933
     },
     {
       "type": "merge",

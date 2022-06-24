@@ -202,12 +202,18 @@ module View
 
         connection_run_header = @game.respond_to?(:connection_run) ? [h(:th, th_props[1, false], '')] : []
         connection_run_subheader = @game.respond_to?(:connection_run) ? [h(:th, render_sort_link('C-Run', :c_run))] : []
+        bank_width = 2
+        reserved_header = []
+        if any_reserved_shares?
+          bank_width += 1
+          reserved_header << h(:th, render_sort_link(@game.ipo_reserved_name, :reserved_shares))
+        end
 
         [
           h(:tr, [
             h(:th, { style: { minWidth: '5rem' } }, ''),
             h(:th, th_props[@game.players.size], 'Players'),
-            h(:th, th_props[2], 'Bank'),
+            h(:th, th_props[bank_width], 'Bank'),
             h(:th, th_props[2], 'Prices'),
             h(:th, th_props[5 + extra.size + treasury.size, false], ['Corporation ', render_toggle_not_floated_link]),
             h(:th, ''),
@@ -221,6 +227,7 @@ module View
               props[:style][:minWidth] = min_width(p)
               h('th.name.nowrap', props, render_sort_link(p.name, p.id))
             end,
+            *reserved_header,
             h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
             h(:th, render_sort_link('Market', :market_shares)),
             h(:th, render_sort_link(@game.ipo_name, :par_price)),
@@ -343,8 +350,10 @@ module View
               else
                 [1, corporation.id]
               end
+            when :reserved_shares
+              num_reserved_shares(corporation)
             when :ipo_shares
-              num_shares_of(@game.separate_treasury? ? @game.bank : corporation, corporation)
+              num_ipo_shares(corporation)
             when :market_shares
               num_shares_of(@game.share_pool, corporation)
             when :share_price
@@ -427,6 +436,17 @@ module View
         treasury = []
         treasury << h(:td, num_shares_of(corporation, corporation)) if @game.separate_treasury?
 
+        reserved = []
+        if any_reserved_shares?
+          reserved << h('td.padded_number', {
+                          style: {
+                            borderLeft: border_style,
+                            color: num_reserved_shares(corporation).zero? ? 'transparent' : 'inherit',
+                          },
+                        },
+                        num_reserved_shares(corporation))
+        end
+
         extra = []
         extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
         if @game.respond_to?(:available_shorts)
@@ -445,7 +465,7 @@ module View
         end
         extra << h(:td, @game.corporation_size_name(corporation)) if @diff_corp_sizes
 
-        n_ipo_shares = num_shares_of(@game.separate_treasury? ? @game.bank : corporation, corporation)
+        n_ipo_shares = num_ipo_shares(corporation)
         n_market_shares = num_shares_of(@game.share_pool, corporation)
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
@@ -461,9 +481,10 @@ module View
             share_holding += n_shares.to_s unless corporation.minor?
             h('td.padded_number', props, share_holding)
           end,
+          *reserved,
           h('td.padded_number', {
               style: {
-                borderLeft: border_style,
+                borderLeft: any_reserved_shares? ? '0px' : border_style,
                 color: n_ipo_shares.zero? ? 'transparent' : 'inherit',
               },
             },
@@ -585,6 +606,20 @@ module View
       end
 
       private
+
+      def num_ipo_shares(corporation)
+        num_shares_of(@game.separate_treasury? ? @game.bank : corporation, corporation) - num_reserved_shares(corporation)
+      end
+
+      def num_reserved_shares(corporation)
+        return 0 unless corporation.respond_to?(:num_ipo_reserved_shares)
+
+        corporation.num_ipo_reserved_shares
+      end
+
+      def any_reserved_shares?
+        @game.all_corporations.any? { |c| num_reserved_shares(c).positive? }
+      end
 
       def min_width(entity)
         PLAYER_COL_MAX_WIDTH if entity.companies.size > 1 || @game.format_currency(entity.value).size > 6

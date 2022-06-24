@@ -178,6 +178,8 @@ module Engine
       end
 
       def process_par(action)
+        raise GameError, 'Cannot par on behalf of other entities' if action.purchase_for
+
         share_price = action.share_price
         corporation = action.corporation
         entity = action.entity

@@ -138,24 +138,28 @@ module Engine
         # Everyone has passed so we need to run a fake OR.
         if @companies.include?(@cheapest)
           # No one has bought anything so we reduce the value of the cheapest company.
-          value = @cheapest.min_bid
-          @cheapest.discount += 5
-          new_value = @cheapest.min_bid
-          @log << "#{@cheapest.name} minimum bid decreases from "\
-                  "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
-
-          if new_value <= 0
-            # It's now free so the next player is forced to take it.
-            @round.next_entity_index!
-            buy_company(current_entity, @cheapest, 0)
-            resolve_bids
-          end
+          increase_discount!(@cheapest, 5)
         else
           @game.payout_companies
           @game.or_set_finished
         end
 
         entities.each(&:unpass!)
+      end
+
+      def increase_discount!(company, discount)
+        value = company.min_bid
+        company.discount += discount
+        new_value = company.min_bid
+        @log << "#{company.name} minimum bid decreases from "\
+                "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
+
+        return if new_value.positive?
+
+        # It's now free so the next player is forced to take it.
+        @round.next_entity_index!
+        buy_company(current_entity, company, 0)
+        resolve_bids
       end
 
       def placement_bid(bid)

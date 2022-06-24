@@ -95,6 +95,8 @@ module Engine
         ability = abilities(entity)
         raise GameError, "Not #{entity.name}'s turn: #{action.to_h}" unless entity == @company
 
+        raise GameError, "#{entity.name} must use all its tile lays" if ability.must_lay_all && ability.count.positive?
+
         entity.remove_ability(ability)
         @log << "#{entity.owner.name} passes laying additional track with #{entity.name}"
         @company = nil

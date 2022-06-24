@@ -954,10 +954,10 @@ module Engine
           major.companies.dup.each(&:close!)
 
           # Decrease share price two step and then give compensation with this price
-          prev = major.share_price.price
+          old_price = major.share_price
           @stock_market.move_left(major)
           @stock_market.move_left(major)
-          log_share_price(major, prev)
+          log_share_price(major, old_price)
           refund = major.share_price.price
           @players.each do |p|
             refund_amount = 0

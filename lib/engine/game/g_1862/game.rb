@@ -1192,7 +1192,7 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          old_price = corporation.share_price
 
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           num_shares = bundle.num_shares
@@ -1201,7 +1201,7 @@ module Engine
             num_shares -= 2 if corporation.share_price.type == :ignore_two_sales
           end
           num_shares.times { @stock_market.move_left(corporation) } if selling_movement?(corporation)
-          log_share_price(corporation, price)
+          log_share_price(corporation, old_price)
           check_bankruptcy!(corporation)
         end
 
@@ -1796,9 +1796,9 @@ module Engine
           shares = entity.shares.take(num_shares)
           bundle = ShareBundle.new(shares)
           @share_pool.sell_shares(bundle)
-          price = entity.share_price.price
+          old_price = entity.share_price
           num_shares.times { @stock_market.move_left(entity) }
-          log_share_price(entity, price)
+          log_share_price(entity, old_price)
           check_bankruptcy!(entity)
         end
 
