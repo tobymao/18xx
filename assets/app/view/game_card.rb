@@ -77,7 +77,7 @@ module View
           end
           JOIN_YELLOW
         when 'active'
-          buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
+          buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'View')
           acting?(@user) ? color_for(:your_turn) : ENTER_GREEN
         when 'finished'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Review')
