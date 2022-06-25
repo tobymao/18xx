@@ -17,6 +17,12 @@ module View
 
       def render_president_contributions
         player = @corporation.owner
+        owner = nil
+        if @game.class::EBUY_OWNER_MUST_HELP
+          owner = @game.acting_for_entity(player)
+          owner = nil if owner == player
+        end
+
         children = []
 
         verb = @must_buy_train ? 'must' : 'may'
@@ -50,8 +56,18 @@ module View
           end
 
           if share_funds_required.positive?
-            children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
-                                "#{@game.format_currency(share_funds_required)}.")
+            if owner
+              if share_funds_possible >= share_funds_required
+                children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
+                                    "#{@game.format_currency(share_funds_required)}.")
+              elsif share_funds_possible.positive?
+                children << h(:div, "#{player.name} #{verb} sell all its shares "\
+                                    "and then #{owner.name} must contribute further.")
+              end
+            else
+              children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
+                                  "#{@game.format_currency(share_funds_required)}.")
+            end
           end
 
           if share_funds_allowed.positive? &&
@@ -83,18 +99,84 @@ module View
           children << h(:div, text)
         end
 
+        owner_helping = false
         if @must_buy_train &&
            share_funds_possible < share_funds_required &&
-           !must_take_loan &&
-           @game.can_go_bankrupt?(player, @corporation)
-          children << h(:div, "#{player.name} does not have enough liquidity to "\
-                              "contribute towards #{@corporation.name} buying a train "\
-                              "from the Depot. #{@corporation.name} must buy a "\
-                              "train from another corporation, or #{player.name} must "\
-                              'declare bankruptcy.')
+           !must_take_loan
+          if @game.can_go_bankrupt?(player, @corporation)
+            children << h(:div, "#{player.name} does not have enough liquidity to "\
+                                "contribute towards #{@corporation.name} buying a train "\
+                                "from the Depot. #{@corporation.name} must buy a "\
+                                "train from another corporation, or #{player.name} must "\
+                                'declare bankruptcy.')
+          elsif owner
+            owner_helping = share_funds_possible.zero?
+            unless owner_helping
+              children << h(:div, "#{player.name} does not have enough liquidity to "\
+                                  "contribute towards #{@corporation.name} buying a train "\
+                                  "from the Depot. #{@corporation.name} must buy a "\
+                                  "train from another corporation, or #{owner.name} must "\
+                                  'contribute enough funds to enable a train purchase from '\
+                                  'the Depot or declare bankruptcy.')
+            end
+            # ADD MORE ABOUT OWNER DECLARING BANKRUPTCY
+          end
         end
 
-        children.concat(render_emergency_money_raising(player)) if share_funds_allowed.positive?
+        if owner_helping
+          cash += owner.cash
+          share_funds_required = cheapest_train_price - cash
+          share_funds_allowed = if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
+                                  share_funds_required
+                                else
+                                  @depot.max_depot_price - cash
+                                end
+          share_funds_possible = @game.liquidity(owner, emergency: true) - owner.cash
+
+          if cheapest_train_price > @corporation.cash
+            children << h(:div, "#{owner.name} #{verb} contribute an additional "\
+                                "#{@game.format_currency(cheapest_train_price - @corporation.cash - player.cash)} "\
+                                "for #{@corporation.name} to afford a train from the Depot.")
+          end
+
+          children << h(:div, "#{owner.name} has #{@game.format_currency(owner.cash)} in cash.")
+
+          if @step.can_ebuy_sell_shares?(@corporation)
+            if share_funds_allowed.positive?
+              children << h(:div, "#{owner.name} has #{@game.format_currency(share_funds_possible)} "\
+                                  'in sellable shares.')
+            end
+
+            if share_funds_required.positive?
+              children << h(:div, "#{owner.name} #{verb} sell shares to raise at least "\
+                                  "#{@game.format_currency(share_funds_required)}.")
+            end
+
+            if share_funds_allowed.positive? &&
+               (share_funds_allowed != share_funds_required) &&
+               (share_funds_possible >= share_funds_allowed)
+              children << h(:div, "#{owner.name} may continue to sell shares until raising up to "\
+                                  "#{@game.format_currency(share_funds_allowed)}.")
+            end
+
+            if @game.class::EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
+              children << h(:div, "#{owner.name} may not sell more shares than is necessary "\
+                                  'to buy the train that is purchased.')
+            end
+
+            if share_funds_possible < share_funds_required
+              children << h(:div, "#{player.name} and #{owner.name} together do not have enough liquidity to "\
+                                  "contribute towards #{@corporation.name} buying a train "\
+                                  "from the Depot. #{@corporation.name} must buy a "\
+                                  "train from another corporation, or #{owner.name} must "\
+                                  'declare bankruptcy.')
+            end
+
+            children.concat(render_emergency_money_raising(owner)) if share_funds_allowed.positive?
+          end
+        elsif share_funds_allowed.positive?
+          children.concat(render_emergency_money_raising(player))
+        end
 
         children
       end

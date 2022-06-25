@@ -44,6 +44,7 @@ module Engine
         DISCARDED_TRAINS = :remove
         EBUY_OTHER_VALUE = false
         EBUY_PRES_SWAP = true
+        EBUY_OWNER_MUST_HELP = true
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
         HOME_TOKEN_TIMING = :float
         MARKET_SHARE_LIMIT = 80
@@ -541,6 +542,17 @@ module Engine
           return false if entity.id == 'PEIR'
 
           super
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          return false if player == @union_bank
+
+          if corporation.owner == @union_bank && company_by_id('UB').owner == player
+            total_emr_buying_power(player, corporation) +
+              total_emr_buying_power(@union_bank, corporation) < @depot.min_depot_price
+          else
+            super
+          end
         end
 
         # The base version of purchasable_companies allows you to purchase most
