@@ -28,7 +28,7 @@ module View
 
     def render_form(name, inputs, description = nil)
       props = {
-        on: { keyup: ->(event) { submit if Native(event)['key'] == 'Enter' } },
+        on: { keyup: ->(event) { submit if Native(event)['key'] == 'View' } },
       }
       h2_props = { style: { margin: '1rem 0 0.5rem 0' } }
 

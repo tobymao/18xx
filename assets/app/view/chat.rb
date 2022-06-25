@@ -32,7 +32,7 @@ module View
       enter = lambda do |event|
         event = Native(event)
 
-        if event['key'] == 'Enter'
+        if event['key'] == 'View'
           message = event['target']['value']
           if message.strip != ''
             add_line(user: @user, created_at: Time.now.to_i, message: message)

@@ -29,7 +29,7 @@ module View
           key = event['key']
 
           case key
-          when 'Enter'
+          when 'View'
             message = event['target']['value']
             if message.strip != ''
               event['target']['value'] = ''
