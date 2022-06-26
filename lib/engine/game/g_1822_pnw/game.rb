@@ -289,7 +289,7 @@ module Engine
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          Engine::Game::G1822PNW::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
@@ -596,6 +596,11 @@ module Engine
 
         def tile_cost_with_discount(tile, _hex, _entity, _spender, base_cost)
           [base_cost - (40 * current_builder_cubes(tile)), 0].max
+        end
+
+        def regional_railway?(entity)
+          @regional_railways ||= %w[A B C].freeze
+          @regional_railways.include?(entity.id)
         end
       end
     end
