@@ -17,6 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>18SJ have now moved from prototype to alpha, using the rules published in AAG Wave 5.</p>
         <p>1877: Stockholm Tramways is now in alpha.</p>
         <p>18 Los Angeles 2 is now in beta.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>

@@ -47,7 +47,7 @@ module Engine
             'code' =>
             'city=revenue:90,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
-          '172' => 2,
+          '171' => 1,
           '298SJ' =>
           {
             'count' => 1,
