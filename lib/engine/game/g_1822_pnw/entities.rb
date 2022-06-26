@@ -1008,7 +1008,7 @@ module Engine
           {
             sym: 'NP',
             name: 'Northern Pacific Railway',
-            logo: '1822_pnw/FCM',
+            logo: '1822_pnw/NP',
             tokens: [0, 100],
             type: 'major',
             float_percent: 20,
