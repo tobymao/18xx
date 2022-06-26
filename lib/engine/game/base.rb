@@ -216,6 +216,7 @@ module Engine
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false # corporation must issue shares before ebuy (if possible)
       EBUY_SELL_MORE_THAN_NEEDED = false # true if corporation may continue to sell shares even though enough funds
       EBUY_CAN_SELL_SHARES = true # true if a player can sell shares for ebuy
+      EBUY_OWNER_MUST_HELP = false # owner of ebuying entity is on the hook
 
       # if sold more than needed then cannot then buy a cheaper train in the depot.
       EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = false
