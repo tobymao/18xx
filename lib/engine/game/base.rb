@@ -584,7 +584,7 @@ module Engine
       end
 
       def active_players
-        players_ = @round.active_entities.map(&:player).compact
+        players_ = @round.active_entities.map(&:player).map { |p| acting_for_player(p) }.compact
 
         players_.empty? ? @players.reject(&:bankrupt) : players_
       end
@@ -599,7 +599,7 @@ module Engine
 
       def valid_actors(action)
         if (player = action.entity.player)
-          [player]
+          [acting_for_player(player)]
         else
           active_players
         end
@@ -607,6 +607,10 @@ module Engine
 
       def acting_for_entity(entity)
         entity&.owner
+      end
+
+      def acting_for_player(player)
+        player
       end
 
       def player_log(entity, msg)
