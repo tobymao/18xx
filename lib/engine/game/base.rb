@@ -718,7 +718,9 @@ module Engine
       end
 
       def process_single_action(action)
-        @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}" if action.user
+        if action.user && action.user != acting_for_player(action.entity&.player)&.id
+          @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
+        end
 
         preprocess_action(action)
 
