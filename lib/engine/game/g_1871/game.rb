@@ -670,7 +670,7 @@ module Engine
             return
           end
 
-          new_share_percent = 100 / @peir_shares.size
+          new_share_percent = (100 / @peir_shares.size).to_i
           @peir.forced_share_percent = new_share_percent
           peir.share_holders.clear
           @peir_shares.each do |share|
