@@ -320,9 +320,9 @@ module View
           # player names when they have the same number of shares. This results
           # in the listed order showing the correct transfer of presidency.
           players_in_order = entities.map(&:name)
-          unless @corporation.owner.nil?
-            player_index = players_in_order.find_index(@corporation.owner.name)
-            players_in_order = players_in_order.rotate(player_index) unless player_index.nil?
+          if @corporation.owner
+            player_index = players_in_order.index(@corporation.owner.name)
+            players_in_order = players_in_order.rotate(player_index) if player_index
           end
         end
 
@@ -332,7 +332,7 @@ module View
             @corporation.president?(entity),
             entity.num_shares_of(@corporation, ceil: false),
             step&.did_sell?(@corporation, entity),
-            pres_transfer_order ? players_in_order.find_index(entity.name) : 0,
+            pres_transfer_order ? players_in_order.index(entity.name) : 0,
             step&.last_acted_upon?(@corporation, entity),
             !@corporation.holding_ok?(entity, 1),
             entity.shares_of(@corporation).count(&:double_cert),
