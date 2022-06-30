@@ -709,7 +709,7 @@ module Engine
             auto_actions.concat(actions)
           end
           if validate_auto_actions
-            raise GameError, "Auto actions do not match" unless auto_actions_match?(action.auto_actions, auto_actions)
+            raise GameError, 'Auto actions do not match' unless auto_actions_match?(action.auto_actions, auto_actions)
           else
             # Update the last raw actions as the hash maybe incorrect
             action.clear_cache
@@ -777,7 +777,7 @@ module Engine
         return false unless a.size == b.size
 
         a.size.times do |i|
-          return false unless a[i].to_h.reject {|k,_| k == 'created_at'} == b[i].to_h.reject {|k,_| k == 'created_at'}
+          return false unless a[i].to_h.except('created_at') == b[i].to_h.except('created_at')
         end
 
         true
