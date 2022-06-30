@@ -131,13 +131,13 @@ module Engine
         }.freeze
 
         MINOR_ASSOCIATIONS = {
-          'M1' => 'CPR',
-          'M4' => 'GNR',
-          'M5' => 'CMPS',
-          'M7' => 'SWW',
-          'M15' => 'NP',
-          'M18' => 'SPS',
-          'M19' => 'ORNC',
+          '1' => 'CPR',
+          '4' => 'GNR',
+          '5' => 'CMPS',
+          '7' => 'SWW',
+          '15' => 'NP',
+          '18' => 'SPS',
+          '19' => 'ORNC',
         }.freeze
 
         def port_company?(entity)
@@ -314,6 +314,47 @@ module Engine
           [G1822PNW::Step::Choose]
         end
 
+        def next_round!
+          @round =
+            case @round
+            when G1822::Round::Choices
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Stock
+              G1822::Round::Choices.new(self, choose_step, round_num: @round.round_num)
+            when Engine::Round::Operating
+              if  @phase.name.to_i >= 2
+                @log << "-- #{round_description('Merger', @round.round_num)} --"
+                G1822PNW::Round::Merger.new(self, [
+                  G1822PNW::Step::Merge,
+                ], round_num: @round.round_num)
+              elsif @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when G1822PNW::Round::Merger
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
         def discountable_trains_for(corporation)
           discount_info = []
 
@@ -389,7 +430,8 @@ module Engine
 
           minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
           minor_6, minors = minors.partition { |c| c.id == 'M6' }
-          minors_assoc, minors = minors.partition { |c| MINOR_ASSOCIATIONS.key?(c.id) }
+          minors_assoc, minors = minors.partition { |c| MINOR_ASSOCIATIONS.key?(c.id[1..-1]) }
+
 
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
           private_1 = privates.find { |c| c.id == 'P1' }
@@ -601,6 +643,14 @@ module Engine
         def regional_railway?(entity)
           @regional_railways ||= %w[A B C].freeze
           @regional_railways.include?(entity.id)
+        end
+
+        def associated_minors
+          @corporations.select { |c| c.floated? && MINOR_ASSOCIATIONS.include?(c.id)}
+        end
+
+        def unassociated_minors
+          @corporations.select { |c| c.floated? && c.type == :minor && !MINOR_ASSOCIATIONS.include?(c.id)}
         end
       end
     end

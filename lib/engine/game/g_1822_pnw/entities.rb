@@ -610,8 +610,8 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'A8',
             city: 0,
-            color: '#d1232a',
-            text_color: '#ffffff',
+            color: '#ffffff',
+            text_color: '#black',
             reservation_color: nil,
           },
           {
@@ -678,8 +678,8 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'D23',
             city: 0,
-            color: '#8dd7f6',
-            text_color: '#000000',
+            color: '#ffffff',
+            text_color: '#black',
             reservation_color: nil,
           },
           {
@@ -712,8 +712,8 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'F23',
             city: 0,
-            color: '#f58121',
-            text_color: '#ffffff',
+            color: '#ffffff',
+            text_color: '#black',
             reservation_color: nil,
           },
           {
@@ -729,8 +729,8 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'H11',
             city: 0,
-            color: '#32763f',
-            text_color: '#ffffff',
+            color: '#ffffff',
+            text_color: '#black',
             reservation_color: nil,
           },
           {
@@ -882,8 +882,8 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O8',
             city: 0, ## Todo - Check
-            color: '#680b26',
-            text_color: '#ffffff',
+            color: '#ffffff',
+            text_color: '#black',
             reservation_color: nil,
           },
           {
@@ -899,8 +899,8 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O8',
             city: 1, ## Todo - Check
-            color: '#025aaa',
-            text_color: '#ffffff',
+            color: '#ffffff',
+            text_color: '#black',
             reservation_color: nil,
           },
           {
@@ -933,8 +933,8 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O20',
             city: 0,
-            color: '#000000',
-            text_color: '#ffffff',
+            color: '#ffffff',
+            text_color: '#black',
             reservation_color: nil,
           },
           {
