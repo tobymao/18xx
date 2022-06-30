@@ -7,12 +7,35 @@ module Engine
     module G1871
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def actions(entity)
+            return [] unless can_entity_buy_train?(entity)
+            return ['sell_shares'] if (entity == current_entity&.owner || entity == @game.acting_for_entity(current_entity)) &&
+                                      can_ebuy_sell_shares?(current_entity)
+            return [] if entity != current_entity
+            return %w[sell_shares buy_train] if president_may_contribute?(entity)
+            return %w[buy_train pass] if can_buy_train?(entity)
+
+            []
+          end
+
           def buyable_trains(entity)
             super.reject do |train|
               entity.id == 'PEIR' &&
               train.from_depot? &&
                 @round.bought_trains.include?(entity)
             end
+          end
+
+          def buy_train_action(action, entity = nil)
+            entity ||= action.entity
+            acting = @game.acting_for_entity(entity.owner)
+            borrow_from = if entity.owner != acting &&
+                             entity.owner.cash < action.price &&
+                             @game.liquidity(entity.owner, emergency: true) == entity.owner.cash
+                            acting
+                          end
+
+            super(action, entity, borrow_from: borrow_from)
           end
 
           def process_buy_train(action)

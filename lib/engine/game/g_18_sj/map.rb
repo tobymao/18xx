@@ -7,9 +7,9 @@ module Engine
         TILES = {
           '5' => 4,
           '6' => 4,
-          '7' => 20,
-          '8' => 20,
-          '9' => 20,
+          '7' => 'unlimited',
+          '8' => 'unlimited',
+          '9' => 'unlimited',
           '14' => 4,
           '15' => 4,
           '16' => 2,
@@ -40,15 +40,15 @@ module Engine
           '57' => 5,
           '63' => 2,
           '70' => 1,
-          '131' =>
+          '611' => 2,
+          '619' => 3,
+          'X1' =>
           {
             'count' => 1,
-            'color' => 'gray',
-            'code' =>
-            'city=revenue:90,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y',
           },
-          '172' => 2,
-          '298SJ' =>
+          'X2' =>
           {
             'count' => 1,
             'color' => 'green',
@@ -56,7 +56,13 @@ module Engine
                       'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
                       'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2',
           },
-          '299SJ' =>
+          'X3' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y',
+          },
+          'X4' =>
           {
             'count' => 1,
             'color' => 'brown',
@@ -64,20 +70,20 @@ module Engine
                       'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
                       'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2',
           },
-          '440' =>
+          'X5' =>
           {
             'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y',
+            'color' => 'gray',
+            'code' =>
+            'city=revenue:90,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
-          '466' =>
+          'X6' =>
           {
             'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y',
+            'color' => 'gray',
+            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                      'path=a:5,b:_0',
           },
-          '611' => 2,
-          '619' => 3,
         }.freeze
 
         LOCATION_NAMES = {

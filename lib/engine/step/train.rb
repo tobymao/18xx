@@ -52,7 +52,7 @@ module Engine
         true
       end
 
-      def buy_train_action(action, entity = nil)
+      def buy_train_action(action, entity = nil, borrow_from: nil)
         entity ||= action.entity
         train = action.train
         train.variant = action.variant
@@ -74,8 +74,18 @@ module Engine
           try_take_player_loan(entity.owner, remaining)
 
           player = entity.owner
-          player.spend(remaining, entity)
-          @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
+
+          if borrow_from && player.cash < remaining
+            current_cash = player.cash
+            extra_needed = remaining - current_cash
+            player.spend(current_cash, entity)
+            @log << "#{player.name} contributes #{@game.format_currency(current_cash)}"
+            borrow_from.spend(extra_needed, entity)
+            @log << "#{borrow_from.name} contributes #{@game.format_currency(extra_needed)}"
+          else
+            player.spend(remaining, entity)
+            @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
+          end
         end
 
         try_take_loan(entity, price)

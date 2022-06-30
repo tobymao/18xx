@@ -54,7 +54,7 @@ module Engine
 
             raise GameError, "#{corporation.name} can't purchase a #{train.name} train" unless can_purchase?(corporation)
 
-            @log << "#{corporation.name} closes the #{hunslet.name} to purchase a"\
+            @log << "#{corporation.name} closes the #{hunslet.name} to purchase a "\
                     "#{train.name} train for #{@game.format_currency(train.price)}"
             hunslet.close!
             @game.buy_train(corporation, train, train.price)
