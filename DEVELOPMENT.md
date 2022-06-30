@@ -129,3 +129,13 @@ Once a game has been made available on the website, bugs may be found where the 
 4. Execute `migrate_json('your_json_file.json')`
 
 This will apply the migrations to the game file you specified, allowing you to verify it worked as expected.
+
+#### Loading a production game state to test locally
+
+You may want example games in your development environment to test. One way to do this is to import games directly from the production website.
+
+1. Run `docker-compose exec rack irb`
+2. Execute `load "import_game.rb"`
+3. Execute `import_game(<product_game_id>)`
+
+A copy of that game is now available locally. 

@@ -44,6 +44,7 @@ module Engine
         DISCARDED_TRAINS = :remove
         EBUY_OTHER_VALUE = false
         EBUY_PRES_SWAP = true
+        EBUY_OWNER_MUST_HELP = true
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
         HOME_TOKEN_TIMING = :float
         MARKET_SHARE_LIMIT = 80
@@ -341,7 +342,11 @@ module Engine
 
         # Let the Union Bank owner act for the bank in an operating round
         def acting_for_entity(entity)
-          return entity&.owner unless entity&.owner == @union_bank
+          acting_for_player(entity&.owner)
+        end
+
+        def acting_for_player(player)
+          return player unless player == @union_bank
 
           bank_company = company_by_id('UB')
           bank_company.owner
@@ -543,6 +548,17 @@ module Engine
           super
         end
 
+        def can_go_bankrupt?(player, corporation)
+          return false if player == @union_bank
+
+          if corporation.owner == @union_bank && company_by_id('UB').owner == player
+            total_emr_buying_power(player, corporation) +
+              total_emr_buying_power(@union_bank, corporation) < @depot.min_depot_price
+          else
+            super
+          end
+        end
+
         # The base version of purchasable_companies allows you to purchase most
         # companies even if you aren't the owner of the private. In this game
         # only one company is lootable and it's only lootable by a corporation
@@ -658,7 +674,7 @@ module Engine
             return
           end
 
-          new_share_percent = 100 / @peir_shares.size
+          new_share_percent = (100 / @peir_shares.size).to_i
           @peir.forced_share_percent = new_share_percent
           peir.share_holders.clear
           @peir_shares.each do |share|
@@ -667,11 +683,15 @@ module Engine
             peir.share_holders[share.owner] += new_share_percent
           end
           peir.share_holders.each do |owner, amount|
-            @log << "#{owner.name} now owns #{100 * amount / (@peir_shares.size * new_share_percent)}% of the PEIR"
+            @log << "#{owner.name} now owns #{(100 * amount / (@peir_shares.size * new_share_percent)).round}% of the PEIR"
           end
 
-          peir.owner = peir_owner
-          @log << "PEIR is now operated by #{peir.owner.name}"
+          if (new_peir_owner = peir_owner) == peir.owner
+            @log << "PEIR is still operated by #{peir.owner.name}"
+          else
+            peir.owner = new_peir_owner
+            @log << "PEIR is now operated by #{peir.owner.name}"
+          end
         end
 
         # Once a corporation pars, add it to the tranches
@@ -776,7 +796,8 @@ module Engine
 
             next unless num_of_branch_shares.positive?
 
-            @log << "#{player.name} exchanges #{num_of_branch_shares} shares of #{corporation.name} for #{branch.name}"
+            shares_str = num_of_branch_shares == 1 ? 'share' : 'shares'
+            @log << "#{player.name} exchanges #{num_of_branch_shares} #{shares_str} of #{corporation.name} for #{branch.name}"
 
             shares.take(num_of_branch_shares).each do |share|
               share.transfer(corporation)
@@ -791,7 +812,8 @@ module Engine
           num_of_branch_shares = (shares.sum(&:percent) / 10 / 2).to_i
 
           if num_of_branch_shares.positive?
-            @log << "The market exchanges #{num_of_branch_shares} shares of #{corporation.name} for #{branch.name}"
+            shares_str = num_of_branch_shares == 1 ? 'share' : 'shares'
+            @log << "The market exchanges #{num_of_branch_shares} #{shares_str} of #{corporation.name} for #{branch.name}"
 
             shares.take(num_of_branch_shares).each do |share|
               share.transfer(corporation)

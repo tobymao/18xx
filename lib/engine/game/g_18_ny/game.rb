@@ -810,11 +810,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          additional_revenue = 0
-          if second_edition? && route.train.name == 'D'
-            additional_revenue = 30 * (stops.map(&:hex) & route.corporation.tokens.select(&:used).map(&:hex)).size
-          end
-
+          additional_revenue = second_edition? && route.train.name == 'D' ? 10 * stops.size : 0
           super + additional_revenue + (route_connection_bonus_hexes(route, stops: stops).size * 10)
         end
 
@@ -961,10 +957,6 @@ module Engine
           @log << "#{owner.name} salvages a #{train.name} train for #{format_currency(salvage_value(train))}"
           @bank.spend(salvage_value(train), owner)
           @depot.reclaim_train(train)
-        end
-
-        def discarded_train_placement
-          second_edition? ? :remove : super
         end
 
         def rust(train)
