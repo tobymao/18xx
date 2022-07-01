@@ -332,7 +332,7 @@ module Engine
                 "#{c.name} (#{@game.format_currency(c.share_price.price)})"
               end
               @log << "#{entity.name} chooses which odd share to retain for trading up"
-              @player_choice = PlayerChoice.new(step_description: 'Choose share to retain after 2:1 exchange',
+              @player_choice = PlayerChoice.new(step_description: 'Choose odd share to retain for trading up',
                                                 choice_description: 'Choose share',
                                                 choices: choices)
               nil
@@ -370,7 +370,7 @@ module Engine
             elsif entity.player? && !@exchange_selection
               @log << "#{entity.name} chooses whether to trade up or sell single #{share.corporation.name} share"
               exchange_cost = share.price - @system.share_price.price
-              @player_choice = PlayerChoice.new(step_description: 'Exchange or sell share',
+              @player_choice = PlayerChoice.new(step_description: 'Trade up or sell share',
                                                 choice_description: 'Choose',
                                                 choices: ["Exchange (#{@game.format_currency(exchange_cost)})",
                                                           "Sell (#{@game.format_currency(share.price)})"])
