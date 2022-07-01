@@ -29,6 +29,12 @@ def send_webhook_notification(user, message)
   end
 end
 
+MessageBus.subscribe '/test_notification' do |msg|
+  user_id = msg.data
+  user = User[user_id]
+  send_webhook_notification(user, 'This is a test notification from 18xx.games.')
+end
+
 MessageBus.subscribe '/turn' do |msg|
   data = msg.data
 
