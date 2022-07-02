@@ -684,7 +684,7 @@ module Engine
         true
       end
 
-      def process_action(action, add_auto_actions: false)
+      def process_action(action, add_auto_actions: false, validate_auto_actions: false)
         action = Engine::Action::Base.action_from_h(action, self) if action.is_a?(Hash)
 
         action.id = current_action_id + 1
@@ -702,15 +702,22 @@ module Engine
           @last_game_action_id = action.id
         end
 
-        action.auto_actions.each { |a| process_single_action(a) }
-        if add_auto_actions
+        if add_auto_actions || validate_auto_actions
+          auto_actions = []
           until (actions = round.auto_actions || []).empty?
             actions.each { |a| process_single_action(a) }
-            action.auto_actions.concat(actions)
+            auto_actions.concat(actions)
           end
-          # Update the last raw actions as the hash maybe incorrect
-          action.clear_cache
-          @raw_actions[-1] = action.to_h
+          if validate_auto_actions
+            raise GameError, 'Auto actions do not match' unless auto_actions_match?(action.auto_actions, auto_actions)
+          else
+            # Update the last raw actions as the hash maybe incorrect
+            action.clear_cache
+            action.auto_actions = auto_actions
+            @raw_actions[-1] = action.to_h
+          end
+        else
+          action.auto_actions.each { |a| process_single_action(a) }
         end
         @last_processed_action = action.id
 
@@ -764,6 +771,14 @@ module Engine
         end
 
         self
+      end
+
+      def auto_actions_match?(actions_a, actions_b)
+        return false unless actions_a.size == actions_b.size
+
+        actions_a.zip(actions_b).all? do |a, b|
+          a.to_h.except('created_at') == b.to_h.except('created_at')
+        end
       end
 
       def store_player_info

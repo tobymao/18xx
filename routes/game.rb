@@ -85,7 +85,7 @@ class Api
 
                 r.params['user'] = user.id
 
-                engine = engine.process_action(r.params)
+                engine = engine.process_action(r.params, validate_auto_actions: true)
                 halt(500, "Illegal action: #{engine.exception}") if engine.exception
                 action = engine.raw_actions.last.to_h
 
