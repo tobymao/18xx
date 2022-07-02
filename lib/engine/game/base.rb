@@ -773,14 +773,12 @@ module Engine
         self
       end
 
-      def auto_actions_match?(a, b)
-        return false unless a.size == b.size
+      def auto_actions_match?(actions_a, actions_b)
+        return false unless actions_a.size == actions_b.size
 
-        a.size.times do |i|
-          return false unless a[i].to_h.except('created_at') == b[i].to_h.except('created_at')
+        actions_a.zip(actions_b).all? do |a,b|
+          a.to_h.except('created_at') == b.to_h.except('created_at')
         end
-
-        true
       end
 
       def store_player_info
