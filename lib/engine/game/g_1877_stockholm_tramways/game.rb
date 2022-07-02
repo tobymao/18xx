@@ -427,7 +427,10 @@ module Engine
           end
 
           other.spend(other.cash, corp) if other.cash.positive?
-          other.trains.each { |train| train.owner = corp }
+          other.trains.each do |train|
+            train.owner = corp
+            train.operated = false
+          end
           corp.trains.concat(other.trains)
           @log << "Transferred trains and treasury from #{other.name} to #{corp.name}"
 
