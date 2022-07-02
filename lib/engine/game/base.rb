@@ -776,7 +776,7 @@ module Engine
       def auto_actions_match?(actions_a, actions_b)
         return false unless actions_a.size == actions_b.size
 
-        actions_a.zip(actions_b).all? do |a,b|
+        actions_a.zip(actions_b).all? do |a, b|
           a.to_h.except('created_at') == b.to_h.except('created_at')
         end
       end
