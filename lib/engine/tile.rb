@@ -360,9 +360,9 @@ module Engine
       @reservations.any? { |r| [r, r.owner].include?(corporation) }
     end
 
-    def add_reservation!(entity, city, slot = nil)
-      # Single city, assume the first
-      city = 0 if @cities.one?
+    def add_reservation!(entity, city, slot = nil, reserve_city = true)
+      # Single city, assume the first unless reserve_city is false
+      city = 0 if @cities.one? && reserve_city
       slot = @cities[city].get_slot(entity) if city && slot.nil?
 
       if city && slot
