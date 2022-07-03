@@ -9,6 +9,12 @@ module Engine
         class Track < Engine::Step::Track
           include Engine::Game::G1894::Tracker
 
+          def actions(entity)
+            return [] if @game.skip_track_and_token
+
+            super
+          end
+
           def legal_tile_rotation?(_entity, hex, tile)
             if hex.id == @game.class::PARIS_HEX && hex.tile.color == :green
               return true if tile.rotation == hex.tile.rotation
@@ -26,6 +32,7 @@ module Engine
               tokens =  old_tile.cities.flat_map(&:tokens).compact
               tokens_to_save = []
               tokens.each do |token|
+                token.price = 0
                 tokens_to_save << {
                   entity: token.corporation,
                   hexes: [hex],

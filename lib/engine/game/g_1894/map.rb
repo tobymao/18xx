@@ -166,8 +166,8 @@ module Engine
 
         HEXES = {
           white: {
-            %w[B1 B7 C4 D5 D7 D9 E2 E18 F1 F3 F7 F9 F17 G8 H1 H3 H11 I4 I10 I12] => '',
-            %w[C10 E8 G6 H5 H9] => 'upgrade=cost:50,terrain:water',
+            %w[B1 B7 C4 D5 D7 D9 E18 F1 F3 F7 F9 F17 G8 H1 H3 H11 I4 I10 I12] => '',
+            %w[C10 E2 E8 G6 H5 H9] => 'upgrade=cost:50,terrain:water',
             %w[C2 C8] => 'upgrade=cost:80,terrain:water',
             %w[B3 B11 D3 D15 E6 E10 E16 G10 H17] => 'city=revenue:0',
             ['B13'] => 'border=edge:5,type:mountain',

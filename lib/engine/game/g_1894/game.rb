@@ -15,11 +15,13 @@ module Engine
         include G1894::Entities
         include StubsAreRestricted
 
+        attr_accessor :skip_track_and_token
+
         CURRENCY_FORMAT_STR = '%d F'
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 99, 4 => 99 }.freeze
+        CERT_LIMIT = { 3 => 22, 4 => 18 }.freeze
 
         STARTING_CASH = { 3 => 650, 4 => 540 }.freeze
 
@@ -162,7 +164,7 @@ module Engine
                     distance: 5,
                     price: 400,
                     rusts_on: 'D',
-                    num: 4,
+                    num: 3,
                     events: [{ 'type' => 'late_corporations_available' }],
                     discount: { '4' => 150 },
                   },
@@ -186,6 +188,7 @@ module Engine
                     distance: 999,
                     price: 800,
                     num: 20,
+                    events: [{ 'type' => 'last_or_set_triggered' }],
                     discount: { '5' => 200, '6' => 300, '7' => 350 },
                   }].freeze
 
@@ -230,6 +233,7 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'late_corporations_available' => ['Late corporations available', 'Late corporations can be opened'],
+          'last_or_set_triggered' => ['The next OR set will be the last one', 'No new tracks and tokens allowed in the last OR set'],
         ).freeze
 
         LONDON_HEX = 'A10'
@@ -298,8 +302,11 @@ module Engine
             %w[F1 B1].include?(c.id)
           end
 
+          @last_or_set_triggered = false
+          @skip_track_and_token = false
+
           @log << "-- Setting game up for #{@players.size} players --"
-          remove_extra_trains
+          #remove_extra_trains
           #remove_extra_late_corporations
 
           @ferry_marker_ability =
@@ -340,7 +347,7 @@ module Engine
           return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
 
           super
-        end
+        end['B13']
 
         def init_stock_market
           G1894::StockMarket.new(self.class::MARKET, [],
@@ -351,10 +358,21 @@ module Engine
           'Treasury'
         end
 
+        def next_round!
+          @skip_track_and_token = @last_or_set_triggered && (@round.instance_of? G1894::Round::Stock)
+
+          super
+        end
+
         def event_late_corporations_available!
           @log << "-- Event: #{EVENTS_TEXT['late_corporations_available'][0]} --"
           @corporations.concat(@late_corporations)
           @late_corporations = []
+        end
+
+        def event_last_or_set_triggered!
+          @log << "-- Event: #{EVENTS_TEXT['last_or_set_triggered'][0]} --"
+          @last_or_set_triggered = true
         end
 
         TILE_LAYS = [
@@ -364,10 +382,6 @@ module Engine
 
         def can_hold_above_corp_limit?(_entity)
           true
-        end
-
-        def show_game_cert_limit?
-          false
         end
 
         def init_round_finished
@@ -497,7 +511,7 @@ module Engine
 
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
           revenues << 60 if is_est_running_to_le_sud(corporation, stops)
-          revenues << get_current_revenue(hex_by_id(LONDON_HEX).tile.cities[0].revenue) + 10 if is_pc_owner_running_to_london(corporation, stops)
+          revenues << get_current_revenue(hex_by_id(LONDON_HEX).tile.towns[0].revenue) + 10 if is_pc_owner_running_to_london(corporation, stops)
 
           revenues.max + 10
         end
