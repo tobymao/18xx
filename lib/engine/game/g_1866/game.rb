@@ -76,7 +76,7 @@ module Engine
                                                 'The transit hub, gives one tokened city value to the treasury '\
                                                 '(when included on a route).'],
           'infrastructure_p' => ['Palace Car', 'The P, palace car infrastructure, will be available for purchase. '\
-                                               'The palace car counts 10 for each city for one train, paid to the treasury.'],
+                                               'The palace car counts 10 for each town for one train, paid to the treasury.'],
           'infrastructure_m' => ['Mail', 'The M, mail infrastructure, will be available for purchase. The mail, counts '\
                                          'the sum value of the start and end locations of a route to the treasury.'],
         }.freeze
@@ -263,31 +263,13 @@ module Engine
               },
             ],
             price: 500,
+            rusts_on: '10',
             events: [
               {
                 'type' => 'brown_ferries',
               },
               {
                 'type' => 'formation',
-              },
-            ],
-            variants: [
-              {
-                name: '3E',
-                distance: [
-                  {
-                    'nodes' => ['city'],
-                    'pay' => 3,
-                    'visit' => 3,
-                  },
-                  {
-                    'nodes' => ['town'],
-                    'pay' => 0,
-                    'visit' => 99,
-                  },
-                ],
-                multiplier: 2,
-                price: 500,
               },
             ],
           },
@@ -1813,9 +1795,9 @@ module Engine
             transist_hub_revenue = 0
             palace_car_revenue = 0
             stops.each do |stop|
-              next if !stop || (!stop.city? && !stop.offboard?)
+              next unless stop
 
-              palace_car_revenue += 10 if !e_train || (e_train && stop.tokened_by?(entity))
+              palace_car_revenue += 10 if stop.town?
               next if !stop.city? || !stop.tokened_by?(entity)
 
               stop_base_revenue = stop.route_base_revenue(phase, train)
