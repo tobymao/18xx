@@ -32,11 +32,11 @@ module Engine
 
           def payout_per_share(entity, revenue)
             # PEIR rounds up
-            (revenue / entity.total_shares).ceil
+            (revenue.to_f / entity.total_shares).ceil
           end
 
           def half_pay_withhold_amount(_entity, revenue)
-            (revenue / 2).ceil
+            (revenue / 2.0).ceil
           end
 
           def dividends_for_entity(entity, holder, per_share)
