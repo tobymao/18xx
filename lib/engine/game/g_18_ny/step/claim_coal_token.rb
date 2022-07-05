@@ -19,7 +19,7 @@ module Engine
             actions = []
             if allowed_to_claim_coal?(entity)
               @game.connected_coal_hexes(entity)&.each do |hex|
-                actions << Engine::Action::ClaimHexToken.new(entity, hex: hex, token_type: :coal)
+                actions << Engine::Action::ClaimHexToken.new(entity, hex: hex, token_type: 'coal')
               end
             end
             actions << Engine::Action::Pass.new(entity) if actions.empty?
