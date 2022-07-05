@@ -995,6 +995,7 @@ module Engine
           create_destinations(
             @optional_rules&.include?(:alternate_destinations) ? ALTERNATE_DESTINATIONS : DESTINATIONS
           )
+          national.destinated!
           national.add_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
         end
