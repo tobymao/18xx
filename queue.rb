@@ -44,7 +44,7 @@ MessageBus.subscribe '/turn' do |msg|
 
   message = "#{data['type']} in #{game.title} \"#{game.description}\" " \
             "(#{game.round} #{game.turn})\n#{data['game_url']}"
-  users.each { send_webhook_notification(user, message) }
+  users.each { |user| send_webhook_notification(user, message) }
 
   users = users.reject do |user|
     notifications = user.settings['notifications'] || 'none'
