@@ -1573,7 +1573,6 @@ module Engine
         def float_national
           national.float!
           @stock_market.set_par(national, calculate_national_price)
-          national.ipoed = true
         end
 
         # Handles the share exchange in nationalization
@@ -1630,10 +1629,14 @@ module Engine
 
             if player == president
               if @false_national_president
-                # TODO: Handle this case properly.
-                @log << "#{player.name} is the president of the #{national.name} but is only awarded 1 share}"
+                @log << "#{player.name} is the president of the #{national.name} but is only awarded 1 share"
                 national.presidents_share.percent /= 2
                 @share_pool.buy_shares(player, national.presidents_share, exchange: :free, exchange_price: 0)
+                national.share_holders[national] -= national.share_percent
+                # Since the share_pool code sees that the player is getting 10%, it only deducts
+                # 10% from the national's IPO percentage, even though if this was on the table, a full 20% certificate would
+                # be taken out from the national's IPO to be given to the player, it's just that the player is only entitled
+                # to half of the 10% share (or half of the 10% share in a 20 share national)
                 player_national_shares -= 1
               else # This player gets the presidency, which is 2 shares
                 @share_pool.buy_shares(player, national.presidents_share, exchange: :free, exchange_price: 0)
