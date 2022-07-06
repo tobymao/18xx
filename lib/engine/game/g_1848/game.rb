@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative 'map'
 require_relative '../base'
 
 module Engine
@@ -10,6 +11,7 @@ module Engine
         attr_reader :sydney_adelaide_connected
 
         include_meta(G1848::Meta)
+        include Map
 
         CURRENCY_FORMAT_STR = '£%d'
 
@@ -22,86 +24,6 @@ module Engine
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
-
-        TILES = {
-          '1' => 1,
-          '2' => 1,
-          '5' => 3,
-          '6' => 4,
-          '7' => 4,
-          '8' => 9,
-          '9' => 12,
-          '14' => 3,
-          '15' => 6,
-          '16' => 1,
-          '18' => 1,
-          '19' => 1,
-          '20' => 1,
-          '23' => 2,
-          '24' => 2,
-          '25' => 2,
-          '26' => 1,
-          '27' => 1,
-          '28' => 1,
-          '29' => 1,
-          '30' => 1,
-          '31' => 1,
-          '39' => 1,
-          '40' => 1,
-          '41' => 1,
-          '42' => 1,
-          '43' => 1,
-          '44' => 1,
-          '45' => 1,
-          '46' => 1,
-          '47' => 1,
-          '55' => 1,
-          '56' => 1,
-          '57' => 3,
-          '59' => 2,
-          '64' => 1,
-          '65' => 1,
-          '66' => 1,
-          '67' => 1,
-          '68' => 1,
-          '69' => 1,
-          '70' => 1,
-          '235' => 3,
-          '236' => 2,
-          '237' => 1,
-          '238' => 1,
-          '239' => 3,
-          '240' => 2,
-          '611' => 4,
-          '915' => 1,
-        }.freeze
-
-        LOCATION_NAMES = {
-          'A4' => 'Alice Springs',
-          'A6' => 'Alice Springs',
-          'A18' => 'Cairns',
-          'D1' => 'Perth',
-          'F3' => 'Port Lincoln',
-          'B17' => 'Toowoomba & Ipswich',
-          'B19' => 'Brisbane',
-          'F17' => 'Sydney',
-          'G14' => 'Canberra',
-          'H11' => 'Melbourne',
-          'E4' => 'Port Augusta',
-          'G6' => 'Adelaide',
-          'C20' => 'Southport',
-          'E18' => 'Newcastle',
-          'E14' => 'Dubbo',
-          'F13' => 'Wagga Wagga',
-          'D9' => 'Broken Hill',
-          'H9' => 'Geelong',
-          'H7' => 'Mount Gambier',
-          'F5' => 'Port Pirie',
-          'E2' => 'Whyalla',
-          'F15' => 'Orange & Bathurst',
-          'G10' => 'Ballarat & Bendigo',
-          'G16' => 'Wollongong',
-        }.freeze
 
         MARKET = [
           %w[0c
@@ -423,62 +345,6 @@ module Engine
             color: 'darkGreen',
           },
         ].freeze
-
-        HEXES = {
-          red: {
-            ['A4'] =>
-                     'offboard=revenue:yellow_10|green_20|brown_40|gray_60;path=a:5,b:_0;path=a:0,b:_0;border=edge:4',
-            ['A6'] =>
-                   'offboard=revenue:yellow_10|green_20|brown_40|gray_60;path=a:5,b:_0;path=a:0,b:_0;border=edge:1',
-            ['A18'] =>
-                   'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:5,b:_0;path=a:0,b:_0',
-            ['D1'] =>
-                   'city=revenue:yellow_20|green_40|brown_60|gray_80;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=K',
-          },
-          blue: {
-            ['B21'] =>
-                     'offboard=revenue:yellow_10|green_10|brown_20|gray_20;path=a:0,b:_0',
-            ['F3'] =>
-            'offboard=revenue:yellow_10|green_10|brown_20|gray_20;path=a:2,b:_0',
-            %w[I8 I10] => '',
-          },
-          white: {
-            %w[B3 B7 B9 C2 C4 C8 E6 E8] =>
-                     'upgrade=cost:40,terrain:desert',
-            %w[D17 E16 H15 H13] => 'upgrade=cost:50,terrain:mountain',
-            %w[B11
-               B13
-               B15
-               B5
-               C10
-               C12
-               C14
-               C16
-               C6
-               D11
-               D13
-               D15
-               D19
-               D5
-               D7
-               E10
-               E12
-               F11
-               F7
-               F9
-               G8] => '',
-            %w[B17 G10] => 'city=revenue:0;city=revenue:0',
-            ['C18'] => 'town=revenue:0;town=revenue:0;upgrade=cost:50,terrain:mountain',
-            %w[B19 F17 H11 G6] => 'city=revenue:0;label=K',
-            %w[G14 E4 C20 E18 E14 F13 D9 H9 H7 F5 E2] =>
-            'city=revenue:0',
-            ['F15'] => 'city=revenue:0;city=revenue:0;upgrade=cost:50,terrain:mountain',
-            %w[G12 D3] => 'town=revenue:0;town=revenue:0',
-            ['G16'] => 'city=revenue:0;upgrade=cost:50,terrain:mountain',
-          },
-        }.freeze
-
-        LAYOUT = :pointy
 
         # Two tiles can be laid at a time, with max one upgrade
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
