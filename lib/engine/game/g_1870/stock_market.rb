@@ -13,14 +13,8 @@ module Engine
           move_down(corporation)
         end
 
-        def move_right(corporation)
-          r, c = corporation.share_price.coordinates
-
-          if corporation.share_price.type != :ignore_one_sale && @market.dig(r, c + 1)&.type == :ignore_one_sale
-            return move_up(corporation)
-          end
-
-          super
+        def right_ledge?(r, c)
+          super || (@market.dig(r, c).type != :ignore_one_sale && @market.dig(r, c + 1)&.type == :ignore_one_sale)
         end
       end
     end

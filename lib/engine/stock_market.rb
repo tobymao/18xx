@@ -40,14 +40,18 @@ module Engine
       corporation.original_par_price = share_price
     end
 
+    def right_ledge?(r, c)
+      c + 1 >= @market[r].size
+    end
+
     def move_right(corporation)
       r, c = corporation.share_price.coordinates
 
-      if c + 1 < @market[r].size
+      if right_ledge?(r, c)
+        move_up(corporation) unless one_d?
+      else
         c += 1
         move(corporation, r, c)
-      else
-        move_up(corporation) unless one_d?
       end
     end
 
