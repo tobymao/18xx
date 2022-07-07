@@ -439,7 +439,7 @@ module Engine
             !depot.depot_trains.empty? &&
              (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase))
         end
-        
+
         # for 3 players corp share limit is 70%
         def corporation_opts
           @players.size == 3 ? { max_ownership_percent: 70 } : {}
