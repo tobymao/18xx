@@ -262,7 +262,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            price: 500,
+            price: 400,
             rusts_on: '10',
             events: [
               {
