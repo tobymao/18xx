@@ -249,6 +249,8 @@ module Engine
             discount: -170,
             revenue: 25,
             desc: 'The owner receives a 10% share in the QR. Cannot be bought by a corporation',
+            abilities: [{ type: 'shares', shares: 'QR_1' },
+                        { type: 'no_buy' }],
           },
           {
             sym: 'P6',
@@ -258,6 +260,8 @@ module Engine
             revenue: 30,
             desc: "The owner receives a Director's Share share in the CAR, which must start at a par value of £100."\
                   ' Cannot be bought by a corporation',
+            abilities: [{ type: 'shares', shares: 'CAR_0' },
+                        { type: 'no_buy' }],
           },
         ].freeze
 
@@ -434,6 +438,27 @@ module Engine
           entity.trains.reject { |t| t.name == '2E' }.empty? &&
             !depot.depot_trains.empty? &&
              (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase))
+        end
+
+        # for 3 players corp share limit is 70%
+        def corporation_opts
+          @players.size == 3 ? { max_ownership_percent: 70 } : {}
+        end
+
+        def after_buy_company(player, company, _price)
+          # share_price = 100
+          # # NOTE: This should only ever be P6
+          abilities(company, :shares) do |ability|
+            ability.shares.each do |share|
+              if share.president
+                stock_market.set_par(share.corporation, stock_market.par_prices.find { |p| p.price == 100 })
+                share_pool.buy_shares(player, share, exchange: :free)
+                after_par(share.corporation)
+              else
+                share_pool.buy_shares(player, share, exchange: :free)
+              end
+            end
+          end
         end
       end
     end
