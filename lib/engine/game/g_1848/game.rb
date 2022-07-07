@@ -364,7 +364,6 @@ module Engine
           @sydney_adelaide_connected = false
 
           @boe = @corporations.find { |c| c.type == :bank }
-
           @boe.ipoed = true
           @boe.ipo_shares.each do |share|
             @share_pool.transfer_shares(
@@ -377,10 +376,6 @@ module Engine
             )
             @boe.owner = @share_pool
           end
-        end
-
-        def pres_change_ok?(corporation)
-          return false if corporation == @boe
         end
 
         def new_auction_round
@@ -472,6 +467,10 @@ module Engine
         # for 3 players corp share limit is 70%
         def corporation_opts
           @players.size == 3 ? { max_ownership_percent: 70 } : {}
+        end
+
+        def pres_change_ok?(corporation)
+          return false if corporation == @boe
         end
 
         def after_buy_company(player, company, _price)
