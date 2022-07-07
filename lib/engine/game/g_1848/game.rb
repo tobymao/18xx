@@ -17,6 +17,8 @@ module Engine
 
         BANK_CASH = 10_000
 
+        BOE_START_CASH = 2000
+
         CERT_LIMIT = { 3 => 20, 4 => 17, 5 => 14, 6 => 12 }.freeze
 
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 510, 6 => 430 }.freeze
@@ -375,6 +377,7 @@ module Engine
               allow_president_change: false
             )
             @boe.owner = @share_pool
+            @boe.cash = BOE_START_CASH
           end
         end
 
