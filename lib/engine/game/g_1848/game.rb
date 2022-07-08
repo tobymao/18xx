@@ -21,6 +21,8 @@ module Engine
 
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 510, 6 => 430 }.freeze
 
+        BOE_STARTING_CASH = 2000
+
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
@@ -273,6 +275,7 @@ module Engine
             simple_logo: '1848/BOE.alt',
             tokens: [],
             text_color: 'black',
+            type: 'bank',
             color: 'antiqueWhite',
           },
           {
@@ -361,11 +364,31 @@ module Engine
         def setup
           super
           @sydney_adelaide_connected = false
+
+          @boe = @corporations.find { |c| c.type == :bank }
+          @boe.ipoed = true
+          @boe.ipo_shares.each do |share|
+            @share_pool.transfer_shares(
+              share.to_bundle,
+              share_pool
+            )
+            @boe.owner = @share_pool
+            @boe.cash = BOE_STARTING_CASH
+          end
         end
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
             G1848::Step::DutchAuction,
+          ])
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            G1848::Step::BuySellParShares,
           ])
         end
 
@@ -443,6 +466,10 @@ module Engine
         # for 3 players corp share limit is 70%
         def corporation_opts
           @players.size == 3 ? { max_ownership_percent: 70 } : {}
+        end
+
+        def pres_change_ok?(corporation)
+          return false if corporation == @boe
         end
 
         def after_buy_company(player, company, _price)
