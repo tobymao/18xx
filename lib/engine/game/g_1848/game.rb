@@ -17,11 +17,11 @@ module Engine
 
         BANK_CASH = 10_000
 
-        BOE_START_CASH = 2000
-
         CERT_LIMIT = { 3 => 20, 4 => 17, 5 => 14, 6 => 12 }.freeze
 
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 510, 6 => 430 }.freeze
+
+        BOE_STARTING_CASH = 2000
 
         CAPITALIZATION = :full
 
@@ -370,14 +370,10 @@ module Engine
           @boe.ipo_shares.each do |share|
             @share_pool.transfer_shares(
               share.to_bundle,
-              share_pool,
-              spender: share_pool,
-              receiver: @bank,
-              price: 0,
-              allow_president_change: false
+              share_pool
             )
             @boe.owner = @share_pool
-            @boe.cash = BOE_START_CASH
+            @boe.cash = BOE_STARTING_CASH
           end
         end
 
