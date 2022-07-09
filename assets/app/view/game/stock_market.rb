@@ -258,11 +258,8 @@ module View
               if first_price && !next_row.empty? && next_row[col_i]
                 align = { left: 0, bottom: 0 }
                 arrow = '⭣'
-              # last cell on right (or 1870's soft ledge), not top row
-              elsif !row_i.zero? && (
-                ((col_i + 1) == row_prices.size) ||
-                (row_prices[col_i].type != :ignore_one_sale && row_prices[col_i + 1].type == :ignore_one_sale))
-
+              # last cell on right, not top row
+              elsif !row_i.zero? && @game.stock_market.right_ledge?(row_i, col_i)
                 align = { right: 0, top: 0 }
                 arrow = '⭡'
               else
