@@ -112,7 +112,6 @@ module Engine
                            " #{@round.merging.map(&:name).join(', ')}."\
                            ' This is against the rules, clearing proposal.'
               @round.merging = []
-              @round.vote_outcome = :against
               return
             end
 
