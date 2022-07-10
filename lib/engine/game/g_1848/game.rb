@@ -23,6 +23,10 @@ module Engine
 
         BOE_STARTING_CASH = 2000
 
+        BOE_STARTING_PRICE = 80
+
+        BOE_ROW = 6
+
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
@@ -79,7 +83,42 @@ module Engine
           %w[0c 40 50 60 70 80p 90 110 130 160 190],
           %w[0c 30 40 50 60 70p 80 100 120],
           %w[0c 20 30 40 50 60 70],
+          %w[80r
+             90r
+             100r
+             110r
+             120r
+             130r
+             140r
+             150r
+             160r
+             170r
+             180r
+             195r
+             210r
+             225r
+             240r
+             260e
+             280r
+             300r
+             320r
+             340r],
         ].freeze
+
+        MARKET_TEXT = {
+          par: 'Par value',
+          repar: 'Bank of England share value',
+          close: 'Receivership',
+          endgame: 'End game trigger',
+        }.freeze
+
+        GAME_END_REASONS_TEXT = {
+          bank: 'The bank runs out of money',
+          stock_market: 'Corporation hit max stock value or Bank of England has given 16 of more loans',
+          custom: 'Fifth corporation is in receivership',
+        }.freeze
+
+        GAME_END_CHECK = { bank: :full_or, stock_market: :full_or, custom: :full_or }.freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
                   {
@@ -372,9 +411,10 @@ module Engine
               share.to_bundle,
               share_pool
             )
-            @boe.owner = @share_pool
-            @boe.cash = BOE_STARTING_CASH
           end
+          @boe.owner = @share_pool
+          @boe.cash = BOE_STARTING_CASH
+          @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
         end
 
         def new_auction_round
@@ -485,6 +525,13 @@ module Engine
                 share_pool.buy_shares(player, share, exchange: :free)
               end
             end
+          end
+        end
+
+        def lookup_boe_price(p)
+          @stock_market.market[BOE_ROW].size.times do |i|
+            next unless @stock_market.share_price(BOE_ROW, i)
+            return @stock_market.share_price(BOE_ROW, i) if @stock_market.share_price(BOE_ROW, i).price == p
           end
         end
       end
