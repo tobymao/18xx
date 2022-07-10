@@ -114,7 +114,7 @@ module Engine
 
         GAME_END_REASONS_TEXT = {
           bank: 'The bank runs out of money',
-          stock_market: 'Corporation hit max stock value or Bank of England has given 16 of more loans',
+          stock_market: 'Corporation hit max stock value or Bank of England has given 16 or more loans',
           custom: 'Fifth corporation is in receivership',
         }.freeze
 
