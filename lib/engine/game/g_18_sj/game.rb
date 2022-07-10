@@ -749,6 +749,12 @@ module Engine
             .each do |c|
               @log << "#{c.name} becomes full capitalization corporation as it has not been parred"
               c.capitalization = :full
+              c.ipo_owner = @bank
+              c.share_holders.keys.each do |sh|
+                next if sh == @bank
+
+                sh.shares_by_corporation[c].dup.each { |share| transfer_share(share, @bank) }
+              end
             end
         end
 
@@ -1160,6 +1166,16 @@ module Engine
 
             raise GameError, "Cannot passthrough blocked city in #{s.hex.name}" if s.tokens.all? { |t| t&.corporation }
           end
+        end
+
+        # just a basic share move without payment or president change (taken from 1862)
+        def transfer_share(share, new_owner)
+          corp = share.corporation
+          corp.share_holders[share.owner] -= share.percent
+          corp.share_holders[new_owner] += share.percent
+          share.owner.shares_by_corporation[corp].delete(share)
+          new_owner.shares_by_corporation[corp] << share
+          share.owner = new_owner
         end
       end
     end
