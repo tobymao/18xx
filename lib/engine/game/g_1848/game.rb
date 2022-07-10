@@ -315,6 +315,7 @@ module Engine
             tokens: [],
             text_color: 'black',
             type: 'bank',
+            shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             color: 'antiqueWhite',
           },
           {
