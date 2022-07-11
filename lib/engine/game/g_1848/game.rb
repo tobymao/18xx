@@ -530,9 +530,8 @@ module Engine
         end
 
         def lookup_boe_price(p)
-          @stock_market.market[BOE_ROW].size.times do |i|
-            next unless @stock_market.share_price(BOE_ROW, i)
-            return @stock_market.share_price(BOE_ROW, i) if @stock_market.share_price(BOE_ROW, i).price == p
+          @stock_market.market[BOE_ROW].each do |i|
+            return i if i.price == p
           end
         end
       end
