@@ -305,13 +305,14 @@ module Engine
             revenue: 15,
             desc: 'The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in'\
                   " addition to the company's normal build that turn.",
-                  abilities: [
+            abilities: [
                     {
                       type: 'tile_lay',
-                      hexes: %w[I8 I10 D5],
-                      tiles: %w[241,1],
+                      hexes: %w[I8 I10],
+                      tiles: %w[241],
                       owner_type: 'corporation',
                       when: 'owning_corp_or_turn',
+                      special: true,
                       count: 1,
                       free: true,
                     },
@@ -515,11 +516,12 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
+            G1848::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             G1848::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1848::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1848::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
@@ -538,6 +540,7 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return %w[5 6 57].include?(to.name) if (from.hex.tile.label.to_s == 'K') && (from.hex.tile.color == 'white')
+          return from.hex.tile.color == 'blue' if selected_company && selected_company.sym == 'P3'
 
           super
         end
