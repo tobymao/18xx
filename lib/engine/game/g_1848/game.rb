@@ -336,7 +336,7 @@ module Engine
                       trains: ['2E'],
                       count: 1,
                       owner_type: 'corporation',
-                      when: 'any',
+                      when: 'buying_train',
                     },
                     {
                       type: 'train_discount',
@@ -344,7 +344,7 @@ module Engine
                       trains: ['2E'],
                       count: 1,
                       owner_type: 'player',
-                      when: 'any',
+                      when: 'owning_player_or_turn',
                     },
                   ],
 
@@ -522,7 +522,7 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             G1848::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
             G1848::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -531,6 +531,10 @@ module Engine
         def init_stock_market
           G1848::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def init_share_pool
+          G1848::SharePool.new(self)
         end
 
         def operating_order
@@ -598,6 +602,10 @@ module Engine
         # for 3 players corp share limit is 70%
         def corporation_opts
           @players.size == 3 ? { max_ownership_percent: 70 } : {}
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          super(bundle, allow_president_change: pres_change_ok?(bundle.corporation), swap: nil)
         end
 
         def pres_change_ok?(corporation)
