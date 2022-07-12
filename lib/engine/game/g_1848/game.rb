@@ -530,8 +530,8 @@ module Engine
         end
 
         def lookup_boe_price(p)
-          @stock_market.market[BOE_ROW].each do |i|
-            return i if i.price == p
+          @stock_market.market[BOE_ROW].each do |sp|
+            return sp if sp.price == p
           end
         end
       end
