@@ -54,6 +54,11 @@ module Engine
           '238' => 1,
           '239' => 3,
           '240' => 2,
+          '241' => {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'offboard=revenue:50;icon=image:anchor;path=a:2,b:_0;path=a:1,b:_0',
+          },
           '611' => 4,
           '915' => 1,
         }.freeze

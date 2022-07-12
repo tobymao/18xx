@@ -9,7 +9,7 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_reader :sydney_adelaide_connected
+        attr_reader :sydney_adelaide_connected, :boe
 
         include_meta(G1848::Meta)
         include Map
@@ -255,6 +255,8 @@ module Engine
             name: "Melbourne & Hobson's Bay Railway Company",
             value: 40,
             discount: 10,
+            min_price: 1,
+            max_price: 40,
             revenue: 5,
             desc: 'No special abilities.',
           },
@@ -262,6 +264,8 @@ module Engine
             sym: 'P2',
             name: 'Sydney Railway Company',
             value: 80,
+            min_price: 1,
+            max_price: 80,
             discount: 10,
             revenue: 10,
             desc: 'Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by'\
@@ -296,18 +300,53 @@ module Engine
             name: 'Tasmanian Railways',
             value: 140,
             discount: 30,
+            min_price: 1,
+            max_price: 140,
             revenue: 15,
             desc: 'The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in'\
                   " addition to the company's normal build that turn.",
+                  abilities: [
+                    {
+                      type: 'tile_lay',
+                      hexes: %w[I8 I10 D5],
+                      tiles: %w[241,1],
+                      owner_type: 'corporation',
+                      when: 'owning_corp_or_turn',
+                      count: 1,
+                      free: true,
+                    },
+                  ],
+
           },
           {
             sym: 'P4',
             name: 'The Ghan',
             value: 220,
             discount: 50,
+            min_price: 1,
+            max_price: 220,
             revenue: 20,
             desc: 'Owning Public Company or its Director may receive a one-time discount of £100 on the purchase'\
                   ' of a 2E (Ghan) train. This power does not go away after a 5/5+ train is purchased.',
+            abilities: [
+                    {
+                      type: 'train_discount',
+                      discount: 100,
+                      trains: ['2E'],
+                      count: 1,
+                      owner_type: 'corporation',
+                      when: 'any',
+                    },
+                    {
+                      type: 'train_discount',
+                      discount: 100,
+                      trains: ['2E'],
+                      count: 1,
+                      owner_type: 'player',
+                      when: 'any',
+                    },
+                  ],
+
           },
           {
             sym: 'P5',
@@ -490,6 +529,11 @@ module Engine
         def init_stock_market
           G1848::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def operating_order
+          boe, others = @corporations.select(&:floated?).sort.partition { |c| c.type == :bank }
+          boe + others
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
