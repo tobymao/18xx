@@ -22,6 +22,8 @@ module Engine
 
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 510, 6 => 430 }.freeze
 
+        K_BONUS = { 0 => 0, 1 => 0, 2 => 50, 3 => 100, 4 => 150, 5 => 200 }.freeze
+
         BOE_STARTING_CASH = 2000
 
         BOE_STARTING_PRICE = 80
@@ -715,8 +717,16 @@ module Engine
             border_edges << "#{edge.hex.id}_#{border.edge}"
           end
           edge_str = "#{edge.hex.id}_#{edge.num}"
-          puts("#{border_edges} #{border_edges.include? edge_str}")
           border_edges.include? edge_str
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          k_sum = stops.each.sum do |rl|
+            rl.hex.tile.label.to_s == 'K' ? 1 : 0
+          end
+          bonus = K_BONUS[k_sum]
+          revenue + bonus
         end
       end
     end
