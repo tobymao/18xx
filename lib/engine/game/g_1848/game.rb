@@ -515,6 +515,7 @@ module Engine
           @boe.cash = BOE_STARTING_CASH
           @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
           @extra_tile_lay = false
+          @private_closed_triggered = false
         end
 
         def new_auction_round
