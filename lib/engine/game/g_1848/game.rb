@@ -9,7 +9,7 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_reader :sydney_adelaide_connected, :boe
+        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered
 
         include_meta(G1848::Meta)
         include Map
@@ -309,7 +309,7 @@ module Engine
                     {
                       type: 'tile_lay',
                       hexes: %w[I8 I10],
-                      tiles: %w[241],
+                      tiles: ['241'],
                       owner_type: 'corporation',
                       when: 'owning_corp_or_turn',
                       special: true,
@@ -475,6 +475,29 @@ module Engine
           @log << 'Corporations can now take out loans'
         end
 
+        def event_close_companies!
+          @log << '-- Event: Private companies close --'
+          @private_closed_triggered = true
+          @companies.each do |company|
+            unsused_ability = false
+            company.all_abilities.each do |ability|
+              next unless ability.type != :no_buy
+
+              unsused_ability = !ability.used? || unsused_ability
+            end
+            if unsused_ability
+              # reduce revenue to 0, keep company around, can't be bought if owned by player
+              company.revenue = 0
+              no_buy = Engine::Ability::NoBuy.new(type: 'no_buy')
+              company.add_ability(no_buy)
+            else
+              # close company
+              @log << "#{company.name} closes here"
+              company.close!
+            end
+          end
+        end
+
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
 
@@ -495,6 +518,7 @@ module Engine
           @boe.cash = BOE_STARTING_CASH
           @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
           @extra_tile_lay = false
+          @private_closed_triggered = false
         end
 
         def new_auction_round
@@ -539,6 +563,7 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return %w[5 6 57].include?(to.name) if (from.hex.tile.label.to_s == 'K') && (from.hex.tile.color == 'white')
+<<<<<<< HEAD
           return ['241'].include?(to.name) if selected_company&.sym == 'P3'
 
           super
@@ -547,6 +572,9 @@ module Engine
         def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
           # tile 241, tasmania  is valid in all phases
           return true if tile.name == '241'
+=======
+          return ['241'].include?(to.name) if selected_company && selected_company.sym == 'P3'
+>>>>>>> aed314e07 (add private impl)
 
           super
         end
@@ -626,6 +654,7 @@ module Engine
               else
                 share_pool.buy_shares(player, share, exchange: :free)
               end
+              ability.use!
             end
           end
         end
