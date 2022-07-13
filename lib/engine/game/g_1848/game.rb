@@ -563,7 +563,6 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return %w[5 6 57].include?(to.name) if (from.hex.tile.label.to_s == 'K') && (from.hex.tile.color == 'white')
-<<<<<<< HEAD
           return ['241'].include?(to.name) if selected_company&.sym == 'P3'
 
           super
@@ -572,9 +571,6 @@ module Engine
         def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
           # tile 241, tasmania  is valid in all phases
           return true if tile.name == '241'
-=======
-          return ['241'].include?(to.name) if selected_company && selected_company.sym == 'P3'
->>>>>>> aed314e07 (add private impl)
 
           super
         end
@@ -684,8 +680,43 @@ module Engine
 
         def market_share_limit(corporation = nil)
           return 100 if corporation == @boe
-
           MARKET_SHARE_LIMIT
+        end
+        # routing logic
+        def check_distance(route, visits, _train = nil)
+          gauge_changes = edge_crossings(route)
+          modifier = route.train.name.include?('+') ? 1 : 0
+          modified_guage_changes = gauge_changes - modifier
+          visits += Array.new(modified_guage_changes) { Engine::Part::City.new('0') } if modified_guage_changes.positive?
+
+          super(route, visits, _train = nil)
+        end
+
+        def route_distance(route)
+          gauge_changes = edge_crossings(route)
+          modifier = route.train.name.include?('+') ? 1 : 0
+          distance = super
+          distance + gauge_changes - modifier
+        end
+
+        def edge_crossings(route)
+          sum = route.paths.sum do |path|
+            path.edges.sum do |edge|
+              edge_is_a_border(edge) ? 1 : 0
+            end
+          end
+          # edges are double counted
+          sum / 2
+        end
+
+        def edge_is_a_border(edge)
+          border_edges = []
+          edge.hex.tile.borders.each do |border|
+            border_edges << "#{edge.hex.id}_#{border.edge}"
+          end
+          edge_str = "#{edge.hex.id}_#{edge.num}"
+          puts("#{border_edges} #{border_edges.include? edge_str}")
+          border_edges.include? edge_str
         end
       end
     end
