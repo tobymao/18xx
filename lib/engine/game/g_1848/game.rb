@@ -540,6 +540,7 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
+            G1848::Step::Loan,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -663,8 +664,10 @@ module Engine
           end
         end
 
+        # loans
+
         def maximum_loans(entity)
-          entity == @boe ? 0 : 5
+          entity == @boe ? 20 : 5
         end
 
         def init_loans
@@ -680,10 +683,41 @@ module Engine
           0
         end
 
+<<<<<<< HEAD
         def market_share_limit(corporation = nil)
           return 100 if corporation == @boe
           MARKET_SHARE_LIMIT
         end
+=======
+        def can_take_loan?(entity)
+          entity.corporation? &&
+            entity.loans.size < maximum_loans(entity) &&
+            @loans.any?
+        end
+
+        def take_loan(entity, loan)
+          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+
+          old_price = entity.share_price
+          boe_old_price = @boe.share_price
+          name = entity.name
+          @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
+          @boe.spend(loan.amount, entity)
+          loan_taken_stock_market_movement(entity)
+          log_share_price(entity, old_price)
+          log_share_price(@boe, boe_old_price)
+          entity.loans << loan
+          @boe.loans << loan
+          @loans.delete(loan)
+        end
+
+        def loan_taken_stock_market_movement(entity)
+          @stock_market.move_left(entity)
+          @stock_market.move_left(entity)
+          @stock_market.move_right(boe)
+        end
+
+>>>>>>> b075a2db2 (implent loans)
         # routing logic
         def check_distance(route, visits, _train = nil)
           gauge_changes = edge_crossings(route)
