@@ -678,12 +678,15 @@ module Engine
           0
         end
 
+<<<<<<< HEAD
         def market_share_limit(corporation = nil)
           return 100 if corporation == @boe
 
           MARKET_SHARE_LIMIT
         end
 
+=======
+>>>>>>> 4bdea3219 (implent loans)
         def can_take_loan?(entity)
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
