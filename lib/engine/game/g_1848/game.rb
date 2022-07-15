@@ -3,6 +3,7 @@
 require_relative 'meta'
 require_relative 'map'
 require_relative '../base'
+require_relative '../../loan'
 
 module Engine
   module Game
@@ -162,7 +163,8 @@ module Engine
         TRAINS = [
           {
             name: '2',
-            distance: 2,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 100,
             rusts_on: '4',
             num: 6,
@@ -172,17 +174,21 @@ module Engine
           },
           {
             name: '3',
-            distance: 3,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 200,
             rusts_on: '6',
             num: 5,
             variants: [
               { name: '3+', distance: 3, price: 230 },
             ],
+            events: [{ 'type' => 'take_out_loans' },
+                     { 'type' => 'lay_second_tile' }],
           },
           {
             name: '4',
-            distance: 4,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 300,
             rusts_on: '8',
             num: 4,
@@ -192,22 +198,25 @@ module Engine
           },
           {
             name: '5',
-            distance: 5,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 500,
             num: 3,
-            events: [{ 'type' => 'close_companies' }],
             variants: [
               { name: '5+', distance: 5, price: 550 },
 ],
+            events: [{ 'type' => 'close_companies' }],
           },
           {
             name: '6',
-            distance: 6,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 600,
             num: 2,
             variants: [
               { name: '6+', distance: 6, price: 660 },
             ],
+            events: [{ 'type' => 'com_operates' }],
           },
           {
             name: 'D',
@@ -218,18 +227,27 @@ module Engine
           },
           {
             name: '8',
-            distance: 8,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
             num: 6,
           },
           {
             name: '2E',
-            distance: 2,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 200,
             num: 6,
             available_on: '5',
           },
         ].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+                  'take_out_loans' => ['Corporations can take out loans'],
+                  'lay_second_tile' => ['Corporations can lay a second tile'],
+                  'com_operates' =>
+                  ['COM operates without Sydney-Adelaide connection'],
+                ).freeze
 
         COMPANIES = [
           {
@@ -249,21 +267,29 @@ module Engine
             desc: 'Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by'\
                   ' a cactus icon). This power does not go away after a 5/5+ train is purchased.',
             abilities: [
-              {
-                type: 'tile_discount',
-                discount: 40,
-                terrain: 'desert',
-                count: 1,
-                owner_type: 'corporation',
-              },
-              {
-                type: 'tile_discount',
-                discount: 40,
-                terrain: 'desert',
-                count: 1,
-                owner_type: 'player',
-              },
-            ],
+                    {
+                      type: 'tile_lay',
+                      discount: 40,
+                      hexes: %w[B7 B9 C2 C4 C8 E6 E8],
+                      tiles: %w[7 8 9],
+                      count: 1,
+                      reachable: true,
+                      consume_tile_lay: true,
+                      owner_type: 'corporation',
+                      when: 'owning_corp_or_turn',
+                    },
+                    {
+                      type: 'tile_lay',
+                      discount: 40,
+                      hexes: %w[B7 B9 C2 C4 C8 E6 E8],
+                      tiles: %w[7 8 9],
+                      count: 1,
+                      reachable: true,
+                      consume_tile_lay: true,
+                      owner_type: 'player',
+                      when: 'owning_player_or_turn',
+                    },
+                  ],
           },
           {
             sym: 'P3',
@@ -393,8 +419,21 @@ module Engine
           },
         ].freeze
 
-        # Two tiles can be laid at a time, with max one upgrade
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true }].freeze
+        EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+
+        def tile_lays(_entity)
+          @extra_tile_lay ? EXTRA_TILE_LAYS : TILE_LAYS
+        end
+
+        def event_lay_second_tile!
+          @log << 'Corporations can now perform a second tile lay'
+          @extra_tile_lay = true
+        end
+
+        def event_take_out_loans!
+          @log << 'Corporations can now take out loans'
+        end
 
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
@@ -402,7 +441,6 @@ module Engine
         HOME_TOKEN_TIMING = :operate
 
         def setup
-          super
           @sydney_adelaide_connected = false
 
           @boe = @corporations.find { |c| c.type == :bank }
@@ -416,6 +454,7 @@ module Engine
           @boe.owner = @share_pool
           @boe.cash = BOE_STARTING_CASH
           @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
+          @extra_tile_lay = false
         end
 
         def new_auction_round
@@ -446,6 +485,11 @@ module Engine
             G1848::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def init_stock_market
+          G1848::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
@@ -533,6 +577,23 @@ module Engine
           @stock_market.market[BOE_ROW].each do |sp|
             return sp if sp.price == p
           end
+        end
+
+        def maximum_loans(entity)
+          entity == @boe ? 0 : 5
+        end
+
+        def init_loans
+          @loan_value = 100
+          Array.new(20) { |id| Loan.new(id, @loan_value) }
+        end
+
+        def can_pay_interest?(_entity, _extra_cash = 0)
+          false
+        end
+
+        def interest_owed(_entity)
+          0
         end
       end
     end
