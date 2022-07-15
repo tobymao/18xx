@@ -55,16 +55,11 @@ module Engine
           end
 
           def get_token_cities_total_revenue(corporation)
-            total = 0
-            @game.hexes.each do |hex|
-              puts(hex.name.to_s) if hex.name == 'H7'
-              hex.tile.cities.each do |city|
-                next unless city.tokened_by?(corporation)
-
-                total += city.revenue[hex.tile.color]
+            @game.hexes.sum do |hex|
+              hex.tile.cities.sum do |city|
+                 city.tokened_by?(corporation) ? city.revenue[hex.tile.color] : 0  
               end
             end
-            total
           end
         end
       end
