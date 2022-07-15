@@ -39,10 +39,10 @@ module View
           }.freeze
 
           if !(available = @game.available_programmed_actions).empty?
-            enabled = @game.programmed_actions[sender]
             available.each do |type|
+              enabled = @game.programmed_actions[sender].find { |a| a.is_a?(type) }
               if (method = types[type])
-                settings = enabled if enabled.is_a?(type)
+                settings = enabled if enabled
                 children.concat(method.call(settings))
               end
             end
@@ -303,17 +303,18 @@ module View
         children
       end
 
-      def disable
+      def disable(type)
         process_action(
           Engine::Action::ProgramDisable.new(
             sender,
-            reason: 'user'
+            reason: 'user',
+            original_type: type
           )
         )
       end
 
-      def render_disable
-        render_button('Disable') { disable }
+      def render_disable(settings)
+        render_button('Disable') { disable(settings.type) }
       end
     end
   end
