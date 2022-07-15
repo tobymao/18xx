@@ -57,7 +57,7 @@ module Engine
           def get_token_cities_total_revenue(corporation)
             @game.hexes.sum do |hex|
               hex.tile.cities.sum do |city|
-                 city.tokened_by?(corporation) ? city.revenue[hex.tile.color] : 0  
+                city.tokened_by?(corporation) ? city.revenue[hex.tile.color] : 0
               end
             end
           end
