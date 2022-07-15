@@ -544,7 +544,7 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return %w[5 6 57].include?(to.name) if (from.hex.tile.label.to_s == 'K') && (from.hex.tile.color == 'white')
-          return from.hex.tile.color == 'blue' if selected_company && selected_company.sym == 'P3'
+          return ['241'].include?(to.name) if selected_company && selected_company.sym == 'P3'
 
           super
         end
