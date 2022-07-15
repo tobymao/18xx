@@ -1046,8 +1046,6 @@ module Engine
 
         def liquidity(player, emergency: false)
           total = player.cash
-          return(total) unless @round&.stock?
-
           player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, shares|
             total += dump_cash(corporation, shares.size)
           end
