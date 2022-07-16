@@ -16,6 +16,7 @@ module View
     needs :type
     needs :notifications, store: true, default: nil
     needs :webhook, store: true, default: nil
+    needs :test_webhook_notification, store: true, default: false
 
     TILE_COLORS = Lib::Hex::COLOR.freeze
     ROUTE_COLORS = Lib::Settings::ROUTE_COLORS.freeze
@@ -219,6 +220,15 @@ module View
       end
       elements << render_input('Webhook User ID', id: :webhook_user_id,
                                                   attrs: { value: setting_for(:webhook_user_id) })
+
+      test_webhook_notification_change = lambda do
+        store(:test_webhook_notification, Native(@inputs[:test_webhook_notification]).elm&.checked)
+      end
+      elements << render_input('Send test notification',
+                               id: :test_webhook_notification,
+                               type: :checkbox,
+                               on: { input: test_webhook_notification_change },
+                               attrs: { checked: @test_webhook_notification })
       elements
     end
 

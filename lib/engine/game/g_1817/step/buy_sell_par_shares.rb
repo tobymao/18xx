@@ -455,7 +455,7 @@ module Engine
             entity.corporation?
           end
 
-          def corporation_secure_percent(_corporation)
+          def corporation_secure_percent
             # Due to shorts 50% isn't enough on 1817, need 60%
             60
           end

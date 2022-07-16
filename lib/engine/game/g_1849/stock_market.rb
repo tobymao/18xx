@@ -19,6 +19,14 @@ module Engine
           @game.max_value_reached = true
         end
 
+        def right_ledge?(r, c)
+          price = @market.dig(r, c).price
+          return false if BLOCKED_UP_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')
+          return true if BLOCKED_RIGHT_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')
+
+          super
+        end
+
         def move_up(corporation)
           price = corporation.share_price.price
           return super unless BLOCKED_UP_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')
@@ -31,7 +39,6 @@ module Engine
           return super unless BLOCKED_RIGHT_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')
 
           @game.log << "#{corporation.name} share price blocked from moving right by phase"
-          move_up(corporation)
         end
       end
     end

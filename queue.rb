@@ -17,6 +17,24 @@ Bus.configure
 
 ASSETS = Assets.new(precompiled: PRODUCTION)
 
+def send_webhook_notification(user, message)
+  return if user.settings['notifications'] != 'webhook'
+  return if (user.settings['webhook_user_id']&.strip || '') == ''
+
+  begin
+    Hooks.send(user, message)
+  rescue Exception => e # rubocop:disable Lint/RescueException
+    puts e.backtrace
+    puts e
+  end
+end
+
+MessageBus.subscribe '/test_notification' do |msg|
+  user_id = msg.data
+  user = User[user_id]
+  send_webhook_notification(user, 'This is a test notification from 18xx.games.')
+end
+
 MessageBus.subscribe '/turn' do |msg|
   data = msg.data
 
@@ -24,19 +42,9 @@ MessageBus.subscribe '/turn' do |msg|
   game = Game[data['game_id']]
   minute_ago = (Time.now - 60).to_i
 
-  users.each do |user|
-    next if user.settings['notifications'] != 'webhook'
-    next if (user.settings['webhook_user_id']&.strip || '') == ''
-
-    begin
-      message = "<@#{user.settings['webhook_user_id']}> #{data['type']} in #{game.title} \"#{game.description}\" " \
-                "(#{game.round} #{game.turn})\n#{data['game_url']}"
-      Hooks.send(user, message)
-    rescue Exception => e # rubocop:disable Lint/RescueException
-      puts e.backtrace
-      puts e
-    end
-  end
+  message = "#{data['type']} in #{game.title} \"#{game.description}\" " \
+            "(#{game.round} #{game.turn})\n#{data['game_url']}"
+  users.each { |user| send_webhook_notification(user, message) }
 
   users = users.reject do |user|
     notifications = user.settings['notifications'] || 'none'

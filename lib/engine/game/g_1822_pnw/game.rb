@@ -42,6 +42,8 @@ module Engine
 
         CURRENCY_FORMAT_STR = '$%d'
 
+        MARKET_TEXT = Base::MARKET_TEXT
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS
         MARKET = [
           %w[40 50px 55px 60px 65px 70px 75px 80px 90px 100px
              110 120 135 150 165 180 200 220 245 270 300 330 360

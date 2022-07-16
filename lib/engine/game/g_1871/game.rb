@@ -342,7 +342,11 @@ module Engine
 
         # Let the Union Bank owner act for the bank in an operating round
         def acting_for_entity(entity)
-          return entity&.owner unless entity&.owner == @union_bank
+          acting_for_player(entity&.owner)
+        end
+
+        def acting_for_player(player)
+          return player unless player == @union_bank
 
           bank_company = company_by_id('UB')
           bank_company.owner
