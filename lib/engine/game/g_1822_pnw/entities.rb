@@ -355,8 +355,8 @@ module Engine
             desc: 'A 50% director’s certificate in the associated minor company. '\
                   'Associated with the Canadian Pacific Railway (CPR). Starting location is A8.',
             abilities: [],
-            color: '#ffffff',
-            text_color: 'black',
+            color: '#e51c00',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 2. Spokane & British Columbia Railway',
@@ -386,7 +386,7 @@ module Engine
             desc: 'A 50% director’s certificate in the associated minor company. '\
                   'Associated with the Great Northern (GNR). Starting location is D19.',
             abilities: [],
-            color: '#ffffff',
+            color: '#fab506',
             text_color: 'black',
           },
           {
@@ -397,8 +397,8 @@ module Engine
             desc: 'A 50% director’s certificate in the associated minor company. '\
                   'Associated with the Chicago, Milwaukee & Puget Sound (CMPS). Starting location is D23.',
             abilities: [],
-            color: '#ffffff',
-            text_color: 'black',
+            color: '#000000',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 6. Port Townsend and Southern Railroad',
@@ -418,8 +418,8 @@ module Engine
             desc: 'A 50% director’s certificate in the associated minor company. '\
                   'Associated with the Seattle & Walla Walla (SWW). Starting location is F23.',
             abilities: [],
-            color: '#ffffff',
-            text_color: 'black',
+            color: '#ff3600',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 8. Puget Sound Shore Railroad',
@@ -499,8 +499,8 @@ module Engine
             desc: 'A 50% director’s certificate in the associated minor company. '\
                   'Associated with the Northen Pacific Failway (NP). Starting location is M4.',
             abilities: [],
-            color: '#ffffff',
-            text_color: 'black',
+            color: '#ff7b93',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 16. Astoria and Columbia River Railroad Company',
@@ -530,8 +530,8 @@ module Engine
             desc: 'A 50% director’s certificate in the associated minor company. '\
                   'Associated with the Spokane, Portland & Seattle (SPS). Starting location is O8.',
             abilities: [],
-            color: '#ffffff',
-            text_color: 'black',
+            color: '#004c6c',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 19. Cascade Portage Railway',
@@ -541,8 +541,8 @@ module Engine
             desc: 'A 50% director’s certificate in the associated minor company. '\
                   'Associated with the Oregon Railroad & Navigation Co. (ORNC). Starting location is O14.',
             abilities: [],
-            color: '#ffffff',
-            text_color: 'black',
+            color: '#850040',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 20. Walla Walla Valley Railway',
@@ -571,8 +571,8 @@ module Engine
             revenue: 10,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is A22.',
             abilities: [],
-            color: '#ffffff',
-            text_color: 'black',
+            color: '#008264',
+            text_color: 'white',
           },
           {
             name: 'Regional Railway: B',
@@ -581,8 +581,8 @@ module Engine
             revenue: 10,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is I12.',
             abilities: [],
-            color: '#ffffff',
-            text_color: 'black',
+            color: '#008264',
+            text_color: 'white',
           },
           {
             name: 'Regional Railway: C',
@@ -591,8 +591,8 @@ module Engine
             revenue: 10,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is O10.',
             abilities: [],
-            color: '#ffffff',
-            text_color: 'black',
+            color: '#008264',
+            text_color: 'white',
           },
         ].freeze
 
@@ -1015,7 +1015,7 @@ module Engine
             always_market_price: true,
             coordinates: 'O20',
             city: 4,
-            color: '#e51c00',
+            color: '#ff7b93',
             reservation_color: nil,
             destination_coordinates: 'I12',
             destination_icon: '1822_pnw/NP_DEST',
@@ -1030,7 +1030,7 @@ module Engine
             always_market_price: true,
             coordinates: 'A8',
             city: 2,
-            color: '#000000',
+            color: '#e51c00',
             reservation_color: nil,
             destination_coordinates: 'A22',
             destination_icon: '1822_pnw/CPR_DEST',
@@ -1044,7 +1044,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             coordinates: 'D11',
-            color: '#ff7b93',
+            color: '#fab506',
             text_color: 'black',
             reservation_color: nil,
             destination_coordinates: 'D23',
@@ -1074,7 +1074,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             coordinates: 'O8',
-            color: '#ff3600',
+            color: '#004c6c',
             reservation_color: nil,
             destination_coordinates: 'F23',
             destination_icon: '1822_pnw/SPS_DEST',
@@ -1088,7 +1088,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             coordinates: 'F23',
-            color: '#fab506',
+            color: '#000000',
             reservation_color: nil,
             destination_coordinates: 'H11',
             destination_icon: '1822_pnw/CMPS_DEST',
@@ -1103,7 +1103,7 @@ module Engine
             always_market_price: true,
             coordinates: 'H11',
             city: 5,
-            color: '#004c6c',
+            color: '#ff3600',
             reservation_color: nil,
             destination_coordinates: 'O22',
             destination_icon: '1822_pnw/SWW_DEST',
