@@ -68,7 +68,7 @@ module Engine
       end
 
       def remove_programmed_action(entity, type)
-        existing = if type && type != '' && @game.class::ALLOW_MULTIPLE_PROGRAMS
+        existing = if type && @game.class::ALLOW_MULTIPLE_PROGRAMS
                      @game.programmed_actions[entity].find { |a| a.type == type }
                    else
                      @game.programmed_actions[entity].last # delete last added

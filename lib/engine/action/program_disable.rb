@@ -7,7 +7,7 @@ module Engine
     class ProgramDisable < Base
       attr_reader :reason, :original_type
 
-      def initialize(entity, reason:, original_type: '')
+      def initialize(entity, reason:, original_type: nil)
         super(entity)
         @reason = reason
         @original_type = original_type
