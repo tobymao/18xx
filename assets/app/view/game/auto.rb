@@ -40,11 +40,10 @@ module View
 
           if !(available = @game.available_programmed_actions).empty?
             available.each do |type|
-              enabled = @game.programmed_actions[sender].find { |a| a.is_a?(type) }
-              if (method = types[type])
-                settings = enabled if enabled
-                children.concat(method.call(settings))
-              end
+              next unless (method = types[type])
+
+              settings = @game.programmed_actions[sender].find { |a| a.is_a?(type) }
+              children.concat(method.call(settings))
             end
           else
             children << h('p.bold', 'No auto actions are presently available for this game.')
