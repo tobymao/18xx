@@ -516,7 +516,7 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            G1848::Step::SpecialTrack,
+            Engine::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             G1848::Step::Track,
             Engine::Step::Token,
@@ -538,13 +538,19 @@ module Engine
         end
 
         def operating_order
-          boe, others = @corporations.select(&:floated?).sort.partition { |c| c.type == :bank }
-          boe + others
+          @corporations.select(&:floated?).sort.partition { |c| c.type == :bank }.flatten
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return %w[5 6 57].include?(to.name) if (from.hex.tile.label.to_s == 'K') && (from.hex.tile.color == 'white')
-          return ['241'].include?(to.name) if selected_company && selected_company.sym == 'P3'
+          return ['241'].include?(to.name) if selected_company&.sym == 'P3'
+
+          super
+        end
+
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
+          # tile 241, tasmania  is valid in all phases
+          return true if tile.name == '241'
 
           super
         end

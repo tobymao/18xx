@@ -25,33 +25,19 @@ module Engine
             return super unless entity == @game.boe
           end
 
-          def dividend_options(entity)
-            return super unless entity == @game.boe
-
-            revenue = calculate_boe_revenue
-            dividend_types.to_h do |type|
-              payout = send(type, entity, revenue)
-              payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
-              [type, payout.merge(share_price_change(entity, revenue - payout[:corporation]))]
-            end
-          end
-
           def process_dividend(action)
             entity = action.entity
             return super unless entity == @game.boe
 
-            kind = action.kind.to_sym
-            payout = dividend_options(entity)[kind]
-
-            payout_shares(entity, calculate_boe_revenue) if payout[:per_share].positive?
+            revenue = calculate_boe_revenue
+            payout = send(:payout, entity, revenue)
+            payout_shares(entity, revenue) if payout[:per_share].positive?
             pass!
           end
 
           def calculate_boe_revenue
             current_phase_name = @game.phase.current[:name]
-            base_pay = BOE_BASE_PAYOUT[current_phase_name]
-            cities_revenue = get_token_cities_total_revenue(@game.boe)
-            base_pay + cities_revenue
+            BOE_BASE_PAYOUT[current_phase_name] + get_token_cities_total_revenue(@game.boe)
           end
 
           def get_token_cities_total_revenue(corporation)
