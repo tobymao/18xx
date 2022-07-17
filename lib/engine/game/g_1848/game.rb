@@ -20,6 +20,13 @@ module Engine
 
         CERT_LIMIT = { 3 => 20, 4 => 17, 5 => 14, 6 => 12 }.freeze
 
+        CERT_LIMIT_RECEIVERSHIP = {
+          3 => { 1 => 18, 2 => 16, 3 => 14, 4 => 12, 5 => 10 },
+          4 => { 1 => 15, 2 => 13, 3 => 11, 4 => 10, 5 => 9 },
+          5 => { 1 => 13, 2 => 12, 3 => 10, 4 => 9, 5 => 8 },
+          6 => { 1 => 11, 2 => 10, 3 => 9, 4 => 8, 5 => 7 },
+        }.freeze
+
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 510, 6 => 430 }.freeze
 
         K_BONUS = { 0 => 0, 1 => 0, 2 => 50, 3 => 100, 4 => 150, 5 => 200 }.freeze
@@ -516,6 +523,7 @@ module Engine
           @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
           @extra_tile_lay = false
           @private_closed_triggered = false
+          @close_corp_count = 0
         end
 
         def new_auction_round
@@ -678,15 +686,12 @@ module Engine
           0
         end
 
-<<<<<<< HEAD
         def market_share_limit(corporation = nil)
           return 100 if corporation == @boe
 
           MARKET_SHARE_LIMIT
         end
 
-=======
->>>>>>> 4bdea3219 (implent loans)
         def can_take_loan?(entity)
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
@@ -743,6 +748,61 @@ module Engine
         def revenue_for(route, stops)
           k_sum = stops.count { |rl| rl.hex.tile.label.to_s == 'K' }
           super + K_BONUS[k_sum]
+        end
+
+        # recievership
+
+        def close_corporation(corporation, quiet: false)
+          @close_corp_count += 1
+          # boe gets all the tokens
+          corporation.tokens.select(&:used).each do |token|
+            boe_token = Engine::Token.new(@boe)
+            token.swap!(boe_token)
+            @boe.tokens << boe_token
+          end
+
+          # shareholders compensated
+          per_share = corporation.original_par_price.price
+          # total_payout = corporation.total_shares * per_share
+          payouts = {}
+          @players.each do |player|
+            next if corporation.president?(player)
+
+            amount = player.num_shares_of(corporation) * per_share
+            next if amount.zero?
+
+            payouts[player] = amount
+            corporation.spend(amount, player)
+          end
+
+          if payouts.any?
+            receivers = payouts
+                          .sort_by { |_r, c| -c }
+                          .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+            @log << "#{corporation.name} settles with shareholders "\
+                    "#{format_currency(per_share)} per share (#{receivers})"
+          end
+
+          # cert limit adjustments
+          players_size = @players.size
+          @cert_limit = CERT_LIMIT_RECEIVERSHIP[players_size][@close_corp_count]
+
+          # remove trains on 2nd and 5th company
+
+          # end game trigger if fifth company
+
+          super
+        end
+
+        def init_cert_limit
+          return super if @cert_limit.nil? && !@cert_limit.is_a?(Numeric)
+
+          @cert_limit
+        end
+
+        def cert_limit(_player)
+          @cert_limit
         end
       end
     end

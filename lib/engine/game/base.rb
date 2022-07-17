@@ -1416,14 +1416,15 @@ module Engine
         hex = hex_by_id(corporation.coordinates)
 
         tile = hex&.tile
+        puts("here tile + #{tile}") if corporation.name == 'BOE'
         if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
-
+          puts("here pending tokens + #{@round.pending_tokens.any?}") if corporation.name == 'BOE'
           if @round.pending_tokens.any? { |p| p[:entity] == corporation }
             # 1867: Avoid adding the same token twice
             @round.clear_cache!
             return
           end
-
+          puts("here + #{@round.pending_tokens.any?}") if corporation.name == 'BOE'
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.
           hexes =
@@ -2050,6 +2051,10 @@ module Engine
 
       def game_cert_limit
         self.class::CERT_LIMIT
+      end
+
+      def cert_limit(_player)
+        @cert_limit
       end
 
       def init_phase
