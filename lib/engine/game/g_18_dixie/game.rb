@@ -361,6 +361,15 @@ module Engine
         def info_on_trains(phase)
           Array(phase[:on]).join(', ')
         end
+
+        def rust(train)
+          if train.owner.corporation? && train.salvage
+            @bank.spend(train.salvage, train.owner)
+            @log << "#{train.owner.name} gets #{format_currency(train.salvage)} salvage for rusted #{train.name} train"
+          end
+
+          super
+        end
       end
     end
   end
