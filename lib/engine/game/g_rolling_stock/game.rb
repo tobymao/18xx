@@ -523,7 +523,7 @@ module Engine
           income += self.class::FOREIGN_EXTRA_INCOME if entity == @foreign_investor
           return income if entity.companies.empty?
 
-          income = entity.companies.sum { |c| company_income(c) }
+          income += entity.companies.sum { |c| company_income(c) }
           return income unless entity.corporation?
 
           income += synergy_income(entity)
@@ -1054,6 +1054,24 @@ module Engine
 
         def force_unconditional_stock_pass?
           true
+        end
+
+        def liquidity(player, emergency: false)
+          total = player.cash
+          player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, shares|
+            total += dump_cash(corporation, shares.size)
+          end
+          total
+        end
+
+        def dump_cash(corporation, num)
+          value = 0
+          price = corporation.share_price
+          num.times do
+            price = next_price_to_left(price)
+            value += price.price
+          end
+          value
         end
       end
     end
