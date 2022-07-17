@@ -142,7 +142,7 @@ module Engine
                     train_limit: 4,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: ['can_buy_companies'],
+                    status: %w[can_buy_companies can_buy_trains],
                   },
                   {
                     name: '4',
@@ -150,7 +150,7 @@ module Engine
                     train_limit: 3,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: ['can_buy_companies'],
+                    status: %w[can_buy_companies can_buy_trains],
                   },
                   {
                     name: '5',
@@ -158,6 +158,7 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
+                    status: ['can_buy_trains'],
                   },
                   {
                     name: '6',
@@ -165,6 +166,7 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
+                    status: ['can_buy_trains'],
                   },
                   {
                     name: '8',
@@ -172,7 +174,11 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown gray],
                     operating_rounds: 3,
+                    status: ['can_buy_trains'],
                   }].freeze
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+             'can_buy_trains' => ['Can Buy trains', 'Can buy trains from other corporations'],
+           ).freeze
 
         TRAINS = [
           {

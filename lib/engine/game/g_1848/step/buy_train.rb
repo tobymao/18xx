@@ -17,13 +17,22 @@ module Engine
           def buyable_trains(entity)
             # Cannot buy 2E if one is already owned
             owns_2e = entity.trains.any? { |t| t.name == '2E' }
-            return super unless owns_2e
+            return super if !owns_2e && @game.phase.status.include?('can_buy_trains')
 
-            super.reject { |t| t.name == '2E' }
+            super.reject { |t| t.name == '2E' } if owns_2e
+            super.select(&:from_depot?) unless @game.phase.status.include?('can_buy_trains')
           end
 
           def room?(entity)
             entity.trains.count { |t| t.name != '2E' } < @game.train_limit(entity)
+          end
+
+          def spend_minmax(entity, train)
+            train_corp_owner = train.owner.owner
+            min = train_corp_owner == entity.owner ? 1 : train.price
+            max = train_corp_owner == entity.owner ? buying_power(entity) : train.price
+
+            [min, max]
           end
         end
       end
