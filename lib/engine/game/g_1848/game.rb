@@ -35,7 +35,7 @@ module Engine
 
         BOE_STARTING_CASH = 2000
 
-        BOE_STARTING_PRICE = 80
+        BOE_STARTING_PRICE = 70
 
         BOE_ROW = 6
 
@@ -95,7 +95,8 @@ module Engine
           %w[0c 40 50 60 70 80p 90 110 130 160 190],
           %w[0c 30 40 50 60 70p 80 100 120],
           %w[0c 20 30 40 50 60 70],
-          %w[80r
+          %w[70r
+             80r
              90r
              100r
              110r
