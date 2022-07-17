@@ -355,6 +355,11 @@ module Engine
           company_by_id(minor_id).close!
           @recently_floated << minor
         end
+
+        # Train stuff
+        def info_on_trains(phase)
+          Array(phase[:on]).join(', ')
+        end
       end
     end
   end
