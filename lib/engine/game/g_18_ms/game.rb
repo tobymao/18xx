@@ -102,6 +102,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 80,
+            salvage: 20,
             num: 5,
           },
           {
@@ -109,6 +110,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 180,
+            salvage: 30,
             num: 4,
           },
           {
@@ -116,6 +118,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 300,
+            salvage: 60,
             num: 3,
           },
           { name: '5', distance: 5, price: 500, num: 2 },
