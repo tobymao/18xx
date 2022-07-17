@@ -546,8 +546,9 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G1848::Round::Operating.new(self, [
             G1848::Step::Loan,
+            G1848::Step::CashCrisis,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G1848::Step::SpecialTrack,
@@ -768,7 +769,7 @@ module Engine
           end
 
           # shareholders compensated
-          per_share = corporation.original_par_price.price
+          per_share = 500
           # total_payout = corporation.total_shares * per_share
           payouts = {}
           @players.each do |player|
@@ -778,7 +779,7 @@ module Engine
             next if amount.zero?
 
             payouts[player] = amount
-            corporation.spend(amount, player)
+            corporation.spend(amount, player, check_cash: false, borrow_from: corporation.owner)
           end
 
           if payouts.any?
