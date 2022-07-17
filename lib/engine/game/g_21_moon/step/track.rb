@@ -7,10 +7,14 @@ module Engine
     module G21Moon
       module Step
         class Track < Engine::Step::Track
+          ACTIONS = %w[lay_tile pass use_graph].freeze
+
           def actions(entity)
             return [] if entity.corporation? && entity.receivership?
+            return [] unless entity == current_entity
+            return [] if entity.company? || !can_lay_tile?(entity)
 
-            super
+            ACTIONS
           end
 
           def setup
@@ -18,8 +22,17 @@ module Engine
 
             # start with allowing track to either SP or LB
             @game.select_combined_graph
-            @lb_connected = false
-            @sp_connected = false
+            @round.lb_connected = false
+            @round.sp_connected = false
+            @round.graph_id = nil
+          end
+
+          def round_state
+            {
+              lb_connected: false,
+              sp_connected: false,
+              graph_id: nil,
+            }
           end
 
           def track_upgrade?(from, _to, _hex)
@@ -42,14 +55,6 @@ module Engine
             @game.lb_graph.clear
             lay_tile_action(action)
 
-            if @lb_connected && !@sp_connected
-              @game.select_sp_graph
-            elsif !@lb_connected && @sp_connected
-              @game.select_lb_graph
-            else
-              @game.select_combined_graph # normal case when loading
-            end
-
             return if can_lay_tile?(action.entity)
 
             pass!
@@ -60,13 +65,40 @@ module Engine
           #
           def check_track_restrictions!(entity, old_tile, new_tile)
             unless @game.loading
-              @lb_connected = new_tile.paths.any? { |np| @game.lb_graph.connected_paths(entity)[np] }
-              @sp_connected = new_tile.paths.any? { |np| @game.sp_graph.connected_paths(entity)[np] }
+              lb = uses_graph?(entity, @game.lb_graph, old_tile, new_tile)
+              sp = uses_graph?(entity, @game.sp_graph, old_tile, new_tile)
+
+              if lb && sp
+                @round.graph_id = 'BOTH'
+              elsif lb
+                @round.graph_id = 'LB'
+                raise GameError, 'Tile must add new track connected to SP' if @round.lb_connected && !@round.sp_connected
+              elsif sp
+                @round.graph_id = 'SP'
+                raise GameError, 'Tile must add new track connected to SP' if @round.sp_connected && !@round.lb_connected
+              else
+                raise GameError, 'Tile must add new track connected to SP or LB'
+              end
             end
 
             check_border_crossing(entity, new_tile)
 
             super
+          end
+
+          def uses_graph?(entity, graph, old_tile, new_tile)
+            old_paths = old_tile.paths
+
+            new_tile.paths.each do |np|
+              next unless graph.connected_paths(entity)[np]
+
+              op = old_paths.find { |path| np <= path }
+              next if op
+
+              return true
+            end
+
+            false
           end
 
           def check_border_crossing(entity, tile)
@@ -97,6 +129,34 @@ module Engine
             return nil if !preprinted && !tile_lay[:upgrade]
 
             connected
+          end
+
+          def auto_actions(entity)
+            return [] unless @round.num_laid_track == 1 # only after first lay
+            return [] unless @round.graph_id            # only once and after normal lay
+
+            id = @round.graph_id
+            @round.graph_id = false
+            [
+              Engine::Action::UseGraph.new(
+                entity,
+                graph_id: id,
+              ),
+            ]
+          end
+
+          def process_use_graph(action)
+            @round.lb_connected = action.graph_id == 'LB' || action.graph_id == 'BOTH'
+            @round.sp_connected = action.graph_id == 'SP' || action.graph_id == 'BOTH'
+
+            # set the graph based on which base connected to the tile
+            if @round.lb_connected && !@round.sp_connected
+              @game.select_sp_graph
+            elsif !@round.lb_connected && @round.sp_connected
+              @game.select_lb_graph
+            else
+              @game.select_combined_graph # both
+            end
           end
         end
       end
