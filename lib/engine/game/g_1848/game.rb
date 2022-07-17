@@ -9,7 +9,7 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered
+        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered
 
         include_meta(G1848::Meta)
         include Map
@@ -493,6 +493,7 @@ module Engine
 
         def event_take_out_loans!
           @log << 'Corporations can now take out loans'
+          @take_out_loan_triggered = true
         end
 
         def event_close_companies!
@@ -535,6 +536,7 @@ module Engine
           @extra_tile_lay = false
           @close_corp_count = 0
           @player_corp_close_count = Hash.new { |h, k| h[k] = 0 }
+          @take_out_loan_triggered = false
         end
 
         def new_auction_round
@@ -707,7 +709,7 @@ module Engine
         def can_take_loan?(entity)
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
-            @loans.any?
+            @loans.any? && @take_out_loan_triggered
         end
 
         def take_loan(entity, loan)
