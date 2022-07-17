@@ -831,6 +831,61 @@ module Engine
 
           G1848::Depot.new(trains, self)
         end
+
+        # recievership
+
+        def close_corporation(corporation, quiet: false)
+          @close_corp_count += 1
+          # boe gets all the tokens
+          corporation.tokens.select(&:used).each do |token|
+            boe_token = Engine::Token.new(@boe)
+            token.swap!(boe_token)
+            @boe.tokens << boe_token
+          end
+
+          # shareholders compensated
+          per_share = corporation.original_par_price.price
+          # total_payout = corporation.total_shares * per_share
+          payouts = {}
+          @players.each do |player|
+            next if corporation.president?(player)
+
+            amount = player.num_shares_of(corporation) * per_share
+            next if amount.zero?
+
+            payouts[player] = amount
+            corporation.spend(amount, player)
+          end
+
+          if payouts.any?
+            receivers = payouts
+                          .sort_by { |_r, c| -c }
+                          .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+            @log << "#{corporation.name} settles with shareholders "\
+                    "#{format_currency(per_share)} per share (#{receivers})"
+          end
+
+          # cert limit adjustments
+          players_size = @players.size
+          @cert_limit = CERT_LIMIT_RECEIVERSHIP[players_size][@close_corp_count]
+
+          # remove trains on 2nd and 5th company
+
+          # end game trigger if fifth company
+
+          super
+        end
+
+        def init_cert_limit
+          return super if @cert_limit.nil? && !@cert_limit.is_a?(Numeric)
+
+          @cert_limit
+        end
+
+        def cert_limit(_player)
+          @cert_limit
+        end
       end
     end
   end
