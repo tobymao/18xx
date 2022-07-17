@@ -9,12 +9,10 @@ module Engine
         class Dividend < Engine::Step::Dividend
           BOE_BASE_PAYOUT = { '2' => 0, '3' => 100, '4' => 100, '5' => 200, '6' => 200, '8' => 300 }.freeze
 
-          def actions(entity)
+          def auto_actions(entity)
             return super unless entity == @game.boe
-
-            # boe always pays if it has any revenue
-            process_dividend(Action::Dividend.new(entity, kind: 'payout'))
-            []
+            [Action::Dividend.new(entity, kind: 'payout')]
+            super
           end
 
           def corporation_dividends(_entity, _per_share)
@@ -41,7 +39,7 @@ module Engine
           end
 
           def get_token_cities_total_revenue(corporation)
-            corporation.tokens.sum do |token|
+              corporation.tokens.sum do |token|
               token.city.revenue[token.hex.tile.color]
             end
           end
