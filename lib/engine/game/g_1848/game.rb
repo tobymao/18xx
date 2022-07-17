@@ -43,6 +43,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        EBUY_PRES_SWAP = false
+
         MARKET = [
           %w[0c
              70
