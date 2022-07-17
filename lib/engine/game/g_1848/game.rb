@@ -27,6 +27,8 @@ module Engine
           6 => { 1 => 11, 2 => 10, 3 => 9, 4 => 8, 5 => 7 },
         }.freeze
 
+        CERT_LIMIT_RECEIVERSHIP_REDUCTION = { 3 => 2, 4 => 2, 5 => 1, 6 => 1 }.freeze
+
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 510, 6 => 430 }.freeze
 
         K_BONUS = { 0 => 0, 1 => 0, 2 => 50, 3 => 100, 4 => 150, 5 => 200 }.freeze
@@ -524,6 +526,7 @@ module Engine
           @extra_tile_lay = false
           @private_closed_triggered = false
           @close_corp_count = 0
+          @player_corp_close_count = Hash.new { |h, k| h[k] = 0 }
         end
 
         def new_auction_round
@@ -754,6 +757,8 @@ module Engine
 
         def close_corporation(corporation, quiet: false)
           @close_corp_count += 1
+          @player_corp_close_count[corporation.owner] += 1
+
           # boe gets all the tokens
           corporation.tokens.select(&:used).each do |token|
             boe_token = Engine::Token.new(@boe)
@@ -789,20 +794,38 @@ module Engine
           @cert_limit = CERT_LIMIT_RECEIVERSHIP[players_size][@close_corp_count]
 
           # remove trains on 2nd and 5th company
-
-          # end game trigger if fifth company
+          depot.export! if @close_corp_count == 2 || @close_corp_count == 5
 
           super
         end
 
+        def custom_end_game_reached?
+          @close_corp_count >= 5
+        end
+
         def init_cert_limit
-          return super if @cert_limit.nil? && !@cert_limit.is_a?(Numeric)
+          return super unless @cert_limit.is_a?(Numeric)
 
           @cert_limit
         end
 
-        def cert_limit(_player)
-          @cert_limit
+        def cert_limit(player)
+          if @cert_limit.is_a?(Numeric) && player
+            # player cert limit needs to be reduced
+            @cert_limit - (@player_corp_close_count[player] * CERT_LIMIT_RECEIVERSHIP_REDUCTION[@players.size])
+          else
+            @cert_limit
+          end
+        end
+
+        def init_train_handler
+          trains = game_trains.flat_map do |train|
+            Array.new((train[:num] || num_trains(train))) do |index|
+              Train.new(**train, index: index)
+            end
+          end
+
+          G1848::Depot.new(trains, self)
         end
       end
     end

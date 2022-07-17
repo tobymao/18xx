@@ -77,7 +77,7 @@ module Engine
     class Base
       include Game::Meta
 
-      attr_reader :raw_actions, :actions, :bank, :cert_limit, :cities, :companies, :corporations,
+      attr_reader :raw_actions, :actions, :bank, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
@@ -2053,7 +2053,7 @@ module Engine
         self.class::CERT_LIMIT
       end
 
-      def cert_limit(_player)
+      def cert_limit(_player = nil)
         @cert_limit
       end
 
