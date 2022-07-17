@@ -47,6 +47,7 @@ module Engine
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 425, 6 => 375 }.freeze
         TILE_RESERVATION_BLOCKS_OTHERS = true
         TRACK_RESTRICTION = :permissive
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         # OR Constants
         FIRST_TURN_EXTRA_TILE_LAYS = [{ lay: true, upgrade: false }].freeze
