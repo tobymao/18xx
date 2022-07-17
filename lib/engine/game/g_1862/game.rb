@@ -68,6 +68,7 @@ module Engine
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = true
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
 
         MARKET = [
           %w[0c
@@ -503,9 +504,6 @@ module Engine
             D15
         ].freeze
 
-        IPSWITCH_HEX = 'F11'
-        HARWICH_HEX = 'F13'
-
         FREIGHT_BONUS = 20
         PORT_FREIGHT_BONUS = 30
 
@@ -930,12 +928,6 @@ module Engine
           return true if adding_town?(from, to)
 
           super
-        end
-
-        def upgrades_to_correct_label?(from, to)
-          (from.label == to.label) ||
-            (from.label.to_s == 'N' && to.label.to_s == 'I' && from.hex.id == IPSWITCH_HEX) ||
-            (from.label.to_s == 'Y' && to.label.to_s == 'H' && from.hex.id == HARWICH_HEX)
         end
 
         def active_players

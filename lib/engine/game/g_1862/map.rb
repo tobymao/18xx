@@ -331,14 +331,14 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
+                      'path=a:5,b:_0;label=N',
           },
           '796' => 3,
           '797' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=H',
+            'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
           },
           '798' => 3,
           '798_1' =>
