@@ -1031,6 +1031,14 @@ module Engine
           companies.sort_by(&:value).reverse
         end
 
+        def stock_round_name
+          'Investment Phase'
+        end
+
+        def force_unconditional_stock_pass?
+          true
+        end
+
         def movement_chart(corporation)
           num = num_issued(corporation)
           price = corporation.share_price
@@ -1046,14 +1054,6 @@ module Engine
           chart <<  ["$0 - $#{(num * one_left) - 1}", "$#{two_left}"] if two_left
           chart << ['', ''] while chart.size < 5
           chart
-        end
-
-        def stock_round_name
-          'Investment Phase'
-        end
-
-        def force_unconditional_stock_pass?
-          true
         end
 
         def liquidity(player, emergency: false)
