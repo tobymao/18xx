@@ -70,14 +70,14 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=C',
+            'city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=C;future_label=label:P,color:brown',
           },
           'TN2' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;path=a:0,b:_0;label=N',
+                      'path=a:5,b:_0;path=a:0,b:_0;label=N;future_label=label:P,color:brown',
           },
           'TN3' =>
           {
@@ -426,7 +426,8 @@ module Engine
           white: {
             %w[B17 G12] => 'city=revenue:0',
             %w[C16 E10 F5 F13] => 'town=revenue:0',
-            %w[D7 F11 F17 H7] => 'city=revenue:0;upgrade=cost:40,terrain:water',
+            %w[D7 F17 H7] => 'city=revenue:0;upgrade=cost:40,terrain:water',
+            ['F11'] => 'city=revenue:0;upgrade=cost:40,terrain:water;future_label=label:N,color:green',
             %w[B15
                C14
                C18
@@ -443,7 +444,7 @@ module Engine
             %w[F21 G18 G20] => 'upgrade=cost:120,terrain:mountain',
             ['F19'] => 'upgrade=cost:120,terrain:mountain;icon=image:18_tn/etwcr',
             ['H17'] => 'upgrade=cost:120,terrain:mountain;icon=image:18_tn/tcc',
-            ['H3'] => 'city=revenue:0;upgrade=cost:60,terrain:water;icon=image:18_tn/mcr',
+            ['H3'] => 'city=revenue:0;upgrade=cost:60,terrain:water;icon=image:18_tn/mcr;future_label=label:P,color:brown',
             ['I10'] => 'town=revenue:0;upgrade=cost:40,terrain:water',
             %w[C8 E8 F9 G8 H9 I12 G16] =>
             'upgrade=cost:40,terrain:water',
@@ -492,9 +493,8 @@ module Engine
         # Two lays or one upgrade
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
-        HEX_WITH_P_LABEL = %w[F11 H3 H15].freeze
         STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
-        GREEN_CITY_TILES = %w[14 15 619 TN1 TN2].freeze
+        GREEN_CITY_TILES = %w[14 15 619].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'civil_war' => ['Civil War', 'Companies with trains lose revenue of one train its next OR']
@@ -610,18 +610,6 @@ module Engine
 
         def lnr
           @lnr ||= company_by_id('LNR')
-        end
-
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # When upgrading from green to brown:
-          #   If Memphis (H3), Chattanooga (H15), Nashville (F11)
-          #   only brown P tile (#170) are allowed.
-          return to.name == '170' if from.color == :green && HEX_WITH_P_LABEL.include?(from.hex.name)
-
-          # When upgrading Nashville (F11) from yellow to green, only TN2 from green to brown:
-          return to.name == 'TN2' if from.color == :yellow && from.hex.name == 'F11'
-
-          super
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
