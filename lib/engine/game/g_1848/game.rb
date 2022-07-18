@@ -689,7 +689,7 @@ module Engine
 
         def init_loans
           @loan_value = 100
-          Array.new(20) { |id| Loan.new(id, @loan_value) }
+          Array.new(2) { |id| Loan.new(id, @loan_value) }
         end
 
         def can_pay_interest?(_entity, _extra_cash = 0)
@@ -712,24 +712,40 @@ module Engine
             @loans.any? && @take_out_loan_triggered
         end
 
-        def take_loan(entity, loan)
-          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+        def take_loan(entity, loan, ebuy = false)
+          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity, ebuy)
 
           old_price = entity.share_price
           boe_old_price = @boe.share_price
           @boe.spend(loan.amount, entity)
-          loan_taken_stock_market_movement(entity, loan)
+          loan_taken_stock_market_movement(entity, loan, ebuy)
           log_share_price(entity, old_price)
           log_share_price(@boe, boe_old_price)
           entity.loans << loan
           @boe.loans << loan
           @loans.delete(loan)
         end
-
-        def loan_taken_stock_market_movement(entity, loan)
+        
+        def loan_taken_stock_market_movement(entity, loan, ebuy = false)
           @log << "#{entity.name} takes a loan and receives #{format_currency(loan.amount)}"
           2.times { @stock_market.move_left(entity) }
+          @stock_market.move_left(entity) if ebuy
           @stock_market.move_right(boe)
+        end
+
+        def perform_ebuy_loans(entity, remaining)
+          ebuy = true
+          while remaining.positive? && entity.share_price.price != 0
+            # if at max loans, company goes directly into receiverhsip
+            if @loans.none?
+              @log << "There no more loans available to force buy a train, #{entity.name} goes into receivership"
+              r, _c = entity.share_price.coordinates
+              @stock_market.move(entity, r, 0)
+              break
+            end
+            take_loan(entity, @loans.first, ebuy)
+            remaining -= 100
+          end
         end
 
         # routing logic
@@ -781,6 +797,10 @@ module Engine
 
           # shareholders compensated
           per_share = corporation.par_price.price
+<<<<<<< HEAD
+=======
+          # total_payout = corporation.total_shares * per_share
+>>>>>>> 67a4f4c65 (add ebuy trains logic)
           payouts = {}
           @players.each do |player|
             next if corporation.president?(player)

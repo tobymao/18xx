@@ -8,6 +8,20 @@ module Engine
     module G1848
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def buy_train_action(action, entity = nil, borrow_from: nil)
+            entity ||= action.entity
+            price = action.price
+            remaining = price - buying_power(entity)
+
+            if remaining.positive?
+              # do emergency loan
+              @game.perform_ebuy_loans(entity, remaining)
+            end
+            return if entity.share_price.price.zero? # company is closing, not buying train
+
+            super
+          end
+
           def can_entity_buy_train?(entity)
             return false if entity == @game.boe
 
