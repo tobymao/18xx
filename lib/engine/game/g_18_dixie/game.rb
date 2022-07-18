@@ -47,6 +47,7 @@ module Engine
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 425, 6 => 375 }.freeze
         TILE_RESERVATION_BLOCKS_OTHERS = true
         TRACK_RESTRICTION = :permissive
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         # OR Constants
         FIRST_TURN_EXTRA_TILE_LAYS = [{ lay: true, upgrade: false }].freeze
@@ -354,6 +355,20 @@ module Engine
           minor.float!
           company_by_id(minor_id).close!
           @recently_floated << minor
+        end
+
+        # Train stuff
+        def info_on_trains(phase)
+          Array(phase[:on]).join(', ')
+        end
+
+        def rust(train)
+          if train.owner.corporation? && train.salvage
+            @bank.spend(train.salvage, train.owner)
+            @log << "#{train.owner.name} gets #{format_currency(train.salvage)} salvage for rusted #{train.name} train"
+          end
+
+          super
         end
       end
     end

@@ -9,7 +9,7 @@ module Engine
 
     attr_accessor :obsolete, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
                   :distance, :reserved
-    attr_reader :available_on, :discount, :multiplier, :sym, :variant, :requires_token, :ever_operated, :operated
+    attr_reader :available_on, :discount, :multiplier, :sym, :variant, :requires_token, :ever_operated, :operated, :salvage
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
@@ -22,6 +22,7 @@ module Engine
       @obsolete_on = opts[:obsolete_on]
       @available_on = opts[:available_on]
       @discount = opts[:discount]
+      @salvage = opts[:salvage]
       @multiplier = opts[:multiplier]
       @no_local = opts[:no_local]
       @buyable = true
@@ -51,6 +52,7 @@ module Engine
         rusts_on: @rusts_on,
         obsolete_on: @obsolete_on,
         discount: @discount,
+        salvage: @salvage,
       }
 
       # Primary variant should be at the head of the list.
