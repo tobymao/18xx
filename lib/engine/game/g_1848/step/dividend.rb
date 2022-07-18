@@ -9,6 +9,18 @@ module Engine
         class Dividend < Engine::Step::Dividend
           BOE_BASE_PAYOUT = { '2' => 0, '3' => 100, '4' => 100, '5' => 200, '6' => 200, '8' => 300 }.freeze
 
+          def actions(entity)
+            return super unless entity == @game.boe
+
+            ['dividend']
+          end
+
+          def auto_actions(entity)
+            return super unless entity == @game.boe
+
+            [Action::Dividend.new(entity, kind: 'payout')]
+          end
+
           def corporation_dividends(_entity, _per_share)
             0
           end
@@ -20,6 +32,7 @@ module Engine
           def process_dividend(action)
             entity = action.entity
             return super unless entity == @game.boe
+            return super if action&.kind == 'withhold'
 
             revenue = calculate_boe_revenue
             payout = send(:payout, entity, revenue)
