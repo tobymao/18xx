@@ -7,12 +7,6 @@ module Engine
     module G1848
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
-          def potential_tiles(entity, hex)
-            return @game.tiles.select { |tile| tile.color == 'blue' } if entity.sym == 'P3'
-
-            super
-          end
-
           def process_lay_tile(action)
             ability = abilities(action.entity)
             super

@@ -543,7 +543,7 @@ module Engine
             G1848::Step::Loan,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
+            G1848::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             G1848::Step::Track,
             Engine::Step::Token,
@@ -685,8 +685,10 @@ module Engine
 
         def market_share_limit(corporation = nil)
           return 100 if corporation == @boe
+
           MARKET_SHARE_LIMIT
         end
+
         def can_take_loan?(entity)
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
