@@ -315,6 +315,11 @@ module Engine
       # See 1856 for an example
       ALLOW_REMOVING_TOWNS = false
 
+      # Can a player have multiple outstanding programmed actions
+      # If true, will possibly need to handle incompatable programmed actions
+      # (e.g. ProgramSharePass and ProgramBuyShares)
+      ALLOW_MULTIPLE_PROGRAMS = false
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -463,7 +468,7 @@ module Engine
 
         @players = @names.map { |player_id, name| Player.new(player_id, name) }
         @user = user
-        @programmed_actions = {}
+        @programmed_actions = Hash.new { |h, k| h[k] = [] }
         @round_counter = 0
 
         @optional_rules = init_optional_rules(optional_rules)
@@ -2357,10 +2362,12 @@ module Engine
       end
 
       def check_programmed_actions
-        @programmed_actions.reject! do |entity, action|
-          if action&.disable?(self)
-            player_log(entity, "Programmed action '#{action}' removed due to round change")
-            true
+        @programmed_actions.each do |entity, action_list|
+          action_list.reject! do |action|
+            if action&.disable?(self)
+              player_log(entity, "Programmed action '#{action}' removed due to round change")
+              true
+            end
           end
         end
       end
@@ -2909,6 +2916,14 @@ module Engine
 
       def companies_sort(companies)
         companies
+      end
+
+      def stock_round_name
+        'Stock Round'
+      end
+
+      def force_unconditional_stock_pass?
+        false
       end
     end
   end
