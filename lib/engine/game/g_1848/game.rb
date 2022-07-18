@@ -700,7 +700,7 @@ module Engine
 
         def init_loans
           @loan_value = 100
-          Array.new(20) { |id| Loan.new(id, @loan_value) }
+          Array.new(2) { |id| Loan.new(id, @loan_value) }
         end
 
         def can_pay_interest?(_entity, _extra_cash = 0)
