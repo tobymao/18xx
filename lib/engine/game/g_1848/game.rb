@@ -9,7 +9,7 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_reader :sydney_adelaide_connected
+        attr_reader :sydney_adelaide_connected, :boe
 
         include_meta(G1848::Meta)
         include Map
@@ -255,6 +255,8 @@ module Engine
             name: "Melbourne & Hobson's Bay Railway Company",
             value: 40,
             discount: 10,
+            min_price: 1,
+            max_price: 40,
             revenue: 5,
             desc: 'No special abilities.',
           },
@@ -262,6 +264,8 @@ module Engine
             sym: 'P2',
             name: 'Sydney Railway Company',
             value: 80,
+            min_price: 1,
+            max_price: 80,
             discount: 10,
             revenue: 10,
             desc: 'Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by'\
@@ -296,18 +300,54 @@ module Engine
             name: 'Tasmanian Railways',
             value: 140,
             discount: 30,
+            min_price: 1,
+            max_price: 140,
             revenue: 15,
             desc: 'The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in'\
                   " addition to the company's normal build that turn.",
+            abilities: [
+                    {
+                      type: 'tile_lay',
+                      hexes: %w[I8 I10],
+                      tiles: %w[241],
+                      owner_type: 'corporation',
+                      when: 'owning_corp_or_turn',
+                      special: true,
+                      count: 1,
+                      free: true,
+                    },
+                  ],
+
           },
           {
             sym: 'P4',
             name: 'The Ghan',
             value: 220,
             discount: 50,
+            min_price: 1,
+            max_price: 220,
             revenue: 20,
             desc: 'Owning Public Company or its Director may receive a one-time discount of £100 on the purchase'\
                   ' of a 2E (Ghan) train. This power does not go away after a 5/5+ train is purchased.',
+            abilities: [
+                    {
+                      type: 'train_discount',
+                      discount: 100,
+                      trains: ['2E'],
+                      count: 1,
+                      owner_type: 'corporation',
+                      when: 'buying_train',
+                    },
+                    {
+                      type: 'train_discount',
+                      discount: 100,
+                      trains: ['2E'],
+                      count: 1,
+                      owner_type: 'player',
+                      when: 'owning_player_or_turn',
+                    },
+                  ],
+
           },
           {
             sym: 'P5',
@@ -464,7 +504,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1848::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -476,12 +516,13 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             G1848::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G1848::Step::Dividend,
+            Engine::Step::SpecialBuyTrain,
             G1848::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -492,8 +533,20 @@ module Engine
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
+        def operating_order
+          @corporations.select(&:floated?).sort.partition { |c| c.type == :bank }.flatten
+        end
+
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return %w[5 6 57].include?(to.name) if (from.hex.tile.label.to_s == 'K') && (from.hex.tile.color == 'white')
+          return ['241'].include?(to.name) if selected_company&.sym == 'P3'
+
+          super
+        end
+
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
+          # tile 241, tasmania  is valid in all phases
+          return true if tile.name == '241'
 
           super
         end
@@ -553,6 +606,10 @@ module Engine
           @players.size == 3 ? { max_ownership_percent: 70 } : {}
         end
 
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          super(bundle, allow_president_change: pres_change_ok?(bundle.corporation), swap: nil)
+        end
+
         def pres_change_ok?(corporation)
           return false if corporation == @boe
         end
@@ -594,6 +651,12 @@ module Engine
 
         def interest_owed(_entity)
           0
+        end
+
+        def market_share_limit(corporation = nil)
+          return 100 if corporation == @boe
+
+          MARKET_SHARE_LIMIT
         end
       end
     end
