@@ -494,7 +494,7 @@ module Engine
               company.add_ability(no_buy)
             else
               # close company
-              @log << "#{company.name} closes here"
+              @log << "#{company.name} closes"
               company.close!
             end
           end
