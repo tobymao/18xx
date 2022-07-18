@@ -683,12 +683,10 @@ module Engine
           0
         end
 
-<<<<<<< HEAD
         def market_share_limit(corporation = nil)
           return 100 if corporation == @boe
           MARKET_SHARE_LIMIT
         end
-=======
         def can_take_loan?(entity)
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
@@ -717,7 +715,6 @@ module Engine
           @stock_market.move_right(boe)
         end
 
->>>>>>> b075a2db2 (implent loans)
         # routing logic
         def check_distance(route, visits, _train = nil)
           gauge_changes = edge_crossings(route)
