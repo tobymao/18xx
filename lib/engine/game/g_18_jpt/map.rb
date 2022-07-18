@@ -236,7 +236,7 @@ module Engine
             %w[C77 D78 E81] => 'upgrade=cost:40,terrain:river',
             %w[E93 G83 G93 I85 I87 K77] => 'upgrade=cost:80,terrain:river',
             %w[B96 C79 C89 F80 H80 I83 J78 K81 K85] => 'city=revenue:20',
-            %w[E77 F94] => 'city=revenue:20;label=KU',
+            %w[E77 F94] => 'city=revenue:20;future_label=label:KU,color:gray',
             %w[D80 F82] => 'city=revenue:20;upgrade=cost:40,terrain:river',
             %w[C83 C91 D84 D90 D94 G81 I77 I79] => 'town=revenue:10',
             %w[B82 E79] => 'town=revenue:10,loc:1;town=revenue:10,loc:4',
