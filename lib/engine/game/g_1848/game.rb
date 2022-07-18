@@ -533,10 +533,6 @@ module Engine
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
-        def init_share_pool
-          G1848::SharePool.new(self)
-        end
-
         def operating_order
           @corporations.select(&:floated?).sort.partition { |c| c.type == :bank }.flatten
         end
@@ -655,6 +651,12 @@ module Engine
 
         def interest_owed(_entity)
           0
+        end
+
+        def market_share_limit(corporation = nil)
+          return 100 if corporation == @boe
+
+          MARKET_SHARE_LIMIT
         end
       end
     end

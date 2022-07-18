@@ -150,11 +150,11 @@ module Engine
     end
 
     def fit_in_bank?(bundle)
-      (bundle.percent + percent_of(bundle.corporation)) <= @game.class::MARKET_SHARE_LIMIT
+      (bundle.percent + percent_of(bundle.corporation)) <= @game.market_share_limit(bundle.corporation)
     end
 
     def bank_at_limit?(corporation)
-      common_percent_of(corporation) >= @game.class::MARKET_SHARE_LIMIT
+      common_percent_of(corporation) >= @game.market_share_limit(corporation)
     end
 
     def transfer_shares(bundle, to_entity,

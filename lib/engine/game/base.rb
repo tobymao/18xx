@@ -2009,6 +2009,10 @@ module Engine
         'PRIVATE COMPANY'
       end
 
+      def market_share_limit(_corporation = nil)
+        self.class::MARKET_SHARE_LIMIT
+      end
+
       private
 
       def init_graph

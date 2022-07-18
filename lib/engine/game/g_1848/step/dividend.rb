@@ -8,11 +8,12 @@ module Engine
       module Step
         class Dividend < Engine::Step::Dividend
           BOE_BASE_PAYOUT = { '2' => 0, '3' => 100, '4' => 100, '5' => 200, '6' => 200, '8' => 300 }.freeze
+          ACTIONS = ['dividend'].freeze
 
           def actions(entity)
             return super unless entity == @game.boe
 
-            ['dividend']
+            ACTIONS
           end
 
           def auto_actions(entity)
