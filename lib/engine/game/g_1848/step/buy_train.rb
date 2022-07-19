@@ -13,8 +13,15 @@ module Engine
             price = action.price
             remaining = price - buying_power(entity)
 
-            @game.perform_ebuy_loans(entity, remaining) if  remaining.positive? && !@game.round.actions_for(entity).include?('pass')
-      
+            if remaining.positive? && !@game.round.actions_for(entity).include?('pass')
+              # do emergency loan
+              if @game.round.actions_for(entity).include?('take_loan')
+                raise GameError,
+                      "#{entity.name} can take a regular loan, prior to performing Compulsory Train Purchase"
+              end
+
+              @game.perform_ebuy_loans(entity, remaining)
+            end
             return if entity.share_price.price.zero? # company is closing, not buying train
 
             super

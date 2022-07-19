@@ -181,7 +181,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 100,
-            rusts_on: '4',
+            rusts_on: '3',
             num: 6,
             variants: [
               { name: '2+', price: 120 },
