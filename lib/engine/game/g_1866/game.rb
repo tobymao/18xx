@@ -262,8 +262,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            price: 400,
-            rusts_on: '10',
+            price: 500,
             events: [
               {
                 'type' => 'brown_ferries',
@@ -420,7 +419,7 @@ module Engine
               'L' => 20,
               '3' => 6,
               '4' => 5,
-              '5' => 4,
+              '5' => 5,
               '6' => 3,
               '8' => 2,
               '10' => 20,
