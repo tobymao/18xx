@@ -90,6 +90,8 @@ module Engine
           'G16' => 'Wollongong',
         }.freeze
 
+        GHAN_HEXES = %w[A4 A6].freeze
+
         HEXES = {
           red: {
             ['A4'] =>

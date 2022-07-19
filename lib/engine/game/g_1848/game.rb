@@ -725,7 +725,7 @@ module Engine
           @boe.loans << loan
           @loans.delete(loan)
         end
-        
+
         def loan_taken_stock_market_movement(entity, loan, ebuy = false)
           @log << "#{entity.name} takes a loan and receives #{format_currency(loan.amount)}"
           2.times { @stock_market.move_left(entity) }
@@ -754,6 +754,11 @@ module Engine
           added_stops = modified_guage_changes.positive? ? Array.new(modified_guage_changes) { Engine::Part::City.new('0') } : []
           super + added_stops
         end
+
+        def check_distance(route, visits, _train = nil)
+          if route.train.name == '2E' && !ghan_visited?(visits.first) && !ghan_visited?(visits.last)
+            raise GameError, 'Route for 2E train must include Alice Springs'
+          end
 
         def get_modified_guage_distance(route)
           gauge_changes = edge_crossings(route)
@@ -858,6 +863,12 @@ module Engine
           end
 
           G1848::Depot.new(trains, self)
+        end
+
+        def ghan_visited?(visited_node)
+          return false unless visited_node
+
+          GHAN_HEXES.include?(visited_node.hex.name)
         end
       end
     end
