@@ -311,7 +311,7 @@ module Engine
                     {
                       type: 'tile_lay',
                       hexes: %w[I8 I10],
-                      tiles: ['241'],
+                      tiles: %w[241'],
                       owner_type: 'corporation',
                       when: 'owning_corp_or_turn',
                       special: true,
@@ -481,13 +481,8 @@ module Engine
           @log << '-- Event: Private companies close --'
           @private_closed_triggered = true
           @companies.each do |company|
-            unsused_ability = false
-            company.all_abilities.each do |ability|
-              next unless ability.type != :no_buy
-
-              unsused_ability = !ability.used? || unsused_ability
-            end
-            if unsused_ability
+            unused_ability = company.all_abilities.any? { |ability| ability.type != :no_buy && !ability.used? }
+            if unused_ability
               # reduce revenue to 0, keep company around, can't be bought if owned by player
               company.revenue = 0
               no_buy = Engine::Ability::NoBuy.new(type: 'no_buy')
@@ -520,7 +515,6 @@ module Engine
           @boe.cash = BOE_STARTING_CASH
           @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
           @extra_tile_lay = false
-          @private_closed_triggered = false
         end
 
         def new_auction_round
@@ -712,26 +706,26 @@ module Engine
         end
 
         def loan_taken_stock_market_movement(entity)
-          @stock_market.move_left(entity)
-          @stock_market.move_left(entity)
+          2.times { @stock_market.move_left(entity) }
           @stock_market.move_right(boe)
         end
 
         # routing logic
         def check_distance(route, visits, _train = nil)
-          gauge_changes = edge_crossings(route)
-          modifier = route.train.name.include?('+') ? 1 : 0
-          modified_guage_changes = gauge_changes - modifier
+          modified_guage_changes = get_modified_guage_distance(route)
           visits += Array.new(modified_guage_changes) { Engine::Part::City.new('0') } if modified_guage_changes.positive?
-
           super(route, visits, _train = nil)
         end
 
         def route_distance(route)
+          modified_guage_changes = get_modified_guage_distance(route)
+          modified_guage_changes.positive? ? super + modified_guage_changes : super
+        end
+
+        def get_modified_guage_distance(route)
           gauge_changes = edge_crossings(route)
           modifier = route.train.name.include?('+') ? 1 : 0
-          distance = super
-          distance + gauge_changes - modifier
+          gauge_changes - modifier
         end
 
         def edge_crossings(route)
@@ -745,21 +739,12 @@ module Engine
         end
 
         def edge_is_a_border(edge)
-          border_edges = []
-          edge.hex.tile.borders.each do |border|
-            border_edges << "#{edge.hex.id}_#{border.edge}"
-          end
-          edge_str = "#{edge.hex.id}_#{edge.num}"
-          border_edges.include? edge_str
+          edge.hex.tile.borders.any? { |border| border.edge == edge.num }
         end
 
         def revenue_for(route, stops)
-          revenue = super
-          k_sum = stops.each.sum do |rl|
-            rl.hex.tile.label.to_s == 'K' ? 1 : 0
-          end
-          bonus = K_BONUS[k_sum]
-          revenue + bonus
+          k_sum = stops.count { |rl| rl.hex.tile.label.to_s == 'K' ? 1 : 0 }
+          super + K_BONUS[k_sum]
         end
       end
     end

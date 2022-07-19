@@ -7,12 +7,12 @@ module Engine
     module G1848
       module Step
         class Loan < Engine::Step::Base
+          ACTIONS = ['take_loan'].freeze
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
+            return [] if @loan_taken || !@game.can_take_loan?(entity)
 
-            actions = []
-            actions << 'take_loan' unless @loan_taken
-            actions
+            ACTIONS
           end
 
           def description
