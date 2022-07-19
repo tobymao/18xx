@@ -743,7 +743,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          k_sum = stops.count { |rl| rl.hex.tile.label.to_s == 'K'}
+          k_sum = stops.count { |rl| rl.hex.tile.label.to_s == 'K' }
           super + K_BONUS[k_sum]
         end
       end
