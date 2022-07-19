@@ -2023,6 +2023,10 @@ module Engine
         self.class::MARKET_SHARE_LIMIT
       end
 
+      def cert_limit(_player = nil)
+        @cert_limit
+      end
+
       private
 
       def init_graph
@@ -2051,10 +2055,6 @@ module Engine
 
       def game_cert_limit
         self.class::CERT_LIMIT
-      end
-
-      def cert_limit(_player = nil)
-        @cert_limit
       end
 
       def init_phase
