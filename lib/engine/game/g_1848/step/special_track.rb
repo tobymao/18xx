@@ -7,7 +7,6 @@ module Engine
     module G1848
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
-          
           def process_lay_tile(action)
             ability = abilities(action.entity)
             super

@@ -2062,13 +2062,6 @@ module Engine
         self.class::CERT_LIMIT
       end
 
-<<<<<<< HEAD
-=======
-      def cert_limit(_player = nil)
-        @cert_limit
-      end
-
->>>>>>> c0cc9d0d9 (clean rebase)
       def init_phase
         Phase.new(game_phases, self)
       end
