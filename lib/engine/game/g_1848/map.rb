@@ -105,9 +105,9 @@ module Engine
           },
           blue: {
             ['B21'] =>
-                     'offboard=revenue:yellow_10|green_10|brown_20|gray_20;path=a:0,b:_0',
+                     'town=revenue:yellow_10|green_10|brown_20|gray_20;icon=image:anchor;path=a:0,b:_0',
             ['F3'] =>
-            'offboard=revenue:yellow_10|green_10|brown_20|gray_20;path=a:2,b:_0',
+            'town=revenue:yellow_10|green_10|brown_20|gray_20;icon=image:anchor;path=a:2,b:_0',
             %w[I8 I10] => '',
           },
           white: {

@@ -477,7 +477,7 @@ module Engine
         ].freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }].freeze
-        EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+        EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         def tile_lays(_entity)
           @extra_tile_lay ? EXTRA_TILE_LAYS : TILE_LAYS
