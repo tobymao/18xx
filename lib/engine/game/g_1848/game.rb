@@ -624,7 +624,7 @@ module Engine
 
         def place_home_token(entity)
           return super if entity.name != :COM
-          return unless @sydney_adelaide_connected
+          return unless @sydney_adelaide_connected || @com_can_operate
           return if entity.tokens.first&.used
 
           # COM places home tokens... regardless as to whether there is space for them
