@@ -326,7 +326,7 @@ module Engine
                     {
                       type: 'tile_lay',
                       hexes: %w[I8 I10],
-                      tiles: %w[241'],
+                      tiles: %w[241],
                       owner_type: 'corporation',
                       when: 'owning_corp_or_turn',
                       special: true,

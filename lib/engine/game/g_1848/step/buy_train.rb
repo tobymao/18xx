@@ -13,11 +13,9 @@ module Engine
             price = action.price
             remaining = price - buying_power(entity)
 
-            # do emergency loan
-            @game.perform_ebuy_loans(entity, remaining) if remaining.positive?
-
-            # company is closing, not buying train
-            return if entity.share_price.price.zero?
+            @game.perform_ebuy_loans(entity, remaining) if  remaining.positive? && !@game.round.actions_for(entity).include?('pass')
+      
+            return if entity.share_price.price.zero? # company is closing, not buying train
 
             super
           end
@@ -33,11 +31,22 @@ module Engine
             trains_to_buy = super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
             trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' } if owns_2e?(entity)
+            trains_to_buy << fix_2e_issue
             trains_to_buy
           end
 
           def owns_2e?(entity)
             entity.trains.any? { |t| t.name == '2E' }
+          end
+            
+          def fix_2e_issue
+            entity_abilities = @game.abilities(entity, :train_discount, time: ability_timing)
+            if entity_abilities
+              ghan = @depot.trains.find { |t| t.name == '2E' }
+              trains << ghan if ghan.price - entity_abilities.discount <= entity.cash
+              # entity can buy the  ghan train cheaper. Add it to list of buyable trains if it has enough cash after discount.
+            end
+            trains
           end
 
           def room?(entity)
