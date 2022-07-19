@@ -9,7 +9,7 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered
+        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered, :com_can_operate
 
         include_meta(G1848::Meta)
         include Map
@@ -494,6 +494,11 @@ module Engine
         def event_take_out_loans!
           @log << 'Corporations can now take out loans'
           @take_out_loan_triggered = true
+        end
+
+        def event_com_operates!
+          @log << 'COM operates even without Sydney-Adelaide connection'
+          @com_can_operate = true
         end
 
         def event_close_companies!
