@@ -22,7 +22,7 @@ module Engine
 
       def process_buy_train(action)
         company = action.entity
-        corporation = company.owner
+        corporation = @game.current_entity
         ability = ability(company, train: action.train)
         from_depot = action.train.from_depot?
         buy_train_action(action, corporation)
@@ -49,6 +49,7 @@ module Engine
         return unless entity&.company?
 
         @game.abilities(entity, :train_discount, time: ability_timing) do |ability|
+          break unless entity.owner == @game.current_entity || entity.owner == @game.current_entity.owner
           return ability if !train || ability.trains.include?(train.name)
         end
 

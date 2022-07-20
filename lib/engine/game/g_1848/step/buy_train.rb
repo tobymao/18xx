@@ -50,7 +50,9 @@ module Engine
             entity_abilities = @game.abilities(entity, :train_discount, time: ability_timing)
             if entity_abilities
               ghan = @depot.trains.find { |t| t.name == '2E' }
-              trains << ghan if ghan.price - entity_abilities.discount <= entity.cash
+              if @game.phase.available?(ghan.available_on) && ghan.price - entity_abilities.discount <= entity.cash
+                trains |= [ghan]
+              end
               # entity can buy the  ghan train cheaper. Add it to list of buyable trains if it has enough cash after discount.
             end
             trains

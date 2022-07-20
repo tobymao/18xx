@@ -254,7 +254,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 200,
             num: 6,
-            available_on: '5',
+            available_on: '3',
           },
         ].freeze
 
@@ -361,7 +361,7 @@ module Engine
                       trains: ['2E'],
                       count: 1,
                       owner_type: 'player',
-                      when: 'owning_player_or_turn',
+                      when: 'buying_train',
                     },
                   ],
 
@@ -573,7 +573,7 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             G1848::Step::Dividend,
-            Engine::Step::SpecialBuyTrain,
+            G1848::Step::SpecialBuyTrain,
             G1848::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
