@@ -254,7 +254,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 200,
             num: 6,
-            available_on: '3',
+            available_on: '5',
           },
         ].freeze
 
@@ -796,6 +796,7 @@ module Engine
 
         def revenue_for(route, stops)
           k_sum = stops.count { |rl| rl.hex.tile.label.to_s == 'K' }
+          k_sum = 0 if route.train.name == '2E' # 2E can't get k bonus
           super + K_BONUS[k_sum]
         end
 
