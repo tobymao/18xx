@@ -291,7 +291,7 @@ module Engine
                     {
                       type: 'tile_lay',
                       discount: 40,
-                      hexes: %w[B7 B9 C2 C4 C8 E6 E8],
+                      hexes: %w[B3 B7 B9 C2 C4 C8 E6 E8],
                       tiles: %w[7 8 9],
                       count: 1,
                       reachable: true,
@@ -302,7 +302,7 @@ module Engine
                     {
                       type: 'tile_lay',
                       discount: 40,
-                      hexes: %w[B7 B9 C2 C4 C8 E6 E8],
+                      hexes: %w[B3 B7 B9 C2 C4 C8 E6 E8],
                       tiles: %w[7 8 9],
                       count: 1,
                       reachable: true,
@@ -666,7 +666,7 @@ module Engine
         end
 
         def pres_change_ok?(corporation)
-          return false if corporation == @boe
+          true unless corporation == @boe
         end
 
         def after_buy_company(player, company, _price)
