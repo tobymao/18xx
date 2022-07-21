@@ -565,17 +565,18 @@ module Engine
           G1848::Round::Operating.new(self, [
             G1848::Step::Loan,
             G1848::Step::CashCrisis,
+            G1848::Step::TasmaniaTile,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G1848::Step::SpecialTrack,
-            Engine::Step::BuyCompany,
+            G1848::Step::BuyCompany,
             G1848::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1848::Step::Dividend,
             G1848::Step::SpecialBuyTrain,
             G1848::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G1848::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -605,6 +606,10 @@ module Engine
         def sar
           # SAR is used for graph to find adelaide (to connect to sydney for starting COM)
           @sar ||= @corporations.find { |corporation| corporation.name == 'SAR' }
+        end
+
+        def tasmania
+          @tasmania ||= @companies.find { |c| c.sym == 'P3' }
         end
 
         def sydney
@@ -880,6 +885,13 @@ module Engine
           return false unless visited_node
 
           GHAN_HEXES.include?(visited_node.hex.name)
+        end
+
+        def entity_can_use_company?(entity, company)
+          # company abilities only work once they can be bought
+          return false unless @phase.status.include?('can_buy_companies')
+
+          super
         end
       end
     end
