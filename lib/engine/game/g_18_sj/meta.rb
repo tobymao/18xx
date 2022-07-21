@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         PROTOTYPE = false
 
         GAME_SUBTITLE = 'Railways in the Frozen North'
