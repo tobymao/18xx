@@ -1359,6 +1359,10 @@ module Engine
         []
       end
 
+      def visited_stops(route)
+        route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact
+      end
+
       def get(type, id)
         return nil unless type && id
 

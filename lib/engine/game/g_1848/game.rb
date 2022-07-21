@@ -694,8 +694,6 @@ module Engine
 
           old_price = entity.share_price
           boe_old_price = @boe.share_price
-          name = entity.name
-          @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
           @boe.spend(loan.amount, entity)
           loan_taken_stock_market_movement(entity)
           log_share_price(entity, old_price)
@@ -706,20 +704,16 @@ module Engine
         end
 
         def loan_taken_stock_market_movement(entity)
+          @log << "#{entity.name} takes a loan and receives #{format_currency(loan.amount)}"
           2.times { @stock_market.move_left(entity) }
           @stock_market.move_right(boe)
         end
 
         # routing logic
-        def check_distance(route, visits, _train = nil)
+        def visited_stops(route)
           modified_guage_changes = get_modified_guage_distance(route)
-          visits += Array.new(modified_guage_changes) { Engine::Part::City.new('0') } if modified_guage_changes.positive?
-          super(route, visits, _train = nil)
-        end
-
-        def route_distance(route)
-          modified_guage_changes = get_modified_guage_distance(route)
-          modified_guage_changes.positive? ? super + modified_guage_changes : super
+          added_stops = modified_guage_changes.positive? ? Array.new(modified_guage_changes) { Engine::Part::City.new('0') } : []
+          super + added_stops
         end
 
         def get_modified_guage_distance(route)
