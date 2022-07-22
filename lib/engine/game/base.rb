@@ -1417,11 +1417,13 @@ module Engine
 
         tile = hex&.tile
         if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+
           if @round.pending_tokens.any? { |p| p[:entity] == corporation }
             # 1867: Avoid adding the same token twice
             @round.clear_cache!
             return
           end
+
           # If the tile does not have any paths at the present time, clear up the ambiguity when the tile is laid
           # otherwise the entity must choose now.
           hexes =
