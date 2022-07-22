@@ -9,7 +9,7 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_reader :sydney_adelaide_connected, :boe
+        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered
 
         include_meta(G1848::Meta)
         include Map
@@ -21,6 +21,8 @@ module Engine
         CERT_LIMIT = { 3 => 20, 4 => 17, 5 => 14, 6 => 12 }.freeze
 
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 510, 6 => 430 }.freeze
+
+        K_BONUS = { 0 => 0, 1 => 0, 2 => 50, 3 => 100, 4 => 150, 5 => 200 }.freeze
 
         BOE_STARTING_CASH = 2000
 
@@ -309,7 +311,7 @@ module Engine
                     {
                       type: 'tile_lay',
                       hexes: %w[I8 I10],
-                      tiles: %w[241],
+                      tiles: %w[241'],
                       owner_type: 'corporation',
                       when: 'owning_corp_or_turn',
                       special: true,
@@ -475,6 +477,24 @@ module Engine
           @log << 'Corporations can now take out loans'
         end
 
+        def event_close_companies!
+          @log << '-- Event: Private companies close --'
+          @private_closed_triggered = true
+          @companies.each do |company|
+            unused_ability = company.all_abilities.any? { |ability| ability.type != :no_buy && !ability.used? }
+            if unused_ability
+              # reduce revenue to 0, keep company around, can't be bought if owned by player
+              company.revenue = 0
+              no_buy = Engine::Ability::NoBuy.new(type: 'no_buy')
+              company.add_ability(no_buy)
+            else
+              # close company
+              @log << "#{company.name} closes"
+              company.close!
+            end
+          end
+        end
+
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
 
@@ -514,9 +534,10 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
+            G1848::Step::Loan,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
+            G1848::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             G1848::Step::Track,
             Engine::Step::Token,
@@ -626,6 +647,7 @@ module Engine
               else
                 share_pool.buy_shares(player, share, exchange: :free)
               end
+              ability.use!
             end
           end
         end
@@ -636,8 +658,10 @@ module Engine
           end
         end
 
+        # loans
+
         def maximum_loans(entity)
-          entity == @boe ? 0 : 5
+          entity == @boe ? 20 : 5
         end
 
         def init_loans
@@ -657,6 +681,64 @@ module Engine
           return 100 if corporation == @boe
 
           MARKET_SHARE_LIMIT
+        end
+
+        def can_take_loan?(entity)
+          entity.corporation? &&
+            entity.loans.size < maximum_loans(entity) &&
+            @loans.any?
+        end
+
+        def take_loan(entity, loan)
+          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+
+          old_price = entity.share_price
+          boe_old_price = @boe.share_price
+          @boe.spend(loan.amount, entity)
+          loan_taken_stock_market_movement(entity)
+          log_share_price(entity, old_price)
+          log_share_price(@boe, boe_old_price)
+          entity.loans << loan
+          @boe.loans << loan
+          @loans.delete(loan)
+        end
+
+        def loan_taken_stock_market_movement(entity)
+          @log << "#{entity.name} takes a loan and receives #{format_currency(loan.amount)}"
+          2.times { @stock_market.move_left(entity) }
+          @stock_market.move_right(boe)
+        end
+
+        # routing logic
+        def visited_stops(route)
+          modified_guage_changes = get_modified_guage_distance(route)
+          added_stops = modified_guage_changes.positive? ? Array.new(modified_guage_changes) { Engine::Part::City.new('0') } : []
+          super + added_stops
+        end
+
+        def get_modified_guage_distance(route)
+          gauge_changes = edge_crossings(route)
+          modifier = route.train.name.include?('+') ? 1 : 0
+          gauge_changes - modifier
+        end
+
+        def edge_crossings(route)
+          sum = route.paths.sum do |path|
+            path.edges.sum do |edge|
+              edge_is_a_border(edge) ? 1 : 0
+            end
+          end
+          # edges are double counted
+          sum / 2
+        end
+
+        def edge_is_a_border(edge)
+          edge.hex.tile.borders.any? { |border| border.edge == edge.num }
+        end
+
+        def revenue_for(route, stops)
+          k_sum = stops.count { |rl| rl.hex.tile.label.to_s == 'K' }
+          super + K_BONUS[k_sum]
         end
       end
     end
