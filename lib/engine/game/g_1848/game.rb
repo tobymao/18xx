@@ -771,7 +771,6 @@ module Engine
 
           # shareholders compensated
           per_share = corporation.par_price.price
-          # total_payout = corporation.total_shares * per_share
           payouts = {}
           @players.each do |player|
             next if corporation.president?(player)
