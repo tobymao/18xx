@@ -647,7 +647,7 @@ module Engine
             raise GameError, 'A route cannot both begin and end at the Basel and Frankfurt off-board hexes'
           end
 
-          return super unless route.train.name == '8'
+          return super unless rheingold_express_train?(route)
 
           if !rge_terminus?(visits.first) && !rge_terminus?(visits.last)
             raise GameError, 'Route for 8 trains must begin/end in an RGE hex'
@@ -680,18 +680,22 @@ module Engine
         def route_distance_str(route)
           towns = route.visited_stops.count(&:town?)
           cities = route_distance(route) - towns
-          return towns.zero? ? cities.to_s : "#{cities}+#{towns}" unless route.train.name == '8'
+          return towns.zero? ? cities.to_s : "#{cities}+#{towns}" unless rheingold_express_train?(route)
 
           cities > 8 ? "8(+#{cities - 8})" : cities.to_s
         end
 
         def revenue_info(route, stops)
-          [montan_bonus(route, stops),
-           eastern_ruhr_area_bonus(stops),
-           iron_rhine_bonus(stops),
-           trajekt_usage_penalty(route, stops),
-           rheingold_express_bonus(route, stops),
-           ratingen_bonus(route, stops)]
+          if rheingold_express_train?(route)
+            [trajekt_usage_penalty(route, stops),
+             rheingold_express_bonus(route, stops)]
+          else
+            [montan_bonus(route, stops),
+             eastern_ruhr_area_bonus(stops),
+             iron_rhine_bonus(stops),
+             trajekt_usage_penalty(route, stops),
+             ratingen_bonus(route, stops)]
+          end
         end
 
         def aachen_duren_cologne_link_checkable?
@@ -855,7 +859,6 @@ module Engine
 
         def montan_bonus(route, stops)
           bonus = { revenue: 0 }
-          return bonus if route.train.name == '8'
 
           coal = count_coal(route, stops)
           return bonus if coal.zero?
@@ -946,9 +949,7 @@ module Engine
 
         def rheingold_express_bonus(route, stops)
           bonus = { revenue: 0 }
-          return bonus if route.train.name != '8' ||
-                          !stops.first || !rge_terminus?(stops.first) ||
-                          !stops.last || !rge_terminus?(stops.last)
+          return bonus unless rge_bonus_route?(route, stops)
 
           # Double any Rhine Metropolis cities visited
           doubles = 0
@@ -967,7 +968,6 @@ module Engine
         def ratingen_bonus(route, stops)
           bonus = { revenue: 0 }
           return bonus if !optional_ratingen_variant ||
-                          route.train.name == '8' ||
                           stops.none? { |s| s.hex.id == RATINGEN_HEX } ||
                           count_steel(route, stops).zero?
 
@@ -1031,6 +1031,16 @@ module Engine
 
         def remove_trajekt_icon(tile)
           tile.icons.reject! { |i| i.name == 'trajekt' }
+        end
+
+        def rheingold_express_train?(route)
+          route.train.name == '8'
+        end
+
+        def rge_bonus_route?(route, stops)
+          rheingold_express_train?(route) &&
+          stops.first && rge_terminus?(stops.first) &&
+          stops.last && rge_terminus?(stops.last)
         end
       end
     end
