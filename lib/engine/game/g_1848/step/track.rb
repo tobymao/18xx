@@ -9,6 +9,12 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include Engine::Game::G1848::Tracker
+
+          def actions(entity)
+            return super unless entity == @game.boe
+
+            []
+          end
         end
       end
     end

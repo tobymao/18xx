@@ -705,7 +705,7 @@ module Engine
 
         def init_loans
           @loan_value = 100
-          Array.new(2) { |id| Loan.new(id, @loan_value) }
+          Array.new(20) { |id| Loan.new(id, @loan_value) }
         end
 
         def can_pay_interest?(_entity, _extra_cash = 0)
@@ -722,11 +722,11 @@ module Engine
           MARKET_SHARE_LIMIT
         end
 
-        def can_take_loan?(entity)
+        def can_take_loan?(entity, ebuy = false)
+          return ebuy if ebuy
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
-            !@loans.empty? &&
-            @take_out_loan_triggered
+            @loans.any? && @take_out_loan_triggered
         end
 
         def take_loan(entity, loan, ebuy: false)
@@ -816,7 +816,7 @@ module Engine
             next if token.used
 
             boe_token = Engine::Token.new(@boe)
-            token.swap!(boe_token)
+            token.swap!(boe_token, check_tokenable: false)
             @boe.tokens << boe_token
           end
 
