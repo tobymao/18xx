@@ -20,19 +20,30 @@ module Engine
 
         CERT_LIMIT = { 3 => 20, 4 => 17, 5 => 14, 6 => 12 }.freeze
 
+        CERT_LIMIT_RECEIVERSHIP = {
+          3 => { 1 => 18, 2 => 16, 3 => 14, 4 => 12, 5 => 10 },
+          4 => { 1 => 15, 2 => 13, 3 => 11, 4 => 10, 5 => 9 },
+          5 => { 1 => 13, 2 => 12, 3 => 10, 4 => 9, 5 => 8 },
+          6 => { 1 => 11, 2 => 10, 3 => 9, 4 => 8, 5 => 7 },
+        }.freeze
+
+        CERT_LIMIT_RECEIVERSHIP_REDUCTION = { 3 => 2, 4 => 2, 5 => 1, 6 => 1 }.freeze
+
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 510, 6 => 430 }.freeze
 
         K_BONUS = { 0 => 0, 1 => 0, 2 => 50, 3 => 100, 4 => 150, 5 => 200 }.freeze
 
         BOE_STARTING_CASH = 2000
 
-        BOE_STARTING_PRICE = 80
+        BOE_STARTING_PRICE = 70
 
         BOE_ROW = 6
 
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
+
+        EBUY_PRES_SWAP = false
 
         MARKET = [
           %w[0c
@@ -86,7 +97,8 @@ module Engine
           %w[0c 40 50 60 70 80p 90 110 130 160 190],
           %w[0c 30 40 50 60 70p 80 100 120],
           %w[0c 20 30 40 50 60 70],
-          %w[80r
+          %w[70r
+             80r
              90r
              100r
              110r
@@ -515,6 +527,8 @@ module Engine
           @boe.cash = BOE_STARTING_CASH
           @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
           @extra_tile_lay = false
+          @close_corp_count = 0
+          @player_corp_close_count = Hash.new { |h, k| h[k] = 0 }
         end
 
         def new_auction_round
@@ -533,8 +547,9 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G1848::Round::Operating.new(self, [
             G1848::Step::Loan,
+            G1848::Step::CashCrisis,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G1848::Step::SpecialTrack,
@@ -695,7 +710,7 @@ module Engine
           old_price = entity.share_price
           boe_old_price = @boe.share_price
           @boe.spend(loan.amount, entity)
-          loan_taken_stock_market_movement(entity)
+          loan_taken_stock_market_movement(entity, loan)
           log_share_price(entity, old_price)
           log_share_price(@boe, boe_old_price)
           entity.loans << loan
@@ -703,7 +718,7 @@ module Engine
           @loans.delete(loan)
         end
 
-        def loan_taken_stock_market_movement(entity)
+        def loan_taken_stock_market_movement(entity, loan)
           @log << "#{entity.name} takes a loan and receives #{format_currency(loan.amount)}"
           2.times { @stock_market.move_left(entity) }
           @stock_market.move_right(boe)
@@ -739,6 +754,82 @@ module Engine
         def revenue_for(route, stops)
           k_sum = stops.count { |rl| rl.hex.tile.label.to_s == 'K' }
           super + K_BONUS[k_sum]
+        end
+
+        # recievership
+
+        def close_corporation(corporation, quiet: false)
+          @close_corp_count += 1
+          @player_corp_close_count[corporation.owner] += 1
+
+          # boe gets all the tokens
+          corporation.tokens.each do |token|
+            next if token.used
+
+            boe_token = Engine::Token.new(@boe)
+            token.swap!(boe_token)
+            @boe.tokens << boe_token
+          end
+
+          # shareholders compensated
+          per_share = corporation.par_price.price
+          payouts = {}
+          @players.each do |player|
+            next if corporation.president?(player)
+
+            amount = player.num_shares_of(corporation) * per_share
+            next if amount.zero?
+
+            payouts[player] = amount
+            corporation.spend(amount, player, check_cash: false, borrow_from: corporation.owner)
+          end
+
+          unless payouts.empty?
+            receivers = payouts
+                          .sort_by { |_r, c| -c }
+                          .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+            @log << "#{corporation.name} settles with shareholders "\
+                    "#{format_currency(per_share)} per share (#{receivers})"
+          end
+
+          # cert limit adjustments
+          players_size = @players.size
+          @cert_limit = CERT_LIMIT_RECEIVERSHIP[players_size][@close_corp_count]
+
+          # remove trains on 2nd and 5th company
+          depot.export! if @close_corp_count == 2 || @close_corp_count == 5
+
+          super
+        end
+
+        def custom_end_game_reached?
+          @close_corp_count >= 5
+        end
+
+        def init_cert_limit
+          return super unless @cert_limit.is_a?(Numeric)
+
+          @cert_limit
+        end
+
+        def cert_limit(player)
+          if @cert_limit.is_a?(Numeric) && player
+            # player cert limit needs to be reduced
+            @cert_limit - (@player_corp_close_count[player] * CERT_LIMIT_RECEIVERSHIP_REDUCTION[@players.size])
+          else
+            @cert_limit
+          end
+        end
+
+        def init_train_handler
+          trains = game_trains.flat_map do |train|
+            Array.new((train[:num] || num_trains(train))) do |index|
+              Train.new(**train, index: index)
+            end
+          end
+
+          G1848::Depot.new(trains, self)
         end
       end
     end
