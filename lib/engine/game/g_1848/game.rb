@@ -541,7 +541,6 @@ module Engine
           @extra_tile_lay = false
           @close_corp_count = 0
           @player_corp_close_count = Hash.new { |h, k| h[k] = 0 }
-          @take_out_loan_triggered = false
         end
 
         def new_auction_round
@@ -694,7 +693,7 @@ module Engine
 
         def init_loans
           @loan_value = 100
-          Array.new(2) { |id| Loan.new(id, @loan_value) }
+          Array.new(20) { |id| Loan.new(id, @loan_value) }
         end
 
         def can_pay_interest?(_entity, _extra_cash = 0)
@@ -748,8 +747,9 @@ module Engine
               @stock_market.move(entity, r, 0)
               break
             end
-            take_loan(entity, @loans.first, ebuy)
-            remaining -= 100
+            loan=@loans.first
+            take_loan(entity, loan, ebuy)
+            remaining -= loan.amount
           end
         end
 
@@ -807,10 +807,6 @@ module Engine
 
           # shareholders compensated
           per_share = corporation.par_price.price
-<<<<<<< HEAD
-=======
-          # total_payout = corporation.total_shares * per_share
->>>>>>> 67a4f4c65 (add ebuy trains logic)
           payouts = {}
           @players.each do |player|
             next if corporation.president?(player)
