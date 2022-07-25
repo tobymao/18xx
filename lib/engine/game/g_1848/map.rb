@@ -88,6 +88,7 @@ module Engine
           'F15' => 'Orange & Bathurst',
           'G10' => 'Ballarat & Bendigo',
           'G16' => 'Wollongong',
+          'I21' => 'BOE Payouts',
         }.freeze
 
         GHAN_HEXES = %w[A4 A6].freeze
@@ -102,6 +103,7 @@ module Engine
                    'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:5,b:_0;path=a:0,b:_0',
             ['D1'] =>
                    'city=revenue:yellow_20|green_40|brown_60|gray_80;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=K',
+            ['I21'] => 'offboard=revenue:yellow_0|green_100|brown_200|gray_300'
           },
           blue: {
             ['B21'] =>
