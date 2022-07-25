@@ -13,7 +13,7 @@ module Engine
           def actions(entity)
             return [] unless entity == current_entity
 
-            if @active_entity.nil?
+            unless @active_entity
               @active_entity = entity
               @game.log << "#{@active_entity.name} enters Cash Crisis and owes"\
                            " the bank #{@game.format_currency(needed_cash(@active_entity))}"
@@ -31,7 +31,7 @@ module Engine
           end
 
           def active?
-            active_entities.any?
+            !active_entities.empty?
           end
 
           def active_entities
@@ -59,10 +59,7 @@ module Engine
           end
 
           def sellable_shares?(entity)
-            sum = entity.shares.sum do |share|
-              can_sell?(entity, share.to_bundle) ? 1 : 0
-            end
-            sum.positive?
+            entity.shares.any? { |share| can_sell?(entity, share.to_bundle) }
           end
 
           def can_sell?(entity, bundle)

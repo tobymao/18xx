@@ -710,7 +710,7 @@ module Engine
           old_price = entity.share_price
           boe_old_price = @boe.share_price
           @boe.spend(loan.amount, entity)
-          loan_taken_stock_market_movement(entity)
+          loan_taken_stock_market_movement(entity, loan)
           log_share_price(entity, old_price)
           log_share_price(@boe, boe_old_price)
           entity.loans << loan
@@ -718,7 +718,7 @@ module Engine
           @loans.delete(loan)
         end
 
-        def loan_taken_stock_market_movement(entity)
+        def loan_taken_stock_market_movement(entity, loan)
           @log << "#{entity.name} takes a loan and receives #{format_currency(loan.amount)}"
           2.times { @stock_market.move_left(entity) }
           @stock_market.move_right(boe)
@@ -763,7 +763,9 @@ module Engine
           @player_corp_close_count[corporation.owner] += 1
 
           # boe gets all the tokens
-          corporation.tokens.select(&:used).each do |token|
+          corporation.tokens.each do |token|
+            next if token.used
+
             boe_token = Engine::Token.new(@boe)
             token.swap!(boe_token)
             @boe.tokens << boe_token
@@ -782,7 +784,7 @@ module Engine
             corporation.spend(amount, player, check_cash: false, borrow_from: corporation.owner)
           end
 
-          if payouts.any?
+          unless payouts.empty?
             receivers = payouts
                           .sort_by { |_r, c| -c }
                           .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
