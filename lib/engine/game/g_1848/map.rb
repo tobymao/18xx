@@ -88,7 +88,7 @@ module Engine
           'F15' => 'Orange & Bathurst',
           'G10' => 'Ballarat & Bendigo',
           'G16' => 'Wollongong',
-          'I21' => 'BOE Payouts',
+          'I21' => 'BOE Payout',
         }.freeze
 
         GHAN_HEXES = %w[A4 A6].freeze
