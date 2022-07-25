@@ -13,11 +13,11 @@ module Engine
             price = action.price
             remaining = price - buying_power(entity)
 
-            if remaining.positive?
-              # do emergency loan
-              @game.perform_ebuy_loans(entity, remaining)
-            end
-            return if entity.share_price.price.zero? # company is closing, not buying train
+            # do emergency loan
+            @game.perform_ebuy_loans(entity, remaining) if remaining.positive?
+
+            # company is closing, not buying train
+            return if entity.share_price.price.zero?
 
             super
           end
