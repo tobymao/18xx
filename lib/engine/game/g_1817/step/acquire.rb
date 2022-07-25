@@ -415,7 +415,7 @@ module Engine
               10 # while technically the bank bids 0 this isn't done by a player.
             else
               # Needs rounding to 10
-              ((corporation.total_shares * corporation.share_price.price).to_f / 10).round * 10
+              ((corporation.total_shares * corporation.share_price.price).to_f / 10).ceil * 10
             end
           end
 
