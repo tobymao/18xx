@@ -72,12 +72,16 @@ module Engine
                 @round.graph_id = 'BOTH'
               elsif lb
                 @round.graph_id = 'LB'
-                raise GameError, 'Tile must add new track connected to SP' if @round.lb_connected && !@round.sp_connected
+                if @round.lb_connected && !@round.sp_connected
+                  raise GameError, 'Tile must upgrade city or add new track and be connected to SP'
+                end
               elsif sp
                 @round.graph_id = 'SP'
-                raise GameError, 'Tile must add new track connected to SP' if @round.sp_connected && !@round.lb_connected
+                if @round.sp_connected && !@round.lb_connected
+                  raise GameError, 'Tile must upgrade city or add new track and be connected to LB'
+                end
               else
-                raise GameError, 'Tile must add new track connected to SP or LB'
+                raise GameError, 'Tile must upgrade city or add new track and be connected to SP or LB'
               end
             end
 
@@ -91,6 +95,7 @@ module Engine
 
             new_tile.paths.each do |np|
               next unless graph.connected_paths(entity)[np]
+              return true unless new_tile.cities.empty? # city_permissive
 
               op = old_paths.find { |path| np <= path }
               next if op
