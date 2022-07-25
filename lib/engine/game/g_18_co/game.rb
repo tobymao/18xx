@@ -39,6 +39,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        EBUY_PRES_SWAP = false
+
         TILES = {
           '3a' =>
                  {
