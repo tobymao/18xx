@@ -224,7 +224,7 @@ module Engine
             num: 3,
             variants: [
               { name: '5+', distance: 5, price: 550 },
-],
+            ],
             events: [{ 'type' => 'close_companies' }],
           },
           {
@@ -747,7 +747,7 @@ module Engine
               @stock_market.move(entity, r, 0)
               break
             end
-            loan=@loans.first
+            loan = @loans.first
             take_loan(entity, loan, ebuy)
             remaining -= loan.amount
           end
@@ -761,9 +761,10 @@ module Engine
         end
 
         def check_distance(route, visits, _train = nil)
-          if route.train.name == '2E' && !ghan_visited?(visits.first) && !ghan_visited?(visits.last)
-            raise GameError, 'Route for 2E train must include Alice Springs'
-          end
+          return unless route.train.name == '2E' && !ghan_visited?(visits.first) && !ghan_visited?(visits.last)
+
+          raise GameError, 'Route for 2E train must include Alice Springs'
+        end
 
         def get_modified_guage_distance(route)
           gauge_changes = edge_crossings(route)
