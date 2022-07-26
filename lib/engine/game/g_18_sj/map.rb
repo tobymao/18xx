@@ -54,7 +54,7 @@ module Engine
             'color' => 'green',
             'code' => 'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;'\
                       'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
-                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2',
+                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=A',
           },
           'X3' =>
           {
@@ -68,14 +68,14 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;'\
                       'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
-                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2',
+                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=A',
           },
           'X5' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' =>
-            'city=revenue:90,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            'city=revenue:90,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=A',
           },
           'X6' =>
           {
@@ -125,7 +125,7 @@ module Engine
             ['B31'] => 'offboard=revenue:yellow_20|green_30|brown_70;path=a:0,b:_0;icon=image:18_sj/N,sticky:1;'\
                        'icon=image:18_sj/m_lower_case,sticky:1',
             ['H9'] => 'offboard=revenue:green_30|brown_40;path=a:3,b:_0;icon=image:18_sj/O,sticky:1;'\
-                      'icon=image:18_sj/b_lower_case,sticky:1;label=S;icon=image:18_sj/S,sticky:1',
+                      'icon=image:18_sj/b_lower_case,sticky:1;icon=image:18_sj/S,sticky:1',
           },
           gray: {
             ['A6'] => 'city=revenue:20;path=a:5,b:_0;path=a:0,b:_0;icon=image:port;icon=image:port',
@@ -182,7 +182,7 @@ module Engine
             ['G10'] =>
               'city=revenue:20,groups:Stockholm;city=revenue:20,groups:Stockholm;'\
               'city=revenue:20,groups:Stockholm;city=revenue:20,groups:Stockholm;path=a:1,b:_0;path=a:2,b:_1;'\
-              'path=a:3,b:_2;path=a:4,b:_3',
+              'path=a:3,b:_2;path=a:4,b:_3;label=A',
           },
         }.freeze
 

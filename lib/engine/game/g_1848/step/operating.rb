@@ -10,6 +10,7 @@ module Engine
           def skip_entity?(entity)
             return super if entity.name != :COM
 
+            @log << 'COM does not operate, Sydney and Addelaide are not connected' unless @game.sydney_adelaide_connected
             !@game.sydney_adelaide_connected
           end
         end

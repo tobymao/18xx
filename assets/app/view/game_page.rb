@@ -329,7 +329,7 @@ module View
       menu_items << item('S|preadsheet', '#spreadsheet')
       menu_items << item("To|ols#{' 📝' if note}", '#tools')
 
-      enabled = @game.programmed_actions[@game.player_by_id(@user['id'])] if @user
+      enabled = !@game.programmed_actions[@game.player_by_id(@user['id'])].empty? if @user
       menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [

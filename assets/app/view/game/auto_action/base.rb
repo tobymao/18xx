@@ -17,7 +17,8 @@ module View
           process_action(
             Engine::Action::ProgramDisable.new(
               @sender,
-              reason: 'user'
+              reason: 'user',
+              original_type: @settings.type
             )
           )
         end

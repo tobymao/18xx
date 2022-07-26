@@ -204,7 +204,7 @@ module Engine
             must_buy_power?(entity)
           end
 
-          def president_may_contribute?(_entity)
+          def president_may_contribute?(_entity, _shell = nil)
             false
           end
 

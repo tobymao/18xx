@@ -170,6 +170,7 @@ module View
 
         show_obsolete_schedule = !obsolete_schedule.keys.empty?
         show_upgrade = @depot.upcoming.any?(&:discount)
+        show_salvage = @depot.trains.any?(&:salvage)
         show_available = @depot.upcoming.any?(&:available_on)
         events = []
 
@@ -235,6 +236,7 @@ module View
                            end
 
           train_content << h(:td, discounts) if show_upgrade
+          train_content << h(:td, (train.salvage ? @game.format_currency(train.salvage) : '')) if show_salvage
           train_content << h(:td, train.available_on) if show_available
           train_content << h(:td, event_text) unless event_text.empty?
           tr_props = remaining.empty? ? @dimmed_font_style : {}
@@ -268,6 +270,7 @@ module View
         upcoming_train_header << h(:th, 'Phases out') if show_obsolete_schedule
         upcoming_train_header << h(:th, 'Rusts')
         upcoming_train_header << h(:th, 'Upgrade Discount') if show_upgrade
+        upcoming_train_header << h(:th, 'Salvage') if show_salvage
         if show_available
           upcoming_train_header << h(:th,
                                      { attrs: { title: 'Available after purchase of first train of type' } },

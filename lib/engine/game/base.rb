@@ -77,7 +77,7 @@ module Engine
     class Base
       include Game::Meta
 
-      attr_reader :raw_actions, :actions, :bank, :cert_limit, :cities, :companies, :corporations,
+      attr_reader :raw_actions, :actions, :bank, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
@@ -315,6 +315,11 @@ module Engine
       # See 1856 for an example
       ALLOW_REMOVING_TOWNS = false
 
+      # Can a player have multiple outstanding programmed actions
+      # If true, will possibly need to handle incompatable programmed actions
+      # (e.g. ProgramSharePass and ProgramBuyShares)
+      ALLOW_MULTIPLE_PROGRAMS = false
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -463,7 +468,7 @@ module Engine
 
         @players = @names.map { |player_id, name| Player.new(player_id, name) }
         @user = user
-        @programmed_actions = {}
+        @programmed_actions = Hash.new { |h, k| h[k] = [] }
         @round_counter = 0
 
         @optional_rules = init_optional_rules(optional_rules)
@@ -1354,6 +1359,10 @@ module Engine
         []
       end
 
+      def visited_stops(route)
+        route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact
+      end
+
       def get(type, id)
         return nil unless type && id
 
@@ -2009,6 +2018,14 @@ module Engine
         'PRIVATE COMPANY'
       end
 
+      def market_share_limit(_corporation = nil)
+        self.class::MARKET_SHARE_LIMIT
+      end
+
+      def cert_limit(_player = nil)
+        @cert_limit
+      end
+
       private
 
       def init_graph
@@ -2357,10 +2374,12 @@ module Engine
       end
 
       def check_programmed_actions
-        @programmed_actions.reject! do |entity, action|
-          if action&.disable?(self)
-            player_log(entity, "Programmed action '#{action}' removed due to round change")
-            true
+        @programmed_actions.each do |entity, action_list|
+          action_list.reject! do |action|
+            if action&.disable?(self)
+              player_log(entity, "Programmed action '#{action}' removed due to round change")
+              true
+            end
           end
         end
       end
@@ -2909,6 +2928,14 @@ module Engine
 
       def companies_sort(companies)
         companies
+      end
+
+      def stock_round_name
+        'Stock Round'
+      end
+
+      def force_unconditional_stock_pass?
+        false
       end
     end
   end
