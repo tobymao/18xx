@@ -184,7 +184,7 @@ module Engine
             ['G14'] => 'city=revenue:0;border=edge:0,type:mountain;border=edge:1,type:mountain',
             ['H15'] => 'upgrade=cost:50,terrain:water;border=edge:0,type:mountain;border=edge:1,type:mountain',
             ['I14'] => 'border=edge:3,type:mountain',
-            ['F15'] => 'city=revenue:0;label=B',
+            ['F15'] => 'city=revenue:10;label=B;path=a:3,b:_0',
             %w[C6 F5 G16 H7] => 'town=revenue:0;town=revenue:0',
             %w[H13] => 'town=revenue:0;town=revenue:0;border=edge:3,type:mountain;border=edge:4,type:mountain',
           },

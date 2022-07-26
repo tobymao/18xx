@@ -43,15 +43,15 @@ module Engine
           {
             name: 'Ligne de Saint-Quentin à Guise',
             sym: 'SQG',
-            value: 90,
-            desc: 'Revenue is equal to twice the revenue of Saint-Quentin (G10) if Saint-Quentin is green or brown, otherwise it\'s 0 F.'\
+            value: 80,
+            desc: 'Revenue is equal to three times the revenue of Saint-Quentin (G10) if Saint-Quentin is green or brown, otherwise it\'s 0 F.'\
                   ' Closes in purple phase.',
             abilities: [{ type: 'close', on_phase: 'Purple' },],
           },
           {
             name: 'London shipping',
             sym: 'PC',
-            value: 100,
+            value: 90,
             revenue: 15,
             desc: 'Owning corporation may place a +10 marker in London (A10). For this corporation only, the value'\
                   ' of London is increased by 10.',
@@ -74,8 +74,10 @@ module Engine
             sym: 'CABMS',
             value: 140,
             revenue: 20,
-            desc: 'Owning player immediately receives a 10% share of the CAB without further payment.',
-            abilities: [{ type: 'shares', shares: 'CAB_1' }],
+            desc: 'Owning player immediately receives a 10% share of the CAB without further payment.'\
+                  ' Revenue increases to 30 F when owned by a corporation.',
+            abilities: [{ type: 'shares', shares: 'CAB_1' },
+                        { type: 'revenue_change', revenue: 30, when: 'sold' }],
           },
           {
             name: 'PLM major shareholding',

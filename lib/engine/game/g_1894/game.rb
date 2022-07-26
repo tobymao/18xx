@@ -23,7 +23,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 22, 4 => 18 }.freeze
 
-        STARTING_CASH = { 3 => 650, 4 => 540 }.freeze
+        STARTING_CASH = { 3 => 650, 4 => 550 }.freeze
 
         CAPITALIZATION = :full
 
@@ -400,7 +400,7 @@ module Engine
           end
 
           sqg = company_by_id('SQG')
-          sqg.revenue = 2 * get_current_revenue(tile.cities[0].revenue)
+          sqg.revenue = 3 * get_current_revenue(tile.cities[0].revenue)
           @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
         end
 
@@ -581,29 +581,29 @@ module Engine
 
         private
 
-        def remove_extra_trains
-          return unless @players.size == 3
+        # def remove_extra_trains
+        #   return unless @players.size == 3
 
-          to_remove = @depot.trains.reverse.find { |t| t.name == '5' }
-          @depot.forget_train(to_remove)
-          @log << "Removing #{to_remove.name} train"
+        #   to_remove = @depot.trains.reverse.find { |t| t.name == '5' }
+        #   @depot.forget_train(to_remove)
+        #   @log << "Removing #{to_remove.name} train"
 
-          # to_remove = @depot.trains.reverse.find { |t| t.name == '6' }
-          # @depot.forget_train(to_remove)
-          # @log << "Removing #{to_remove.name} train"
-        end
+        #   # to_remove = @depot.trains.reverse.find { |t| t.name == '6' }
+        #   # @depot.forget_train(to_remove)
+        #   # @log << "Removing #{to_remove.name} train"
+        # end
 
-        def remove_extra_late_corporations
-          to_remove = @late_corporations.select { |c| c.id == 'B2' }
-          @late_corporations.delete(to_remove)
-          @log << 'Removing B2 late corporation'
+        # def remove_extra_late_corporations
+        #   to_remove = @late_corporations.select { |c| c.id == 'B2' }
+        #   @late_corporations.delete(to_remove)
+        #   @log << 'Removing B2 late corporation'
 
-          return unless @players.size == 3
+        #   return unless @players.size == 3
 
-          to_remove = @late_corporations.select { |c| c.id == 'F2' }
-          @late_corporations.delete(to_remove)
-          @log << 'Removing F2 late corporation'
-        end
+        #   to_remove = @late_corporations.select { |c| c.id == 'F2' }
+        #   @late_corporations.delete(to_remove)
+        #   @log << 'Removing F2 late corporation'
+        # end
 
         def plm_corporation
           @plm_corporation ||= corporation_by_id('PLM')
