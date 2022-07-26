@@ -111,7 +111,7 @@ module Engine
               @game.log << "#{previous_proposer.name} already proposed the same exact merger of"\
                            " #{@round.merging.map(&:name).join(', ')}."\
                            ' This is against the rules, clearing proposal.'
-              @round.merging = []
+              @round.merging = nil
               return
             end
 

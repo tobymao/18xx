@@ -29,6 +29,12 @@ def send_webhook_notification(user, message)
   end
 end
 
+MessageBus.subscribe '/test_notification' do |msg|
+  user_id = msg.data
+  user = User[user_id]
+  send_webhook_notification(user, 'This is a test notification from 18xx.games.')
+end
+
 MessageBus.subscribe '/turn' do |msg|
   data = msg.data
 
@@ -38,7 +44,7 @@ MessageBus.subscribe '/turn' do |msg|
 
   message = "#{data['type']} in #{game.title} \"#{game.description}\" " \
             "(#{game.round} #{game.turn})\n#{data['game_url']}"
-  users.each { send_webhook_notification(user, message) }
+  users.each { |user| send_webhook_notification(user, message) }
 
   users = users.reject do |user|
     notifications = user.settings['notifications'] || 'none'

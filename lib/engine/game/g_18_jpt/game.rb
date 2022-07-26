@@ -272,12 +272,6 @@ module Engine
 
           super
         end
-
-        def upgrades_to_correct_label?(from, to)
-          return to.labels.empty? if from.label.to_s == 'KU' && from.color != :brown
-
-          super
-        end
       end
     end
   end

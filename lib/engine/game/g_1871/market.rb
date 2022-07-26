@@ -5,7 +5,7 @@ module Engine
     module G1871
       module Market
         MARKET = [
-          ['', '', '111', '122', '136', '152', '170', '190', '215', '240', '270', '300', '330', '360', '400o'],
+          ['', '', '111', '122', '136', '152', '170', '190', '215', '240', '270', '300', '330', '360', '400B'],
           %w[88 92 100 110 121 133 146 160 180 200 225 250 280],
           %w[82 86 93 101 111 123 137 152 167 185 203],
           %w[78 80p 86 94 102 112 122],
@@ -20,11 +20,12 @@ module Engine
                                               par_1: 'Par value until 3+',
                                               par_2: 'Par value until 7',
                                               par_3: 'Par value',
-                                              unlimited: 'Stock bumps increase run value by $40').freeze
+                                              pays_bonus: 'Stock bumps increase run value by $40').freeze
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow,
                                                             par_1: :green,
                                                             par_2: :blue,
-                                                            par_3: :red).freeze
+                                                            par_3: :red,
+                                                            pays_bonus: :orange).freeze
       end
     end
   end

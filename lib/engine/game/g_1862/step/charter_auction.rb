@@ -240,6 +240,10 @@ module Engine
             end
           end
 
+          def can_sell?(_entity, _bundle)
+            false
+          end
+
           def round_state
             super.merge(
               {

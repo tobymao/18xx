@@ -63,16 +63,8 @@ module Engine
             operating_rounds: 2,
           },
           {
-            name: '8',
-            on: '2D',
-            train_limit: 2,
-            tiles: %i[yellow green brown gray],
-            status: ['multiple_train_buy'],
-            operating_rounds: 2,
-          },
-          {
-            name: '9',
-            on: '5D',
+            name: 'D',
+            on: %w[2D 4D 5D],
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             status: ['multiple_train_buy'],

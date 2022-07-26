@@ -231,7 +231,7 @@ module Engine
     end
 
     def visited_stops
-      @visited_stops ||= connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact
+      @visited_stops ||= @game.visited_stops(self)
     end
 
     def stops
@@ -357,6 +357,58 @@ module Engine
                             end
     end
 
+    def connection_data
+      return @connection_data if @connection_data
+
+      @connection_data = []
+      return @connection_data unless @connection_hexes
+
+      if @connection_hexes.one? && @connection_hexes[0].include?('local')
+        if @train.local?
+          city_node = @game.hex_by_id(@connection_hexes[0][1]).tile.nodes.find do |n|
+            @game.city_tokened_by?(n, corporation)
+          end
+          return add_single_node_connection(city_node) if city_node
+        end
+        @connection_hexes.clear
+      end
+
+      possibilities = @connection_hexes.map do |hex_ids|
+        find_matching_chains(hex_ids)
+      end
+
+      other_paths = compute_other_paths
+
+      if possibilities.one?
+        @node_signatures = nil
+        chain = possibilities[0].find do |ch|
+          ch[:nodes].any? { |node| @game.city_tokened_by?(node, corporation) } && (ch[:paths] & other_paths).empty?
+        end
+        return @connection_data unless chain
+
+        left, right = chain[:nodes]
+        return @connection_data if !left || !right
+
+        @connection_data << { left: left, right: right, chain: chain }
+      else
+        possibilities.each_cons(2).with_index do |pair, index|
+          a, b, left, right, middle = find_pairwise_chain(*pair, other_paths)
+          if !left&.hex || !right&.hex || !middle&.hex
+            @node_signatures = nil
+            return @connection_data.clear
+          end
+
+          @connection_data << { left: left, right: middle, chain: a } if index.zero?
+          @connection_data << { left: middle, right: right, chain: b }
+
+          other_paths.concat(a[:paths])
+        end
+      end
+
+      @node_signatures = nil
+      @connection_data
+    end
+
     private
 
     def chain_id(paths)
@@ -435,58 +487,6 @@ module Engine
       other_paths = @game.compute_other_paths(@routes, self)
       @routes.each { |r| r.instance_variable_set(:@paths, nil) }
       other_paths
-    end
-
-    def connection_data
-      return @connection_data if @connection_data
-
-      @connection_data = []
-      return @connection_data unless @connection_hexes
-
-      if @connection_hexes.one? && @connection_hexes[0].include?('local')
-        if @train.local?
-          city_node = @game.hex_by_id(@connection_hexes[0][1]).tile.nodes.find do |n|
-            @game.city_tokened_by?(n, corporation)
-          end
-          return add_single_node_connection(city_node) if city_node
-        end
-        @connection_hexes.clear
-      end
-
-      possibilities = @connection_hexes.map do |hex_ids|
-        find_matching_chains(hex_ids)
-      end
-
-      other_paths = compute_other_paths
-
-      if possibilities.one?
-        @node_signatures = nil
-        chain = possibilities[0].find do |ch|
-          ch[:nodes].any? { |node| @game.city_tokened_by?(node, corporation) } && (ch[:paths] & other_paths).empty?
-        end
-        return @connection_data unless chain
-
-        left, right = chain[:nodes]
-        return @connection_data if !left || !right
-
-        @connection_data << { left: left, right: right, chain: chain }
-      else
-        possibilities.each_cons(2).with_index do |pair, index|
-          a, b, left, right, middle = find_pairwise_chain(*pair, other_paths)
-          if !left&.hex || !right&.hex || !middle&.hex
-            @node_signatures = nil
-            return @connection_data.clear
-          end
-
-          @connection_data << { left: left, right: middle, chain: a } if index.zero?
-          @connection_data << { left: middle, right: right, chain: b }
-
-          other_paths.concat(a[:paths])
-        end
-      end
-
-      @node_signatures = nil
-      @connection_data
     end
 
     def local_connection?

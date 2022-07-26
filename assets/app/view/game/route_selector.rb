@@ -266,6 +266,8 @@ module View
             path_timeout: setting_for(:path_timeout).to_i,
             route_timeout: setting_for(:route_timeout).to_i,
           )
+          @selected_route = @routes.first
+          store(:selected_route, @selected_route, skip: true)
           store(:routes, @routes)
         end
 
