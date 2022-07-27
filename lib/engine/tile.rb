@@ -150,6 +150,7 @@ module Engine
         town
       when 'halt'
         halt = Part::Halt.new(params['symbol'],
+                              revenue: params['revenue'],
                               groups: params['groups'],
                               hide: params['hide'],
                               visit_cost: params['visit_cost'],
