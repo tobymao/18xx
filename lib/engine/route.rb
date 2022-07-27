@@ -111,7 +111,7 @@ module Engine
 
     # walk paths from start_node, and only keep connections that end at end_node
     def get_node_chains(start_node, end_node)
-      skip_track = @game.skip_route_track_type
+      skip_track = @game.skip_route_track_type(@train)
       @node_chains[[start_node, end_node]] ||=
         begin
           new_chains = []
