@@ -444,7 +444,8 @@ module Engine
             ['F7'] => 'upgrade=cost:60,terrain:mountain',
             ['G4'] =>
                    'city=revenue:0;upgrade=cost:60,terrain:mountain;label=B;icon=image:18_al/coal,sticky:1',
-            %w[J7 K2 L5] => 'city=revenue:0',
+            %w[J7 K2] => 'city=revenue:0',
+            ['L5'] => 'city=revenue:0;future_label=label:M,color:green',
             %w[G6 H3] => 'city=revenue:0;icon=image:18_al/coal,sticky:1',
             ['O6'] => 'town=revenue:0',
           },

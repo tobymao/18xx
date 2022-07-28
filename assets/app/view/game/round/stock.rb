@@ -50,7 +50,7 @@ module View
           children << h(Choose) if @current_actions.include?('choose') && @step.choice_available?(@current_entity)
 
           if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
-            children << if @game.num_certs(@current_entity) > @game.cert_limit
+            children << if @game.num_certs(@current_entity) > @game.cert_limit(@current_entity)
                           h('div.margined', 'Must sell stock: above certificate limit')
                         else
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')

@@ -277,7 +277,7 @@ module Engine
         def two_player_variant
           # The two player variant will add a third, bot, so need to remember original player count
           @original_player_count ||= @players.size
-          @optional_rules&.include?(:two_player_variant) && @original_player_count == 2
+          @original_player_count == 2
         end
 
         def init_corporations(stock_market)
@@ -446,7 +446,9 @@ module Engine
           @sj_tokens_passable = false
           @requisition_turn = 0
 
-          if two_player_variant && @players.size == 2
+          if two_player_variant
+            @log << 'The rules for "A.W. Edelswärd 2 Player Variant" is used when playing at 2'
+            @log << 'Here an A.W. Edelswärd "bot" plays the 3rd player. See rule book for details'
             @edelsward = Player.new(EDELSWARD_PLAYER_ID, 'A.W. Edelswärd')
             @players << @edelsward
           end
@@ -598,7 +600,6 @@ module Engine
 
         def redeemable_shares(entity)
           return [] unless entity.corporation?
-          return [] unless entity.capitalization == :incremental
           return [] unless round.steps.find { |step| step.instance_of?(G18SJ::Step::IssueShares) }.active?
 
           type = entity.share_price.type
@@ -748,6 +749,12 @@ module Engine
             .each do |c|
               @log << "#{c.name} becomes full capitalization corporation as it has not been parred"
               c.capitalization = :full
+              c.ipo_owner = @bank
+              c.share_holders.keys.each do |sh|
+                next if sh == @bank
+
+                sh.shares_by_corporation[c].dup.each { |share| transfer_share(share, @bank) }
+              end
             end
         end
 
@@ -1159,6 +1166,16 @@ module Engine
 
             raise GameError, "Cannot passthrough blocked city in #{s.hex.name}" if s.tokens.all? { |t| t&.corporation }
           end
+        end
+
+        # just a basic share move without payment or president change (taken from 1862)
+        def transfer_share(share, new_owner)
+          corp = share.corporation
+          corp.share_holders[share.owner] -= share.percent
+          corp.share_holders[new_owner] += share.percent
+          share.owner.shares_by_corporation[corp].delete(share)
+          new_owner.shares_by_corporation[corp] << share
+          share.owner = new_owner
         end
       end
     end

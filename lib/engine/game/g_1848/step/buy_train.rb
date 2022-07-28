@@ -8,6 +8,12 @@ module Engine
     module G1848
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def can_entity_buy_train?(entity)
+            return false if entity == @game.boe
+
+            super
+          end
+
           def buyable_trains(entity)
             # Cannot buy 2E if one is already owned
             owns_2e = entity.trains.any? { |t| t.name == '2E' }

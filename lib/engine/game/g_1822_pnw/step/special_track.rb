@@ -8,42 +8,37 @@ module Engine
       module Step
         class SpecialTrack < Engine::Game::G1822::Step::SpecialTrack
           def potential_tiles(entity, hex)
-            if @game.port_company?(entity)
-              tile_ability = abilities(entity)
-              tile = @game.tiles.find { |t| t.name == tile_ability.tiles[0] }
-              return [tile]
-            elsif @game.cube_company?(entity)
-              return @game.can_hold_builder_cubes?(hex.tile) ? [@game.tile_by_id('BC-0')] : []
+            tiles = super
+            if @game.can_hold_builder_cubes?(hex.tile)
+              cube_tile = @game.tile_by_id('BC-0')
+              tiles << cube_tile
             end
-            super
+            tiles
           end
 
-          def legal_tile_rotation?(entity, hex, tile)
-            return hex.tile.paths[0].exits == tile.exits if @game.port_company?(entity)
-            return true if @game.cube_company?(entity)
-
-            super
+          def legal_tile_rotation?(_entity, _hex, tile)
+            return true if tile.id == 'BC-0'
           end
 
-          def available_hex(entity, hex)
-            return hex.tile.color == :blue ? [hex.tile.exits] : nil if @game.port_company?(entity)
-            if @game.cube_company?(entity)
-              return @game.can_hold_builder_cubes?(hex.tile) && @game.graph.connected_hexes(entity.owner)[hex]
-            end
-
-            super
-          end
+          #          def available_hex(entity, hex)
+          #          end
 
           def process_lay_tile(action)
-            if @game.cube_company?(action.entity)
+            if @game.company_ability_extra_track?(action.entity) && action.tile.id == 'BC-0'
               @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
               action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
               ability = abilities(action.entity)
               ability.use!
-              if ability.count.zero? && ability.closed_when_used_up
-                company = ability.owner
-                @log << "#{company.name} closes"
-                company.close!
+              # Minors can only do this once...
+              if action.entity.owner.type == :minor
+                ability.use!
+              else
+                @extra_laided_track = true
+              end
+
+              if ability.type == :tile_lay && ability.count <= 0 && ability.closed_when_used_up
+                @log << "#{ability.owner.name} closes"
+                ability.owner.close!
               end
             else
               super

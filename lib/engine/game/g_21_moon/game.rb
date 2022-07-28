@@ -476,7 +476,7 @@ module Engine
         def new_auction_round
           Engine::Round::Auction.new(self, [
           G21Moon::Step::OLSToken,
-          Engine::Step::WaterfallAuction,
+          G21Moon::Step::WaterfallAuction,
         ])
         end
 

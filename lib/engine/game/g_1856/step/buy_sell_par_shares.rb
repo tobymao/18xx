@@ -7,11 +7,19 @@ module Engine
     module G1856
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
+          def round_state
+            # The false national president situation can only happen once in the game so there's no need to reset this.
+            super.merge({ false_national_president_warning_issued: false })
+          end
+
           def actions(entity)
             return super if @game.false_national_president != entity || entity != current_entity
 
             # entity == current_entity == @game.false_national_president
-            @game.log << "-- #{entity.name} must raise funds to buy a #{@game.national.name} share --"
+            unless @round.false_national_president_warning_issued
+              @game.log << "-- #{entity.name} must raise funds to buy a #{@game.national.name} share --"
+              @round.false_national_president_warning_issued = true
+            end
 
             actions = []
             actions << 'sell_shares' if can_sell_any?(entity)
@@ -143,7 +151,10 @@ module Engine
             entity.spend(price, @game.bank)
 
             # grow up the share
-            @game.national.presidents_share.percent *= 2
+            share_percent = @game.national.presidents_share.percent
+            @game.national.presidents_share.percent += share_percent
+            @game.national.share_holders[entity] += share_percent
+
             @game.false_national_president = nil
             @game.national.remove_ability(@game.class::FALSE_PRESIDENCY_ABILITY)
 

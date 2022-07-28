@@ -24,6 +24,7 @@ module Engine
       'C' => :convert_range,
       'm' => :max_price,
       'u' => :phase_limited,
+      'B' => :pays_bonus,
     }.freeze
 
     # Types which are info only and shouldn't

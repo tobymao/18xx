@@ -68,7 +68,7 @@ module Engine
             %w[A20 C22 D13 E20 F5 G2 G8 G12 I8 J7 J13 J19 K12 K22 M10 P5 P13 P19] => 'town=revenue:0',
             %w[B19 D19 D23 F13 G14 G16 H21 J5 J23 L9 L11 L19 L23 P17] => 'city=revenue:0',
             %w[A14 B13 C12 C16 D17 E14 E18 F1 F3 F7 F15 F19 G6 H7 I4 I16 I20 J15 L13 L17 N15
-               O4] => 'upgrade=cost:10,terrain:swamp',
+               O4] => 'upgrade=cost:10,terrain:forest',
             %w[A16 G18 J17] => 'upgrade=cost:150,terrain:mountain',
             %w[G4 H5 I6] => 'upgrade=cost:100,terrain:mountain',
             %w[H13] => 'border=edge:1,type:water,cost:75',

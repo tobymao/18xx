@@ -18,7 +18,7 @@ module Engine
           def pass!
             if current_entity.trains.empty?
               all_cash = buying_power(current_entity.owner)
-              current_entity.owner.spend(all_cash, current_entity)
+              current_entity.owner.spend(all_cash, current_entity) if all_cash.positive?
               @log << "#{current_entity.owner.name} contributes #{@game.format_currency(all_cash)}"
             end
             super

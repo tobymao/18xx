@@ -17,8 +17,9 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>1877: Stockholm Tramways is now in alpha.</p>
-        <p>18 Los Angeles 2 is now in beta.</p>
+        <p><a href="https://www.kickstarter.com/projects/ambierona/board-game-day?ref=5ripxz">Board Game Day</a> a rhyming children's book by Ambie is now available on Kickstarter!</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/18SJ">18SJ</a> is now in beta.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/1822MX">1822MX</a> is now in beta.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. Join the

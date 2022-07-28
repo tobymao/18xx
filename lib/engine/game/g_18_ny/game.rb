@@ -810,11 +810,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          additional_revenue = 0
-          if second_edition? && route.train.name == 'D'
-            additional_revenue = 30 * (stops.map(&:hex) & route.corporation.tokens.select(&:used).map(&:hex)).size
-          end
-
+          additional_revenue = second_edition? && route.train.name == 'D' ? 10 * stops.size : 0
           super + additional_revenue + (route_connection_bonus_hexes(route, stops: stops).size * 10)
         end
 
@@ -963,10 +959,6 @@ module Engine
           @depot.reclaim_train(train)
         end
 
-        def discarded_train_placement
-          second_edition? ? :remove : super
-        end
-
         def rust(train)
           salvage_train(train) unless train.from_depot?
           super
@@ -1007,7 +999,7 @@ module Engine
           return [] if cash_needed.negative?
 
           max_issuable_shares = [5, corp.num_player_shares].min - corp.num_market_shares
-          num_issuable_shares = [max_issuable_shares, (corp.share_price.price / cash_needed.to_f).ceil].min
+          num_issuable_shares = [max_issuable_shares, (cash_needed / corp.share_price.price.to_f).ceil].min
           bundles.reject { |bundle| bundle.num_shares > num_issuable_shares }.sort_by(&:price)
         end
 
