@@ -146,7 +146,7 @@ module Engine
                   {
                     name: '3',
                     distance: 3,
-                    price: 160,
+                    price: 140,
                     rusts_on: '5',
                     num: 6,
                     discount: { '2' => 40 },
