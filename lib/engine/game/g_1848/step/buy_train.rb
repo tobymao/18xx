@@ -31,10 +31,10 @@ module Engine
           def buyable_trains(entity)
             # Cannot buy 2E if one is already owned
             owns_2e = entity.trains.any? { |t| t.name == '2E' }
-            return super if !owns_2e && @game.phase.status.include?('can_buy_trains')
-
-            super.reject { |t| t.name == '2E' } if owns_2e
-            super.select(&:from_depot?) unless @game.phase.status.include?('can_buy_trains')
+            trains_to_buy = super
+            trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.phase.status.include?('can_buy_trains')
+            trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' } if owns_2e
+            trains_to_buy
           end
 
           def room?(entity)

@@ -741,8 +741,8 @@ module Engine
           ebuy = true
           while remaining.positive? && entity.share_price.price != 0
             # if at max loans, company goes directly into receiverhsip
-            if @loans.none?
-              @log << "There no more loans available to force buy a train, #{entity.name} goes into receivership"
+            if @loans.empty?
+              @log << "There are no more loans available to force buy a train, #{entity.name} goes into receivership"
               r, _c = entity.share_price.coordinates
               @stock_market.move(entity, r, 0)
               break
@@ -761,7 +761,7 @@ module Engine
         end
 
         def check_distance(route, visits, _train = nil)
-          return unless route.train.name == '2E' && !ghan_visited?(visits.first) && !ghan_visited?(visits.last)
+          return super if route.train.name != '2E' || ghan_visited?(visits.first) || ghan_visited?(visits.last)
 
           raise GameError, 'Route for 2E train must include Alice Springs'
         end
