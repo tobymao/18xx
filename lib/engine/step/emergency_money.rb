@@ -50,7 +50,7 @@ module Engine
 
       def causes_president_swap?(corporation, bundle)
         seller = bundle.owner
-        share_holders = corporation.player_share_holders
+        share_holders = corporation.player_share_holders(corporate: true)
         remaining = share_holders[seller] - bundle.percent
         next_highest = share_holders.reject { |k, _| k == seller }.values.max || 0
         remaining < next_highest
