@@ -719,7 +719,7 @@ module Engine
         def can_take_loan?(entity)
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
-            @loans.any? &&
+            !@loans.empty? &&
             @take_out_loan_triggered
         end
 
