@@ -9,7 +9,8 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered, :com_can_operate
+        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered, :com_can_operate,
+                    :can_buy_trains
 
         include_meta(G1848::Meta)
         include Map
@@ -142,7 +143,7 @@ module Engine
                     train_limit: 4,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: %w[can_buy_companies can_buy_trains],
+                    status: %w[can_buy_companies],
                   },
                   {
                     name: '4',
@@ -150,7 +151,7 @@ module Engine
                     train_limit: 3,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: %w[can_buy_companies can_buy_trains],
+                    status: %w[can_buy_companies],
                   },
                   {
                     name: '5',
@@ -158,7 +159,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: '6',
@@ -166,7 +166,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: '8',
@@ -174,11 +173,7 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown gray],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   }].freeze
-        STATUS_TEXT = Base::STATUS_TEXT.merge(
-             'can_buy_trains' => ['Can Buy trains', 'Can buy trains from other corporations'],
-           ).freeze
 
         TRAINS = [
           {
@@ -203,7 +198,8 @@ module Engine
               { name: '3+', distance: 3, price: 230 },
             ],
             events: [{ 'type' => 'take_out_loans' },
-                     { 'type' => 'lay_second_tile' }],
+                     { 'type' => 'lay_second_tile' },
+                     { 'type' => 'can_buy_trains' }],
           },
           {
             name: '4',
@@ -267,6 +263,7 @@ module Engine
                   'lay_second_tile' => ['Corporations can lay a second tile'],
                   'com_operates' =>
                   ['COM operates without Sydney-Adelaide connection'],
+                  'can_buy_trains' => ['Corporations can buy trains from other corporations']
                 ).freeze
 
         COMPANIES = [
@@ -499,6 +496,11 @@ module Engine
         def event_com_operates!
           @log << 'COM operates even without Sydney-Adelaide connection'
           @com_can_operate = true
+        end
+
+        def event_can_buy_trains!
+          @log << 'Corporations can buy trains from other corporations'
+          @can_buy_trains = true
         end
 
         def event_close_companies!
