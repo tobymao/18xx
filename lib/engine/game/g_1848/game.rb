@@ -9,7 +9,7 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered, :com_can_operate,
+        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered,
                     :can_buy_trains
 
         include_meta(G1848::Meta)
@@ -625,7 +625,7 @@ module Engine
 
         def place_home_token(entity)
           return super if entity.name != :COM
-          return unless @sydney_adelaide_connected || @com_can_operate
+          return unless can_com_operate?
           return if entity.tokens.first&.used
 
           # COM places home tokens... regardless as to whether there is space for them
@@ -635,6 +635,10 @@ module Engine
             home_token = entity.tokens.find { |token| !token.used && token.price.zero? }
             city.place_token(entity, home_token, free: true, check_tokenable: false, cheater: slot)
           end
+        end
+
+        def can_com_operate?
+          @sydney_adelaide_connected || @com_can_operate
         end
 
         def crowded_corps
@@ -715,10 +719,11 @@ module Engine
         def can_take_loan?(entity)
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
-            @loans.any? && @take_out_loan_triggered
+            @loans.any? &&
+            @take_out_loan_triggered
         end
 
-        def take_loan(entity, loan, ebuy = false)
+        def take_loan(entity, loan, ebuy: false)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity, ebuy)
 
           old_price = entity.share_price
