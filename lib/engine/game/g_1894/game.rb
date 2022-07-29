@@ -296,6 +296,18 @@ module Engine
           ], round_num: round_num)
         end
 
+        def plm
+          corporation_by_id('PLM')
+        end
+
+        def belge
+          corporation_by_id('Belge')
+        end
+
+        def ouest
+          corporation_by_id('Ouest')
+        end
+
         def setup
           @late_corporations, @corporations = @corporations.partition do |c|
             #%w[F1 F2 B1 B2].include?(c.id)
@@ -313,17 +325,20 @@ module Engine
             Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
           block_london
 
-          plm = corporation_by_id('PLM')
+          #belge = corporation_by_id('Belge')
+          #plm = corporation_by_id('PLM')
           paris_tiles_names = %w[X1 X4 X5 X7 X8]
           paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
           @players.each do |player|
             share_pool.transfer_shares(plm.ipo_shares.last.to_bundle, player)
+            share_pool.transfer_shares(belge.ipo_shares.last.to_bundle, player)
           end
 
           if @players.size == 3
             share_pool.transfer_shares(plm.ipo_shares.last.to_bundle, share_pool)
+            share_pool.transfer_shares(belge.ipo_shares.last.to_bundle, share_pool)
           end
         end
 
@@ -364,6 +379,37 @@ module Engine
           super
         end
 
+        def place_home_token(corporation)
+          hex = hex_by_id(corporation.coordinates.first)    
+          tile = hex&.tile
+
+          return super if corporation != ouest || tile.color != :brown  
+
+          ouest.coordinates.each_with_index do |coordinate|
+            if tile.color != :brown
+              tile.cities[0].place_token(corporation, corporation.next_token, free: true)
+            else
+              place_home_token_brown_tile(corporation, hex, tile)
+            end
+          end
+          ouest.coordinates = [ouest.coordinates.first]
+        end
+
+        def place_home_token_brown_tile(corporation, hex, tile)
+          if tile.cities[0].reserved_by?(corporation)
+            tile.cities[0].place_token(corporation, corporation.next_token, free: true)
+          elsif tile.cities[1].reserved_by?(corporation)
+            tile.cities[1].place_token(corporation, corporation.next_token, free: true)
+          else
+            @log << "#{corporation.name} must choose city for home token in #{hex.id}"
+            @round.pending_tokens << {
+              entity: corporation,
+              hexes: hexes,
+              token: corporation.find_token_by_type,
+            }
+          end
+        end
+
         def event_late_corporations_available!
           @log << "-- Event: #{EVENTS_TEXT['late_corporations_available'][0]} --"
           @corporations.concat(@late_corporations)
@@ -394,6 +440,15 @@ module Engine
           return unless action.is_a?(Action::LayTile)
 
           tile = hex_by_id(action.hex.id).tile
+
+          # The city splits into two cities, so the reservation has to be for the whole hex
+          if BROWN_CITY_TILES.include?(tile.name)
+            reservation = tile.cities[0].reservations[0]
+            if reservation
+              tile.cities[0].remove_all_reservations!
+              tile.add_reservation!(reservation.corporation, nil, reserve_city=false)
+            end
+          end
 
           if action.hex.id != SQ_HEX || tile.color == :yellow
             return

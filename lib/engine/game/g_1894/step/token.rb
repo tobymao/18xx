@@ -21,6 +21,21 @@ module Engine
 
             super
           end
+
+          def process_place_token(action)
+            super
+
+            tile = action.city.hex.tile
+            # If only one city left, move the reservation there
+            if Engine::Game::G1894::Game::BROWN_CITY_TILES.include?(tile.name) && !tile.reservations.empty?
+              reservation = tile.reservations[0]
+              tile.reservations.clear
+              tile.cities.each do | city |
+                city.add_reservation!(reservation.corporation) if city.tokenable?(reservation.corporation)
+                break
+              end
+            end
+          end
         end
       end
     end

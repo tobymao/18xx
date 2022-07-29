@@ -92,6 +92,18 @@ module Engine
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'PLM_0' }],
           },
+          {
+            name: 'Belge major shareholding',
+            sym: 'BMS',
+            value: 210,
+            revenue: 30,
+            desc: 'Owning player immediately receives the President\'s certificate of the'\
+                  ' Belge without further payment.'\
+                  ' Closes when the Belge operates.',
+            abilities: [{ type: 'close', when: 'operated', corporation: 'Belge' },
+                        { type: 'no_buy' },
+                        { type: 'shares', shares: 'Belge_0' }],
+          },
         ].freeze
 
         CORPORATIONS = [
@@ -100,10 +112,16 @@ module Engine
             name: 'Chemins de fer de l\'Ouest',
             logo: '1894/Ouest',
             simple_logo: '1894/Ouest.alt',
-            tokens: [0, 40, 60, 80, 100],
+            tokens: [0, 0, 60, 80, 100],
             max_ownership_percent: 60,
-            coordinates: 'D3',
+            coordinates: %w[D3 E6],
             color: '#4682b4',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Two home stations (Rouen & Amiens)',
+              },
+            ],
           },
           {
             sym: 'Nord',
@@ -133,7 +151,7 @@ module Engine
             simple_logo: '1894/CAB.alt',
             tokens: [0, 40, 60, 80, 100],
             max_ownership_percent: 60,
-            coordinates: 'E6',
+            coordinates: 'G14',
             color: '#9c661f',
           },
           {
