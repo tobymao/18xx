@@ -781,6 +781,12 @@ module Engine
           raise GameError, 'Route must include Alice Springs'
         end
 
+        def route_distance_str(route)
+          towns = route.visited_stops.count(&:town?)
+          cities = route_distance(route) - towns
+          towns.zero? ? cities.to_s : "#{cities}+#{towns}"
+        end
+
         def get_modified_guage_distance(route)
           gauge_changes = edge_crossings(route)
           modifier = route.train.name.include?('+') ? 1 : 0
