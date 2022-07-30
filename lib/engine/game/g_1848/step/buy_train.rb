@@ -32,11 +32,11 @@ module Engine
             # Cannot buy 2E if one is already owned
             trains_to_buy = super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
-            trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' } if owns_2e(entity)
+            trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' } if owns_2e?(entity)
             trains_to_buy
           end
 
-          def owns_2e(entity)
+          def owns_2e?(entity)
             entity.trains.any? { |t| t.name == '2E' }
           end
 

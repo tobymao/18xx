@@ -770,7 +770,7 @@ module Engine
         def check_distance(route, visits, _train = nil)
           return super if route.train.name != '2E' || ghan_visited?(visits.first) || ghan_visited?(visits.last)
 
-          raise GameError, 'Route for 2E train must include Alice Springs'
+          raise GameError, 'Route must include Alice Springs'
         end
 
         def get_modified_guage_distance(route)

@@ -21,7 +21,7 @@ module Engine
             return super if entity.name != :COM || @game.can_com_operate?
 
             @log << 'COM does not operate until either Sydney and Adelaide are connected or phase 6 has started'
-            !@game.can_com_operate?
+            true
           end
         end
       end
