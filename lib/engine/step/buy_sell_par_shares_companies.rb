@@ -54,7 +54,7 @@ module Engine
       def can_buy_any_companies?(entity)
         return false if bought? ||
           !entity.cash.positive? ||
-          @game.num_certs(entity) >= @game.cert_limit(entity)
+          @game.num_certs(entity) >= @game.cert_limit
 
         @game.companies.any? { |c| c.owner == @game.bank && !did_sell?(c, entity) }
       end

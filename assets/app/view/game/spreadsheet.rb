@@ -564,10 +564,11 @@ module View
       end
 
       def render_player_certs
+        cert_limit = @game.cert_limit
         props = { style: { color: 'red' } }
         h(:tr, tr_default_props, [
           h('th.left', 'Certs' + (@game.show_game_cert_limit? ? "/#{cert_limit}" : '')),
-          *@game.players.map { |player| render_player_cert_count(player, @game.cert_limit(player), props) },
+          *@game.players.map { |player| render_player_cert_count(player, cert_limit, props) },
         ])
       end
 
