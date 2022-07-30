@@ -23,7 +23,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 22, 4 => 18 }.freeze
 
-        STARTING_CASH = { 3 => 650, 4 => 550 }.freeze
+        STARTING_CASH = { 3 => 550, 4 => 450 }.freeze
 
         CAPITALIZATION = :full
 
@@ -99,7 +99,7 @@ module Engine
                     name: 'Green',
                     on: '3',
                     train_limit: 4,
-                    tiles: %i[yellow green],
+                    tiles: %i[yellow green brown],
                     operating_rounds: 2,
                     status: ['can_buy_companies'],
                   },
@@ -245,12 +245,12 @@ module Engine
         LE_SUD_HEX = 'I2'
         LUXEMBOURG_HEX = 'I18'
         CALAIS_HEX = 'B9'
-        AMIENS_HEX = 'E6'
-        AMIENS_TILE = 'X3'
-        ROUEN_HEX = 'D3'
-        ROUEN_TILE = 'X16'
+        #AMIENS_HEX = 'E6'
+        #AMIENS_TILE = 'X3'
+        #ROUEN_HEX = 'D3'
+        #ROUEN_TILE = 'X16'
         SQ_HEX = 'G10'
-        SQ_TILE = 'X17'
+        #SQ_TILE = 'X17'
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
@@ -380,26 +380,30 @@ module Engine
         end
 
         def place_home_token(corporation)
-          hex = hex_by_id(corporation.coordinates.first)    
-          tile = hex&.tile
-
-          return super if corporation != ouest || tile.color != :brown  
-
-          ouest.coordinates.each_with_index do |coordinate|
-            if tile.color != :brown
-              tile.cities[0].place_token(corporation, corporation.next_token, free: true)
-            else
-              place_home_token_brown_tile(corporation, hex, tile)
+          if corporation == ouest
+            ouest.coordinates.each do | coordinate |
+              hex = hex_by_id(coordinate)
+              tile = hex&.tile
+              if tile.color != :brown
+                tile.cities.first.place_token(corporation, corporation.next_token, free: true)
+              else
+                place_home_token_brown_tile(corporation, hex, tile)
+              end
             end
+            ouest.coordinates = [ouest.coordinates.first]
+          else
+            hex = hex_by_id(corporation.coordinates)
+            tile = hex&.tile
+
+            return super if tile.color != :brown
+            place_home_token_brown_tile(corporation, hex, tile)
           end
-          ouest.coordinates = [ouest.coordinates.first]
         end
 
         def place_home_token_brown_tile(corporation, hex, tile)
-          if tile.cities[0].reserved_by?(corporation)
-            tile.cities[0].place_token(corporation, corporation.next_token, free: true)
-          elsif tile.cities[1].reserved_by?(corporation)
-            tile.cities[1].place_token(corporation, corporation.next_token, free: true)
+          city = tile.cities.find { |c| c.reserved_by?(corporation) }
+          if city
+            city.place_token(corporation, corporation.next_token, free: true)
           else
             @log << "#{corporation.name} must choose city for home token in #{hex.id}"
             @round.pending_tokens << {
@@ -501,10 +505,10 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          return to.name == AMIENS_TILE if from.hex.name == AMIENS_HEX && from.color == :white
+          #return to.name == AMIENS_TILE if from.hex.name == AMIENS_HEX && from.color == :white
           #return to.name == ROUEN_TILE if from.hex.name == ROUEN_HEX && from.color == :white
           #return to.name == SQ_TILE if from.hex.name == SQ_HEX && from.color == :white
-          return GREEN_CITY_TILES.include?(to.name) if from.hex.name == AMIENS_HEX && from.color == :yellow
+          #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == AMIENS_HEX && from.color == :yellow
           #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == ROUEN_HEX && from.color == :yellow
           #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == SQ_HEX && from.color == :yellow
           return BROWN_CITY_TILES.include?(to.name) if from.hex.tile.name == CALAIS_HEX

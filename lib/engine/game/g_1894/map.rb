@@ -6,7 +6,6 @@ module Engine
       module Map
         TILES = {
           '1' => 1,
-          '2' => 1,
           '7' => 4,
           '8' => 13,
           '9' => 13,
@@ -46,6 +45,7 @@ module Engine
           '118' => 2,
           '619' => 4,
           '624' => 1,
+          '630' => 1,
           'X1' => {
             'count' => 1,
             'color' => 'yellow',
@@ -56,11 +56,11 @@ module Engine
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;label=B',
           },
-          'X3' => {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=A',
-          },
+          # 'X3' => {
+          #   'count' => 1,
+          #   'color' => 'yellow',
+          #   'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=A',
+          # },
           'X4' => {
             'count' => 1,
             'color' => 'green',
@@ -166,32 +166,34 @@ module Engine
 
         HEXES = {
           white: {
-            %w[B1 B7 C4 D5 D7 D9 E4 E18 F1 F3 F7 F9 F17 G8 H1 H3 H11 I4 I10 I12] => '',
-            %w[C10 E2 E8 G6 H5 H9] => 'upgrade=cost:50,terrain:water',
+            %w[B1 B7 C4 D7 D9 E2 E4 E8 E18 F1 F3 F7 F17 G8 H1 H3 H11 I4 I10 I12] => '',
+            %w[C10 D5 F9 G6 H5 H9] => 'upgrade=cost:50,terrain:water',
             %w[C2 C8] => 'upgrade=cost:80,terrain:water',
             %w[B3 B11 D3 D15 E6 E10 E16 G10 H17] => 'city=revenue:0',
+            %w[C6 F5 G16 H7] => 'town=revenue:0;town=revenue:0',
             ['B13'] => 'border=edge:5,type:mountain',
             ['C12'] => 'border=edge:4,type:mountain;border=edge:5,type:mountain',
-            ['C14'] => 'upgrade=cost:50,terrain:water;border=edge:1,type:mountain;border=edge:2,type:mountain',
+            ['C14'] => 'border=edge:1,type:mountain;border=edge:2,type:mountain',
             ['D11'] => 'city=revenue:0;border=edge:4,type:mountain',
             ['D13'] => 'border=edge:0,type:mountain;border=edge:1,type:mountain;border=edge:2,type:mountain',
             ['E12'] => 'border=edge:3,type:mountain;border=edge:4,type:mountain;border=edge:5,type:mountain',
             ['E14'] => 'border=edge:1,type:mountain',
-            ['F13'] => 'upgrade=cost:50,terrain:water;'\
-            'border=edge:0,type:mountain;border=edge:2,type:mountain',
+            ['F11'] => 'upgrade=cost:50,terrain:water;border=edge:4,type:mountain',
+            ['F13'] => 'upgrade=cost:50,terrain:water;border=edge:0,type:mountain;border=edge:1,type:mountain;border=edge:2,type:mountain',
+            ['F15'] => 'city=revenue:0;label=B',
+            #['F15'] => 'city=revenue:10;label=B;path=a:3,b:_0',
+            #'border=edge:0,type:mountain;border=edge:2,type:mountain',
             ['G4'] => 'city=revenue:0;city=revenue:0;label=P',
             ['G12'] => 'upgrade=cost:50,terrain:water;border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['G14'] => 'city=revenue:0;border=edge:0,type:mountain;border=edge:1,type:mountain',
-            ['H15'] => 'upgrade=cost:50,terrain:water;border=edge:0,type:mountain;border=edge:1,type:mountain',
+            ['H13'] => 'town=revenue:0;town=revenue:0;border=edge:3,type:mountain;border=edge:4,type:mountain',
+            ['H15'] => 'border=edge:0,type:mountain;border=edge:1,type:mountain',
             ['I14'] => 'border=edge:3,type:mountain',
-            ['F15'] => 'city=revenue:0;label=B',
-            #['F15'] => 'city=revenue:10;label=B;path=a:3,b:_0',
-            %w[C6 F5 G16 H7] => 'town=revenue:0;town=revenue:0',
-            %w[H13] => 'town=revenue:0;town=revenue:0;border=edge:3,type:mountain;border=edge:4,type:mountain',
           },
           yellow: {
             ['D17'] => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0',
             ['G2'] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0',
+            #['G14'] => 'city=revenue:20;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:0,type:mountain;border=edge:1,type:mountain',
             ['I6'] => 'path=a:1,b:3',
             ['I8'] => 'city=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
@@ -207,7 +209,7 @@ module Engine
             ['C18'] => 'path=a:0,b:1;',
             ['D1'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0',
             #['E4'] => 'town=revenue:yellow_10|brown_30,visit_cost:0;label=extra;path=a:2,b:_0;path=a:4,b:_0',
-            ['F11'] => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
+            #['F11'] => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
             ['G18'] => 'path=a:0,b:2;',
             ['I16'] => 'path=a:1,b:4;path=a:1,b:2;',
           },
@@ -215,7 +217,7 @@ module Engine
             ['A4'] => 'offboard=revenue:50;path=a:0,b:_0;path=a:1,b:_0',
             ['C16'] => 'offboard=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['I2'] => 'offboard=revenue:30;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            ['I18'] => 'offboard=revenue:0,hide:1;label=Largest+10;path=a:1,b:_0;path=a:2,b:_00',
+            ['I18'] => 'offboard=revenue:0,hide:1;label=Largest;path=a:1,b:_0;path=a:2,b:_00',
           },
         }.freeze
       end

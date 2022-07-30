@@ -24,19 +24,19 @@ module Engine
                         }],
           },
           {
-            name: 'Charleroi-Sud',
-            sym: 'CS',
+            name: 'Gare de Rouen-Rive-Droite',
+            sym: 'GRRD',
             value: 50,
             revenue: 10,
-            desc: 'Owning corporation may lay a yellow tile or upgrade a yellow tile in Charleroi'\
-                  ' (G14) along with an optional station marker.'\
+            desc: 'Owning corporation may lay a yellow tile or upgrade a yellow tile in Rouen'\
+                  ' (D3) along with an optional station marker.'\
                   ' This counts as one of the corporation\'s tile builds.'\
-                  ' Blocks G14 while owned by a player.',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['G14'] },
+                  ' Blocks D3 while owned by a player.',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D3'] },
                         {
                           type: 'teleport',
                           owner_type: 'corporation',
-                          hexes: ['G14'],
+                          hexes: ['D3'],
                           tiles: %w[14 15 57 619],
                         }],
           },
@@ -95,11 +95,12 @@ module Engine
           {
             name: 'Belge major shareholding',
             sym: 'BMS',
-            value: 210,
+            value: 220,
             revenue: 30,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
-                  ' Belge without further payment.'\
-                  ' Closes when the Belge operates.',
+                  ' Belge without further payment. This private company may not be sold to any corporation, and does'\
+                  ' not exchange hands if the owning player loses the Presidency of the Belge.'\
+                  ' Closes in green phase.',
             abilities: [{ type: 'close', when: 'operated', corporation: 'Belge' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'Belge_0' }],
@@ -114,12 +115,12 @@ module Engine
             simple_logo: '1894/Ouest.alt',
             tokens: [0, 0, 60, 80, 100],
             max_ownership_percent: 60,
-            coordinates: %w[D3 E6],
+            coordinates: %w[B3 E6],
             color: '#4682b4',
             abilities: [
               {
                 type: 'base',
-                description: 'Two home stations (Rouen & Amiens)',
+                description: 'Two home stations (Le Havre and Amiens)',
               },
             ],
           },
@@ -149,7 +150,7 @@ module Engine
             name: 'Chemins de fer d\'Amiens à Boulogne',
             logo: '1894/CAB',
             simple_logo: '1894/CAB.alt',
-            tokens: [0, 40, 60, 80, 100],
+            tokens: [0, 40, 60, 80],
             max_ownership_percent: 60,
             coordinates: 'G14',
             color: '#9c661f',
@@ -159,9 +160,9 @@ module Engine
             name: 'Chemins de fer de l\'État belge',
             logo: '1894/Belge',
             simple_logo: '1894/Belge.alt',
-            tokens: [0, 40, 60, 80],
+            tokens: [0, 40, 60],
             max_ownership_percent: 60,
-            coordinates: 'F15',
+            coordinates: 'D17',
             color: '#61b229',
           },
           {
