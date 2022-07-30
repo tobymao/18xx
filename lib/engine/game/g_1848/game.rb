@@ -385,9 +385,10 @@ module Engine
             discount: -230,
             revenue: 30,
             desc: "The owner receives a Director's Share share in the CAR, which must start at a par value of £100."\
-                  ' Cannot be bought by a corporation',
+                  ' Cannot be bought by a corporation. When CAR purchases its first train the private company is closed.',
             abilities: [{ type: 'shares', shares: 'CAR_0' },
-                        { type: 'no_buy' }],
+                        { type: 'no_buy' },
+                        { type: 'close', when: 'bought_train', corporation: 'CAR' }],
           },
         ].freeze
 
@@ -870,7 +871,7 @@ module Engine
           @cert_limit
         end
 
-        def cert_limit(player)
+        def cert_limit(player=nil)
           if @cert_limit.is_a?(Numeric) && player
             # player cert limit needs to be reduced
             @cert_limit - (@player_corp_close_count[player] * CERT_LIMIT_RECEIVERSHIP_REDUCTION[@players.size])
