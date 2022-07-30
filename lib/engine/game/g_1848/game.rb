@@ -46,6 +46,8 @@ module Engine
 
         EBUY_PRES_SWAP = false
 
+        SHOW_INTEREST = false
+
         MARKET = [
           %w[0c
              70
@@ -590,10 +592,9 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          puts("here before in 1848 upgrade_to:  from.hex.tile.color is #{from.hex.tile.color}, from.hex.tile.color=='white' resolves to: #{from.hex.tile.color == 'white'}  ") if from.name == "H11"
           return %w[5 6 57].include?(to.name) if (from.hex.tile.label.to_s == 'K') && (from.hex.tile.color == :white)
           return ['241'].include?(to.name) if selected_company&.sym == 'P3'
-          puts("here after in 1848 upgrade_to") if from.name == "H11"
+
           super
         end
 

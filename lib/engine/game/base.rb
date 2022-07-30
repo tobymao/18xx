@@ -257,6 +257,8 @@ module Engine
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
+      SHOW_INTEREST = true
+
       EVENTS_TEXT = {
         'close_companies' =>
           ['Companies Close', 'All companies unless otherwise noted are discarded from the game'],
