@@ -38,7 +38,7 @@ module Engine
             trains_to_buy = super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
             trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' } if owns_2e?(entity)
-            trains_to_buy << fix_2e_issue
+            trains_to_buy << fix_2e_issue(entity)
             trains_to_buy
           end
 
@@ -46,7 +46,7 @@ module Engine
             entity.trains.any? { |t| t.name == '2E' }
           end
             
-          def fix_2e_issue
+          def fix_2e_issue(entity)
             entity_abilities = @game.abilities(entity, :train_discount, time: ability_timing)
             if entity_abilities
               ghan = @depot.trains.find { |t| t.name == '2E' }
