@@ -46,8 +46,6 @@ module Engine
 
         EBUY_PRES_SWAP = false
 
-        SHOW_INTEREST = false
-
         MARKET = [
           %w[0c
              70
@@ -611,7 +609,7 @@ module Engine
         end
 
         def tasmania
-          @tasmania ||= @companies.find { |c| c.sym == 'P3' }
+          @tasmania ||= company_by_id('P3')
         end
 
         def sydney
@@ -673,7 +671,7 @@ module Engine
         end
 
         def pres_change_ok?(corporation)
-          true unless corporation == @boe
+          corporation != @boe
         end
 
         def after_buy_company(player, company, _price)
@@ -724,12 +722,13 @@ module Engine
           MARKET_SHARE_LIMIT
         end
 
-        def can_take_loan?(entity, ebuy = false)
+        def can_take_loan?(entity, ebuy: nil)
           return ebuy if ebuy
 
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
-            @loans.any? && @take_out_loan_triggered
+            @loans.any? &&
+            @take_out_loan_triggered
         end
 
         def take_loan(entity, loan, ebuy: false)
@@ -901,6 +900,10 @@ module Engine
           return false unless @phase.status.include?('can_buy_companies')
 
           super
+        end
+
+        def show_interest?
+          false
         end
       end
     end

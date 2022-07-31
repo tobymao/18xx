@@ -257,8 +257,6 @@ module Engine
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
-      SHOW_INTEREST = true
-
       EVENTS_TEXT = {
         'close_companies' =>
           ['Companies Close', 'All companies unless otherwise noted are discarded from the game'],
@@ -2026,6 +2024,10 @@ module Engine
 
       def cert_limit(_player = nil)
         @cert_limit
+      end
+
+      def show_interest?
+        true
       end
 
       private
