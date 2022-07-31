@@ -546,7 +546,6 @@ module Engine
           @extra_tile_lay = false
           @close_corp_count = 0
           @player_corp_close_count = Hash.new { |h, k| h[k] = 0 }
-          @take_out_loan_triggered = false
         end
 
         def new_auction_round
