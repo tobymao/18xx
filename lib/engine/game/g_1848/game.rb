@@ -727,6 +727,7 @@ module Engine
 
         def can_take_loan?(entity, ebuy = false)
           return ebuy if ebuy
+
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
             @loans.any? && @take_out_loan_triggered
@@ -871,7 +872,7 @@ module Engine
           @cert_limit
         end
 
-        def cert_limit(player=nil)
+        def cert_limit(player = nil)
           if @cert_limit.is_a?(Numeric) && player
             # player cert limit needs to be reduced
             @cert_limit - (@player_corp_close_count[player] * CERT_LIMIT_RECEIVERSHIP_REDUCTION[@players.size])
