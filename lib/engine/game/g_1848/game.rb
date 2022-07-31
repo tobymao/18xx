@@ -9,7 +9,8 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered
+        attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered,
+                    :can_buy_trains
 
         include_meta(G1848::Meta)
         include Map
@@ -142,7 +143,7 @@ module Engine
                     train_limit: 4,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: ['can_buy_companies'],
+                    status: %w[can_buy_companies],
                   },
                   {
                     name: '4',
@@ -150,7 +151,7 @@ module Engine
                     train_limit: 3,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: ['can_buy_companies'],
+                    status: %w[can_buy_companies],
                   },
                   {
                     name: '5',
@@ -197,7 +198,8 @@ module Engine
               { name: '3+', distance: 3, price: 230 },
             ],
             events: [{ 'type' => 'take_out_loans' },
-                     { 'type' => 'lay_second_tile' }],
+                     { 'type' => 'lay_second_tile' },
+                     { 'type' => 'can_buy_trains' }],
           },
           {
             name: '4',
@@ -218,7 +220,7 @@ module Engine
             num: 3,
             variants: [
               { name: '5+', distance: 5, price: 550 },
-],
+            ],
             events: [{ 'type' => 'close_companies' }],
           },
           {
@@ -261,6 +263,7 @@ module Engine
                   'lay_second_tile' => ['Corporations can lay a second tile'],
                   'com_operates' =>
                   ['COM operates without Sydney-Adelaide connection'],
+                  'can_buy_trains' => ['Corporations can buy trains from other corporations']
                 ).freeze
 
         COMPANIES = [
@@ -487,6 +490,17 @@ module Engine
 
         def event_take_out_loans!
           @log << 'Corporations can now take out loans'
+          @take_out_loan_triggered = true
+        end
+
+        def event_com_operates!
+          @log << 'COM operates even without Sydney-Adelaide connection'
+          @com_can_operate = true
+        end
+
+        def event_can_buy_trains!
+          @log << 'Corporations can buy trains from other corporations'
+          @can_buy_trains = true
         end
 
         def event_close_companies!
@@ -611,7 +625,7 @@ module Engine
 
         def place_home_token(entity)
           return super if entity.name != :COM
-          return unless @sydney_adelaide_connected
+          return unless can_com_operate?
           return if entity.tokens.first&.used
 
           # COM places home tokens... regardless as to whether there is space for them
@@ -621,6 +635,10 @@ module Engine
             home_token = entity.tokens.find { |token| !token.used && token.price.zero? }
             city.place_token(entity, home_token, free: true, check_tokenable: false, cheater: slot)
           end
+        end
+
+        def can_com_operate?
+          @sydney_adelaide_connected || @com_can_operate
         end
 
         def crowded_corps
@@ -701,16 +719,17 @@ module Engine
         def can_take_loan?(entity)
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
-            @loans.any?
+            !@loans.empty? &&
+            @take_out_loan_triggered
         end
 
-        def take_loan(entity, loan)
-          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+        def take_loan(entity, loan, ebuy: false)
+          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity, ebuy)
 
           old_price = entity.share_price
           boe_old_price = @boe.share_price
           @boe.spend(loan.amount, entity)
-          loan_taken_stock_market_movement(entity, loan)
+          loan_taken_stock_market_movement(entity, loan, ebuy)
           log_share_price(entity, old_price)
           log_share_price(@boe, boe_old_price)
           entity.loans << loan
@@ -718,10 +737,27 @@ module Engine
           @loans.delete(loan)
         end
 
-        def loan_taken_stock_market_movement(entity, loan)
+        def loan_taken_stock_market_movement(entity, loan, ebuy = false)
           @log << "#{entity.name} takes a loan and receives #{format_currency(loan.amount)}"
           2.times { @stock_market.move_left(entity) }
+          @stock_market.move_left(entity) if ebuy
           @stock_market.move_right(boe)
+        end
+
+        def perform_ebuy_loans(entity, remaining)
+          ebuy = true
+          while remaining.positive? && entity.share_price.price != 0
+            # if at max loans, company goes directly into receiverhsip
+            if @loans.empty?
+              @log << "There are no more loans available to force buy a train, #{entity.name} goes into receivership"
+              r, _c = entity.share_price.coordinates
+              @stock_market.move(entity, r, 0)
+              break
+            end
+            loan = @loans.first
+            take_loan(entity, loan, ebuy)
+            remaining -= loan.amount
+          end
         end
 
         # routing logic
@@ -729,6 +765,12 @@ module Engine
           modified_guage_changes = get_modified_guage_distance(route)
           added_stops = modified_guage_changes.positive? ? Array.new(modified_guage_changes) { Engine::Part::City.new('0') } : []
           super + added_stops
+        end
+
+        def check_distance(route, visits, _train = nil)
+          return super if route.train.name != '2E' || ghan_visited?(visits.first) || ghan_visited?(visits.last)
+
+          raise GameError, 'Route must include Alice Springs'
         end
 
         def get_modified_guage_distance(route)
@@ -830,6 +872,12 @@ module Engine
           end
 
           G1848::Depot.new(trains, self)
+        end
+
+        def ghan_visited?(visited_node)
+          return false unless visited_node
+
+          GHAN_HEXES.include?(visited_node.hex.name)
         end
       end
     end
