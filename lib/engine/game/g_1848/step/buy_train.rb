@@ -46,7 +46,7 @@ module Engine
           end
 
           def fix_2e_issue(entity, trains_to_buy)
-             # entity can buy the  ghan train cheaper. Add it to list of buyable trains if it has enough cash after discount.
+            # entity can buy the  ghan train cheaper. Add it to list of buyable trains if it has enough cash after discount.
             entity_abilities = @game.abilities(entity, :train_discount, time: ability_timing)
             if entity_abilities
               ghan = @depot.trains.find { |t| t.name == '2E' }
