@@ -731,13 +731,13 @@ module Engine
             @take_out_loan_triggered
         end
 
-        def take_loan(entity, loan, ebuy: false)
-          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity, ebuy)
+        def take_loan(entity, loan, ebuy: nil)
+          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity, ebuy: ebuy)
 
           old_price = entity.share_price
           boe_old_price = @boe.share_price
           @boe.spend(loan.amount, entity)
-          loan_taken_stock_market_movement(entity, loan, ebuy)
+          loan_taken_stock_market_movement(entity, loan, ebuy: ebuy)
           log_share_price(entity, old_price)
           log_share_price(@boe, boe_old_price)
           entity.loans << loan
@@ -745,7 +745,7 @@ module Engine
           @loans.delete(loan)
         end
 
-        def loan_taken_stock_market_movement(entity, loan, ebuy = false)
+        def loan_taken_stock_market_movement(entity, loan, ebuy: nil)
           @log << "#{entity.name} takes a loan and receives #{format_currency(loan.amount)}"
           2.times { @stock_market.move_left(entity) }
           @stock_market.move_left(entity) if ebuy
