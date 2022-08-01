@@ -24,19 +24,19 @@ module Engine
                         }],
           },
           {
-            name: 'Gare de Rouen-Rive-Droite',
-            sym: 'GRRD',
+            name: 'Gare de Liège-Guillemins',
+            sym: 'GLG',
             value: 50,
             revenue: 10,
-            desc: 'Owning corporation may lay a yellow tile or upgrade a yellow tile in Rouen'\
-                  ' (D3) along with an optional station marker.'\
+            desc: 'Owning corporation may lay a yellow tile or upgrade a yellow tile in Liège'\
+                  ' (H17) along with an optional station marker.'\
                   ' This counts as one of the corporation\'s tile builds.'\
-                  ' Blocks D3 while owned by a player.',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D3'] },
+                  ' Blocks H17 while owned by a player.',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H17'] },
                         {
                           type: 'teleport',
                           owner_type: 'corporation',
-                          hexes: ['D3'],
+                          hexes: ['H17'],
                           tiles: %w[14 15 57 619],
                         }],
           },
@@ -131,7 +131,7 @@ module Engine
             simple_logo: '1894/Nord.alt',
             tokens: [0, 40, 60, 80, 100],
             max_ownership_percent: 60,
-            coordinates: 'D11',
+            coordinates: %w[D3 D11],
             color: '#ff4040',
           },
           {

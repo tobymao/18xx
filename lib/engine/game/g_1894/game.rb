@@ -99,7 +99,7 @@ module Engine
                     name: 'Green',
                     on: '3',
                     train_limit: 4,
-                    tiles: %i[yellow green brown],
+                    tiles: %i[yellow green],
                     operating_rounds: 2,
                     status: ['can_buy_companies'],
                   },
@@ -157,7 +157,7 @@ module Engine
                     price: 300,
                     rusts_on: '7',
                     num: 3,
-                    discount: { '3' => 80 },
+                    discount: { '3' => 70 },
                   },
                   {
                     name: '5',
@@ -308,6 +308,10 @@ module Engine
           corporation_by_id('Ouest')
         end
 
+        def nord
+          corporation_by_id('Nord')
+        end
+
         def setup
           @late_corporations, @corporations = @corporations.partition do |c|
             #%w[F1 F2 B1 B2].include?(c.id)
@@ -380,8 +384,9 @@ module Engine
         end
 
         def place_home_token(corporation)
-          if corporation == ouest
-            ouest.coordinates.each do | coordinate |
+          return if corporation.tokens.first&.used == true
+          if corporation == ouest || corporation == nord
+            corporation.coordinates.each do | coordinate |
               hex = hex_by_id(coordinate)
               tile = hex&.tile
               if tile.color != :brown
@@ -390,7 +395,7 @@ module Engine
                 place_home_token_brown_tile(corporation, hex, tile)
               end
             end
-            ouest.coordinates = [ouest.coordinates.first]
+            corporation.coordinates = [corporation.coordinates.first]
           else
             hex = hex_by_id(corporation.coordinates)
             tile = hex&.tile
@@ -572,7 +577,7 @@ module Engine
           revenues << 60 if is_est_running_to_le_sud(corporation, stops)
           revenues << get_current_revenue(hex_by_id(LONDON_HEX).tile.towns[0].revenue) + 10 if is_pc_owner_running_to_london(corporation, stops)
 
-          revenues.max + 10
+          revenues.max
         end
 
         def get_current_revenue(revenue)
