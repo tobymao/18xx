@@ -2,6 +2,7 @@
 
 require_relative '../../../step/track'
 require_relative 'tracker'
+require_relative 'skip_boe'
 
 module Engine
   module Game
@@ -9,12 +10,7 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include Engine::Game::G1848::Tracker
-
-          def actions(entity)
-            return super unless entity == @game.boe
-
-            []
-          end
+          include SkipBoe
         end
       end
     end

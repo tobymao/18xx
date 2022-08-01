@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_company'
-require_relative 'skip_boe'
 
 module Engine
   module Game
     module G1848
-      module Step
-        class BuyCompany < Engine::Step::BuyCompany
-          include SkipBoe
+      module SkipBoe
+        def actions(entity)
+          return [] if @game.boe == entity
+
+          super
         end
       end
     end
