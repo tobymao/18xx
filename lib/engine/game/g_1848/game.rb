@@ -907,7 +907,7 @@ module Engine
         end
 
         def ability_used!(company)
-          company.all_abilities.each { |ab| company.remove_ability(ab) }
+          company.all_abilities.dup.each { |ab| company.remove_ability(ab) }
         end
       end
     end
