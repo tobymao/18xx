@@ -727,7 +727,7 @@ module Engine
 
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
-            @loans.any? &&
+            !@loans.empty? &&
             @take_out_loan_triggered
         end
 
@@ -902,8 +902,12 @@ module Engine
           super
         end
 
-        def show_interest?
+        def corporation_show_interest?
           false
+        end
+
+        def ability_used!(company)
+          company.all_abilities.each { |ab| company.remove_ability(ab) }
         end
       end
     end

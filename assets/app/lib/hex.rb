@@ -69,7 +69,6 @@ module Lib
       gray50: '#7b7d84',
       gray40: '#626569',
       salmon: '#e57373',
-      darkblue: '#3542ff',
     }.freeze
 
     def self.points(scale: 1.0)

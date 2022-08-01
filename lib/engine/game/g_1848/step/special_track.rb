@@ -9,9 +9,9 @@ module Engine
         class SpecialTrack < Engine::Step::SpecialTrack
           def process_lay_tile(action)
             super
-            # track lay ability is both on player and corporate, remove all left over abilities
             company = action.entity
-            company.all_abilities.each { |ab| company.remove_ability(ab) }
+            # track lay ability is both on player and corporate, remove all left over abilities
+            @game.ability_used!(company)
             return unless @game.private_closed_triggered
 
             # close company if company closes and the ability has been used

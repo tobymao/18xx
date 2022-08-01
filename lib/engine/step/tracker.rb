@@ -83,7 +83,7 @@ module Engine
         @game.abilities(entity, :tile_lay, **kwargs, &block)
       end
 
-      def lay_tile(action, extra_cost: 0, entity: nil, spender: nil, ignore_abilities: nil)
+      def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
         entity ||= action.entity
         spender ||= entity
         tile = action.tile
@@ -152,7 +152,7 @@ module Engine
           end
         end
 
-        if entity.company? && !ability_found && !ignore_abilities
+        if entity.company? && !ability_found
           raise GameError, "#{entity.name} does not have an ability that allows them to lay this tile"
         end
 

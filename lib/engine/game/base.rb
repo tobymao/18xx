@@ -2026,7 +2026,7 @@ module Engine
         @cert_limit
       end
 
-      def show_interest?
+      def corporation_show_interest?
         true
       end
 

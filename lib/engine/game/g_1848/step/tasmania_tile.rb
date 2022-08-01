@@ -27,7 +27,7 @@ module Engine
           end
 
           def active?
-            active_entities.any?
+            !active_entities.empty?
           end
 
           def active_entities
@@ -36,33 +36,43 @@ module Engine
             [@game.tasmania].compact
           end
 
+          def tasmania_player_ability
+            @tasmania_player_ability ||= Engine::Ability::TileLay.new(
+              type: tasmania_ability.type,
+              hexes: tasmania_ability.hexes,
+              tiles: tasmania_ability.tiles,
+              owner_type: 'player',
+              special: tasmania_ability.special,
+              count: tasmania_ability.count,
+              free: tasmania_ability.free,
+              when: 'any',
+            )
+          end
+
           def process_lay_tile(action)
+            action.entity.add_ability(tasmania_player_ability)
             super
             @active_entity = nil
           end
 
           def available_hex(_entity, hex)
-            @game.tasmania.abilities.first.hexes&.include?(hex.id)
+            tasmania_ability.hexes&.include?(hex.id)
           end
 
           def potential_tiles(_entity, _hex)
-            @game.tiles.select { |tile| tile.color == 'blue' }
+            @game.tiles.select { |t| tasmania_ability.tiles.include?(t.name) }
           end
 
           def upgradeable_tiles(_entity, ui_hex)
             super(@game.tasmania, ui_hex)
           end
 
-          def abilities(_entity, **_kwargs)
-            @game.tasmania.abilities.first
-          end
-
           def hex_neighbors(_entity, hex)
             @game.hex_by_id(hex.id).neighbors.keys
           end
 
-          def lay_tile(action, spender: nil)
-            super(action, spender: nil, ignore_abilities: true)
+          def tasmania_ability
+            @tasmania_ability ||= @game.tasmania.abilities.first
           end
         end
       end

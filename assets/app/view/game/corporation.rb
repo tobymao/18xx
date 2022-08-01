@@ -83,7 +83,7 @@ module View
         if @game.corporation_show_loans?(@corporation)
           if @game.total_loans&.nonzero?
             extras.concat(render_loans)
-            extras.concat(render_interest) if @game.show_interest?
+            extras.concat(render_interest) if @game.corporation_show_interest?
           end
           if @corporation.corporation? && @corporation.floated? &&
             @game.total_loans.positive? && @corporation.can_buy?
