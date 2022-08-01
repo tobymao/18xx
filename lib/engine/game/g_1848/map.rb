@@ -115,7 +115,7 @@ module Engine
           white: {
             %w[B11 B13 B15 B5 D5 E12] => '',
             %w[B3 C2 C4] => 'upgrade=cost:40,terrain:desert',
-            %w[B19 F17 H11] => 'city=revenue:0;label=K',
+            %w[B19 F17 H11] => 'city=revenue:0;future_label=label:K,color:green',
             %w[E4 E18 E14 F5 E2] => 'city=revenue:0',
             ['D3'] => 'town=revenue:0;town=revenue:0',
             ['B17'] => 'city=revenue:0;city=revenue:0',
@@ -148,7 +148,7 @@ module Engine
             ['F11'] => 'border=edge:0,type:mountain;border=edge:1,type:mountain;' \
                        'border=edge:5,type:mountain',
             ['F15'] => 'city=revenue:0;city=revenue:0;upgrade=cost:50,terrain:mountain',
-            ['G6'] => 'city=revenue:0;label=K;border=edge:4,type:mountain;',
+            ['G6'] => 'city=revenue:0;future_label=label:K,color:green;border=edge:4,type:mountain;',
             ['G8'] => 'border=edge:0,type:mountain;border=edge:1,type:mountain;' \
                       'border=edge:2,type:mountain',
             ['G10'] => 'city=revenue:0;city=revenue:0;border=edge:3,type:mountain',
