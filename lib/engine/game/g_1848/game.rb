@@ -611,6 +611,10 @@ module Engine
           @tasmania ||= company_by_id('P3')
         end
 
+        def ghan
+          @ghan ||= company_by_id('P4')
+        end
+
         def sydney
           @sydney ||= hex_by_id('F17')
         end
@@ -722,7 +726,7 @@ module Engine
         end
 
         def can_take_loan?(entity, ebuy: nil)
-          return ebuy if ebuy
+          return true if ebuy
 
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&

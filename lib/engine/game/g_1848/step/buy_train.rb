@@ -37,25 +37,34 @@ module Engine
             # Cannot buy 2E if one is already owned
             trains_to_buy = super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
-            trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' } if owns_2e?(entity)
-            fix_2e_issue(entity, trains_to_buy)
+            if owns_2e?(entity)
+              trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
+            elsif trains_to_buy.none? { |t| t.name == '2E' } && can_buy_2e?(entity)
+              trains_to_buy << ghan_train
+            end
+            trains_to_buy.uniq
           end
 
           def owns_2e?(entity)
             entity.trains.any? { |t| t.name == '2E' }
           end
 
-          def fix_2e_issue(entity, trains_to_buy)
-            # entity can buy the  ghan train cheaper. Add it to list of buyable trains if it has enough cash after discount.
-            entity_abilities = @game.abilities(entity, :train_discount, time: ability_timing)
-            if entity_abilities
-              ghan = @depot.trains.find { |t| t.name == '2E' }
-              if @game.phase.available?(ghan.available_on) && !trains_to_buy.include?(ghan) &&
-                ghan.price - entity_abilities.discount <= entity.cash
-                trains_to_buy << ghan
-              end
-            end
-            trains_to_buy
+          def can_buy_2e?(entity)
+            ghan_private_owned?(entity) &&
+            @game.phase.available?(ghan_train.available_on) &&
+            ghan_train.price - ghan_private_ability.discount <= entity.cash
+          end
+
+          def ghan_private_ability
+            @ghan_private_ability ||= @game.abilities(@game.ghan, :train_discount, time: ability_timing)
+          end
+
+          def ghan_train
+            @ghan_train ||= @depot.trains.find { |t| t.name == '2E' }
+          end
+
+          def ghan_private_owned?(entity)
+            entity.companies.include?(@game.ghan) || entity.owner.companies.include?(@game.ghan)
           end
 
           def room?(entity)
