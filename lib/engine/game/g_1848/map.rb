@@ -107,9 +107,9 @@ module Engine
           },
           blue: {
             ['B21'] =>
-                     'offboard=revenue:yellow_10|green_10|brown_20|gray_20;path=a:0,b:_0',
+                     'town=revenue:yellow_10|green_10|brown_20|gray_20;path=a:0,b:_0',
             ['F3'] =>
-            'offboard=revenue:yellow_10|green_10|brown_20|gray_20;path=a:2,b:_0',
+            'town=revenue:yellow_10|green_10|brown_20|gray_20;path=a:2,b:_0',
             %w[I8 I10] => '',
           },
           white: {
@@ -119,7 +119,7 @@ module Engine
             %w[E4 E18 E14 F5 E2] => 'city=revenue:0',
             ['D3'] => 'town=revenue:0;town=revenue:0',
             ['B17'] => 'city=revenue:0;city=revenue:0',
-            ['B7'] => 'upgrade=cost:40,terrain:desert;label=OO'\
+            ['B7'] => 'upgrade=cost:40,terrain:desert;label=OO;'\
                       'border=edge:4,type:mountain;border=edge:5,type:mountain',
             ['B9'] => 'upgrade=cost:40,terrain:desert;border=edge:1,type:mountain',
             ['C6'] => 'border=edge:4,type:mountain',
