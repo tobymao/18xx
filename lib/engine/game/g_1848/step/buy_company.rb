@@ -9,6 +9,11 @@ module Engine
       module Step
         class BuyCompany < Engine::Step::BuyCompany
           include SkipBoe
+          def actions(entity)
+            return [] if entity.company?
+
+            super
+          end
         end
       end
     end

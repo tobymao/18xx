@@ -119,7 +119,7 @@ module Engine
             %w[E4 E18 E14 F5 E2] => 'city=revenue:0',
             ['D3'] => 'town=revenue:0;town=revenue:0',
             ['B17'] => 'city=revenue:0;city=revenue:0',
-            ['B7'] => 'upgrade=cost:40,terrain:desert;'\
+            ['B7'] => 'upgrade=cost:40,terrain:desert;label=OO'\
                       'border=edge:4,type:mountain;border=edge:5,type:mountain',
             ['B9'] => 'upgrade=cost:40,terrain:desert;border=edge:1,type:mountain',
             ['C6'] => 'border=edge:4,type:mountain',
@@ -147,15 +147,15 @@ module Engine
                       'border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['F11'] => 'border=edge:0,type:mountain;border=edge:1,type:mountain;' \
                        'border=edge:5,type:mountain',
-            ['F15'] => 'city=revenue:0;city=revenue:0;upgrade=cost:50,terrain:mountain',
+            ['F15'] => 'city=revenue:0;city=revenue:0;upgrade=cost:50,terrain:mountain;label=OO',
             ['G6'] => 'city=revenue:0;future_label=label:K,color:green;border=edge:4,type:mountain;',
             ['G8'] => 'border=edge:0,type:mountain;border=edge:1,type:mountain;' \
                       'border=edge:2,type:mountain',
-            ['G10'] => 'city=revenue:0;city=revenue:0;border=edge:3,type:mountain',
+            ['G10'] => 'city=revenue:0;city=revenue:0;border=edge:3,type:mountain;label=OO',
             ['G12'] => 'town=revenue:0;town=revenue:0;border=edge:2,type:mountain;' \
                        'border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['G14'] => 'city=revenue:0;border=edge:0,type:mountain;border=edge:5,type:mountain;'\
-                       'city=revenue:0;border=edge:1,type:mountain',
+                       'border=edge:1,type:mountain',
             ['G16'] => 'city=revenue:0;upgrade=cost:50,terrain:mountain;border=edge:0,type:mountain',
             ['H7'] => 'city=revenue:0;border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['H9'] => 'city=revenue:0;border=edge:1,type:mountain',
