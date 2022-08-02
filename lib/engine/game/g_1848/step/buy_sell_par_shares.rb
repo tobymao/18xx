@@ -21,12 +21,6 @@ module Engine
 
             super
           end
-
-          def can_buy?(entity, bundle)
-            return true if bundle.corporation == @game.boe
-
-            super
-          end
         end
       end
     end
