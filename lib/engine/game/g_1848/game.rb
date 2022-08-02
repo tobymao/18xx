@@ -270,8 +270,8 @@ module Engine
           {
             sym: 'P1',
             name: "Melbourne & Hobson's Bay Railway Company",
-            value: 40,
-            discount: 10,
+            value: 30,
+            discount: 0,
             min_price: 1,
             max_price: 40,
             revenue: 5,
@@ -280,10 +280,10 @@ module Engine
           {
             sym: 'P2',
             name: 'Sydney Railway Company',
-            value: 80,
+            value: 70,
             min_price: 1,
             max_price: 80,
-            discount: 10,
+            discount: 0,
             revenue: 10,
             desc: 'Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by'\
                   ' a cactus icon). This power does not go away after a 5/5+ train is purchased.',
@@ -315,8 +315,8 @@ module Engine
           {
             sym: 'P3',
             name: 'Tasmanian Railways',
-            value: 140,
-            discount: 30,
+            value: 110,
+            discount: 0,
             min_price: 1,
             max_price: 140,
             revenue: 15,
@@ -339,8 +339,8 @@ module Engine
           {
             sym: 'P4',
             name: 'The Ghan',
-            value: 220,
-            discount: 50,
+            value: 170,
+            discount: 0,
             min_price: 1,
             max_price: 220,
             revenue: 20,
@@ -369,8 +369,8 @@ module Engine
           {
             sym: 'P5',
             name: 'Trans-Australian Railway',
-            value: 0,
-            discount: -170,
+            value: 170,
+            discount: 0,
             revenue: 25,
             desc: 'The owner receives a 10% share in the QR. Cannot be bought by a corporation',
             abilities: [{ type: 'shares', shares: 'QR_1' },
@@ -379,8 +379,8 @@ module Engine
           {
             sym: 'P6',
             name: 'North Australian Railway',
-            value: 0,
-            discount: -230,
+            value: 230,
+            discount: 0,
             revenue: 30,
             desc: "The owner receives a Director's Share share in the CAR, which must start at a par value of £100."\
                   ' Cannot be bought by a corporation. When CAR purchases its first train the private company is closed.',
