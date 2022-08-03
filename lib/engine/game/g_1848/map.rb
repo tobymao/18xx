@@ -88,6 +88,7 @@ module Engine
           'F15' => 'Orange & Bathurst',
           'G10' => 'Ballarat & Bendigo',
           'G16' => 'Wollongong',
+          'I21' => 'BOE Payout',
         }.freeze
 
         GHAN_HEXES = %w[A4 A6].freeze
@@ -102,21 +103,22 @@ module Engine
                    'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:5,b:_0;path=a:0,b:_0',
             ['D1'] =>
                    'city=revenue:yellow_20|green_40|brown_60|gray_80;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=K',
+            ['I21'] => 'offboard=revenue:yellow_0|green_100|brown_200|gray_300',
           },
           blue: {
             ['B21'] =>
-                     'offboard=revenue:yellow_10|green_10|brown_20|gray_20;path=a:0,b:_0',
+                     'town=revenue:yellow_10|green_10|brown_20|gray_20;path=a:0,b:_0',
             ['F3'] =>
-            'offboard=revenue:yellow_10|green_10|brown_20|gray_20;path=a:2,b:_0',
+            'town=revenue:yellow_10|green_10|brown_20|gray_20;path=a:2,b:_0',
             %w[I8 I10] => '',
           },
           white: {
             %w[B11 B13 B15 B5 D5 E12] => '',
             %w[B3 C2 C4] => 'upgrade=cost:40,terrain:desert',
-            %w[B19 F17 H11] => 'city=revenue:0;label=K',
+            %w[B19 F17 H11] => 'city=revenue:0;future_label=label:K,color:green',
             %w[E4 E18 E14 F5 E2] => 'city=revenue:0',
             ['D3'] => 'town=revenue:0;town=revenue:0',
-            ['B17'] => 'city=revenue:0;city=revenue:0',
+            ['B17'] => 'city=revenue:0;city=revenue:0;label=OO',
             ['B7'] => 'upgrade=cost:40,terrain:desert;'\
                       'border=edge:4,type:mountain;border=edge:5,type:mountain',
             ['B9'] => 'upgrade=cost:40,terrain:desert;border=edge:1,type:mountain',
@@ -145,15 +147,15 @@ module Engine
                       'border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['F11'] => 'border=edge:0,type:mountain;border=edge:1,type:mountain;' \
                        'border=edge:5,type:mountain',
-            ['F15'] => 'city=revenue:0;city=revenue:0;upgrade=cost:50,terrain:mountain',
-            ['G6'] => 'city=revenue:0;label=K;border=edge:4,type:mountain;',
+            ['F15'] => 'city=revenue:0;city=revenue:0;upgrade=cost:50,terrain:mountain;label=OO',
+            ['G6'] => 'city=revenue:0;future_label=label:K,color:green;border=edge:4,type:mountain;',
             ['G8'] => 'border=edge:0,type:mountain;border=edge:1,type:mountain;' \
                       'border=edge:2,type:mountain',
-            ['G10'] => 'city=revenue:0;city=revenue:0;border=edge:3,type:mountain',
+            ['G10'] => 'city=revenue:0;city=revenue:0;border=edge:3,type:mountain;label=OO',
             ['G12'] => 'town=revenue:0;town=revenue:0;border=edge:2,type:mountain;' \
                        'border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['G14'] => 'city=revenue:0;border=edge:0,type:mountain;border=edge:5,type:mountain;'\
-                       'city=revenue:0;border=edge:1,type:mountain',
+                       'border=edge:1,type:mountain',
             ['G16'] => 'city=revenue:0;upgrade=cost:50,terrain:mountain;border=edge:0,type:mountain',
             ['H7'] => 'city=revenue:0;border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['H9'] => 'city=revenue:0;border=edge:1,type:mountain',

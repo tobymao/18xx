@@ -2026,6 +2026,10 @@ module Engine
         @cert_limit
       end
 
+      def corporation_show_interest?
+        true
+      end
+
       private
 
       def init_graph

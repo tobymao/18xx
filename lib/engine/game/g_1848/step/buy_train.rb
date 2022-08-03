@@ -13,11 +13,16 @@ module Engine
             price = action.price
             remaining = price - buying_power(entity)
 
-            # do emergency loan
-            @game.perform_ebuy_loans(entity, remaining) if remaining.positive?
+            if remaining.positive? && !@game.round.actions_for(entity).include?('pass')
+              # do emergency loan
+              if @game.round.actions_for(entity).include?('take_loan')
+                raise GameError,
+                      "#{entity.name} can take a regular loan, prior to performing Compulsory Train Purchase"
+              end
 
-            # company is closing, not buying train
-            return if entity.share_price.price.zero?
+              @game.perform_ebuy_loans(entity, remaining)
+            end
+            return if entity.share_price.price.zero? # company is closing, not buying train
 
             super
           end
@@ -32,12 +37,34 @@ module Engine
             # Cannot buy 2E if one is already owned
             trains_to_buy = super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
-            trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' } if owns_2e?(entity)
-            trains_to_buy
+            if owns_2e?(entity)
+              trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
+            elsif trains_to_buy.none? { |t| t.name == '2E' } && can_buy_2e?(entity)
+              trains_to_buy << ghan_train
+            end
+            trains_to_buy.uniq
           end
 
           def owns_2e?(entity)
             entity.trains.any? { |t| t.name == '2E' }
+          end
+
+          def can_buy_2e?(entity)
+            ghan_private_owned?(entity) &&
+            @game.phase.available?(ghan_train.available_on) &&
+            ghan_train.price - ghan_private_ability.discount <= entity.cash
+          end
+
+          def ghan_private_ability
+            @ghan_private_ability ||= @game.abilities(@game.ghan, :train_discount, time: ability_timing)
+          end
+
+          def ghan_train
+            @ghan_train ||= @depot.trains.find { |t| t.name == '2E' }
+          end
+
+          def ghan_private_owned?(entity)
+            entity.companies.include?(@game.ghan) || entity.owner.companies.include?(@game.ghan)
           end
 
           def room?(entity)
