@@ -922,12 +922,12 @@ module Engine
 
         def entity_can_use_company?(entity, company)
           # company abilities only work once they can be bought
-          return false unless can_use_compnay_ability?
+          return false unless can_use_company_ability?
 
           super
         end
-        
-        def can_use_compnay_ability?
+
+        def can_use_company_ability?
           @phase.status.include?('can_buy_companies') || private_closed_triggered
         end
 
