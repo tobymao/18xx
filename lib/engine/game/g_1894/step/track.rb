@@ -54,7 +54,7 @@ module Engine
 
             if old_tile.name == @game.class::PARIS_HEX && old_tile.paths.empty?
               plm_token = tokens.find { |t| t.corporation.id == 'PLM' }
-              plm_token.move!(cities[0])
+              plm_token.move!(cities.first)
               @game.graph.clear
             elsif saved_tokens.any?
               token = saved_tokens.find { |t| t[:entity] == entity}

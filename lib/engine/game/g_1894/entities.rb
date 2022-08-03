@@ -41,66 +41,82 @@ module Engine
                         }],
           },
           {
+            name: 'London shipping',
+            sym: 'LS',
+            value: 90,
+            revenue: 15,
+            desc: 'Owning corporation may place one of its tokens for free in A12.'\
+                  ' The value of London (A10) is increased, for this corporation only,'\
+                  ' by the largest other revenue on the route.',
+            abilities: [{
+              type: 'token',
+              when: 'owning_corp_or_turn',
+              hexes: ['A12'],
+              count: 1,
+              extra_action: true,
+              from_owner: true,
+              owner_type: 'corporation',
+            }]
+          },
+          {
             name: 'Ligne de Saint-Quentin à Guise',
             sym: 'SQG',
-            value: 80,
-            desc: 'Revenue is equal to three times the revenue of Saint-Quentin (G10) if Saint-Quentin is green or brown, otherwise it\'s 0 F.'\
+            value: 100,
+            desc: 'Revenue is equal to 70 if Saint-Quentin (G10) is green, to 100 if Saint-Quentin is brown and to 0 otherwise.'\
                   ' Closes in purple phase.',
             abilities: [{ type: 'close', on_phase: 'Purple' },],
           },
-          {
-            name: 'London shipping',
-            sym: 'PC',
-            value: 90,
-            revenue: 15,
-            desc: 'Owning corporation may place a +10 marker in London (A10). For this corporation only, the value'\
-                  ' of London is increased by 10.',
-            abilities: [{
-              type: 'assign_hexes',
-              when: 'owning_corp_or_turn',
-              hexes: ['A10'],
-              count: 1,
-              owner_type: 'corporation',
-            },
-                        {
-                          type: 'assign_corporation',
-                          when: 'sold',
-                          count: 1,
-                          owner_type: 'corporation',
-                        }],
-          },
+          # {
+          #   name: 'London shipping',
+          #   sym: 'PC',
+          #   value: 90,
+          #   revenue: 15,
+          #   desc: 'Owning corporation may place a +10 marker in London (A10). For this corporation only, the value'\
+          #         ' of London is increased by 10.',
+          #   abilities: [{
+          #     type: 'assign_hexes',
+          #     when: 'owning_corp_or_turn',
+          #     hexes: ['A10'],
+          #     count: 1,
+          #     owner_type: 'corporation',
+          #   },
+          #               {
+          #                 type: 'assign_corporation',
+          #                 when: 'sold',
+          #                 count: 1,
+          #                 owner_type: 'corporation',
+          #               }],
+          # },          
           {
             name: 'CAB minor shareholding',
             sym: 'CABMS',
             value: 140,
             revenue: 20,
-            desc: 'Owning player immediately receives a 10% share of the CAB without further payment.'\
-                  ' Revenue increases to 30 F when owned by a corporation.',
-            abilities: [{ type: 'shares', shares: 'CAB_1' },
-                        { type: 'revenue_change', revenue: 30, when: 'sold' }],
+            desc: 'Owning player immediately receives a 10% share of the CAB without further payment.',
+            abilities: [{ type: 'shares', shares: 'CAB_1' },],
           },
           {
             name: 'PLM major shareholding',
             sym: 'PLMMS',
-            value: 200,
+            value: 180,
             revenue: 25,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' PLM without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the PLM.'\
-                  ' Closes in green phase.',
-            abilities: [{ type: 'close', on_phase: 'Green' },
+                  ' Closes when the PLM operates.',
+            abilities: [{ type: 'close', when: 'operated', corporation: 'PLM' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'PLM_0' }],
           },
           {
             name: 'Belge major shareholding',
             sym: 'BMS',
-            value: 220,
+            value: 300,
             revenue: 30,
-            desc: 'Owning player immediately receives the President\'s certificate of the'\
+            desc: 'Owning player immediately receives the President\'s certificate and a 10% share of the'\
                   ' Belge without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the Belge.'\
-                  ' Closes in green phase.',
+                  ' Closes when the Belge operates.',
             abilities: [{ type: 'close', when: 'operated', corporation: 'Belge' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'Belge_0' }],
@@ -129,17 +145,23 @@ module Engine
             name: 'Chemins de fer du Nord',
             logo: '1894/Nord',
             simple_logo: '1894/Nord.alt',
-            tokens: [0, 0, 100, 100],
+            tokens: [0, 0, 100, 100, 100],
             max_ownership_percent: 60,
             coordinates: %w[D3 D11],
             color: '#ff4040',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Two home stations (Rouen and Lille)',
+              },
+            ],
           },
           {
             sym: 'GR',
             name: 'Gent Railway',
             logo: '1894/GR',
             simple_logo: '1894/GR.alt',
-            tokens: [0, 40, 100],
+            tokens: [0, 100, 100, 100],
             max_ownership_percent: 60,
             coordinates: 'D15',
             color: '#fcf75e',
@@ -150,7 +172,7 @@ module Engine
             name: 'Chemins de fer d\'Amiens à Boulogne',
             logo: '1894/CAB',
             simple_logo: '1894/CAB.alt',
-            tokens: [0, 40, 100],
+            tokens: [0, 40, 100, 100],
             max_ownership_percent: 60,
             coordinates: 'G14',
             color: '#9c661f',
@@ -170,7 +192,7 @@ module Engine
             name: 'Chemins de fer de Paris à Lyon et à la Méditerranée',
             logo: '1894/PLM',
             simple_logo: '1894/PLM.alt',
-            tokens: [0, 40, 100, 100],
+            tokens: [0, 100, 100, 100],
             max_ownership_percent: 60,
             coordinates: 'G4',
             city: 0,
@@ -252,9 +274,6 @@ module Engine
           #   tokens: [0, 40],
           #   max_ownership_percent: 60,
           #   color: '#ffefdb',
-          #   text_color: 'black',
-          #   abilities: [
-          #     {
           #       type: 'description',
           #       description: 'Home in an empty hex in Belgium',
           #     },
