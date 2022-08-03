@@ -46,6 +46,8 @@ module Engine
 
         EBUY_PRES_SWAP = false
 
+        SELL_BUY_ORDER = :sell_buy
+
         MARKET = [
           %w[0c
              70
@@ -811,7 +813,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          k_sum = stops.count { |rl| rl.hex.tile.label.to_s == 'K' || rl.hex.tile.future_label&.label.to_s == 'K' }
+          k_sum = stops.count { |rl| rl.hex&.tile&.label&.to_s == 'K' || rl.hex&.tile&.future_label&.label.to_s == 'K' }
           k_sum = 0 if route.train.name == '2E' # 2E can't get k bonus
           super + K_BONUS[k_sum]
         end

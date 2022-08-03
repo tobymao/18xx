@@ -118,8 +118,8 @@ module Engine
             %w[B19 F17 H11] => 'city=revenue:0;future_label=label:K,color:green',
             %w[E4 E18 E14 F5 E2] => 'city=revenue:0',
             ['D3'] => 'town=revenue:0;town=revenue:0',
-            ['B17'] => 'city=revenue:0;city=revenue:0',
-            ['B7'] => 'upgrade=cost:40,terrain:desert;label=OO;'\
+            ['B17'] => 'city=revenue:0;city=revenue:0;label=OO',
+            ['B7'] => 'upgrade=cost:40,terrain:desert;'\
                       'border=edge:4,type:mountain;border=edge:5,type:mountain',
             ['B9'] => 'upgrade=cost:40,terrain:desert;border=edge:1,type:mountain',
             ['C6'] => 'border=edge:4,type:mountain',
