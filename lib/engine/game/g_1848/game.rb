@@ -197,7 +197,13 @@ module Engine
             rusts_on: '6',
             num: 5,
             variants: [
-              { name: '3+', distance: 3, price: 230 },
+              {
+                name: '3+',
+                distance:
+                [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+                 { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                price: 230,
+              },
             ],
             events: [{ 'type' => 'take_out_loans' },
                      { 'type' => 'lay_second_tile' },
@@ -211,7 +217,12 @@ module Engine
             rusts_on: '8',
             num: 4,
             variants: [
-              { name: '4+', distance: 4, price: 340 },
+              {
+                name: '4+',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                price: 340,
+              },
             ],
           },
           {
@@ -221,7 +232,13 @@ module Engine
             price: 500,
             num: 3,
             variants: [
-              { name: '5+', distance: 5, price: 550 },
+              {
+                name: '5+',
+                distance:
+                [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+                 { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                price: 550,
+              },
             ],
             events: [{ 'type' => 'close_companies' }],
           },
@@ -232,7 +249,12 @@ module Engine
             price: 600,
             num: 2,
             variants: [
-              { name: '6+', distance: 6, price: 660 },
+              {
+                name: '6+',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
+                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                price: 660,
+              },
             ],
             events: [{ 'type' => 'com_operates' }],
           },
