@@ -63,7 +63,7 @@ module Engine
             @active_entity = nil
           end
 
-          def add_tile_lay_ability(_entity)
+          def add_tile_lay_ability(entity)
             entity.owner.corporation? ? entity.add_ability(tasmania_corp_ability) : entity.add_ability(tasmania_player_ability)
           end
 
