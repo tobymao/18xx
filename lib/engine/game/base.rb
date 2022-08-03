@@ -1803,7 +1803,6 @@ module Engine
 
       def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
         return nil unless entity
-        puts("here #{entity.name}") if entity.name == "P4" || entity.name == "West Australian Railway"
 
         active_abilities = entity.all_abilities.select do |ability|
           ability_right_type?(ability, type) &&
