@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative 'map'
 require_relative '../base'
 require_relative '../../loan'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
@@ -14,6 +15,7 @@ module Engine
 
         include_meta(G1848::Meta)
         include Map
+        include CitiesPlusTownsRouteDistanceStr
 
         CURRENCY_FORMAT_STR = '£%d'
 
@@ -799,12 +801,6 @@ module Engine
           return super if route.train.name != '2E' || ghan_visited?(visits.first) || ghan_visited?(visits.last)
 
           raise GameError, 'Route must include Alice Springs'
-        end
-
-        def route_distance_str(route)
-          towns = route.visited_stops.count(&:town?)
-          cities = route_distance(route) - towns
-          towns.zero? ? cities.to_s : "#{cities}+#{towns}"
         end
 
         def get_modified_guage_distance(route)
