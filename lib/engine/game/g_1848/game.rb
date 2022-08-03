@@ -46,8 +46,6 @@ module Engine
 
         EBUY_PRES_SWAP = false
 
-        SELL_BUY_ORDER = :sell_buy
-
         MARKET = [
           %w[0c
              70
@@ -924,9 +922,13 @@ module Engine
 
         def entity_can_use_company?(entity, company)
           # company abilities only work once they can be bought
-          return false unless @phase.status.include?('can_buy_companies')
+          return false unless can_use_compnay_ability?
 
           super
+        end
+        
+        def can_use_compnay_ability?
+          @phase.status.include?('can_buy_companies') || private_closed_triggered
         end
 
         def corporation_show_interest?
