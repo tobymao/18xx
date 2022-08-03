@@ -37,22 +37,34 @@ module Engine
           end
 
           def tasmania_player_ability
-            @tasmania_player_ability ||= Engine::Ability::TileLay.new(
+            @tasmania_player_ability ||= new_tasmania_ability(:player)
+          end
+
+          def tasmania_corp_ability
+            @tasmania_corp_ability ||= new_tasmania_ability(:corporation)
+          end
+
+          def new_tasmania_ability(owner_type)
+            Engine::Ability::TileLay.new(
               type: tasmania_ability.type,
               hexes: tasmania_ability.hexes,
               tiles: tasmania_ability.tiles,
-              owner_type: 'player',
+              owner_type: owner_type,
               special: tasmania_ability.special,
               count: tasmania_ability.count,
               free: tasmania_ability.free,
-              when: 'any',
+              when: 'any'
             )
           end
 
           def process_lay_tile(action)
-            action.entity.add_ability(tasmania_player_ability)
+            add_tile_lay_ability(action.entity)
             super
             @active_entity = nil
+          end
+
+          def add_tile_lay_ability(_entity)
+            entity.owner.corporation? ? entity.add_ability(tasmania_corp_ability) : entity.add_ability(tasmania_player_ability)
           end
 
           def available_hex(_entity, hex)
