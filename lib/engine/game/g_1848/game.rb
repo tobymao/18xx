@@ -48,6 +48,8 @@ module Engine
 
         EBUY_PRES_SWAP = false
 
+        CERT_LIMIT_INCLUDES_PRIVATES = false
+
         MARKET = [
           %w[0c
              70
