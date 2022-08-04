@@ -186,8 +186,14 @@ module Engine
             rusts_on: '4',
             num: 6,
             variants: [
-              { name: '2+', price: 120 },
+              {
+                name: '2+',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                price: 120,
+              },
             ],
+            events: [{ 'type' => 'com_operates' }],
           },
           {
             name: '3',
@@ -656,7 +662,7 @@ module Engine
         end
 
         def place_home_token(entity)
-          return super if entity.name != :COM
+          return super unless entity.name == 'COM'
           return unless can_com_operate?
           return if entity.tokens.first&.used
 
@@ -844,7 +850,6 @@ module Engine
             next unless token.used
 
             boe_token = Engine::Token.new(@boe)
-            boe_token.used = true
             token.swap!(boe_token, check_tokenable: false)
             @boe.tokens << boe_token
           end
