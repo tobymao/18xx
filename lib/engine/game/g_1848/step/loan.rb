@@ -13,6 +13,7 @@ module Engine
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
             return [] if @loan_taken
+            return [] if entity == @game.boe
 
             actions = []
             actions << 'take_loan' if @game.can_take_loan?(entity)
@@ -23,6 +24,10 @@ module Engine
 
           def description
             'Take Loans'
+          end
+
+          def pass_description
+            'Skip (Loans)'
           end
 
           def blocks?

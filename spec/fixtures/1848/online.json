@@ -646,6 +646,14 @@
     },
     {
       "type": "pass",
+      "entity": "VR",
+      "entity_type": "corporation",
+      "id": 60,
+      "created_at": 1659442842,
+      "original_id": 89
+    },
+    {
+      "type": "pass",
       "entity": "player 1",
       "entity_type": "player",
       "id": 61,
@@ -824,6 +832,14 @@
       "original_id": 101
     },
     {
+      "type": "pass",
+      "entity": "CAR",
+      "entity_type": "corporation",
+      "id": 72,
+      "created_at": 1659443019,
+      "original_id": 101
+    },
+    {
       "type": "lay_tile",
       "entity": "SAR",
       "entity_type": "corporation",
@@ -952,6 +968,14 @@
       "original_id": 130
     },
     {
+      "type": "pass",
+      "entity": "SAR",
+      "entity_type": "corporation",
+      "id": 81,
+      "created_at": 1659445688,
+      "original_id": 130
+    },
+    {
       "type": "lay_tile",
       "entity": "VR",
       "entity_type": "corporation",
@@ -1037,6 +1061,14 @@
       "created_at": 1659446075,
       "kind": "payout",
       "original_id": 137
+    },
+    {
+      "type": "pass",
+      "entity": "VR",
+      "entity_type": "corporation",
+      "id": 87,
+      "created_at": 1659446111,
+      "original_id": 138
     },
     {
       "type": "pass",
@@ -1168,6 +1200,14 @@
       "price": 200,
       "variant": "3",
       "original_id": 176
+    },
+    {
+      "type": "pass",
+      "entity": "CAR",
+      "entity_type": "corporation",
+      "id": 94,
+      "created_at": 1659446630,
+      "original_id": 177
     },
     {
       "type": "pass",
@@ -1338,6 +1378,14 @@
       "original_id": 186
     },
     {
+      "type": "pass",
+      "entity": "SAR",
+      "entity_type": "corporation",
+      "id": 101,
+      "created_at": 1659446694,
+      "original_id": 186
+    },
+    {
       "type": "buy_company",
       "entity": "VR",
       "entity_type": "corporation",
@@ -1450,6 +1498,14 @@
       "id": 108,
       "created_at": 1659449324,
       "original_id": 200
+    },
+    {
+      "type": "pass",
+      "entity": "VR",
+      "entity_type": "corporation",
+      "id": 109,
+      "created_at": 1659449325,
+      "original_id": 201
     },
     {
       "type": "pass",
@@ -1811,6 +1867,14 @@
       "original_id": 302
     },
     {
+      "type": "pass",
+      "entity": "CAR",
+      "entity_type": "corporation",
+      "id": 131,
+      "created_at": 1659450982,
+      "original_id": 302
+    },
+    {
       "type": "lay_tile",
       "entity": "NSW",
       "entity_type": "corporation",
@@ -1857,6 +1921,14 @@
       "id": 136,
       "created_at": 1659451437,
       "original_id": 312
+    },
+    {
+      "type": "pass",
+      "entity": "NSW",
+      "entity_type": "corporation",
+      "id": 137,
+      "created_at": 1659451438,
+      "original_id": 313
     },
     {
       "type": "pass",
@@ -1978,6 +2050,14 @@
       "id": 144,
       "created_at": 1659451560,
       "original_id": 326
+    },
+    {
+      "type": "pass",
+      "entity": "VR",
+      "entity_type": "corporation",
+      "id": 145,
+      "created_at": 1659451645,
+      "original_id": 327
     },
     {
       "type": "pass",
@@ -2122,6 +2202,14 @@
       "entity": "SAR",
       "entity_type": "corporation",
       "id": 152,
+      "created_at": 1659453042,
+      "original_id": 338
+    },
+    {
+      "type": "pass",
+      "entity": "SAR",
+      "entity_type": "corporation",
+      "id": 152,
       "created_at": 1659453043,
       "auto_actions": [
         {
@@ -2217,6 +2305,14 @@
       "id": 157,
       "created_at": 1659453357,
       "original_id": 343
+    },
+    {
+      "type": "pass",
+      "entity": "CAR",
+      "entity_type": "corporation",
+      "id": 158,
+      "created_at": 1659453358,
+      "original_id": 344
     },
     {
       "type": "pass",
@@ -2359,6 +2455,14 @@
       "original_id": 348
     },
     {
+      "type": "pass",
+      "entity": "SAR",
+      "entity_type": "corporation",
+      "id": 162,
+      "created_at": 1659453620,
+      "original_id": 348
+    },
+    {
       "type": "lay_tile",
       "entity": "NSW",
       "entity_type": "corporation",
@@ -2415,6 +2519,14 @@
       "created_at": 1659453657,
       "loan": 5,
       "original_id": 358
+    },
+    {
+      "type": "pass",
+      "entity": "NSW",
+      "entity_type": "corporation",
+      "id": 169,
+      "created_at": 1659453661,
+      "original_id": 359
     },
     {
       "type": "pass",
