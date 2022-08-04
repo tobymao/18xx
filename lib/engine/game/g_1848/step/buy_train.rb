@@ -68,6 +68,8 @@ module Engine
           end
 
           def room?(entity)
+            return true if entity.trains.count { |t| t.name != '2E' } == @game.train_limit(entity) && can_buy_2e?(entity)
+
             entity.trains.count { |t| t.name != '2E' } < @game.train_limit(entity)
           end
 

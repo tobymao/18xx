@@ -302,7 +302,7 @@ module Engine
           },
           {
             sym: 'P2',
-            name: 'Sydney Railway Company',
+            name: 'Oodnadatta Railway',
             value: 70,
             min_price: 1,
             max_price: 80,
@@ -341,7 +341,7 @@ module Engine
             min_price: 1,
             max_price: 140,
             revenue: 15,
-            desc: 'The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in'\
+            desc: 'The Tasmania tile can be placed by a Public Company on one of the two blue hexes (I8, I10). This is in'\
                   " addition to the company's normal build that turn.",
             abilities: [
                     {
@@ -402,7 +402,7 @@ module Engine
             value: 230,
             revenue: 30,
             desc: "The owner receives a Director's Share share in the CAR, which must start at a par value of £100."\
-                  ' Cannot be bought by a corporation. When CAR purchases its first train the private company is closed.',
+                  ' Cannot be bought by a corporation. Closes when CAR purchases its first train.',
             abilities: [{ type: 'shares', shares: 'CAR_0' },
                         { type: 'no_buy' },
                         { type: 'close', when: 'bought_train', corporation: 'CAR' }],
@@ -582,6 +582,7 @@ module Engine
 
         def operating_round(round_num)
           G1848::Round::Operating.new(self, [
+            G1848::Step::CheckCOMFormation,
             G1848::Step::Loan,
             G1848::Step::CashCrisis,
             G1848::Step::TasmaniaTile,
@@ -642,13 +643,16 @@ module Engine
           @adelaide ||= hex_by_id('G6')
         end
 
-        def check_sydney_adelaide_connected
-          return @sydney_adelaide_connected if @sydney_adelaide_connected
+        def sydney_adelaide_connected?
+          return true if @sydney_adelaide_connected
 
           graph = Graph.new(self, home_as_token: true, no_blocking: true)
           graph.compute(sar)
-          @sydney_adelaide_connected = graph.reachable_hexes(sar).include?(sydney)
-          @sydney_adelaide_connected
+          graph.reachable_hexes(sar).include?(sydney)
+        end
+
+        def event_com_connected!
+          @sydney_adelaide_connected = true
         end
 
         def place_home_token(entity)
@@ -837,9 +841,10 @@ module Engine
 
           # boe gets all the tokens
           corporation.tokens.each do |token|
-            next if token.used
+            next unless token.used
 
             boe_token = Engine::Token.new(@boe)
+            boe_token.used = true
             token.swap!(boe_token, check_tokenable: false)
             @boe.tokens << boe_token
           end
