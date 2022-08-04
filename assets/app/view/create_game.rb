@@ -358,7 +358,7 @@ module View
 
     def mode_input(mode, text)
       click_handler = lambda do
-        store(:mode, mode) # , skip: true)
+        store(:mode, mode, skip: true)
         update_inputs
       end
 
