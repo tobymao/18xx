@@ -2,6 +2,7 @@
 
 require 'lib/settings'
 require 'lib/truncate'
+require 'lib/profile_link'
 require 'view/game_row'
 require 'view/link'
 
@@ -10,6 +11,7 @@ module View
     include GameManager
     include Lib::Settings
     include Lib::WhatsThis::AutoRoute
+    include Lib::ProfileLink
 
     needs :user
     needs :gdata # can't conflict with game_data
@@ -223,9 +225,8 @@ module View
 
         else
           player_props = { attrs: { title: player['name'].to_s } }
-
           elm = h(:span, [
-            h(acting?(player) ? :em : :span, player_props, short_name),
+            h(acting?(player) ? :em : :span, player_props, [profile_link(player['name'], display_name: short_name)]),
             index == (players.size - 1) || (owner? && new?) ? '' : ', ',
           ])
         end
@@ -235,7 +236,8 @@ module View
       row_styles = { style: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between' } }
       pill_styles = { style: { background: '#c62033', borderRadius: '30px', padding: '0px 5px', color: 'white' } }
       id_row = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
-      if @gdata['status'] != 'finished' && !@gdata['settings']['is_async'] && !@gdata['settings']['is_async'].nil?
+      if !%w[finished
+             archived].include?(@gdata['status']) && !@gdata['settings']['is_async'] && !@gdata['settings']['is_async'].nil?
         id_row << h(:div, pill_styles, 'Live')
       end
       children = [h(:div, row_styles, id_row)]
@@ -257,15 +259,16 @@ module View
           render_time_or_date('created_at'),
         ])
       elsif %w[finished archived].include?(@gdata['status'])
-        result = @gdata['result']
-          .sort_by { |_, v| -v }
-          .map { |k, v| "#{k.truncate} #{v}" }
-          .join(', ')
+        r_elm = @gdata['result'].sort_by { |_, v| -v }.map.with_index do |(name, score), index|
+          player_props = { attrs: { title: name } }
+          h(:span, player_props, [
+            profile_link(name, display_name: name.truncate),
+            " #{score}",
+            index == players.size - 1 ? '' : ', ',
+          ])
+        end
 
-        children << h('div.inline', [
-          h(:strong, 'Result: '),
-          result,
-        ])
+        children << h('div.inline', [h(:strong, 'Result: '), *r_elm])
         children << h('div.inline', { style: { float: 'right', paddingLeft: '1rem' } }, [
           h(:strong, 'Ended: '),
           render_time_or_date('updated_at'),

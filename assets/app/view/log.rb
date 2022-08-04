@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
+require 'lib/profile_link'
 
 module View
   class Log < Snabberb::Component
     include Lib::Settings
+    include Lib::ProfileLink
 
     needs :log
     needs :negative_pad, default: false
@@ -98,7 +100,7 @@ module View
 
         h('div.chatline', line_props, [
           h('span.timestamp', timestamp_props, timestamp),
-          h('span.username', username_props, line[:user][:name]),
+          h('span.username', username_props, [profile_link(line[:user][:name])]),
           h('span.message', message_props, line[:message]),
         ])
       end
