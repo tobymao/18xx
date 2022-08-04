@@ -193,7 +193,6 @@ module Engine
                 price: 120,
               },
             ],
-            events: [{ 'type' => 'com_operates' }],
           },
           {
             name: '3',
