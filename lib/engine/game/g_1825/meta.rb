@@ -145,13 +145,13 @@ module Engine
           %i[big_bank strict_bank],
         ].freeze
 
-        def self.check_options(options, num_players)
+        def self.check_options(options, _min_players, max_players)
           optional_rules = (options || []).map(&:to_sym)
 
-          return if optional_rules.empty? && !num_players
+          return if optional_rules.empty? && !max_players
 
           if optional_rules.empty?
-            case num_players
+            case max_players
             when 2
               return 'No Unit(s) selected. Will use Unit 3 based on player count'
             when 3

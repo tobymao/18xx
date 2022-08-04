@@ -10,7 +10,8 @@ module View
     include Lib::WhatsThis::AutoRoute
 
     needs :mode, default: :multi, store: true
-    needs :num_players, default: 3, store: true
+    needs :min_players, default: nil, store: true
+    needs :max_players, default: nil, store: true
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
     needs :visible_optional_rules, default: nil, store: true
@@ -43,7 +44,7 @@ module View
         inputs << render_game_info
       when :hotseat
         inputs << h(:label, { style: @label_style }, 'Player Names')
-        @num_players.times do |index|
+        @max_players.times do |index|
           n = index + 1
           inputs << render_input('', id: "player_#{n}", attrs: { value: "Player #{n}" })
         end
@@ -123,7 +124,7 @@ module View
 
         preselect_variant(@selected_game)
         preselect_optional_rules(@selected_game)
-        update_inputs
+        update_inputs(title_change: true)
       end
 
       inputs = [
@@ -132,13 +133,28 @@ module View
                                    input_style: { maxWidth: '90vw' }, children: game_options),
         render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
         render_input(
+          'Min Players',
+          id: :min_players,
+          type: :number,
+          attrs: {
+            min: @min_p.values.first,
+            max: @max_p.values.first,
+            value: @min_players || @min_p.values.first,
+            required: true,
+          },
+          container_style: @mode == :hotseat ? { display: 'none' } : {},
+          input_style: { width: '3.5rem' },
+          label_style: @label_style,
+          on: { input: -> { update_inputs } },
+        ),
+        render_input(
           @mode == :hotseat ? 'Players' : 'Max Players',
           id: :max_players,
           type: :number,
           attrs: {
             min: @min_p.values.first,
             max: @max_p.values.first,
-            value: @num_players,
+            value: @max_players || @max_p.values.first,
             required: true,
           },
           input_style: { width: '3.5rem' },
@@ -278,7 +294,7 @@ module View
       }
 
       info = selected_game_or_variant.respond_to?(:check_options) &&
-        selected_game_or_variant.check_options(@optional_rules, @num_players)
+        selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)
 
       if info
         h(:div, [
@@ -342,7 +358,7 @@ module View
 
     def mode_input(mode, text)
       click_handler = lambda do
-        store(:mode, mode, skip: true)
+        store(:mode, mode) # , skip: true)
         update_inputs
       end
 
@@ -414,7 +430,8 @@ module View
         players: players.map { |name| { name: name } },
         title: game_params[:title],
         description: game_params[:description],
-        max_players: game_params[:max_players],
+        min_players: game_params[:min_players],
+        max_players: game_params[:min_players],
         **game_data,
       )
     end
@@ -459,20 +476,44 @@ module View
     end
 
     def filtered_rule?(rule)
-      rule[:hidden] || (rule[:players] && !rule[:players].include?(@num_players))
+      rule[:hidden] ||
+        (rule[:players] &&
+        !((@mode == :hotseat || rule[:players].include?(@min_players)) && rule[:players].include?(@max_players)))
     end
 
-    def update_inputs
+    def update_inputs(title_change: false)
       title = selected_game_or_variant.title
 
-      range = Native(@inputs[:max_players]).elm
-      unless range.value == ''
-        min = range.min = @min_p[title]
-        max = range.max = @max_p[title]
-        val = range.value.to_i
-        range.value = (min..max).cover?(val) ? val : max
-        store(:num_players, range.value.to_i, skip: true)
+      min_p = @min_p[title]
+      max_p = @max_p[title]
+
+      min_players = Native(@inputs[:min_players]).elm
+      max_players = Native(@inputs[:max_players]).elm
+      max_players.min = min_players.min = min_p
+      max_players.max = min_players.max = max_p
+      if @mode == :hotseat || title_change || min_players.value == ''
+        min_players.value = min_p
+      else
+        val = min_players.value.to_i
+        if val < min_p
+          min_players.value = min_p
+        elsif val > max_p
+          min_players.value = max_p
+        end
       end
+      store(:min_players, min_players.value.to_i, skip: true)
+
+      if title_change || max_players.value == ''
+        max_players.value = max_p
+      else
+        val = max_players.value.to_i
+        if val < @min_players
+          max_players.value = @min_players
+        elsif val > max_p
+          max_players.value = max_p
+        end
+      end
+      store(:max_players, max_players.value.to_i, skip: true)
 
       store(:selected_game, selected_game, skip: true)
 
