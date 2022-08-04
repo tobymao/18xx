@@ -604,6 +604,7 @@ module Engine
             G1848::Step::SpecialBuyTrain,
             G1848::Step::BuyTrain,
             [G1848::Step::BuyCompany, { blocks: true }],
+            [G1848::Step::Loan, { blocks: true }],
           ], round_num: round_num)
         end
 

@@ -1,18 +1,24 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
+require_relative 'skip_boe'
 
 module Engine
   module Game
     module G1848
       module Step
         class Loan < Engine::Step::Base
-          ACTIONS = ['take_loan'].freeze
+          include SkipBoe
+
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
-            return [] if @loan_taken || !@game.can_take_loan?(entity)
+            return [] if @loan_taken
 
-            ACTIONS
+            actions = []
+            actions << 'take_loan' if @game.can_take_loan?(entity)
+            actions << 'pass' if blocks?
+
+            actions
           end
 
           def description
@@ -20,7 +26,7 @@ module Engine
           end
 
           def blocks?
-            false
+            @opts[:blocks] && @game.can_take_loan?(current_entity)
           end
 
           def process_take_loan(action)
