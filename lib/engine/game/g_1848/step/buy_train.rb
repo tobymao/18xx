@@ -8,7 +8,6 @@ module Engine
     module G1848
       module Step
         class BuyTrain < Engine::Step::BuyTrain
-
           def buy_train_action(action, entity = nil, borrow_from: nil)
             entity ||= action.entity
             price = action.price
@@ -70,13 +69,13 @@ module Engine
             entity.companies.include?(@game.ghan) || entity.owner.companies.include?(@game.ghan)
           end
 
-          def at_train_limit?(entity) 
+          def at_train_limit?(entity)
             entity.trains.count { |t| t.name != '2E' } == @game.train_limit(entity)
           end
 
           def room?(entity)
             return true if at_train_limit?(entity) && can_buy_2e?(entity)
-            
+
             entity.trains.count { |t| t.name != '2E' } < @game.train_limit(entity)
           end
 
