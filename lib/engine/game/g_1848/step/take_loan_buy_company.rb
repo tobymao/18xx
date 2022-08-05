@@ -27,7 +27,7 @@ module Engine
           end
 
           def blocks?
-            @opts[:blocks] && @game.can_take_loan?(current_entity)
+            @opts[:blocks] && (@game.can_take_loan?(current_entity) || can_buy_company?(current_entity))
           end
 
           def process_take_loan(action)
