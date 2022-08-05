@@ -384,6 +384,7 @@ module Engine
             @game.bank.spend(share_price.price * 2, entity)
 
             action = Action::Par.new(entity, corporation: corporation, share_price: share_price)
+            action.id = @game.current_action_id
             process_par(action)
 
             # Clear the corporation of 'share' cash
