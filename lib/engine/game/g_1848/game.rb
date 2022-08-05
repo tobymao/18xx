@@ -10,6 +10,7 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
+        attr_accessor :loan_taken
         attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered,
                     :can_buy_trains
 
@@ -590,21 +591,19 @@ module Engine
         def operating_round(round_num)
           G1848::Round::Operating.new(self, [
             G1848::Step::CheckCOMFormation,
-            G1848::Step::Loan,
+            G1848::Step::TakeLoanBuyCompany,
             G1848::Step::CashCrisis,
             G1848::Step::TasmaniaTile,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G1848::Step::SpecialTrack,
-            G1848::Step::BuyCompany,
             G1848::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1848::Step::Dividend,
             G1848::Step::SpecialBuyTrain,
             G1848::Step::BuyTrain,
-            [G1848::Step::BuyCompany, { blocks: true }],
-            [G1848::Step::Loan, { blocks: true }],
+            [G1848::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -651,9 +650,7 @@ module Engine
           @adelaide ||= hex_by_id('G6')
         end
 
-        def sydney_adelaide_connected?
-          return true if @sydney_adelaide_connected
-
+        def check_for_sydney_adelaide_connection
           graph = Graph.new(self, home_as_token: true, no_blocking: true)
           graph.compute(sar)
           graph.reachable_hexes(sar).include?(sydney)
@@ -762,7 +759,8 @@ module Engine
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
             !@loans.empty? &&
-            @take_out_loan_triggered
+            @take_out_loan_triggered &&
+            !@loan_taken
         end
 
         def take_loan(entity, loan, ebuy: nil)
@@ -777,6 +775,7 @@ module Engine
           entity.loans << loan
           @boe.loans << loan
           @loans.delete(loan)
+          @loan_taken = true
         end
 
         def loan_taken_stock_market_movement(entity, loan, ebuy: nil)

@@ -16,7 +16,7 @@ module Engine
 
             return [] if @game.sydney_adelaide_connected
             return ACTIONS if @game.loading
-            return [] unless @game.sydney_adelaide_connected?
+            return [] unless @game.check_for_sydney_adelaide_connection
 
             @connected = true
             ACTIONS
@@ -36,7 +36,7 @@ module Engine
             [Engine::Action::DestinationConnection.new(entity)]
           end
 
-          def process_destination_connection(_action)\
+          def process_destination_connection(_action)
             @game.log << 'Sydney and Adelaide are connected - COM may start operating'
             @game.event_com_connected!
           end

@@ -7,27 +7,23 @@ module Engine
   module Game
     module G1848
       module Step
-        class Loan < Engine::Step::Base
+        class TakeLoanBuyCompany < Engine::Step::BuyCompany
           include SkipBoe
 
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
-            return [] if @loan_taken
             return [] if entity == @game.boe
 
             actions = []
             actions << 'take_loan' if @game.can_take_loan?(entity)
+            actions << 'buy_company' if can_buy_company?(entity)
             actions << 'pass' if blocks?
 
             actions
           end
 
           def description
-            'Take Loans'
-          end
-
-          def pass_description
-            'Skip (Loans)'
+            'Take Loans or Buy Company'
           end
 
           def blocks?
@@ -35,14 +31,13 @@ module Engine
           end
 
           def process_take_loan(action)
-            @loan_taken = true
             entity = action.entity
             @game.take_loan(entity, action.loan)
           end
 
           def setup
             # you can only take one loan per OR turn
-            @loan_taken = false
+            @game.loan_taken = false
           end
         end
       end
