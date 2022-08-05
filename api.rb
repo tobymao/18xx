@@ -66,7 +66,7 @@ class Api < Roda
   use Rack::Deflater unless PRODUCTION
 
   STANDARD_ROUTES = %w[
-    / about hotseat login new_game profile signup tutorial forgot reset
+    / about hotseat login new_game signup tutorial forgot reset
   ].freeze
 
   ROUTES_WITH_GAME_TITLES = %w[
@@ -108,6 +108,20 @@ class Api < Roda
 
     r.on ROUTES_WITH_GAME_TITLES do
       render(titles: request.path.split('/')[2].split('+'))
+    end
+
+    r.on 'profile' do
+      r.get String do |name|
+        halt(404, 'User does not exist') unless (profile = User.by_username(name))
+
+        needs = { profile: profile&.to_h(for_user: false) }
+        render(
+          title: request.params['title'],
+          pin: request.params['pin'],
+          games: Game.home_games(profile, **request.params).map(&:to_h),
+          **needs,
+        )
+      end
     end
 
     r.on 'tiles' do

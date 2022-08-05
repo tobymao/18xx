@@ -36,6 +36,10 @@ class User < Base
     self[Sequel.function(:lower, :email) => email.downcase] || self[Sequel.function(:lower, :name) => email.downcase]
   end
 
+  def self.by_username(name)
+    self[Sequel.function(:lower, :name) => name.downcase]
+  end
+
   def reset_hashes
     now = Time.now.to_i / RESET_WINDOW
     (0..1).map { |i| Digest::MD5.hexdigest("#{password}#{now + i}") }
