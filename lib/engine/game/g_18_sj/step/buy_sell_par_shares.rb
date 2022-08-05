@@ -17,7 +17,6 @@ module Engine
             end
           end
 
-          # FIXME: copied from 21moon which has "FIXME: move to common location"
           def can_buy_any_from_ipo?(entity)
             @game.corporations.each do |corporation|
               next unless corporation.ipoed
