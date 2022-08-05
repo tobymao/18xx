@@ -362,6 +362,19 @@ module Engine
           interest_owed_for_loans(entity.loans.size) + (entity.companies.include?(loan_shark_private) ? 10 : 0)
         end
 
+        def log_interest_payment(entity, amount)
+          amount_fmt = format_currency(amount)
+          loans_due = loans_due_interest(entity)
+          loans =
+            if loans_due != 1
+              " #{loans_due} loans"
+            else
+              ' 1 loan'
+            end
+          loan_shark_msg = ' and Loan Shark' if entity.companies.include?(loan_shark_private)
+          @log << "#{entity.name} pays #{amount_fmt} interest for #{loans}#{loan_shark_msg}"
+        end
+
         def interest_change
           rate = future_interest_rate
           summary = []
