@@ -127,6 +127,15 @@ module View
         update_inputs(title_change: true)
       end
 
+      title = selected_game_or_variant.title
+      min_p = @min_p[title]
+      max_p = @max_p[title]
+      max_players = @max_players || max_p
+      if selected_game_or_variant.respond_to?(:min_players)
+        min_p = selected_game_or_variant.min_players(@optional_rules, max_players)
+      end
+      min_players = @min_players || min_p
+
       inputs = [
         render_input('Game Title', id: :title, el: 'select', on: { input: title_change },
                                    container_style: @label_style, label_style: @label_style,
@@ -137,9 +146,9 @@ module View
           id: :min_players,
           type: :number,
           attrs: {
-            min: @min_p.values.first,
-            max: @max_p.values.first,
-            value: @min_players || @min_p.values.first,
+            min: min_p,
+            max: max_p,
+            value: min_players,
             required: true,
           },
           container_style: @mode == :hotseat ? { display: 'none' } : {},
@@ -152,9 +161,9 @@ module View
           id: :max_players,
           type: :number,
           attrs: {
-            min: @min_p.values.first,
-            max: @max_p.values.first,
-            value: @max_players || @max_p.values.first,
+            min: min_p,
+            max: max_p,
+            value: max_players,
             required: true,
           },
           input_style: { width: '3.5rem' },
@@ -430,8 +439,8 @@ module View
         players: players.map { |name| { name: name } },
         title: game_params[:title],
         description: game_params[:description],
-        min_players: game_params[:min_players],
-        max_players: game_params[:min_players],
+        min_players: game_params[:max_players],
+        max_players: game_params[:max_players],
         **game_data,
       )
     end
@@ -483,40 +492,32 @@ module View
 
     def update_inputs(title_change: false)
       title = selected_game_or_variant.title
-
-      min_p = @min_p[title]
       max_p = @max_p[title]
+      min_p = @min_p[title]
+      max_players_elm = Native(@inputs[:max_players]).elm
+      min_players_elm = Native(@inputs[:min_players]).elm
 
-      min_players = Native(@inputs[:min_players]).elm
-      max_players = Native(@inputs[:max_players]).elm
-      max_players.min = min_players.min = min_p
-      max_players.max = min_players.max = max_p
-      if @mode == :hotseat || title_change || min_players.value == ''
-        min_players.value = min_p
+      if title_change
+        max_players = max_p
+        min_players = min_p
       else
-        val = min_players.value.to_i
-        if val < min_p
-          min_players.value = min_p
-        elsif val > max_p
-          min_players.value = max_p
-        end
+        max_players = max_players_elm.value.to_i.zero? ? max_p : max_players_elm.value.to_i
+        min_players = min_players_elm.value.to_i.zero? ? min_p : min_players_elm.value.to_i
       end
-      store(:min_players, min_players.value.to_i, skip: true)
 
-      if title_change || max_players.value == ''
-        max_players.value = max_p
-      else
-        val = max_players.value.to_i
-        if val < @min_players
-          max_players.value = @min_players
-        elsif val > max_p
-          max_players.value = max_p
-        end
+      max_players = [max_players, max_p].min
+      if selected_game_or_variant.respond_to?(:min_players)
+        min_p = selected_game_or_variant.min_players(@optional_rules, max_players)
       end
-      store(:max_players, max_players.value.to_i, skip: true)
+      min_players = [min_players, min_p].max
+      min_players = [min_players, max_players].min
+
+      max_players_elm.value = max_players
+      min_players_elm.value = min_players
+      store(:min_players, min_players, skip: true)
+      store(:max_players, max_players, skip: true)
 
       store(:selected_game, selected_game, skip: true)
-
       store(:selected_variant, @selected_variant, skip: true)
       store(:game_variants, selected_game.game_variants, skip: true)
 
