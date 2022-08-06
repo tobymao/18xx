@@ -74,9 +74,7 @@ module Engine
           end
 
           def room?(entity)
-            return true if at_train_limit?(entity) && can_buy_2e?(entity)
-
-            entity.trains.count { |t| t.name != '2E' } < @game.train_limit(entity)
+            !at_train_limit?(entity) || can_buy_2e?(entity)
           end
 
           def spend_minmax(entity, train)

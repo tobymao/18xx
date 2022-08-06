@@ -10,7 +10,6 @@ module Engine
   module Game
     module G1848
       class Game < Game::Base
-        attr_accessor :loan_taken
         attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered,
                     :can_buy_trains
 
@@ -759,8 +758,7 @@ module Engine
           entity.corporation? &&
             entity.loans.size < maximum_loans(entity) &&
             !@loans.empty? &&
-            @take_out_loan_triggered &&
-            !@loan_taken
+            @take_out_loan_triggered
         end
 
         def take_loan(entity, loan, ebuy: nil)
@@ -775,7 +773,6 @@ module Engine
           entity.loans << loan
           @boe.loans << loan
           @loans.delete(loan)
-          @loan_taken = true
         end
 
         def loan_taken_stock_market_movement(entity, loan, ebuy: nil)
