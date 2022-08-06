@@ -57,14 +57,6 @@ module View
       acting.include?(player['id'] || player['name'])
     end
 
-    def lookup_min(game)
-      min_p, _max_p = game::PLAYER_RANGE
-      return min_p unless game.respond_to?(:min_players)
-
-      optional_rules = @gdata.dig('settings', 'optional_rules') || []
-      game.min_players(optional_rules, @gdata['max_players']) || min_p
-    end
-
     def render_header
       buttons = []
 
@@ -98,9 +90,8 @@ module View
       end
 
       game = Engine.meta_by_title(@gdata['title'])
-      @min_p = lookup_min(game)
 
-      can_start = owner? && new? && players.size >= @min_p
+      can_start = owner? && new? && players.size >= @gdata['min_players']
       buttons << render_button('Start', -> { start_game(@gdata) }) if can_start
 
       div_props = {
@@ -252,7 +243,7 @@ module View
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) unless %w[finished archived].include?(@gdata['status'])
 
       if new?
-        seats = @min_p.to_s + (@min_p == @gdata['max_players'] ? '' : " - #{@gdata['max_players']}")
+        seats = @gdata['min_players'].to_s + (@gdata['min_players'] == @gdata['max_players'] ? '' : " - #{@gdata['max_players']}")
         children << h('div.inline', [h(:strong, 'Seats: '), seats])
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Created: '),
