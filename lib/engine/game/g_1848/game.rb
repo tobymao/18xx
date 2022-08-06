@@ -265,26 +265,29 @@ module Engine
             ],
             events: [{ 'type' => 'com_operates' }],
           },
-          {
-            name: 'D',
-            distance: 999,
-            price: 1100,
-            num: 6,
-            discount: { '4' => 300, '5' => 300, '6' => 300 },
-          },
+
           {
             name: '8',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
-            num: 6,
+            num: 999,
+            variants: [
+              {
+                name: 'D',
+                distance: 999,
+                price: 1100,
+                num: 999,
+                discount: { '4' => 300, '5' => 300, '6' => 300 },
+              },
+            ],
           },
           {
             name: '2E',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 200,
-            num: 6,
+            num: 999,
             available_on: '5',
           },
         ].freeze

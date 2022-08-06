@@ -37,10 +37,10 @@ module Engine
           end
 
           def round_state
-            {
-              # has player taken a loan this or already
-              loan_taken: false,
-            }
+            super.merge({
+                          # has player taken a loan this or already
+                          loan_taken: false,
+                        })
           end
 
           def setup
