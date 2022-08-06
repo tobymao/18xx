@@ -20,8 +20,10 @@ module Engine
             return true if tile.id == 'BC-0'
           end
 
-          #          def available_hex(entity, hex)
-          #          end
+          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+            raise GameError, 'Cannot upgrade forests' if action.hex.assigned?('forest')
+            super
+          end
 
           def process_lay_tile(action)
             if @game.company_ability_extra_track?(action.entity) && action.tile.id == 'BC-0'
@@ -41,8 +43,10 @@ module Engine
                 ability.owner.close!
               end
             else
+              forest = @game.forest?(action.hex.tile)
               super
               action.hex.tile.icons.reject! { |i| i.name == 'block' }
+              action.hex.assign!('forest') if forest
             end
           end
         end

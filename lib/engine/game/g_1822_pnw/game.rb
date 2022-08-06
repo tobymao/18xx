@@ -34,6 +34,7 @@ module Engine
         #          'IRM' => 3,
         #        }.freeze
 
+
         STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18 P19 P20 P21
                                 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15 M16 M17 M18 M19 M20 M21 MA MB MC].freeze
 
@@ -59,6 +60,13 @@ module Engine
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
         P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
         # /TODO
+
+
+        ASSIGNMENT_TOKENS = {
+          'forest' => '/icons/tree.svg'
+        }.freeze
+
+        DOUBLE_HEX = %w[H19].freeze
 
         # Don't run 1822 specific code for the LCDR
         COMPANY_LCDR = nil
@@ -574,7 +582,8 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          route.train.name == '3/2P' ? (revenue / 2).round(-1) : revenue
+          revenue += 10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
+          revenue
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
@@ -654,6 +663,14 @@ module Engine
         def unassociated_minors
           @corporations.select { |c| c.floated? && c.type == :minor && !MINOR_ASSOCIATIONS.include?(c.id)}
         end
+
+        def forest?(tile)
+          tile.parts.each do |part|
+            return true if part.is_a?(Engine::Part::Upgrade) && (part.terrains[0] == :forest)
+          end
+          false
+        end
+        
       end
     end
   end
