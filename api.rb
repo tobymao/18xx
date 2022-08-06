@@ -112,6 +112,7 @@ class Api < Roda
 
     r.on 'profile' do
       r.get String do |name|
+        name.gsub!('%20', ' ')
         halt(404, 'User does not exist') unless (profile = User.by_username(name))
 
         needs = { profile: profile&.to_h(for_user: false) }
