@@ -317,6 +317,10 @@ module Engine
           corporation_by_id('Est')
         end
 
+        def cab
+          corporation_by_id('CAB')
+        end
+
         def setup
           @late_corporations, @corporations = @corporations.partition do |c|
             #%w[F1 F2 B1 B2].include?(c.id)

@@ -159,6 +159,7 @@ module Engine
           'G4' => 'Paris',
           'G10' => 'Saint-Quentin',
           'G14' => 'Charleroi',
+          'H1' => 'Chartres',
           'H17' => 'Liège',
           'I2' => 'Le Sud',
           'I8' => 'Reims',
@@ -167,8 +168,8 @@ module Engine
 
         HEXES = {
           white: {
-            %w[B1 B7 C4 D7 D9 E2 E4 E18 F1 F7 F9 F17 G8 H1 H3 H11 I4 I12] => '',
-            %w[C2 C8 C10 D5 E8 F3 G6 H5 H9] => 'upgrade=cost:50,terrain:water',
+            %w[B1 C4 D7 D9 E2 E4 E18 F1 F7 F9 F17 G8 H3 H11 I4 I12] => '',
+            %w[B7 C2 C8 C10 D5 E8 F3 G6 H5 H9] => 'upgrade=cost:50,terrain:water',
             #%w[] => 'upgrade=cost:80,terrain:water',
             %w[B3 B9 B11 D3 D15 E6 E10 E16 G10 H17] => 'city=revenue:0',
             %w[C6 F5 G16 H7] => 'town=revenue:0;town=revenue:0',
@@ -214,6 +215,7 @@ module Engine
             #['E4'] => 'town=revenue:yellow_10|brown_30,visit_cost:0;label=extra;path=a:2,b:_0;path=a:4,b:_0',
             #['F11'] => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
             ['G18'] => 'path=a:0,b:2;',
+            ['H1'] => 'city=revenue:20;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
             ['I16'] => 'path=a:1,b:4;path=a:1,b:2;',
           },
           blue: {
