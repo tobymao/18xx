@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 require 'user_manager'
-require 'lib/profile_link'
 
 module View
   class About < Snabberb::Component
     include UserManager
-    include Lib::ProfileLink
 
     needs :needs_consent, default: false
     needs :connection, store: true, default: nil
@@ -40,7 +38,7 @@ module View
         </p>
 
         <p>
-        <b>Email Addresses</b> are collected in order to send notifications. These notifications can be disabled in the <a href="/profile/#{@user['id']}">profile</a> page. Emails are not publicly available and not shared to any 3rd party except when email notifications are enabled. Emails are sent using the <a href='https://elasticemail.com'>Elastic Email</a> service.
+        <b>Email Addresses</b> are collected in order to send notifications. These notifications can be disabled in the #{@user ? "<a href=\"/profile/#{@user['id']}\">profile</a>" : 'profile'} page. Emails are not publicly available and not shared to any 3rd party except when email notifications are enabled. Emails are sent using the <a href='https://elasticemail.com'>Elastic Email</a> service.
         </p>
 
         <p>
