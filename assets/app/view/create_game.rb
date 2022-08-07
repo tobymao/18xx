@@ -501,22 +501,27 @@ module View
         max_players = max_p
         min_players = min_p
       else
-        max_players = max_players_elm.value.to_i.zero? ? max_p : max_players_elm.value.to_i
-        min_players = min_players_elm.value.to_i.zero? ? min_p : min_players_elm.value.to_i
+        # Letters resolve to 0 when converted to integers
+        max_players = max_players_elm.value.to_i.zero? ? nil : max_players_elm.value.to_i
+        min_players = min_players_elm.value.to_i.zero? ? nil : min_players_elm.value.to_i
       end
 
-      max_players = [max_players, max_p].min
-      if selected_game_or_variant.respond_to?(:min_players)
-        min_p = selected_game_or_variant.min_players(@optional_rules, max_players)
+      if max_players
+        max_players = [max_players, max_p].min
+        if selected_game_or_variant.respond_to?(:min_players)
+          min_p = selected_game_or_variant.min_players(@optional_rules, max_players)
+        end
+        max_players_elm.value = max_players
       end
-      min_players = [min_players, min_p].max
-      min_players = [min_players, max_players].min
 
-      max_players_elm.value = max_players
-      min_players_elm.value = min_players
-      store(:min_players, min_players, skip: true)
+      if min_players
+        min_players = [min_players, min_p].max
+        min_players = [min_players, max_players || max_p].min
+        min_players_elm.value = min_players
+      end
+
       store(:max_players, max_players, skip: true)
-
+      store(:min_players, min_players, skip: true)
       store(:selected_game, selected_game, skip: true)
       store(:selected_variant, @selected_variant, skip: true)
       store(:game_variants, selected_game.game_variants, skip: true)
