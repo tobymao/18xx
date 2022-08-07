@@ -17,7 +17,7 @@ class Api
         # POST '/api/user/'
         r.is do
           params = {
-            name: r['name'],
+            name: r['name']&.strip,
             email: r['email'],
             password: r['password'],
             settings: {
