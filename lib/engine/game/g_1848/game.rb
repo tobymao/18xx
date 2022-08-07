@@ -603,6 +603,7 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             G1848::Step::Dividend,
+            Engine::Step::DiscardTrain,
             G1848::Step::SpecialBuyTrain,
             G1848::Step::BuyTrain,
             [G1848::Step::TakeLoanBuyCompany, { blocks: true }],
