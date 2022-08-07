@@ -34,8 +34,8 @@ module Engine
           end
 
           def buyable_trains(entity)
-            # Cannot buy 2E if one is already owned
-            trains_to_buy = super
+            # Cannot buy 2E if one is already owned, can't by non 2e if at limit
+            trains_to_buy = at_train_limit?(entity) ? [] : super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
             if owns_2e?(entity)
               trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
@@ -50,9 +50,11 @@ module Engine
           end
 
           def can_buy_2e?(entity)
-            ghan_private_owned?(entity) &&
-            @game.phase.available?(ghan_train.available_on) &&
-            ghan_train.price - ghan_private_ability.discount <= entity.cash
+            return false if !@game.phase.available?(ghan_train&.available_on) || owns_2e?(entity)
+
+            cost = ghan_train.price
+            cost -= ghan_private_ability.discount if ghan_private_owned?(entity)
+            cost <= entity.cash
           end
 
           def ghan_private_ability
@@ -60,15 +62,19 @@ module Engine
           end
 
           def ghan_train
-            @ghan_train ||= @depot.trains.find { |t| t.name == '2E' }
+            @depot.depot_trains.find { |t| t.name == '2E' }
           end
 
           def ghan_private_owned?(entity)
             entity.companies.include?(@game.ghan) || entity.owner.companies.include?(@game.ghan)
           end
 
+          def at_train_limit?(entity)
+            entity.trains.count { |t| t.name != '2E' } == @game.train_limit(entity)
+          end
+
           def room?(entity)
-            entity.trains.count { |t| t.name != '2E' } < @game.train_limit(entity)
+            !at_train_limit?(entity) || can_buy_2e?(entity)
           end
 
           def spend_minmax(entity, train)

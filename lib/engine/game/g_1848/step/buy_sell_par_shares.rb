@@ -17,7 +17,7 @@ module Engine
           end
 
           def can_sell?(entity, bundle)
-            return true if bundle.corporation == @game.boe
+            return can_sell_order? if bundle.corporation == @game.boe
 
             super
           end

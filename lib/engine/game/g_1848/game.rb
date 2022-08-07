@@ -48,6 +48,8 @@ module Engine
 
         EBUY_PRES_SWAP = false
 
+        CERT_LIMIT_INCLUDES_PRIVATES = false
+
         MARKET = [
           %w[0c
              70
@@ -186,7 +188,12 @@ module Engine
             rusts_on: '4',
             num: 6,
             variants: [
-              { name: '2+', price: 120 },
+              {
+                name: '2+',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                price: 120,
+              },
             ],
           },
           {
@@ -258,26 +265,29 @@ module Engine
             ],
             events: [{ 'type' => 'com_operates' }],
           },
-          {
-            name: 'D',
-            distance: 999,
-            price: 1100,
-            num: 6,
-            discount: { '4' => 300, '5' => 300, '6' => 300 },
-          },
+
           {
             name: '8',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
-            num: 6,
+            num: 999,
+            variants: [
+              {
+                name: 'D',
+                distance: 999,
+                price: 1100,
+                num: 999,
+                discount: { '4' => 300, '5' => 300, '6' => 300 },
+              },
+            ],
           },
           {
             name: '2E',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 200,
-            num: 6,
+            num: 999,
             available_on: '5',
           },
         ].freeze
@@ -302,7 +312,7 @@ module Engine
           },
           {
             sym: 'P2',
-            name: 'Sydney Railway Company',
+            name: 'Oodnadatta Railway',
             value: 70,
             min_price: 1,
             max_price: 80,
@@ -341,7 +351,7 @@ module Engine
             min_price: 1,
             max_price: 140,
             revenue: 15,
-            desc: 'The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in'\
+            desc: 'The Tasmania tile can be placed by a Public Company on one of the two blue hexes (I8, I10). This is in'\
                   " addition to the company's normal build that turn.",
             abilities: [
                     {
@@ -402,7 +412,7 @@ module Engine
             value: 230,
             revenue: 30,
             desc: "The owner receives a Director's Share share in the CAR, which must start at a par value of £100."\
-                  ' Cannot be bought by a corporation. When CAR purchases its first train the private company is closed.',
+                  ' Cannot be bought by a corporation. Closes when CAR purchases its first train.',
             abilities: [{ type: 'shares', shares: 'CAR_0' },
                         { type: 'no_buy' },
                         { type: 'close', when: 'bought_train', corporation: 'CAR' }],
@@ -582,20 +592,20 @@ module Engine
 
         def operating_round(round_num)
           G1848::Round::Operating.new(self, [
-            G1848::Step::Loan,
+            G1848::Step::CheckCOMFormation,
+            G1848::Step::TakeLoanBuyCompany,
             G1848::Step::CashCrisis,
             G1848::Step::TasmaniaTile,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G1848::Step::SpecialTrack,
-            G1848::Step::BuyCompany,
             G1848::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1848::Step::Dividend,
             G1848::Step::SpecialBuyTrain,
             G1848::Step::BuyTrain,
-            [G1848::Step::BuyCompany, { blocks: true }],
+            [G1848::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -642,17 +652,18 @@ module Engine
           @adelaide ||= hex_by_id('G6')
         end
 
-        def check_sydney_adelaide_connected
-          return @sydney_adelaide_connected if @sydney_adelaide_connected
-
+        def check_for_sydney_adelaide_connection
           graph = Graph.new(self, home_as_token: true, no_blocking: true)
           graph.compute(sar)
-          @sydney_adelaide_connected = graph.reachable_hexes(sar).include?(sydney)
-          @sydney_adelaide_connected
+          graph.reachable_hexes(sar).include?(sydney)
+        end
+
+        def event_com_connected!
+          @sydney_adelaide_connected = true
         end
 
         def place_home_token(entity)
-          return super if entity.name != :COM
+          return super unless entity.name == 'COM'
           return unless can_com_operate?
           return if entity.tokens.first&.used
 
@@ -837,7 +848,7 @@ module Engine
 
           # boe gets all the tokens
           corporation.tokens.each do |token|
-            next if token.used
+            next unless token.used
 
             boe_token = Engine::Token.new(@boe)
             token.swap!(boe_token, check_tokenable: false)
