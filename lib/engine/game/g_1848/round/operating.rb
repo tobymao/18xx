@@ -18,7 +18,7 @@ module Engine
           end
 
           def skip_entity?(entity)
-            return super if entity.name != :COM || @game.can_com_operate?
+            return super if entity.name != 'COM' || @game.can_com_operate?
 
             @log << 'COM does not operate until either Sydney and Adelaide are connected or phase 6 has started'
             true
