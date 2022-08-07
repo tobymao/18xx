@@ -12,7 +12,7 @@ module View
       other_links = [item('About', '/about')]
 
       if @user
-        other_links << item("Profile (#{@user['name']})", "/profile/#{@user['name']}")
+        other_links << item("Profile (#{@user['name']})", "/profile/#{@user['id']}")
       else
         other_links << item('Signup', '/signup')
         other_links << item('Login', '/login')

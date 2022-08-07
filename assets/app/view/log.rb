@@ -100,7 +100,7 @@ module View
 
         h('div.chatline', line_props, [
           h('span.timestamp', timestamp_props, timestamp),
-          h('span.username', username_props, [profile_link(line[:user][:name])]),
+          h('span.username', username_props, [profile_link(line[:user][:id], line[:user][:name])]),
           h('span.message', message_props, line[:message]),
         ])
       end

@@ -59,7 +59,7 @@ module View
           },
         }
 
-        h('div.player.title.nowrap', props, [profile_link(@player.name)])
+        h('div.player.title.nowrap', props, [profile_link(@player.id, @player.name)])
       end
 
       def render_body
