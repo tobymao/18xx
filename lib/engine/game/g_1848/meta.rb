@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
         GAME_DESIGNER = 'Leonhard Orgler and Helmut Ohley'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1848'
