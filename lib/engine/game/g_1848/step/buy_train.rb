@@ -37,12 +37,17 @@ module Engine
             # Cannot buy 2E if one is already owned, can't by non 2e if at limit
             trains_to_buy = at_train_limit?(entity) ? [] : super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
+            trains_to_buy = reject_unaffordable_depot_trains(trains_to_buy) if must_buy_train?(entity)
             if owns_2e?(entity)
               trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
             elsif trains_to_buy.none? { |t| t.name == '2E' } && can_buy_2e?(entity)
               trains_to_buy << ghan_train
             end
             trains_to_buy.uniq
+          end
+
+          def reject_unaffordable_depot_trains(trains_to_buy)
+            trains_to_buy.reject { |train| @depot.discarded.include?(train) && train.price > buying_power(entity) }
           end
 
           def owns_2e?(entity)
@@ -81,6 +86,14 @@ module Engine
             return [1, buying_power(entity)] if train.owner.owner == entity.owner
 
             [train.price, train.price]
+          end
+
+          def can_ebuy_sell_shares?(_entity)
+            false
+          end
+
+          def must_take_loan?(_)
+            true
           end
         end
       end

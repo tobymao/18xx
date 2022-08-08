@@ -174,7 +174,7 @@ module View
 
             children.concat(render_emergency_money_raising(owner)) if share_funds_allowed.positive?
           end
-        elsif share_funds_allowed.positive?
+        elsif share_funds_allowed.positive? && @step.can_ebuy_sell_shares?(@corporation)
           children.concat(render_emergency_money_raising(player))
         end
 
@@ -338,7 +338,6 @@ module View
               train_props[:style][:color] = contrast_on(color)
             end
             source = @depot.discarded.include?(train) ? 'The Discard' : 'The Depot'
-
             [h(:div, train_props, name),
              h('div.nowrap', train_props, source),
              h('div.right', train_props, @game.format_currency(price)),
