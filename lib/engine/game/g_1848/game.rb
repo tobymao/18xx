@@ -797,7 +797,7 @@ module Engine
               break
             end
             loan = @loans.first
-            take_loan(entity, loan, ebuy)
+            take_loan(entity, loan, ebuy: ebuy)
             remaining -= loan.amount
           end
         end
