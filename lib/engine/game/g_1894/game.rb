@@ -5,6 +5,7 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'stock_market'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -261,8 +262,9 @@ module Engine
         BROWN_CITY_619_UPGRADE_TILES = %w[X10 X11 X13].freeze
         BROWN_CITY_TILES = %w[X10 X11 X12 X13 X14 X15 35 36 118]
 
-        REGULAR_CORPORATIONS = %w[PLM CAB Ouest Belge GR Nord Est].freeze
-        FRENCH_CORPORATIONS = %w[PLM Ouest Nord Est]
+        FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CAB].freeze
+        BELGIAN_REGULAR_CORPORATIONS = %w[GR Belge].freeze
+        REGULAR_CORPORATIONS = FRENCH_REGULAR_CORPORATIONS + BELGIAN_REGULAR_CORPORATIONS
         FRENCH_LATE_CORPORATIONS = %w[F1 F2].freeze
         FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 I8].freeze
         BELGIAN_LATE_CORPORATIONS = %w[B1 B2].freeze
@@ -301,9 +303,9 @@ module Engine
           corporation_by_id('PLM')
         end
 
-        def belge
-          corporation_by_id('Belge')
-        end
+        # def belge
+        #   corporation_by_id('Belge')
+        # end
 
         def ouest
           corporation_by_id('Ouest')
@@ -330,7 +332,7 @@ module Engine
           @last_or_set_triggered = false
           @skip_track_and_token = false
 
-          @log << "-- Setting game up for #{@players.size} players --"
+          #@log << "-- Setting game up for #{@players.size} players --"
           #remove_extra_trains
           #remove_extra_late_corporations
 
@@ -342,14 +344,21 @@ module Engine
           paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
+          french_starting_corporation = corporation_by_id(FRENCH_REGULAR_CORPORATIONS.sort_by(rand).take(1).first)
+          @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
+          belgian_starting_corporation = corporation_by_id(BELGIAN_REGULAR_CORPORATIONS.sort_by(rand).take(1).first)
+          @log << "-- The Belgian major shareholding corporation is the #{belgian_starting_corporation.id}"
+
+          remove_extra_companies([french_starting_corporation.id, belgian_starting_corporation.id])
+
           @players.each do |player|
-            share_pool.transfer_shares(plm.ipo_shares.last.to_bundle, player)
-            share_pool.transfer_shares(belge.ipo_shares.last.to_bundle, player)
+            share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, player)
+            share_pool.transfer_shares(belgian_starting_corporation.ipo_shares.last.to_bundle, player)
           end
 
           if @players.size == 3
-            share_pool.transfer_shares(plm.ipo_shares.last.to_bundle, share_pool)
-            #share_pool.transfer_shares(belge.ipo_shares.last.to_bundle, share_pool)
+            share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, share_pool)
+            share_pool.transfer_shares(belgian_starting_corporation.ipo_shares.last.to_bundle, share_pool)
           end
         end
 
@@ -369,11 +378,11 @@ module Engine
           hexes
         end
 
-        def init_round_finished
-          @players.rotate!(@round.entity_index)
-          share_pool.transfer_shares(belge.ipo_shares.last.to_bundle, belge.owner)
-          float_corporation(belge)
-        end
+        # def init_round_finished
+        #   @players.rotate!(@round.entity_index)
+        #   share_pool.transfer_shares(belge.ipo_shares.last.to_bundle, belge.owner)
+        #   float_corporation(belge)
+        # end
 
         def assignment_tokens(assignment)
           return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
@@ -398,7 +407,7 @@ module Engine
 
         def place_home_token(corporation)
           return if corporation.tokens.first&.used == true
-          if corporation == ouest || corporation == nord
+          if [ouest, nord, cab].include?(corporation)
             corporation.coordinates.each do | coordinate |
               hex = hex_by_id(coordinate)
               tile = hex&.tile
@@ -414,6 +423,7 @@ module Engine
             tile = hex&.tile
 
             return super if tile.color != :brown
+            
             place_home_token_brown_tile(corporation, hex, tile)
           end
         end
@@ -667,6 +677,33 @@ module Engine
 
         private
 
+        def remove_extra_companies(starting_corporations_ids)
+          major_shareholdings = companies.find_all { |c| [180, 220].include?(c.value) }
+
+          major_shareholdings.each do |company|
+            close_ability = company.abilities.select { |a| a.type == :close }.first
+
+            next if starting_corporations_ids.include?(close_ability.corporation)
+
+            company.close!
+            @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company)
+          end
+
+          # belgian_to_remove = companies.find_all { |company| company.value == 220 }
+          #   .sort_by { rand }
+          #   .take(1)
+
+          # to_remove = french_to_remove + belgian_to_remove
+
+          # to_remove.each do |company|
+          #   puts company.inspect
+          #   puts company.abilities.inspect
+          #   company.close!
+          #   @round.steps.find { |step| step.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company)
+          #   #@log << "Removing the #{company.name} company"
+          # end
+        end
+
         # def remove_extra_trains
         #   return unless @players.size == 3
 
@@ -691,9 +728,9 @@ module Engine
         #   @log << 'Removing F2 late corporation'
         # end
 
-        def plm_corporation
-          @plm_corporation ||= corporation_by_id('PLM')
-        end
+        # def plm_corporation
+        #   @plm_corporation ||= corporation_by_id('PLM')
+        # end
       end
     end
   end

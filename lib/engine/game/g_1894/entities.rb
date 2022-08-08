@@ -22,6 +22,7 @@ module Engine
                           when: 'owning_corp_or_turn',
                           count: 1,
                         }],
+            color: '#d9d9d9',
           },
           {
             name: 'Gare de Liège-Guillemins',
@@ -38,7 +39,8 @@ module Engine
                           owner_type: 'corporation',
                           hexes: ['H17'],
                           tiles: %w[14 15 57 619],
-                        }],
+                          }],
+            color: '#d9d9d9',
           },
           {
             name: 'London shipping',
@@ -56,7 +58,8 @@ module Engine
               extra_action: true,
               from_owner: true,
               owner_type: 'corporation',
-            }]
+            }],
+            color: '#d9d9d9',
           },
           {
             name: 'Ligne de Saint-Quentin à Guise',
@@ -65,14 +68,16 @@ module Engine
             desc: 'Revenue is equal to 70 if Saint-Quentin (G10) is green, to 100 if Saint-Quentin is brown and to 0 otherwise.'\
                   ' Closes in purple phase.',
             abilities: [{ type: 'close', on_phase: 'Purple' },],
+            color: '#d9d9d9',
           },        
           {
             name: 'Nord minor shareholding',
-            sym: 'NMS',
+            sym: 'NMinorS',
             value: 140,
             revenue: 20,
             desc: 'Owning player immediately receives a 10% share of the Nord without further payment.',
             abilities: [{ type: 'shares', shares: 'Nord_1' },],
+            color: '#d9d9d9',
           },
           {
             name: 'PLM major shareholding',
@@ -86,19 +91,91 @@ module Engine
             abilities: [{ type: 'close', when: 'operated', corporation: 'PLM' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'PLM_0' }],
+            color: '#dda0dd',
+          },
+          {
+            name: 'Ouest major shareholding',
+            sym: 'OMMS',
+            value: 180,
+            revenue: 25,
+            desc: 'Owning player immediately receives the President\'s certificate of the'\
+                  ' Ouest without further payment. This private company may not be sold to any corporation, and does'\
+                  ' not exchange hands if the owning player loses the Presidency of the Ouest.'\
+                  ' Closes when the Ouest operates.',
+            abilities: [{ type: 'close', when: 'operated', corporation: 'Ouest' },
+                        { type: 'no_buy' },
+                        { type: 'shares', shares: 'Ouest_0' }],
+            color: '#4682b4',
+          },
+          {
+            name: 'Nord major shareholding',
+            sym: 'NMS',
+            value: 180,
+            revenue: 25,
+            desc: 'Owning player immediately receives the President\'s certificate of the'\
+                  ' Nord without further payment. This private company may not be sold to any corporation, and does'\
+                  ' not exchange hands if the owning player loses the Presidency of the Nord.'\
+                  ' Closes when the Nord operates.',
+            abilities: [{ type: 'close', when: 'operated', corporation: 'Nord' },
+                        { type: 'no_buy' },
+                        { type: 'shares', shares: 'Nord_0' }],
+            color: '#ff4040',
+          },
+          {
+            name: 'CAB major shareholding',
+            sym: 'CMS',
+            value: 180,
+            revenue: 25,
+            desc: 'Owning player immediately receives the President\'s certificate of the'\
+                  ' CAB without further payment. This private company may not be sold to any corporation, and does'\
+                  ' not exchange hands if the owning player loses the Presidency of the CAB.'\
+                  ' Closes when the CAB operates.',
+            abilities: [{ type: 'close', when: 'operated', corporation: 'CAB' },
+                        { type: 'no_buy' },
+                        { type: 'shares', shares: 'CAB_0' }],
+            color: '#9c661f',
+          },
+          {
+            name: 'Est major shareholding',
+            sym: 'EMS',
+            value: 180,
+            revenue: 25,
+            desc: 'Owning player immediately receives the President\'s certificate of the'\
+                  ' Est without further payment. This private company may not be sold to any corporation, and does'\
+                  ' not exchange hands if the owning player loses the Presidency of the Est.'\
+                  ' Closes when the Est operates.',
+            abilities: [{ type: 'close', when: 'operated', corporation: 'Est' },
+                        { type: 'no_buy' },
+                        { type: 'shares', shares: 'Est_0' }],
+            color: '#ff9966',
           },
           {
             name: 'Belge major shareholding',
             sym: 'BMS',
-            value: 300,
+            value: 220,
             revenue: 30,
-            desc: 'Owning player immediately receives the President\'s certificate and a 10% share of the'\
+            desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' Belge without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the Belge.'\
                   ' Closes when the Belge operates.',
             abilities: [{ type: 'close', when: 'operated', corporation: 'Belge' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'Belge_0' }],
+            color: '#61b229',
+          },
+          {
+            name: 'GR major shareholding',
+            sym: 'GRMS',
+            value: 220,
+            revenue: 30,
+            desc: 'Owning player immediately receives the President\'s certificate of the'\
+                  ' GR without further payment. This private company may not be sold to any corporation, and does'\
+                  ' not exchange hands if the owning player loses the Presidency of the Belge.'\
+                  ' Closes when the GR operates.',
+            abilities: [{ type: 'close', when: 'operated', corporation: 'GR' },
+                        { type: 'no_buy' },
+                        { type: 'shares', shares: 'GR_0' }],
+            color: '#fcf75e',
           },
         ].freeze
 
