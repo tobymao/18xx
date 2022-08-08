@@ -71,7 +71,7 @@ module View
             if entity.company?
               entity.sym
             elsif entity.player?
-              profile_link(entity.name)
+              profile_link(entity.id, entity.name)
             else
               entity.name
             end
@@ -82,7 +82,7 @@ module View
             elsif entity.player? || !entity.owner
               ''
             elsif acting_owner.player?
-              h(:span, [' (', profile_link(acting_owner.name, display_name: acting_owner.name.truncate), ')'])
+              h(:span, [' (', profile_link(acting_owner.id, acting_owner.name.truncate), ')'])
             else
               " (#{acting_owner.name.truncate})"
             end

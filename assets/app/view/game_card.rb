@@ -217,7 +217,7 @@ module View
         else
           player_props = { attrs: { title: player['name'].to_s } }
           elm = h(:span, [
-            h(acting?(player) ? :em : :span, player_props, [profile_link(player['name'], display_name: short_name)]),
+            h(acting?(player) ? :em : :span, player_props, [profile_link(player['id'], short_name)]),
             index == (players.size - 1) || (owner? && new?) ? '' : ', ',
           ])
         end
@@ -251,9 +251,10 @@ module View
         ])
       elsif %w[finished archived].include?(@gdata['status'])
         r_elm = @gdata['result'].sort_by { |_, v| -v }.map.with_index do |(name, score), index|
+          player = players.find { |p| p['name'] == name }
           player_props = { attrs: { title: name } }
           h(:span, player_props, [
-            profile_link(name, display_name: name.truncate),
+            profile_link(player['id'], name.truncate),
             " #{score}",
             index == players.size - 1 ? '' : ', ',
           ])

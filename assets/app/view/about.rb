@@ -38,7 +38,7 @@ module View
         </p>
 
         <p>
-        <b>Email Addresses</b> are collected in order to send notifications. These notifications can be disabled in the <a href='/profile'>profile</a> page. Emails are not publicly available and not shared to any 3rd party except when email notifications are enabled. Emails are sent using the <a href='https://elasticemail.com'>Elastic Email</a> service.
+        <b>Email Addresses</b> are collected in order to send notifications. These notifications can be disabled in the #{@user ? "<a href=\"/profile/#{@user['id']}\">profile</a>" : 'profile'} page. Emails are not publicly available and not shared to any 3rd party except when email notifications are enabled. Emails are sent using the <a href='https://elasticemail.com'>Elastic Email</a> service.
         </p>
 
         <p>
