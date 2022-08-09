@@ -92,7 +92,7 @@ module Engine
             false
           end
 
-          def must_take_loan?(_)
+          def must_take_loan?(_entity)
             true
           end
         end

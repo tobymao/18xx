@@ -1841,6 +1841,7 @@ module Engine
 
       def discountable_trains_for(corporation)
         discountable_trains = @depot.depot_trains.select { |train| train.discount || train.variants.any? { |_, v| v[:discount] } }
+
         corporation.trains.flat_map do |train|
           discountable_trains.flat_map do |discount_train|
             discount_info = []
@@ -1860,6 +1861,7 @@ module Engine
                 discount_info << [train, discount_train, v[:name], price]
               end
             end
+
             discount_info
           end.compact
         end

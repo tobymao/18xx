@@ -279,7 +279,7 @@ module Engine
                 name: 'D',
                 distance: 999,
                 price: 1100,
-                num: 30,
+                num: 20,
                 discount: { '4' => 300, '5' => 300, '6' => 300 },
               },
             ],

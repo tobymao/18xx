@@ -338,6 +338,7 @@ module View
               train_props[:style][:color] = contrast_on(color)
             end
             source = @depot.discarded.include?(train) ? 'The Discard' : 'The Depot'
+
             [h(:div, train_props, name),
              h('div.nowrap', train_props, source),
              h('div.right', train_props, @game.format_currency(price)),
