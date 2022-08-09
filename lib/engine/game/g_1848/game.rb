@@ -273,13 +273,13 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
-            num: 999,
+            num: 20,
             variants: [
               {
                 name: 'D',
                 distance: 999,
                 price: 1100,
-                num: 999,
+                num: 30,
                 discount: { '4' => 300, '5' => 300, '6' => 300 },
               },
             ],
@@ -289,7 +289,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 200,
-            num: 999,
+            num: 10,
             available_on: '5',
           },
         ].freeze
@@ -943,20 +943,6 @@ module Engine
 
         def ability_used!(company)
           company.all_abilities.dup.each { |ab| company.remove_ability(ab) }
-        end
-
-        def discountable_trains_for(corporation)
-          discountable_trains = @depot.depot_trains.select(&:discount)
-
-          corporation.trains.flat_map do |train|
-            discountable_trains.flat_map do |discount_train|
-              discounted_price = discount_train.price(train)
-              next if discount_train.price == discounted_price
-
-              name = discount_train.name
-              [[train, discount_train, name, discounted_price]]
-            end.compact
-          end
         end
       end
     end
