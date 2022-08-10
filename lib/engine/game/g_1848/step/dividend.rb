@@ -48,7 +48,7 @@ module Engine
 
           def get_token_cities_total_revenue(corporation)
             corporation.tokens.sum do |token|
-              token.city.revenue[token.hex.tile.color]
+              token.city.revenue[token.hex.tile.color] || 0
             end
           end
         end

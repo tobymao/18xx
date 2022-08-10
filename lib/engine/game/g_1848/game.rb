@@ -636,9 +636,9 @@ module Engine
           super
         end
 
-        def sar
-          # SAR is used for graph to find adelaide (to connect to sydney for starting COM)
-          @sar ||= @corporations.find { |corporation| corporation.name == 'SAR' }
+        def dummy_corp
+          # dummy corp is used for graph to find adelaide (to connect to sydney for starting COM)
+          @dummy_corp ||= Engine::Corporation.new(name: 'Dummy Corp', sym: 'Dummy Corp', tokens: [], coordinates: 'G6')
         end
 
         def tasmania
@@ -659,8 +659,8 @@ module Engine
 
         def check_for_sydney_adelaide_connection
           graph = Graph.new(self, home_as_token: true, no_blocking: true)
-          graph.compute(sar)
-          graph.reachable_hexes(sar).include?(sydney)
+          graph.compute(dummy_corp)
+          graph.reachable_hexes(dummy_corp).include?(sydney)
         end
 
         def event_com_connected!
