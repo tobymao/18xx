@@ -11,7 +11,7 @@ module Engine
     module G1848
       class Game < Game::Base
         attr_reader :sydney_adelaide_connected, :boe, :private_closed_triggered, :take_out_loan_triggered,
-                    :can_buy_trains
+                    :can_buy_trains, :com_can_operate
 
         include_meta(G1848::Meta)
         include Map
