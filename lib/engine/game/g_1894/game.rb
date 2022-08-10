@@ -100,7 +100,7 @@ module Engine
                     name: 'Green',
                     on: '3',
                     train_limit: 4,
-                    tiles: %i[yellow green],
+                    tiles: %i[yellow green brown],
                     operating_rounds: 2,
                     status: ['can_buy_companies'],
                   },
@@ -303,10 +303,6 @@ module Engine
           corporation_by_id('PLM')
         end
 
-        # def belge
-        #   corporation_by_id('Belge')
-        # end
-
         def ouest
           corporation_by_id('Ouest')
         end
@@ -344,9 +340,11 @@ module Engine
           paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
-          french_starting_corporation = corporation_by_id(FRENCH_REGULAR_CORPORATIONS.sort_by(rand).take(1).first)
+          #french_starting_corporation = corporation_by_id(FRENCH_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
+          french_starting_corporation = corporation_by_id(%w[CAB Ouest Nord].sort_by{ rand }.take(1).first)
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
-          belgian_starting_corporation = corporation_by_id(BELGIAN_REGULAR_CORPORATIONS.sort_by(rand).take(1).first)
+          #belgian_starting_corporation = corporation_by_id(BELGIAN_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
+          belgian_starting_corporation = corporation_by_id('Belge')
           @log << "-- The Belgian major shareholding corporation is the #{belgian_starting_corporation.id}"
 
           remove_extra_companies([french_starting_corporation.id, belgian_starting_corporation.id])
@@ -378,11 +376,9 @@ module Engine
           hexes
         end
 
-        # def init_round_finished
-        #   @players.rotate!(@round.entity_index)
-        #   share_pool.transfer_shares(belge.ipo_shares.last.to_bundle, belge.owner)
-        #   float_corporation(belge)
-        # end
+        def init_round_finished
+          @players.rotate!(@round.entity_index)
+        end
 
         def assignment_tokens(assignment)
           return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
@@ -540,7 +536,7 @@ module Engine
           #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == AMIENS_HEX && from.color == :yellow
           #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == ROUEN_HEX && from.color == :yellow
           #return GREEN_CITY_TILES.include?(to.name) if from.hex.name == SQ_HEX && from.color == :yellow
-          return BROWN_CITY_TILES.include?(to.name) if from.hex.tile.name == CALAIS_HEX
+          #return BROWN_CITY_TILES.include?(to.name) if from.hex.tile.name == CALAIS_HEX
           return BROWN_CITY_14_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
@@ -580,7 +576,7 @@ module Engine
 
         def london_bonus(corporation, stops)
           london_bonus_city = hex_by_id(LONDON_BONUS_FERRY_SUPPLY_HEX).tile.cities.first
-          puts london_bonus_city.tokened_by?(corporation)
+
           return 0 if !london_bonus_city.tokened_by?(corporation) || !stops.any? { |s| s.hex.id == LONDON_HEX }
 
           get_route_max_value(corporation, stops, ignore_london=true)
@@ -688,20 +684,6 @@ module Engine
             company.close!
             @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company)
           end
-
-          # belgian_to_remove = companies.find_all { |company| company.value == 220 }
-          #   .sort_by { rand }
-          #   .take(1)
-
-          # to_remove = french_to_remove + belgian_to_remove
-
-          # to_remove.each do |company|
-          #   puts company.inspect
-          #   puts company.abilities.inspect
-          #   company.close!
-          #   @round.steps.find { |step| step.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company)
-          #   #@log << "Removing the #{company.name} company"
-          # end
         end
 
         # def remove_extra_trains
@@ -726,10 +708,6 @@ module Engine
         #   to_remove = @late_corporations.select { |c| c.id == 'F2' }
         #   @late_corporations.delete(to_remove)
         #   @log << 'Removing F2 late corporation'
-        # end
-
-        # def plm_corporation
-        #   @plm_corporation ||= corporation_by_id('PLM')
         # end
       end
     end

@@ -170,7 +170,7 @@ module Engine
             revenue: 30,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' GR without further payment. This private company may not be sold to any corporation, and does'\
-                  ' not exchange hands if the owning player loses the Presidency of the Belge.'\
+                  ' not exchange hands if the owning player loses the Presidency of the GR.'\
                   ' Closes when the GR operates.',
             abilities: [{ type: 'close', when: 'operated', corporation: 'GR' },
                         { type: 'no_buy' },
@@ -188,13 +188,13 @@ module Engine
             tokens: [0, 0, 80, 80, 120],
             max_ownership_percent: 60,
             coordinates: %w[B3 E6],
-            color: '#4682b4',
             abilities: [
               {
                 type: 'base',
                 description: 'Two home stations (Le Havre and Amiens)',
               },
             ],
+            color: '#4682b4',
           },
           {
             sym: 'Nord',
@@ -204,13 +204,13 @@ module Engine
             tokens: [0, 0, 80, 80, 120],
             max_ownership_percent: 60,
             coordinates: %w[E10 G14],
-            color: '#ff4040',
             abilities: [
               {
                 type: 'base',
-                description: 'Two home stations (Rouen and Lille)',
+                description: 'Two home stations (Arras and Charleroi)',
               },
             ],
+            color: '#ff4040',
           },
           {
             sym: 'GR',
@@ -231,6 +231,12 @@ module Engine
             tokens: [0, 0, 80, 80, 120],
             max_ownership_percent: 60,
             coordinates: %w[D3 H1],
+            abilities: [
+              {
+                type: 'base',
+                description: 'Two home stations (Rouen and Chartres)',
+              },
+            ],
             color: '#9c661f',
           },
           {
@@ -264,7 +270,6 @@ module Engine
             max_ownership_percent: 60,
             coordinates: 'I8',
             color: '#ff9966',
-            text_color: 'black',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -273,6 +278,7 @@ module Engine
                 hexes: ['I2'],
               },
             ],
+            text_color: 'black',
           },
           {
             sym: 'F1',

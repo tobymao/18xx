@@ -56,11 +56,6 @@ module Engine
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;label=B',
           },
-          # 'X3' => {
-          #   'count' => 1,
-          #   'color' => 'yellow',
-          #   'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=A',
-          # },
           'X4' => {
             'count' => 1,
             'color' => 'green',
@@ -184,7 +179,7 @@ module Engine
             ['E14'] => 'border=edge:1,type:mountain',
             ['F11'] => 'upgrade=cost:50,terrain:water;border=edge:4,type:mountain',
             ['F13'] => 'upgrade=cost:50,terrain:water;border=edge:0,type:mountain;border=edge:1,type:mountain;border=edge:2,type:mountain',
-            ['F15'] => 'city=revenue:0;label=B;stub=edge:3',
+            ['F15'] => 'city=revenue:0;label=B',
             #['F15'] => 'city=revenue:10;label=B;path=a:3,b:_0',
             #'border=edge:0,type:mountain;border=edge:2,type:mountain',
             ['G4'] => 'city=revenue:0;city=revenue:0;label=P',
