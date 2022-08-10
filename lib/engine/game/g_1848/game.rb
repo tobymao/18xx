@@ -52,6 +52,8 @@ module Engine
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
+        DISCARDED_TRAINS = :remove
+
         MARKET = [
           %w[0c
              70
