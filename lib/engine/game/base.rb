@@ -1840,22 +1840,26 @@ module Engine
       end
 
       def discountable_trains_for(corporation)
-        discountable_trains = @depot.depot_trains.select(&:discount)
+        discountable_trains = @depot.depot_trains.select { |train| train.discount || train.variants.any? { |_, v| v[:discount] } }
 
         corporation.trains.flat_map do |train|
           discountable_trains.flat_map do |discount_train|
+            discount_info = []
             discounted_price = discount_train.price(train)
-            next if discount_train.price == discounted_price
-
-            name = discount_train.name
-            discount_info = [[train, discount_train, name, discounted_price]]
+            if discount_train.price > discounted_price
+              name = discount_train.name
+              discount_info = [[train, discount_train, name, discounted_price]]
+            end
 
             # Add variants if any - they have same discount as base version
             discount_train.variants.each do |_, v|
               next if v[:name] == name
 
-              price = v[:price] - (discount_train.price - discounted_price)
-              discount_info << [train, discount_train, v[:name], price]
+              discounted_price = discount_train.price(train, variant: v)
+              if discount_train.price > discounted_price
+                price = v[:price] - (discount_train.price - discounted_price)
+                discount_info << [train, discount_train, v[:name], price]
+              end
             end
 
             discount_info

@@ -50,6 +50,10 @@ module Engine
 
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+
+        DISCARDED_TRAINS = :remove
+
         MARKET = [
           %w[0c
              70
@@ -271,13 +275,13 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
-            num: 999,
+            num: 20,
             variants: [
               {
                 name: 'D',
                 distance: 999,
                 price: 1100,
-                num: 999,
+                num: 20,
                 discount: { '4' => 300, '5' => 300, '6' => 300 },
               },
             ],
@@ -287,7 +291,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 200,
-            num: 999,
+            num: 10,
             available_on: '5',
           },
         ].freeze
@@ -797,7 +801,7 @@ module Engine
               break
             end
             loan = @loans.first
-            take_loan(entity, loan, ebuy)
+            take_loan(entity, loan, ebuy: ebuy)
             remaining -= loan.amount
           end
         end
@@ -806,7 +810,8 @@ module Engine
         def visited_stops(route)
           modified_guage_changes = get_modified_guage_distance(route)
           added_stops = modified_guage_changes.positive? ? Array.new(modified_guage_changes) { Engine::Part::City.new('0') } : []
-          super + added_stops
+          route_stops = super
+          route.train.name == '2E' ? route_stops : route_stops + added_stops
         end
 
         def check_distance(route, visits, _train = nil)
@@ -920,7 +925,7 @@ module Engine
         def ghan_visited?(visited_node)
           return false unless visited_node
 
-          GHAN_HEXES.include?(visited_node.hex.name)
+          GHAN_HEXES.include?(visited_node&.hex&.name)
         end
 
         def entity_can_use_company?(entity, company)

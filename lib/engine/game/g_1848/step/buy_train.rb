@@ -82,6 +82,14 @@ module Engine
 
             [train.price, train.price]
           end
+
+          def can_ebuy_sell_shares?(_entity)
+            false
+          end
+
+          def must_take_loan?(_entity)
+            true
+          end
         end
       end
     end
