@@ -634,7 +634,11 @@ module Engine
         actions.each.with_index do |action, index|
           case action['type']
           when 'undo'
-            undo_to = action['action_id'] || filtered_actions.rindex { |a| a && a['type'] != 'message' } || 0
+            undo_to = if (id = action['action_id'])
+                        id.zero? ? 0 : actions.index { |a| a['id'] == action['action_id'] } + 1
+                      else
+                        filtered_actions.rindex { |a| a && a['type'] != 'message' } || 0
+                      end
             active_undos << filtered_actions[undo_to...index].map.with_index do |a, i|
               next if !a || a['type'] == 'message'
 
