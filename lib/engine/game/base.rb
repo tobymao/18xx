@@ -570,7 +570,7 @@ module Engine
 
       def result
         result_players
-          .map { |p| [p.name, player_value(p)] }
+          .map { |p| [p.id, player_value(p)] }
           .sort_by { |_, v| v }
           .reverse
           .to_h
@@ -1179,14 +1179,19 @@ module Engine
         (price * (100.0 - self.class::DISCARDED_TRAIN_DISCOUNT.to_f) / 100.0).ceil.to_i
       end
 
-      def end_game!
+      def end_game!(player_initiated: false)
         return if @finished
 
         @finished = true
+        @ended_by_player = player_initiated
         store_player_info
         @round_counter += 1
-        scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
+        scores = result.map { |id, value| "#{@players.find { |p| p.id == id.to_i }&.name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
+      end
+
+      def manually_ended?
+        @ended_by_player
       end
 
       def revenue_for(route, stops)

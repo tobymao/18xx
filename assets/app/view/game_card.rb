@@ -250,11 +250,12 @@ module View
           render_time_or_date('created_at'),
         ])
       elsif %w[finished archived].include?(@gdata['status'])
-        r_elm = @gdata['result'].sort_by { |_, v| -v }.map.with_index do |(name, score), index|
-          player = players.find { |p| p['name'] == name }
-          player_props = { attrs: { title: name } }
+        r_elm = @gdata['result'].sort_by { |_, v| -v }.map.with_index do |(id, score), index|
+          id = id.to_i
+          player = players.find { |p| p['id'] == id }
+          player_props = { attrs: { title: player['name'] } }
           h(:span, player_props, [
-            profile_link(player['id'], name.truncate),
+            profile_link(player['id'], player['name'].truncate),
             " #{score}",
             index == players.size - 1 ? '' : ', ',
           ])
@@ -263,7 +264,7 @@ module View
         children << h('div.inline', [h(:strong, 'Result: '), *r_elm])
         children << h('div.inline', { style: { float: 'right', paddingLeft: '1rem' } }, [
           h(:strong, 'Ended: '),
-          render_time_or_date('updated_at'),
+          render_time_or_date('finished_at'),
         ])
       elsif @gdata['round']
         children << h('div.inline', [

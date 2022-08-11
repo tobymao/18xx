@@ -378,7 +378,7 @@ module Engine
           current_order = @players.dup
           @players
             .sort_by { |p| [-player_value(p), current_order.index(p)] }
-            .to_h { |p| [p.name, player_value(p)] }
+            .to_h { |p| [p.id, player_value(p)] }
         end
 
         def purchasable_companies(entity = nil)

@@ -109,6 +109,10 @@ class Game < Base
       .shuffle(random: Random.new(settings['seed'] || 1))
   end
 
+  def finished_at_ts
+    finished_at&.to_i
+  end
+
   def archive!
     Action.where(game: self).delete
     update(status: 'archived')
@@ -141,6 +145,7 @@ class Game < Base
       loaded: include_actions,
       created_at: created_at_ts,
       updated_at: updated_at_ts,
+      finished_at: finished_at_ts,
     }
   end
 end

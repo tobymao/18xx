@@ -64,7 +64,7 @@ module View
                       user: @user)
       end
 
-      finished_games = (player_games['finished'] + player_games['archived']).sort_by { |game| -game['updated_at'] }
+      finished_games = (player_games['finished'] + player_games['archived']).sort_by { |game| -game['finished_at'] }
       unless finished_games.empty?
         children << h(GameRow,
                       header: "#{name} Finished Games",

@@ -878,7 +878,7 @@ module Engine
           return super unless two_player_variant
 
           @players.reject { |p| bot_player?(p) }
-            .map { |p| [p.name, player_value(p)] }
+            .map { |p| [p.id, player_value(p)] }
             .sort_by { |_, v| v }
             .reverse
             .to_h
