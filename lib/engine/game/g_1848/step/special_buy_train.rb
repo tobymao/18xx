@@ -7,6 +7,12 @@ module Engine
     module G1848
       module Step
         class SpecialBuyTrain < Engine::Step::SpecialBuyTrain
+          def actions(entity)
+            return [] unless @round.train_buy_available
+
+            super
+          end
+
           def process_buy_train(action)
             super
             # special ability is both on player and corporate, remove all left over abilities

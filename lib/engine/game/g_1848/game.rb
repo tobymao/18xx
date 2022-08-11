@@ -312,7 +312,7 @@ module Engine
             min_price: 1,
             max_price: 40,
             revenue: 5,
-            desc: 'No special abilities.',
+            desc: 'No special abilities. Can be bought for £1-£60',
           },
           {
             sym: 'P2',
@@ -322,7 +322,7 @@ module Engine
             max_price: 80,
             revenue: 10,
             desc: 'Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by'\
-                  ' a cactus icon). This power does not go away after a 5/5+ train is purchased.',
+                  ' a cactus icon). This power does not go away after a 5/5+ train is purchased. Can be bought for £1-£80 ',
             abilities: [
                     {
                       type: 'tile_lay',
@@ -356,7 +356,7 @@ module Engine
             max_price: 140,
             revenue: 15,
             desc: 'The Tasmania tile can be placed by a Public Company on one of the two blue hexes (I8, I10). This is in'\
-                  " addition to the company's normal build that turn.",
+                  " addition to the company's normal build that turn. Can be bought for £1-£140",
             abilities: [
                     {
                       type: 'tile_lay',
@@ -380,7 +380,7 @@ module Engine
             max_price: 220,
             revenue: 20,
             desc: 'Owning Public Company or its Director may receive a one-time discount of £100 on the purchase'\
-                  ' of a 2E (Ghan) train. This power does not go away after a 5/5+ train is purchased.',
+                  ' of a 2E (Ghan) train. This power does not go away after a 5/5+ train is purchased. Can be bought for £1-£220',
             abilities: [
                     {
                       type: 'train_discount',
