@@ -118,12 +118,13 @@ class Game < Base
     update(status: 'archived')
   end
 
-  def to_h(include_actions: false, player: nil)
+  def to_h(include_actions: false, player_id: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
+    actions_h.reject! { |a| a['type'] == 'message' } unless players.find { |p| p.id == player_id }
     settings_h = settings.to_h
 
     # Move user settings and hide from other players
-    user_settings_h = settings_h.dig('players', player.to_s)
+    user_settings_h = settings_h.dig('players', player_id.to_s)
     settings_h.delete('players')
 
     {
