@@ -18,10 +18,10 @@ module Engine
           data = JSON.parse(File.read(fixture))
           result = data['result']
 
-          expect(Engine::Game.load(data).maybe_raise!.result).to eq(result)
+          expect(Engine::Game.load(data).maybe_raise!.result.values.sort).to eq(result.values.sort)
 
           rungame = Engine::Game.load(data, strict: true).maybe_raise!
-          expect(rungame.result).to eq(result)
+          expect(rungame.result.values.sort).to eq(result.values.sort)
           expect(rungame.finished).to eq(true)
 
           # some fixtures want to test that the last N actions of the game replayed the same as in the fixture
@@ -87,7 +87,7 @@ module Engine
             auto_last = auto_game.actions.last.to_h
             auto_last['auto_actions']&.each { |a| a.delete('created_at') }
 
-            expect(spec_game.result).to eq(auto_game.result)
+            expect(spec_game.result.values.sort).to eq(auto_game.result.values.sort)
             expect(spec_last).to eq(auto_last)
           end
         end
