@@ -82,7 +82,8 @@ module Engine
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
-                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter
+                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter,
+                  :manually_ended
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -1187,15 +1188,11 @@ module Engine
         return if @finished
 
         @finished = true
-        @ended_by_player = player_initiated
+        @manually_ended = player_initiated
         store_player_info
         @round_counter += 1
         scores = result.map { |id, value| "#{@players.find { |p| p.id == id.to_i }&.name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
-      end
-
-      def manually_ended?
-        @ended_by_player
       end
 
       def revenue_for(route, stops)
