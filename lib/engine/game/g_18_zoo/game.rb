@@ -410,7 +410,7 @@ module Engine
             player_debt(player)
         end
 
-        def end_game!
+        def end_game!(player_initiated: false)
           return if @finished
 
           update_zoo_tickets_value(4, 0)
