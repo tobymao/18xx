@@ -1856,9 +1856,8 @@ module Engine
               next if v[:name] == name
 
               discounted_price = discount_train.price(train, variant: v)
-              if discount_train.price > discounted_price
-                price = v[:price] - (discount_train.price - discounted_price)
-                discount_info << [train, discount_train, v[:name], price]
+              if v[:price] > discounted_price
+                discount_info << [train, discount_train, v[:name], discounted_price]
               end
             end
 
