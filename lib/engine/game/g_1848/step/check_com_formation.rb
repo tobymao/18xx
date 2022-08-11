@@ -37,7 +37,7 @@ module Engine
           end
 
           def process_destination_connection(_action)
-            @game.log << 'Sydney and Adelaide are connected - COM may start operating'
+            @game.log << 'Sydney and Adelaide are connected - COM may start operating' unless @game.com_can_operate
             @game.event_com_connected!
           end
         end
