@@ -90,6 +90,24 @@ module Engine
           def must_take_loan?(_entity)
             true
           end
+
+          def round_state
+            super.merge(
+              {
+                train_buy_available: true,
+              }
+            )
+          end
+
+          def setup
+            @round.train_buy_available = true
+            super
+          end
+
+          def pass!
+            @round.train_buy_available = false
+            super
+          end
         end
       end
     end
