@@ -24,16 +24,15 @@ module Engine
           '5': 3,
         }.freeze
 
-        #        EXCHANGE_TOKENS = {
-        #          'FCM' => 3,
-        #          'MC' => 3,
-        #          'CHP' => 3,
-        #          'FNM' => 3,
-        #          'MIR' => 3,
-        #          'FCP' => 3,
-        #          'IRM' => 3,
-        #        }.freeze
-
+        EXCHANGE_TOKENS = {
+          'CPR' => 3,
+          'GNR' => 3,
+          'CMPS' => 3,
+          'SWW' => 3,
+          'SPS' => 3,
+          'ORNC' => 3,
+          'NP' => 3,
+        }.freeze
 
         STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18 P19 P20 P21
                                 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15 M16 M17 M18 M19 M20 M21 MA MB MC].freeze
@@ -61,9 +60,8 @@ module Engine
         P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
         # /TODO
 
-
         ASSIGNMENT_TOKENS = {
-          'forest' => '/icons/tree.svg'
+          'forest' => '/icons/tree.svg',
         }.freeze
 
         DOUBLE_HEX = %w[H19].freeze
@@ -142,13 +140,17 @@ module Engine
 
         MINOR_ASSOCIATIONS = {
           '1' => 'CPR',
-          '4' => 'GNR',
-          '5' => 'CMPS',
-          '7' => 'SWW',
-          '15' => 'NP',
-          '18' => 'SPS',
-          '19' => 'ORNC',
+          '5' => 'GNR',
+          '7' => 'CMPS',
+          '8' => 'SWW',
+          '17' => 'SPS',
+          '18' => 'ORNC',
+          '20' => 'NP',
         }.freeze
+
+        def home_token_counts_as_tile_lay?(_entity)
+          false
+        end
 
         def port_company?(entity)
           entity.id == 'P17' || entity.id == 'P18'
@@ -334,7 +336,7 @@ module Engine
             when Engine::Round::Stock
               G1822::Round::Choices.new(self, choose_step, round_num: @round.round_num)
             when Engine::Round::Operating
-              if  @phase.name.to_i >= 2
+              if @phase.name.to_i >= 2
                 @log << "-- #{round_description('Merger', @round.round_num)} --"
                 G1822PNW::Round::Merger.new(self, [
                   G1822PNW::Step::Merge,
@@ -425,7 +427,7 @@ module Engine
           @bidbox_minors_cache = []
 
           # Setup exchange token abilities for all corporations
-          # setup_exchange_tokens
+          setup_exchange_tokens
 
           # Setup all the destination tokens, icons and abilities
           # setup_destinations
@@ -441,7 +443,6 @@ module Engine
           minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
           minor_6, minors = minors.partition { |c| c.id == 'M6' }
           minors_assoc, minors = minors.partition { |c| MINOR_ASSOCIATIONS.key?(c.id[1..-1]) }
-
 
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
           private_1 = privates.find { |c| c.id == 'P1' }
@@ -657,11 +658,15 @@ module Engine
         end
 
         def associated_minors
-          @corporations.select { |c| c.floated? && MINOR_ASSOCIATIONS.include?(c.id)}
+          @corporations.select { |c| c.floated? && MINOR_ASSOCIATIONS.include?(c.id) }
         end
 
         def unassociated_minors
-          @corporations.select { |c| c.floated? && c.type == :minor && !MINOR_ASSOCIATIONS.include?(c.id)}
+          @corporations.select { |c| c.floated? && c.type == :minor && !MINOR_ASSOCIATIONS.include?(c.id) }
+        end
+
+        def associated_major(minor)
+          corporation_by_id(MINOR_ASSOCIATIONS[minor.id])
         end
 
         def forest?(tile)
@@ -670,7 +675,6 @@ module Engine
           end
           false
         end
-        
       end
     end
   end

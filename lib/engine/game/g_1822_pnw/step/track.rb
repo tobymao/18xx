@@ -42,6 +42,7 @@ module Engine
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             raise GameError, 'Cannot upgrade forests' if action.hex.assigned?('forest')
+
             super
           end
         end

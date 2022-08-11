@@ -14,12 +14,15 @@ module Engine
           include Engine::Step::ProgrammerMergerPass
 
           def actions(entity)
-            return [] if !entity.corporation? || entity != current_entity
+            return [] if !entity.corporation? || entity != current_entity || @merge_state == :done
+            return ['choose'] if @merge_state != :none
+            return ['merge'] if mergeable(entity).any?
 
-            actions = []
-            print ("AA:#{entity}")
-            actions << 'merge' if mergeable(entity).any?
-            actions
+            []
+          end
+
+          def setup
+            @merge_state = :none
           end
 
           def merge_name(_entity = nil)
@@ -31,142 +34,171 @@ module Engine
           end
 
           def mergeable(corporation)
-            print("mergable:#{@game.unassociated_minors.select { |m| @game.graph.connected_nodes(corporation)[m] }}")
-            @game.unassociated_minors.select { |m| @game.graph.connected_nodes(corporation)[m] }
+            @game.unassociated_minors.select do |m|
+              @game.graph.connected_nodes(corporation)[m.tokens.first.city] && !valid_par_prices(corporation, m).empty?
+            end
           end
 
+          def choice_name
+            case @merge_state
+            when :selecting_par
+              'Choose par value for new company'
+            when :selecting_shares
+              'Choose number of shares'
+            when :selecting_token
+              'What to do with the token'
+            end
+          end
 
-#            return [] if !corporation.floated? || !corporation.share_price.normal_movement?
+          def min_exchange_shares(par, minors_value, minors_cash)
+            ((minors_value - minors_cash - 1) / par).floor + 1
+          end
 
-#            @game.corporations.select do |target|
-#              target.floated? &&
-#              !@round.converts.include?(target) &&
-#                target.share_price.normal_movement? &&
-#                !target.share_price.acquisition? &&
-#                target != corporation &&
-#                target.total_shares != 10 &&
-#                target.total_shares == corporation.total_shares &&
-              # on 5 share merges ensure one player will have at least enough shares to take the presidency
-#              (target.total_shares != 5 || merged_max_share_holder(corporation, target) >= 40) &&
-#              owner_can_afford_extra_share(corporation, target)           
-#            end
+          def max_exchange_shares(par, minors_value, player_cash)
+            ((minors_value + [player_cash, (par - 1)].min) / par).floor
+          end
 
+          def possible_exchanged_shares(par, minors_cash, minors_value, player_cash)
+            (2..10).to_a.filter do |n|
+              n >= min_exchange_shares(par, minors_value,
+                                       minors_cash) && n <= max_exchange_shares(par, minors_value,
+                                                                                player_cash) && (6 * par) >= minors_value
+            end
+          end
 
-#          def merger_auto_pass_entity
-            # Buying and selling shares are done by other steps
-#            current_entity
-#         end
+          def can_par_at?(par, minors_cash, minors_value, player_cash)
+            return true unless possible_exchanged_shares(par, minors_cash, minors_value, player_cash).empty?
+          end
 
-#          def others_acted?
-#            !@round.converts.empty?
-#          end
+          def valid_par_prices(minor_one, minor_two)
+            minors_value = (minor_one.share_price.price + minor_two.share_price.price) * 2
+            minors_cash = minor_one.cash + minor_two.cash + 100
+            @game.stock_market.par_prices.map(&:price).sort.filter do |par|
+              can_par_at?(par, minors_cash, minors_value, minor_one.owner.cash)
+            end
+          end
 
-#          def process_convert(action)
-#            corporation = action.entity
-#            before = corporation.total_shares
-#            @game.convert(corporation)
-#            after = corporation.total_shares
-#            @log << "#{corporation.name} converts from #{before} to #{after} shares"
-
-#            tokens = corporation.tokens.size
-
-#            @round.tokens_needed =
-#              case after
-#              when 5
-#                tokens < 8 ? 1 : 0
-#              when 10
-#                [[8 - tokens, 0].max, 2].min
-#              else
-#                0
-#              end
-
-#            @round.converts << corporation
-#            @round.converted_price = corporation.share_price
-#            @round.converted = corporation
-#          end
-
-#          def new_share_price(corporation, target)
-#            new_price =
-#              if corporation.total_shares == 2
-#                corporation.share_price.price + target.share_price.price
-#              else
-#                (corporation.share_price.price + target.share_price.price) / 2
-#              end
-#            @game.find_share_price(new_price)
-#          end
+          def choices
+            choices = {}
+            case @merge_state
+            when :selecting_par
+              valid_par_prices(@associated_minor, @unassociated_minor).each do |par|
+                choices[par.to_s] = @game.format_currency(par)
+              end
+            when :selecting_shares
+              minors_value = (@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2
+              minors_cash = @associated_minor.cash + @unassociated_minor.cash + 100
+              player_cash = @associated_minor.owner.cash
+              possible_exchanged_shares(@selected_par, minors_cash, minors_value, player_cash).each do |shares|
+                money_difference = minors_value - (@selected_par * shares)
+                choices[shares.to_s] = if money_difference.zero?
+                                         "#{@associated_minor.owner.name} receives #{shares} shares"
+                                       elsif money_difference.positive?
+                                         "#{@associated_minor.owner.name} receives #{shares} shares and " \
+                                           "#{@game.format_currency(money_difference)}"
+                                       else
+                                         "#{@associated_minor.owner.name} receives #{shares} shares and pays " \
+                                           "#{@game.format_currency(-1 * money_difference)}"
+                                       end
+              end
+            when :selecting_token
+              choices['replace'] = 'Replace token on the map with an exchange token'
+              choices['exchange'] = 'Move an exchange token to available token area on the corporation chart'
+            end
+            choices
+          end
 
           def process_merge(action)
-            corporation = action.entity
-            target = action.corporation
+            @associated_minor = action.entity
+            @unassociated_minor = action.corporation
 
-            if !target || !mergeable(corporation).include?(target)
-              raise GameError, "Choose a corporation to merge with #{corporation.name}"
+            if !@unassociated_minor || !mergeable(@associated_minor).include?(@unassociated_minor)
+              raise GameError, "Choose a corporation to merge with #{@associated_minor.name}"
             end
 
-            receiving = []
+            @new_corporation = @game.associated_major(@associated_minor)
+            @player = @associated_minor.owner
 
-            if target.cash.positive?
-              receiving << @game.format_currency(target.cash)
-              target.spend(target.cash, corporation)
-            end
+            @game.log << "#{@associated_minor.name} and #{@unassociated_minor.name} merge into #{@new_corporation.name}"
 
-            companies = @game.transfer(:companies, target, corporation).map(&:name)
-            receiving << "companies (#{companies.join(', ')})" if companies.any?
+            transfer_posessions(@associated_minor, @new_corporation)
+            transfer_posessions(@unassociated_minor, @new_corporation)
 
-            loans = @game.transfer(:loans, target, corporation).size
-            receiving << "loans (#{loans})" if loans.positive?
-
-            trains = @game.transfer(:trains, target, corporation).map(&:name)
-            receiving << "trains (#{trains})" if trains.any?
-
-            remove_duplicate_tokens(corporation, target)
-            if tokens_above_limits?(corporation, target)
-              @game.log << "#{corporation.name} will be above token limit and must decide which tokens to remove"
-              @round.corporations_removing_tokens = [corporation, target]
-            else
-              tokens = move_tokens_to_surviving(corporation, target)
-              receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
-            end
-
-            initial_size = corporation.total_shares
-            share_price = new_share_price(corporation, target)
-            price = share_price.price
-            @game.stock_market.move(corporation, *share_price.coordinates)
-
-            @log << "#{corporation.name} merges with #{target.name} "\
-                    "at share price #{@game.format_currency(price)} receiving #{receiving.join(', ')}"
-
-            owner = corporation.owner
-            target_owner = target.owner
-
-            if initial_size == 2
-              @game.convert(corporation)
-              if owner != target_owner
-                owner.spend(price, corporation)
-                share = corporation.shares[0]
-                @log << "#{owner.name} buys a #{share.percent}% share for #{@game.format_currency(price)} "\
-                        "and receives the president's share"
-                @game.share_pool.buy_shares(target_owner, share.to_bundle, exchange: :free)
-              end
-            else
-              @game.migrate_shares(corporation, target)
-            end
-
-            @game.reset_corporation(target)
-
-            @round.entities.delete(target)
-
-            # Deleting the entity changes turn order, restore it.
-            @round.goto_entity!(corporation) unless @round.entities.empty?
-
-            @round.converted = corporation
-            @round.converted_price = corporation.share_price
-            @round.converts << corporation
+            @merge_state = :selecting_par
           end
 
-#          def log_pass(entity)
-#            super unless entity.share_price.liquidation?
-#          end
+          def process_choose(action)
+            case @merge_state
+
+            when :selecting_par
+              @selected_par = action.choice.to_i
+              @game.log << "#{@new_corporation.name} is parred at #{@game.format_currency(@selected_par)}"
+              @game.stock_market.set_par(@new_corporation, @game.stock_market.par_prices.find { |pp| pp.price == @selected_par })
+              @merge_state = :selecting_shares
+
+            when :selecting_shares
+              @selected_shares = action.choice.to_i
+              shares = @new_corporation.shares.first(@selected_shares - 1)
+              bundle = Engine::ShareBundle.new(shares)
+              @game.share_pool.transfer_shares(bundle, @player)
+
+              minors_value = (@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2
+              shares_value = (@selected_shares * @selected_par)
+
+              if shares_value > minors_value
+                @game.log << "#{@player.name} pays #{@game.format_currency(shares_value - minors_value)} " \
+                             "to get #{@selected_shares} shares of #{@new_corporation.name}"
+                @player.spend(shares_value - minors_value, @new_corporation)
+              elsif (@selected_shares * @selected_par) < minors_value
+                @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name} " \
+                             "and #{@game.format_currency(shares_value - minors_value)}"
+                @new_corporation.spend(minors_value - shares_value, @player)
+              else
+                @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name}"
+              end
+              @merge_state = :selecting_token
+
+            when :selecting_token
+              @selected_token = action.choice
+              city = @associated_minor.tokens[0].city
+              city.delete_token!(@associated_minor.tokens[0])
+              city.place_token(@new_corporation, @new_corporation.find_token_by_type, check_tokenable: false)
+              @game.log << "#{@new_corporation.name} replaces the #{@associated_minor.name} token in #{city.hex.name}"
+
+              city = @unassociated_minor.tokens[0].city
+              city.delete_token!(@unassociated_minor.tokens[0])
+              @game.move_exchange_token(@new_corporation)
+              if @selected_token == 'replace'
+                city.place_token(@new_corporation, @new_corporation.find_token_by_type, check_tokenable: false)
+                @game.log << "#{@new_corporation.name} replaces the #{@unassociated_minor.name} token in #{city.hex.name}"
+              else
+                @game.log << "#{@new_corporation.name} moves one token from exchange to available"
+              end
+              @game.graph.clear
+
+              @associated_minor.close!
+              @unassociated_minor.close!
+
+              @merge_state = :done
+            end
+          end
+
+          def transfer_posessions(minor, corporation)
+            receiving = []
+
+            if minor.cash.positive?
+              receiving << @game.format_currency(minor.cash)
+              minor.spend(minor.cash, corporation)
+            end
+
+            companies = @game.transfer(:companies, minor, corporation).map(&:name)
+            receiving << "companies (#{companies.join(', ')})" if companies.any?
+
+            trains = @game.transfer(:trains, minor, corporation).map(&:name)
+            receiving << "trains (#{trains})" if trains.any?
+
+            @game.log << "#{corporation.name} receives #{receiving.join(', ')} from #{minor.name}" unless receiving.empty?
+          end
 
           def mergeable_type(corporation)
             "Corporations that can merge with #{corporation.name}"
@@ -175,29 +207,6 @@ module Engine
           def show_other_players
             false
           end
-
-
-
-#          def merged_max_share_holder(corporation, target)
-#            corporation.player_share_holders
-#            .merge(target.player_share_holders) { |_key, corp, other| (corp + other) }
-#            .values.max
-#          end
-
-#          def owner_can_afford_extra_share(corporation, target)
-#            target.total_shares != 2 ||
-#            corporation.owner == target.owner ||
-#            (corporation.owner.cash >= new_share_price(corporation, target).price)
-#          end
-
-#          def round_state
-#            {
-#              converted: nil,
-#              converted_price: nil,
-#              tokens_needed: nil,
-#              converts: [],
-#            }
-#          end
         end
       end
     end

@@ -24,64 +24,12 @@ module Engine
           end
 
           def setup
-            print("merger:setup")
             super
             skip_steps
             next_entity! if finished?
           end
 
-          def after_process(action)
-            print("merger:after_process")
-#            return if action.free?
-#            return if active_step
-
-#            purchase_tokens(@converted) if @tokens_needed
-#            liquidate!(@converted) if @tokens_needed
-#            @converted = nil
-
-#            @game.players.each(&:unpass!)
-#            next_entity!
-          end
-
-          def purchase_tokens(corporation)
-            print("merger:process_tokens")
-#            return @tokens_needed = nil if @tokens_needed.zero?
-
-#            cost = token_cost(corporation)
-#            return if needs_money?(corporation)
-
-#            tokens_needed.times { corporation.tokens << Engine::Token.new(corporation, price: 0) }
-#            if cost.positive?
-#              corporation.spend(cost, @game.bank)
-#              @log << "#{corporation.name} pays #{@game.format_currency(cost)}"\
-#                      " for #{tokens_needed} token#{tokens_needed > 1 ? 's' : ''}"
-#            else
-#              @log << "#{corporation.name} acquires #{tokens_needed} token#{tokens_needed > 1 ? 's' : ''}"
-#            end
-#            @tokens_needed = nil
-          end
-
-          def needs_money?(corporation)
-            print("merger:needs_money?")
-#            tokens_needed && token_cost(corporation) > corporation.cash
-          end
-
-          def token_cost(corporation)
-            print("merger:token_cost")
-#            cost = (tokens_needed || 0) * 50
-#            cost -= 50 if corporation.companies.include?(@game.station_subsidy_private)
-#            cost
-          end
-
-          def liquidate!(corporation)
-            print("merger:liquidate!")
-#            @game.liquidate!(corporation)
-#            @log << "#{corporation.name} cannot purchase required tokens and liquidates"
-#            @tokens_needed = nil
-          end
-
           def next_entity!
-            print("merger:next_entity!")
             next_entity_index! if @entities.any?
             return if @entity_index.zero?
 
@@ -90,10 +38,6 @@ module Engine
 
             skip_steps
             next_entity! if finished?
-          end
-
-          def entities
-            @entities
           end
         end
       end
