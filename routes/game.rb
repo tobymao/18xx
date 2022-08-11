@@ -204,6 +204,7 @@ class Api
 
     if engine.finished
       game.result = engine.result
+      game.finished_at = Time.now
       game.status = 'finished'
     else
       game.result = {}
