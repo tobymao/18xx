@@ -529,13 +529,17 @@ module Engine
           # setup_ndem
         end
 
+        def corp_id_from_company_id(id)
+          id[1..-1]
+        end
+
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
         def setup_companies
           @companies.sort_by! { rand }
 
           minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
           minor_6, minors = minors.partition { |c| c.id == 'M6' }
-          minors_assoc, minors = minors.partition { |c| MINOR_ASSOCIATIONS.key?(c.id[1..-1]) }
+          minors_assoc, minors = minors.partition { |c| MINOR_ASSOCIATIONS.key?(corp_id_from_company_id(c.id)) }
 
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
           private_1 = privates.find { |c| c.id == 'P1' }
@@ -680,7 +684,13 @@ module Engine
           revenue
         end
 
+        def legal_leavenworth_tile(hex, tile)
+          @leavenworth_yellow_tiles ||= %w[5 6 57]
+          hex.name == 'H19' && @leavenworth_yellow_tiles.include?(tile.name)
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
+          return true if legal_leavenworth_tile(from.hex, to) && from.color == :white
           return true if from.color == 'blue' && to.color == 'blue'
 
           super
@@ -763,10 +773,7 @@ module Engine
         end
 
         def forest?(tile)
-          tile.parts.each do |part|
-            return true if part.is_a?(Engine::Part::Upgrade) && (part.terrains[0] == :forest)
-          end
-          false
+          tile.terrain.include?(:forest)
         end
       end
     end

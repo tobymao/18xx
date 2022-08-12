@@ -73,7 +73,7 @@ module Engine
           def valid_par_prices(minor_one, minor_two)
             minors_value = (minor_one.share_price.price + minor_two.share_price.price) * 2
             minors_cash = minor_one.cash + minor_two.cash + 100
-            @game.stock_market.par_prices.map(&:price).sort.filter do |par|
+            @game.stock_market.par_prices.map(&:price).sort.select do |par|
               # 50 is valid for par for minors, but cannot be used here
               par != 50 && can_par_at?(par, minors_cash, minors_value, minor_one.owner.cash)
             end
