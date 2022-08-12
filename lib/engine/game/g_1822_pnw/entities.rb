@@ -276,74 +276,125 @@ module Engine
             color: nil,
           },
           {
-            name: 'P14-Lumber Baron',
+            name: 'P14-Lumber Baron (2x Timber Value)',
             sym: 'P14',
             value: 0,
             revenue: 10,
-            desc: 'Lumber Baron Description',
+            desc: 'MAJOR/MINOR, Phase 3. The Lumber Baron private increases '\
+                  'the payout of each timber track traversed by a single '\
+                  'train from $10 to $20. Maintains all of the timber trade '\
+                  'connection requirements. Once acquired by a company '\
+                  'this private no longer pays its revenue.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P15-Paper Mill',
+            name: 'P15-Paper Mill (City Revenue)',
             sym: 'P15',
             value: 0,
             revenue: 10,
-            desc: 'Paper Mill Description',
+            desc: 'MAJOR/MINOR, Phase 3. Close this private to place the '\
+                  'special Paper Mill token on any city tile that is '\
+                  'connected to an adjacent Timber hex. The Paper Mill '\
+                  'token adds $10 to a single train starting in phase 3 and '\
+                  '$30 starting in phase 5. Can be used with E-train and '\
+                  'Mail Contract.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P16-Pacific Portage Company',
+            name: 'P16-Pacific Portage Company (Special Tile Placement)',
             sym: 'P16',
             value: 0,
             revenue: 10,
-            desc: 'Pacific Portage Company Description',
+            desc: 'MAJOR/MINOR, Phase 2. Rotate this private to place '\
+                  'one or both special tiles (PNW1, PNW2) in any blue '\
+                  'water hex on the map. This tile lay replaces a '\
+                  'company\'s normal tile lay. The owning company may '\
+                  'run a train across the special tiles for free. If any other '\
+                  'train company uses the tiles, they subtract $10 from '\
+                  'their run for each special tile crossed. The owning '\
+                  'company receives $10 per special track used from the '\
+                  'bank. Once rotated, this private no longer pays revenue '\
+                  'to the company.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P17-Ski Haus',
+            name: 'P17-Ski Haus (Route Enhancement)',
             sym: 'P17',
             value: 0,
             revenue: 10,
-            desc: 'Ski Haus Description',
+            desc: 'MAJOR/MINOR, Phase 5. Close this private to place '\
+                  'the special Ski Haus token on any piece of track laid '\
+                  'over a mountain pass hex. This token provides an '\
+                  'additional $30 to a route that runs through this hex. A '\
+                  'mountain pass hex is any hex that includes the '\
+                  'mountain symbol AND a build cost. Revenue is NOT '\
+                  'added to an E-train.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P18-Boom Town',
+            name: 'P18-Boom Town (Special Tile Upgrade)',
             sym: 'P18',
             value: 0,
             revenue: 10,
-            desc: 'Boom Town Description',
+            desc: 'MAJOR/MINOR, Phase 3. Close this private to upgrade '\
+                  'any plain yellow track tile to the special boom town tile '\
+                  '(PNW3). This tile ignores any tile\'s normal tile '\
+                  'placement restrictions.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P19-Rockport Coal Mine',
+            name: 'P19-Rockport Coal Mine (Special Tile Placement)',
             sym: 'P19',
             value: 0,
             revenue: 10,
-            desc: 'Boom Town Description',
+            desc: 'MAJOR/MINOR, Phase 3. Rotate this private to use a track '\
+                  'action to place the Rockport Coal special tile (PNW4) in '\
+                  'any mountain hex. Only the owning company can run a '\
+                  'train through the city spot on the Rockport Coal special tile '\
+                  '(PNW4). Any company can pay the upgrade cost or use '\
+                  'building cubes to upgrade the Rockport Coal Special tile '\
+                  '(PNW4) to include the pass around route tile (PNW5). No '\
+                  'other private bonus can combine with this one. Once '\
+                  'rotated, this private no longer pays revenue to the '\
+                  'company.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P20-Backoom Negotiations',
+            name: 'P20-Backoom Negotiations (Minor Status Upgrade)',
             sym: 'P20',
             value: 0,
             revenue: 0,
-            desc: 'Backoom Negotiations Description',
+            desc: 'MAJOR/MINOR, Phase 2. When this private is '\
+                  'acquired by a non-associated minor company, choose an '\
+                  'associated minor company that is currently not operational '\
+                  'or in an auction box. That minor is removed from the game '\
+                  'and the minor that owns this private becomes the '\
+                  'associated minor for the major associated with the '\
+                  'discarded minor. The owning minor must still abide by all '\
+                  'merge requirements when forming the associated major '\
+                  'company and its location becomes the major’s new home '\
+                  'token location.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P21-Credit Mobilier',
+            name: 'P21-Credit Mobilier (Move Card/Exchange Token)',
             sym: 'P21',
             value: 0,
             revenue: 10,
-            desc: 'Credit Mobilier Description',
+            desc: 'MAJOR/MINOR, Phase 2. Allows the director of the '\
+                  'owning company to select one private company or minor '\
+                  'company from the relevant stack of certificates, excluding '\
+                  'those items currently in the bidding boxes, and move it to '\
+                  'the top or the bottom of the stack OR allows the director of '\
+                  'a major company to move a station token from exchange to '\
+                  'available. Closes when the power is exercised.',
             abilities: [],
             color: nil,
           },

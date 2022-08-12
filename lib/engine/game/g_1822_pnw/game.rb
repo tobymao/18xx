@@ -42,13 +42,34 @@ module Engine
 
         CURRENCY_FORMAT_STR = '$%d'
 
-        MARKET_TEXT = Base::MARKET_TEXT
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
+          par_1: :red,
+          par: :peach,
+        ).freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+          par_1: 'Par (Majors and Minors, Phases 2-7)',
+          par: 'Par (Minors only. Phases 1-7)',
+        )
+
         MARKET = [
-          %w[40 50px 55px 60px 65px 70px 75px 80px 90px 100px
+          %w[40 50p 55x 60x 65x 70x 75x 80x 90x 100x
              110 120 135 150 165 180 200 220 245 270 300 330 360
              400 450 500 550 600e],
         ].freeze
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price, < 2x share price ', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Minor company dividend > 0', '1 →'],
+            ['Each share sold (if sold by director)', '1 ←'],
+            ['One or more shares sold (if sold by non-director)', '1 ←'],
+            ['Corporation sold out at end of SR', '1 →'],
+          ]
+        end
 
         # TODO
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
@@ -148,6 +169,10 @@ module Engine
           '20' => 'NP',
         }.freeze
 
+        def reservation_corporations
+          corporations.reject { |c| c.type == :major }
+        end
+
         def home_token_counts_as_tile_lay?(_entity)
           false
         end
@@ -159,6 +184,79 @@ module Engine
         def cube_company?(entity)
           entity.id == 'P10' || entity.id == 'P11'
         end
+
+        PHASES = [
+          {
+            name: '1',
+            on: '',
+            train_limit: { minor: 2, major: 4 },
+            tiles: [:yellow],
+            status: ['minor_float_phase1'],
+            operating_rounds: 1,
+          },
+          {
+            name: '2',
+            on: %w[2 3],
+            train_limit: { minor: 2, major: 4 },
+            tiles: [:yellow],
+            status: %w[minor_float_phase2],
+            operating_rounds: 2,
+          },
+          {
+            name: '3',
+            on: '3',
+            train_limit: { minor: 2, major: 4 },
+            tiles: %i[yellow green],
+            status: %w[can_buy_trains minor_float_phase3on],
+            operating_rounds: 2,
+          },
+          {
+            name: '4',
+            on: '4',
+            train_limit: { minor: 1, major: 3 },
+            tiles: %i[yellow green],
+            status: %w[can_buy_trains minor_float_phase3on],
+            operating_rounds: 2,
+          },
+          {
+            name: '5',
+            on: '5',
+            train_limit: { minor: 1, major: 2 },
+            tiles: %i[yellow green brown],
+            status: %w[can_buy_trains
+                       can_acquire_minor_bidbox
+                       can_par
+                       minors_green_upgrade
+                       minor_float_phase3on],
+            operating_rounds: 2,
+          },
+          {
+            name: '6',
+            on: '6',
+            train_limit: { minor: 1, major: 2 },
+            tiles: %i[yellow green brown],
+            status: %w[can_buy_trains
+                       can_acquire_minor_bidbox
+                       can_par
+                       full_capitalisation
+                       minors_green_upgrade
+                       minor_float_phase3on],
+            operating_rounds: 2,
+          },
+          {
+            name: '7',
+            on: '7',
+            train_limit: { minor: 1, major: 2 },
+            tiles: %i[yellow green brown gray],
+            status: %w[can_buy_trains
+                       can_acquire_minor_bidbox
+                       can_par
+                       full_capitalisation
+                       minors_green_upgrade
+                       minor_float_phase3on],
+            operating_rounds: 2,
+          },
+        ].freeze
 
         TRAINS = [
           {
@@ -207,11 +305,6 @@ module Engine
             distance: 5,
             num: 2,
             price: 500,
-            events: [
-              {
-                'type' => 'close_concessions',
-              },
-            ],
           },
           {
             name: '6',
@@ -619,7 +712,7 @@ module Engine
         end
 
         def company_status_str(company)
-          index = bidbox_minors.index(company) || bidbox_concessions.index(company)
+          index = bidbox_minors.index(company) || bidbox_privates.index(company)
           return "Bid box #{index + 1}" if index
 
           nil

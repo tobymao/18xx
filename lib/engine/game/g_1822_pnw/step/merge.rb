@@ -59,11 +59,11 @@ module Engine
           end
 
           def possible_exchanged_shares(par, minors_cash, minors_value, player_cash)
-            (2..10).to_a.filter do |n|
-              n >= min_exchange_shares(par, minors_value,
-                                       minors_cash) && n <= max_exchange_shares(par, minors_value,
-                                                                                player_cash) && (6 * par) >= minors_value
-            end
+            return [] if (6 * par) < minors_value
+
+            min_shares = min_exchange_shares(par, minors_value, minors_cash)
+            max_shares = max_exchange_shares(par, minors_value, player_cash)
+            (2..10).to_a.select { |n| n >= min_shares && n <= max_shares }
           end
 
           def can_par_at?(par, minors_cash, minors_value, player_cash)
@@ -74,7 +74,8 @@ module Engine
             minors_value = (minor_one.share_price.price + minor_two.share_price.price) * 2
             minors_cash = minor_one.cash + minor_two.cash + 100
             @game.stock_market.par_prices.map(&:price).sort.filter do |par|
-              can_par_at?(par, minors_cash, minors_value, minor_one.owner.cash)
+              # 50 is valid for par for minors, but cannot be used here
+              par != 50 && can_par_at?(par, minors_cash, minors_value, minor_one.owner.cash)
             end
           end
 
@@ -112,7 +113,7 @@ module Engine
             @associated_minor = action.entity
             @unassociated_minor = action.corporation
 
-            if !@unassociated_minor || !mergeable(@associated_minor).include?(@unassociated_minor)
+            if !@game.loading || !@unassociated_minor || !mergeable(@associated_minor).include?(@unassociated_minor)
               raise GameError, "Choose a corporation to merge with #{@associated_minor.name}"
             end
 
@@ -127,59 +128,68 @@ module Engine
             @merge_state = :selecting_par
           end
 
+          def process_select_par(action)
+            @selected_par = action.choice.to_i
+            @game.log << "#{@new_corporation.name} is parred at #{@game.format_currency(@selected_par)}"
+            @game.stock_market.set_par(@new_corporation, @game.stock_market.par_prices.find { |pp| pp.price == @selected_par })
+            @merge_state = :selecting_shares
+          end
+
+          def process_select_shares(action)
+            @selected_shares = action.choice.to_i
+            shares = @new_corporation.shares.first(@selected_shares - 1)
+            bundle = Engine::ShareBundle.new(shares)
+            @game.share_pool.transfer_shares(bundle, @player)
+
+            minors_value = (@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2
+            shares_value = (@selected_shares * @selected_par)
+
+            if shares_value > minors_value
+              @game.log << "#{@player.name} pays #{@game.format_currency(shares_value - minors_value)} " \
+                           "to get #{@selected_shares} shares of #{@new_corporation.name}"
+              @player.spend(shares_value - minors_value, @new_corporation)
+            elsif (@selected_shares * @selected_par) < minors_value
+              @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name} " \
+                           "and #{@game.format_currency(minors_value - shares_value)}"
+              @new_corporation.spend(minors_value - shares_value, @player)
+            else
+              @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name}"
+            end
+            @merge_state = :selecting_token
+          end
+
+          def process_select_token(action)
+            @selected_token = action.choice
+            city = @associated_minor.tokens[0].city
+            city.delete_token!(@associated_minor.tokens[0])
+            city.place_token(@new_corporation, @new_corporation.find_token_by_type, check_tokenable: false)
+            @game.log << "#{@new_corporation.name} replaces the #{@associated_minor.name} token in #{city.hex.name}"
+
+            city = @unassociated_minor.tokens[0].city
+            city.delete_token!(@unassociated_minor.tokens[0])
+            @game.move_exchange_token(@new_corporation)
+            if @selected_token == 'replace'
+              city.place_token(@new_corporation, @new_corporation.find_token_by_type, check_tokenable: false)
+              @game.log << "#{@new_corporation.name} replaces the #{@unassociated_minor.name} token in #{city.hex.name}"
+            else
+              @game.log << "#{@new_corporation.name} moves one token from exchange to available"
+            end
+            @game.graph.clear
+
+            @associated_minor.close!
+            @unassociated_minor.close!
+
+            @merge_state = :done
+          end
+
           def process_choose(action)
             case @merge_state
-
             when :selecting_par
-              @selected_par = action.choice.to_i
-              @game.log << "#{@new_corporation.name} is parred at #{@game.format_currency(@selected_par)}"
-              @game.stock_market.set_par(@new_corporation, @game.stock_market.par_prices.find { |pp| pp.price == @selected_par })
-              @merge_state = :selecting_shares
-
+              process_select_par(action)
             when :selecting_shares
-              @selected_shares = action.choice.to_i
-              shares = @new_corporation.shares.first(@selected_shares - 1)
-              bundle = Engine::ShareBundle.new(shares)
-              @game.share_pool.transfer_shares(bundle, @player)
-
-              minors_value = (@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2
-              shares_value = (@selected_shares * @selected_par)
-
-              if shares_value > minors_value
-                @game.log << "#{@player.name} pays #{@game.format_currency(shares_value - minors_value)} " \
-                             "to get #{@selected_shares} shares of #{@new_corporation.name}"
-                @player.spend(shares_value - minors_value, @new_corporation)
-              elsif (@selected_shares * @selected_par) < minors_value
-                @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name} " \
-                             "and #{@game.format_currency(shares_value - minors_value)}"
-                @new_corporation.spend(minors_value - shares_value, @player)
-              else
-                @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name}"
-              end
-              @merge_state = :selecting_token
-
+              process_select_shares(action)
             when :selecting_token
-              @selected_token = action.choice
-              city = @associated_minor.tokens[0].city
-              city.delete_token!(@associated_minor.tokens[0])
-              city.place_token(@new_corporation, @new_corporation.find_token_by_type, check_tokenable: false)
-              @game.log << "#{@new_corporation.name} replaces the #{@associated_minor.name} token in #{city.hex.name}"
-
-              city = @unassociated_minor.tokens[0].city
-              city.delete_token!(@unassociated_minor.tokens[0])
-              @game.move_exchange_token(@new_corporation)
-              if @selected_token == 'replace'
-                city.place_token(@new_corporation, @new_corporation.find_token_by_type, check_tokenable: false)
-                @game.log << "#{@new_corporation.name} replaces the #{@unassociated_minor.name} token in #{city.hex.name}"
-              else
-                @game.log << "#{@new_corporation.name} moves one token from exchange to available"
-              end
-              @game.graph.clear
-
-              @associated_minor.close!
-              @unassociated_minor.close!
-
-              @merge_state = :done
+              process_select_token(action)
             end
           end
 
@@ -192,10 +202,10 @@ module Engine
             end
 
             companies = @game.transfer(:companies, minor, corporation).map(&:name)
-            receiving << "companies (#{companies.join(', ')})" if companies.any?
+            receiving << "companies (#{companies.join(', ')})" unless companies.empty?
 
             trains = @game.transfer(:trains, minor, corporation).map(&:name)
-            receiving << "trains (#{trains})" if trains.any?
+            receiving << "trains (#{trains})" unless trains.empty?
 
             @game.log << "#{corporation.name} receives #{receiving.join(', ')} from #{minor.name}" unless receiving.empty?
           end
