@@ -378,7 +378,7 @@ module Engine
           current_order = @players.dup
           @players
             .sort_by { |p| [-player_value(p), current_order.index(p)] }
-            .to_h { |p| [p.name, player_value(p)] }
+            .to_h { |p| [p.id, player_value(p)] }
         end
 
         def purchasable_companies(entity = nil)
@@ -410,7 +410,7 @@ module Engine
             player_debt(player)
         end
 
-        def end_game!
+        def end_game!(player_initiated: false)
           return if @finished
 
           update_zoo_tickets_value(4, 0)

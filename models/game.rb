@@ -109,17 +109,22 @@ class Game < Base
       .shuffle(random: Random.new(settings['seed'] || 1))
   end
 
+  def finished_at_ts
+    finished_at&.to_i
+  end
+
   def archive!
     Action.where(game: self).delete
     update(status: 'archived')
   end
 
-  def to_h(include_actions: false, player: nil)
+  def to_h(include_actions: false, player_id: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
+    actions_h.reject! { |a| a['type'] == 'message' } unless players.find { |p| p.id == player_id }
     settings_h = settings.to_h
 
     # Move user settings and hide from other players
-    user_settings_h = settings_h.dig('players', player.to_s)
+    user_settings_h = settings_h.dig('players', player_id.to_s)
     settings_h.delete('players')
 
     {
@@ -141,6 +146,7 @@ class Game < Base
       loaded: include_actions,
       created_at: created_at_ts,
       updated_at: updated_at_ts,
+      finished_at: finished_at_ts,
     }
   end
 end

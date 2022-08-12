@@ -436,7 +436,7 @@ module View
 
       create_hotseat(
         id: Time.now.to_i,
-        players: players.map { |name| { name: name } },
+        players: players.map.with_index { |name, i| { name: name, id: i } },
         title: game_params[:title],
         description: game_params[:description],
         min_players: game_params[:max_players],
