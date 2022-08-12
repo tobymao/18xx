@@ -100,7 +100,7 @@ module Engine
                     name: 'Green',
                     on: '3',
                     train_limit: 4,
-                    tiles: %i[yellow green brown],
+                    tiles: %i[yellow green],
                     operating_rounds: 2,
                     status: ['can_buy_companies'],
                   },
@@ -157,7 +157,7 @@ module Engine
                     distance: 4,
                     price: 300,
                     rusts_on: '7',
-                    num: 3,
+                    num: 4,
                     discount: { '3' => 70 },
                   },
                   {
@@ -340,8 +340,8 @@ module Engine
           paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
-          #french_starting_corporation = corporation_by_id(FRENCH_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
-          french_starting_corporation = corporation_by_id(%w[CAB Ouest Nord].sort_by{ rand }.take(1).first)
+          french_starting_corporation = corporation_by_id(FRENCH_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
+          #french_starting_corporation = corporation_by_id(%w[CAB Ouest Nord].sort_by{ rand }.take(1).first)
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
           #belgian_starting_corporation = corporation_by_id(BELGIAN_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
           belgian_starting_corporation = corporation_by_id('Belge')
