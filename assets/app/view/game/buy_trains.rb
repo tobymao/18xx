@@ -302,7 +302,7 @@ module View
             president_assist, _fee = @game.president_assisted_buy(@corporation, train, price)
             entity = @corporation
 
-            if [@corporation, @corporation.owner].include?(@selected_company&.owner)
+            if [@corporation, @corporation.owner].include?(@selected_company&.owner) && @step.respond_to?(:ability_timing)
               @game.abilities(@selected_company, :train_discount, time: @step.ability_timing) do |ability|
                 if ability.trains.include?(train.name)
                   price = ability.discounted_price(train, price)
