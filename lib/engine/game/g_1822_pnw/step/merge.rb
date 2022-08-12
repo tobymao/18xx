@@ -113,7 +113,7 @@ module Engine
             @associated_minor = action.entity
             @unassociated_minor = action.corporation
 
-            if !@game.loading || !@unassociated_minor || !mergeable(@associated_minor).include?(@unassociated_minor)
+            if !@game.loading && (!@unassociated_minor || !mergeable(@associated_minor).include?(@unassociated_minor))
               raise GameError, "Choose a corporation to merge with #{@associated_minor.name}"
             end
 
