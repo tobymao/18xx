@@ -71,6 +71,15 @@ module View
                       game_row_games: finished_games,
                       type: :personal,
                       user: @user)
+        stats = {}
+        finished_games.each do |game|
+          next if game['elo'].empty?
+
+          stats['overall'] ||= game['elo'][@user['name']]['overall']
+          stats[game['title']] ||= game['elo'][@user['name']]['title']
+        end
+
+        children << h(:div, stats.map { |k, v| h(:div, "#{k}: #{v}") })
       end
 
       children

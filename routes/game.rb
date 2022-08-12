@@ -205,6 +205,7 @@ class Api
     if engine.finished
       game.result = engine.result
       game.finished_at = Time.now
+      elo(engine)
       game.status = 'finished'
     else
       game.result = {}
@@ -231,5 +232,24 @@ class Api
       type: type,
       force: force,
     )
+  end
+
+  def elo(game)
+    return {} if game.manually_ended?
+
+    old_elo = {}
+    game.result_players.each do |p|
+      games = Game.user_games(p, status: %w[finished archived]).reject { |g| g.id == game.id }
+      # games = Game.user_games(p, status: %w[finished archived]).select { |g| !g.manually_ended && g.id != game.id }
+      warn games.first.inspect
+      warn games.find { |g| g.title == game.class.title }.inspect
+      next
+      old_elo[p] = {
+        overall: !games.empty? ? games.first.elo[p.id][:overall] : 0,
+        title: (g = games.find { |g| g.title == game.title }) ? g[p.id][:title] : 0,
+      }
+    end
+
+    new_elo = {}
   end
 end
