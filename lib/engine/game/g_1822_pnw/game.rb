@@ -696,28 +696,12 @@ module Engine
           super
         end
 
-        def payout_companies
+        def close_corporation(corporation, quiet: false)
           super
-          # Check on stock drop private
-          company = company_by_id('P16')
-          return unless company.owner.is_a?(Corporation)
+          return unless regional_railway?(corporation)
 
-          payment = 10
-          if company.owner.cash >= payment
-            @log << "#{company.owner.name} spends #{format_currency(payment)} because of #{company.name}"
-            company.owner.spend(payment, bank)
-          else
-            @log << "#{company.owner.name} cannot afford #{format_currency(payment)} for #{company.name}"
-            close_p16
-          end
-        end
-
-        def close_p16
-          company = company_by_id('P16')
-          @log << "#{company.name} closes"
-          old_price = company.owner.share_price
-          stock_market.move_left(company.owner)
-          log_share_price(company.owner, old_price)
+          company = company_by_id("M#{corporation.id}")
+          company.owner.companies.delete(company)
           company.close!
         end
 
@@ -766,6 +750,10 @@ module Engine
 
         def unassociated_minors
           @corporations.select { |c| c.floated? && c.type == :minor && !MINOR_ASSOCIATIONS.include?(c.id) }
+        end
+
+        def regionals
+          @corporations.select { |c| regional_railway?(c) }
         end
 
         def associated_major(minor)
