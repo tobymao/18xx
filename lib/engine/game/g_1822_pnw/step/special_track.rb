@@ -8,7 +8,6 @@ module Engine
       module Step
         class SpecialTrack < Engine::Game::G1822::Step::SpecialTrack
           def potential_tiles(entity, hex)
-            print('pt')
             tiles = super
             if @game.can_hold_builder_cubes?(hex.tile)
               cube_tile = @game.tile_by_id('BC-0')
