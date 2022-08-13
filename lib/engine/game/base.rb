@@ -838,9 +838,9 @@ module Engine
       end
 
       def process_to_action(id)
-        @raw_all_actions.each.with_index do |action, index|
-          next if index < (@last_processed_action || 0)
-          break if index >= id
+        @raw_all_actions.each do |action|
+          next if action['id'] <= (@raw_actions.last&.fetch('id') || 0)
+          break if action['id'] > id
 
           if action['skip']
             @raw_actions << action
