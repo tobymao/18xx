@@ -71,7 +71,7 @@ module Engine
                O4] => 'upgrade=cost:10,terrain:forest',
             %w[A16 G18 J17] => 'upgrade=cost:150,terrain:mountain',
             %w[G4 H5 I6] => 'upgrade=cost:100,terrain:mountain',
-            %w[H11] => 'city=revenue:20,slots:2;upgrade=cost:20;'\
+            %w[H11] => 'city=revenue:20,slots:2;upgrade=cost:20;border=edge:4,type:water,cost:75;'\
                        'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Sea',
             %w[H13] => 'border=edge:1,type:water,cost:75',
             %w[H19] => 'city=revenue:20,loc:center;town=revenue:10,loc:3;path=a:_0,b:_1',
