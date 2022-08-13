@@ -178,6 +178,8 @@ module Engine
 
             @associated_minor.close!
             @unassociated_minor.close!
+            @game.corporations.delete(@associated_minor)
+            @game.corporations.delete(@unassociated_minor)
 
             @merge_state = :done
           end
