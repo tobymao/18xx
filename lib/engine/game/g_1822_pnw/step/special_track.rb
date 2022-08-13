@@ -16,7 +16,7 @@ module Engine
             tiles
           end
 
-          def legal_tile_rotation?(_entity, _hex, tile)
+          def legal_tile_rotation?(_entity, hex, tile)
             return true if tile.id == 'BC-0'
             return true if @game.legal_leavenworth_tile(hex, tile)
 

@@ -71,15 +71,11 @@ module Engine
           ]
         end
 
-        # TODO
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
-        EXTRA_TRAIN_PERMANENTS = %w[2P LP 3/2P].freeze
-        PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
-        PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
+        EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
+        PRIVATE_MAIL_CONTRACTS = %w[P9].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
-        P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
-        # /TODO
 
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/tree.svg',
@@ -356,7 +352,7 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 1,
+            num: 2,
             price: 0,
           },
           {
@@ -381,13 +377,6 @@ module Engine
             ],
             num: 2,
             price: 0,
-          },
-          {
-            name: '3/2P',
-            distance: 3,
-            num: 1,
-            price: 0,
-            # Dividing by two takes place in revenue_for
           },
         ].freeze
 
@@ -513,9 +502,6 @@ module Engine
           # Randomize and setup the companies
           setup_companies
 
-          # Initialize the stock round choice for P7
-          @p7_choice = nil
-
           # Actual bidbox setup happens in the stock round.
           @bidbox_minors_cache = []
 
@@ -524,13 +510,14 @@ module Engine
 
           # Setup all the destination tokens, icons and abilities
           # setup_destinations
-
-          # Setup the NdeM
-          # setup_ndem
         end
 
         def corp_id_from_company_id(id)
           id[1..-1]
+        end
+
+        def company_id_from_corp_id(id)
+          "M#{id}"
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
@@ -557,25 +544,14 @@ module Engine
           @companies.concat(stack_3)
           @companies.concat(privates)
 
-          # Set the min bid on the Concessions and Minors
-          # @companies.each do |c|
-          #  c.min_price = case c.id[0]
-          #                when self.class::COMPANY_CONCESSION_PREFIX, self.class::COMPANY_MINOR_PREFIX
-          #                  c.value
-          #                else
-          #                  0
-          #                end
-          #  c.max_price = 10_000
-          # end
-
           # Setup company abilities
-          # @company_trains = {}
-          # @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
-          # @company_trains['P2'] = find_and_remove_train_by_id('2P-0', buyable: false)
-          # @company_trains['P3'] = find_and_remove_train_by_id('3/2P-0', buyable: false)
-          # @company_trains['P4'] = find_and_remove_train_by_id('LP-0', buyable: false)
-          # @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
-          # @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
+          @company_trains = {}
+          @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
+          @company_trains['P2'] = find_and_remove_train_by_id('2P-0', buyable: false)
+          @company_trains['P3'] = find_and_remove_train_by_id('LP-0', buyable: false)
+          @company_trains['P4'] = find_and_remove_train_by_id('LP-1', buyable: false)
+          @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
+          @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
         end
 
         # Stubbed out because this game doesn't it, but base 22 does
@@ -589,58 +565,8 @@ module Engine
           minors + majors
         end
 
-        def set_private_revenues
-          @companies.each do |c|
-            next unless c.owner
-
-            adjust_p7_revenue(c) if c.id == 'P7' && c.owner.corporation?
-          end
-        end
-
-        def adjust_p7_revenue(company)
-          company.revenue = self.class::P7_REVENUE[@phase.name.to_i]
-        end
-
-        def choices_entities
-          company = company_by_id('P7')
-          return [] unless company&.owner&.player?
-
-          [company.owner]
-        end
-
-        def company_choices_p7(company, time)
-          return {} if @p7_choice || !company.owner&.player? || time != :choose
-
-          choices = {}
-          choices['double'] = 'Double your actual cash holding when determining player turn order.'
-          choices
-        end
-
-        def company_made_choice_p7(company)
-          @p7_choice = company.owner
-          @log << "#{company.owner.name} chooses to double actual cash holding when determining player turn order."
-        end
-
-        def company_choices(company, time)
-          case company.id
-          when 'P7'
-            company_choices_p7(company, time)
-          else
-            {}
-          end
-        end
-
-        def company_made_choice(company, _choice, _time)
-          case company.id
-          when 'P7'
-            company_made_choice_p7(company)
-          end
-        end
-
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          adjust_p7_revenue(company) if company.id == 'P7'
-          company.revenue = -10 if company.id == 'P16'
           company.revenue = 0 if cube_company?(company)
         end
 
@@ -662,20 +588,34 @@ module Engine
           @p7_choice = nil
         end
 
-        def can_only_lay_plain_or_towns?(entity)
-          entity.id == 'P8'
+        def must_be_on_terrain?(_entity)
+          false
         end
 
-        def can_upgrade_one_phase_ahead?(entity)
-          entity.id == 'P8'
+        def can_only_lay_plain_or_towns?(_entity)
+          false
+          # Will be used for privates - not yet implemented in PNW
+          # entity.id == 'P8'
         end
 
-        def company_ability_extra_track?(company)
-          company.id == 'P9' || company.id == 'P17' || company.id == 'P18'
+        def can_upgrade_one_phase_ahead?(_entity)
+          false
+          # Will be used for privates - not yet implemented in PNW
+          # entity.id == 'P8'
+        end
+
+        def company_ability_extra_track?(_company)
+          false
+          # Will be used for privates - not yet implemented in PNW
+          # company.id == 'P9' || company.id == 'P17' || company.id == 'P18'
+        end
+
+        def choices_entities
+          []
         end
 
         def must_remove_town?(entity)
-          entity.id == 'P12' || entity.id == 'P13'
+          %w[P7 P8].include?(entity.id)
         end
 
         def revenue_for(route, stops)
@@ -696,29 +636,17 @@ module Engine
           super
         end
 
-        def payout_companies
+        def close_corporation(corporation, quiet: false)
           super
-          # Check on stock drop private
-          company = company_by_id('P16')
-          return unless company.owner.is_a?(Corporation)
-
-          payment = 10
-          if company.owner.cash >= payment
-            @log << "#{company.owner.name} spends #{format_currency(payment)} because of #{company.name}"
-            company.owner.spend(payment, bank)
-          else
-            @log << "#{company.owner.name} cannot afford #{format_currency(payment)} for #{company.name}"
-            close_p16
+          if associated_minor?(corporation)
+            major = associated_major(corporation)
+            hex_by_id(corporation.coordinates).tile.cities[0].add_reservation!(major)
+            @log << "#{major.name} reservation takes the place of #{corporation.name}"
+          elsif regional_railway?(corporation)
+            company = company_by_id(company_id_from_corp_id(corporation.id))
+            company.owner.companies.delete(company)
+            company.close!
           end
-        end
-
-        def close_p16
-          company = company_by_id('P16')
-          @log << "#{company.name} closes"
-          old_price = company.owner.share_price
-          stock_market.move_left(company.owner)
-          log_share_price(company.owner, old_price)
-          company.close!
         end
 
         def company_status_str(company)
@@ -751,7 +679,9 @@ module Engine
           current_builder_cubes(tile) < max_builder_cubes(tile)
         end
 
-        def tile_cost_with_discount(tile, _hex, _entity, _spender, base_cost)
+        def tile_cost_with_discount(tile, hex, _entity, _spender, base_cost)
+          return 20 if hex.id == 'H11' # Don't charge for the river hexside if this is Seattle
+
           [base_cost - (40 * current_builder_cubes(tile)), 0].max
         end
 
@@ -760,12 +690,21 @@ module Engine
           @regional_railways.include?(entity.id)
         end
 
+        def associated_minor?(entity)
+          MINOR_ASSOCIATIONS.include?(entity.id)
+        end
+
         def associated_minors
           @corporations.select { |c| c.floated? && MINOR_ASSOCIATIONS.include?(c.id) }
         end
 
         def unassociated_minors
           @corporations.select { |c| c.floated? && c.type == :minor && !MINOR_ASSOCIATIONS.include?(c.id) }
+        end
+
+        def regionals
+          # Not cached because @corporations can change
+          @corporations.select { |c| regional_railway?(c) }
         end
 
         def associated_major(minor)

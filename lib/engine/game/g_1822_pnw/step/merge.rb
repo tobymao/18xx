@@ -72,7 +72,7 @@ module Engine
 
           def valid_par_prices(minor_one, minor_two)
             minors_value = (minor_one.share_price.price + minor_two.share_price.price) * 2
-            minors_cash = minor_one.cash + minor_two.cash + 100
+            minors_cash = minor_one.cash + minor_two.cash
             @game.stock_market.par_prices.map(&:price).sort.select do |par|
               # 50 is valid for par for minors, but cannot be used here
               par != 50 && can_par_at?(par, minors_cash, minors_value, minor_one.owner.cash)
@@ -88,7 +88,7 @@ module Engine
               end
             when :selecting_shares
               minors_value = (@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2
-              minors_cash = @associated_minor.cash + @unassociated_minor.cash + 100
+              minors_cash = @associated_minor.cash + @unassociated_minor.cash
               player_cash = @associated_minor.owner.cash
               possible_exchanged_shares(@selected_par, minors_cash, minors_value, player_cash).each do |shares|
                 money_difference = minors_value - (@selected_par * shares)
@@ -178,6 +178,8 @@ module Engine
 
             @associated_minor.close!
             @unassociated_minor.close!
+            @game.corporations.delete(@associated_minor)
+            @game.corporations.delete(@unassociated_minor)
 
             @merge_state = :done
           end

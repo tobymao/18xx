@@ -1094,11 +1094,11 @@ module Engine
             type: 'major',
             float_percent: 20,
             always_market_price: true,
-            coordinates: 'D11',
+            coordinates: 'D23',
             color: '#fab506',
             text_color: 'black',
             reservation_color: nil,
-            destination_coordinates: 'D23',
+            destination_coordinates: 'D11',
             destination_icon: '1822_pnw/GNR_DEST',
           },
           {
