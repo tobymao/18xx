@@ -698,11 +698,15 @@ module Engine
 
         def close_corporation(corporation, quiet: false)
           super
-          return unless regional_railway?(corporation)
-
-          company = company_by_id("M#{corporation.id}")
-          company.owner.companies.delete(company)
-          company.close!
+          if associated_minor?(corporation)
+            major = associated_major(corporation)
+            hex_by_id(corporation.coordinates).tile.cities[0].add_reservation!(major)
+            @log << "#{major.name} reservation takes the place of #{corporation.name}"
+          elsif regional_railway?(corporation)
+            company = company_by_id("M#{corporation.id}")
+            company.owner.companies.delete(company)
+            company.close!
+          end
         end
 
         def company_status_str(company)
@@ -742,6 +746,10 @@ module Engine
         def regional_railway?(entity)
           @regional_railways ||= %w[A B C].freeze
           @regional_railways.include?(entity.id)
+        end
+
+        def associated_minor?(entity)
+          MINOR_ASSOCIATIONS.include?(entity.id)
         end
 
         def associated_minors
