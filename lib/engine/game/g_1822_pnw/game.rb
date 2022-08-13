@@ -615,7 +615,7 @@ module Engine
         end
 
         def must_remove_town?(entity)
-          entity.id == 'P7' || entity.id == 'P8'
+          %w[P7 P8].include?(entity.id)
         end
 
         def revenue_for(route, stops)
