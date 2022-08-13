@@ -48,8 +48,12 @@ module Engine
 
           def get_token_cities_total_revenue(corporation)
             corporation.tokens.sum do |token|
-              token.city.revenue[token.hex.tile.color] || 0
+              token.city.revenue[phase_color] || 0
             end
+          end
+
+          def phase_color
+            @game.phase.current[:tiles].last
           end
         end
       end
