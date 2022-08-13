@@ -134,7 +134,7 @@ class Api < Roda
       halt(404, 'Game not found') unless (game = Game[id])
 
       pin = game.settings['pin']
-      render(titles: [game.title], pin: pin, game_data: pin ? game.to_h(include_actions: true) : game.to_h)
+      render(titles: [game.title], pin: pin, game_data: pin ? game.to_h(include_actions: true, logged_in_user_id: user&.id) : game.to_h)
     end
   end
 

@@ -9,7 +9,7 @@ class Api
 
         # '/api/game/<game_id>/'
         r.is do
-          game_data = game.to_h(include_actions: true, player_id: user&.id)
+          game_data = game.to_h(include_actions: true, logged_in_user_id: user&.id)
 
           game_data
         end

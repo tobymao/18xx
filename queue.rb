@@ -62,7 +62,7 @@ MessageBus.subscribe '/turn' do |msg|
 
   html = ASSETS.html(
     'assets/app/mail/turn.rb',
-    game_data: game.to_h(include_actions: true),
+    game_data: game.to_h(include_actions: true, logged_in_user_id: users.first.id),
     game_url: data['game_url'],
   )
 
