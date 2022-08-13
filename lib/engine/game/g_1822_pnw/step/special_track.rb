@@ -8,6 +8,7 @@ module Engine
       module Step
         class SpecialTrack < Engine::Game::G1822::Step::SpecialTrack
           def potential_tiles(entity, hex)
+            print('pt')
             tiles = super
             if @game.can_hold_builder_cubes?(hex.tile)
               cube_tile = @game.tile_by_id('BC-0')
@@ -16,7 +17,7 @@ module Engine
             tiles
           end
 
-          def legal_tile_rotation?(_entity, _hex, tile)
+          def legal_tile_rotation?(_entity, hex, tile)
             return true if tile.id == 'BC-0'
             return true if @game.legal_leavenworth_tile(hex, tile)
 

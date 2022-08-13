@@ -13,7 +13,7 @@ module Engine
 
         GAME_SUBTITLE = nil
         GAME_DESIGNER = 'Ken Kuhn'.freeze
-        GAME_IMPLEMENTER = 'Christopher Giroir'.freeze
+        GAME_IMPLEMENTER = 'Michael Alexander'.freeze
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822PNW'.freeze
         GAME_LOCATION = 'Pacific Northwest'.freeze
         GAME_PUBLISHER = :all_aboard_games
