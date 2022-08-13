@@ -739,7 +739,9 @@ module Engine
           current_builder_cubes(tile) < max_builder_cubes(tile)
         end
 
-        def tile_cost_with_discount(tile, _hex, _entity, _spender, base_cost)
+        def tile_cost_with_discount(tile, hex, _entity, _spender, base_cost)
+          return 20 if hex.id == 'H11' # Don't charge for the river hexside if this is Seattle
+
           [base_cost - (40 * current_builder_cubes(tile)), 0].max
         end
 
