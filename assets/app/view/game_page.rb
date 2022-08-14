@@ -66,9 +66,10 @@ module View
       game_id = @game_data['id']
       actions = @game_data['actions']
       @last_action_id = actions&.last&.fetch('id') || 0
+      last_processed_action_id = @game&.raw_actions&.last&.fetch('id') || 0
       return if game_id == @game&.id &&
         (@game.exception ||
-         (!cursor && @game.last_game_action_id == @last_action_id) ||
+         (!cursor && last_processed_action_id == @last_action_id) ||
          (cursor == @game.last_game_action_id))
 
       return @game.process_to_action(cursor) if game_id == @game&.id && cursor && cursor > @game.last_game_action_id
