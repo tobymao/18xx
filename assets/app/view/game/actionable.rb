@@ -96,6 +96,7 @@ module View
         if game.finished
           @game_data[:result] = game.result
           @game_data[:finished_at] = Time.now.to_i
+          @game_data[:manually_ended] = game.manually_ended
           @game_data[:status] = 'finished'
         else
           @game_data[:result] = {}

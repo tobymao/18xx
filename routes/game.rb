@@ -205,6 +205,7 @@ class Api
     if engine.finished
       game.result = engine.result
       game.finished_at = Time.now
+      game.manually_ended = engine.manually_ended
       game.status = 'finished'
     else
       game.result = {}
