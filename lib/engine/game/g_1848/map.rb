@@ -102,7 +102,8 @@ module Engine
             ['A18'] =>
                    'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:5,b:_0;path=a:0,b:_0',
             ['D1'] =>
-                   'city=revenue:yellow_20|green_40|brown_60|gray_80;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;path=a:3,b:_0,terminal:1;label=K',
+                   'city=revenue:yellow_20|green_40|brown_60|gray_80;path=a:4,b:_0,terminal:1;' \
+                   'path=a:5,b:_0,terminal:1;path=a:3,b:_0,terminal:1;label=K',
             ['I21'] => 'offboard=revenue:yellow_0|green_100|brown_200|gray_300',
           },
           blue: {
