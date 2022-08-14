@@ -193,7 +193,7 @@ module View
         extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
         if @game.total_loans.positive?
           extra << h(:th, render_sort_link('Buying Power', :buying_power))
-          extra << h(:th, render_sort_link('Interest Due', :interest))
+          extra << h(:th, render_sort_link('Interest Due', :interest)) if @game.corporation_show_interest?
         end
         if (@diff_corp_sizes = @game.all_corporations.any? { |c| @game.corporation_size(c) != :small })
           extra << h(:th, render_sort_link('Size', :corp_size))
