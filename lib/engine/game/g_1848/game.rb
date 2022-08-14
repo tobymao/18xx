@@ -606,6 +606,7 @@ module Engine
             G1848::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
+            G1848::Step::BlockingLoan,
             G1848::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1848::Step::SpecialBuyTrain,
@@ -957,6 +958,13 @@ module Engine
 
         def ability_used!(company)
           company.all_abilities.dup.each { |ab| company.remove_ability(ab) }
+        end
+
+        def first_column?(entity)
+          return unless entity.corporation?
+
+          _r, c = entity.share_price.coordinates
+          c == 1
         end
       end
     end
