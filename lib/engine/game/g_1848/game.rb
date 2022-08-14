@@ -289,7 +289,7 @@ module Engine
           {
             name: '2E',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 200,
             num: 10,
             available_on: '5',
