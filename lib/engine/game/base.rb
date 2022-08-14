@@ -847,7 +847,10 @@ module Engine
             @raw_actions << action
           else
             process_action(action)
-            @raw_actions.last['id'] = action['id'] # maintain original action ids
+            
+            # maintain original action ids
+            @raw_actions.last['id'] = action['id'] 
+            @last_processed_action = action['id']
           end
         end
       end
