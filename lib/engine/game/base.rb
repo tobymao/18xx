@@ -838,14 +838,18 @@ module Engine
       end
 
       def process_to_action(id)
+        last_processed_action_id = @raw_actions.last&.fetch('id') || 0
         @raw_all_actions.each do |action|
-          next if action['id'] <= (@raw_actions.last&.fetch('id') || 0)
+          next if action['id'] <= last_processed_action_id
           break if action['id'] > id
 
           if action['skip']
             @raw_actions << action
           else
             process_action(action)
+            # maintain original action ids
+            @raw_actions.last['id'] = action['id']
+            @last_processed_action = action['id']
           end
         end
       end
