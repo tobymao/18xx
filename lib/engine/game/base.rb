@@ -849,7 +849,7 @@ module Engine
             process_action(action)
             
             # maintain original action ids
-            @raw_actions.last['id'] = action['id'] 
+            @raw_actions.last['id'] = action['id']
             @last_processed_action = action['id']
           end
         end
