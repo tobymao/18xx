@@ -841,9 +841,21 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          k_sum = stops.count { |rl| rl.hex&.tile&.label&.to_s == 'K' || rl.hex&.tile&.future_label&.label.to_s == 'K' }
-          k_sum = 0 if route.train.name == '2E' # 2E can't get k bonus
-          super + K_BONUS[k_sum]
+          super + K_BONUS[k_sum(route, stops)]
+        end
+
+        def k_sum(route, stops)
+          return 0 if route.train.name == '2E' || !stops
+
+          stops.count { |rl| rl.hex&.tile&.label&.to_s == 'K' || rl.hex&.tile&.future_label&.label.to_s == 'K' }
+        end
+
+        def revenue_str(route)
+          return super unless k_sum(route, route.stops) > 1
+
+          k_sum_string = ' + k'
+          (k_sum(route, route.stops) - 1).times { k_sum_string += '-k' }
+          super + k_sum_string
         end
 
         # recievership
