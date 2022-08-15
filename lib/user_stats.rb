@@ -10,21 +10,16 @@ module UserStats
 
   def self.calculate_stats
     user_stats = Hash.new { |hash, key| hash[key] = Hash.new([1200, 0]) }
-    on_or_after = Date.today - (365 * YEARS_INCLUDED)
-    offset = 0
+    on_or_after = Date.today - (365.25 * YEARS_INCLUDED)
 
-    loop do
-      games = Game.eager(:players).where(status: %w[finished archived], manually_ended: false)
-                                  .where { finished_at >= on_or_after }
-                                  .order(:finished_at)
-                                  .limit(BATCH_SIZE, offset).all
-      break if games.empty?
-
-      games.each { |game| calculate_game_stats(game, user_stats) }
-      offset += BATCH_SIZE
+    Game.eager(:players).where(status: %w[finished archived], manually_ended: false)
+                        .where { finished_at >= on_or_after }
+                        .order(:finished_at)
+                        .paged_each(rows_per_fetch: BATCH_SIZE) do |game|
+      calculate_game_stats(game, user_stats)
     end
 
-    user_stats.each { |user_id, stats| store_stats(user_id.to_i, stats) }
+    store_stats(user_stats)
     true
   end
 
@@ -74,7 +69,7 @@ module UserStats
     stats[player][category] = [old_elo + elo_change[category], plays + 1]
   end
 
-  def self.store_stats(user_id, stats)
-    Bus[Bus::USER_STATS % user_id] = stats
+  def self.store_stats(stats)
+    Bus.store_keys(stats.transform_keys { |user_id| Bus::USER_STATS % user_id.to_i })
   end
 end

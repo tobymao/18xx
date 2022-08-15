@@ -33,6 +33,17 @@ module Bus
     redis.get(key)
   end
 
+  def self.store_keys(keys)
+    redis.pipelined do |pipeline|
+      keys.each do |key, value|
+        pipeline.set(key, value)
+        pipeline.expire(key, ttl_for(key))
+      end
+    end
+
+    true
+  end
+
   def self.[]=(key, value)
     redis.pipelined do |pipeline|
       pipeline.set(key, value)
