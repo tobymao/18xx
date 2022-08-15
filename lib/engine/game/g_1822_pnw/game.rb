@@ -561,6 +561,10 @@ module Engine
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
 
+        def company_choices(_company, _time)
+          {}
+        end
+
         def operating_order
           minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
           minors + majors
@@ -617,10 +621,41 @@ module Engine
           %w[P7 P8].include?(entity.id)
         end
 
+        def lumber_baron_bonus(routes)
+          return nil if routes.empty?
+
+          # If multiple routes gets lumber baron bonus, get the biggest one.
+          lumber_baron_bonus = routes.map { |r| calculate_lumber_baron_bonus(r) }.compact
+          lumber_baron_bonus.sort_by { |v| v[:revenue] }.reverse&.first
+        end
+
+        def calculate_lumber_baron_bonus(route)
+          return nil unless route.train.owner.companies.any? { |c| c.id == 'P14' }
+
+          { route: route, revenue: forest_revenue(route) }
+        end
+
+        def forest_revenue(route)
+          10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
+        end
+
         def revenue_for(route, stops)
           revenue = super
-          revenue += 10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
+          revenue += forest_revenue(route)
+          lumber_baron_bonus = lumber_baron_bonus(route.routes)
+          revenue += lumber_baron_bonus[:revenue] if lumber_baron_bonus && lumber_baron_bonus[:route] == route
           revenue
+        end
+
+        def revenue_str(route)
+          str = super
+
+          lumber_baron_bonus = lumber_baron_bonus(route.routes)
+          if lumber_baron_bonus && lumber_baron_bonus[:route] == route
+            str += " +#{format_currency(lumber_baron_bonus[:revenue])} LB "
+          end
+
+          str
         end
 
         def legal_leavenworth_tile(hex, tile)
