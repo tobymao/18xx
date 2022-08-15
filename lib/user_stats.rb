@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'json'
 require_relative 'bus'
 
 module UserStats
@@ -20,7 +21,6 @@ module UserStats
     end
 
     store_stats(user_stats)
-    true
   end
 
   def self.calculate_game_stats(game, player_stats)
@@ -70,6 +70,6 @@ module UserStats
   end
 
   def self.store_stats(stats)
-    Bus.store_keys(stats.transform_keys { |user_id| Bus::USER_STATS % user_id.to_i })
+    Bus.store_keys(stats.to_h { |user_id, data| [Bus::USER_STATS % user_id.to_i, JSON.dump(data)] })
   end
 end

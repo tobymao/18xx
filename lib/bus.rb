@@ -5,12 +5,12 @@ require 'redis'
 
 module Bus
   TTL = 60 * 5
-  URL = 'redis://redis:6379'
+  URL = 'redis://redis:6379'.freeze
 
-  USER_TS_PREFIX = 'user_ts'
+  USER_TS_PREFIX = 'user_ts'.freeze
   USER_TS = "#{USER_TS_PREFIX}:%d".freeze
 
-  USER_STATS_PREFIX = 'user_stats'
+  USER_STATS_PREFIX = 'user_stats'.freeze
   USER_STATS = "#{USER_STATS_PREFIX}:%d".freeze
 
   TTL = {
@@ -40,8 +40,6 @@ module Bus
         pipeline.expire(key, ttl_for(key))
       end
     end
-
-    true
   end
 
   def self.[]=(key, value)
@@ -54,7 +52,7 @@ module Bus
   end
 
   def self.ttl_for(key)
-    prefix = key.split(':').first
+    prefix = key.split(':')[0]
     TTL[prefix] || 0
   end
 end
