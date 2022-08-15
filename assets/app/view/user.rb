@@ -86,7 +86,7 @@ module View
         h('div#settings__options', [
           render_notifications,
           h(:h3, 'Statistics'),
-          render_checkbox('Show Individual Statistics', :show_stats),
+          render_checkbox('Show Individual Statistics on Profile Page', :show_stats),
           h(:h3, 'Display'),
           render_checkbox('Red 18xx.games Logo', :red_logo),
         ]),
