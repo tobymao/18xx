@@ -572,7 +572,7 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          company.revenue = 0 if cube_company?(company) || company.id == "P14"
+          company.revenue = 0 if cube_company?(company) || company.id == 'P14'
         end
 
         def reorder_players(_order = nil)
