@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'rufus-scheduler'
 require 'require_all'
 require_relative 'models'
 require_rel './models'
@@ -8,6 +9,7 @@ require_relative 'lib/assets'
 require_relative 'lib/bus'
 require_relative 'lib/hooks'
 require_relative 'lib/mail'
+require_relative 'lib/user_stats'
 
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
@@ -16,6 +18,13 @@ LOGGER = Logger.new($stdout)
 Bus.configure
 
 ASSETS = Assets.new(precompiled: PRODUCTION)
+
+scheduler = Rufus::Scheduler.new
+
+scheduler.cron '00 09 * * *' do
+  LOGGER.info('Calculating user stats')
+  UserStats.calculate_stats
+end
 
 def send_webhook_notification(user, message)
   return if user.settings['notifications'] != 'webhook'
