@@ -54,6 +54,7 @@ module Bus
   end
 
   def self.ttl_for(key)
-    TTL.find { |k, _v| key.include?(k) }&.last || 0
+    prefix = key.split(':').first
+    TTL[prefix] || 0
   end
 end
