@@ -947,7 +947,7 @@ module Engine
           end
         end
 
-        def end_game!
+        def end_game!(player_initiated: false)
           return if @finished
 
           @corporations.each do |corporation|

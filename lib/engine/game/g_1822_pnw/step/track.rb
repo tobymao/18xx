@@ -19,6 +19,7 @@ module Engine
           def legal_tile_rotation?(entity, hex, tile)
             return true if hex.tile.name == tile.name && hex.tile.rotation == tile.rotation
             return true if tile.id == 'BC-0'
+            return true if @game.legal_leavenworth_tile(hex, tile)
 
             super
           end
@@ -33,9 +34,17 @@ module Engine
               @round.num_laid_track += 1
               @round.laid_hexes << action.hex
             else
+              forest = @game.forest?(action.hex.tile)
               super
               action.hex.tile.icons.reject! { |i| i.name == 'block' }
+              action.hex.assign!('forest') if forest
             end
+          end
+
+          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+            raise GameError, 'Cannot upgrade forests' if action.hex.assigned?('forest')
+
+            super
           end
         end
       end

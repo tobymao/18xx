@@ -82,7 +82,8 @@ module Engine
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
-                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter
+                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter,
+                  :manually_ended
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -570,7 +571,7 @@ module Engine
 
       def result
         result_players
-          .map { |p| [p.name, player_value(p)] }
+          .map { |p| [p.id, player_value(p)] }
           .sort_by { |_, v| v }
           .reverse
           .to_h
@@ -634,7 +635,11 @@ module Engine
         actions.each.with_index do |action, index|
           case action['type']
           when 'undo'
-            undo_to = action['action_id'] || filtered_actions.rindex { |a| a && a['type'] != 'message' } || 0
+            undo_to = if (id = action['action_id'])
+                        id.zero? ? 0 : actions.index { |a| a['id'] == action['action_id'] } + 1
+                      else
+                        filtered_actions.rindex { |a| a && a['type'] != 'message' } || 0
+                      end
             active_undos << filtered_actions[undo_to...index].map.with_index do |a, i|
               next if !a || a['type'] == 'message'
 
@@ -833,14 +838,18 @@ module Engine
       end
 
       def process_to_action(id)
-        @raw_all_actions.each.with_index do |action, index|
-          next if index < (@last_processed_action || 0)
-          break if index >= id
+        last_processed_action_id = @raw_actions.last&.fetch('id') || 0
+        @raw_all_actions.each do |action|
+          next if action['id'] <= last_processed_action_id
+          break if action['id'] > id
 
           if action['skip']
             @raw_actions << action
           else
             process_action(action)
+            # maintain original action ids
+            @raw_actions.last['id'] = action['id']
+            @last_processed_action = action['id']
           end
         end
       end
@@ -1179,13 +1188,14 @@ module Engine
         (price * (100.0 - self.class::DISCARDED_TRAIN_DISCOUNT.to_f) / 100.0).ceil.to_i
       end
 
-      def end_game!
+      def end_game!(player_initiated: false)
         return if @finished
 
         @finished = true
+        @manually_ended = player_initiated
         store_player_info
         @round_counter += 1
-        scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
+        scores = result.map { |id, value| "#{@players.find { |p| p.id == id.to_i }&.name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
       end
 
@@ -1840,22 +1850,23 @@ module Engine
       end
 
       def discountable_trains_for(corporation)
-        discountable_trains = @depot.depot_trains.select(&:discount)
+        discountable_trains = @depot.depot_trains.select { |train| train.discount || train.variants.any? { |_, v| v[:discount] } }
 
         corporation.trains.flat_map do |train|
           discountable_trains.flat_map do |discount_train|
+            discount_info = []
             discounted_price = discount_train.price(train)
-            next if discount_train.price == discounted_price
-
-            name = discount_train.name
-            discount_info = [[train, discount_train, name, discounted_price]]
+            if discount_train.price > discounted_price
+              name = discount_train.name
+              discount_info = [[train, discount_train, name, discounted_price]]
+            end
 
             # Add variants if any - they have same discount as base version
             discount_train.variants.each do |_, v|
               next if v[:name] == name
 
-              price = v[:price] - (discount_train.price - discounted_price)
-              discount_info << [train, discount_train, v[:name], price]
+              discounted_price = discount_train.price(train, variant: v)
+              discount_info << [train, discount_train, v[:name], discounted_price] if v[:price] > discounted_price
             end
 
             discount_info
@@ -2024,6 +2035,10 @@ module Engine
 
       def cert_limit(_player = nil)
         @cert_limit
+      end
+
+      def corporation_show_interest?
+        true
       end
 
       private

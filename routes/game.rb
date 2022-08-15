@@ -9,7 +9,7 @@ class Api
 
         # '/api/game/<game_id>/'
         r.is do
-          game_data = game.to_h(include_actions: true, player: user&.id)
+          game_data = game.to_h(include_actions: true, logged_in_user_id: user&.id)
 
           game_data
         end
@@ -169,6 +169,7 @@ class Api
           params = {
             user: user,
             description: r['description'],
+            min_players: r['min_players'],
             max_players: r['max_players'],
             settings: {
               seed: (r['seed'] || Random.new_seed) % (2**31),
@@ -203,6 +204,8 @@ class Api
 
     if engine.finished
       game.result = engine.result
+      game.finished_at = Time.now
+      game.manually_ended = engine.manually_ended
       game.status = 'finished'
     else
       game.result = {}

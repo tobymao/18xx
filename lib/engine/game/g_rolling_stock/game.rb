@@ -1024,7 +1024,7 @@ module Engine
           result_players
             .sort_by { |p| [player_value(p), -@players.index(p)] }
             .reverse
-            .to_h { |p| [p.name, player_value(p)] }
+            .to_h { |p| [p.id, player_value(p)] }
         end
 
         def companies_sort(companies)

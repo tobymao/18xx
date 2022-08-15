@@ -44,6 +44,39 @@ module View
     def render_profile
       return [h('h3', 'You are not logged in')] unless @user
 
+      children = []
+
+      name = "#{@profile['name']}'s"
+      if @profile['name'] == @user['name']
+        name = 'Your'
+        children << render_settings
+      end
+
+      player_games = @games.select { |game| user_in_game?(@profile, game) }.group_by { |game| game['status'] }
+      player_games.default = []
+
+      active_games = player_games['active'].sort_by { |game| -game['updated_at'] }
+      unless active_games.empty?
+        children << h(GameRow,
+                      header: "#{name} Active Games",
+                      game_row_games: active_games,
+                      type: :personal,
+                      user: @user)
+      end
+
+      finished_games = (player_games['finished'] + player_games['archived']).sort_by { |game| -game['finished_at'] }
+      unless finished_games.empty?
+        children << h(GameRow,
+                      header: "#{name} Finished Games",
+                      game_row_games: finished_games,
+                      type: :personal,
+                      user: @user)
+      end
+
+      children
+    end
+
+    def render_settings
       title = 'Profile Settings'
       inputs = [
         render_username,
@@ -71,16 +104,7 @@ module View
         ]),
       ]
 
-      finished_games = @games
-        .select { |game| user_in_game?(@user, game) && %w[finished archived].include?(game['status']) }
-        .sort_by { |game| -game['updated_at'] }
-
-      [render_form(title, inputs),
-       h(GameRow,
-         header: 'Your Finished Games',
-         game_row_games: finished_games,
-         type: :personal,
-         user: @user)]
+      render_form(title, inputs)
     end
 
     def render_signup

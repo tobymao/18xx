@@ -7,6 +7,9 @@ module Engine
     module G1822PNW
       module Step
         class MinorAcquisition < Engine::Game::G1822::Step::MinorAcquisition
+          def potentially_mergeable(entity)
+            super + @game.regionals
+          end
         end
       end
     end
