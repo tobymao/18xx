@@ -37,6 +37,7 @@ module Lib
       **ROUTES,
       path_timeout: 30,
       route_timeout: 10,
+      show_stats: false,
     }.freeze
 
     def self.included(base)
