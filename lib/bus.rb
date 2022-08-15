@@ -7,7 +7,16 @@ module Bus
   TTL = 60 * 5
   URL = 'redis://redis:6379'
 
-  USER_TS = 'user_ts:%d'
+  USER_TS_PREFIX = 'user_ts'
+  USER_TS = "#{USER_TS_PREFIX}:%d".freeze
+
+  USER_STATS_PREFIX = 'user_stats'
+  USER_STATS = "#{USER_STATS_PREFIX}:%d".freeze
+
+  TTL = {
+    USER_TS_PREFIX => 60 * 5,
+    USER_STATS_PREFIX => 60 * 60 * 25,
+  }.freeze
 
   def self.configure
     MessageBus.configure(backend: :redis, url: URL)
@@ -25,11 +34,15 @@ module Bus
   end
 
   def self.[]=(key, value)
-    redis.pipelined do
-      redis.set(key, value)
-      redis.expire(key, TTL)
+    redis.pipelined do |pipeline|
+      pipeline.set(key, value)
+      pipeline.expire(key, ttl_for(key))
     end
 
     value
+  end
+
+  def self.ttl_for(key)
+    TTL.find { |k, _v| key.include?(k) }&.last || 0
   end
 end
