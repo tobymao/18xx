@@ -75,6 +75,7 @@ module Engine
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P9].freeze
+        PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
 
         ASSIGNMENT_TOKENS = {
@@ -174,11 +175,11 @@ module Engine
         end
 
         def port_company?(entity)
-          entity.id == 'P17' || entity.id == 'P18'
+          %w[P12 P13].include?(entity.id)
         end
 
         def cube_company?(entity)
-          entity.id == 'P10' || entity.id == 'P11'
+          entity.id == 'P10'
         end
 
         PHASES = [
@@ -604,10 +605,8 @@ module Engine
           # entity.id == 'P8'
         end
 
-        def company_ability_extra_track?(_company)
-          false
-          # Will be used for privates - not yet implemented in PNW
-          # company.id == 'P9' || company.id == 'P17' || company.id == 'P18'
+        def company_ability_extra_track?(entity)
+          %w[P11 P12 P13].include?(entity.id)
         end
 
         def choices_entities
