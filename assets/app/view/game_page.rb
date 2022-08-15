@@ -65,13 +65,14 @@ module View
     def load_game
       game_id = @game_data['id']
       actions = @game_data['actions']
-      @num_actions = actions.size
+      @last_action_id = actions&.last&.fetch('id') || 0
+      last_processed_action_id = @game&.raw_actions&.last&.fetch('id') || 0
       return if game_id == @game&.id &&
         (@game.exception ||
-         (!cursor && @game.raw_actions.size == @num_actions) ||
-         (cursor == @game.raw_actions.size))
+         (!cursor && last_processed_action_id == @last_action_id) ||
+         (cursor == @game.last_game_action_id))
 
-      return @game.process_to_action(cursor) if game_id == @game&.id && cursor && cursor > @game.raw_actions.size
+      return @game.process_to_action(cursor) if game_id == @game&.id && cursor && cursor > @game.last_game_action_id
 
       load_game_with_class = lambda do
         @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
@@ -446,7 +447,7 @@ module View
       children = []
       children << render_round
       children << h(Game::GameLog, user: @user, scroll_pos: @scroll_pos, chat_input: @chat_input)
-      children << h(Game::HistoryAndUndo, num_actions: @num_actions)
+      children << h(Game::HistoryAndUndo, last_action_id: @last_action_id)
       children << h(Game::EntityOrder, round: @round)
       unless @game.finished
         children << h(Game::Abilities, user: @user, game: @game)

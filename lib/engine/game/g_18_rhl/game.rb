@@ -496,7 +496,7 @@ module Engine
         end
 
         def acting_for_entity(entity)
-          return super if entity.owned_by_player?
+          return super if entity.player? || entity.owned_by_player?
 
           WithNameAdapter.new
         end

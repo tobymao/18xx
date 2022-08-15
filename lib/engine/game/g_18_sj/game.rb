@@ -821,14 +821,6 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # Handle upgrade to Stockholm gray tile
-          return to.name == '131' if from.color == :brown && from.hex.name == 'G10'
-          return false if to.name == '131'
-
-          super
-        end
-
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
 
@@ -886,7 +878,7 @@ module Engine
           return super unless two_player_variant
 
           @players.reject { |p| bot_player?(p) }
-            .map { |p| [p.name, player_value(p)] }
+            .map { |p| [p.id, player_value(p)] }
             .sort_by { |_, v| v }
             .reverse
             .to_h

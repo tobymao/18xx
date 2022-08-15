@@ -912,7 +912,7 @@ module Engine
           minors + majors + [@national]
         end
 
-        def add_neutral_tokens
+        def add_neutral_tokens(_hexes)
           # 1861 doesn't have neutral tokens
           @green_tokens = []
         end

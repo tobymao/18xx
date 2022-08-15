@@ -638,6 +638,10 @@ module Engine
           player.value - debt(player) - penalty_interest(player)
         end
 
+        def result_players
+          @players.reject { |p| p == @vaclav }
+        end
+
         def liquidity(player, emergency: false)
           return player.cash if emergency
 

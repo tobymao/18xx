@@ -84,6 +84,7 @@ module Engine
               action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
               @round.num_laid_track += 1
               @round.laid_hexes << action.hex
+              pass! unless can_lay_tile?(action.entity)
             else
               super
               action.hex.tile.icons.reject! { |i| i.name == 'block' }

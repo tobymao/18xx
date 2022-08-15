@@ -18,10 +18,11 @@ module Engine
           data = JSON.parse(File.read(fixture))
           result = data['result']
 
-          expect(Engine::Game.load(data).maybe_raise!.result).to eq(result)
+          game_result = JSON.parse(JSON.generate(Engine::Game.load(data).maybe_raise!.result))
+          expect(game_result).to eq(result)
 
           rungame = Engine::Game.load(data, strict: true).maybe_raise!
-          expect(rungame.result).to eq(result)
+          expect(JSON.parse(JSON.generate(rungame.result))).to eq(result)
           expect(rungame.finished).to eq(true)
 
           # some fixtures want to test that the last N actions of the game replayed the same as in the fixture

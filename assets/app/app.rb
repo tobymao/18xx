@@ -72,7 +72,7 @@ class App < Snabberb::Component
       when /reset/
         h(View::Reset)
       when /profile/
-        h(View::User, user: @user, type: :profile)
+        h(View::User, profile: @profile, type: :profile, user: @user)
       when /about/
         h(View::About)
       when /tiles/

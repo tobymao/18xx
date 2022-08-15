@@ -2,6 +2,7 @@
 
 require 'lib/settings'
 require 'lib/text'
+require 'lib/profile_link'
 require 'view/game/companies'
 require 'view/game/unsold_companies'
 require 'view/share_calculation'
@@ -11,6 +12,7 @@ module View
     class Player < Snabberb::Component
       include Lib::Settings
       include Lib::Text
+      include Lib::ProfileLink
       include View::ShareCalculation
 
       needs :player
@@ -57,7 +59,7 @@ module View
           },
         }
 
-        h('div.player.title.nowrap', props, @player.name)
+        h('div.player.title.nowrap', props, [profile_link(@player.id, @player.name)])
       end
 
       def render_body

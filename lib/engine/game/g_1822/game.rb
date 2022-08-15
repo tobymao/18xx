@@ -693,7 +693,7 @@ module Engine
           discount_info
         end
 
-        def end_game!
+        def end_game!(player_initiated: false)
           finalize_end_game_values
           super
         end

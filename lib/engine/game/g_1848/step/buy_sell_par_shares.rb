@@ -15,6 +15,12 @@ module Engine
                        allow_president_change: @game.pres_change_ok?(action.bundle.corporation))
             track_action(action, action.bundle.corporation)
           end
+
+          def can_sell?(entity, bundle)
+            return can_sell_order? if bundle.corporation == @game.boe
+
+            super
+          end
         end
       end
     end

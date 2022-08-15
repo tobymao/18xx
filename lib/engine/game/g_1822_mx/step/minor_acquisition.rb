@@ -22,6 +22,10 @@ module Engine
                          end
             @game.graph.connected_nodes(entity)[minor_city] || (connected_to_port?(minor) && connected_to_port?(entity))
           end
+
+          def token_replace_requires_choice?(_entity)
+            false
+          end
         end
       end
     end
