@@ -461,7 +461,10 @@ module View
             interest_props[:style][:backgroundColor] = color
             interest_props[:style][:color] = contrast_on(color)
           end
-          extra << h(:td, interest_props, @game.format_currency(@game.interest_owed(corporation)).to_s)
+          if @game.corporation_show_interest?
+            extra << h(:td, interest_props,
+                       @game.format_currency(@game.interest_owed(corporation)).to_s)
+          end
         end
         extra << h(:td, @game.corporation_size_name(corporation)) if @diff_corp_sizes
 
