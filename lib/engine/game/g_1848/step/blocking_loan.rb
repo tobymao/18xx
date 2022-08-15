@@ -16,7 +16,7 @@ module Engine
             return [] if entity == @game.boe
 
             actions = []
-            actions += %w[take_loan pass] if check_blocking_loan(entity)
+            actions << %w[take_loan pass] if check_blocking_loan(entity)
             actions
           end
 
