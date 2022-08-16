@@ -966,6 +966,15 @@ module Engine
           _r, c = entity.share_price.coordinates
           c == 1
         end
+
+        def next_round!
+          reset_company_values if @round.is_a?(Engine::Round::Auction)
+          super
+        end
+
+        def reset_company_values
+          companies.each { |comp| comp.value = 0 }
+        end
       end
     end
   end
