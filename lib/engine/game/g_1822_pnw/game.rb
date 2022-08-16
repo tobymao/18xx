@@ -182,6 +182,10 @@ module Engine
           entity.id == 'P10'
         end
 
+        def portage_company?(entity)
+          entity.id == 'P16'
+        end
+
         PHASES = [
           {
             name: '1',
@@ -639,11 +643,19 @@ module Engine
           10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
         end
 
+        def portage_penalty(route)
+          @portage_tiles ||= %w[PNW1 PNW2].freeze
+          return 0 if route.train.owner.companies.any? { |c| portage_company?(c) }
+
+          10 * route.all_hexes.count { |hex| @portage_tiles.include?(hex.tile.name) }
+        end
+
         def revenue_for(route, stops)
           revenue = super
           revenue += forest_revenue(route)
           lumber_baron_bonus = lumber_baron_bonus(route.routes)
           revenue += lumber_baron_bonus[:revenue] if lumber_baron_bonus && lumber_baron_bonus[:route] == route
+          revenue -= portage_penalty(route)
           revenue
         end
 
@@ -652,8 +664,9 @@ module Engine
 
           lumber_baron_bonus = lumber_baron_bonus(route.routes)
           if lumber_baron_bonus && lumber_baron_bonus[:route] == route
-            str += " +#{format_currency(lumber_baron_bonus[:revenue])} LB "
+            str += " (+#{format_currency(lumber_baron_bonus[:revenue])} LB) "
           end
+          str += " (-#{format_currency(portage_penalty(route))} Portage) " if portage_penalty(route).positive?
 
           str
         end

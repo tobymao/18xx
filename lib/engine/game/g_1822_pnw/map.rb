@@ -309,6 +309,18 @@ module Engine
               'code' =>
                 'city=revenue:green_40|brown_50|gray_60,slots:0;path=a:0,b:_0,terminal:1',
             },
+          'PNW1' =>
+            {
+              'count' => 1,
+              'color' => 'blue',
+              'code' => 'path=a:0,b:3;icon=image:1822_pnw/minus_10,large:1',
+            },
+          'PNW2' =>
+            {
+              'count' => 1,
+              'color' => 'blue',
+              'code' => 'path=a:0,b:2;icon=image:1822_pnw/minus_10,large:1',
+            },
 
           'BC' =>
             {
