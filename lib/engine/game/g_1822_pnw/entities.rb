@@ -343,7 +343,16 @@ module Engine
                   'mountain pass hex is any hex that includes the '\
                   'mountain symbol AND a build cost. Revenue is NOT '\
                   'added to an E-train.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[A16 G4 G18 H5 I6 J17 M14 N13],
+                count: 1,
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {

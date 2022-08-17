@@ -80,6 +80,7 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/tree.svg',
+          'P17' => '/icons/ski.svg',
         }.freeze
 
         DOUBLE_HEX = %w[H19].freeze
@@ -393,6 +394,7 @@ module Engine
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
+            Engine::Step::Assign,
             G1822PNW::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -643,6 +645,10 @@ module Engine
           10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
         end
 
+        def ski_haus_revenue(route)
+          route.all_hexes.any? { |hex| hex.assigned?('P17') } ? 30 : 0
+        end
+
         def portage_penalty(route)
           @portage_tiles ||= %w[PNW1 PNW2].freeze
           return 0 if route.train.owner.companies.any? { |c| portage_company?(c) }
@@ -653,6 +659,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           revenue += forest_revenue(route)
+          revenue += ski_haus_revenue(route)
           lumber_baron_bonus = lumber_baron_bonus(route.routes)
           revenue += lumber_baron_bonus[:revenue] if lumber_baron_bonus && lumber_baron_bonus[:route] == route
           revenue -= portage_penalty(route)
@@ -666,6 +673,7 @@ module Engine
           if lumber_baron_bonus && lumber_baron_bonus[:route] == route
             str += " (+#{format_currency(lumber_baron_bonus[:revenue])} LB) "
           end
+          str += ' (+30 Ski Haus) ' if ski_haus_revenue(route).positive?
           str += " (-#{format_currency(portage_penalty(route))} Portage) " if portage_penalty(route).positive?
 
           str
@@ -691,7 +699,7 @@ module Engine
             @log << "#{major.name} reservation takes the place of #{corporation.name}"
           elsif regional_railway?(corporation)
             company = company_by_id(company_id_from_corp_id(corporation.id))
-            company.owner.companies.delete(company)
+            company.owner&.companies&.delete(company)
             company.close!
           end
         end
