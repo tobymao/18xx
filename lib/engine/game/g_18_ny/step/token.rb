@@ -52,7 +52,7 @@ module Engine
           end
 
           def distance(path)
-            path.keys.map(&:hex).chunk(&:itself).count { |hex| !FREE_HEXES.include?(hex.id) }
+            path.keys.map(&:hex).uniq.count { |hex| !FREE_HEXES.include?(hex.id) }
           end
         end
       end
