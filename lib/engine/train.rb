@@ -75,8 +75,9 @@ module Engine
     end
 
     def price(exchange_train = nil, variant: nil)
-      discount = (variant && variant[:discount]) || self.discount
-      @price - (discount&.dig(exchange_train&.name) || 0)
+      discount = variant ? variant[:discount] : self.discount
+      price = variant ? variant[:price] : @price
+      price - (discount&.dig(exchange_train&.name) || 0)
     end
 
     def id

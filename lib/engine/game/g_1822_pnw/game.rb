@@ -80,6 +80,7 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/tree.svg',
+          'P17' => '/icons/ski.svg',
         }.freeze
 
         DOUBLE_HEX = %w[H19].freeze
@@ -180,6 +181,10 @@ module Engine
 
         def cube_company?(entity)
           entity.id == 'P10'
+        end
+
+        def portage_company?(entity)
+          entity.id == 'P16'
         end
 
         PHASES = [
@@ -389,6 +394,7 @@ module Engine
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
+            Engine::Step::Assign,
             G1822PNW::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -561,6 +567,10 @@ module Engine
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
 
+        def company_choices(_company, _time)
+          {}
+        end
+
         def operating_order
           minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
           minors + majors
@@ -568,7 +578,7 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          company.revenue = 0 if cube_company?(company)
+          company.revenue = 0 if cube_company?(company) || company.id == 'P14'
         end
 
         def reorder_players(_order = nil)
@@ -617,10 +627,56 @@ module Engine
           %w[P7 P8].include?(entity.id)
         end
 
+        def lumber_baron_bonus(routes)
+          return nil if routes.empty?
+
+          # If multiple routes gets lumber baron bonus, get the biggest one.
+          lumber_baron_bonus = routes.map { |r| calculate_lumber_baron_bonus(r) }.compact
+          lumber_baron_bonus.sort_by { |v| v[:revenue] }.reverse&.first
+        end
+
+        def calculate_lumber_baron_bonus(route)
+          return nil unless route.train.owner.companies.any? { |c| c.id == 'P14' }
+
+          { route: route, revenue: forest_revenue(route) }
+        end
+
+        def forest_revenue(route)
+          10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
+        end
+
+        def ski_haus_revenue(route)
+          route.all_hexes.any? { |hex| hex.assigned?('P17') } ? 30 : 0
+        end
+
+        def portage_penalty(route)
+          @portage_tiles ||= %w[PNW1 PNW2].freeze
+          return 0 if route.train.owner.companies.any? { |c| portage_company?(c) }
+
+          10 * route.all_hexes.count { |hex| @portage_tiles.include?(hex.tile.name) }
+        end
+
         def revenue_for(route, stops)
           revenue = super
-          revenue += 10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
+          revenue += forest_revenue(route)
+          revenue += ski_haus_revenue(route)
+          lumber_baron_bonus = lumber_baron_bonus(route.routes)
+          revenue += lumber_baron_bonus[:revenue] if lumber_baron_bonus && lumber_baron_bonus[:route] == route
+          revenue -= portage_penalty(route)
           revenue
+        end
+
+        def revenue_str(route)
+          str = super
+
+          lumber_baron_bonus = lumber_baron_bonus(route.routes)
+          if lumber_baron_bonus && lumber_baron_bonus[:route] == route
+            str += " (+#{format_currency(lumber_baron_bonus[:revenue])} LB) "
+          end
+          str += ' (+30 Ski Haus) ' if ski_haus_revenue(route).positive?
+          str += " (-#{format_currency(portage_penalty(route))} Portage) " if portage_penalty(route).positive?
+
+          str
         end
 
         def legal_leavenworth_tile(hex, tile)
@@ -643,7 +699,7 @@ module Engine
             @log << "#{major.name} reservation takes the place of #{corporation.name}"
           elsif regional_railway?(corporation)
             company = company_by_id(company_id_from_corp_id(corporation.id))
-            company.owner.companies.delete(company)
+            company.owner&.companies&.delete(company)
             company.close!
           end
         end

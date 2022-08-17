@@ -282,14 +282,14 @@ module Engine
                 distance: 999,
                 price: 1100,
                 num: 20,
-                discount: { '4' => 300, '5' => 300, '6' => 300 },
+                discount: { '4' => 300, '4+' => 300, '5' => 300, '5+' => 300, '6+' => 300, '6' => 300 },
               },
             ],
           },
           {
             name: '2E',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 200,
             num: 10,
             available_on: '5',
@@ -606,6 +606,7 @@ module Engine
             G1848::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
+            G1848::Step::BlockingLoan,
             G1848::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1848::Step::SpecialBuyTrain,
@@ -841,9 +842,21 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          k_sum = stops.count { |rl| rl.hex&.tile&.label&.to_s == 'K' || rl.hex&.tile&.future_label&.label.to_s == 'K' }
-          k_sum = 0 if route.train.name == '2E' # 2E can't get k bonus
-          super + K_BONUS[k_sum]
+          super + K_BONUS[k_sum(route, stops)]
+        end
+
+        def k_sum(route, stops)
+          return 0 if route.train.name == '2E' || !stops
+
+          stops.count { |rl| rl.hex&.tile&.label&.to_s == 'K' || rl.hex&.tile&.future_label&.label.to_s == 'K' }
+        end
+
+        def revenue_str(route)
+          return super unless k_sum(route, route.stops) > 1
+
+          k_sum_string = ' + k'
+          (k_sum(route, route.stops) - 1).times { k_sum_string += '-k' }
+          super + k_sum_string
         end
 
         # recievership
@@ -945,6 +958,22 @@ module Engine
 
         def ability_used!(company)
           company.all_abilities.dup.each { |ab| company.remove_ability(ab) }
+        end
+
+        def first_column?(entity)
+          return unless entity.corporation?
+
+          _r, c = entity.share_price.coordinates
+          c == 1
+        end
+
+        def next_round!
+          reset_company_values if @round.is_a?(Engine::Round::Auction)
+          super
+        end
+
+        def reset_company_values
+          companies.each { |comp| comp.value = 0 }
         end
       end
     end

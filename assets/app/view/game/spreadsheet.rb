@@ -193,7 +193,7 @@ module View
         extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
         if @game.total_loans.positive?
           extra << h(:th, render_sort_link('Buying Power', :buying_power))
-          extra << h(:th, render_sort_link('Interest Due', :interest))
+          extra << h(:th, render_sort_link('Interest Due', :interest)) if @game.corporation_show_interest?
         end
         if (@diff_corp_sizes = @game.all_corporations.any? { |c| @game.corporation_size(c) != :small })
           extra << h(:th, render_sort_link('Size', :corp_size))
@@ -461,7 +461,10 @@ module View
             interest_props[:style][:backgroundColor] = color
             interest_props[:style][:color] = contrast_on(color)
           end
-          extra << h(:td, interest_props, @game.format_currency(@game.interest_owed(corporation)).to_s)
+          if @game.corporation_show_interest?
+            extra << h(:td, interest_props,
+                       @game.format_currency(@game.interest_owed(corporation)).to_s)
+          end
         end
         extra << h(:td, @game.corporation_size_name(corporation)) if @diff_corp_sizes
 

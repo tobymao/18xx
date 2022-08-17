@@ -1856,10 +1856,8 @@ module Engine
           discountable_trains.flat_map do |discount_train|
             discount_info = []
             discounted_price = discount_train.price(train)
-            if discount_train.price > discounted_price
-              name = discount_train.name
-              discount_info = [[train, discount_train, name, discounted_price]]
-            end
+            name = discount_train.name
+            discount_info = [[train, discount_train, name, discounted_price]] if discount_train.price > discounted_price
 
             # Add variants if any - they have same discount as base version
             discount_train.variants.each do |_, v|

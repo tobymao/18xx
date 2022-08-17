@@ -4,7 +4,6 @@ require 'message_bus'
 require 'redis'
 
 module Bus
-  TTL = 60 * 5
   URL = 'redis://redis:6379'.freeze
 
   USER_TS_PREFIX = 'user_ts'.freeze

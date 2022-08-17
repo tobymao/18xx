@@ -25,6 +25,8 @@ module Engine
           end
 
           def process_lay_tile(action)
+            raise GameError, 'Cannot place a tile or cube now' if @round.num_laid_portage.positive?
+
             if action.tile.id == 'BC-0'
               tile_lay = get_tile_lay(action.entity)
               raise GameError, 'Cannot lay a builder cube now' if !tile_lay || !tile_lay[:lay]
