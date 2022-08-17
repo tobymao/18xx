@@ -83,8 +83,7 @@ class Api
 
         # POST '/api/user/login'
         r.is 'delete' do
-          Game.where(id: user.game_users.map(&:game_id)).delete
-          user.destroy
+          MessageBus.publish('/delete_user', user.id)
           clear_cookies!
           {}
         end
