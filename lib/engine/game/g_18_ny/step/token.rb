@@ -7,6 +7,8 @@ module Engine
     module G18NY
       module Step
         class Token < Engine::Step::Token
+          FREE_HEXES = %w[E1 E25].freeze
+
           def actions(entity)
             return [] if entity.corporation? && entity.type == :minor
 
@@ -41,9 +43,7 @@ module Engine
 
             tokened_hexes = entity.tokens.select(&:used).map(&:hex)
             hex.tile.nodes.first&.walk(corporation: entity) do |path, visited_paths, _visited|
-              if tokened_hexes.include?(path.nodes&.first&.hex)
-                min_distance = [min_distance, distance(visited_paths.keys.map(&:hex)) - 1].min
-              end
+              min_distance = [min_distance, distance(visited_paths) - 1].min if tokened_hexes.include?(path.nodes&.first&.hex)
             end
 
             cost = token.price * min_distance
@@ -51,8 +51,8 @@ module Engine
             cost
           end
 
-          def distance(hexes)
-            hexes.chunk(&:itself).count { |hex| !%w[E1 E25].include?(hex.id) }
+          def distance(path)
+            path.keys.map(&:hex).chunk(&:itself).count { |hex| !FREE_HEXES.include?(hex.id) }
           end
         end
       end
