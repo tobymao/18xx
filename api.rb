@@ -116,7 +116,13 @@ class Api < Roda
         halt(404, 'User does not exist') unless (profile = User[id])
 
         needs = { profile: profile&.to_h(for_user: false) }
-        needs[:profile]['stats'] = JSON.parse(Bus[Bus::USER_STATS % id]) if profile.settings['show_stats']
+        if profile.settings['show_stats']
+          begin
+            needs[:profile]['stats'] = JSON.parse(Bus[Bus::USER_STATS % id])
+          rescue StandardError => e
+            LOGGER.error "Unable to get stats for #{id}: #{e}"
+          end
+        end
         render(
           title: request.params['title'],
           pin: request.params['pin'],
