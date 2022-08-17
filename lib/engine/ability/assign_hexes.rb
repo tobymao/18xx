@@ -9,7 +9,7 @@ module Engine
 
       def setup(hexes:, closed_when_used_up: nil)
         @hexes = hexes
-        @closed_when_used_up = closed_when_used_up || false
+        @closed_when_used_up = closed_when_used_up
       end
     end
   end
