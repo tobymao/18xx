@@ -34,14 +34,11 @@ module Engine
           end
 
           def buyable_trains(entity)
-            # Cannot buy 2E if one is already owned, can't by non 2e if at limit
+            # Cannot buy 2E if one is already owned, can't by non 2e if at limit. 2E can't be cross bought
             trains_to_buy = at_train_limit?(entity) ? [] : super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
-            if owns_2e?(entity)
-              trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
-            elsif trains_to_buy.none? { |t| t.name == '2E' } && can_buy_2e?(entity)
-              trains_to_buy << ghan_train
-            end
+            trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
+            trains_to_buy << ghan_train if can_buy_2e?(entity)
             trains_to_buy.uniq
           end
 

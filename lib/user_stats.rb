@@ -38,7 +38,7 @@ module UserStats
 
   def self.elo_change_for(player, score, category, game, stats)
     elo, num_plays = stats[player][category]
-    k = k_for(game.result.size, num_plays)
+    k = k_for(num_plays)
     elo_change = 0
 
     game.result.each do |opponent, opp_score|
@@ -60,8 +60,8 @@ module UserStats
     elo_change
   end
 
-  def self.k_for(num_players, num_plays)
-    (num_plays <= 30 ? K_NEW : K) / (num_players - 1)
+  def self.k_for(num_plays)
+    num_plays <= 30 ? K_NEW : K
   end
 
   def self.update_stats(player, elo_change, category, stats)

@@ -52,6 +52,8 @@ module View
         children << render_settings
       end
 
+      children << render_stats("#{name} Statistics")
+
       player_games = @games.select { |game| user_in_game?(@profile, game) }.group_by { |game| game['status'] }
       player_games.default = []
 
@@ -83,6 +85,9 @@ module View
         render_email,
         h('div#settings__options', [
           render_notifications,
+          h(:h3, 'Statistics'),
+          render_checkbox('Show Individual Statistics on Profile Page', :show_stats),
+          h(:h3, 'Display'),
           render_checkbox('Red 18xx.games Logo', :red_logo),
         ]),
         h('div#settings__colors', { style: { maxWidth: '38rem' } }, [
@@ -193,6 +198,7 @@ module View
       end
 
       children = [
+        h(:h3, 'Notifications'),
         h(
           :a,
           {
@@ -254,6 +260,44 @@ module View
                                on: { input: test_webhook_notification_change },
                                attrs: { checked: @test_webhook_notification })
       elements
+    end
+
+    def render_stats(header)
+      stats = @profile['stats']
+      return h(:div) unless stats
+      return h(:div, 'No eligible games') if stats.empty?
+
+      overall = { 'Overall' => stats['overall'] }
+      stats.delete('overall')
+      stats.transform_keys! { |title| Engine.meta_by_title(title)&.display_title }
+      stats = stats.sort_by { |k, _v| k }.to_h
+
+      rows =
+        overall.merge(stats).map do |title, (elo, plays)|
+          h(:tr, {}, [
+            h(:td, title),
+            h(:td, elo),
+            h(:td, plays),
+          ])
+        end
+
+      table =
+        h(:div, { style: { overflowX: 'auto' } }, [
+          h(:table, [
+            h(:thead, [
+              h(:tr, [
+                h(:th, 'Game'),
+                h(:th, 'Elo Rating'),
+                h(:th, 'Number of Plays'),
+              ]),
+            ]),
+            h(:tbody, rows),
+          ]),
+        ])
+
+      notes = '* Updated daily. Only fully completed games are eligible.'
+
+      h('div#profile-stats', [h(:h2, header), table, notes])
     end
 
     def render_checkbox(label, id)
@@ -376,6 +420,7 @@ module View
         login(params)
       when :profile
         edit_user(params)
+        `setTimeout(function() { location.reload() }, 1000)`
       end
     end
   end
