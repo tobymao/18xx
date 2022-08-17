@@ -317,7 +317,18 @@ module Engine
                   'company receives $10 per special track used from the '\
                   'bank. Once rotated, this private no longer pays revenue '\
                   'to the company.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 2,
+                reachable: false,
+                closed_when_used_up: false,
+                hexes: %w[D9 E8 E10 F11 G10 H9 I10 M6 M8 N9 O16 O18],
+                tiles: %w[PNW1 PNW2],
+              },
+            ],
             color: nil,
           },
           {
@@ -332,7 +343,16 @@ module Engine
                   'mountain pass hex is any hex that includes the '\
                   'mountain symbol AND a build cost. Revenue is NOT '\
                   'added to an E-train.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[A16 G4 G18 H5 I6 J17 M14 N13],
+                count: 1,
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
