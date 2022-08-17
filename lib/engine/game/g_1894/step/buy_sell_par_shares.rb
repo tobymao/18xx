@@ -35,7 +35,7 @@ module Engine
 
           def process_choose(action)
             choice = action.choice
-            @game.home_hex(@pending_late_corporation, choice)
+            @game.late_corporation_home_hex(@pending_late_corporation, choice)
             @game.log << "#{@pending_late_corporation.name}'s home location is #{choice}"
             @pending_late_corporation = nil
           end

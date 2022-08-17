@@ -6,6 +6,7 @@ require_relative 'map'
 require_relative 'entities'
 require_relative 'stock_market'
 require_relative '../stubs_are_restricted'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
@@ -24,7 +25,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 22, 4 => 18 }.freeze
 
-        STARTING_CASH = { 3 => 600, 4 => 500 }.freeze
+        STARTING_CASH = { 3 => 560, 4 => 420 }.freeze
 
         CAPITALIZATION = :full
 
@@ -143,13 +144,13 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 8 },
+        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 1 },
                   {
                     name: '3',
                     distance: 3,
                     price: 140,
                     rusts_on: '5',
-                    num: 6,
+                    num: 1,
                     discount: { '2' => 40 },
                   },
                   {
@@ -161,8 +162,9 @@ module Engine
                     discount: { '3' => 70 },
                   },
                   {
-                    name: '5',
-                    distance: 5,
+                    name: '5+',
+                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
                     price: 400,
                     rusts_on: 'D',
                     num: 3,
@@ -212,7 +214,7 @@ module Engine
           final_phase: :one_more_full_or_set,
         }.freeze
 
-        SELL_BUY_ORDER = :sell_buy
+        SELL_BUY_ORDER = :sell_buy_sell
 
         NEXT_SR_PLAYER_ORDER = :first_to_pass
 
@@ -266,7 +268,7 @@ module Engine
         BELGIAN_REGULAR_CORPORATIONS = %w[GR Belge].freeze
         REGULAR_CORPORATIONS = FRENCH_REGULAR_CORPORATIONS + BELGIAN_REGULAR_CORPORATIONS
         FRENCH_LATE_CORPORATIONS = %w[F1 F2].freeze
-        FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 I8].freeze
+        FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 H7 I8].freeze
         BELGIAN_LATE_CORPORATIONS = %w[B1 B2].freeze
         BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 H17].freeze
 
@@ -403,6 +405,7 @@ module Engine
 
         def place_home_token(corporation)
           return if corporation.tokens.first&.used == true
+
           if [ouest, nord, cab].include?(corporation)
             corporation.coordinates.each do | coordinate |
               hex = hex_by_id(coordinate)
@@ -524,9 +527,14 @@ module Engine
           possible_home_hexes.map(&:id)
         end
 
-        def home_hex(corporation, hex)
-          corporation.coordinates = hex
-          hex_by_id(hex).tile.add_reservation!(corporation, nil, reserve_city=false)
+        def late_corporation_home_hex(corporation, coordinates)
+          corporation.coordinates = coordinates
+          tile = hex_by_id(coordinates).tile
+          if tile.color == :brown
+            tile.add_reservation!(corporation, nil, reserve_city=false)
+          else
+            tile.add_reservation!(corporation, 0)
+          end
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
@@ -600,8 +608,8 @@ module Engine
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
           
           revenues << 60 if is_est_running_to_le_sud(corporation, stops)
-          if not ignore_london
-            london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.towns.first.revenue)
+          if ignore_london
+            london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.citiess.first.revenue)
             revenues.delete_at(revenues.index(london_revenue) || revenues.length)
           end
 
@@ -663,7 +671,7 @@ module Engine
         end
 
         def block_london
-          london = hex_by_id(LONDON_HEX).tile.towns.first
+          london = hex_by_id(LONDON_HEX).tile.cities.first
           london.instance_variable_set(:@game, self)
 
           def london.blocks?(corporation)

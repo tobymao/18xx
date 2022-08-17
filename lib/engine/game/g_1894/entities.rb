@@ -55,6 +55,8 @@ module Engine
               when: 'owning_corp_or_turn',
               hexes: ['A12'],
               count: 1,
+              price: 0,
+              teleport_price: 0,
               extra_action: true,
               from_owner: true,
               owner_type: 'corporation',
