@@ -267,14 +267,13 @@ module View
       return h(:div) unless stats
       return h(:div, 'No eligible games') if stats.empty?
 
+      overall = { 'Overall' => stats['overall'] }
+      stats.delete('overall')
+      stats.transform_keys! { |title| Engine.meta_by_title(title)&.display_title }
+      stats = stats.sort_by { |k, _v| k }.to_h
+
       rows =
-        stats.map do |title, (elo, plays)|
-          title =
-            if title == 'overall'
-              title.capitalize
-            else
-              Engine.meta_by_title(title)&.display_title || title.capitalize
-            end
+        overall.merge(stats).map do |title, (elo, plays)|
           h(:tr, {}, [
             h(:td, title),
             h(:td, elo),
