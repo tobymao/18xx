@@ -282,7 +282,7 @@ module Engine
                 distance: 999,
                 price: 1100,
                 num: 20,
-                discount: { '4' => 300, '5' => 300, '6' => 300 },
+                discount: { '4' => 300, '4+' => 300, '5' => 300, '5+' => 300, '6+' => 300, '6' => 300 },
               },
             ],
           },
@@ -965,6 +965,15 @@ module Engine
 
           _r, c = entity.share_price.coordinates
           c == 1
+        end
+
+        def next_round!
+          reset_company_values if @round.is_a?(Engine::Round::Auction)
+          super
+        end
+
+        def reset_company_values
+          companies.each { |comp| comp.value = 0 }
         end
       end
     end
