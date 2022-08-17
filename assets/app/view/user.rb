@@ -420,6 +420,7 @@ module View
         login(params)
       when :profile
         edit_user(params)
+        `setTimeout(function() { location.reload() }, 1000)`
       end
     end
   end
