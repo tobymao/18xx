@@ -347,7 +347,7 @@ module Engine
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
           #belgian_starting_corporation = corporation_by_id(BELGIAN_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
           belgian_starting_corporation = corporation_by_id('Belge')
-          @log << "-- The Belgian major shareholding corporation is the #{belgian_starting_corporation.id}"
+          #@log << "-- The Belgian major shareholding corporation is the #{belgian_starting_corporation.id}"
 
           remove_extra_companies([french_starting_corporation.id, belgian_starting_corporation.id])
 
