@@ -364,7 +364,17 @@ module Engine
                   'any plain yellow track tile to the special boom town tile '\
                   '(PNW3). This tile ignores any tile\'s normal tile '\
                   'placement restrictions.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[PNW3],
+              },
+            ],
             color: nil,
           },
           {
@@ -570,7 +580,7 @@ module Engine
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is M4.',
             abilities: [],
             color: '#ffffff',
-            text_color: 'white',
+            text_color: 'black',
           },
           {
             name: 'MINOR: 16. Astoria and Columbia River Railroad Company',
