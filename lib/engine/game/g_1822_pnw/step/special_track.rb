@@ -27,6 +27,7 @@ module Engine
               return @game.can_hold_builder_cubes?(hex.tile) && @game.graph.connected_hexes(entity.owner)[hex]
             end
             return available_hex_portage_company(entity, hex) if @game.portage_company?(entity)
+            return available_hex_boomtown_company(entity, hex) if @game.boomtown_company?(entity)
 
             super
           end
@@ -42,6 +43,7 @@ module Engine
               return @game.can_hold_builder_cubes?(hex.tile) ? [@game.tile_by_id('BC-0')] : []
             end
             return potential_tiles_portage_company(entity, hex) if @game.portage_company?(entity)
+            return potential_tiles_boomtown_company(entity, hex) if @game.boomtown_company?(entity)
 
             tiles = super
             if @game.can_hold_builder_cubes?(hex.tile)
@@ -56,6 +58,7 @@ module Engine
             return true if tile.id == 'BC-0'
             return true if @game.legal_leavenworth_tile(hex, tile)
             return legal_tile_rotation_portage_company?(entity, hex, tile) if @game.portage_company?(entity)
+            return legal_tile_rotation_boomtown_company?(entity, hex, tile) if @game.boomtown_company?(entity)
 
             super
           end
@@ -76,6 +79,18 @@ module Engine
             tile.exits.none? { |exit| hex.all_neighbors[exit].id == 'H11' }
           end
 
+          def available_hex_boomtown_company(_entity, hex)
+            %w[7 8 9].include?(hex.tile.name)
+          end
+
+          def potential_tiles_boomtown_company(entity, _hex)
+            @game.tiles.select { |tile| abilities(entity).tiles.include?(tile.name) }.uniq
+          end
+
+          def legal_tile_rotation_boomtown_company?(_entity, _hex, _tile)
+            true
+          end
+
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             raise GameError, 'Cannot upgrade forests' if action.hex.assigned?('forest')
 
@@ -83,40 +98,37 @@ module Engine
           end
 
           def process_lay_tile(action)
-            if @game.cube_company?(action.entity)
-              @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
-              action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
-              ability = abilities(action.entity)
-              ability.use!
-              if ability.count.zero? && ability.closed_when_used_up
-                company = ability.owner
-                @log << "#{company.name} closes"
-                company.close!
-              end
-            elsif @game.company_ability_extra_track?(action.entity) && action.tile.id == 'BC-0'
-              @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
-              action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
-              ability = abilities(action.entity)
-              ability.use!
-              # Minors can only do this once...
-              if action.entity.owner.type == :minor
-                ability.use!
-              else
-                @extra_laided_track = true
-              end
-
-              if ability.type == :tile_lay && ability.count <= 0 && ability.closed_when_used_up
-                @log << "#{ability.owner.name} closes"
-                ability.owner.close!
-              end
-            elsif @game.portage_company?(action.entity)
-              process_lay_tile_portage_company(action)
-            else
-              forest = @game.forest?(action.hex.tile)
-              super
-              action.hex.tile.icons.reject! { |i| i.name == 'block' }
-              action.hex.assign!('forest') if forest
+            return process_lay_tile_cube_company(action) if @game.cube_company?(action.entity)
+            if @game.company_ability_extra_track?(action.entity) && action.tile.id == 'BC-0'
+              return process_lay_tile_extra_track_cube(action)
             end
+            return process_lay_tile_portage_company(action) if @game.portage_company?(action.entity)
+            return process_lay_tile_boomtown_company(action) if @game.boomtown_company?(action.entity)
+
+            forest = @game.forest?(action.hex.tile)
+            super
+            action.hex.tile.icons.reject! { |i| i.name == 'block' }
+            action.hex.assign!('forest') if forest
+          end
+
+          def process_lay_tile_cube_company(action)
+            place_builder_cube(action)
+            ability = abilities(action.entity)
+            ability.use!
+            check_company_closing(ability)
+          end
+
+          def process_lay_tile_extra_track_cube(action)
+            place_builder_cube(action)
+            ability = abilities(action.entity)
+            ability.use!
+            # Minors can only do this once...
+            if action.entity.owner.type == :minor
+              ability.use!
+            else
+              @extra_laided_track = true
+            end
+            check_company_closing(ability)
           end
 
           def process_lay_tile_portage_company(action)
@@ -126,6 +138,25 @@ module Engine
             abilities(action.entity).use!
             @round.num_laid_portage += 1
             action.entity.revenue = 0
+          end
+
+          def process_lay_tile_boomtown_company(action)
+            lay_tile(action)
+            ability = abilities(action.entity)
+            ability.use!
+            check_company_closing(ability)
+          end
+
+          def place_builder_cube(action)
+            @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
+            action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
+          end
+
+          def check_company_closing(ability)
+            return unless ability.count.zero? && ability.closed_when_used_up
+
+            @log << "#{ability.owner.name} closes"
+            ability.owner.close!
           end
         end
       end
