@@ -187,6 +187,10 @@ module Engine
           entity.id == 'P16'
         end
 
+        def boomtown_company?(entity)
+          entity&.id == 'P18'
+        end
+
         PHASES = [
           {
             name: '1',
@@ -687,6 +691,7 @@ module Engine
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if legal_leavenworth_tile(from.hex, to) && from.color == :white
           return true if from.color == 'blue' && to.color == 'blue'
+          return to.name == 'PNW3' if boomtown_company?(selected_company)
 
           super
         end

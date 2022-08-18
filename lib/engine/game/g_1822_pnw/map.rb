@@ -295,6 +295,27 @@ module Engine
               'code' => 'city=revenue:100,slots:4;'\
                         'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:20;label=Por',
             },
+          'PNW3' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            },
+          'PNW4' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0',
+            },
+          'PNW5' =>
+            {
+              'count' => 1,
+              'color' => 'gray',
+              'code' =>
+                'city=revenue:50,loc:2.5;path=a:1,b:_0;path=a:4,b:_0;path=a:1,b:4',
+            },
           'P1' =>
             {
               'count' => 1,
