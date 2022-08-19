@@ -322,6 +322,7 @@ module Engine
         '105' => 'city=revenue:40,slots:3;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:2,b:_0,track:dual;label=BM',
         '106' => 'junction;path=a:0,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:4,b:_0,track:dual;path=a:3,b:_0,track:dual',
         '107' => 'junction;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:4,b:_0,track:dual',
+        '108' => 'junction;path=a:0,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:4,b:_0,track:dual;path=a:5,b:_0,track:dual',
         '118' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3',
         '122' => 'city=revenue:80,slots:2;city=revenue:80,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=T',
         '125' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
