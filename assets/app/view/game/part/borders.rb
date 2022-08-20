@@ -60,6 +60,8 @@ module View
             case border.type
             when :mountain
               :brown
+            when :province
+              :orange
             when :water
               :blue
             when :impassable
@@ -71,6 +73,10 @@ module View
 
         def border_width(border)
           border.type == :impassable ? '10' : '8'
+        end
+
+        def border_dash(border)
+          border.type == :province ? '20 20' : 'none'
         end
 
         def render_cost(border)
@@ -114,6 +120,7 @@ module View
                             **EDGES[border.edge],
                             stroke: color(border),
                             'stroke-width': border_width(border),
+                            'stroke-dasharray': border_dash(border),
                           })
             children << render_cost(border) if border.cost
           end
