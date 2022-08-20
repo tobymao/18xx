@@ -31,7 +31,7 @@ module Engine
         '57' => 'city=revenue:20;path=a:0,b:_0;path=a:_0,b:3',
         '58' => 'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2',
         '69' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:2,b:_1;path=a:_1,b:4',
-        # '71' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow',
+        '71' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:_1,track:narrow;path=a:_1,b:4,track:narrow',
         '72' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:1,track:narrow',
         '73' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow',
         '74' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow',
