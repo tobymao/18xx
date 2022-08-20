@@ -191,6 +191,20 @@ module Engine
           entity&.id == 'P18'
         end
 
+        def coal_company?(entity)
+          entity&.id == 'P19'
+        end
+
+        def owns_coal_company?(entity)
+          entity.companies.any? { |c| coal_company?(c) }
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          return super unless coal_company?(selected_company)
+
+          tiles.select { |t| abilities(selected_company).tiles.include?(t.name) }.uniq
+        end
+
         PHASES = [
           {
             name: '1',
@@ -405,7 +419,7 @@ module Engine
             G1822PNW::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
-            G1822::Step::Route,
+            G1822PNW::Step::Route,
             G1822PNW::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822PNW::Step::MinorAcquisition,
@@ -478,15 +492,6 @@ module Engine
           self.class::STARTING_COMPANIES
         end
 
-        def upgrades_to_correct_label?(from, to)
-          # If the previous hex is white with a 'T', allow upgrades to 5 or 6
-          if from.hex.tile.label.to_s == 'T' && from.hex.tile.color == :white
-            return true if to.name == '5'
-            return true if to.name == '6'
-          end
-          super
-        end
-
         def stock_round
           G1822PNW::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
@@ -518,6 +523,9 @@ module Engine
 
           # Setup exchange token abilities for all corporations
           setup_exchange_tokens
+
+          # Setup hidden coal corporation for P18
+          @hidden_coal_corp = Corporation.new(sym: 'HC', name: 'Hidden Coal', logo: 'open_city', tokens: [0])
 
           # Setup all the destination tokens, icons and abilities
           # setup_destinations
@@ -627,6 +635,20 @@ module Engine
           []
         end
 
+        attr_reader :hidden_coal_corp
+
+        def check_connected(route, corporation)
+          return if route.ordered_paths.each_cons(2).all? do |a, b|
+                      a.connects_to?(b,
+                                     corporation) || ((corporation.companies.any? do |c|
+                                                         coal_company?(c)
+                                                       end) && a.connects_to?(b,
+                                                                              hidden_coal_corp))
+                    end
+
+          raise GameError, 'Route is not connected'
+        end
+
         def must_remove_town?(entity)
           %w[P7 P8].include?(entity.id)
         end
@@ -692,6 +714,13 @@ module Engine
           return true if legal_leavenworth_tile(from.hex, to) && from.color == :white
           return true if from.color == 'blue' && to.color == 'blue'
           return to.name == 'PNW3' if boomtown_company?(selected_company)
+          return to.name == 'PNW5' if from.name == 'PNW4'
+
+          super
+        end
+
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
+          return true if tile.name == 'PNW5'
 
           super
         end

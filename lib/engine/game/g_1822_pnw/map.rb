@@ -307,7 +307,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0',
+                'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;upgrade=cost:75,terrain:mountain',
             },
           'PNW5' =>
             {

@@ -9,10 +9,8 @@ module Engine
         class Track < Engine::Game::G1822::Step::Track
           def potential_tiles(entity, hex)
             tiles = super
-            if @game.can_hold_builder_cubes?(hex.tile)
-              cube_tile = @game.tile_by_id('BC-0')
-              tiles << cube_tile
-            end
+            tiles << @game.tile_by_id('BC-0') if @game.can_hold_builder_cubes?(hex.tile)
+            tiles << @game.tile_by_id('PNW5-0') if hex.tile.name == 'PNW4'
             tiles
           end
 
