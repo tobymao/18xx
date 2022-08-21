@@ -359,8 +359,8 @@ module Engine
           @second_edition_optional_rule ||= @optional_rules.include?(:second_edition)
         end
 
-        def fivede_runs_stations_and_offboards_only?
-          @fivede_optional_rule ||= @optional_rules.include?(:fivede)
+        def de_runs_stations_and_offboards_only?
+          second_edition? || @optional_rules.include?(:fivede)
         end
 
         def fourde_variant?
@@ -801,7 +801,7 @@ module Engine
           stops = route.visited_stops
           return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
 
-          if fivede_runs_stations_and_offboards_only?
+          if de_runs_stations_and_offboards_only?
             stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == :red }
           end
           count = route.train.distance.first['pay']
@@ -810,14 +810,16 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          additional_revenue = second_edition? && route.train.name == 'D' ? 10 * stops.size : 0
-          super + additional_revenue + (route_connection_bonus_hexes(route, stops: stops).size * 10)
+          super + bonus_revenue(route.train, stops) + (route_connection_bonus_hexes(route, stops: stops).size * 10)
         end
 
         def revenue_str(route)
           stops = route.stops
           stop_hexes = stops.map(&:hex)
           str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
+          if (bonus = bonus_revenue(route.train, stops)).positive?
+            str += " + #{format_currency(bonus)}"
+          end
 
           num_bonuses = route_connection_bonus_hexes(route).size
           str += " + #{num_bonuses} Connection Bonus#{num_bonuses == 1 ? '' : 'es'}" if num_bonuses.positive?
@@ -836,6 +838,12 @@ module Engine
 
         def connection_bonus_revenue(entity)
           abilities(entity, :connection_bonus)&.bonus_revenue || 0
+        end
+
+        def bonus_revenue(train, stops)
+          return 0 if train.name != 'D' || !second_edition?
+
+          stops.count { |s| s.tile.color == :red } * 100
         end
 
         def route_connection_bonus_hexes(route, stops: nil)
