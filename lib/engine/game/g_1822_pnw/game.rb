@@ -14,6 +14,8 @@ module Engine
         include G1822PNW::Entities
         include G1822PNW::Map
 
+        attr_reader :hidden_coal_corp
+
         CERT_LIMIT = { 3 => 21, 4 => 15, 5 => 12 }.freeze
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
@@ -155,6 +157,9 @@ module Engine
           'M19' => '19',
           'M20' => '20',
           'M21' => '21',
+          'MA' => 'A',
+          'MB' => 'B',
+          'MC' => 'C',
         }.freeze
 
         MINOR_ASSOCIATIONS = {
@@ -189,6 +194,20 @@ module Engine
 
         def boomtown_company?(entity)
           entity&.id == 'P18'
+        end
+
+        def coal_company?(entity)
+          entity&.id == 'P19'
+        end
+
+        def owns_coal_company?(entity)
+          entity.companies.any? { |c| coal_company?(c) }
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          return super unless coal_company?(selected_company)
+
+          tiles.select { |t| abilities(selected_company).tiles.include?(t.name) }.uniq
         end
 
         PHASES = [
@@ -405,7 +424,7 @@ module Engine
             G1822PNW::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
-            G1822::Step::Route,
+            G1822PNW::Step::Route,
             G1822PNW::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822PNW::Step::MinorAcquisition,
@@ -478,15 +497,6 @@ module Engine
           self.class::STARTING_COMPANIES
         end
 
-        def upgrades_to_correct_label?(from, to)
-          # If the previous hex is white with a 'T', allow upgrades to 5 or 6
-          if from.hex.tile.label.to_s == 'T' && from.hex.tile.color == :white
-            return true if to.name == '5'
-            return true if to.name == '6'
-          end
-          super
-        end
-
         def stock_round
           G1822PNW::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
@@ -518,6 +528,9 @@ module Engine
 
           # Setup exchange token abilities for all corporations
           setup_exchange_tokens
+
+          # Setup hidden coal corporation for P18
+          @hidden_coal_corp = Corporation.new(sym: 'HC', name: 'Hidden Coal', logo: 'open_city', tokens: [0])
 
           # Setup all the destination tokens, icons and abilities
           # setup_destinations
@@ -571,8 +584,77 @@ module Engine
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
 
-        def company_choices(_company, _time)
+        def company_choices(company, time)
+          return company_choices_p21(company, time) if company.id == 'P21'
+
           {}
+        end
+
+        def company_choices_p21(company, time)
+          return {} if time != :token && time != :track && time != :issue
+
+          exclude_minors = bidbox_minors
+          exclude_privates = bidbox_privates
+
+          minors_choices = company_choices_p21_companies(self.class::COMPANY_MINOR_PREFIX, exclude_minors)
+          privates_choices = company_choices_p21_companies(self.class::COMPANY_PRIVATE_PREFIX, exclude_privates)
+
+          choices = {}
+          choices.merge!(minors_choices)
+          choices.merge!(privates_choices)
+          if company.owner.type == :major && exchange_tokens(company.owner).positive?
+            exchange_choice = {}
+            exchange_choice['exchange'] = "#{company.owner.name} moves a token from exchange to available"
+            choices.merge!(exchange_choice)
+          end
+          choices.compact
+        end
+
+        def company_choices_p21_companies(prefix, exclude_companies)
+          choices = {}
+          companies = bank_companies(prefix).reject do |company|
+            exclude_companies.any? { |c| c == company }
+          end
+          companies.each do |company|
+            choices["#{company.id}_top"] = "#{self.class::COMPANY_SHORT_NAMES[company.id]}-Top"
+            choices["#{company.id}_bottom"] = "#{self.class::COMPANY_SHORT_NAMES[company.id]}-Bottom"
+          end
+          choices
+        end
+
+        def company_made_choice(company, choice)
+          return company_made_choice_p21(company, choice) if company.id == 'P21'
+        end
+
+        def company_made_choice_p21(company, choice)
+          if choice == 'exchange'
+            @log << "#{company.owner.name} moves one token from exchange to available"
+            move_exchange_token(company.owner)
+            return
+          else
+            choice_array = choice.split('_')
+            selected_company = company_by_id(choice_array[0])
+            top = choice_array[1] == 'top'
+
+            @companies.delete(selected_company)
+            if top
+              last_bid_box_company = case selected_company.id[0]
+                                     when self.class::COMPANY_MINOR_PREFIX
+                                       bidbox_minors&.last
+                                     else
+                                       bidbox_privates&.last
+                                     end
+              index = @companies.index { |c| c == last_bid_box_company }
+              @companies.insert(index + 1, selected_company)
+            else
+              @companies << selected_company
+            end
+
+            @log << "#{company.owner.name} moves #{selected_company.name} to the #{top ? 'top' : 'bottom'}"
+          end
+
+          @log << "#{company.name} closes"
+          company.close!
         end
 
         def operating_order
@@ -625,6 +707,22 @@ module Engine
 
         def choices_entities
           []
+        end
+
+        def check_connected(route, corporation)
+          return if route.ordered_paths.each_cons(2).all? do |a, b|
+                      a.connects_to?(
+                        b,
+                        corporation
+                      ) || ((corporation.companies.any? do |c|
+                               coal_company?(c)
+                             end) && a.connects_to?(
+                              b,
+                              hidden_coal_corp
+                            ))
+                    end
+
+          raise GameError, 'Route is not connected'
         end
 
         def must_remove_town?(entity)
@@ -692,6 +790,13 @@ module Engine
           return true if legal_leavenworth_tile(from.hex, to) && from.color == :white
           return true if from.color == 'blue' && to.color == 'blue'
           return to.name == 'PNW3' if boomtown_company?(selected_company)
+          return to.name == 'PNW5' if from.name == 'PNW4'
+
+          super
+        end
+
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
+          return true if tile.name == 'PNW5'
 
           super
         end

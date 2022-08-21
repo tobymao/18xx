@@ -392,7 +392,17 @@ module Engine
                   'other private bonus can combine with this one. Once '\
                   'rotated, this private no longer pays revenue to the '\
                   'company.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                closed_when_used_up: false,
+                hexes: %w[B15 C14 D15 E16 F17 H17 I18 K16 L15],
+                tiles: %w[PNW4],
+              },
+            ],
             color: nil,
           },
           {
@@ -491,7 +501,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 7. SPokane Falls and Northern Railway',
+            name: 'MINOR: 7. Spokane Falls and Northern Railway',
             sym: 'M7',
             value: 100,
             revenue: 0,
