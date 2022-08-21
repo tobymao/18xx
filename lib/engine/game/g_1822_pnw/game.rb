@@ -172,6 +172,16 @@ module Engine
           '20' => 'NP',
         }.freeze
 
+        def major_name_for_associated_minor(id)
+          MINOR_ASSOCIATIONS[id]
+        end
+
+        def replace_associated_minor(old_minor_id, new_minor_id)
+          major = MINOR_ASSOCIATIONS[old_minor_id]
+          MINOR_ASSOCIATIONS.except!(old_minor_id)
+          MINOR_ASSOCIATIONS[new_minor_id] = major
+        end
+
         def reservation_corporations
           corporations.reject { |c| c.type == :major }
         end
@@ -202,6 +212,10 @@ module Engine
 
         def owns_coal_company?(entity)
           entity.companies.any? { |c| coal_company?(c) }
+        end
+
+        def backroom_company?(entity)
+          entity.id == 'P20'
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
@@ -415,7 +429,7 @@ module Engine
           Engine::Game::G1822PNW::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
-            Engine::Step::AcquireCompany,
+            G1822PNW::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             Engine::Step::Assign,
             G1822PNW::Step::SpecialChoose,
@@ -711,16 +725,16 @@ module Engine
 
         def check_connected(route, corporation)
           return if route.ordered_paths.each_cons(2).all? do |a, b|
-                      a.connects_to?(
-                        b,
-                        corporation
-                      ) || ((corporation.companies.any? do |c|
-                               coal_company?(c)
-                             end) && a.connects_to?(
-                              b,
-                              hidden_coal_corp
-                            ))
-                    end
+            a.connects_to?(
+              b,
+              corporation
+            ) || ((corporation.companies.any? do |c|
+                     coal_company?(c)
+                   end) && a.connects_to?(
+                    b,
+                    hidden_coal_corp
+                  ))
+          end
 
           raise GameError, 'Route is not connected'
         end
