@@ -711,11 +711,15 @@ module Engine
 
         def check_connected(route, corporation)
           return if route.ordered_paths.each_cons(2).all? do |a, b|
-                      a.connects_to?(b,
-                                     corporation) || ((corporation.companies.any? do |c|
-                                                         coal_company?(c)
-                                                       end) && a.connects_to?(b,
-                                                                              hidden_coal_corp))
+                      a.connects_to?(
+                        b,
+                        corporation
+                      ) || ((corporation.companies.any? do |c|
+                               coal_company?(c)
+                             end) && a.connects_to?(
+                              b,
+                              hidden_coal_corp
+                            ))
                     end
 
           raise GameError, 'Route is not connected'
