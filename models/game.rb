@@ -115,7 +115,12 @@ class Game < Base
 
   def archive!
     Action.where(game: self).delete
-    update(status: 'archived')
+    archive_data = { status: 'archived' }
+    unless finished_at
+      archive_data[:finished_at] = updated_at
+      archive_data[:manually_ended] = true
+    end
+    update(archive_data)
   end
 
   def to_h(include_actions: false, logged_in_user_id: nil)
