@@ -116,7 +116,10 @@ class Game < Base
   def archive!
     Action.where(game: self).delete
     archive_data = { status: 'archived' }
-    archive_data.merge!({ finished_at: updated_at, manually_ended: true }) unless finished_at
+    unless finished_at
+      archive_data[:finished_at] = updated_at
+      archive_data[:manually_ended] = true
+    end
     update(archive_data)
   end
 
