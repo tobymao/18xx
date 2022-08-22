@@ -591,14 +591,12 @@ module Engine
         end
 
         # Normally this only calls value on the player, but we want to add the
-        # bank to the proper player.
+        # bank to the proper player. Update the bank's private value in place so
+        # it will display correctly on the player card.
         def player_value(player)
-          value = player.value
-
           bank = company_by_id('UB')
-          value += @union_bank&.value || 0 if bank.owner == player
-
-          value
+          bank.value = @union_bank&.value || 0 if bank.owner == player
+          player.value
         end
 
         # Need to redefine this in order to add in union bank to the mix after
