@@ -66,6 +66,7 @@ module Engine
             ['Dividend < share price', 'none'],
             ['Dividend ≥ share price, < 2x share price ', '1 →'],
             ['Dividend ≥ 2x share price', '2 →'],
+            ['Dividend ≥ 3x share price, share price <= 150', '3 →'],
             ['Minor company dividend > 0', '1 →'],
             ['Each share sold (if sold by director)', '1 ←'],
             ['One or more shares sold (if sold by non-director)', '1 ←'],
@@ -79,6 +80,8 @@ module Engine
         PRIVATE_MAIL_CONTRACTS = %w[P9].freeze
         PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
+
+        IMPASSABLE_HEX_COLORS = %i[gray red].freeze
 
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/tree.svg',
@@ -610,6 +613,7 @@ module Engine
         end
 
         def company_choices_p21(company, time)
+          return {} unless company.owner&.corporation?
           return {} if time != :token && time != :track && time != :issue
 
           exclude_minors = bidbox_minors
@@ -810,11 +814,15 @@ module Engine
           str = super
 
           mill_bonus = mill_bonus(route.routes)
-          str += " (+#{format_currency(mill_bonus[:revenue])} Mill) " if mill_bonus && mill_bonus[:route] == route
+          if mill_bonus && mill_bonus[:route] == route && (mill_bonus[:revenue]).positive?
+            str += " (+#{format_currency(mill_bonus[:revenue])} Mill) "
+          end
+
           lumber_baron_bonus = lumber_baron_bonus(route.routes)
           if lumber_baron_bonus && lumber_baron_bonus[:route] == route
             str += " (+#{format_currency(lumber_baron_bonus[:revenue])} LB) "
           end
+
           str += ' (+30 Ski Haus) ' if ski_haus_revenue(route).positive?
           str += " (-#{format_currency(portage_penalty(route))} Portage) " if portage_penalty(route).positive?
 
@@ -833,6 +841,10 @@ module Engine
           return to.name == 'PNW5' if from.name == 'PNW4'
 
           super
+        end
+
+        def upgrade_ignore_num_cities(from)
+          from.hex.id == 'O14' && from.color == :yellow
         end
 
         def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
@@ -862,7 +874,7 @@ module Engine
         end
 
         def total_terrain_cost(tile)
-          tile.upgrades.sum(&:cost)
+          tile.upgrades.sum { |u| u.terrains.empty? ? 0 : u.cost }
         end
 
         def can_place_river(tile)

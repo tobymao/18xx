@@ -1550,7 +1550,7 @@ module Engine
         #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
         # - TODO: account for games that allow double dits to upgrade to one town
         return false if from.towns.size != to.towns.size
-        return false if !from.label && from.cities.size != to.cities.size
+        return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
 
         # but don't permit a labelled city to be downgraded to 0 cities.
         return false if from.label && !from.cities.empty? && to.cities.empty?
@@ -1559,6 +1559,10 @@ module Engine
         return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
 
         true
+      end
+
+      def upgrade_ignore_num_cities(_from)
+        false
       end
 
       def upgrades_to_correct_color?(from, to, selected_company: nil)
