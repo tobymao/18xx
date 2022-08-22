@@ -57,16 +57,16 @@ module Engine
         TRAINS = [
           {
             name: '2H',
-            obsolete_on: %w[6H 3M],
-            rusts_on: %w[6E 5M],
+            obsolete_on: '6H',
+            rusts_on: '6E',
             distance: 2,
             price: 100,
             num: 6,
           },
           {
             name: '4H',
-            obsolete_on: %w[6E 5M],
-            rusts_on: %w[7E 6M],
+            obsolete_on: '6E',
+            rusts_on: '7E',
             distance: 4,
             price: 200,
             num: 5,
@@ -81,8 +81,8 @@ module Engine
           },
           {
             name: '6H',
-            obsolete_on: %w[7E 6M],
-            rusts_on: %w[5D],
+            obsolete_on: '7E',
+            rusts_on: '5D',
             distance: 6,
             price: 300,
             num: 4,
