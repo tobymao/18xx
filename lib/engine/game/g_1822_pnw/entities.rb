@@ -299,7 +299,16 @@ module Engine
                   'token adds $10 to a single train starting in phase 3 and '\
                   '$30 starting in phase 5. Can be used with E-train and '\
                   'Mail Contract.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[D11 D19 F9 F13 G14 G16 H19 L11 L19 N5 O14],
+                count: 1,
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {

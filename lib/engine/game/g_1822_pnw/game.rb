@@ -83,6 +83,7 @@ module Engine
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/tree.svg',
           'P17' => '/icons/ski.svg',
+          'P15' => '/icons/factory.svg',
         }.freeze
 
         DOUBLE_HEX = %w[H19].freeze
@@ -196,6 +197,10 @@ module Engine
 
         def cube_company?(entity)
           entity.id == 'P10'
+        end
+
+        def mill_company?(entity)
+          entity.id == 'P15'
         end
 
         def portage_company?(entity)
@@ -431,7 +436,7 @@ module Engine
             G1822::Step::FirstTurnHousekeeping,
             G1822PNW::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
-            Engine::Step::Assign,
+            G1822PNW::Step::Assign,
             G1822PNW::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -678,7 +683,7 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          company.revenue = 0 if cube_company?(company) || company.id == 'P14'
+          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == '16'
         end
 
         def reorder_players(_order = nil)
@@ -743,6 +748,23 @@ module Engine
           %w[P7 P8].include?(entity.id)
         end
 
+        def mill_bonus_amount
+          @phase.name.to_i < 5 ? 10 : 30
+        end
+
+        def mill_bonus(routes)
+          return nil if routes.empty?
+
+          # If multiple routes gets mill bonus, get the biggest one.
+          mill_bonus = routes.map { |r| calculate_mill_bonus(r) }.compact
+          mill_bonus.sort_by { |v| v[:revenue] }.reverse&.first
+        end
+
+        def calculate_mill_bonus(route)
+          revenue = route.hexes.any? { |hex| hex.assigned?('P15') } ? mill_bonus_amount : 0
+          { route: route, revenue: revenue }
+        end
+
         def lumber_baron_bonus(routes)
           return nil if routes.empty?
 
@@ -778,6 +800,8 @@ module Engine
           revenue += ski_haus_revenue(route)
           lumber_baron_bonus = lumber_baron_bonus(route.routes)
           revenue += lumber_baron_bonus[:revenue] if lumber_baron_bonus && lumber_baron_bonus[:route] == route
+          mill_bonus = mill_bonus(route.routes)
+          revenue += mill_bonus[:revenue] if mill_bonus && mill_bonus[:route] == route
           revenue -= portage_penalty(route)
           revenue
         end
@@ -785,6 +809,8 @@ module Engine
         def revenue_str(route)
           str = super
 
+          mill_bonus = mill_bonus(route.routes)
+          str += " (+#{format_currency(mill_bonus[:revenue])} Mill) " if mill_bonus && mill_bonus[:route] == route
           lumber_baron_bonus = lumber_baron_bonus(route.routes)
           if lumber_baron_bonus && lumber_baron_bonus[:route] == route
             str += " (+#{format_currency(lumber_baron_bonus[:revenue])} LB) "
