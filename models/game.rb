@@ -126,7 +126,14 @@ class Game < Base
   def to_h(include_actions: false, logged_in_user_id: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
     if !players.find { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
-      actions_h.reject! { |a| a['type'] == 'message' }
+      actions_h.map! do |a|
+        if a['type'] == 'message'
+          a['user'] = user_id # Assign all messages to the creator of the game to not leak who sent it
+          a['message'] = '(Message redacted)'
+        end
+
+        a
+      end
     end
     settings_h = settings.to_h
 
