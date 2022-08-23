@@ -52,13 +52,6 @@ module Engine
 
         NYC_TOKEN_COST = 40
 
-        # These symbols upgrade to plain tiles in these colours
-        PLAIN_SYMBOL_UPGRADES = {
-          yellow: %w[Br R S],
-          green: %w[Bu Br S],
-          brown: %w[Bu],
-        }.freeze
-
         # Two lays with one being an upgrade. Tile lays cost 20
         TILE_COST = 20
         TILE_LAYS = [
@@ -684,18 +677,7 @@ module Engine
           super
         end
 
-        def tile_lay(_hex, old_tile, new_tile)
-          if old_tile.label
-            # add label to new tile, if this is a plain lay on a label.
-            new_tile.label = old_tile.label.to_s unless new_tile.label
-
-            # remove the label when we remove a temporaily labelled tile.
-            if PLAIN_SYMBOL_UPGRADES.include?(old_tile.color) &&
-               PLAIN_SYMBOL_UPGRADES[old_tile.color].include?(old_tile.label.to_s)
-              old_tile.label = nil
-            end
-          end
-
+        def tile_lay(_hex, old_tile, _new_tile)
           return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
 
           @log << "#{erie_canal_private.name}'s revenue reduced from #{format_currency(erie_canal_private.revenue)}" \
@@ -725,18 +707,6 @@ module Engine
           else
             false
           end
-        end
-
-        def upgrades_to_correct_label?(from, to)
-          # handle lays of a plain tile over a hex/tile with a label
-
-          if PLAIN_SYMBOL_UPGRADES.include?(to.color) &&
-             PLAIN_SYMBOL_UPGRADES[to.color].include?(from.label.to_s) &&
-             !to.label
-            return true
-          end
-
-          super
         end
 
         def legal_tile_rotation?(entity, hex, tile)
