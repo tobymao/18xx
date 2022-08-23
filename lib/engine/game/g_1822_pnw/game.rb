@@ -166,24 +166,26 @@ module Engine
           'MC' => 'C',
         }.freeze
 
-        MINOR_ASSOCIATIONS = {
-          '1' => 'CPR',
-          '5' => 'GNR',
-          '7' => 'CMPS',
-          '8' => 'SWW',
-          '17' => 'SPS',
-          '18' => 'ORNC',
-          '20' => 'NP',
-        }.freeze
+        def setup_associated_minors
+          @minor_associations = {
+            '1' => 'CPR',
+            '5' => 'GNR',
+            '7' => 'CMPS',
+            '8' => 'SWW',
+            '17' => 'SPS',
+            '18' => 'ORNC',
+            '20' => 'NP',
+          }
+        end
 
         def major_name_for_associated_minor(id)
-          MINOR_ASSOCIATIONS[id]
+          @minor_associations[id]
         end
 
         def replace_associated_minor(old_minor_id, new_minor_id)
-          major = MINOR_ASSOCIATIONS[old_minor_id]
-          MINOR_ASSOCIATIONS.except!(old_minor_id)
-          MINOR_ASSOCIATIONS[new_minor_id] = major
+          major = @minor_associations[old_minor_id]
+          @minor_associations.except!(old_minor_id)
+          @minor_associations[new_minor_id] = major
         end
 
         def reservation_corporations
@@ -536,6 +538,8 @@ module Engine
         end
 
         def setup
+          setup_associated_minors
+
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
 
@@ -572,7 +576,7 @@ module Engine
 
           minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
           minor_6, minors = minors.partition { |c| c.id == 'M6' }
-          minors_assoc, minors = minors.partition { |c| MINOR_ASSOCIATIONS.key?(corp_id_from_company_id(c.id)) }
+          minors_assoc, minors = minors.partition { |c| @minor_associations.key?(corp_id_from_company_id(c.id)) }
 
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
           private_1 = privates.find { |c| c.id == 'P1' }
@@ -908,15 +912,15 @@ module Engine
         end
 
         def associated_minor?(entity)
-          MINOR_ASSOCIATIONS.include?(entity.id)
+          @minor_associations.include?(entity.id)
         end
 
         def associated_minors
-          @corporations.select { |c| c.floated? && MINOR_ASSOCIATIONS.include?(c.id) }
+          @corporations.select { |c| c.floated? && @minor_associations.include?(c.id) }
         end
 
         def unassociated_minors
-          @corporations.select { |c| c.floated? && c.type == :minor && !MINOR_ASSOCIATIONS.include?(c.id) }
+          @corporations.select { |c| c.floated? && c.type == :minor && !@minor_associations.include?(c.id) }
         end
 
         def regionals
@@ -925,7 +929,7 @@ module Engine
         end
 
         def associated_major(minor)
-          corporation_by_id(MINOR_ASSOCIATIONS[minor.id])
+          corporation_by_id(@minor_associations[minor.id])
         end
 
         def forest?(tile)
