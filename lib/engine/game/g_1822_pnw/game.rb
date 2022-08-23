@@ -66,6 +66,7 @@ module Engine
             ['Dividend < share price', 'none'],
             ['Dividend ≥ share price, < 2x share price ', '1 →'],
             ['Dividend ≥ 2x share price', '2 →'],
+            ['Dividend ≥ 3x share price, share price <= 150', '3 →'],
             ['Minor company dividend > 0', '1 →'],
             ['Each share sold (if sold by director)', '1 ←'],
             ['One or more shares sold (if sold by non-director)', '1 ←'],
@@ -80,9 +81,12 @@ module Engine
         PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
 
+        IMPASSABLE_HEX_COLORS = %i[gray red].freeze
+
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/tree.svg',
           'P17' => '/icons/ski.svg',
+          'P15' => '/icons/factory.svg',
         }.freeze
 
         DOUBLE_HEX = %w[H19].freeze
@@ -162,15 +166,27 @@ module Engine
           'MC' => 'C',
         }.freeze
 
-        MINOR_ASSOCIATIONS = {
-          '1' => 'CPR',
-          '5' => 'GNR',
-          '7' => 'CMPS',
-          '8' => 'SWW',
-          '17' => 'SPS',
-          '18' => 'ORNC',
-          '20' => 'NP',
-        }.freeze
+        def setup_associated_minors
+          @minor_associations = {
+            '1' => 'CPR',
+            '5' => 'GNR',
+            '7' => 'CMPS',
+            '8' => 'SWW',
+            '17' => 'SPS',
+            '18' => 'ORNC',
+            '20' => 'NP',
+          }
+        end
+
+        def major_name_for_associated_minor(id)
+          @minor_associations[id]
+        end
+
+        def replace_associated_minor(old_minor_id, new_minor_id)
+          major = @minor_associations[old_minor_id]
+          @minor_associations.except!(old_minor_id)
+          @minor_associations[new_minor_id] = major
+        end
 
         def reservation_corporations
           corporations.reject { |c| c.type == :major }
@@ -188,6 +204,10 @@ module Engine
           entity.id == 'P10'
         end
 
+        def mill_company?(entity)
+          entity.id == 'P15'
+        end
+
         def portage_company?(entity)
           entity.id == 'P16'
         end
@@ -202,6 +222,10 @@ module Engine
 
         def owns_coal_company?(entity)
           entity.companies.any? { |c| coal_company?(c) }
+        end
+
+        def backroom_company?(entity)
+          entity.id == 'P20'
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
@@ -415,9 +439,9 @@ module Engine
           Engine::Game::G1822PNW::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
-            Engine::Step::AcquireCompany,
+            G1822PNW::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
-            Engine::Step::Assign,
+            G1822PNW::Step::Assign,
             G1822PNW::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -514,6 +538,8 @@ module Engine
         end
 
         def setup
+          setup_associated_minors
+
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
 
@@ -550,7 +576,7 @@ module Engine
 
           minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
           minor_6, minors = minors.partition { |c| c.id == 'M6' }
-          minors_assoc, minors = minors.partition { |c| MINOR_ASSOCIATIONS.key?(corp_id_from_company_id(c.id)) }
+          minors_assoc, minors = minors.partition { |c| @minor_associations.key?(corp_id_from_company_id(c.id)) }
 
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
           private_1 = privates.find { |c| c.id == 'P1' }
@@ -591,6 +617,7 @@ module Engine
         end
 
         def company_choices_p21(company, time)
+          return {} unless company.owner&.corporation?
           return {} if time != :token && time != :track && time != :issue
 
           exclude_minors = bidbox_minors
@@ -664,7 +691,7 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          company.revenue = 0 if cube_company?(company) || company.id == 'P14'
+          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == '16'
         end
 
         def reorder_players(_order = nil)
@@ -711,22 +738,39 @@ module Engine
 
         def check_connected(route, corporation)
           return if route.ordered_paths.each_cons(2).all? do |a, b|
-                      a.connects_to?(
-                        b,
-                        corporation
-                      ) || ((corporation.companies.any? do |c|
-                               coal_company?(c)
-                             end) && a.connects_to?(
-                              b,
-                              hidden_coal_corp
-                            ))
-                    end
+            a.connects_to?(
+              b,
+              corporation
+            ) || ((corporation.companies.any? do |c|
+                     coal_company?(c)
+                   end) && a.connects_to?(
+                    b,
+                    hidden_coal_corp
+                  ))
+          end
 
           raise GameError, 'Route is not connected'
         end
 
         def must_remove_town?(entity)
           %w[P7 P8].include?(entity.id)
+        end
+
+        def mill_bonus_amount
+          @phase.name.to_i < 5 ? 10 : 30
+        end
+
+        def mill_bonus(routes)
+          return nil if routes.empty?
+
+          # If multiple routes gets mill bonus, get the biggest one.
+          mill_bonus = routes.map { |r| calculate_mill_bonus(r) }.compact
+          mill_bonus.sort_by { |v| v[:revenue] }.reverse&.first
+        end
+
+        def calculate_mill_bonus(route)
+          revenue = route.hexes.any? { |hex| hex.assigned?('P15') } ? mill_bonus_amount : 0
+          { route: route, revenue: revenue }
         end
 
         def lumber_baron_bonus(routes)
@@ -764,6 +808,8 @@ module Engine
           revenue += ski_haus_revenue(route)
           lumber_baron_bonus = lumber_baron_bonus(route.routes)
           revenue += lumber_baron_bonus[:revenue] if lumber_baron_bonus && lumber_baron_bonus[:route] == route
+          mill_bonus = mill_bonus(route.routes)
+          revenue += mill_bonus[:revenue] if mill_bonus && mill_bonus[:route] == route
           revenue -= portage_penalty(route)
           revenue
         end
@@ -771,10 +817,16 @@ module Engine
         def revenue_str(route)
           str = super
 
+          mill_bonus = mill_bonus(route.routes)
+          if mill_bonus && mill_bonus[:route] == route && (mill_bonus[:revenue]).positive?
+            str += " (+#{format_currency(mill_bonus[:revenue])} Mill) "
+          end
+
           lumber_baron_bonus = lumber_baron_bonus(route.routes)
           if lumber_baron_bonus && lumber_baron_bonus[:route] == route
             str += " (+#{format_currency(lumber_baron_bonus[:revenue])} LB) "
           end
+
           str += ' (+30 Ski Haus) ' if ski_haus_revenue(route).positive?
           str += " (-#{format_currency(portage_penalty(route))} Portage) " if portage_penalty(route).positive?
 
@@ -793,6 +845,10 @@ module Engine
           return to.name == 'PNW5' if from.name == 'PNW4'
 
           super
+        end
+
+        def upgrade_ignore_num_cities(from)
+          from.hex.id == 'O14' && from.color == :yellow
         end
 
         def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
@@ -822,7 +878,7 @@ module Engine
         end
 
         def total_terrain_cost(tile)
-          tile.upgrades.sum(&:cost)
+          tile.upgrades.sum { |u| u.terrains.empty? ? 0 : u.cost }
         end
 
         def can_place_river(tile)
@@ -856,15 +912,15 @@ module Engine
         end
 
         def associated_minor?(entity)
-          MINOR_ASSOCIATIONS.include?(entity.id)
+          @minor_associations.include?(entity.id)
         end
 
         def associated_minors
-          @corporations.select { |c| c.floated? && MINOR_ASSOCIATIONS.include?(c.id) }
+          @corporations.select { |c| c.floated? && @minor_associations.include?(c.id) }
         end
 
         def unassociated_minors
-          @corporations.select { |c| c.floated? && c.type == :minor && !MINOR_ASSOCIATIONS.include?(c.id) }
+          @corporations.select { |c| c.floated? && c.type == :minor && !@minor_associations.include?(c.id) }
         end
 
         def regionals
@@ -873,7 +929,7 @@ module Engine
         end
 
         def associated_major(minor)
-          corporation_by_id(MINOR_ASSOCIATIONS[minor.id])
+          corporation_by_id(@minor_associations[minor.id])
         end
 
         def forest?(tile)
