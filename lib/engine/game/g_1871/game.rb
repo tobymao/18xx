@@ -425,68 +425,14 @@ module Engine
           stock_market.remove_par!(stock_market.share_price(5, 1))
         end
 
-        # Remove the straight tile from the manifest and the standard potential
-        # upgrades. When rendering track options the view uses the step's
-        # potential_tiles method which includes 9 as normal but excludes it
-        # based on our upgrades_to? method below.
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
-          super.reject { |t| t.name == '9' }
-        end
-
-        # Returns true if this tile represents a X or T hex on the base map
-        def map_x_or_t?(tile)
-          return false unless tile.color == :white
-
-          tile.label.to_s.include?('X') || tile.label.to_s.include?('T')
-        end
-
-        # Returns true if this tile represents a yellow tile on a map X hex
-        def yellow_x?(tile)
-          return false unless tile.color == :yellow
-
-          tile.hex.original_tile.label.to_s.include?('X')
-        end
-
-        # Returns true if this tile represents a brown tile on a map C hex
-        def brown_cx?(tile)
-          return false unless tile.color == :brown
-
-          tile.hex.original_tile.label.to_s.include?('CX')
-        end
-
-        # Returns true if this tile represents a yellow tile on a map T hex
-        def yellow_t?(tile)
-          return false unless tile.color == :yellow
-
-          tile.hex.original_tile.label.to_s.include?('T')
-        end
-
         # Handle tile upgrades. Differences from base include:
-        # - all of the proper X rules
         # - Removing the 'special' tile lay exception since 1871 doesn't include one
         # - Removing weird OO and double dit handling
-        # - Proper C tile handling
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Normal color progression and pre-existing track copied from base
           return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
           return false unless from.paths_are_subset_of?(to.paths)
-
-          # X tile handling
-          if yellow_x?(from)
-            # if we're upgrading a yellow X, make sure we use X tiles
-            return false unless to.label.to_s.include?('X')
-          elsif yellow_t?(from)
-            # if we're upgrading a yellow T, make sure we use T tiles
-            return false unless to.label.to_s.include?('T')
-          elsif brown_cx?(from)
-            # if we're upgrading the CX hex to gray, make sure we use the CX tile
-            return false unless to.label.to_s.include?('CX')
-          elsif !map_x_or_t?(from)
-            # normal label checking from base in other cases
-            return false unless upgrades_to_correct_label?(from, to)
-          end
-          # if we're upgrading a map X or T, don't check labels, normal
-          # yellows allowed
+          return false unless upgrades_to_correct_label?(from, to)
 
           # This is simplified from the base game since we don't have OO tiles
           # and double dits work in a standard way.
