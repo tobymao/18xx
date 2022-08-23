@@ -334,7 +334,7 @@ module Engine
                 count: 2,
                 reachable: false,
                 closed_when_used_up: false,
-                hexes: %w[D9 E8 E10 F11 G10 H9 I10 M6 M8 N9 O16 O18],
+                hexes: %w[E10 F11 G10 H9 I10 M6 M8 N9 O16 O18],
                 tiles: %w[PNW1 PNW2],
               },
             ],
