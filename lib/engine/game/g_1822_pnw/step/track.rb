@@ -7,10 +7,17 @@ module Engine
     module G1822PNW
       module Step
         class Track < Engine::Game::G1822::Step::Track
+          def available_hex(entity, hex)
+            return nil if @game.tokencity?(hex) && (!get_tile_lay(entity) & [:upgrade])
+
+            super
+          end
+
           def potential_tiles(entity, hex)
             tiles = super
             tiles << @game.tile_by_id('BC-0') if @game.can_hold_builder_cubes?(hex.tile)
             tiles << @game.tile_by_id('PNW5-0') if hex.tile.name == 'PNW4'
+            tiles = @game.tokencity_potential_tiles(hex, tiles) if @game.tokencity?(hex)
             tiles
           end
 
@@ -45,6 +52,14 @@ module Engine
             raise GameError, 'Cannot upgrade forests' if action.hex.assigned?('forest')
 
             super
+          end
+
+          def track_upgrade?(_from, _to, hex)
+            @game.tokencity?(hex) || super
+          end
+
+          def border_cost_discount(entity, spender, border, cost, hex)
+            hex == @game.seattle_hex ? 75 : super
           end
         end
       end

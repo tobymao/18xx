@@ -24,7 +24,7 @@ module Engine
           end
 
           def potentially_mergeable(entity)
-            super + @game.regionals
+            super + @game.regionals.select { |r| @game.regional_payout_count(r) > 1 }
           end
         end
       end

@@ -539,6 +539,8 @@ module Engine
 
         def setup
           setup_associated_minors
+          setup_regional_payout_count
+          setup_tokencity_tiles
 
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
@@ -609,6 +611,23 @@ module Engine
 
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
+
+        def setup_regional_payout_count
+          @regional_payout_count = {
+            'A' => 0,
+            'B' => 0,
+            'C' => 0,
+          }
+        end
+
+        def payout_companies
+          super
+          regionals.each { |r| @regional_payout_count[r.id] += 1 if r.owner }
+        end
+
+        def regional_payout_count(regional)
+          @regional_payout_count[regional.id]
+        end
 
         def company_choices(company, time)
           return company_choices_p21(company, time) if company.id == 'P21'
@@ -843,6 +862,7 @@ module Engine
           return true if from.color == 'blue' && to.color == 'blue'
           return to.name == 'PNW3' if boomtown_company?(selected_company)
           return to.name == 'PNW5' if from.name == 'PNW4'
+          return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
           super
         end
@@ -900,9 +920,13 @@ module Engine
           current_builder_cubes(tile) < max_builder_cubes(tile)
         end
 
-        def tile_cost_with_discount(tile, hex, _entity, _spender, base_cost)
-          return 20 if hex.id == 'H11' # Don't charge for the river hexside if this is Seattle
+        def upgrade_cost(tile, hex, entity, spender)
+          return tokencity_upgrade_cost(tile, hex) if tokencity?(hex)
 
+          super
+        end
+
+        def tile_cost_with_discount(tile, _hex, _entity, _spender, base_cost)
           [base_cost - (40 * current_builder_cubes(tile)), 0].max
         end
 

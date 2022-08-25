@@ -1209,6 +1209,50 @@ module Engine
             destination_icon: '1822_pnw/SWW_DEST',
           },
         ].freeze
+
+        # Portland and Seattle
+        def portland_hex
+          @portland_hex ||= hex_by_id('O8')
+        end
+
+        def seattle_hex
+          @seattle_hex ||= hex_by_id('H11')
+        end
+
+        def setup_tokencity_tiles
+          @tokencity_tiles = {}
+          @tokencity_tiles[portland_hex] = %w[X24 X25 X26 X27].map { |id| tile_by_id("#{id}-0") }
+          @tokencity_tiles[seattle_hex] = %w[X20 X21 X22 X23].map { |id| tile_by_id("#{id}-0") }
+        end
+
+        def tokencity?(hex)
+          @tokencity_tiles.key?(hex)
+        end
+
+        def tokencity_tile_index_of(hex, tile)
+          @tokencity_tiles[hex].find_index(tile) || -1
+        end
+
+        def tokencity_upgrades_to?(from, to)
+          from_index = tokencity_tile_index_of(from.hex, from)
+          to_index = tokencity_tile_index_of(from.hex, to)
+          to_index > from_index
+        end
+
+        def tokencity_potential_tiles(hex, tiles)
+          return [] if tiles.empty?
+          if @tokencity_tiles.keys.any? { |h| h != hex && h.tile.color == tiles[0].color }
+            return tiles.size > 1 ? [tiles[1]] : []
+          end
+
+          [tiles[0]]
+        end
+
+        def tokencity_upgrade_cost(old_tile, hex)
+          from_index = tokencity_tile_index_of(hex, old_tile)
+          to_index = tokencity_tile_index_of(hex, hex.tile)
+          20 * (to_index - from_index)
+        end
       end
     end
   end

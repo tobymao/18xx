@@ -1740,7 +1740,7 @@ module Engine
           train = @company_trains[company.id]
 
           unless can_gain_extra_train?(entity, train)
-            raise GameError, "Can't gain an extra #{train.name}, already have a permanent 2P or LP"
+            raise GameError, "Can't gain an extra #{train.name}, already have a permanent 2P, LP, or P+"
           end
 
           buy_train(entity, train, :free)
