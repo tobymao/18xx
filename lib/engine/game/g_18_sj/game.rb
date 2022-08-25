@@ -163,7 +163,13 @@ module Engine
                     num: 20,
                     available_on: '6',
                     discount: { '4' => 300, '5' => 300, '6' => 300 },
-                    variants: [{ name: 'E', price: 1300 }],
+                    variants: [
+                      {
+                        name: 'E',
+                        price: 1300,
+                        discount: { '4' => 300, '5' => 300, '6' => 300 },
+                      },
+                    ],
                     events: [{ 'type' => 'nationalization' }],
                   }].freeze
 
