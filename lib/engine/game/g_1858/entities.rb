@@ -15,7 +15,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 0, 0],
+            tokens: [0, 40, 40],
           },
           {
             sym: 'AVT',
@@ -27,7 +27,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 0, 0],
+            tokens: [0, 40, 40],
           },
           {
             sym: 'MZA',
@@ -39,7 +39,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 0, 0],
+            tokens: [0, 40, 40],
           },
           {
             sym: 'N',
@@ -51,7 +51,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 0, 0],
+            tokens: [0, 40, 40],
           },
           {
             sym: 'RP',
@@ -63,7 +63,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 0, 0],
+            tokens: [0, 40, 40],
           },
           {
             sym: 'TBF',
@@ -75,7 +75,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 0, 0],
+            tokens: [0, 40, 40],
           },
           {
             sym: 'W',
@@ -87,7 +87,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 0, 0],
+            tokens: [0, 40, 40],
           },
           {
             sym: 'ZPB',
@@ -99,7 +99,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 0, 0],
+            tokens: [0, 40, 40],
           },
         ].freeze
 
