@@ -16,7 +16,13 @@ module Engine
           def place_token(entity, city, token, connected: true, extra_action: false, special_ability: nil)
             raise GameError, "#{city.hex.location_name} may not be tokened" if city.hex.name == Engine::Game::G1894::Game::LONDON_HEX
 
-            raise GameError, "#{city.hex.location_name} may not be tokened until removed tokens are placed again" if @game.saved_tokens_hex && city.hex.name == @game.saved_tokens_hex.name && @game.saved_tokens && @game.saved_tokens.size > 1
+            if city.hex.name == @game.saved_tokens_hex&.name
+              if @game.saved_tokens&.size == 2
+                raise GameError, "#{city.hex.location_name} may not be tokened until removed tokens are placed again"
+              elsif @game.saved_tokens&.size == 1 && city.tile.reservations.any?
+                raise GameError, "#{city.hex.location_name} may not be tokened until the removed token is placed again as the tile is reserved by a corporation" 
+              end
+            end
 
             super
           end
