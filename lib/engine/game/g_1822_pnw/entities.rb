@@ -469,7 +469,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 3. Bellingham Bay @ British Columbia Railroad',
+            name: 'MINOR: 3. Bellingham Bay & British Columbia Railroad',
             sym: 'M3',
             value: 100,
             revenue: 0,
@@ -479,7 +479,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 4. Brewster @ Davenport Railroad',
+            name: 'MINOR: 4. Brewster & Davenport Railroad',
             sym: 'M4',
             value: 100,
             revenue: 0,
@@ -489,7 +489,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 5. Idaho @ Washington Northern Railway',
+            name: 'MINOR: 5. Idaho & Washington Northern Railway',
             sym: 'M5',
             value: 100,
             revenue: 0,
@@ -699,7 +699,7 @@ module Engine
         CORPORATIONS = [
           {
             sym: '1',
-            name: '1',
+            name: 'Pacfic Great Eastern Railway',
             logo: '1822/1',
             tokens: [0],
             type: 'minor',
@@ -716,7 +716,7 @@ module Engine
           },
           {
             sym: '2',
-            name: '2',
+            name: 'Spokane & British Columbia Railway',
             logo: '1822/2',
             tokens: [0],
             type: 'minor',
@@ -733,7 +733,7 @@ module Engine
           },
           {
             sym: '3',
-            name: '3',
+            name: 'Bellingham Bay & British Columbia Railroad',
             logo: '1822/3',
             tokens: [0],
             type: 'minor',
@@ -750,7 +750,7 @@ module Engine
           },
           {
             sym: '4',
-            name: '4',
+            name: 'Brewster & Davenport Railroad',
             logo: '1822/4',
             tokens: [0],
             type: 'minor',
@@ -767,7 +767,7 @@ module Engine
           },
           {
             sym: '5',
-            name: '5',
+            name: 'Idaho & Washington Northern Railway',
             logo: '1822/5',
             tokens: [0],
             type: 'minor',
@@ -784,7 +784,7 @@ module Engine
           },
           {
             sym: '6',
-            name: '6',
+            name: 'Port Townsend and Southern Railroad',
             logo: '1822/6',
             tokens: [0],
             type: 'minor',
@@ -801,7 +801,7 @@ module Engine
           },
           {
             sym: '7',
-            name: '7',
+            name: 'Spokane Falls and Northern Railway',
             logo: '1822/7',
             tokens: [0],
             type: 'minor',
@@ -818,7 +818,7 @@ module Engine
           },
           {
             sym: '8',
-            name: '8',
+            name: 'Puget Sound Shore Railroad',
             logo: '1822/8',
             tokens: [0],
             type: 'minor',
@@ -835,7 +835,7 @@ module Engine
           },
           {
             sym: '9',
-            name: '9',
+            name: 'Wenatchee Valley Railroad',
             logo: '1822/9',
             tokens: [0],
             type: 'minor',
@@ -852,7 +852,7 @@ module Engine
           },
           {
             sym: '10',
-            name: 'Grand Junction Railway',
+            name: 'Tacoma, Olympia and Grays Harbor Railroad Company',
             logo: '1822/10',
             tokens: [0],
             type: 'minor',
@@ -869,7 +869,7 @@ module Engine
           },
           {
             sym: '11',
-            name: '11',
+            name: 'Aberdeen & Oakville Railroad',
             logo: '1822/11',
             tokens: [0],
             type: 'minor',
@@ -886,7 +886,7 @@ module Engine
           },
           {
             sym: '12',
-            name: '12',
+            name: 'Connell Northern Railway Company',
             logo: '1822/12',
             tokens: [0],
             type: 'minor',
@@ -903,7 +903,7 @@ module Engine
           },
           {
             sym: '13',
-            name: '13',
+            name: 'North Yakima Valley Railroad',
             logo: '1822/13',
             tokens: [0],
             type: 'minor',
@@ -920,7 +920,7 @@ module Engine
           },
           {
             sym: '14',
-            name: '14',
+            name: 'Camas Prarie Railroad',
             logo: '1822/14',
             tokens: [20],
             type: 'minor',
@@ -937,7 +937,7 @@ module Engine
           },
           {
             sym: '15',
-            name: '15',
+            name: 'Ilwaco Railroad Company',
             logo: '1822/15',
             tokens: [0],
             type: 'minor',
@@ -954,7 +954,7 @@ module Engine
           },
           {
             sym: '16',
-            name: '16',
+            name: 'Astoria and Columbia River Railroad Company',
             logo: '1822/16',
             tokens: [0],
             type: 'minor',
@@ -971,7 +971,7 @@ module Engine
           },
           {
             sym: '17',
-            name: '17',
+            name: 'Oregon Central Railroad',
             logo: '1822/17',
             tokens: [0],
             type: 'minor',
@@ -988,7 +988,7 @@ module Engine
           },
           {
             sym: '18',
-            name: '18',
+            name: 'Portland and Willamette Valley Railway',
             logo: '1822/18',
             tokens: [0],
             type: 'minor',
@@ -1005,7 +1005,7 @@ module Engine
           },
           {
             sym: '19',
-            name: '19',
+            name: 'Cascade Portage Railway',
             logo: '1822/19',
             tokens: [0],
             type: 'minor',
@@ -1022,7 +1022,7 @@ module Engine
           },
           {
             sym: '20',
-            name: '20',
+            name: 'Walla Walla Valley Railway',
             logo: '1822/20',
             tokens: [0],
             type: 'minor',
@@ -1039,7 +1039,7 @@ module Engine
           },
           {
             sym: '21',
-            name: '21',
+            name: 'The Great Southern Railroad',
             logo: '1822/21',
             tokens: [0],
             type: 'minor',
@@ -1056,7 +1056,7 @@ module Engine
           },
           {
             sym: 'A',
-            name: 'A',
+            name: 'Vancouver Regional Railway',
             logo: '1822_pnw/a',
             tokens: [0],
             type: 'minor',
@@ -1073,7 +1073,7 @@ module Engine
           },
           {
             sym: 'B',
-            name: 'B',
+            name: 'Tacoma Regional Railway',
             logo: '1822_pnw/b',
             tokens: [0],
             type: 'minor',
@@ -1090,7 +1090,7 @@ module Engine
           },
           {
             sym: 'C',
-            name: 'C',
+            name: 'Calgary Regional Railway',
             logo: '1822_pnw/c',
             tokens: [0],
             type: 'minor',

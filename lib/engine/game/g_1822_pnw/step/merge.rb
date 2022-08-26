@@ -14,9 +14,9 @@ module Engine
           include Engine::Step::ProgrammerMergerPass
 
           def actions(entity)
-            return [] if !entity.corporation? || entity != current_entity || @merge_state == :done
-            return ['choose'] if @merge_state != :none
-            return ['merge'] if mergeable(entity).any?
+            return [] if !entity.corporation? || entity != current_entity
+            return %w[choose] if @merge_state != :none
+            return %w[merge pass] if mergeable(entity).any?
 
             []
           end
@@ -44,7 +44,8 @@ module Engine
             when :selecting_par
               'Choose par value for new company'
             when :selecting_shares
-              'Choose number of shares'
+              'Choose number of shares to make up minors value of '\
+              "#{@game.format_currency((@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2)}"
             when :selecting_token
               'What to do with the token'
             end
@@ -88,7 +89,7 @@ module Engine
               end
             when :selecting_shares
               minors_value = (@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2
-              minors_cash = @associated_minor.cash + @unassociated_minor.cash
+              minors_cash = @new_corporation.cash
               player_cash = @associated_minor.owner.cash
               possible_exchanged_shares(@selected_par, minors_cash, minors_value, player_cash).each do |shares|
                 money_difference = minors_value - (@selected_par * shares)
@@ -176,12 +177,10 @@ module Engine
             end
             @game.graph.clear
 
-            @associated_minor.close!
-            @unassociated_minor.close!
-            @game.corporations.delete(@associated_minor)
-            @game.corporations.delete(@unassociated_minor)
+            close_minor(@associated_minor)
+            close_minor(@unassociated_minor)
 
-            @merge_state = :done
+            @merge_state = :none
           end
 
           def process_choose(action)
@@ -210,6 +209,12 @@ module Engine
             receiving << "trains (#{trains})" unless trains.empty?
 
             @game.log << "#{corporation.name} receives #{receiving.join(', ')} from #{minor.name}" unless receiving.empty?
+          end
+
+          def close_minor(minor)
+            minor.owner.shares_by_corporation.delete(minor)
+            minor.close!
+            @game.corporations.delete(minor)
           end
 
           def mergeable_type(corporation)

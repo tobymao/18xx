@@ -902,7 +902,7 @@ module Engine
         end
 
         def can_place_river(tile)
-          @river_directions ||= { 'M4' => 5, 'N5' => 2 }
+          @river_directions ||= { 'M4' => 5, 'N5' => 2, 'H13' => 1 }
           return false unless @river_directions.include?(tile.hex.id)
 
           tile.paths.find { |p| p.edges[0].num == @river_directions[tile.hex.id] }.nil?
