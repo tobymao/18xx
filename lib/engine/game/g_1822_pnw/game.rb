@@ -13,6 +13,7 @@ module Engine
         include_meta(G1822PNW::Meta)
         include G1822PNW::Entities
         include G1822PNW::Map
+        include G1822PNW::BuilderCubes
 
         attr_reader :hidden_coal_corp
 
@@ -906,18 +907,6 @@ module Engine
           return false unless @river_directions.include?(tile.hex.id)
 
           tile.paths.find { |p| p.edges[0].num == @river_directions[tile.hex.id] }.nil?
-        end
-
-        def max_builder_cubes(tile)
-          ((total_terrain_cost(tile).to_f + (can_place_river(tile) ? 75.0 : 0.0)) / 40.0).ceil
-        end
-
-        def current_builder_cubes(tile)
-          tile.icons.count { |i| i.name.start_with?('block') }
-        end
-
-        def can_hold_builder_cubes?(tile)
-          current_builder_cubes(tile) < max_builder_cubes(tile)
         end
 
         def upgrade_cost(tile, hex, entity, spender)
