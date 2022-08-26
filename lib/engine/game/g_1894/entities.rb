@@ -271,7 +271,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 amount: 0,
-                description: 'Value of Le Sud (I2) increased by 30.',
+                description: 'Value of Centre & Bourgogne (I2) increased by 30.',
                 hexes: ['I2'],
               },
             ],

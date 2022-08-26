@@ -245,7 +245,7 @@ module Engine
         FERRY_MARKER_COST = 50
 
         PARIS_HEX = 'G4'
-        LE_SUD_HEX = 'I2'
+        CENTRE_BOURGOGNE_HEX = 'I2'
         LUXEMBOURG_HEX = 'I18'
         CALAIS_HEX = 'B9'
         #AMIENS_HEX = 'E6'
@@ -572,7 +572,7 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          revenue += est_le_sud_bonus(route.corporation, stops)
+          revenue += est_centre_bourgogne_bonus(route.corporation, stops)
           revenue += luxembourg_value(route.corporation, stops)
           revenue += london_bonus(route.corporation, stops)
 
@@ -589,12 +589,12 @@ module Engine
           get_route_max_value(corporation, stops, ignore_london=true)
         end
 
-        def est_le_sud_bonus(corporation, stops)
-          is_est_running_to_le_sud(corporation, stops) ? 30 : 0
+        def est_centre_bourgogne_bonus(corporation, stops)
+          is_est_running_to_centre_bourgogne(corporation, stops) ? 30 : 0
         end
 
-        def is_est_running_to_le_sud(corporation, stops)
-          corporation == est && stops.any? { |s| s.hex.id == LE_SUD_HEX }
+        def is_est_running_to_centre_bourgogne(corporation, stops)
+          corporation == est && stops.any? { |s| s.hex.id == CENTRE_BOURGOGNE_HEX }
         end
 
         def luxembourg_value(corporation, stops)
@@ -606,7 +606,7 @@ module Engine
         def get_route_max_value(corporation, stops, ignore_london = false)          
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
           
-          revenues << 60 if is_est_running_to_le_sud(corporation, stops)
+          revenues << 60 if is_est_running_to_centre_bourgogne(corporation, stops)
           if ignore_london
             london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.cities.first.revenue)
             revenues.delete_at(revenues.index(london_revenue) || revenues.length)

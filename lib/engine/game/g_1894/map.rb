@@ -157,7 +157,7 @@ module Engine
           'H1' => 'Chartres',
           'H7' => 'Soissons',
           'H17' => 'Liège',
-          'I2' => 'Le Sud',
+          'I2' => 'Centre & Bourgogne',
           'I8' => 'Reims',
           'I18' => 'Luxembourg',
         }.freeze
