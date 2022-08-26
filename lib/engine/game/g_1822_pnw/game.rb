@@ -561,7 +561,7 @@ module Engine
           @hidden_coal_corp = Corporation.new(sym: 'HC', name: 'Hidden Coal', logo: 'open_city', tokens: [0])
 
           # Setup all the destination tokens, icons and abilities
-          # setup_destinations
+          setup_destinations
         end
 
         def corp_id_from_company_id(id)

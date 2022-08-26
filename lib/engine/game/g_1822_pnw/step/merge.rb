@@ -12,6 +12,7 @@ module Engine
         class Merge < Engine::Step::Base
           include Engine::Step::TokenMerger
           include Engine::Step::ProgrammerMergerPass
+          include Engine::Game::G1822PNW::Connections
 
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
@@ -35,7 +36,9 @@ module Engine
 
           def mergeable(corporation)
             @game.unassociated_minors.select do |m|
-              @game.graph.connected_nodes(corporation)[m.tokens.first.city] && !valid_par_prices(corporation, m).empty?
+              entity_connects?(corporation, m) &&
+                !valid_par_prices(corporation, m).empty? &&
+                corporation.owner == m.owner
             end
           end
 
