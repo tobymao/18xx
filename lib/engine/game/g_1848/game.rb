@@ -312,7 +312,7 @@ module Engine
             min_price: 1,
             max_price: 40,
             revenue: 5,
-            desc: 'No special abilities. Can be bought for £1-£60',
+            desc: 'No special abilities. Can be bought for £1-£40',
           },
           {
             sym: 'P2',
