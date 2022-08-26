@@ -115,7 +115,7 @@ module Engine
                   },
                   {
                     name: 'Brown',
-                    on: '5',
+                    on: '5+',
                     train_limit: 3,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
@@ -144,13 +144,13 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 1 },
+        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 8 },
                   {
                     name: '3',
                     distance: 3,
                     price: 140,
-                    rusts_on: '5',
-                    num: 1,
+                    rusts_on: '5+',
+                    num: 6,
                     discount: { '2' => 40 },
                   },
                   {
@@ -177,7 +177,7 @@ module Engine
                     price: 600,
                     num: 3,
                     events: [{ 'type' => 'close_companies' }],
-                    discount: { '5' => 200 },
+                    discount: { '5+' => 200 },
                   },
                   {
                     name: '7',
@@ -609,7 +609,7 @@ module Engine
           
           revenues << 60 if is_est_running_to_le_sud(corporation, stops)
           if ignore_london
-            london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.citiess.first.revenue)
+            london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.cities.first.revenue)
             revenues.delete_at(revenues.index(london_revenue) || revenues.length)
           end
 

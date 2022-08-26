@@ -33,6 +33,13 @@ module Engine
             new_tile = action.tile
 
             if @game.class::BROWN_CITY_TILES.include?(new_tile.name)
+              # The city splits into two cities, so the reservation has to be for the whole hex
+              reservation = old_tile.cities.first.reservations.compact.first
+              if reservation
+                old_tile.cities.first.remove_all_reservations!
+                old_tile.add_reservation!(reservation.corporation, nil, reserve_city=false)
+              end
+
               tokens =  old_tile.cities.flat_map(&:tokens).compact
               tokens_to_save = []
               tokens.each do |token|
