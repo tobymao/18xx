@@ -299,7 +299,16 @@ module Engine
                   'token adds $10 to a single train starting in phase 3 and '\
                   '$30 starting in phase 5. Can be used with E-train and '\
                   'Mail Contract.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[D11 D19 F9 F13 G14 G16 H19 L11 L19 N5 O14],
+                count: 1,
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -325,7 +334,7 @@ module Engine
                 count: 2,
                 reachable: false,
                 closed_when_used_up: false,
-                hexes: %w[D9 E8 E10 F11 G10 H9 I10 M6 M8 N9 O16 O18],
+                hexes: %w[E10 F11 G10 H9 I10 M6 M8 N9 O16 O18],
                 tiles: %w[PNW1 PNW2],
               },
             ],
@@ -392,7 +401,17 @@ module Engine
                   'other private bonus can combine with this one. Once '\
                   'rotated, this private no longer pays revenue to the '\
                   'company.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                closed_when_used_up: false,
+                hexes: %w[B15 C14 D15 E16 F17 H17 I18 K16 L15],
+                tiles: %w[PNW4],
+              },
+            ],
             color: nil,
           },
           {
@@ -491,7 +510,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 7. SPokane Falls and Northern Railway',
+            name: 'MINOR: 7. Spokane Falls and Northern Railway',
             sym: 'M7',
             value: 100,
             revenue: 0,
@@ -640,7 +659,7 @@ module Engine
             sym: 'M21',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is P21.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is P17.',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -1029,7 +1048,7 @@ module Engine
             hide_shares: true,
             shares: [100],
             max_ownership_percent: 100,
-            coordinates: 'P21',
+            coordinates: 'P17',
             city: 0,
             color: '#ffffff',
             text_color: 'black',

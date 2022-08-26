@@ -28,6 +28,7 @@ module Engine
             end
             return available_hex_portage_company(entity, hex) if @game.portage_company?(entity)
             return available_hex_boomtown_company(entity, hex) if @game.boomtown_company?(entity)
+            return available_hex_coal_company(entity, hex) if @game.coal_company?(entity)
 
             super
           end
@@ -44,6 +45,7 @@ module Engine
             end
             return potential_tiles_portage_company(entity, hex) if @game.portage_company?(entity)
             return potential_tiles_boomtown_company(entity, hex) if @game.boomtown_company?(entity)
+            return potential_tiles_coal_company(entity, hex) if @game.coal_company?(entity)
 
             tiles = super
             if @game.can_hold_builder_cubes?(hex.tile)
@@ -59,6 +61,7 @@ module Engine
             return true if @game.legal_leavenworth_tile(hex, tile)
             return legal_tile_rotation_portage_company?(entity, hex, tile) if @game.portage_company?(entity)
             return legal_tile_rotation_boomtown_company?(entity, hex, tile) if @game.boomtown_company?(entity)
+            return legal_tile_rotation_coal_company?(entity, hex, tile) if @game.coal_company?(entity)
 
             super
           end
@@ -91,6 +94,18 @@ module Engine
             true
           end
 
+          def available_hex_coal_company(entity, hex)
+            abilities(entity).hexes.include?(hex.id) ? hex.all_neighbors.keys : nil
+          end
+
+          def potential_tiles_coal_company(entity, _hex)
+            @game.tiles.select { |tile| abilities(entity).tiles.include?(tile.name) }.uniq
+          end
+
+          def legal_tile_rotation_coal_company?(_entity, _hex, _tile)
+            true
+          end
+
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             raise GameError, 'Cannot upgrade forests' if action.hex.assigned?('forest')
 
@@ -104,6 +119,7 @@ module Engine
             end
             return process_lay_tile_portage_company(action) if @game.portage_company?(action.entity)
             return process_lay_tile_boomtown_company(action) if @game.boomtown_company?(action.entity)
+            return process_lay_tile_coal_company(action) if @game.coal_company?(action.entity)
 
             forest = @game.forest?(action.hex.tile)
             super
@@ -145,6 +161,14 @@ module Engine
             ability = abilities(action.entity)
             ability.use!
             check_company_closing(ability)
+          end
+
+          def process_lay_tile_coal_company(action)
+            lay_tile(action)
+            ability = abilities(action.entity)
+            token = Engine::Token.new(@game.hidden_coal_corp, logo: '/icons/18_usa/mine.svg')
+            action.tile.cities[0].place_token(@game.hidden_coal_corp, token, check_tokenable: false)
+            ability.use!
           end
 
           def place_builder_cube(action)

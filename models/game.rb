@@ -115,12 +115,19 @@ class Game < Base
 
   def archive!
     Action.where(game: self).delete
-    update(status: 'archived')
+    archive_data = { status: 'archived' }
+    unless finished_at
+      archive_data[:finished_at] = updated_at
+      archive_data[:manually_ended] = true
+    end
+    update(archive_data)
   end
 
   def to_h(include_actions: false, logged_in_user_id: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
-    actions_h.reject! { |a| a['type'] == 'message' } unless players.find { |p| p.id == logged_in_user_id }
+    if !players.find { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
+      actions_h.reject! { |a| a['type'] == 'message' }
+    end
     settings_h = settings.to_h
 
     # Move user settings and hide from other players

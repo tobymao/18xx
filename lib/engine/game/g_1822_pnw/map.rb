@@ -63,12 +63,15 @@ module Engine
 
         HEXES = {
           white: {
-            %w[A10 A12 A18 B9 B11 B17 B21 C10 C18 C20 D21 E12 E22 F21 G20 G22 H15 H23 I14 I22 J11 J21 K4 K6 K8 K10 K14 K18
+            %w[A10 A12 A18 B11 B17 B21 C18 C20 D21 E12 E22 F21 G20 G22 H15 H23 I14 I22 J11 J21 K4 K6 K8 K10 K14 K18
                K20 L5 L7 M12 M16 M18 N7 N11 N17 O6 P7 P11 P15] => '',
             %w[A20 C22 D13 E20 F5 G2 G8 G12 I8 J7 J13 J19 K12 K22 M10 P5 P13 P19] => 'town=revenue:0',
             %w[B19 D19 D23 F13 G14 G16 H21 J5 J23 L9 L11 L19 L23 P17] => 'city=revenue:0',
-            %w[A14 B13 C12 C16 D17 E14 E18 F1 F3 F7 F15 F19 G6 H7 I4 I16 I20 J15 L13 L17 N15
+            %w[B9] => 'border=edge:1,type:impassable;',
+            %w[C10] => 'border=edge:0,type:impassable;',
+            %w[A14 B13 C12 C16 D17 E14 E18 F1 F3 F15 F19 G6 H7 I4 I16 I20 J15 L13 L17 N15
                O4] => 'upgrade=cost:10,terrain:forest',
+            %w[F7] => 'upgrade=cost:10,terrain:forest;border=edge:3,type:impassable;',
             %w[A16 G18 J17] => 'upgrade=cost:150,terrain:mountain',
             %w[G4 H5 I6] => 'upgrade=cost:100,terrain:mountain',
             %w[H11] => 'city=revenue:20,slots:2;upgrade=cost:20;border=edge:4,type:water,cost:75;'\
@@ -120,9 +123,9 @@ module Engine
             %w[B15 C14 D15 E16 F17 H17 I18 K16 L15] => 'upgrade=cost:0,terrain:mountain',
           },
           blue: {
-            %w[B7] => 'junction;path=a:3,b:_0,terminal:1',
-            %w[D9] => 'junction;path=a:4,b:_0,terminal:1',
-            %w[E8] => 'junction;path=a:5,b:_0,terminal:1',
+            %w[B7] => 'junction;path=a:3,b:_0,terminal:1;border=edge:4,type:impassable',
+            %w[D9] => 'junction;path=a:4,b:_0,terminal:1;border=edge:3,type:impassable',
+            %w[E8] => 'junction;path=a:5,b:_0,terminal:1;border=edge:0,type:impassable',
             %w[I10] => 'junction;path=a:0,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
             %w[E10 F11 G10 H9 M6 M8 O16 O18] => '',
             %w[M2] => 'junction;path=a:4,b:_0,terminal:1',
@@ -307,7 +310,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0',
+                'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;upgrade=cost:75,terrain:mountain',
             },
           'PNW5' =>
             {

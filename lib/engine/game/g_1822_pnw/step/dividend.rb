@@ -17,6 +17,21 @@ module Engine
             end
             super
           end
+
+          def share_price_change(entity, revenue = 0)
+            return { share_direction: :left, share_times: 1 } unless revenue.positive?
+
+            price = entity.share_price.price
+            times = 0
+            times = 1 if revenue >= price || entity.type == :minor
+            times = 2 if revenue >= price * 2 && entity.type == :major
+            times = 3 if revenue >= price * 3 && price <= 150 && entity.type == :major
+            if times.positive?
+              { share_direction: :right, share_times: times }
+            else
+              {}
+            end
+          end
         end
       end
     end

@@ -46,7 +46,7 @@ module View
         </p>
 
         <p>
-        <b>Game Data</b> is collected when you play a game and is needed for the game to function. Game Data includes messages sent to others as a part of the game. This is publicly available through the website interface and API.
+        <b>Game Data</b> is collected when you play a game and is needed for the game to function. Game Data is publicly available through the website interface and API. In-game messages are only visible to the players in the game (whether via the website or the API).
         </p>
 
         <p>
