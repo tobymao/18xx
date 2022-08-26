@@ -23,6 +23,15 @@ module Engine
                           count: 1,
                         }],
             color: '#d9d9d9',
+          },          
+          {
+            name: 'Antwerpen-Rotterdamsche Spoorwegmaatschappij',
+            sym: 'AR',
+            value: 25,
+            revenue: 5,
+            desc: 'When owned by a corporation, the revenue is equal to 10.',
+            abilities: [{ type: 'revenue_change', revenue: 10, when: 'sold' }],
+            color: '#d9d9d9',
           },
           {
             name: 'Gare de Liège-Guillemins',
@@ -154,7 +163,7 @@ module Engine
           {
             name: 'Belge major shareholding',
             sym: 'BMS',
-            value: 220,
+            value: 200,
             revenue: 30,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' Belge without further payment. This private company may not be sold to any corporation, and does'\
@@ -164,20 +173,6 @@ module Engine
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'Belge_0' }],
             color: '#61b229',
-          },
-          {
-            name: 'GR major shareholding',
-            sym: 'GRMS',
-            value: 220,
-            revenue: 30,
-            desc: 'Owning player immediately receives the President\'s certificate of the'\
-                  ' GR without further payment. This private company may not be sold to any corporation, and does'\
-                  ' not exchange hands if the owning player loses the Presidency of the GR.'\
-                  ' Closes when the GR operates.',
-            abilities: [{ type: 'close', when: 'operated', corporation: 'GR' },
-                        { type: 'no_buy' },
-                        { type: 'shares', shares: 'GR_0' }],
-            color: '#fcf75e',
           },
         ].freeze
 

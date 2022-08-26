@@ -345,11 +345,10 @@ module Engine
           french_starting_corporation = corporation_by_id(FRENCH_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
           #french_starting_corporation = corporation_by_id(%w[CAB Ouest Nord].sort_by{ rand }.take(1).first)
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
-          #belgian_starting_corporation = corporation_by_id(BELGIAN_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
           belgian_starting_corporation = corporation_by_id('Belge')
-          #@log << "-- The Belgian major shareholding corporation is the #{belgian_starting_corporation.id}"
 
-          remove_extra_companies([french_starting_corporation.id, belgian_starting_corporation.id])
+          remove_extra_companies()
+          remove_extra_french_major_shareholding_companies(french_starting_corporation.id)
 
           @players.each do |player|
             share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, player)
@@ -681,13 +680,22 @@ module Engine
 
         private
 
-        def remove_extra_companies(starting_corporations_ids)
-          major_shareholdings = companies.find_all { |c| [180, 220].include?(c.value) }
+        def remove_extra_companies()
+          return unless @players.size == 4
+
+          company_to_remove = companies.find { |c| c.id == 'AR' }
+
+          company_to_remove.close!
+          @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
+        end
+
+        def remove_extra_french_major_shareholding_companies(starting_corporation_id)
+          major_shareholdings = companies.find_all { |c| c.value == 180 }
 
           major_shareholdings.each do |company|
             close_ability = company.abilities.select { |a| a.type == :close }.first
 
-            next if starting_corporations_ids.include?(close_ability.corporation)
+            next if close_ability.corporation == starting_corporation_id
 
             company.close!
             @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company)
