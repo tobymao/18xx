@@ -24,8 +24,16 @@ module Engine
           super
         end
 
+        def init_round
+          # FIXME: the initial stock round isn't *quite* a normal stock round,
+          # you cannot start public companies in the first stock round.
+          stock_round
+        end
+
         def stock_round
-          super
+          Engine::Round::Stock.new(self, [
+            Engine::Step::BuySellParShares,
+          ])
         end
 
         def operating_round
