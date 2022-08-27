@@ -82,7 +82,7 @@ module Engine
           {
             name: '6H',
             obsolete_on: '7E',
-            rusts_on: '5D',
+            rusts_on: '5D',   # FIXME: rusted by fifth 7E/6M/5D train bought
             distance: 6,
             price: 300,
             num: 4,
