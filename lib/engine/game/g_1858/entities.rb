@@ -16,6 +16,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 40, 40],
+            coordinates: 'G20',     # FIXME: does not have a fixed start location
           },
           {
             sym: 'AVT',
@@ -28,6 +29,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 40, 40],
+            coordinates: 'L13',     # FIXME: does not have a fixed start location
           },
           {
             sym: 'MZA',
@@ -40,6 +42,8 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 40, 40],
+            coordinates: 'H11',     # FIXME: does not have a fixed start location
+            city: 2,
           },
           {
             sym: 'N',
@@ -52,6 +56,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 40, 40],
+            coordinates: 'F1',      # FIXME: does not have a fixed start location
           },
           {
             sym: 'RP',
@@ -64,6 +69,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 40, 40],
+            coordinates: 'A14',     # FIXME: does not have a fixed start location
           },
           {
             sym: 'TBF',
@@ -76,6 +82,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 40, 40],
+            coordinates: 'O8',      # FIXME: does not have a fixed start location
           },
           {
             sym: 'W',
@@ -88,6 +95,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 40, 40],
+            coordinates: 'B5',      # FIXME: does not have a fixed start location
           },
           {
             sym: 'ZPB',
@@ -100,6 +108,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 40, 40],
+            coordinates: 'L7',      # FIXME: does not have a fixed start location
           },
         ].freeze
 
