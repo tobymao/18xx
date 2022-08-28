@@ -808,7 +808,11 @@ module Engine
         end
 
         def calculate_mill_bonus(route)
-          revenue = route.hexes.any? { |hex| hex.assigned?('P15') } ? mill_bonus_amount : 0
+          mill_hex = route.hexes.find { |hex| hex.assigned?('P15') }
+          revenue = mill_hex ? mill_bonus_amount : 0
+          if mill_hex && (train_type(route.train) == :etrain)
+            revenue = mill_hex.tile.cities[0].tokened_by?(route.train.owner) ? mill_bonus_amount * 2 : 0
+          end
           { route: route, revenue: revenue }
         end
 
@@ -827,6 +831,8 @@ module Engine
         end
 
         def forest_revenue(route)
+          return 0 if train_type(route.train) == :etrain
+
           10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
         end
 
