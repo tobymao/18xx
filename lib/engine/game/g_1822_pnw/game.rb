@@ -569,9 +569,16 @@ module Engine
           return super if corporation.floated?
 
           minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
+          corporation = corporation_by_id(minor_id)
           company_id = company_id_from_corp_id(minor_id)
           company = @companies.find { |c| c.id == company_id }
-          return false unless company
+
+          # If there is no company, either the minor is already closed (corporation will be nil)
+          # in which case the major can be started, or the minor is owned (corporation will not
+          # be nil), in which case the major cannot be started
+          return corporation.nil? unless company
+
+          # If there is a company, make sure it has no bids
           return false if @round.respond_to?(:bids) && !@round.bids[company].empty?
 
           true
