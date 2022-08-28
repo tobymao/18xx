@@ -563,6 +563,9 @@ module Engine
             # Moers can be upgraded to gray 950
             return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
 
+            # Dusseldorf and Cologne can be upgraded to gray 932V
+            return to.name == '932V' if from.color == :brown && %w[F9 I10].include?(from.hex.name)
+
             # Duisburg can be upgraded to gray 929
             return to.name == '949' if from.color == :brown && from.hex.name == 'D9'
           elsif from.color == :brown && %w[D9 F9 I10].include?(from.hex.name)
