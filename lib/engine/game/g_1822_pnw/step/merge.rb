@@ -128,6 +128,7 @@ module Engine
 
             transfer_posessions(@associated_minor, @new_corporation)
             transfer_posessions(@unassociated_minor, @new_corporation)
+            @new_corporation.ipoed = true
 
             @merge_state = :selecting_par
           end

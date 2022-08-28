@@ -565,6 +565,18 @@ module Engine
           setup_destinations
         end
 
+        def corporation_available?(corporation)
+          return super if corporation.floated?
+
+          minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
+          company_id = company_id_from_corp_id(minor_id)
+          company = @companies.find { |c| c.id == company_id }
+          return false unless company
+          return false if @round.respond_to?(:bids) && !@round.bids[company].empty?
+
+          true
+        end
+
         def corp_id_from_company_id(id)
           id[1..-1]
         end
