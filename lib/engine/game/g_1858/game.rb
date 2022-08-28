@@ -20,6 +20,13 @@ module Engine
 
         HOME_TOKEN_TIMING = :float
 
+        # FIXME: second tile lay only costs 10 if either first or second lay
+        # only adds metre gauge track.
+        TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
+        ].freeze
+
         def setup
           super
         end
