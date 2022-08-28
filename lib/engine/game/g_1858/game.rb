@@ -55,6 +55,34 @@ module Engine
           end
           return open_locations
         end
+
+        def hex_train?(train)
+          train.name[-1] == "H"
+        end
+
+        def hex_edge_cost(conn)
+          conn[:paths].each_cons(2).sum do |a, b|
+            a.hex == b.hex ? 0 : 1
+          end
+        end
+
+        def check_distance(route, _visits)
+          if hex_train?(route.train)
+            limit = route.train.distance
+            distance = route_distance(route)
+            raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
+          else
+            super
+          end
+        end
+
+        def route_distance(route)
+          if hex_train?(route.train)
+            route.chains.sum { |conn| hex_edge_cost(conn) }
+          else
+            route.visited_stops.sum(&:visit_cost)
+          end
+        end
       end
     end
   end
