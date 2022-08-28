@@ -75,8 +75,20 @@ class Api
                 game.acting = acting.map(&:id)
                 acting.delete(user)
 
+                if game.status != 'finished' && meta['game_status'] == 'finished'
+                  meta['finished_at'] ||= Time.now
+                  meta['manually_ended'] ||= true
+
+                  # If the game_result keys are not user ids, fix them up here
+                  if meta['game_result'].keys.any? { |key| key.to_i.to_s != key }
+                    meta['game_result'].transform_keys! { |name| game.players.find { |p| p.name == name }.id.to_s }
+                  end
+                end
+
                 game.result = meta['game_result']
                 game.status = meta['game_status']
+                game.finished_at = meta['finished_at']
+                game.manually_ended = meta['manually_ended']
 
                 game.save
               else
