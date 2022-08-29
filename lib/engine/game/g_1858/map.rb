@@ -11,9 +11,7 @@ module Engine
         LAYOUT = :flat
 
         LOCATION_NAMES = {
-          'F1' => 'Gijón',
-          'L17' => 'Alicante',
-          'L19' => 'Cartagena',
+          'A14' => 'Lisboa',
           'B5' => 'Vigo',
           'B7' => 'Braga',
           'B9' => 'Porto',
@@ -29,6 +27,7 @@ module Engine
           'D19' => 'Huelva',
           'E18' => 'Sevilla',
           'E20' => 'Cádiz',
+          'F1' => 'Gijón',
           'F5' => 'León',
           'F9' => 'Salamanca',
           'F19' => 'Marchena',
@@ -40,6 +39,8 @@ module Engine
           'G20' => 'Málaga',
           'H3' => 'Santander',
           'H5' => 'Burgos',
+          'H11' => 'Madrid',
+          'H13' => 'Aranjuez',
           'H15' => 'Ciudad Real',
           'H17' => 'Jaén & Linares',
           'H19' => 'Granada',
@@ -48,27 +49,26 @@ module Engine
           'I10' => 'Guadalajara',
           'J3' => 'San Sebastián',
           'J5' => 'Logroño',
+          'K18' => 'Murcia',
           'J15' => 'Albacete',
           'K4' => 'Pamplona',
-          'K18' => 'Murcia',
+          'L7' => 'Zaragoza',
           'L13' => 'Valencia',
+          'L17' => 'Alicante',
+          'L19' => 'Cartagena',
+          'M2' => 'France',
           'M10' => 'Tortosa',
           'M12' => 'Castellón',
           'N7' => 'Lérida',
           'N9' => 'Reus & Tarragona',
           'O8' => 'Barcelona',
           'P7' => 'Gerona',
-          'L7' => 'Zaragoza',
-          'H11' => 'Madrid',
-          'H13' => 'Aranjuez',
-          'A14' => 'Lisboa',
-          'M2' => 'France',
         }.freeze
 
         HEXES = {
           white: {
             # Plain track hexes
-            %w[B3 B17 B19 C10 G4 H7 I12] => '',
+            %w[B3 B17 B19 C10 H7 I12] => '',
             %w[A12] =>
                     'border=type:province,edge:4',
             %w[L15] =>
