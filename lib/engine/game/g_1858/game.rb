@@ -50,14 +50,13 @@ module Engine
         def home_token_locations(_corporation)
           # FIXME/TODO: when starting a public company after the start of phase 5
           # it can choose any unoccupied city space for its first token.
-          open_locations = hexes.select do |hex|
+          hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
           end
-          return open_locations
         end
 
         def hex_train?(train)
-          train.name[-1] == "H"
+          train.name[-1] == 'H'
         end
 
         def hex_edge_cost(conn)
