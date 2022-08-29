@@ -57,7 +57,7 @@ module Engine
           def legal_tile_rotation?(entity, hex, tile)
             return hex.tile.paths.any? { |p| p.exits == tile.exits } if @game.port_company?(entity)
             return true if tile == @game.cube_tile
-            return true if @game.legal_leavenworth_tile(hex, tile)
+            return true if @game.legal_city_and_town_tile(hex, tile)
             return legal_tile_rotation_portage_company?(entity, hex, tile) if @game.portage_company?(entity)
             return legal_tile_rotation_boomtown_company?(entity, hex, tile) if @game.boomtown_company?(entity)
             return legal_tile_rotation_coal_company?(entity, hex, tile) if @game.coal_company?(entity)

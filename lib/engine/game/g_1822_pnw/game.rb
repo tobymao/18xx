@@ -90,7 +90,7 @@ module Engine
           'P15' => '/icons/factory.svg',
         }.freeze
 
-        DOUBLE_HEX = %w[H19].freeze
+        DOUBLE_HEX = %w[H19 M4].freeze
 
         # Don't run 1822 specific code for the LCDR
         COMPANY_LCDR = nil
@@ -878,13 +878,14 @@ module Engine
           str
         end
 
-        def legal_leavenworth_tile(hex, tile)
-          @leavenworth_yellow_tiles ||= %w[5 6 57]
-          hex.name == 'H19' && @leavenworth_yellow_tiles.include?(tile.name)
+        def legal_city_and_town_tile(hex, tile)
+          @city_and_town_yellow_tiles ||= %w[5 6 57]
+          @city_and_town_hex_names ||= %w[H19 M4]
+          @city_and_town_hex_names.include?(hex.name) && @city_and_town_yellow_tiles.include?(tile.name)
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          return true if legal_leavenworth_tile(from.hex, to) && from.color == :white
+          return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
           return true if from.color == 'blue' && to.color == 'blue'
           return to.name == 'PNW3' if boomtown_company?(selected_company)
           return to.name == 'PNW5' if from.name == 'PNW4'
@@ -931,7 +932,7 @@ module Engine
           @river_directions ||= { 'M4' => 5, 'N5' => 2, 'H13' => 1 }
           return false unless @river_directions.include?(tile.hex.id)
 
-          tile.paths.find { |p| p.edges[0].num == @river_directions[tile.hex.id] }.nil?
+          tile.paths.find { |p| !p.edges.empty? && p.edges[0].num == @river_directions[tile.hex.id] }.nil?
         end
 
         def upgrade_cost(tile, hex, entity, spender)

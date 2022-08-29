@@ -25,7 +25,7 @@ module Engine
           def legal_tile_rotation?(entity, hex, tile)
             return true if hex.tile.name == tile.name && hex.tile.rotation == tile.rotation
             return true if tile == @game.cube_tile
-            return true if @game.legal_leavenworth_tile(hex, tile)
+            return true if @game.legal_city_and_town_tile(hex, tile)
 
             super
           end
