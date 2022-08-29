@@ -189,6 +189,13 @@ module Engine
           @minor_associations[new_minor_id] = major
         end
 
+        def timeline
+          timeline = super
+          pairs = @minor_associations.keys.map { |a| "#{a} → #{@minor_associations[a]}" }
+          timeline << "Minor Associations: #{pairs.join(', ')}" unless pairs.empty?
+          timeline
+        end
+
         def reservation_corporations
           corporations.reject { |c| c.type == :major }
         end
