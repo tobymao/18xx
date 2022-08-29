@@ -591,6 +591,15 @@ module Engine
           true
         end
 
+        def float_corporation(corporation)
+          if corporation.type == :major
+            minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
+            @log << "Associated minor #{minor_id} closes"
+            company_by_id(company_id_from_corp_id(minor_id)).close!
+          end
+          super
+        end
+
         def corp_id_from_company_id(id)
           id[1..-1]
         end
