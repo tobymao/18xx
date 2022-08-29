@@ -25,7 +25,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 22, 4 => 18 }.freeze
 
-        STARTING_CASH = { 3 => 560, 4 => 420 }.freeze
+        STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
 
         CAPITALIZATION = :full
 
@@ -150,7 +150,7 @@ module Engine
                     distance: 3,
                     price: 140,
                     rusts_on: '5+',
-                    num: 6,
+                    num: 5,
                     discount: { '2' => 40 },
                   },
                   {
@@ -397,7 +397,7 @@ module Engine
         end
 
         def next_round!
-          @skip_track_and_token = @last_or_set_triggered && (@round.instance_of? G1894::Round::Stock)
+          @skip_track_and_token = @skip_track_and_token || (@last_or_set_triggered && (@round.instance_of? G1894::Round::Stock))
 
           super
         end
@@ -421,7 +421,7 @@ module Engine
             tile = hex&.tile
 
             return super if tile.color != :brown
-            
+
             place_home_token_brown_tile(corporation, hex, tile)
           end
         end
@@ -483,7 +483,7 @@ module Engine
           sqg = company_by_id('SQG')
           case tile.color
           when :green
-            sqg.revenue = 70          
+            sqg.revenue = 70
           when :brown
             sqg.revenue = 100
           end
@@ -553,7 +553,7 @@ module Engine
 
         def save_tokens(tokens)
           @saved_tokens = tokens
-          save_tokens_hex(nil) if tokens == nil || tokens.size == 0 
+          save_tokens_hex(nil) if tokens == nil || tokens.size == 0
         end
 
         def saved_tokens
@@ -603,9 +603,9 @@ module Engine
           get_route_max_value(corporation, stops)
         end
 
-        def get_route_max_value(corporation, stops, ignore_london = false)          
+        def get_route_max_value(corporation, stops, ignore_london = false)
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
-          
+
           revenues << 60 if is_est_running_to_centre_bourgogne(corporation, stops)
           if ignore_london
             london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.cities.first.revenue)

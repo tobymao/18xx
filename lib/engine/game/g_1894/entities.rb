@@ -23,7 +23,7 @@ module Engine
                           count: 1,
                         }],
             color: '#d9d9d9',
-          },          
+          },
           {
             name: 'Antwerpen-Rotterdamsche Spoorwegmaatschappij',
             sym: 'AR',
@@ -56,9 +56,9 @@ module Engine
             sym: 'LS',
             value: 90,
             revenue: 15,
-            desc: 'Owning corporation may place one of its tokens for free in A12.'\
+            desc: 'Owning corporation may place its cheapest available token for free in A12.'\
                   ' The value of London (A10) is increased, for this corporation only,'\
-                  ' by the largest other revenue on the route.',
+                  ' by the largest non-London, non-Luxembourg revenue on the route.',
             abilities: [{
               type: 'token',
               when: 'owning_corp_or_turn',
@@ -80,7 +80,7 @@ module Engine
                   ' Closes in purple phase.',
             abilities: [{ type: 'close', on_phase: 'Purple' },],
             color: '#d9d9d9',
-          },        
+          },
           {
             name: 'Nord minor shareholding',
             sym: 'NMinorS',
@@ -198,7 +198,7 @@ module Engine
             name: 'Chemins de fer du Nord',
             logo: '1894/Nord',
             simple_logo: '1894/Nord.alt',
-            tokens: [0, 0, 80, 80, 120],
+            tokens: [0, 0, 80, 80],
             max_ownership_percent: 60,
             coordinates: %w[E10 G14],
             abilities: [
@@ -263,7 +263,7 @@ module Engine
             name: 'Chemins de fer de l\'Est',
             logo: '1894/Est',
             simple_logo: '1894/Est.alt',
-            tokens: [0, 40, 40, 40, 40],
+            tokens: [0, 40, 80, 80, 120],
             max_ownership_percent: 60,
             coordinates: 'I8',
             color: '#ff9966',
@@ -271,7 +271,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 amount: 0,
-                description: 'Value of Centre & Bourgogne (I2) increased by 30.',
+                description: 'Value of Centre & Bourgogne (I2) increased to 60.',
                 hexes: ['I2'],
               },
             ],
