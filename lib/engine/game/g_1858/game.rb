@@ -43,8 +43,18 @@ module Engine
           ])
         end
 
-        def operating_round
-          super
+        def operating_round(round_num)
+          @round_num = round_num
+          Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            Engine::Game::G1858::Step::IssueShares,
+          ], round_num: round_num)
         end
 
         def home_token_locations(_corporation)
