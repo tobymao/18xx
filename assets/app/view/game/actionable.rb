@@ -115,6 +115,8 @@ module View
             meta = {
               game_result: @game_data[:result],
               game_status: @game_data[:status],
+              finished_at: @game_data[:finished_at],
+              manually_ended: @game_data[:manually_ended],
               active_players: game.active_players_id,
               turn: game.turn,
               round: game.round.name,
