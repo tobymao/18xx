@@ -160,7 +160,9 @@ module Engine
             else
               @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name}"
             end
+
             @merge_state = :selecting_token
+            process_minor_on_destination if @new_corporation.destination_coordinates == @associated_minor.coordinates
           end
 
           def process_select_token(action)
@@ -179,12 +181,35 @@ module Engine
             else
               @game.log << "#{@new_corporation.name} moves one token from exchange to available"
             end
-            @game.graph.clear
 
+            finish_merge
+          end
+
+          def process_minor_on_destination
+            city = @unassociated_minor.tokens[0].city
+            city.delete_token!(@unassociated_minor.tokens[0])
+            city.place_token(@new_corporation, @new_corporation.find_token_by_type, check_tokenable: false)
+            @game.log << "#{@new_corporation.name} token replaces the #{@unassociated_minor.name} token in #{city.hex.name}"
+
+            city = @associated_minor.tokens[0].city
+            city.delete_token!(@associated_minor.tokens[0])
+            token = @new_corporation.find_token_by_type(:destination)
+            city.place_token(@new_corporation, token, free: true, check_tokenable: false, cheater: true)
+            city.hex.tile.icons.reject! { |icon| icon.name == "#{@new_corporation.id}_destination" }
+            ability = @new_corporation.all_abilities.find { |a| a.type == :destination }
+            @new_corporation.remove_ability(ability)
+            @game.log << "#{@new_corporation.name} destination token replaces the #{@associated_minor.name} " \
+                         "token in #{city.hex.name}"
+
+            finish_merge
+          end
+
+          def finish_merge
+            @game.graph.clear
             close_minor(@associated_minor)
             close_minor(@unassociated_minor)
-
             @merge_state = :none
+            pass!
           end
 
           def process_choose(action)
