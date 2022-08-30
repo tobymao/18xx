@@ -663,27 +663,13 @@ module Engine
       # Initialize actions respecting the undo state
       def initialize_actions(actions, at_action: nil)
         @loading = true unless @strict
-        filtered_actions, active_undos = self.class.filtered_actions(actions)
+        @filtered_actions, active_undos = self.class.filtered_actions(actions)
 
         # Store all actions for history navigation
         @raw_all_actions = actions
-        filtered_actions.each.with_index { |action, index| @raw_all_actions[index]['skip'] = true unless action }
 
         @undo_possible = false
-        # replay all actions with a copy
-        filtered_actions.each.with_index do |action, index|
-          next if @exception
-          break if at_action && action && action['id'] > at_action
-
-          if action
-            action = action.copy(self) if action.is_a?(Action::Base)
-
-            process_action(action)
-          else
-            # Restore the original action to the list to ensure action ids remain consistent but don't apply them
-            @raw_actions << actions[index]
-          end
-        end
+        process_to_action(at_action || actions.last['id']) unless actions.empty?
         @redo_possible = active_undos.any?
         @loading = false
       end
@@ -839,17 +825,18 @@ module Engine
 
       def process_to_action(id)
         last_processed_action_id = @raw_actions.last&.fetch('id') || 0
-        @raw_all_actions.each do |action|
+        @raw_all_actions.each.with_index do |action, index|
+          next if @exception
           next if action['id'] <= last_processed_action_id
           break if action['id'] > id
 
-          if action['skip']
-            @raw_actions << action
-          else
+          if @filtered_actions[index]
             process_action(action)
             # maintain original action ids
             @raw_actions.last['id'] = action['id']
             @last_processed_action = action['id']
+          else
+            @raw_actions << action
           end
         end
       end
