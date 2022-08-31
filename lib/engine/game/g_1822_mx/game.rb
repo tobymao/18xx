@@ -763,6 +763,10 @@ module Engine
 
         def finalize_end_game_values; end
 
+        def num_certs_modification(_entity)
+          0
+        end
+
         def reduced_bundle_price_for_market_drop(bundle)
           bundle.share_price = @stock_market.find_share_price(bundle.corporation, [:left] * bundle.num_shares).price
           bundle
