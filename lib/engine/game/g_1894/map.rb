@@ -7,8 +7,8 @@ module Engine
         TILES = {
           '1' => 1,
           '7' => 4,
-          '8' => 13,
-          '9' => 13,
+          '8' => 12,
+          '9' => 12,
           '14' => 4,
           '15' => 4,
           '16' => 1,
@@ -121,16 +121,6 @@ module Engine
             'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:3.5;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;path=a:4,b:_1',
           },
-          # 'X16' => {
-          #   'count' => 1,
-          #   'color' => 'yellow',
-          #   'code' => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;label=R',
-          # },
-          # 'X17' => {
-          #   'count' => 1,
-          #   'color' => 'yellow',
-          #   'code' => 'city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=SQ',
-          # },
         }.freeze
 
         LOCATION_NAMES = {
@@ -164,8 +154,8 @@ module Engine
 
         HEXES = {
           white: {
-            %w[C4 D5 D9 E2 E18 F1 F3 F17 G8 H3 H5 H11 I4 I12] => '',
-            %w[B1 B7 C2 C8 C10 D7 E4 E8 F7 G6 H9] => 'upgrade=cost:50,terrain:water',
+            %w[C4 D5 D9 E2 E18 F1 F3 F17 G6 H3 H5 H11 I4 I12] => '',
+            %w[B1 B7 C2 C8 C10 D7 E4 E8 F7 G8 H9] => 'upgrade=cost:50,terrain:water',
             #%w[] => 'upgrade=cost:80,terrain:water',
             %w[B3 B9 B11 D3 D15 E6 E10 E16 G10 H7 H17] => 'city=revenue:0',
             %w[C6 F5 F9 G16] => 'town=revenue:0;town=revenue:0',
@@ -180,8 +170,6 @@ module Engine
             ['F11'] => 'upgrade=cost:50,terrain:water;border=edge:4,type:mountain',
             ['F13'] => 'upgrade=cost:50,terrain:water;border=edge:0,type:mountain;border=edge:1,type:mountain;border=edge:2,type:mountain',
             ['F15'] => 'city=revenue:0;label=B',
-            #['F15'] => 'city=revenue:10;label=B;path=a:3,b:_0',
-            #'border=edge:0,type:mountain;border=edge:2,type:mountain',
             ['G4'] => 'city=revenue:0;city=revenue:0;label=P',
             ['G12'] => 'upgrade=cost:50,terrain:water;border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['G14'] => 'city=revenue:0;border=edge:0,type:mountain;border=edge:1,type:mountain',

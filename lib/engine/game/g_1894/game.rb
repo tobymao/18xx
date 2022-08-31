@@ -247,13 +247,7 @@ module Engine
         PARIS_HEX = 'G4'
         CENTRE_BOURGOGNE_HEX = 'I2'
         LUXEMBOURG_HEX = 'I18'
-        CALAIS_HEX = 'B9'
-        #AMIENS_HEX = 'E6'
-        #AMIENS_TILE = 'X3'
-        #ROUEN_HEX = 'D3'
-        #ROUEN_TILE = 'X16'
         SQ_HEX = 'G10'
-        #SQ_TILE = 'X17'
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
@@ -323,14 +317,13 @@ module Engine
 
         def setup
           @late_corporations, @corporations = @corporations.partition do |c|
-            #%w[F1 F2 B1 B2].include?(c.id)
             %w[F1 B1].include?(c.id)
           end
 
           @last_or_set_triggered = false
           @skip_track_and_token = false
 
-          #@log << "-- Setting game up for #{@players.size} players --"
+          @log << "-- Setting game up for #{@players.size} players --"
           #remove_extra_trains
           #remove_extra_late_corporations
 
@@ -343,7 +336,6 @@ module Engine
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
           french_starting_corporation = corporation_by_id(FRENCH_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
-          #french_starting_corporation = corporation_by_id(%w[CAB Ouest Nord].sort_by{ rand }.take(1).first)
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
           belgian_starting_corporation = corporation_by_id('Belge')
 
@@ -375,6 +367,17 @@ module Engine
           end
 
           hexes
+        end
+
+        def after_buy_company(player, company, price)
+          # Nord share that comes with NMinorS transfered this way so the presidency doesn't change when the Nord is
+          # the random French corporation and a player buys MNinorS
+          if company.id == 'NMinorS'
+            share_pool.transfer_shares(nord.ipo_shares.last.to_bundle, player, allow_president_change: false)
+            @log << "#{player.name} receives a 10% share of Nord"
+          end
+
+          super
         end
 
         def init_round_finished
@@ -701,30 +704,6 @@ module Engine
             @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company)
           end
         end
-
-        # def remove_extra_trains
-        #   return unless @players.size == 3
-
-        #   to_remove = @depot.trains.reverse.find { |t| t.name == '5' }
-        #   @depot.forget_train(to_remove)
-        #   @log << "Removing #{to_remove.name} train"
-
-        #   # to_remove = @depot.trains.reverse.find { |t| t.name == '6' }
-        #   # @depot.forget_train(to_remove)
-        #   # @log << "Removing #{to_remove.name} train"
-        # end
-
-        # def remove_extra_late_corporations
-        #   to_remove = @late_corporations.select { |c| c.id == 'B2' }
-        #   @late_corporations.delete(to_remove)
-        #   @log << 'Removing B2 late corporation'
-
-        #   return unless @players.size == 3
-
-        #   to_remove = @late_corporations.select { |c| c.id == 'F2' }
-        #   @late_corporations.delete(to_remove)
-        #   @log << 'Removing F2 late corporation'
-        # end
       end
     end
   end
