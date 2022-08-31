@@ -470,13 +470,16 @@ module Engine
 
           tile = hex_by_id(action.hex.id).tile
 
-          # The city splits into two cities, so the reservation has to be for the whole hex
           if BROWN_CITY_TILES.include?(tile.name)
+            # The city splits into two cities, so the reservation has to be for the whole hex
             reservation = tile.cities.first.reservations.first
             if reservation
               tile.cities.first.remove_all_reservations!
               tile.add_reservation!(reservation.corporation, nil, reserve_city=false)
             end
+
+            # Clear all routes as they could be affected by the cities getting disjointed
+            graph.clear_graph_for_all
           end
 
           if action.hex.id != SQ_HEX || tile.color == :yellow
