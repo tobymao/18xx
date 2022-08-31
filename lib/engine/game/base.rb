@@ -815,12 +815,12 @@ module Engine
 
       def previous_action_id_from(action_id)
         # Skips messages and undone actions
-        @raw_all_actions.reverse.find { |a| a['id'] < action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id') || 0
+        @filtered_actions.reverse.find { |a| a && a['id'] < action_id && a['type'] != 'message' }&.fetch('id') || 0
       end
 
       def next_action_id_from(action_id)
         # Skips messages and undone actions
-        @raw_all_actions.find { |a| a['id'] > action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id')
+        @filtered_actions.find { |a| a && a['id'] > action_id && a['type'] != 'message' }&.fetch('id')
       end
 
       def process_to_action(id)
