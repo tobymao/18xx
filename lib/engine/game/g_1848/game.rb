@@ -809,8 +809,8 @@ module Engine
 
         # routing logic
         def visited_stops(route)
-          modified_guage_changes = get_modified_guage_distance(route)
-          added_stops = modified_guage_changes.positive? ? Array.new(modified_guage_changes) { Engine::Part::City.new('0') } : []
+          modified_gauge_changes = get_modified_gauge_distance(route)
+          added_stops = modified_gauge_changes.positive? ? Array.new(modified_gauge_changes) { Engine::Part::City.new('0') } : []
           route_stops = super
           route_stops_2e = route_stops.select { |stop| stop.tokened_by?(route.train.owner) || ghan_visited?(stop) }
           route.train.name == '2E' ? route_stops_2e : route_stops + added_stops
@@ -822,7 +822,7 @@ module Engine
           raise GameError, 'Route must include Alice Springs'
         end
 
-        def get_modified_guage_distance(route)
+        def get_modified_gauge_distance(route)
           gauge_changes = edge_crossings(route)
           modifier = route.train.name.include?('+') ? 1 : 0
           gauge_changes - modifier
