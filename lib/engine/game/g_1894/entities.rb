@@ -184,12 +184,6 @@ module Engine
             tokens: [0, 0, 80, 80, 120],
             max_ownership_percent: 60,
             coordinates: %w[B3 E6],
-            abilities: [
-              {
-                type: 'base',
-                description: 'Two home stations (Le Havre and Amiens)',
-              },
-            ],
             color: '#4682b4',
           },
           {
@@ -200,12 +194,6 @@ module Engine
             tokens: [0, 0, 80, 80],
             max_ownership_percent: 60,
             coordinates: %w[E10 G14],
-            abilities: [
-              {
-                type: 'base',
-                description: 'Two home stations (Arras and Charleroi)',
-              },
-            ],
             color: '#ff4040',
           },
           {
@@ -227,12 +215,6 @@ module Engine
             tokens: [0, 0, 80, 80, 120],
             max_ownership_percent: 60,
             coordinates: %w[D3 H1],
-            abilities: [
-              {
-                type: 'base',
-                description: 'Two home stations (Rouen and Chartres)',
-              },
-            ],
             color: '#9c661f',
           },
           {
@@ -281,16 +263,10 @@ module Engine
             name: 'French 1',
             logo: '1894/F1',
             simple_logo: '1894/F1.alt',
-            tokens: [0, 40],
+            tokens: [0, 40, 80],
             max_ownership_percent: 60,
             color: '#ffc0cb',
             text_color: 'black',
-            abilities: [
-              {
-                type: 'description',
-                description: 'Home in an empty hex in France',
-              },
-            ],
           },
           {
             sym: 'B1',
@@ -301,12 +277,6 @@ module Engine
             max_ownership_percent: 60,
             color: '#c9c9c9',
             text_color: 'black',
-            abilities: [
-              {
-                type: 'description',
-                description: 'Home in an empty hex in Belgium',
-              },
-            ],
           },
         ].freeze
       end

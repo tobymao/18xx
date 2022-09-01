@@ -192,7 +192,7 @@ module Engine
                     price: 800,
                     num: 20,
                     events: [{ 'type' => 'last_or_set_triggered' }],
-                    discount: { '5' => 200, '6' => 300, '7' => 350 },
+                    discount: { '5+' => 200, '6' => 300, '7' => 350 },
                   }].freeze
 
         LAYOUT = :pointy
@@ -315,6 +315,10 @@ module Engine
           corporation_by_id('CAB')
         end
 
+        def sqg
+          company_by_id('SQG')
+        end
+
         def setup
           @late_corporations, @corporations = @corporations.partition do |c|
             %w[F1 B1].include?(c.id)
@@ -339,7 +343,7 @@ module Engine
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
           belgian_starting_corporation = corporation_by_id('Belge')
 
-          remove_extra_companies()
+          adjust_companies
           remove_extra_french_major_shareholding_companies(french_starting_corporation.id)
 
           @players.each do |player|
@@ -413,7 +417,9 @@ module Engine
               hex = hex_by_id(coordinate)
               tile = hex&.tile
               if tile.color != :brown
-                tile.cities.first.place_token(corporation, corporation.next_token, free: true)
+                # don't take the token that's alerady pending
+                token = corporation.tokens.find { |t| !@round.pending_tokens.find { |p_t| p_t[:token] == t } }
+                tile.cities.first.place_token(corporation, token, free: true)
               else
                 place_home_token_brown_tile(corporation, hex, tile)
               end
@@ -437,8 +443,8 @@ module Engine
             @log << "#{corporation.name} must choose city for home token in #{hex.id}"
             @round.pending_tokens << {
               entity: corporation,
-              hexes: hexes,
-              token: corporation.find_token_by_type,
+              hexes: [hex],
+              token: corporation.next_token,
             }
           end
         end
@@ -486,7 +492,6 @@ module Engine
             return
           end
 
-          sqg = company_by_id('SQG')
           case tile.color
           when :green
             sqg.revenue = 70
@@ -686,13 +691,16 @@ module Engine
 
         private
 
-        def remove_extra_companies()
+        def adjust_companies()
           return unless @players.size == 4
 
           company_to_remove = companies.find { |c| c.id == 'AR' }
 
           company_to_remove.close!
           @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
+
+          sqg.value = 70
+          @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.sort_by!(&:value)
         end
 
         def remove_extra_french_major_shareholding_companies(starting_corporation_id)
