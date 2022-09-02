@@ -119,7 +119,7 @@ module Engine
                        'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,lanes:2,terminal:1',
           },
           brown: {
-            %w[B15 C14 D15 E16 F17 H17 I18 K16 L15] => 'upgrade=cost:0,terrain:mountain',
+            %w[B15 C14 D15 E16 F17 H17 I18 K16 L15] => 'icon=image:18_zoo/mountain',
           },
           blue: {
             %w[B7] => 'junction;path=a:3,b:_0,terminal:1;border=edge:4,type:impassable',
@@ -183,7 +183,7 @@ module Engine
             },
           '405' =>
             {
-              'count' => 3,
+              'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
             },
@@ -251,7 +251,7 @@ module Engine
             },
           'X10' =>
             {
-              'count' => 3,
+              'count' => 1,
               'color' => 'brown',
               'code' =>
                 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
@@ -265,7 +265,7 @@ module Engine
             },
           'X16' =>
             {
-              'count' => 2,
+              'count' => 1,
               'color' => 'gray',
               'code' =>
                 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
