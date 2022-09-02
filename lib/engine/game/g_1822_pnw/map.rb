@@ -79,7 +79,7 @@ module Engine
             %w[H13] => 'border=edge:1,type:water,cost:75',
             %w[H19] => 'city=revenue:20,loc:center;town=revenue:10,loc:3;path=a:_0,b:_1',
             %w[L21 M20 M22 N19 N21] => 'upgrade=cost:20,terrain:water',
-            %w[M4] => 'city=revenue:0;border=edge:5,type:water,cost:75',
+            %w[M4] => 'city=revenue:20,loc:center;town=revenue:10,loc:3;path=a:_0,b:_1;border=edge:5,type:water,cost:75',
             %w[M14 N13] => 'upgrade=cost:75,terrain:mountain',
             %w[N5] => 'city=revenue:0;border=edge:2,type:water,cost:75',
             %w[O8] => 'city=revenue:20,slots:4;upgrade=cost:20;'\
@@ -102,7 +102,6 @@ module Engine
                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             %w[I24] => 'junction;path=a:0,b:_0,terminal:1',
             %w[K24] => 'junction;path=a:0,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
-            %w[L3] => 'town=revenue:10;path=a:5,b:_0',
             %w[M24] => 'junction;path=a:2,b:_0,terminal:1',
             %w[O12] => 'town=revenue:10;path=a:1,b:_0;path=a:4,b:_0',
             %w[P9] => 'path=a:1,b:2,b_lane:2.1;path=a:4,b:2,b_lane:2.0',
