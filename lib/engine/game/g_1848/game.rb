@@ -809,10 +809,11 @@ module Engine
 
         # routing logic
         def visited_stops(route)
-          modified_guage_changes = get_modified_guage_distance(route)
-          added_stops = modified_guage_changes.positive? ? Array.new(modified_guage_changes) { Engine::Part::City.new('0') } : []
+          modified_gauge_changes = get_modified_gauge_distance(route)
+          added_stops = modified_gauge_changes.positive? ? Array.new(modified_gauge_changes) { Engine::Part::City.new('0') } : []
           route_stops = super
-          route.train.name == '2E' ? route_stops : route_stops + added_stops
+          route_stops_2e = route_stops.select { |stop| stop.tokened_by?(route.train.owner) || ghan_visited?(stop) }
+          route.train.name == '2E' ? route_stops_2e : route_stops + added_stops
         end
 
         def check_distance(route, visits, _train = nil)
@@ -821,7 +822,7 @@ module Engine
           raise GameError, 'Route must include Alice Springs'
         end
 
-        def get_modified_guage_distance(route)
+        def get_modified_gauge_distance(route)
           gauge_changes = edge_crossings(route)
           modifier = route.train.name.include?('+') ? 1 : 0
           gauge_changes - modifier
@@ -857,6 +858,62 @@ module Engine
           k_sum_string = ' + k'
           (k_sum(route, route.stops) - 1).times { k_sum_string += '-k' }
           super + k_sum_string
+        end
+
+        def compute_stops(route, train = nil)
+          train ||= route.train
+          visits = route.visited_stops
+          distance = train.distance
+          return visits if distance.is_a?(Numeric)
+          return [] if visits.empty?
+
+          # distance is an array of hashes defining how many locations of
+          # each type can be hit. A 2+2 train (4 locations, at most 2 of
+          # which can be cities) looks like this:
+          #   [ { nodes: [ 'town' ],                     pay: 2},
+          #     { nodes: [ 'city', 'town', 'offboard' ], pay: 2} ]
+          # Stops use the first available slot, so for each stop in this case
+          # we'll try to put it in a town slot if possible and then
+          # in a city/town/offboard slot.
+          distance = distance.sort_by { |types, _| types.size }
+
+          max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
+
+          max_num_stops.downto(1) do |num_stops|
+            # to_i to work around Opal bug
+            stops, revenue = visits.combination(num_stops.to_i).map do |stops|
+              # Make sure this set of stops is legal
+              # 1) At least one stop must have a token (if enabled)
+              next if train.requires_token && stops.none? { |stop| stop.tokened_by?(route.corporation) }
+
+              # 2) if 2E one stop must be alice springs
+              next if train.name == '2E' && stops.none? { |stop| ghan_visited?(stop) }
+
+              # 3) We can't ask for more revenue centers of a type than are allowed
+              types_used = Array.new(distance.size, 0) # how many slots of each row are filled
+
+              next unless stops.all? do |stop|
+                row = distance.index.with_index do |h, i|
+                  h['nodes'].include?(stop.type) && types_used[i] < h['pay']
+                end
+
+                types_used[row] += 1 if row
+                row
+              end
+
+              [stops, revenue_for(route, stops)]
+            end.compact.max_by(&:last)
+
+            revenue ||= 0
+
+            # We assume that no stop collection with m < n stops could be
+            # better than a stop collection with n stops, so if we found
+            # anything usable with this number of stops we return it
+            # immediately.
+            return stops if revenue.positive?
+          end
+
+          []
         end
 
         # recievership
