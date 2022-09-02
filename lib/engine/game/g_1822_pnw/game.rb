@@ -184,9 +184,7 @@ module Engine
         end
 
         def replace_associated_minor(old_minor_id, new_minor_id)
-          major = @minor_associations[old_minor_id]
-          @minor_associations.except!(old_minor_id)
-          @minor_associations[new_minor_id] = major
+          @minor_associations[new_minor_id] = @minor_associations.delete(old_minor_id)
         end
 
         def timeline
@@ -902,7 +900,7 @@ module Engine
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
-          return true if from.color == 'blue' && to.color == 'blue'
+          return true if from.color == :blue && to.color == :blue
           return to.name == 'PNW3' if boomtown_company?(selected_company)
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)

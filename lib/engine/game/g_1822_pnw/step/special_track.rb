@@ -16,6 +16,10 @@ module Engine
             )
           end
 
+          def setup
+            @round.num_laid_portage = 0
+          end
+
           def available_hex(entity, hex)
             if @game.port_company?(entity)
               return nil unless abilities(entity).hexes.include?(hex.id)
