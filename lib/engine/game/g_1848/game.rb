@@ -276,15 +276,13 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
             num: 20,
-            variants: [
-              {
-                name: 'D',
-                distance: 999,
-                price: 1100,
-                num: 20,
-                discount: { '4' => 300, '4+' => 300, '5' => 300, '5+' => 300, '6+' => 300, '6' => 300 },
-              },
-            ],
+          },
+          {
+            name: 'D',
+            distance: 999,
+            price: 1100,
+            num: 20,
+            discount: { '4' => 300, '4+' => 300, '5' => 300, '5+' => 300, '6+' => 300, '6' => 300 },
           },
           {
             name: '2E',
