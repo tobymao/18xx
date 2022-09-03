@@ -643,8 +643,7 @@ module Engine
 
         def illegal_revisit_of_rhine_metropolis_hex?(actual_visits)
           actual_visits.select { |v| RHINE_METROPOLIS_HEXES.include?(v.hex.name) && v.hex.tile.color == :green }
-                       .group_by { |v| v.hex.name }.reject { |_, e| e.size < 2 }
-                       .any?
+                       .group_by { |v| v.hex.name }.any? { |_, e| e.size >= 2 }
         end
 
         def check_distance(route, visits)
@@ -887,7 +886,7 @@ module Engine
         end
 
         def get_token(entity, token)
-          return token unless token.nil?
+          return token if token
 
           # Due to changing the token type, this can cause problems when doing undo.
           # As a fall back assume first available token of type normal/neutral is OK
@@ -1022,7 +1021,7 @@ module Engine
         def rheingold_express_description(revenue_stops)
           bonus = { revenue: 0 }
           doubles = revenue_stops.select { |rs| rs[:rhine_metropolis_bonus] }
-          return bonus unless doubles.any?
+          return bonus if doubles.empty?
 
           revenue_bonus = doubles.sum { |rs| rs[:revenue] } / 2
           bonus[:description] = 'RGE' + (doubles.size > 1 ? "x#{doubles.size}" : '') + " (=+#{revenue_bonus}M)"
