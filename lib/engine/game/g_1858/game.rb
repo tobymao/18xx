@@ -53,7 +53,7 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            Engine::Game::G1858::Step::IssueShares,
+            G1858::Step::IssueShares,
           ], round_num: round_num)
         end
 
