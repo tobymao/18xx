@@ -119,7 +119,7 @@ module Engine
                        'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,lanes:2,terminal:1',
           },
           brown: {
-            %w[B15 C14 D15 E16 F17 H17 I18 K16 L15] => 'icon=image:18_zoo/mountain',
+            %w[B15 C14 D15 E16 F17 H17 I18 K16 L15] => 'icon=image:mountain',
           },
           blue: {
             %w[B7] => 'junction;path=a:3,b:_0,terminal:1;border=edge:4,type:impassable',
