@@ -568,6 +568,7 @@ module Engine
 
           # Setup all the destination tokens, icons and abilities
           setup_destinations
+          setup_home_icons
         end
 
         def corporation_available?(corporation)
@@ -591,11 +592,29 @@ module Engine
 
         def float_corporation(corporation)
           if corporation.type == :major
+            remove_home_icon(corporation, corporation.coordinates)
             minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
             @log << "Associated minor #{minor_id} closes"
             company_by_id(company_id_from_corp_id(minor_id)).close!
           end
           super
+        end
+
+        def setup_home_icons
+          @corporations.each do |c|
+            add_home_icon(c, c.coordinates) if c.type == :major
+          end
+        end
+
+        def add_home_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          # Logo and Icon each add '.svg' to the end - so chop one of them off
+          hex.tile.icons << Part::Icon.new("../#{corporation.logo.chop.chop.chop.chop}", "#{corporation.id}_home")
+        end
+
+        def remove_home_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_home" }
         end
 
         def corp_id_from_company_id(id)
@@ -645,6 +664,8 @@ module Engine
 
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
+
+        def finalize_end_game_values; end
 
         def setup_regional_payout_count
           @regional_payout_count = {
