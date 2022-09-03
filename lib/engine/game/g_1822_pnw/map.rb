@@ -119,16 +119,39 @@ module Engine
                        'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,lanes:2,terminal:1',
           },
           brown: {
-            %w[B15 C14 D15 E16 F17 H17 I18 K16 L15] => 'icon=image:mountain',
+            %w[B15 K16] => 'icon=image:mountain;junction;path=a:1,b:_0,terminal:2;path=a:2,b:_0,terminal:2;'\
+                           'path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
+            %w[C14] => 'icon=image:mountain;junction;path=a:0,b:_0,terminal:2;path=a:1,b:_0,terminal:2;'\
+                       'path=a:2,b:_0,terminal:2;path=a:4,b:_0,terminal:2',
+            %w[D15 E16] => 'icon=image:mountain;junction;path=a:0,b:_0,terminal:2;path=a:1,b:_0,terminal:2;'\
+                           'path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2',
+            %w[F17 I18] => 'icon=image:mountain;junction;path=a:0,b:_0,terminal:2;path=a:1,b:_0,terminal:2;'\
+                           'path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
+            %w[H17] => 'icon=image:mountain;junction;path=a:0,b:_0,terminal:2;path=a:1,b:_0,terminal:2;'\
+                       'path=a:2,b:_0,terminal:2;path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2',
+            %w[L15] => 'icon=image:mountain;junction;path=a:0,b:_0,terminal:2;path=a:1,b:_0,terminal:2;'\
+                       'path=a:2,b:_0,terminal:2;path=a:4,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
           },
           blue: {
             %w[B7] => 'junction;path=a:3,b:_0,terminal:1;border=edge:4,type:impassable',
             %w[D9] => 'junction;path=a:4,b:_0,terminal:1;border=edge:3,type:impassable',
             %w[E8] => 'junction;path=a:5,b:_0,terminal:1;border=edge:0,type:impassable',
-            %w[I10] => 'junction;path=a:0,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
-            %w[E10 F11 G10 H9 M6 M8 O16 O18] => '',
+            %w[E10] => 'junction;path=a:0,b:_0,terminal:2;path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2',
+            %w[F11] => 'junction;path=a:1,b:_0,terminal:2;path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2;'\
+                       'path=a:5,b:_0,terminal:2',
+            %w[G10] => 'junction;path=a:1,b:_0,terminal:2;path=a:2,b:_0,terminal:2;path=a:4,b:_0,terminal:2',
+            %w[H9] => 'junction;path=a:0,b:_0,terminal:2;path=a:1,b:_0,terminal:2;path=a:2,b:_0,terminal:2',
+            %w[I10] => 'junction;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:2;path=a:4,b:_0,terminal:1;'\
+                       'path=a:5,b:_0,terminal:2',
             %w[M2] => 'junction;path=a:4,b:_0,terminal:1',
-            %w[N9] => 'junction;path=a:0,b:_0,terminal:1',
+            %w[M6 O16] => 'junction;path=a:0,b:_0,terminal:2;path=a:1,b:_0,terminal:2;path=a:2,b:_0,terminal:2;'\
+                          'path=a:3,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
+            %w[M8] => 'junction;path=a:0,b:_0,terminal:2;path=a:2,b:_0,terminal:2;path=a:3,b:_0,terminal:2;'\
+                      'path=a:4,b:_0,terminal:2',
+            %w[N9] => 'junction;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:2;path=a:3,b:_0,terminal:2;'\
+                      'path=a:4,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
+            %w[O18] => 'junction;path=a:0,b:_0,terminal:2;path=a:2,b:_0,terminal:2;path=a:3,b:_0,terminal:2;'\
+                       'path=a:4,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
           },
         }.freeze
 
