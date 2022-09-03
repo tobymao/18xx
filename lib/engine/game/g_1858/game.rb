@@ -69,6 +69,10 @@ module Engine
           train.name[-1] == 'H'
         end
 
+        def metre_gauge_train?(train)
+          train.name[-1] == 'M'
+        end
+
         def hex_edge_cost(conn)
           conn[:paths].each_cons(2).sum do |a, b|
             a.hex == b.hex ? 0 : 1
@@ -90,6 +94,20 @@ module Engine
             route.chains.sum { |conn| hex_edge_cost(conn) }
           else
             route.visited_stops.sum(&:visit_cost)
+          end
+        end
+
+        def check_other(route)
+          check_track_type(route)
+        end
+
+        def check_track_type(route)
+          track_types = route.chains.flat_map { |item| item[:paths] }.flat_map(&:track).uniq
+
+          if metre_gauge_train?(route.train)
+            raise GameError, 'Route cannot contain broad gauge track' if track_types.include?(:broad)
+          elsif track_types.include?(:narrow)
+            raise GameError, 'Route cannot contain metre gauge track'
           end
         end
       end
