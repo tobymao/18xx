@@ -316,7 +316,7 @@ module Engine
             sym: 'P16',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Rotate this private to place '\
+            desc: 'MAJOR/MINOR, Phase 2. Use this private to place '\
                   'one or both special tiles (PNW1, PNW2) in any blue '\
                   'water hex on the map. This tile lay replaces a '\
                   'company\'s normal tile lay. The owning company may '\
@@ -324,7 +324,7 @@ module Engine
                   'train company uses the tiles, they subtract $10 from '\
                   'their run for each special tile crossed. The owning '\
                   'company receives $10 per special track used from the '\
-                  'bank. Once rotated, this private no longer pays revenue '\
+                  'bank. Once used, this private no longer pays revenue '\
                   'to the company.',
             abilities: [
               {
@@ -370,7 +370,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 3. Close this private to upgrade '\
-                  'any plain yellow track tile to the special boom town tile '\
+                  'any plain yellow track tile to the special $30 boom town tile '\
                   '(PNW3). This tile ignores any tile\'s normal tile '\
                   'placement restrictions.',
             abilities: [
@@ -391,7 +391,7 @@ module Engine
             sym: 'P19',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Rotate this private to use a track '\
+            desc: 'MAJOR/MINOR, Phase 3. Use this private to use a track '\
                   'action to place the Rockport Coal special tile (PNW4) in '\
                   'any mountain hex. Only the owning company can run a '\
                   'train through the city spot on the Rockport Coal special tile '\
@@ -399,7 +399,7 @@ module Engine
                   'building cubes to upgrade the Rockport Coal Special tile '\
                   '(PNW4) to include the pass around route tile (PNW5). No '\
                   'other private bonus can combine with this one. Once '\
-                  'rotated, this private no longer pays revenue to the '\
+                  'used, this private no longer pays revenue to the '\
                   'company.',
             abilities: [
               {
@@ -415,7 +415,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P20-Backoom Negotiations (Minor Status Upgrade)',
+            name: 'P20-Backroom Negotiations (Minor Status Upgrade)',
             sym: 'P20',
             value: 0,
             revenue: 0,
@@ -665,34 +665,34 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'Regional: A. Vancouver Regional Railway',
+            name: 'REGIONAL: A. Vancouver Regional Railway',
             sym: 'MA',
             value: 100,
             revenue: 10,
             desc: 'Ownership certificate in the Vancouver Regional Railway. Starting location is O10.',
             abilities: [],
-            color: '#008264',
-            text_color: 'white',
+            color: '#ffffff',
+            text_color: 'black',
           },
           {
-            name: 'Regional: B. Tacoma Regional Railway',
+            name: 'REGIONAL: B. Tacoma Regional Railway',
             sym: 'MB',
             value: 100,
             revenue: 10,
             desc: 'Ownership certificate in the Tacoma Regional Railway. Starting location is I12.',
             abilities: [],
-            color: '#008264',
-            text_color: 'white',
+            color: '#ffffff',
+            text_color: 'black',
           },
           {
-            name: 'Regional: C. Calgary Regional Railway',
+            name: 'REGIONAL: C. Calgary Regional Railway',
             sym: 'MC',
             value: 100,
             revenue: 10,
             desc: 'Ownership certificate in the Calgary Regional Railway. Starting location is A22/B23.',
             abilities: [],
-            color: '#008264',
-            text_color: 'white',
+            color: '#ffffff',
+            text_color: 'black',
           },
         ].freeze
 

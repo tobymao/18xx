@@ -85,7 +85,7 @@ module Engine
         IMPASSABLE_HEX_COLORS = %i[gray red].freeze
 
         ASSIGNMENT_TOKENS = {
-          'forest' => '/icons/tree.svg',
+          'forest' => '/icons/1822_pnw/tree_plus_10.svg',
           'P17' => '/icons/ski.svg',
           'P15' => '/icons/factory.svg',
         }.freeze
@@ -964,6 +964,11 @@ module Engine
           @regional_railways.include?(entity.id)
         end
 
+        def regional_railway_company?(entity)
+          @regional_railway_companies ||= %w[MA MB MC].freeze
+          @regional_railway_companies.include?(entity.id)
+        end
+
         def associated_minor?(entity)
           @minor_associations.include?(entity.id)
         end
@@ -979,6 +984,10 @@ module Engine
         def regionals
           # Not cached because @corporations can change
           @corporations.select { |c| regional_railway?(c) }
+        end
+
+        def company_header(company)
+          regional_railway_company?(company) ? 'REGIONAL RAILWAY' : super
         end
 
         def associated_major(minor)
