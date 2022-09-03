@@ -663,6 +663,10 @@ module Engine
           @regional_payout_count[regional.id]
         end
 
+        def float_str(entity)
+          regional_railway?(entity) ? '' : super
+        end
+
         def company_choices(company, time)
           return company_choices_p21(company, time) if company.id == 'P21'
 
