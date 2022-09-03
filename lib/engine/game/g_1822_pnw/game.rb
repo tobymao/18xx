@@ -571,10 +571,7 @@ module Engine
         end
 
         def corporation_available?(corporation)
-          print("AA:#{corporation.id}")
           return super if corporation.floated?
-
-          print('BB')
 
           minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
           corporation = corporation_by_id(minor_id)
