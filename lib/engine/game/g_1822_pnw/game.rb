@@ -571,7 +571,10 @@ module Engine
         end
 
         def corporation_available?(corporation)
+          print("AA:#{corporation.id}")
           return super if corporation.floated?
+
+          print('BB')
 
           minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
           corporation = corporation_by_id(minor_id)
@@ -667,6 +670,13 @@ module Engine
           return company_choices_p21(company, time) if company.id == 'P21'
 
           {}
+        end
+
+        def sorted_corporations
+          ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
+          corporations = ipoed.sort
+          corporations += others if @phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par')
+          corporations
         end
 
         def company_choices_p21(company, time)
