@@ -702,7 +702,7 @@ module Engine
           choices
         end
 
-        def company_made_choice(company, choice)
+        def company_made_choice(company, choice, _time)
           return company_made_choice_p21(company, choice) if company.id == 'P21'
         end
 
