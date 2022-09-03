@@ -43,7 +43,12 @@ module Engine
             @game.replace_associated_minor(action.choice, @new_associated_minor.id)
             @log << "#{action.choice} is removed from the game"
             @game.corporations.delete(@game.corporation_by_id(action.choice))
-            @game.companies.delete(@game.company_by_id(@game.company_id_from_corp_id(action.choice)))
+
+            old_company = @game.company_by_id(@game.company_id_from_corp_id(action.choice))
+            @new_associated_minor.color = old_company.color
+            @new_associated_minor.text_color = old_company.text_color
+            @game.companies.delete(old_company)
+
             @choices = nil
           end
         end
