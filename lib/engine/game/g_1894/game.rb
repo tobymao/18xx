@@ -202,10 +202,6 @@ module Engine
         MUST_BID_INCREMENT_MULTIPLE = true
         MIN_BID_INCREMENT = 5
 
-        # ASSIGNMENT_TOKENS = {
-        #   'PC' => '/icons/1894/pc_token.svg',
-        # }.freeze
-
         TILE_RESERVATION_BLOCKS_OTHERS = false
 
         GAME_END_CHECK = {
