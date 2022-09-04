@@ -110,6 +110,12 @@ module Engine
             raise GameError, 'Route cannot contain metre gauge track'
           end
         end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue /= 2 if route.train.obsolete
+          revenue
+        end
       end
     end
   end
