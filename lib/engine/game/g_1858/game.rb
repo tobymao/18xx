@@ -52,7 +52,7 @@ module Engine
             Engine::Step::Route,
             G1858::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1858::Step::BuyTrain,
             G1858::Step::IssueShares,
           ], round_num: round_num)
         end
