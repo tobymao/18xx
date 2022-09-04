@@ -13,15 +13,37 @@ module Engine
             # Wounded trains are not discarded after running
           end
 
+          def share_price_change(entity, revenue = 0)
+            price = entity.share_price.price
+            per_share = payout_per_share(entity, revenue)
+
+            if revenue == 0
+              { share_direction: :left, share_times: 1 }
+            elsif per_share * 10 >= price
+              { share_direction: :right, share_times: 1 }
+            else
+              {}
+            end
+          end
+
           def payout_per_share(entity, revenue)
             (revenue / entity.total_shares.to_f).floor.to_i
           end
 
+          def payout(entity, revenue)
+            # 1858 can give revenues that do not neatly divide between the
+            # shareholders. This means that even on a full payout there can be
+            # some money left over after paying the shareholders. This goes to
+            # the company treasury.
+            per_share = payout_per_share(entity, revenue)
+            withheld = revenue - (per_share * entity.total_shares)
+            { corporation: withheld, per_share: per_share }
+          end
+
           def half(entity, revenue)
-            dividend = payout_per_share(entity, revenue / 2)
-            withheld = revenue - (dividend * entity.total_shares)
-            puts "revenue: #{revenue}, shares: #{entity.total_shares}, dividend: #{dividend.to_f}, withheld: #{withheld}"
-            { corporation: withheld, per_share: dividend }
+            per_share = payout_per_share(entity, revenue / 2)
+            withheld = revenue - (per_share * entity.total_shares)
+            { corporation: withheld, per_share: per_share }
           end
         end
       end
