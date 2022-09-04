@@ -725,7 +725,7 @@ module Engine
           @cert_limit_adjust ||= 0
         end
 
-        def cert_limit
+        def cert_limit(_player = nil)
           super + cert_limit_adjust
         end
 
