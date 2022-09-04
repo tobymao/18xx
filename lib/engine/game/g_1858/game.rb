@@ -50,7 +50,7 @@ module Engine
             Engine::Step::Track,
             G1858::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1858::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             G1858::Step::IssueShares,
