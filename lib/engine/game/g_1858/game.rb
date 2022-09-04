@@ -19,6 +19,7 @@ module Engine
         include CitiesPlusTownsRouteDistanceStr
 
         HOME_TOKEN_TIMING = :float
+        TRACK_RESTRICTION = :semi_restrictive
 
         # FIXME: second tile lay only costs 10 if either first or second lay
         # only adds metre gauge track.
