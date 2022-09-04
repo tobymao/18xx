@@ -4,6 +4,8 @@ module Engine
   module Game
     module G1858
       module Trains
+        OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
+
         PHASES = [
           {
             name: '2',
