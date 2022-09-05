@@ -1015,7 +1015,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             coordinates: 'O14',
-            city: 0,
+            city: 1,
             color: '#ffffff',
             text_color: 'black',
             reservation_color: nil,
