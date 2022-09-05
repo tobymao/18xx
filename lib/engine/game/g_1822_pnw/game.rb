@@ -448,7 +448,7 @@ module Engine
             G1822PNW::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822PNW::Step::Assign,
-            G1822PNW::Step::SpecialChoose,
+            Engine::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
             G1822::Step::SpecialToken,
             G1822PNW::Step::Track,
@@ -465,7 +465,7 @@ module Engine
         end
 
         def choose_step
-          [G1822PNW::Step::Choose]
+          [G1822::Step::Choose]
         end
 
         def next_round!
@@ -530,7 +530,7 @@ module Engine
         def stock_round
           G1822PNW::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1822PNW::Step::BuySellParShares,
+            G1822::Step::BuySellParShares,
           ])
         end
 
