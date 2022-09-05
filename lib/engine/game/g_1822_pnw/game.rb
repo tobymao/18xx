@@ -82,7 +82,7 @@ module Engine
         PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
 
-        IMPASSABLE_HEX_COLORS = %i[gray red].freeze
+        IMPASSABLE_HEX_COLORS = %i[gray red blue brown].freeze
 
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/1822_pnw/tree_plus_10.svg',
@@ -926,7 +926,7 @@ module Engine
 
         def legal_city_and_town_tile(hex, tile)
           @city_and_town_yellow_tiles ||= %w[5 6 57]
-          @city_and_town_hex_names ||= %w[H19 M4]
+          @city_and_town_hex_names ||= %w[H19]
           @city_and_town_hex_names.include?(hex.name) && @city_and_town_yellow_tiles.include?(tile.name)
         end
 
