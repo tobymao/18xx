@@ -40,6 +40,8 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1858::Step::HomeToken,
             Engine::Step::BuySellParShares,
           ])
         end
@@ -58,11 +60,11 @@ module Engine
           ], round_num: round_num)
         end
 
-        def home_token_locations(_corporation)
-          # FIXME/TODO: when starting a public company after the start of phase 5
-          # it can choose any unoccupied city space for its first token.
+        def home_token_locations(corporation)
+          # When starting a public company after the start of phase 5 it can
+          # choose any unoccupied city space for its first token.
           hexes.select do |hex|
-            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
+            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
         end
 
