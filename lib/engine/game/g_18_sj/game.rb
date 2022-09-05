@@ -469,7 +469,7 @@ module Engine
           end
         end
 
-        def cert_limit
+        def cert_limit(_player = nil)
           current_cert_limit
         end
 
