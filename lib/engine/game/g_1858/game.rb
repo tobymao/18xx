@@ -119,6 +119,28 @@ module Engine
           revenue /= 2 if route.train.obsolete
           revenue
         end
+
+        def metre_gauge_upgrade(old_tile, new_tile)
+          # Check if the only new track on the tile is metre gauge
+          old_track = old_tile.paths.map(&:track)
+          new_track = new_tile.paths.map(&:track)
+          old_track.each { |t| new_track.slice!(new_track.index(t) || new_track.size) }
+          new_track.uniq == [:narrow]
+        end
+
+        def upgrade_cost(tile, hex, entity, _spender)
+          return 0 if tile.upgrades.empty?
+
+          cost = tile.upgrades[0].cost
+          if metre_gauge_upgrade(tile, hex.tile)
+            discount = cost / 2
+            @log << "#{entity.name} receives a #{format_currency(discount)} " \
+                    "terrain discount for metre gauge track"
+            cost - discount
+          else
+            cost
+          end
+        end
       end
     end
   end
