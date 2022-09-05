@@ -1034,7 +1034,7 @@ module Engine
             coordinates: 'O20',
             city: 0,
             color: '#221E20',
-            text_color: '#black',
+            text_color: '#white',
             reservation_color: nil,
           },
           {
