@@ -281,6 +281,8 @@ module View
           children.concat(render_president_contributions)
         end
 
+        children << h(:div, @step.ebuy_custom_message(@corporation)) if @step.respond_to?(:ebuy_custom_message)
+
         props = {
           style: {
             display: 'grid',
