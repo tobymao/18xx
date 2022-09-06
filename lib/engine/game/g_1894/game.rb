@@ -127,7 +127,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
-                    status: ['can_buy_companies'],
                   },
                   {
                     name: 'Gray',
@@ -254,12 +253,12 @@ module Engine
         BROWN_CITY_619_UPGRADE_TILES = %w[X10 X11 X13].freeze
         BROWN_CITY_TILES = %w[X10 X11 X12 X13 X14 X15 35 36 118]
 
-        FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CAB].freeze
+        FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CFOR].freeze
         BELGIAN_REGULAR_CORPORATIONS = %w[GR Belge].freeze
         REGULAR_CORPORATIONS = FRENCH_REGULAR_CORPORATIONS + BELGIAN_REGULAR_CORPORATIONS
-        FRENCH_LATE_CORPORATIONS = %w[F1 F2].freeze
+        FRENCH_LATE_CORPORATIONS = %w[LF].freeze
         FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 H7 I8].freeze
-        BELGIAN_LATE_CORPORATIONS = %w[B1 B2].freeze
+        BELGIAN_LATE_CORPORATIONS = %w[LB].freeze
         BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 H17].freeze
 
         DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
@@ -307,8 +306,8 @@ module Engine
           corporation_by_id('Est')
         end
 
-        def cab
-          corporation_by_id('CAB')
+        def cfor
+          corporation_by_id('CFOR')
         end
 
         def sqg
@@ -317,7 +316,7 @@ module Engine
 
         def setup
           @late_corporations, @corporations = @corporations.partition do |c|
-            %w[F1 B1].include?(c.id)
+            %w[LB LF].include?(c.id)
           end
 
           @last_or_set_triggered = false
@@ -408,13 +407,13 @@ module Engine
         def place_home_token(corporation)
           return if corporation.tokens.first&.used == true
 
-          if [ouest, nord, cab].include?(corporation)
+          if [ouest, nord, cfor].include?(corporation)
             corporation.coordinates.each do | coordinate |
               hex = hex_by_id(coordinate)
               tile = hex&.tile
               if tile.color != :brown
                 # don't take the token that's alerady pending
-                token = corporation.tokens.find { |t| !@round.pending_tokens.find { |p_t| p_t[:token] == t } }
+                token = corporation.tokens.find { |t| !t.used && !@round.pending_tokens.find { |p_t| p_t[:token] == t } }
                 tile.cities.first.place_token(corporation, token, free: true)
               else
                 place_home_token_brown_tile(corporation, hex, tile)
@@ -614,6 +613,7 @@ module Engine
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
 
           revenues << 60 if is_est_running_to_centre_bourgogne(corporation, stops)
+
           if ignore_london
             london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.cities.first.revenue)
             revenues.delete_at(revenues.index(london_revenue) || revenues.length)
@@ -685,8 +685,6 @@ module Engine
           end
         end
 
-        private
-
         def adjust_companies()
           return unless @players.size == 4
 
@@ -696,6 +694,8 @@ module Engine
           @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
 
           sqg.value = 70
+          sqg.min_price = 35
+          sqg.max_price = 140
           @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.sort_by!(&:value)
         end
 

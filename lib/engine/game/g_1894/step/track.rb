@@ -70,6 +70,7 @@ module Engine
 
               plm_token.move!(cities.first)
               @game.graph.clear
+              
             elsif saved_tokens.any?
               token = saved_tokens.find { |t| t[:entity] == entity}
               return unless token
