@@ -16,7 +16,7 @@ module Engine
         BANK_CASH = 12_000
 
         CERT_LIMIT = { 2 => 20, 3 => 13, 4 => 10 }.freeze
-        def cert_limit
+        def cert_limit(_player = nil)
           # cert limit isn't dynamic in 1836jr56
           CERT_LIMIT[@players.size]
         end

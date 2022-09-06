@@ -24,6 +24,23 @@ module Engine
 
             super
           end
+
+          RHINE_METROPOLIS_HEXES = %w[D9 F9 I10].freeze
+
+          def upgradeable_tiles(entity, hex)
+            return super unless RHINE_METROPOLIS_HEXES.include?(hex.name)
+
+            potential_tiles(entity, hex).map do |tile|
+              tile.rotate!(0)
+              tile
+            end.compact
+          end
+
+          def legal_tile_rotation?(entity, hex, tile)
+            return true if RHINE_METROPOLIS_HEXES.include?(hex.name)
+
+            super
+          end
         end
       end
     end

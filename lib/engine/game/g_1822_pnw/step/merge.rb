@@ -12,11 +12,12 @@ module Engine
         class Merge < Engine::Step::Base
           include Engine::Step::TokenMerger
           include Engine::Step::ProgrammerMergerPass
+          include Engine::Game::G1822PNW::Connections
 
           def actions(entity)
-            return [] if !entity.corporation? || entity != current_entity || @merge_state == :done
-            return ['choose'] if @merge_state != :none
-            return ['merge'] if mergeable(entity).any?
+            return [] if !entity.corporation? || entity != current_entity
+            return %w[choose] if @merge_state != :none
+            return %w[merge pass] if mergeable(entity).any?
 
             []
           end
@@ -33,9 +34,21 @@ module Engine
             'Merge Corporation'
           end
 
+          def log_skip(entity)
+            @log << "#{entity.name} has no valid companies to merge with and is skipped"
+          end
+
+          def buyer
+            @merge_state == :none ? nil : @new_corporation
+          end
+
           def mergeable(corporation)
+            return [] unless @merge_state == :none
+
             @game.unassociated_minors.select do |m|
-              @game.graph.connected_nodes(corporation)[m.tokens.first.city] && !valid_par_prices(corporation, m).empty?
+              entity_connects?(corporation, m) &&
+                !valid_par_prices(corporation, m).empty? &&
+                corporation.owner == m.owner
             end
           end
 
@@ -44,7 +57,8 @@ module Engine
             when :selecting_par
               'Choose par value for new company'
             when :selecting_shares
-              'Choose number of shares'
+              'Choose number of shares to make up minors value of '\
+              "#{@game.format_currency((@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2)}"
             when :selecting_token
               'What to do with the token'
             end
@@ -88,7 +102,7 @@ module Engine
               end
             when :selecting_shares
               minors_value = (@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2
-              minors_cash = @associated_minor.cash + @unassociated_minor.cash
+              minors_cash = @new_corporation.cash
               player_cash = @associated_minor.owner.cash
               possible_exchanged_shares(@selected_par, minors_cash, minors_value, player_cash).each do |shares|
                 money_difference = minors_value - (@selected_par * shares)
@@ -124,6 +138,8 @@ module Engine
 
             transfer_posessions(@associated_minor, @new_corporation)
             transfer_posessions(@unassociated_minor, @new_corporation)
+            @new_corporation.ipoed = true
+            @game.remove_home_icon(@new_corporation, @associated_minor.coordinates)
 
             @merge_state = :selecting_par
           end
@@ -155,7 +171,9 @@ module Engine
             else
               @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name}"
             end
+
             @merge_state = :selecting_token
+            process_minor_on_destination if @new_corporation.destination_coordinates == @associated_minor.coordinates
           end
 
           def process_select_token(action)
@@ -174,14 +192,35 @@ module Engine
             else
               @game.log << "#{@new_corporation.name} moves one token from exchange to available"
             end
+
+            finish_merge
+          end
+
+          def process_minor_on_destination
+            city = @unassociated_minor.tokens[0].city
+            city.delete_token!(@unassociated_minor.tokens[0])
+            city.place_token(@new_corporation, @new_corporation.find_token_by_type, check_tokenable: false)
+            @game.log << "#{@new_corporation.name} token replaces the #{@unassociated_minor.name} token in #{city.hex.name}"
+
+            city = @associated_minor.tokens[0].city
+            city.delete_token!(@associated_minor.tokens[0])
+            token = @new_corporation.find_token_by_type(:destination)
+            city.place_token(@new_corporation, token, free: true, check_tokenable: false, cheater: true)
+            city.hex.tile.icons.reject! { |icon| icon.name == "#{@new_corporation.id}_destination" }
+            ability = @new_corporation.all_abilities.find { |a| a.type == :destination }
+            @new_corporation.remove_ability(ability)
+            @game.log << "#{@new_corporation.name} destination token replaces the #{@associated_minor.name} " \
+                         "token in #{city.hex.name}"
+
+            finish_merge
+          end
+
+          def finish_merge
             @game.graph.clear
-
-            @associated_minor.close!
-            @unassociated_minor.close!
-            @game.corporations.delete(@associated_minor)
-            @game.corporations.delete(@unassociated_minor)
-
-            @merge_state = :done
+            close_minor(@associated_minor)
+            close_minor(@unassociated_minor)
+            @merge_state = :none
+            pass!
           end
 
           def process_choose(action)
@@ -210,6 +249,12 @@ module Engine
             receiving << "trains (#{trains})" unless trains.empty?
 
             @game.log << "#{corporation.name} receives #{receiving.join(', ')} from #{minor.name}" unless receiving.empty?
+          end
+
+          def close_minor(minor)
+            minor.owner.shares_by_corporation.delete(minor)
+            minor.close!
+            @game.corporations.delete(minor)
           end
 
           def mergeable_type(corporation)

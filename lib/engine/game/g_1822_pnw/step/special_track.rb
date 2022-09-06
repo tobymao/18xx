@@ -16,6 +16,10 @@ module Engine
             )
           end
 
+          def setup
+            @round.num_laid_portage = 0
+          end
+
           def available_hex(entity, hex)
             if @game.port_company?(entity)
               return nil unless abilities(entity).hexes.include?(hex.id)
@@ -29,6 +33,7 @@ module Engine
             return available_hex_portage_company(entity, hex) if @game.portage_company?(entity)
             return available_hex_boomtown_company(entity, hex) if @game.boomtown_company?(entity)
             return available_hex_coal_company(entity, hex) if @game.coal_company?(entity)
+            return nil if @game.tokencity?(hex) && !get_tile_lay(entity)[:upgrade]
 
             super
           end
@@ -41,24 +46,22 @@ module Engine
               tile = @game.tiles.find { |t| t.name == tile_ability.tiles[0] }
               return [tile]
             elsif @game.cube_company?(entity)
-              return @game.can_hold_builder_cubes?(hex.tile) ? [@game.tile_by_id('BC-0')] : []
+              return @game.can_hold_builder_cubes?(hex.tile) ? [@game.cube_tile] : []
             end
             return potential_tiles_portage_company(entity, hex) if @game.portage_company?(entity)
             return potential_tiles_boomtown_company(entity, hex) if @game.boomtown_company?(entity)
             return potential_tiles_coal_company(entity, hex) if @game.coal_company?(entity)
 
             tiles = super
-            if @game.can_hold_builder_cubes?(hex.tile)
-              cube_tile = @game.tile_by_id('BC-0')
-              tiles << cube_tile
-            end
+            tiles << @game.cube_tile if @game.can_hold_builder_cubes?(hex.tile)
+            tiles = @game.tokencity_potential_tiles(hex, tiles) if @game.tokencity?(hex)
             tiles
           end
 
           def legal_tile_rotation?(entity, hex, tile)
             return hex.tile.paths.any? { |p| p.exits == tile.exits } if @game.port_company?(entity)
-            return true if tile.id == 'BC-0'
-            return true if @game.legal_leavenworth_tile(hex, tile)
+            return true if tile == @game.cube_tile
+            return true if @game.legal_city_and_town_tile(hex, tile)
             return legal_tile_rotation_portage_company?(entity, hex, tile) if @game.portage_company?(entity)
             return legal_tile_rotation_boomtown_company?(entity, hex, tile) if @game.boomtown_company?(entity)
             return legal_tile_rotation_coal_company?(entity, hex, tile) if @game.coal_company?(entity)
@@ -114,7 +117,7 @@ module Engine
 
           def process_lay_tile(action)
             return process_lay_tile_cube_company(action) if @game.cube_company?(action.entity)
-            if @game.company_ability_extra_track?(action.entity) && action.tile.id == 'BC-0'
+            if @game.company_ability_extra_track?(action.entity) && action.tile == @game.cube_tile
               return process_lay_tile_extra_track_cube(action)
             end
             return process_lay_tile_portage_company(action) if @game.portage_company?(action.entity)
@@ -181,6 +184,14 @@ module Engine
 
             @log << "#{ability.owner.name} closes"
             ability.owner.close!
+          end
+
+          def track_upgrade?(_from, _to, hex)
+            @game.tokencity?(hex) || super
+          end
+
+          def border_cost_discount(entity, spender, border, cost, hex)
+            hex == @game.seattle_hex ? 75 : super
           end
         end
       end

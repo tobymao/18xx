@@ -809,12 +809,11 @@ module Engine
         end
 
         def num_certs(entity)
-          certs = super
+          super + num_certs_modification(entity)
+        end
 
-          # Tax haven does not count towards cert limit
-          company = entity.companies.find { |c| c.id == self.class::COMPANY_OSTH }
-          certs -= 1 if company
-          certs
+        def num_certs_modification(entity)
+          entity.companies.find { |c| c.id == self.class::COMPANY_OSTH } ? -1 : 0
         end
 
         def tile_lays(entity)
@@ -1740,7 +1739,7 @@ module Engine
           train = @company_trains[company.id]
 
           unless can_gain_extra_train?(entity, train)
-            raise GameError, "Can't gain an extra #{train.name}, already have a permanent 2P or LP"
+            raise GameError, "Can't gain an extra #{train.name}, already have a permanent 2P, LP, or P+"
           end
 
           buy_train(entity, train, :free)
