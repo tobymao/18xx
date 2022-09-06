@@ -38,12 +38,22 @@ module Engine
           end
 
           def process_choose(action)
+            major = @game.corporation_by_id(@game.major_name_for_associated_minor(action.choice))
             @log << "#{@new_associated_minor.name} replaces #{action.choice} as the associated minor " \
-                    "for #{@game.major_name_for_associated_minor(action.choice)}"
+                    "for #{major.id}"
             @game.replace_associated_minor(action.choice, @new_associated_minor.id)
             @log << "#{action.choice} is removed from the game"
             @game.corporations.delete(@game.corporation_by_id(action.choice))
-            @game.companies.delete(@game.company_by_id(@game.company_id_from_corp_id(action.choice)))
+
+            old_company = @game.company_by_id(@game.company_id_from_corp_id(action.choice))
+            @new_associated_minor.color = old_company.color
+            @new_associated_minor.text_color = old_company.text_color
+
+            @game.remove_home_icon(major, major.coordinates)
+            @game.add_home_icon(major, @new_associated_minor.coordinates)
+
+            @game.companies.delete(old_company)
+
             @choices = nil
           end
         end

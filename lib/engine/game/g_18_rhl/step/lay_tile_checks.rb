@@ -12,6 +12,8 @@ module LayTileChecks
       potentially_close_private(action, @game.angertalbahn)
     when 'E14'
       potentially_remove_ability_from_private(action, @game.prinz_wilhelm_bahn)
+    when 'I10', 'F9', 'D9'
+      @game.update_token_blocking_in_rhine_metropolies(@round.current_operator)
     end
   end
 

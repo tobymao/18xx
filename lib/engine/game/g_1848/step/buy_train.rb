@@ -39,6 +39,7 @@ module Engine
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
             trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
             trains_to_buy << ghan_train if can_buy_2e?(entity)
+            trains_to_buy += @depot.depot_trains.reject { |t| t.name == '2E' }
             trains_to_buy.uniq
           end
 

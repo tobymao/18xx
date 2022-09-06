@@ -92,46 +92,52 @@ module Engine
             'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_1;path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_0;'\
                       'label=OO',
           },
-          '921' =>
+          'X921' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D;'\
+            'code' => 'city=revenue:40,slots:1,loc:1;city=revenue:40,slots:2,loc:4;label=D;'\
+                      'path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
-          '922' =>
+          'X922' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D;'\
+            'code' => 'city=revenue:40,slots:1,loc:1;city=revenue:40,slots:2,loc:4;label=D;'\
+                      'path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_1;path=a:5,b:_1;path=a:_0,b:_1,track:narrow;'\
+                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0;label=D',
+          },
+          'X923' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2,loc:1;city=revenue:40,slots:1,loc:4;label=K;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
-          '923' =>
+          'X924' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=K;'\
+            'code' => 'city=revenue:40,slots:2,loc:1;city=revenue:40,slots:1,loc:4;label=K;'\
+                      'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
-          '924' =>
+          'X925' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=K;'\
+            'code' => 'city=revenue:40,slots:1,loc:1;city=revenue:40,slots:2,loc:4;label=DU;'\
+                      'path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
-          '925' =>
+          'X926' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DU;'\
-                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
-          },
-          '926' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DU;'\
+            'code' => 'city=revenue:40,slots:1,loc:1;city=revenue:40,slots:2,loc:4;label=DU;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_1;path=a:_0,b:_1,track:narrow;'\
                       'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
           '927' =>

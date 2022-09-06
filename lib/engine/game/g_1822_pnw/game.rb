@@ -13,6 +13,7 @@ module Engine
         include_meta(G1822PNW::Meta)
         include G1822PNW::Entities
         include G1822PNW::Map
+        include G1822PNW::BuilderCubes
 
         attr_reader :hidden_coal_corp
 
@@ -84,12 +85,12 @@ module Engine
         IMPASSABLE_HEX_COLORS = %i[gray red].freeze
 
         ASSIGNMENT_TOKENS = {
-          'forest' => '/icons/tree.svg',
+          'forest' => '/icons/1822_pnw/tree_plus_10.svg',
           'P17' => '/icons/ski.svg',
           'P15' => '/icons/factory.svg',
         }.freeze
 
-        DOUBLE_HEX = %w[H19].freeze
+        DOUBLE_HEX = %w[H19 M4].freeze
 
         # Don't run 1822 specific code for the LCDR
         COMPANY_LCDR = nil
@@ -183,9 +184,14 @@ module Engine
         end
 
         def replace_associated_minor(old_minor_id, new_minor_id)
-          major = @minor_associations[old_minor_id]
-          @minor_associations.except!(old_minor_id)
-          @minor_associations[new_minor_id] = major
+          @minor_associations[new_minor_id] = @minor_associations.delete(old_minor_id)
+        end
+
+        def timeline
+          timeline = super
+          pairs = @minor_associations.keys.map { |a| "#{a} → #{@minor_associations[a]}" }
+          timeline << "Minor Associations: #{pairs.join(', ')}" unless pairs.empty?
+          timeline
         end
 
         def reservation_corporations
@@ -539,6 +545,8 @@ module Engine
 
         def setup
           setup_associated_minors
+          setup_regional_payout_count
+          setup_tokencity_tiles
 
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
@@ -559,7 +567,54 @@ module Engine
           @hidden_coal_corp = Corporation.new(sym: 'HC', name: 'Hidden Coal', logo: 'open_city', tokens: [0])
 
           # Setup all the destination tokens, icons and abilities
-          # setup_destinations
+          setup_destinations
+          setup_home_icons
+        end
+
+        def corporation_available?(corporation)
+          return super if corporation.floated?
+
+          minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
+          corporation = corporation_by_id(minor_id)
+          company_id = company_id_from_corp_id(minor_id)
+          company = @companies.find { |c| c.id == company_id }
+
+          # If there is no company, either the minor is already closed (corporation will be nil)
+          # in which case the major can be started, or the minor is owned (corporation will not
+          # be nil), in which case the major cannot be started
+          return corporation.nil? unless company
+
+          # If there is a company, make sure it has no bids
+          return false if @round.respond_to?(:bids) && !@round.bids[company].empty?
+
+          true
+        end
+
+        def float_corporation(corporation)
+          if corporation.type == :major
+            remove_home_icon(corporation, corporation.coordinates)
+            minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
+            @log << "Associated minor #{minor_id} closes"
+            company_by_id(company_id_from_corp_id(minor_id)).close!
+          end
+          super
+        end
+
+        def setup_home_icons
+          @corporations.each do |c|
+            add_home_icon(c, c.coordinates) if c.type == :major
+          end
+        end
+
+        def add_home_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          # Logo and Icon each add '.svg' to the end - so chop one of them off
+          hex.tile.icons << Part::Icon.new("../#{corporation.logo.chop.chop.chop.chop}", "#{corporation.id}_home")
+        end
+
+        def remove_home_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_home" }
         end
 
         def corp_id_from_company_id(id)
@@ -610,10 +665,40 @@ module Engine
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
 
+        def finalize_end_game_values; end
+
+        def setup_regional_payout_count
+          @regional_payout_count = {
+            'A' => 0,
+            'B' => 0,
+            'C' => 0,
+          }
+        end
+
+        def payout_companies
+          super
+          regionals.each { |r| @regional_payout_count[r.id] += 1 if r.owner }
+        end
+
+        def regional_payout_count(regional)
+          @regional_payout_count[regional.id]
+        end
+
+        def float_str(entity)
+          regional_railway?(entity) ? '' : super
+        end
+
         def company_choices(company, time)
           return company_choices_p21(company, time) if company.id == 'P21'
 
           {}
+        end
+
+        def sorted_corporations
+          ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
+          corporations = ipoed.sort
+          corporations += others if @phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par')
+          corporations
         end
 
         def company_choices_p21(company, time)
@@ -649,7 +734,7 @@ module Engine
           choices
         end
 
-        def company_made_choice(company, choice)
+        def company_made_choice(company, choice, _time)
           return company_made_choice_p21(company, choice) if company.id == 'P21'
         end
 
@@ -769,7 +854,11 @@ module Engine
         end
 
         def calculate_mill_bonus(route)
-          revenue = route.hexes.any? { |hex| hex.assigned?('P15') } ? mill_bonus_amount : 0
+          mill_hex = route.hexes.find { |hex| hex.assigned?('P15') }
+          revenue = mill_hex ? mill_bonus_amount : 0
+          if mill_hex && (train_type(route.train) == :etrain)
+            revenue = mill_hex.tile.cities[0].tokened_by?(route.train.owner) ? mill_bonus_amount * 2 : 0
+          end
           { route: route, revenue: revenue }
         end
 
@@ -788,6 +877,8 @@ module Engine
         end
 
         def forest_revenue(route)
+          return 0 if train_type(route.train) == :etrain
+
           10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
         end
 
@@ -833,16 +924,18 @@ module Engine
           str
         end
 
-        def legal_leavenworth_tile(hex, tile)
-          @leavenworth_yellow_tiles ||= %w[5 6 57]
-          hex.name == 'H19' && @leavenworth_yellow_tiles.include?(tile.name)
+        def legal_city_and_town_tile(hex, tile)
+          @city_and_town_yellow_tiles ||= %w[5 6 57]
+          @city_and_town_hex_names ||= %w[H19 M4]
+          @city_and_town_hex_names.include?(hex.name) && @city_and_town_yellow_tiles.include?(tile.name)
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          return true if legal_leavenworth_tile(from.hex, to) && from.color == :white
-          return true if from.color == 'blue' && to.color == 'blue'
+          return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
+          return true if from.color == :blue && to.color == :blue
           return to.name == 'PNW3' if boomtown_company?(selected_company)
           return to.name == 'PNW5' if from.name == 'PNW4'
+          return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
           super
         end
@@ -882,33 +975,30 @@ module Engine
         end
 
         def can_place_river(tile)
-          @river_directions ||= { 'M4' => 5, 'N5' => 2 }
+          @river_directions ||= { 'M4' => 5, 'N5' => 2, 'H13' => 1 }
           return false unless @river_directions.include?(tile.hex.id)
 
-          tile.paths.find { |p| p.edges[0].num == @river_directions[tile.hex.id] }.nil?
+          tile.paths.find { |p| !p.edges.empty? && p.edges[0].num == @river_directions[tile.hex.id] }.nil?
         end
 
-        def max_builder_cubes(tile)
-          ((total_terrain_cost(tile).to_f + (can_place_river(tile) ? 75.0 : 0.0)) / 40.0).ceil
+        def upgrade_cost(tile, hex, entity, spender)
+          return tokencity_upgrade_cost(tile, hex) if tokencity?(hex)
+
+          super
         end
 
-        def current_builder_cubes(tile)
-          tile.icons.count { |i| i.name.start_with?('block') }
-        end
-
-        def can_hold_builder_cubes?(tile)
-          current_builder_cubes(tile) < max_builder_cubes(tile)
-        end
-
-        def tile_cost_with_discount(tile, hex, _entity, _spender, base_cost)
-          return 20 if hex.id == 'H11' # Don't charge for the river hexside if this is Seattle
-
+        def tile_cost_with_discount(tile, _hex, _entity, _spender, base_cost)
           [base_cost - (40 * current_builder_cubes(tile)), 0].max
         end
 
         def regional_railway?(entity)
           @regional_railways ||= %w[A B C].freeze
           @regional_railways.include?(entity.id)
+        end
+
+        def regional_railway_company?(entity)
+          @regional_railway_companies ||= %w[MA MB MC].freeze
+          @regional_railway_companies.include?(entity.id)
         end
 
         def associated_minor?(entity)
@@ -926,6 +1016,10 @@ module Engine
         def regionals
           # Not cached because @corporations can change
           @corporations.select { |c| regional_railway?(c) }
+        end
+
+        def company_header(company)
+          regional_railway_company?(company) ? 'REGIONAL RAILWAY' : super
         end
 
         def associated_major(minor)

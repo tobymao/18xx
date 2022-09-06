@@ -453,6 +453,10 @@ module View
               'stroke-width': (width.to_i * 0.75).to_s,
               'stroke-dasharray': dash,
             )
+            if @terminal == '2'
+              props[:attrs][:d] = "M #{terminal_start_x} 85 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
+                                  "L #{terminal_end_x} 85 L #{point_x} 65 Z"
+            end
           end
           props
         end
