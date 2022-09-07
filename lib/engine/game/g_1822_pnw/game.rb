@@ -82,7 +82,7 @@ module Engine
         PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
 
-        IMPASSABLE_HEX_COLORS = %i[gray red].freeze
+        IMPASSABLE_HEX_COLORS = %i[gray red blue].freeze
 
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/1822_pnw/tree_plus_10.svg',
@@ -448,7 +448,7 @@ module Engine
             G1822PNW::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822PNW::Step::Assign,
-            G1822PNW::Step::SpecialChoose,
+            Engine::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
             G1822::Step::SpecialToken,
             G1822PNW::Step::Track,
@@ -465,7 +465,7 @@ module Engine
         end
 
         def choose_step
-          [G1822PNW::Step::Choose]
+          [G1822::Step::Choose]
         end
 
         def next_round!
@@ -530,7 +530,7 @@ module Engine
         def stock_round
           G1822PNW::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1822PNW::Step::BuySellParShares,
+            G1822::Step::BuySellParShares,
           ])
         end
 
@@ -568,7 +568,6 @@ module Engine
 
           # Setup all the destination tokens, icons and abilities
           setup_destinations
-          setup_home_icons
         end
 
         def corporation_available?(corporation)
@@ -598,12 +597,6 @@ module Engine
             company_by_id(company_id_from_corp_id(minor_id)).close!
           end
           super
-        end
-
-        def setup_home_icons
-          @corporations.each do |c|
-            add_home_icon(c, c.coordinates) if c.type == :major
-          end
         end
 
         def add_home_icon(corporation, coordinates)
@@ -666,6 +659,8 @@ module Engine
         def company_tax_haven_payout(entity, per_share); end
 
         def finalize_end_game_values; end
+
+        def set_private_revenues; end
 
         def setup_regional_payout_count
           @regional_payout_count = {
@@ -776,7 +771,7 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == '16'
+          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == 'P9'
         end
 
         def reorder_players(_order = nil)
@@ -926,7 +921,7 @@ module Engine
 
         def legal_city_and_town_tile(hex, tile)
           @city_and_town_yellow_tiles ||= %w[5 6 57]
-          @city_and_town_hex_names ||= %w[H19 M4]
+          @city_and_town_hex_names ||= %w[H19]
           @city_and_town_hex_names.include?(hex.name) && @city_and_town_yellow_tiles.include?(tile.name)
         end
 
@@ -934,6 +929,7 @@ module Engine
           return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
           return true if from.color == :blue && to.color == :blue
           return to.name == 'PNW3' if boomtown_company?(selected_company)
+          return from.color == :brown if to.name == 'PNW4'
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
