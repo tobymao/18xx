@@ -82,7 +82,7 @@ module Engine
         PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
 
-        IMPASSABLE_HEX_COLORS = %i[gray red blue brown].freeze
+        IMPASSABLE_HEX_COLORS = %i[gray red blue].freeze
 
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/1822_pnw/tree_plus_10.svg',
@@ -667,6 +667,8 @@ module Engine
 
         def finalize_end_game_values; end
 
+        def set_private_revenues; end
+
         def setup_regional_payout_count
           @regional_payout_count = {
             'A' => 0,
@@ -776,7 +778,7 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == '16'
+          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == 'P9'
         end
 
         def reorder_players(_order = nil)
@@ -934,7 +936,7 @@ module Engine
           return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
           return true if from.color == :blue && to.color == :blue
           return to.name == 'PNW3' if boomtown_company?(selected_company)
-          return to.name == 'PNW4' if from.color == :brown
+          return from.color == :brown if to.name == 'PNW4'
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
