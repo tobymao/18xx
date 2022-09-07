@@ -17,7 +17,7 @@ module Engine
             price = entity.share_price.price
             per_share = payout_per_share(entity, revenue)
 
-            if revenue == 0
+            if revenue.zero?
               { share_direction: :left, share_times: 1 }
             elsif per_share * 10 >= price
               { share_direction: :right, share_times: 1 }

@@ -135,7 +135,7 @@ module Engine
           if metre_gauge_upgrade(tile, hex.tile)
             discount = cost / 2
             @log << "#{entity.name} receives a #{format_currency(discount)} " \
-                    "terrain discount for metre gauge track"
+                    'terrain discount for metre gauge track'
             cost - discount
           else
             cost
