@@ -53,30 +53,26 @@ class Game < Base
       FROM games g
       LEFT JOIN user_games ug
         ON g.id = ug.id
-      WHERE ug.id IS NOT NULL
-        OR g.user_id = :user_id
+      WHERE (ug.id IS NOT NULL OR g.user_id = :user_id)
+        AND g.status IN :status
       ORDER BY g.id DESC
-      LIMIT 1000
+      LIMIT :limit
     ) personal_games
   SQL
 
   # rubocop:disable Style/FormatString
-  LOGGED_IN_QUERY = <<~SQL.freeze
-    #{USER_QUERY}
-    UNION
-    #{USER_STATUS_QUERY % { status: 'new' }}
-    UNION
-    #{USER_STATUS_QUERY % { status: 'active' }}
-    UNION
-    #{USER_STATUS_QUERY % { status: 'finished' }}
-  SQL
-
   LOGGED_OUT_QUERY = <<~SQL.freeze
     #{STATUS_QUERY % { status: 'new' }}
     UNION
     #{STATUS_QUERY % { status: 'active' }}
     UNION
     #{STATUS_QUERY % { status: 'finished' }}
+  SQL
+
+  LOGGED_IN_QUERY = <<~SQL.freeze
+    #{USER_QUERY}
+    UNION
+    #{LOGGED_OUT_QUERY}
   SQL
   # rubocop:enable Style/FormatString
 
@@ -89,7 +85,17 @@ class Game < Base
 
     kwargs[:user_id] = user.id if user
     kwargs[:title] = opts['title'] != '' ? opts['title'] : nil
+    kwargs[:status] = %w[new active]
+    kwargs[:limit] = 1000
     fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs,).all.sort_by(&:id).reverse
+  end
+
+  def self.profile_games(user)
+    kwargs = {}
+    kwargs[:user_id] = user.id if user
+    kwargs[:status] = %w[new active archived finished]
+    kwargs[:limit] = 100
+    fetch(USER_QUERY, **kwargs,).all.sort_by(&:id).reverse
   end
 
   SETTINGS = %w[
