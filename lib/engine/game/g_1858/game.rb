@@ -50,7 +50,7 @@ module Engine
           @round_num = round_num
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Track,
+            G1858::Step::Track,
             G1858::Step::Token,
             Engine::Step::Route,
             G1858::Step::Dividend,
