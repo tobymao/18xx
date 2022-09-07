@@ -568,7 +568,6 @@ module Engine
 
           # Setup all the destination tokens, icons and abilities
           setup_destinations
-          setup_home_icons
         end
 
         def corporation_available?(corporation)
@@ -598,12 +597,6 @@ module Engine
             company_by_id(company_id_from_corp_id(minor_id)).close!
           end
           super
-        end
-
-        def setup_home_icons
-          @corporations.each do |c|
-            add_home_icon(c, c.coordinates) if c.type == :major
-          end
         end
 
         def add_home_icon(corporation, coordinates)
