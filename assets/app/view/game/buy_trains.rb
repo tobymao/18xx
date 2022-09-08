@@ -282,7 +282,7 @@ module View
         end
 
         if @step.respond_to?(:must_take_loan?) && @step.must_take_loan?(@corporation)
-          issue_str = "#{@corporation.name} must take loans until it is able to buy a train"
+          issue_str = "#{corporation.name} must take loans until it is able to buy a train"
           issue_str += ' or goes into receivership' if @game.class::EBUY_CORP_LOANS_RECEIVERSHIP
           children << h(:div, issue_str)
         end
