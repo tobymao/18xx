@@ -87,15 +87,11 @@ class Game < Base
     kwargs[:title] = opts['title'] != '' ? opts['title'] : nil
     kwargs[:status] = %w[new active]
     kwargs[:limit] = 1000
-    fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs,).all.sort_by(&:id).reverse
+    fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all
   end
 
   def self.profile_games(user)
-    kwargs = {}
-    kwargs[:user_id] = user.id if user
-    kwargs[:status] = %w[new active archived finished]
-    kwargs[:limit] = 100
-    fetch(USER_QUERY, **kwargs,).all.sort_by(&:id).reverse
+    fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 }).all
   end
 
   SETTINGS = %w[
