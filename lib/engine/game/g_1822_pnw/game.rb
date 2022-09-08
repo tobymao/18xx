@@ -601,7 +601,7 @@ module Engine
             remove_home_icon(corporation, corporation.coordinates)
             minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
             @log << "Associated minor #{minor_id} closes"
-            company_by_id(company_id_from_corp_id(minor_id)).close!
+            company_by_id(company_id_from_corp_id(minor_id))&.close!
           end
           super
         end
