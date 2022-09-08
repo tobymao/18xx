@@ -8,6 +8,20 @@ module Engine
     module G1848
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def actions(entity)
+            return [] unless can_entity_buy_train?(entity)
+
+            return [] if entity != current_entity
+
+            if must_buy_train?(entity)
+              %w[buy_train]
+            elsif can_buy_train?(entity)
+              %w[buy_train pass]
+            else
+              []
+            end
+          end
+
           def buy_train_action(action, entity = nil, borrow_from: nil)
             entity ||= action.entity
             price = action.price
@@ -105,6 +119,14 @@ module Engine
           def pass!
             @round.train_buy_available = false
             super
+          end
+
+          def ebuy_president_can_contribute?(_corporation)
+            false
+          end
+
+          def president_may_contribute?
+            false
           end
         end
       end

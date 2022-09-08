@@ -48,9 +48,13 @@ module Engine
 
         EBUY_PRES_SWAP = false
 
+        EBUY_CAN_SELL_SHARES = false
+
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+
+        EBUY_LOANS_RECEIVERSHIP = true
 
         DISCARDED_TRAINS = :remove
 
