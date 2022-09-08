@@ -18,6 +18,7 @@ module Engine
           'E2' => 'Neah',
           'E20' => 'Davenport',
           'E24' => 'Spokane',
+          'F5' => 'Port Angeles',
           'F9' => 'Port Townsend',
           'F13' => 'Everett',
           'F23' => 'Spokane',
