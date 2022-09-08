@@ -9,7 +9,7 @@ module Engine
         class Track < Engine::Step::Track
           def round_state
             # An extra field to track whether each tile lay only adds narrow gauge track.
-            super.merge( { gauges_added: [] } )
+            super.merge({ gauges_added: [] })
           end
 
           def setup
@@ -54,12 +54,12 @@ module Engine
           def discount_second_tile!(tile_lay, old_tile, new_tile, entity)
             return if tile_lay[:cost].zero? # first tile
 
-            gauges_added = @round.gauges_added + [ new_track_gauge(old_tile, new_tile) ]
-            if gauges_added.include?([:narrow])
-              @log << "#{entity.name} receives a #{@game.format_currency(10)} " \
-                      'discount on its second tile for metre gauge track'
-              tile_lay[:cost] = tile_lay[:upgrade_cost] = 10
-            end
+            gauges_added = @round.gauges_added + [new_track_gauge(old_tile, new_tile)]
+            return unless gauges_added.include?([:narrow])
+
+            @log << "#{entity.name} receives a #{@game.format_currency(10)} " \
+                    'discount on its second tile for metre gauge track'
+            tile_lay[:cost] = tile_lay[:upgrade_cost] = 10
           end
         end
       end
