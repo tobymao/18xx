@@ -6,11 +6,18 @@ module Engine
       module Trains
         OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
 
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          { 'broad_gauge' => ['Broad gauge track', 'Only broad gauge track can be built'] },
+          { 'narrow_gauge' => ['Metre gauge track', 'Broad and metre gauge track can be built'] },
+          { 'dual_gauge' => ['Dual gauge track', 'Broad, metre and dual gauge track can be built'] },
+        ).freeze
+
         PHASES = [
           {
             name: '2',
             train_limit: 4,
             tiles: [:yellow], # FIXME: narrow gauge tiles not available until phase 3
+            status: ['broad_gauge'],
             operating_rounds: 2,
           },
           {
@@ -18,6 +25,7 @@ module Engine
             on: %w[4H 2M],
             train_limit: 4,
             tiles: %i[yellow green],
+            status: ['narrow_gauge'],
             operating_rounds: 2,
           },
           {
@@ -32,6 +40,7 @@ module Engine
             on: %w[5E 4M],
             train_limit: 2,
             tiles: %i[yellow green brown],
+            status: ['dual_gauge'],
             operating_rounds: 2,
           },
           {
