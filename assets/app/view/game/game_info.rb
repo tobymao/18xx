@@ -185,13 +185,12 @@ module View
           end
           discounts = discounts.flat_map { |e| [e, ', '] }[0..-2] if discounts
 
-          if discounts.nil?
+          if !discounts
             # if no overall discount found, attempt to find discounts for specific variants inside the group
             discounts =  train.variants.select{|_k,v| v["discount"] }.map do |variant_sym, variant_discount_hash|
               price_string = variant_discount_hash["discount"].group_by { |_k, v| v }&.map do |price, price_discounts|
                 "[#{variant_sym}] #{price_discounts.map(&:first).join(', ')} → #{@game.format_currency(price)}"
               end
-              debugger
               h('span.nowrap', price_string)
             end
             discounts = discounts.flat_map { |e| [e, "; "] }[0..-2] if discounts
