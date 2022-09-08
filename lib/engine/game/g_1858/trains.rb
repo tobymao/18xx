@@ -16,7 +16,7 @@ module Engine
           {
             name: '2',
             train_limit: 4,
-            tiles: [:yellow], # FIXME: narrow gauge tiles not available until phase 3
+            tiles: [:yellow],
             status: ['broad_gauge'],
             operating_rounds: 2,
           },

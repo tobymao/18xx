@@ -61,6 +61,14 @@ module Engine
                     'discount on its second tile for metre gauge track'
             tile_lay[:cost] = tile_lay[:upgrade_cost] = 10
           end
+
+          def potential_tiles(entity, hex)
+            tiles = super
+            return tiles unless @game.phase.name == '2'
+
+            # Metre gauge track is not available until phase 3.
+            tiles.reject { |tile| tile.paths.map(&:track).include?(:narrow) }
+          end
         end
       end
     end
