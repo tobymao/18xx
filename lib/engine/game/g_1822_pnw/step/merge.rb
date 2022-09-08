@@ -34,7 +34,17 @@ module Engine
             'Merge Corporation'
           end
 
+          def log_skip(entity)
+            @log << "#{entity.name} has no valid companies to merge with and is skipped"
+          end
+
+          def buyer
+            @merge_state == :none ? nil : @new_corporation
+          end
+
           def mergeable(corporation)
+            return [] unless @merge_state == :none
+
             @game.unassociated_minors.select do |m|
               entity_connects?(corporation, m) &&
                 !valid_par_prices(corporation, m).empty? &&
@@ -129,6 +139,7 @@ module Engine
             transfer_posessions(@associated_minor, @new_corporation)
             transfer_posessions(@unassociated_minor, @new_corporation)
             @new_corporation.ipoed = true
+            @game.remove_home_icon(@new_corporation, @associated_minor.coordinates)
 
             @merge_state = :selecting_par
           end

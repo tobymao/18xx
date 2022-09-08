@@ -82,10 +82,10 @@ module Engine
         PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
 
-        IMPASSABLE_HEX_COLORS = %i[gray red].freeze
+        IMPASSABLE_HEX_COLORS = %i[gray red blue].freeze
 
         ASSIGNMENT_TOKENS = {
-          'forest' => '/icons/tree.svg',
+          'forest' => '/icons/1822_pnw/tree_plus_10.svg',
           'P17' => '/icons/ski.svg',
           'P15' => '/icons/factory.svg',
         }.freeze
@@ -448,7 +448,7 @@ module Engine
             G1822PNW::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822PNW::Step::Assign,
-            G1822PNW::Step::SpecialChoose,
+            Engine::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
             G1822::Step::SpecialToken,
             G1822PNW::Step::Track,
@@ -465,7 +465,7 @@ module Engine
         end
 
         def choose_step
-          [G1822PNW::Step::Choose]
+          [G1822::Step::Choose]
         end
 
         def next_round!
@@ -530,7 +530,7 @@ module Engine
         def stock_round
           G1822PNW::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1822PNW::Step::BuySellParShares,
+            G1822::Step::BuySellParShares,
           ])
         end
 
@@ -591,11 +591,23 @@ module Engine
 
         def float_corporation(corporation)
           if corporation.type == :major
+            remove_home_icon(corporation, corporation.coordinates)
             minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
             @log << "Associated minor #{minor_id} closes"
             company_by_id(company_id_from_corp_id(minor_id)).close!
           end
           super
+        end
+
+        def add_home_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          # Logo and Icon each add '.svg' to the end - so chop one of them off
+          hex.tile.icons << Part::Icon.new("../#{corporation.logo.chop.chop.chop.chop}", "#{corporation.id}_home")
+        end
+
+        def remove_home_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_home" }
         end
 
         def corp_id_from_company_id(id)
@@ -646,6 +658,10 @@ module Engine
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
 
+        def finalize_end_game_values; end
+
+        def set_private_revenues; end
+
         def setup_regional_payout_count
           @regional_payout_count = {
             'A' => 0,
@@ -663,10 +679,21 @@ module Engine
           @regional_payout_count[regional.id]
         end
 
+        def float_str(entity)
+          regional_railway?(entity) ? '' : super
+        end
+
         def company_choices(company, time)
           return company_choices_p21(company, time) if company.id == 'P21'
 
           {}
+        end
+
+        def sorted_corporations
+          ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
+          corporations = ipoed.sort
+          corporations += others if @phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par')
+          corporations
         end
 
         def company_choices_p21(company, time)
@@ -702,7 +729,7 @@ module Engine
           choices
         end
 
-        def company_made_choice(company, choice)
+        def company_made_choice(company, choice, _time)
           return company_made_choice_p21(company, choice) if company.id == 'P21'
         end
 
@@ -744,7 +771,7 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == '16'
+          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == 'P9'
         end
 
         def reorder_players(_order = nil)
@@ -894,7 +921,7 @@ module Engine
 
         def legal_city_and_town_tile(hex, tile)
           @city_and_town_yellow_tiles ||= %w[5 6 57]
-          @city_and_town_hex_names ||= %w[H19 M4]
+          @city_and_town_hex_names ||= %w[H19]
           @city_and_town_hex_names.include?(hex.name) && @city_and_town_yellow_tiles.include?(tile.name)
         end
 
@@ -902,6 +929,7 @@ module Engine
           return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
           return true if from.color == :blue && to.color == :blue
           return to.name == 'PNW3' if boomtown_company?(selected_company)
+          return from.color == :brown if to.name == 'PNW4'
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
@@ -964,6 +992,11 @@ module Engine
           @regional_railways.include?(entity.id)
         end
 
+        def regional_railway_company?(entity)
+          @regional_railway_companies ||= %w[MA MB MC].freeze
+          @regional_railway_companies.include?(entity.id)
+        end
+
         def associated_minor?(entity)
           @minor_associations.include?(entity.id)
         end
@@ -979,6 +1012,10 @@ module Engine
         def regionals
           # Not cached because @corporations can change
           @corporations.select { |c| regional_railway?(c) }
+        end
+
+        def company_header(company)
+          regional_railway_company?(company) ? 'REGIONAL RAILWAY' : super
         end
 
         def associated_major(minor)

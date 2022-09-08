@@ -154,7 +154,7 @@ module Engine
 
         def after_bid; end
 
-        def cert_limit
+        def cert_limit(_player = nil)
           (8 * corporations.size / players.size).to_i
         end
 

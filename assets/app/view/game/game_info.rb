@@ -88,7 +88,7 @@ module View
           tr_props = @game.phase.available?(phase[:name]) && phase != current_phase ? @dimmed_font_style : {}
 
           h(:tr, tr_props, [
-            h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
+            h(:td, (current_phase == phase ? '→' : '') + phase[:name]),
             h(:td, @game.info_on_trains(phase)),
             h(:td, phase[:operating_rounds]),
             h(:td, train_limit_to_h(phase[:train_limit])),
@@ -181,7 +181,7 @@ module View
           train = trains.first
           # standard discount for entire train group (all variants)
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
-            h('span.nowrap', "#{price_discounts.map(&:first).join(', ')} → #{@game.format_currency(price)}")
+            h('span.nowrap', "#{price_discounts.map(&:first).join(', ')}→#{@game.format_currency(price)}")
           end
           discounts = discounts.flat_map { |e| [e, ', '] }[0..-2] if discounts
 
@@ -215,7 +215,7 @@ module View
             end
           end
           event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
-          name = (@game.info_available_train(first_train, train) ? '→ ' : '') + @game.info_train_name(train)
+          name = (@game.info_available_train(first_train, train) ? '→' : '') + @game.info_train_name(train)
 
           train_content = [
             h(:td, name),
@@ -237,7 +237,7 @@ module View
 
             # needed for 18CZ where a train can be rusted by multiple different trains
             trains_to_rust = rust_schedule.select { |k, _v| k&.include?(key) }.values.flatten.join(', ')
-            rusts << "#{key} → #{trains_to_rust}"
+            rusts << "#{key}→#{trains_to_rust}"
             show_rusts_inline = false
           end
 
