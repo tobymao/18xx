@@ -58,6 +58,8 @@ module Engine
 
         DISCARDED_TRAINS = :remove
 
+        TRACK_RESTRICTION = :permissive
+
         MARKET = [
           %w[0c
              70
