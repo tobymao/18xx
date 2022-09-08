@@ -20,6 +20,8 @@ module Engine
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
+        GAME_END_CHECK = { bank: :current_or }
+        BANKRUPTCY_ALLOWED = false
 
         TILE_LAYS = [
           { lay: true, upgrade: true },
