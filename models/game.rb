@@ -17,6 +17,7 @@ class Game < Base
       FROM games
       WHERE status = '%<status>s'
         AND (:title IS NULL OR :title = title)
+        AND NOT (status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY created_at DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
