@@ -21,7 +21,7 @@ module View
 
       children = [
         render_header,
-        h(Welcome, show_intro: your_games.size < 2),
+        h(Welcome, show_intro: your_games.empty?),
         h(Chat, user: @user, connection: @connection),
       ]
 
