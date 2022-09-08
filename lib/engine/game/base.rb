@@ -222,9 +222,6 @@ module Engine
       # if sold more than needed then cannot then buy a cheaper train in the depot.
       EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = false
 
-      # loans taken during ebuy can lead to receviership
-      EBUY_LOANS_RECEIVERSHIP = false
-
       # when is the home token placed? on...
       # par
       # float

@@ -128,6 +128,11 @@ module Engine
           def president_may_contribute?
             false
           end
+
+          def ebuy_custom_message(corporation)
+            "#{corporation.name} must take loans (stock price moves 3 steps left per additional loan)" \
+              'until it is able to buy a train or goes into receivership'
+          end
         end
       end
     end
