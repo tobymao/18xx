@@ -11,7 +11,6 @@ module Engine
             name: '2',
             train_limit: 4,
             tiles: [:yellow], # FIXME: narrow gauge tiles not available until phase 3
-            status: ['minor_limit_two'],
             operating_rounds: 2,
           },
           {
@@ -19,7 +18,6 @@ module Engine
             on: %w[4H 2M],
             train_limit: 4,
             tiles: %i[yellow green],
-            status: ['minor_limit_two'],
             operating_rounds: 2,
           },
           {
@@ -27,7 +25,6 @@ module Engine
             on: %w[6H 3M],
             train_limit: 3,
             tiles: %i[yellow green],
-            status: ['minor_limit_one'],
             operating_rounds: 2,
           },
           {
@@ -35,7 +32,6 @@ module Engine
             on: %w[5E 4M],
             train_limit: 2,
             tiles: %i[yellow green brown],
-            status: %w[minor_limit_one normal_formation],
             operating_rounds: 2,
           },
           {
@@ -43,7 +39,6 @@ module Engine
             on: %w[6E 5M],
             train_limit: 2,
             tiles: %i[yellow green brown],
-            status: ['normal_formation'],
             operating_rounds: 2,
           },
           {
@@ -51,7 +46,6 @@ module Engine
             on: %w[7E 6M],
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: ['normal_formation'],
             operating_rounds: 2,
           },
         ].freeze
