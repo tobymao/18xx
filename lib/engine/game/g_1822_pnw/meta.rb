@@ -17,7 +17,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822PNW'.freeze
         GAME_LOCATION = 'Pacific Northwest'.freeze
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1822PNW'.freeze
+        GAME_RULES_URL = 'https://boardgamegeek.com/thread/2890404/1822pnw-public-rules-review'.freeze
         GAME_TITLE = '1822PNW'.freeze
 
         PLAYER_RANGE = [3, 5].freeze
