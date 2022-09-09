@@ -169,7 +169,7 @@ module View
         rust_schedule, obsolete_schedule = rust_obsolete_schedule
 
         show_obsolete_schedule = !obsolete_schedule.keys.empty?
-        show_upgrade = @depot.upcoming.any? { |train| train.variants.any? { |_k, v| v['discount'] }}
+        show_upgrade = @depot.upcoming.any? { |train| train.variants.any? { |_k, v| v['discount'] } }
         show_salvage = @depot.trains.any?(&:salvage)
         show_available = @depot.upcoming.any?(&:available_on)
         events = []
