@@ -530,7 +530,7 @@ module Engine
         def stock_round
           G1822PNW::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1822::Step::BuySellParShares,
+            G1822PNW::Step::BuySellParShares,
           ])
         end
 
@@ -570,23 +570,30 @@ module Engine
           setup_destinations
         end
 
-        def corporation_available?(corporation)
-          return super if corporation.floated?
+        def major_formation_status(major, player: nil)
+          return :formed if major.floated?
 
-          minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
-          corporation = corporation_by_id(minor_id)
+          minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == major.id }
+          minor_corp = corporation_by_id(minor_id)
+
+          if minor_corp.owner && player
+            return minor_corp.owner == player ? :convertable : :none
+          end
+
           company_id = company_id_from_corp_id(minor_id)
           company = @companies.find { |c| c.id == company_id }
 
-          # If there is no company, either the minor is already closed (corporation will be nil)
-          # in which case the major can be started, or the minor is owned (corporation will not
-          # be nil), in which case the major cannot be started
-          return corporation.nil? unless company
+          return :parable unless company && @round.respond_to?(:bids) && !@round.bids[company].empty?
 
-          # If there is a company, make sure it has no bids
-          return false if @round.respond_to?(:bids) && !@round.bids[company].empty?
+          :none
+        end
 
-          true
+        def corporation_available?(corporation)
+          major_formation_status(corporation) != :none
+        end
+
+        def form_button_text(_corporation)
+          'Convert from minor'
         end
 
         def float_corporation(corporation)
@@ -594,7 +601,7 @@ module Engine
             remove_home_icon(corporation, corporation.coordinates)
             minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
             @log << "Associated minor #{minor_id} closes"
-            company_by_id(company_id_from_corp_id(minor_id)).close!
+            company_by_id(company_id_from_corp_id(minor_id))&.close!
           end
           super
         end
@@ -1022,8 +1029,35 @@ module Engine
           corporation_by_id(@minor_associations[minor.id])
         end
 
+        def associated_minor(major)
+          corporation_by_id(@minor_associations.keys.find { |m| @minor_associations[m] == major.id })
+        end
+
         def forest?(tile)
           tile.terrain.include?(:forest)
+        end
+
+        def transfer_posessions(from, to)
+          receiving = []
+
+          if from.cash.positive?
+            receiving << format_currency(from.cash)
+            from.spend(from.cash, to)
+          end
+
+          companies = transfer(:companies, from, to).map(&:name)
+          receiving << "companies (#{companies.join(', ')})" unless companies.empty?
+
+          trains = transfer(:trains, from, to).map(&:name)
+          receiving << "trains (#{trains})" unless trains.empty?
+
+          log << "#{to.name} receives #{receiving.join(', ')} from #{from.name}" unless receiving.empty?
+        end
+
+        def close_minor(minor)
+          minor.owner.shares_by_corporation.delete(minor)
+          minor.close!
+          corporations.delete(minor)
         end
       end
     end
