@@ -54,7 +54,11 @@ module Engine
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
+        EBUY_CORP_LOANS_RECEIVERSHIP = true
+
         DISCARDED_TRAINS = :remove
+
+        TRACK_RESTRICTION = :permissive
 
         MARKET = [
           %w[0c
