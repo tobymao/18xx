@@ -35,7 +35,7 @@ class Game < Base
         AND (:title IS NULL OR :title = g.title)
         AND ug.id IS NULL
         AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
-      ORDER BY g.created_at DESC
+      ORDER BY g.%<ordered_by>s DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
     ) %<status>s_games
@@ -73,7 +73,11 @@ class Game < Base
   LOGGED_IN_QUERY = <<~SQL.freeze
     #{USER_QUERY}
     UNION
-    #{LOGGED_OUT_QUERY}
+    #{USER_STATUS_QUERY % { status: 'new', ordered_by: 'created_at' }}
+    UNION
+    #{USER_STATUS_QUERY % { status: 'active', ordered_by: 'updated_at' }}
+    UNION
+    #{USER_STATUS_QUERY % { status: 'finished', ordered_by: 'finished_at' }}
   SQL
   # rubocop:enable Style/FormatString
 
