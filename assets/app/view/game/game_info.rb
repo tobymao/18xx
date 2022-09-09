@@ -169,7 +169,7 @@ module View
         rust_schedule, obsolete_schedule = rust_obsolete_schedule
 
         show_obsolete_schedule = !obsolete_schedule.keys.empty?
-        show_upgrade = @depot.upcoming.any?(&:discount)
+        show_upgrade = @depot.upcoming.any? { |train| train.variants.any? { |_k, v| v['discount'] }}
         show_salvage = @depot.trains.any?(&:salvage)
         show_available = @depot.upcoming.any?(&:available_on)
         events = []
@@ -179,10 +179,23 @@ module View
         rows = @depot.trains.reject(&:reserved).group_by(&:sym).map do |sym, trains|
           remaining = @depot.upcoming.select { |t| t.sym == sym }
           train = trains.first
+          # standard discount for entire train group (all variants)
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
             h('span.nowrap', "#{price_discounts.map(&:first).join(', ')}→#{@game.format_currency(price)}")
           end
           discounts = discounts.flat_map { |e| [e, ', '] }[0..-2] if discounts
+
+          unless discounts
+            # if no overall discount found, attempt to find discounts for specific variants inside the group
+            discounts = train.variants.select { |_k, v| v['discount'] }.map do |variant_sym, variant_discount_hash|
+              price_string = variant_discount_hash['discount'].group_by { |_k, v| v }&.map do |price, price_discounts|
+                "[#{variant_sym}] #{price_discounts.map(&:first).join(', ')} → #{@game.format_currency(price)}"
+              end
+              h('span.nowrap', price_string)
+            end
+            discounts = discounts.flat_map { |e| [e, '; '] }[0..-2] if discounts
+          end
+
           names_to_prices = train.names_to_prices
 
           event_text = []
