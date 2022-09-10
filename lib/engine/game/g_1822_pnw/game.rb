@@ -82,7 +82,7 @@ module Engine
         PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
 
-        IMPASSABLE_HEX_COLORS = %i[gray red].freeze
+        IMPASSABLE_HEX_COLORS = %i[gray red blue].freeze
 
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/1822_pnw/tree_plus_10.svg',
@@ -115,7 +115,7 @@ module Engine
           'P17' => { acquire: %i[major minor], phase: 5 },
           'P18' => { acquire: %i[major minor], phase: 3 },
           'P19' => { acquire: %i[major minor], phase: 3 },
-          'P20' => { acquire: %i[major minor], phase: 2 },
+          'P20' => { acquire: %i[major minor], phase: 1 },
           'P21' => { acquire: %i[major minor], phase: 2 },
         }.freeze
 
@@ -448,7 +448,7 @@ module Engine
             G1822PNW::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822PNW::Step::Assign,
-            G1822PNW::Step::SpecialChoose,
+            Engine::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
             G1822::Step::SpecialToken,
             G1822PNW::Step::Track,
@@ -465,7 +465,7 @@ module Engine
         end
 
         def choose_step
-          [G1822PNW::Step::Choose]
+          [G1822::Step::Choose]
         end
 
         def next_round!
@@ -568,26 +568,32 @@ module Engine
 
           # Setup all the destination tokens, icons and abilities
           setup_destinations
-          setup_home_icons
         end
 
-        def corporation_available?(corporation)
-          return super if corporation.floated?
+        def major_formation_status(major, player: nil)
+          return :formed if major.floated?
 
-          minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
-          corporation = corporation_by_id(minor_id)
+          minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == major.id }
+          minor_corp = corporation_by_id(minor_id)
+
+          if minor_corp.owner && player
+            return minor_corp.owner == player ? :convertable : :none
+          end
+
           company_id = company_id_from_corp_id(minor_id)
           company = @companies.find { |c| c.id == company_id }
 
-          # If there is no company, either the minor is already closed (corporation will be nil)
-          # in which case the major can be started, or the minor is owned (corporation will not
-          # be nil), in which case the major cannot be started
-          return corporation.nil? unless company
+          return :parable unless company && @round.respond_to?(:bids) && !@round.bids[company].empty?
 
-          # If there is a company, make sure it has no bids
-          return false if @round.respond_to?(:bids) && !@round.bids[company].empty?
+          :none
+        end
 
-          true
+        def corporation_available?(corporation)
+          major_formation_status(corporation) != :none
+        end
+
+        def form_button_text(_corporation)
+          'Convert from minor'
         end
 
         def float_corporation(corporation)
@@ -595,15 +601,9 @@ module Engine
             remove_home_icon(corporation, corporation.coordinates)
             minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
             @log << "Associated minor #{minor_id} closes"
-            company_by_id(company_id_from_corp_id(minor_id)).close!
+            company_by_id(company_id_from_corp_id(minor_id))&.close!
           end
           super
-        end
-
-        def setup_home_icons
-          @corporations.each do |c|
-            add_home_icon(c, c.coordinates) if c.type == :major
-          end
         end
 
         def add_home_icon(corporation, coordinates)
@@ -666,6 +666,8 @@ module Engine
         def company_tax_haven_payout(entity, per_share); end
 
         def finalize_end_game_values; end
+
+        def set_private_revenues; end
 
         def setup_regional_payout_count
           @regional_payout_count = {
@@ -776,7 +778,7 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == '16'
+          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == 'P9'
         end
 
         def reorder_players(_order = nil)
@@ -926,7 +928,7 @@ module Engine
 
         def legal_city_and_town_tile(hex, tile)
           @city_and_town_yellow_tiles ||= %w[5 6 57]
-          @city_and_town_hex_names ||= %w[H19 M4]
+          @city_and_town_hex_names ||= %w[H19]
           @city_and_town_hex_names.include?(hex.name) && @city_and_town_yellow_tiles.include?(tile.name)
         end
 
@@ -934,6 +936,7 @@ module Engine
           return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
           return true if from.color == :blue && to.color == :blue
           return to.name == 'PNW3' if boomtown_company?(selected_company)
+          return from.color == :brown if to.name == 'PNW4'
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
@@ -968,6 +971,12 @@ module Engine
           return "Bid box #{index + 1}" if index
 
           nil
+        end
+
+        def status_str(corporation)
+          return super unless regional_railway?(corporation)
+
+          "Acquisition value #{format_currency(200)}"
         end
 
         def total_terrain_cost(tile)
@@ -1026,8 +1035,35 @@ module Engine
           corporation_by_id(@minor_associations[minor.id])
         end
 
+        def associated_minor(major)
+          corporation_by_id(@minor_associations.keys.find { |m| @minor_associations[m] == major.id })
+        end
+
         def forest?(tile)
           tile.terrain.include?(:forest)
+        end
+
+        def transfer_posessions(from, to)
+          receiving = []
+
+          if from.cash.positive?
+            receiving << format_currency(from.cash)
+            from.spend(from.cash, to)
+          end
+
+          companies = transfer(:companies, from, to).map(&:name)
+          receiving << "companies (#{companies.join(', ')})" unless companies.empty?
+
+          trains = transfer(:trains, from, to).map(&:name)
+          receiving << "trains (#{trains})" unless trains.empty?
+
+          log << "#{to.name} receives #{receiving.join(', ')} from #{from.name}" unless receiving.empty?
+        end
+
+        def close_minor(minor)
+          minor.owner.shares_by_corporation.delete(minor)
+          minor.close!
+          corporations.delete(minor)
         end
       end
     end

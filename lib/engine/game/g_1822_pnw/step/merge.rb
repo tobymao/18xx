@@ -136,8 +136,8 @@ module Engine
 
             @game.log << "#{@associated_minor.name} and #{@unassociated_minor.name} merge into #{@new_corporation.name}"
 
-            transfer_posessions(@associated_minor, @new_corporation)
-            transfer_posessions(@unassociated_minor, @new_corporation)
+            @game.transfer_posessions(@associated_minor, @new_corporation)
+            @game.transfer_posessions(@unassociated_minor, @new_corporation)
             @new_corporation.ipoed = true
             @game.remove_home_icon(@new_corporation, @associated_minor.coordinates)
 
@@ -217,8 +217,8 @@ module Engine
 
           def finish_merge
             @game.graph.clear
-            close_minor(@associated_minor)
-            close_minor(@unassociated_minor)
+            @game.close_minor(@associated_minor)
+            @game.close_minor(@unassociated_minor)
             @merge_state = :none
             pass!
           end
@@ -232,29 +232,6 @@ module Engine
             when :selecting_token
               process_select_token(action)
             end
-          end
-
-          def transfer_posessions(minor, corporation)
-            receiving = []
-
-            if minor.cash.positive?
-              receiving << @game.format_currency(minor.cash)
-              minor.spend(minor.cash, corporation)
-            end
-
-            companies = @game.transfer(:companies, minor, corporation).map(&:name)
-            receiving << "companies (#{companies.join(', ')})" unless companies.empty?
-
-            trains = @game.transfer(:trains, minor, corporation).map(&:name)
-            receiving << "trains (#{trains})" unless trains.empty?
-
-            @game.log << "#{corporation.name} receives #{receiving.join(', ')} from #{minor.name}" unless receiving.empty?
-          end
-
-          def close_minor(minor)
-            minor.owner.shares_by_corporation.delete(minor)
-            minor.close!
-            @game.corporations.delete(minor)
           end
 
           def mergeable_type(corporation)
