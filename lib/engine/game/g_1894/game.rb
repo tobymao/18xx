@@ -179,17 +179,17 @@ module Engine
                   {
                     name: '7',
                     distance: 7,
-                    price: 700,
+                    price: 710,
                     num: 2,
                     discount: { '6' => 300 },
                   },
                   {
                     name: 'D',
                     distance: 999,
-                    price: 800,
-                    num: 20,
+                    price: 820,
+                    num: 22,
                     events: [{ 'type' => 'last_or_set_triggered' }],
-                    discount: { '5+' => 200, '6' => 300, '7' => 350 },
+                    discount: { '5+' => 200, '6' => 300, '7' => 355 },
                   }].freeze
 
         LAYOUT = :pointy
