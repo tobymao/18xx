@@ -5,7 +5,6 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'stock_market'
-require_relative '../stubs_are_restricted'
 require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
@@ -15,7 +14,6 @@ module Engine
         include_meta(G1894::Meta)
         include G1894::Map
         include G1894::Entities
-        include StubsAreRestricted
 
         attr_accessor :skip_track_and_token
 
@@ -243,6 +241,7 @@ module Engine
         CENTRE_BOURGOGNE_HEX = 'I2'
         LUXEMBOURG_HEX = 'I18'
         SQ_HEX = 'G10'
+        BRUXELLES_HEX = 'F15'
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
@@ -254,7 +253,7 @@ module Engine
         BROWN_CITY_TILES = %w[X10 X11 X12 X13 X14 X15 35 36 118]
 
         FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CFOR].freeze
-        BELGIAN_REGULAR_CORPORATIONS = %w[GR Belge].freeze
+        BELGIAN_REGULAR_CORPORATIONS = %w[AG Belge].freeze
         REGULAR_CORPORATIONS = FRENCH_REGULAR_CORPORATIONS + BELGIAN_REGULAR_CORPORATIONS
         FRENCH_LATE_CORPORATIONS = %w[LF].freeze
         FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 H7 I8].freeze
@@ -310,8 +309,16 @@ module Engine
           corporation_by_id('CFOR')
         end
 
+        def french_starting_corporation
+          corporation_by_id(@french_starting_corporation_id)
+        end
+
         def sqg
           company_by_id('SQG')
+        end
+
+        def starting_corporation_ids
+          ['Belge', french_starting_corporation.id]
         end
 
         def setup
@@ -334,12 +341,14 @@ module Engine
           paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
-          french_starting_corporation = corporation_by_id(FRENCH_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first)
+          @french_starting_corporation_id = FRENCH_REGULAR_CORPORATIONS.sort_by{ rand }.take(1).first
+          french_starting_corporation.add_ability(
+            Engine::Ability::Description.new(type: 'description', description: 'May not redeem shares'))
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
           belgian_starting_corporation = corporation_by_id('Belge')
 
           adjust_companies
-          remove_extra_french_major_shareholding_companies(french_starting_corporation.id)
+          remove_extra_french_major_shareholding_companies
 
           @players.each do |player|
             share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, player)
@@ -535,11 +544,14 @@ module Engine
         def late_corporation_home_hex(corporation, coordinates)
           corporation.coordinates = coordinates
           tile = hex_by_id(coordinates).tile
-          if tile.color == :brown
-            tile.add_reservation!(corporation, nil, reserve_city=false)
-          else
-            tile.add_reservation!(corporation, 0)
-          end
+
+          return tile.add_reservation!(corporation, 1) if coordinates = PARIS_HEX
+
+          return tile.add_reservation!(corporation, 0) if tile.color != :brown
+
+          return tile.add_reservation!(corporation, 0) if coordinates = BRUXELLES_HEX
+
+          tile.add_reservation!(corporation, nil, reserve_city=false)
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
@@ -685,7 +697,7 @@ module Engine
           end
         end
 
-        def adjust_companies()
+        def adjust_companies
           return unless @players.size == 4
 
           company_to_remove = companies.find { |c| c.id == 'AR' }
@@ -699,13 +711,13 @@ module Engine
           @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.sort_by!(&:value)
         end
 
-        def remove_extra_french_major_shareholding_companies(starting_corporation_id)
+        def remove_extra_french_major_shareholding_companies
           major_shareholdings = companies.find_all { |c| c.value == 180 }
 
           major_shareholdings.each do |company|
             close_ability = company.abilities.select { |a| a.type == :close }.first
 
-            next if close_ability.corporation == starting_corporation_id
+            next if close_ability.corporation == french_starting_corporation.id
 
             company.close!
             @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company)

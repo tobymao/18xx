@@ -7,6 +7,13 @@ module Engine
     module G1894
       module Step
         class RedeemShares < Engine::Step::IssueShares
+          def actions(entity)
+            puts @game.starting_corporation_ids
+            return [] if @game.starting_corporation_ids.include?(entity.id)
+
+            super
+          end
+
           def round_state
             super.merge(redeem_cash: Hash.new { |h, c| h[c] = c.cash })
           end

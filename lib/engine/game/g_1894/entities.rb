@@ -132,18 +132,19 @@ module Engine
             color: '#ff4040',
           },
           {
-            name: 'CAB major shareholding',
+            name: 'CFOR major shareholding',
             sym: 'CMS',
             value: 180,
             revenue: 25,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
-                  ' CAB without further payment. This private company may not be sold to any corporation, and does'\
-                  ' not exchange hands if the owning player loses the Presidency of the CAB.'\
-                  ' Closes when the CAB operates.',
-            abilities: [{ type: 'close', when: 'operated', corporation: 'CAB' },
+                  ' CFOR without further payment. This private company may not be sold to any corporation, and does'\
+                  ' not exchange hands if the owning player loses the Presidency of the CFOR.'\
+                  ' Closes when the CFOR operates.',
+            abilities: [{ type: 'close', when: 'operated', corporation: 'CFOR' },
                         { type: 'no_buy' },
-                        { type: 'shares', shares: 'CAB_0' }],
+                        { type: 'shares', shares: 'CFOR_0' }],
             color: '#9c661f',
+            text_color: 'white',
           },
           {
             name: 'Est major shareholding',
@@ -197,10 +198,10 @@ module Engine
             color: '#ff4040',
           },
           {
-            sym: 'GR',
-            name: 'Gent Railway',
-            logo: '1894/GR',
-            simple_logo: '1894/GR.alt',
+            sym: 'AG',
+            name: 'Chemin de fer d\'Anvers à Gand',
+            logo: '1894/AG',
+            simple_logo: '1894/AG.alt',
             tokens: [0, 40, 100, 100],
             max_ownership_percent: 60,
             coordinates: 'D15',
@@ -226,6 +227,12 @@ module Engine
             max_ownership_percent: 60,
             coordinates: 'D17',
             color: '#61b229',
+            abilities: [
+              {
+                type: 'description',
+                description: 'May not redeem shares',
+              },
+            ],
           },
           {
             sym: 'PLM',
@@ -248,15 +255,15 @@ module Engine
             max_ownership_percent: 60,
             coordinates: 'I8',
             color: '#ff9966',
+            text_color: 'black',
             abilities: [
               {
                 type: 'hex_bonus',
                 amount: 0,
-                description: 'Value of I2 increased to 60.',
+                description: 'Value of I2 increased to 60',
                 hexes: ['I2'],
               },
             ],
-            text_color: 'black',
           },
           {
             sym: 'LF',
