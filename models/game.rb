@@ -75,9 +75,9 @@ class Game < Base
     UNION
     #{USER_STATUS_QUERY % { status: 'new', ordered_by: 'created_at' }}
     UNION
-    #{USER_STATUS_QUERY % { status: 'active', ordered_by: 'updated_at' }}
+    #{USER_STATUS_QUERY % { status: 'active', ordered_by: 'created_at' }}
     UNION
-    #{USER_STATUS_QUERY % { status: 'finished', ordered_by: 'finished_at' }}
+    #{USER_STATUS_QUERY % { status: 'finished', ordered_by: 'created_at' }}
   SQL
   # rubocop:enable Style/FormatString
 
