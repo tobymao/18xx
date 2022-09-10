@@ -221,6 +221,8 @@ class Api
       game.status = 'finished'
     else
       game.result = {}
+      game.finished_at = nil
+      game.manually_ended = nil
       game.status = 'active'
     end
 

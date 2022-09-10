@@ -10,7 +10,7 @@ module Engine
             sym: 'P1',
             value: 0,
             revenue: 5,
-            desc: 'MAJOR, Phase 5. 5-Train. Once a company acquires it, this is a notmal 5-train that is subject to '\
+            desc: 'MAJOR, Phase 5. 5-Train. Once a company acquires it, this is a normal 5-train that is subject to '\
                   'all of the normal rules.  It is not a "special train" and is not subject to the rules that are '\
                   'specific to special trains.  A company can acquire this private company at the start of its turn, '\
                   'even if it is already at it\'s train limit, as this counts as an acquisition action, not a train '\
@@ -162,7 +162,7 @@ module Engine
             desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income '\
                   'into its treasury equal to one half of the base value of the start and end '\
                   'stations from one of the trains operated. Modifications to values (for '\
-                  'E-trains, a 3/2-train, or destination tokens) do not apply. An L-train may '\
+                  'E-trains or destination tokens) do not apply. An L-train may '\
                   'deliver mail within a single city. The company is not required to maximize '\
                   'the dividend from its run if it wishes to maximize its revenue from the mail '\
                   'contract by stopping at a large city and not running beyond it to include '\
@@ -255,7 +255,7 @@ module Engine
             revenue: 10,
             desc: 'MAJOR, Phase 3. Replace a spike going to water with this tile. Lay this tile on '\
                   'a spike that does not already have a port. The spike now counts as a 40 '\
-                  '(gren)/50 (brown)/60 (gray) and is treated like a gray off-board area for '\
+                  '(green)/50 (brown)/60 (gray) and is treated like a gray off-board area for '\
                   'counting train runs for all companies. This is in addition to the company’s '\
                   'normal tile placement and the company does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
@@ -652,7 +652,7 @@ module Engine
                   'Associated with the Northern Pacific Railroad (NP). Starting location is O20.',
             abilities: [],
             color: '#221E20',
-            text_color: 'black',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 21. The Great Southern Railroad',
@@ -1034,7 +1034,7 @@ module Engine
             coordinates: 'O20',
             city: 0,
             color: '#221E20',
-            text_color: '#black',
+            text_color: '#white',
             reservation_color: nil,
           },
           {

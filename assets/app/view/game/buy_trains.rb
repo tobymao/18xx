@@ -281,6 +281,12 @@ module View
           children.concat(render_president_contributions)
         end
 
+        if @must_buy_train && @step.respond_to?(:must_take_loan?) && @step.must_take_loan?(@corporation)
+          issue_str = "#{@corporation.name} must take loans until it is able to buy a train"
+          issue_str += ' or goes into receivership' if @game.class::EBUY_CORP_LOANS_RECEIVERSHIP
+          children << h(:div, issue_str)
+        end
+
         props = {
           style: {
             display: 'grid',
@@ -302,7 +308,8 @@ module View
             president_assist, _fee = @game.president_assisted_buy(@corporation, train, price)
             entity = @corporation
 
-            if [@corporation, @corporation.owner].include?(@selected_company&.owner) && @step.respond_to?(:ability_timing)
+            if @selected_company && [@corporation, @corporation.owner].include?(@selected_company.owner) \
+              && @step.respond_to?(:ability_timing)
               @game.abilities(@selected_company, :train_discount, time: @step.ability_timing) do |ability|
                 if ability.trains.include?(train.name)
                   price = ability.discounted_price(train, price)
