@@ -163,4 +163,9 @@ class Game < Base
       finished_at: finished_at_ts,
     }
   end
+
+  def validate
+    super
+    errors.add(:finished_at, 'must be set for finished games') if status == 'finished' && !finished_at
+  end
 end
