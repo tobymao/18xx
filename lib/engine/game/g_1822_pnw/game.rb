@@ -115,7 +115,7 @@ module Engine
           'P17' => { acquire: %i[major minor], phase: 5 },
           'P18' => { acquire: %i[major minor], phase: 3 },
           'P19' => { acquire: %i[major minor], phase: 3 },
-          'P20' => { acquire: %i[major minor], phase: 2 },
+          'P20' => { acquire: %i[major minor], phase: 1 },
           'P21' => { acquire: %i[major minor], phase: 2 },
         }.freeze
 
@@ -971,6 +971,12 @@ module Engine
           return "Bid box #{index + 1}" if index
 
           nil
+        end
+
+        def status_str(corporation)
+          return super unless regional_railway?(corporation)
+
+          "Acquisition value #{format_currency(200)}"
         end
 
         def total_terrain_cost(tile)

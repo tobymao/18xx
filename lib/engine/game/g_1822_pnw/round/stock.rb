@@ -21,6 +21,10 @@ module Engine
             minor.share_price = @game.stock_market.par_prices.find { |pp| pp.price == 100 }
             @log << "#{minor.id} places a token on #{minor_city.hex.name} (#{minor_city.hex.location_name})"
           end
+
+          def sold_out_stock_movement(corp)
+            @game.stock_market.move_right(corp)
+          end
         end
       end
     end
