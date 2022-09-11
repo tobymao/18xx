@@ -28,6 +28,15 @@ module Engine
           bundles_for_corporation(entity, entity).select { |bundle| @share_pool.fit_in_bank?(bundle) }
         end
 
+        def emergency_issuable_bundles(entity)
+          return [] unless entity.trains.empty?
+          return [] if entity.cash >= @depot.max_depot_price
+
+          eligible, remaining = issuable_shares(entity)
+            .partition { |bundle| bundle.price + entity.cash < @depot.max_depot_price }
+          eligible.concat(remaining.take(1))
+        end
+
         def redeemable_shares(entity)
           return [] unless entity.corporation?
 

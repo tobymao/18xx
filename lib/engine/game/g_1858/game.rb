@@ -23,6 +23,15 @@ module Engine
         GAME_END_CHECK = { bank: :current_or }.freeze
         BANKRUPTCY_ALLOWED = false
 
+        MUST_BUY_TRAIN = :never
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_OTHER_VALUE = false
+        MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false
+        EBUY_SELL_MORE_THAN_NEEDED = false
+        EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = true
+        EBUY_OWNER_MUST_HELP = true
+        EBUY_CAN_SELL_SHARES = false
+
         TILE_LAYS = [
           { lay: true, upgrade: true },
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
