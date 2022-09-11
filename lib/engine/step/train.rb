@@ -197,7 +197,7 @@ module Engine
         variants.reject! { |v| entity.cash < v[:price] } if must_issue_before_ebuy?(entity)
         variants
       end
- 
+
       def setup
         @depot = @game.depot
         @last_share_sold_price = nil
