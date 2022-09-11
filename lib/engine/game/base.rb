@@ -238,6 +238,7 @@ module Engine
 
       ALLOW_TRAIN_BUY_FROM_OTHERS = true # Allows train buy from other corporations
       ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = true # Allows train buy from other player's corporations
+      ALLOW_OBSOLETE_TRAIN_BUY = false # Allows obsolete trains to be bought from other corporations
 
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
