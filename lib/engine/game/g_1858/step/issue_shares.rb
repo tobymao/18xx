@@ -7,6 +7,13 @@ module Engine
     module G1858
       module Step
         class IssueShares < Engine::Step::IssueShares
+          def issuable_shares(entity)
+            # Can't issues shares on a company's first operating turn.
+            return [] if entity.operating_history.one?
+
+            @game.issuable_shares(entity)
+          end
+
           def process_sell_shares(action)
             @game.share_pool.sell_shares(action.bundle)
             old_price = action.entity.share_price

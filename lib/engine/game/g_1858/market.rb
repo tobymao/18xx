@@ -23,7 +23,6 @@ module Engine
 
         def issuable_shares(entity)
           return [] unless entity.corporation?
-          return [] unless entity.operating_history.size > 1
           return [] if entity.num_ipo_shares.zero?
 
           bundles_for_corporation(entity, entity).select { |bundle| @share_pool.fit_in_bank?(bundle) }
