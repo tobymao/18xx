@@ -198,7 +198,6 @@ module Engine
         variants
       end
  
-
       def setup
         @depot = @game.depot
         @last_share_sold_price = nil
