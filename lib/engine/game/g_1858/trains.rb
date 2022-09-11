@@ -4,6 +4,9 @@ module Engine
   module Game
     module G1858
       module Trains
+        ALLOW_TRAIN_BUY_FROM_OTHERS = true
+        ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = true
+        ALLOW_OBSOLETE_TRAIN_BUY = true
         OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
