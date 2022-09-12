@@ -69,6 +69,36 @@ module Engine
             # Metre gauge track is not available until phase 3.
             tiles.reject { |tile| tile.paths.map(&:track).include?(:narrow) }
           end
+
+          def can_lay_tile?(entity)
+            # Don't check whether the company has enough cash to pay for the tile
+            # lay as this can be paid by the company president.
+            action = get_tile_lay(entity)
+            return false unless action
+            action[:lay] || action[:upgrade]
+          end
+
+          def try_take_loan(corporation, cost)
+            # 1858 does not have any loans, but this method gets called at the
+            # start of Engine::Step::Tracker.pay_tile_cost! and so can be used
+            # to catch when a public company does not have enough money to pay
+            # its terrain or extra tile costs, and have the company's president
+            # contribute money to pay for these.
+            return unless corporation.corporation?
+            return unless cost.positive?
+            return unless cost > corporation.cash
+
+            president = corporation.owner
+            shortfall = cost - corporation.cash
+            if shortfall > corporation.owner.cash
+              raise GameError, "The tile lay costs #{@game.format_currency(cost)} but " \
+                "#{corporation.name} has #{@game.format_currency(corporation.cash)} and " \
+                "#{president.name} has #{@game.format_currency(president.cash)}"
+            end
+            @game.log << "#{president.name} contributes #{@game.format_currency(shortfall)} " \
+              "towards the cost of #{corporation.name}'s tile lay"
+            president.spend(shortfall, corporation)
+          end
         end
       end
     end
