@@ -457,9 +457,9 @@ module Engine
           },
           blue: {
             %w[A16] =>
-                    'offboard=revenue:30;path=a:3,b:_0',
+                    'offboard=revenue:30;icon=image:port,large:1;path=a:3,b:_0',
             %w[J1] =>
-                    'offboard=revenue:20;path=a:1,b:_0,track:dual',
+                    'offboard=revenue:20;icon=image:port,large:1;path=a:1,b:_0,track:dual',
           },
           gray: {
             %w[D1] =>
