@@ -139,6 +139,7 @@ module Engine
             @game.transfer_posessions(@associated_minor, @new_corporation)
             @game.transfer_posessions(@unassociated_minor, @new_corporation)
             @new_corporation.ipoed = true
+            @new_corporation.floated = true
             @game.remove_home_icon(@new_corporation, @associated_minor.coordinates)
 
             @merge_state = :selecting_par

@@ -22,7 +22,7 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
+    attr_accessor :ipoed, :floated, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
                   :type, :floatable, :original_par_price, :reservation_color, :min_price, :ipo_owner,
                   :always_market_price, :full_name
     attr_reader :companies, :name, :fraction_shares, :id, :needs_token_to_par,
