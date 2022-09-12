@@ -694,16 +694,15 @@ module Engine
 
         def crowded_corps
           # 2E does not create a crowded corp
-          @crowded_corps ||= (minors + corporations).select do |c|
-            c.trains.count { |t| !t.obsolete && t.name != '2E' } > train_limit(c)
+          @crowded_corps ||= corporations.select do |c|
+            c.trains.count { |t| t.name != '2E' } > train_limit(c)
           end
         end
 
         def must_buy_train?(entity)
           # 2E does not count as compulsory train purchase
           entity.trains.reject { |t| t.name == '2E' }.empty? &&
-            !depot.depot_trains.empty? &&
-             (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase))
+            !depot.depot_trains.empty? && @graph.route_info(entity)&.dig(:route_train_purchase)
         end
 
         # for 3 players corp share limit is 70%
