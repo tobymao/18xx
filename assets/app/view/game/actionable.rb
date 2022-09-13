@@ -95,12 +95,12 @@ module View
 
         if game.finished
           @game_data[:result] = game.result
-          @game_data[:finished_at] = Time.now.to_i
           @game_data[:manually_ended] = game.manually_ended
           @game_data[:status] = 'finished'
         else
           @game_data[:result] = {}
           @game_data[:status] = 'active'
+          @game_data[:manually_ended] = nil
         end
 
         if hotseat?
@@ -115,7 +115,6 @@ module View
             meta = {
               game_result: @game_data[:result],
               game_status: @game_data[:status],
-              finished_at: @game_data[:finished_at],
               manually_ended: @game_data[:manually_ended],
               active_players: game.active_players_id,
               turn: game.turn,
