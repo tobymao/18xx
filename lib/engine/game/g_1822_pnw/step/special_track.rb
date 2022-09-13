@@ -171,6 +171,7 @@ module Engine
             ability = abilities(action.entity)
             token = Engine::Token.new(@game.hidden_coal_corp, logo: '/icons/18_usa/mine.svg')
             action.tile.cities[0].place_token(@game.hidden_coal_corp, token, check_tokenable: false)
+            @game.coal_company_used
             ability.use!
           end
 

@@ -230,6 +230,10 @@ module Engine
           entity.companies.any? { |c| coal_company?(c) }
         end
 
+        def coal_company_used
+          company_by_id('P19').revenue = 0
+        end
+
         def backroom_company?(entity)
           entity.id == 'P20'
         end
