@@ -18,6 +18,8 @@ module Engine
         include G1858::Trains
         include CitiesPlusTownsRouteDistanceStr
 
+        attr_reader :graph_broad, :graph_metre
+
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
         GAME_END_CHECK = { bank: :current_or }.freeze
@@ -38,7 +40,20 @@ module Engine
         ].freeze
 
         def setup
-          super
+          # We need three different graphs for tracing routes for entities:
+          #  - @graph_broad traces routes along broad and dual gauge track.
+          #  - @graph_metre traces routes along metre and dual gauge track.
+          #  - @graph uses any track. This is going to include illegal routes
+          #    (using both broad and metre gauge track) but will just be used
+          #    by things like the auto-router where the route will get rejected.
+          @graph_broad = Graph.new(self, skip_track: :narrow)
+          @graph_metre = Graph.new(self, skip_track: :broad)
+        end
+
+        def clear_graph_for_entity(_entity)
+          @graph.clear
+          @graph_broad.clear
+          @graph_metre.clear
         end
 
         def init_round

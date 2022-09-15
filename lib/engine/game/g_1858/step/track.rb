@@ -99,6 +99,13 @@ module Engine
               "towards the cost of #{corporation.name}'s tile lay"
             president.spend(shortfall, corporation)
           end
+
+          def hex_neighbors(entity, hex)
+            hexes_broad = @game.graph_broad.connected_hexes(entity)[hex]
+            hexes_metre = @game.graph_metre.connected_hexes(entity)[hex]
+            hexes = [hexes_broad, hexes_metre].compact.inject([], :|)
+            hexes if hexes.any?
+          end
         end
       end
     end
