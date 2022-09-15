@@ -57,6 +57,7 @@ module Engine
           node_path.walk(
             visited: visited_paths,
             skip_paths: skip_paths,
+            skip_track: skip_track,
             counter: counter,
             converging: converging_path,
           ) do |path, vp, ct, converging|
