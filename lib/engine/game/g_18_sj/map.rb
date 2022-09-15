@@ -192,7 +192,7 @@ module Engine
           true
         end
 
-        def map_legend(font_color, yellow, green, brown, gray)
+        def map_legend(font_color, *_extra_colors)
           [
             # table-wide props
             {
@@ -210,14 +210,31 @@ module Engine
             ],
             # body
             [
-              { text: 'Bergslagen 1', props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } } },
+              {
+                text: 'Bergslagen 1',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+              },
               {
                 text: 'B-b',
-                props: { style: { textAlign: 'center', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'center',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
               {
                 text: '50',
-                props: { style: { textAlign: 'right', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'right',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
             ],
             [
@@ -232,11 +249,25 @@ module Engine
               },
               {
                 text: 'N-S',
-                props: { style: { textAlign: 'center', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'center',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
               {
                 text: '100',
-                props: { style: { textAlign: 'right', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'right',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
             ],
             [
@@ -245,14 +276,31 @@ module Engine
               { text: '50', props: { style: { textAlign: 'right', border: "1px solid #{font_color}" } } },
             ],
             [
-              { text: 'Malmfälten 2', props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } } },
+              {
+                text: 'Malmfälten 2',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+              },
               {
                 text: 'M-m-m',
-                props: { style: { textAlign: 'center', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'center',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
               {
                 text: '100',
-                props: { style: { textAlign: 'right', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'right',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
             ],
             [

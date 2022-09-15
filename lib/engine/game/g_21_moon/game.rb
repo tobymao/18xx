@@ -1009,42 +1009,57 @@ module Engine
             # header
             [
               { text: 'Tile Color:', props: { style: { border: '1px solid' } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: "#{yellow}" } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: "#{green}" } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: "#{brown}" } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: "#{gray}" } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: yellow.to_s } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: green.to_s } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: brown.to_s } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: gray.to_s } } },
             ],
             # body
             [
-              { text: 'Source-X', props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'black' } } },
+              {
+                text: 'Source-X',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'black' } },
+              },
               { text: '20', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '60', props: { style: { border: '1px solid' } } },
               { text: '80', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Helium-3', props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'red' } } },
+              {
+                text: 'Helium-3',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'red' } },
+              },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '50', props: { style: { border: '1px solid' } } },
               { text: '60', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Regolith', props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'orange' } } },
+              {
+                text: 'Regolith',
+                props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'orange' } },
+              },
               { text: '20', props: { style: { border: '1px solid' } } },
               { text: '20', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '50', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Armacolite', props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'yellow' } } },
+              {
+                text: 'Armacolite',
+                props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'yellow' } },
+              },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '20', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Magnetite', props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'white' } } },
+              {
+                text: 'Magnetite',
+                props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'white' } },
+              },
               { text: '10', props: { style: { border: '1px solid' } } },
               { text: '10', props: { style: { border: '1px solid' } } },
               { text: '10', props: { style: { border: '1px solid' } } },

@@ -193,7 +193,13 @@ module View
       end
 
       def render_legend
-        table_props, header, *chart = @game.map_legend(color_for(:font), color_for(:yellow), color_for(:green), color_for(:brown), color_for(:gray))
+        table_props, header, *chart = @game.map_legend(
+          color_for(:font),
+          color_for(:yellow),
+          color_for(:green),
+          color_for(:brown),
+          color_for(:gray)
+        )
 
         head = header.map do |cell|
           item = cell[:text] || h(:image, { attrs: { href: cell[:image] } })
