@@ -120,7 +120,7 @@ module Engine
           end
         end
 
-        graph.clear
+        @game.clear_graph_for_entity(entity)
         free = false
         discount = 0
         teleport = false
