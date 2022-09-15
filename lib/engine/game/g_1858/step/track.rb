@@ -75,6 +75,7 @@ module Engine
             # lay as this can be paid by the company president.
             action = get_tile_lay(entity)
             return false unless action
+
             action[:lay] || action[:upgrade]
           end
 
@@ -92,11 +93,11 @@ module Engine
             shortfall = cost - corporation.cash
             if shortfall > corporation.owner.cash
               raise GameError, "The tile lay costs #{@game.format_currency(cost)} but " \
-                "#{corporation.name} has #{@game.format_currency(corporation.cash)} and " \
-                "#{president.name} has #{@game.format_currency(president.cash)}"
+                               "#{corporation.name} has #{@game.format_currency(corporation.cash)} and " \
+                               "#{president.name} has #{@game.format_currency(president.cash)}"
             end
             @game.log << "#{president.name} contributes #{@game.format_currency(shortfall)} " \
-              "towards the cost of #{corporation.name}'s tile lay"
+                         "towards the cost of #{corporation.name}'s tile lay"
             president.spend(shortfall, corporation)
           end
 
