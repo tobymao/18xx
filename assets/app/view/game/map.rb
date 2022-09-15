@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require '../lib/storage'
+require '../lib/settings'
 require 'view/game/axis'
 require 'view/game/hex'
 require 'view/game/tile_confirmation'
@@ -10,6 +11,7 @@ require 'view/game/token_selector'
 module View
   module Game
     class Map < Snabberb::Component
+      include Lib::Settings
       needs :game
       needs :tile_selector, default: nil, store: true
       needs :selected_route, default: nil, store: true
@@ -191,7 +193,7 @@ module View
       end
 
       def render_legend
-        table_props, header, *chart = @game.map_legend
+        table_props, header, *chart = @game.map_legend(color_for(:font), color_for(:yellow), color_for(:green), color_for(:brown), color_for(:gray))
 
         head = header.map do |cell|
           item = cell[:text] || h(:image, { attrs: { href: cell[:image] } })

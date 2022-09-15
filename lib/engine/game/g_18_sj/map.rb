@@ -192,7 +192,7 @@ module Engine
           true
         end
 
-        def map_legend
+        def map_legend(font_color, yellow, green, brown, gray)
           [
             # table-wide props
             {
@@ -210,14 +210,14 @@ module Engine
             ],
             # body
             [
-              { text: 'Bergslagen 1', props: { style: { border: '1px solid black', color: 'white', backgroundColor: 'grey' } } },
+              { text: 'Bergslagen 1', props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } } },
               {
                 text: 'B-b',
-                props: { style: { textAlign: 'center', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: { style: { textAlign: 'center', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
               },
               {
                 text: '50',
-                props: { style: { textAlign: 'right', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: { style: { textAlign: 'right', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
               },
             ],
             [
@@ -228,31 +228,31 @@ module Engine
             [
               {
                 text: 'Lapplandspilen',
-                props: { style: { border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
               },
               {
                 text: 'N-S',
-                props: { style: { textAlign: 'center', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: { style: { textAlign: 'center', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
               },
               {
                 text: '100',
-                props: { style: { textAlign: 'right', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: { style: { textAlign: 'right', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
               },
             ],
             [
-              { text: 'Malmfälten 1', props: { style: { border: '1px solid black' } } },
-              { text: 'M-m', props: { style: { textAlign: 'center', border: '1px solid black' } } },
-              { text: '50', props: { style: { textAlign: 'right', border: '1px solid black' } } },
+              { text: 'Malmfälten 1', props: { style: { border: "1px solid #{font_color}" } } },
+              { text: 'M-m', props: { style: { textAlign: 'center', border: "1px solid #{font_color}" } } },
+              { text: '50', props: { style: { textAlign: 'right', border: "1px solid #{font_color}" } } },
             ],
             [
-              { text: 'Malmfälten 2', props: { style: { border: '1px solid black', color: 'white', backgroundColor: 'grey' } } },
+              { text: 'Malmfälten 2', props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } } },
               {
                 text: 'M-m-m',
-                props: { style: { textAlign: 'center', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: { style: { textAlign: 'center', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
               },
               {
                 text: '100',
-                props: { style: { textAlign: 'right', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: { style: { textAlign: 'right', border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
               },
             ],
             [
