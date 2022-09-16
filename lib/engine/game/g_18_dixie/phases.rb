@@ -40,7 +40,7 @@ module Engine
           },
           {
             name: '5',
-            on: '5',
+            on: '5⛭',
             train_limit: 3,
             tiles: %i[yellow green],
             status: [],

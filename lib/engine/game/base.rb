@@ -891,6 +891,11 @@ module Engine
           (train.obsolete_on == purchased_train.sym && @depot.discarded.include?(train))
       end
 
+      # Before obsoleting, check if this specific train should obsolete.
+      def obsolete?(train, purchased_train)
+        train.obsolete_on == purchased_train.sym
+      end
+
       def shares
         @corporations.flat_map(&:shares)
       end
@@ -1958,7 +1963,7 @@ module Engine
         owners = Hash.new(0)
 
         trains.each do |t|
-          next if t.obsolete || t.obsolete_on != train.sym
+          next if t.obsolete || !obsolete?(t, train)
 
           obsolete_trains << t.name
           t.obsolete = true
