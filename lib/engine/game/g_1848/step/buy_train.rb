@@ -129,7 +129,7 @@ module Engine
           end
 
           def pass_if_cannot_buy_train?(entity)
-            must_buy_train?(entity) ? false : true
+            !must_buy_train?(entity)
           end
         end
       end
