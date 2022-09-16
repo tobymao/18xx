@@ -22,6 +22,15 @@ module Engine
             end
           end
 
+          def can_buy_train?(entity = nil, _shell = nil)
+            return true if only_owns_ghan?(entity)
+            super
+          end
+
+          def must_buy_train?(entity)
+            only_owns_ghan?(entity) || super
+          end
+
           def buy_train_action(action, entity = nil, borrow_from: nil)
             entity ||= action.entity
             price = action.price
@@ -31,7 +40,7 @@ module Engine
               # do emergency loan
               if @game.round.actions_for(entity).include?('take_loan')
                 raise GameError,
-                      "#{entity.name} can take a regular loan, prior to performing Compulsory Train Purchase"
+                      "#{entity.name} must take a regular loan prior to performing Compulsory Train Purchase"
               end
 
               @game.perform_ebuy_loans(entity, remaining)
@@ -52,16 +61,20 @@ module Engine
             trains_to_buy = at_train_limit?(entity) ? [] : super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
             trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
-            trains_to_buy << ghan_train if can_buy_2e?(entity)
+            trains_to_buy << ghan_train if can_buy_ghan?(entity)
             trains_to_buy.uniq
           end
 
-          def owns_2e?(entity)
+          def only_owns_ghan?(entity)
+            entity.trains.none? { |t| t.name != '2E' }
+          end
+
+          def owns_ghan?(entity)
             entity.trains.any? { |t| t.name == '2E' }
           end
 
-          def can_buy_2e?(entity)
-            return false if !@game.phase.available?(ghan_train&.available_on) || owns_2e?(entity)
+          def can_buy_ghan?(entity)
+            return false if !@game.phase.available?(ghan_train&.available_on) || owns_ghan?(entity)
 
             cost = ghan_train.price
             cost -= ghan_private_ability.discount if ghan_private_owned?(entity)
@@ -85,7 +98,7 @@ module Engine
           end
 
           def room?(entity)
-            !at_train_limit?(entity) || can_buy_2e?(entity)
+            !at_train_limit?(entity) || can_buy_ghan?(entity)
           end
 
           def spend_minmax(entity, train)
