@@ -165,6 +165,25 @@ module Engine
             cost
           end
         end
+
+        def event_green_privates_available!
+          @log << 'Green private companies can be started'
+          # TODO: implement this
+        end
+
+        def event_corporations_convert!
+          @log << 'All 5-share public companies must convert to 10-share companies'
+          # TODO: implement this
+        end
+
+        def event_privates_close!
+          @log << 'Private companies will close at the end of this operating round'
+          # TODO: implement this
+        end
+
+        def event_check_train_rust!
+          # TODO: implement this
+        end
       end
     end
   end
