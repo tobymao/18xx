@@ -103,62 +103,57 @@ module Engine
           'only_pres_drop' => ['Only pres. sales drop', 'Only sales by corporation presidents drop the share price'],
         ).freeze
 
-        def game_phases
-          three = second_ed_playtest? ? '3+2' : '3+1'
-          five = second_ed_playtest? ? '3X' : '5+2'
-
-          [
-            {
-              name: '2+1',
-              train_limit: { '5-share': 3, '10-share': 4 },
-              tiles: [:yellow],
-              operating_rounds: 2,
-            },
-            {
-              name: three,
-              on: three,
-              train_limit: { '5-share': 3, '10-share': 4 },
-              tiles: %i[yellow green],
-              operating_rounds: 2,
-            },
-            {
-              name: '4+2',
-              on: '4+2',
-              train_limit: { '5-share': 2, '10-share': 3 },
-              tiles: %i[yellow green blue],
-              operating_rounds: 2,
-            },
-            {
-              name: five,
-              on: five,
-              train_limit: { '5-share': 2, '10-share': 3 },
-              tiles: %i[yellow green blue brown],
-              operating_rounds: 2,
-            },
-            {
-              name: '4X',
-              on: '4X',
-              train_limit: 2,
-              tiles: %i[yellow green blue brown],
-              operating_rounds: 2,
-            },
-            {
-              name: '5X',
-              on: '5X',
-              train_limit: 2,
-              tiles: %i[yellow green blue brown],
-              operating_rounds: 2,
-            },
-            {
-              name: '6X',
-              on: '6X',
-              train_limit: 2,
-              tiles: %i[yellow green blue brown gray],
-              status: ['only_pres_drop'],
-              operating_rounds: 2,
-            },
-          ].freeze
-        end
+        PHASES = [
+          {
+            name: '2+1',
+            train_limit: { '5-share': 3, '10-share': 4 },
+            tiles: [:yellow],
+            operating_rounds: 2,
+          },
+          {
+            name: '3+1',
+            on: '3+1',
+            train_limit: { '5-share': 3, '10-share': 4 },
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+          },
+          {
+            name: '4+2',
+            on: '4+2',
+            train_limit: { '5-share': 2, '10-share': 3 },
+            tiles: %i[yellow green blue],
+            operating_rounds: 2,
+          },
+          {
+            name: '5+2',
+            on: '5+2',
+            train_limit: { '5-share': 2, '10-share': 3 },
+            tiles: %i[yellow green blue brown],
+            operating_rounds: 2,
+          },
+          {
+            name: '4X',
+            on: '4X',
+            train_limit: 2,
+            tiles: %i[yellow green blue brown],
+            operating_rounds: 2,
+          },
+          {
+            name: '5X',
+            on: '5X',
+            train_limit: 2,
+            tiles: %i[yellow green blue brown],
+            operating_rounds: 2,
+          },
+          {
+            name: '6X',
+            on: '6X',
+            train_limit: 2,
+            tiles: %i[yellow green blue brown gray],
+            status: ['only_pres_drop'],
+            operating_rounds: 2,
+          },
+        ].freeze
 
         TRAINS = [
           {
@@ -318,10 +313,6 @@ module Engine
           optional_rules = super(optional_rules)
           @scenario = init_scenario(optional_rules)
           optional_rules
-        end
-
-        def second_ed_playtest?
-          @optional_rules&.include?(:second_ed_test)
         end
 
         def trigger_end_game_restrictions
