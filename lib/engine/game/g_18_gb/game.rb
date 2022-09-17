@@ -8,6 +8,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'scenarios'
 require_relative 'round/operating'
+require_relative 'round/stock'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/buy_train'
 require_relative 'step/dividend'
@@ -667,7 +668,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G18GB::Round::Stock.new(self, [
             Engine::Step::HomeToken,
             G18GB::Step::BuySellParShares,
           ])

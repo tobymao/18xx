@@ -109,10 +109,14 @@ module Engine
               can_gain?(entity, bundle)
           end
 
+          def already_president?(corporation)
+            !@round.presidencies.select { |corp| corp == corporation }.empty?
+          end
+
           def can_buy_multiple?(entity, corporation, owner)
             bought = num_shares_bought(corporation)
             owned = entity.num_shares_of(corporation)
-            super && corporation&.president?(entity) && bought < 2 && owned > 2
+            super && corporation&.president?(entity) && bought < 2 && already_president?(corporation)
           end
 
           def num_shares_bought(corporation)
