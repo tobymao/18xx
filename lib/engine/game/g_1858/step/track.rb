@@ -107,6 +107,42 @@ module Engine
             hexes = [hexes_broad, hexes_metre].compact.inject([], :|)
             hexes if hexes.any?
           end
+
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            return if @game.loading || !entity.operator?
+
+            raise GameError, 'New track must override old one' if !@game.class::ALLOW_REMOVING_TOWNS &&
+                old_tile.city_towns.any? do |old_city|
+                  new_tile.city_towns.none? { |new_city| (old_city.exits - new_city.exits).empty? }
+                end
+
+            # Need to check twice whether this tile is OK, once using routes along
+            # broad/dual gauge track, and once allow metre/dual gauge.
+            unless valid_tile_lay?(entity, old_tile, new_tile, @game.graph_broad) ||
+                   valid_tile_lay?(entity, old_tile, new_tile, @game.graph_metre)
+              raise GameError, 'Must use new track or change city value'
+            end
+          end
+
+          def valid_tile_lay?(entity, old_tile, new_tile, graph)
+            return false unless graph.connected_hexes(entity).include?(new_tile.hex)
+
+            old_paths = old_tile.paths
+            changed_city = false
+            used_new_track = false
+
+            new_tile.paths.each do |np|
+              next unless graph.connected_paths(entity)[np]
+
+              op = old_paths.find { |path| np <= path }
+              used_new_track = true unless op
+              old_revenues = op&.nodes && op.nodes.map(&:max_revenue).sort
+              new_revenues = np&.nodes && np.nodes.map(&:max_revenue).sort
+              changed_city = true unless old_revenues == new_revenues
+            end
+
+            used_new_track || changed_city
+          end
         end
       end
     end
