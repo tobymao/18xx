@@ -395,7 +395,7 @@ module Engine
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2',
             %w[B9] =>
-                    'city=revenue:0;label=P;label=Y;upgrade=cost:20,terrain:water',
+                    'city=revenue:0;label=Y;future_label=label:P,color:brown;upgrade=cost:20,terrain:water',
             %w[G20 L13] =>
                     'city=revenue:0;label=Y;upgrade=cost:20,terrain:water',
             %w[E18] =>
