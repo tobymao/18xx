@@ -331,12 +331,7 @@ module Engine
           @optional_rules&.include?(:second_ed_test)
         end
 
-        def end_game_restrictions?
-          @optional_rules&.include?(:second_ed_test)
-        end
-
         def trigger_end_game_restrictions
-          return unless end_game_restrictions?
           return if @end_game_near
 
           @log << '-- Event: End game restrictions are now in place: no more tokens may be placed --'
@@ -344,8 +339,6 @@ module Engine
         end
 
         def end_game_restrictions_active?
-          return false unless end_game_restrictions?
-
           @end_game_near
         end
 
