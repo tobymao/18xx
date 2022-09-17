@@ -448,7 +448,7 @@ module Engine
           @train_bought = false
           @end_game_near = false
 
-          @corporations.each { |corp| place_home_token(corp) } if second_ed_playtest?
+          @corporations.each { |corp| place_home_token(corp) }
         end
 
         def event_float_60!
@@ -464,7 +464,7 @@ module Engine
         def remove_corporation(corporation)
           token = corporation.tokens.first(&:used).dup
           close_corporation(corporation, quiet: true)
-          token.city.place_token(corporation, token, check_tokenable: false) if second_ed_playtest?
+          token.city.place_token(corporation, token, check_tokenable: false)
         end
 
         def event_remove_unstarted!
