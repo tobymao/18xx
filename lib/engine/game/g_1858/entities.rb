@@ -16,7 +16,7 @@ module Engine
             shares: [40, 20, 20, 20],
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 40, 40],
+            tokens: [0, 20, 20],
           },
           {
             sym: 'AVT',
@@ -29,7 +29,7 @@ module Engine
             shares: [40, 20, 20, 20],
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 40, 40],
+            tokens: [0, 20, 20],
           },
           {
             sym: 'MZA',
@@ -42,7 +42,7 @@ module Engine
             shares: [40, 20, 20, 20],
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 40, 40],
+            tokens: [0, 20, 20],
             city: 2,
           },
           {
@@ -56,7 +56,7 @@ module Engine
             shares: [40, 20, 20, 20],
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 40, 40],
+            tokens: [0, 20, 20],
           },
           {
             sym: 'RP',
@@ -69,7 +69,7 @@ module Engine
             shares: [40, 20, 20, 20],
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 40, 40],
+            tokens: [0, 20, 20],
           },
           {
             sym: 'TBF',
@@ -82,7 +82,7 @@ module Engine
             shares: [40, 20, 20, 20],
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 40, 40],
+            tokens: [0, 20, 20],
           },
           {
             sym: 'W',
@@ -95,7 +95,7 @@ module Engine
             shares: [40, 20, 20, 20],
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 40, 40],
+            tokens: [0, 20, 20],
           },
           {
             sym: 'ZPB',
@@ -108,7 +108,7 @@ module Engine
             shares: [40, 20, 20, 20],
             always_market_price: true,
             capitalization: :incremental,
-            tokens: [0, 40, 40],
+            tokens: [0, 20, 20],
           },
         ].freeze
 
