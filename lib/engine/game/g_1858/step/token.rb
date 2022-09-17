@@ -43,6 +43,11 @@ module Engine
           def borders_crossed(hex1, hex2)
             DISTANCES[hex1.coordinates].find_index { |coords| coords.include?(hex2.coordinates) }
           end
+
+          def available_hex(entity, hex)
+            @game.graph_broad.reachable_hexes(entity)[hex] \
+              || @game.graph_metre.reachable_hexes(entity)[hex]
+          end
         end
       end
     end
