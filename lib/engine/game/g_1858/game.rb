@@ -16,7 +16,6 @@ module Engine
         include G1858::Entities
         include G1858::Market
         include G1858::Trains
-        include CitiesPlusTownsRouteDistanceStr
 
         attr_reader :graph_broad, :graph_metre
 
@@ -93,6 +92,10 @@ module Engine
           end
         end
 
+        def express_train?(train)
+          %w[E D].include?(train.name[-1])
+        end
+
         def hex_train?(train)
           train.name[-1] == 'H'
         end
@@ -164,6 +167,22 @@ module Engine
             cost - discount
           else
             cost
+          end
+        end
+
+        def route_distance_str(route)
+          train = route.train
+
+          if hex_train?(train)
+            "#{route_distance(route)}H"
+          else
+            towns = route.visited_stops.count(&:town?)
+            cities = route_distance(route) - towns
+            if express_train?(train)
+              cities.to_s
+            else
+              "#{cities}+#{towns}"
+            end
           end
         end
 
