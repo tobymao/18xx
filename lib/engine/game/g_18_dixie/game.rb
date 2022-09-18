@@ -362,7 +362,30 @@ module Engine
           Array(phase[:on]).join(', ')
         end
 
+        def give_spare_part_to_train(train)
+          raise GameError "Permanent train #{train.name} cannot get a spare part" unless train.rusts_on
+
+          train.name = train.name + SPARE_PART_CHAR
+        end
+
+        def obsolete?(train, purchased_train)
+          train.rusts_on == purchased_train.sym && train.name.include?(SPARE_PART_CHAR)
+        end
+
+        def rust?(train, purchased_train)
+          super && !train.name.include?(SPARE_PART_CHAR)
+        end
+
+        def remove_spare_part(train)
+          return unless train.name[-1] == SPARE_PART_CHAR
+
+          @log << "#{train.name} uses up a spare part"
+          train.name = train.name[0..-2]
+        end
+
         def rust(train)
+          return if train.name[-1] == SPARE_PART_CHAR
+
           if train.owner.corporation? && train.salvage
             @bank.spend(train.salvage, train.owner)
             @log << "#{train.owner.name} gets #{format_currency(train.salvage)} salvage for rusted #{train.name} train"
