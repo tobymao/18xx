@@ -131,7 +131,7 @@ module Engine
           {
             name: '5E',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                       { 'nodes' => %w[town], 'pay' => 99, 'visit' => 0 }],
+                       { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 500,
             num: 3,
             events: [{ 'type' => 'corporations_convert' },
@@ -148,7 +148,7 @@ module Engine
           {
             name: '6E',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
-                       { 'nodes' => %w[town], 'pay' => 99, 'visit' => 0 }],
+                       { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 650,
             num: 2,
             variants: [
@@ -163,7 +163,7 @@ module Engine
           {
             name: '7E',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 7 },
-                       { 'nodes' => %w[town], 'pay' => 99, 'visit' => 0 }],
+                       { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 800,
             num: 16,
             events: [{ 'type' => 'check_train_rust' }],
@@ -179,10 +179,11 @@ module Engine
           {
             name: '5D',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                       { 'nodes' => %w[town], 'pay' => 99, 'visit' => 0 }],
+                       { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 1_100,
             num: 8,
             multiplier: 2,
+            available_on: '7',
             events: [{ 'type' => 'check_train_rust' }],
           },
         ].freeze
