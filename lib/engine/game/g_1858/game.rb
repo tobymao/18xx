@@ -22,6 +22,7 @@ module Engine
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities]
         GAME_END_CHECK = { bank: :current_or }.freeze
         BANKRUPTCY_ALLOWED = false
 
