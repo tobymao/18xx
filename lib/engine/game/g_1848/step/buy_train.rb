@@ -127,6 +127,10 @@ module Engine
           def president_may_contribute?
             false
           end
+
+          def pass_if_cannot_buy_train?(entity)
+            !must_buy_train?(entity)
+          end
         end
       end
     end
