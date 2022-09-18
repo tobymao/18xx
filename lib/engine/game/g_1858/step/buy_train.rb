@@ -34,6 +34,7 @@ module Engine
           def process_scrap_train(action)
             @log << "#{action.entity.name} discards wounded #{action.train.name} train"
             @game.remove_train(action.train)
+            # FIXME: these trains are getting listed in the log when their train class rusts
           end
 
           def president_may_contribute?(entity, _shell = nil)

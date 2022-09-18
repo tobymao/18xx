@@ -48,6 +48,10 @@ module Engine
           #    by things like the auto-router where the route will get rejected.
           @graph_broad = Graph.new(self, skip_track: :narrow)
           @graph_metre = Graph.new(self, skip_track: :broad)
+
+          # The rusting event for 6H/4M trains is triggered by the sale of the
+          # fifth phase 7 train, so track the number of these sold.
+          @phase7_trains_bought = 0
         end
 
         def clear_graph_for_entity(_entity)
@@ -201,8 +205,21 @@ module Engine
           # TODO: implement this
         end
 
-        def event_check_train_rust!
-          # TODO: implement this
+        def buy_train(operator, train, price = nil)
+          super
+          return if @phase7_trains_bought >= 5
+          return unless %w[7E 6M 5D].include?(train.name)
+
+          @phase7_trains_bought += 1
+          ordinal = %w[First Second Third Fourth Fifth][@phase7_trains_bought - 1]
+          @log << "#{ordinal} phase 7 train has been bought"
+          rust_phase4_trains!(train) if @phase7_trains_bought == 5
+        end
+
+        def rust_phase4_trains!(purchased_train)
+          trains.select { |train| %i[6H 3M].include?(train.name) }
+                .each { |train| train.rusts_on = purchased_train.sym }
+          rust_trains!(purchased_train)
         end
       end
     end

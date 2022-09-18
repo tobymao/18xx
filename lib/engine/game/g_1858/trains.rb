@@ -17,8 +17,6 @@ module Engine
             'privates_close' => ['Private companies close',
                                  'The private closure round takes place at the end of the ' \
                                  'operating round in which the first 5E/4M train is bought'],
-            'check_train_rust' => ['6H/4M trains may rust',
-                                   '6H and 4M trains rust when the fifth 7E/6M/5D train is bought'],
           ).freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -115,7 +113,9 @@ module Engine
           {
             name: '6H',
             obsolete_on: '7E',
-            rusts_on: '5D',   # FIXME: rusted by fifth 7E/6M/5D train bought
+            # These trains are not permanent, but do not have a rust_on attribute
+            # defined. They rust on the purchase of the fifth phase 7 train, so
+            # the rusting is handled in the game code.
             distance: 6,
             price: 300,
             num: 4,
@@ -166,7 +166,6 @@ module Engine
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 800,
             num: 16,
-            events: [{ 'type' => 'check_train_rust' }],
             variants: [
               {
                 name: '6M',
@@ -184,9 +183,13 @@ module Engine
             num: 8,
             multiplier: 2,
             available_on: '7',
-            events: [{ 'type' => 'check_train_rust' }],
           },
         ].freeze
+
+        def timeline
+          @timeline = ['5D trains are available after the first 7E/6M train has been bought',
+                       '6H/3M trains rust when the fifth 7E/6M/5D train is bought']
+        end
       end
     end
   end
