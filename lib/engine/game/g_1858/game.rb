@@ -70,7 +70,7 @@ module Engine
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1858::Step::HomeToken,
-            Engine::Step::BuySellParShares,
+            G1858::Step::BuySellParShares,
           ])
         end
 
@@ -220,6 +220,31 @@ module Engine
           trains.select { |train| %i[6H 3M].include?(train.name) }
                 .each { |train| train.rusts_on = purchased_train.sym }
           rust_trains!(purchased_train)
+        end
+
+        def convert!(corporation)
+          return unless corporation.corporation?
+          return unless corporation.type == :medium
+
+          @log << "#{corporation.name} converts to a 10-share company"
+          corporation.type = :large
+
+          shares = @_shares.values.select { |share| share.corporation == corporation }
+          shares.each { |share| share.percent /= 2 }
+
+          new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
+          new_shares.each do |share|
+            add_new_share(share)
+          end
+          new_shares
+        end
+
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
         end
       end
     end

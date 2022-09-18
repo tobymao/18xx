@@ -41,6 +41,7 @@ module View
           children.concat(render_buy_shares)
           children.concat(render_merge)
           children.concat(render_short)
+          children.concat(render_convert)
         end
         children.concat(render_exchanges)
 
@@ -271,6 +272,15 @@ module View
         end
 
         [h(:button, { on: { click: merge } }, 'Merge')]
+      end
+
+      def render_convert
+        return [] unless @step.current_actions.include?('convert')
+        return [] unless @step.can_convert?(@corporation)
+
+        convert = -> { process_action(Engine::Action::Convert.new(@current_entity, corporation: @corporation)) }
+
+        [h(:button, { on: { click: convert } }, @step.convert_button_text)]
       end
     end
   end
