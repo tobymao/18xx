@@ -10,7 +10,7 @@ module Engine
           include Engine::Game::G1822PNW::Connections
 
           def potentially_mergeable(entity)
-            super + @game.regionals.select { |r| @game.regional_payout_count(r) > 1 } - @game.associated_minors
+            super.reject { |c| @game.associated_minor?(c) } + @game.regionals.select { |r| @game.regional_payout_count(r) > 1 }
           end
         end
       end
