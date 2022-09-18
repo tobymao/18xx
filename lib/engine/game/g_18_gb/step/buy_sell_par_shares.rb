@@ -110,7 +110,7 @@ module Engine
           end
 
           def already_president?(corporation)
-            !@round.presidencies.select { |corp| corp == corporation }.empty?
+            @round.presidencies.include?(corporation)
           end
 
           def can_buy_multiple?(entity, corporation, owner)
