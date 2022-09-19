@@ -164,6 +164,7 @@ module Engine
           Engine::Step::Route,
           G18Dixie::Step::Dividend,
           Engine::Step::DiscardTrain,
+          G18Dixie::Step::MergeConsent,
           Engine::Step::BuyTrain,
           [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -372,20 +373,86 @@ module Engine
         end
 
         # ICG/SCL merger stuff
+        def ic
+          @ic ||= corporation_by_id('IC')
+        end
+
+        def frisco
+          @frisco ||= corporation_by_id('Fr')
+        end
+
         def icg
           @icg ||= corporation_by_id('ICG')
+        end
+
+        def sal
+          @sal ||= corporation_by_id('SAL')
+        end
+
+        def acl
+          @acl ||= corporation_by_id('ACL')
         end
 
         def scl
           @scl ||= corporation_by_id('SCL')
         end
 
+        def close_merger_corp(merger_corp)
+          puts "here? #{merger_corp}"
+          @log << "-- Event: #{merger_corp.name} fails to form --"
+          merger_corp.close!
+        end
+
+        # If either of the input corporations haven't floated or operated yet, the merger automatically fails
+        def merger_precheck(primary_corp, secondary_corp, merger_corp)
+          if merger_corp.closed?
+            @log << "#{merger_corp.name} is already removed from the game and fails to form"
+            return false
+          end
+          unfloated_input_corp = [primary_corp, secondary_corp].find { |c| !c.floated? }
+          unoperated_input_corp = [primary_corp, secondary_corp].find { |c| !c.operated? }
+          return true unless unfloated_input_corp || unoperated_input_corp
+
+          @log << "-- #{unfloated_input_corp.name} has not floated so #{merger_corp.name} cannot form --" if unfloated_input_corp
+          if unoperated_input_corp
+            @log << "-- #{unoperated_input_corp.name} has not operated so #{merger_corp.name} cannot form --"
+          end
+          close_merger_corp(merger_corp)
+          false
+        end
+
+        # Determine the eligibility of the merger, and either kick it off or close the merger corp
+        def merger_consent_check(primary_corp, secondary_corp, merger_corp, subsidy)
+          return unless merger_precheck(primary_corp, secondary_corp, merger_corp)
+
+          # Since the merger didn't automatically fail, it is up to the presidents to decide
+          puts "hm #{merger_corp} #{primary_corp} #{secondary_corp}"
+          @round.merge_consent_merging_corp = merger_corp
+          @round.merge_consent_primary_corp = primary_corp
+          @round.merge_consent_secondary_corp = secondary_corp
+          @round.merge_consent_pending_corps << primary_corp
+          @round.merge_consent_pending_corps << secondary_corp if primary_corp.owner != secondary_corp.owner
+          puts @round.merge_consent_pending_corps
+          @round.merge_consent_subsidy = subsidy
+        end
+
+        def other_merger_corp(merger_corp)
+          merger_corp == scl ? icg : scl
+        end
+
+        def start_merge(primary_corp, secondary_corp, merger_corp, _subsidy)
+          @log << "-- Event: #{primary_corp.name} and #{secondary_corp.name} merge to form #{merger_corp.name} --"
+          close_merger_corp(other_merger_corp(merger_corp))
+        end
+
         def event_icg_formation_chance!
           @log << '-- Event: ICG Formation opportunity --'
+          merger_consent_check(ic, frisco, icg, 200)
         end
 
         def event_scl_formation_chance!
           @log << '-- Event: SCL Formation opportunity -- '
+          merger_consent_check(sal, acl, scl, 100)
         end
 
         # Train stuff
