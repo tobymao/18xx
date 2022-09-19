@@ -52,6 +52,9 @@ module Engine
           # The rusting event for 6H/4M trains is triggered by the sale of the
           # fifth phase 7 train, so track the number of these sold.
           @phase7_trains_bought = 0
+
+          # Setup private companies for auction
+          @companies.each { |company| company.owner = @bank }
         end
 
         def clear_graph_for_entity(_entity)
@@ -191,17 +194,18 @@ module Engine
         end
 
         def event_green_privates_available!
-          @log << 'Green private companies can be started'
-          # TODO: implement this
+          @log << '-- Event: Green private companies can be started --'
+          # Don't need to change anything, the check in buyable_bank_owned_companies
+          # will let these companies be auctioned in future stock rounds.
         end
 
         def event_corporations_convert!
-          @log << 'All 5-share public companies must convert to 10-share companies'
+          @log << '-- Event: All 5-share public companies must convert to 10-share companies --'
           # TODO: implement this
         end
 
         def event_privates_close!
-          @log << 'Private companies will close at the end of this operating round'
+          @log << '-- Event: Private companies will close at the end of this operating round --'
           # TODO: implement this
         end
 
@@ -245,6 +249,10 @@ module Engine
           corporation.share_holders[owner] += share.percent if owner
           owner.shares_by_corporation[corporation] << share
           @_shares[share.id] = share
+        end
+
+        def buyable_bank_owned_companies
+          super.filter { |company| company.color == :yellow || @phase.status.include?('green_privates') }
         end
       end
     end
