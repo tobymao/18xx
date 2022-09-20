@@ -19,11 +19,15 @@ module Engine
 
         attr_reader :graph_broad, :graph_metre
 
+        GAME_END_CHECK = { bank: :current_or }.freeze
+        BANKRUPTCY_ALLOWED = false
+
+        MIN_BID_INCREMENT = 5
+        MUST_BID_INCREMENT_MULTIPLE = true
+
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
         TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
-        GAME_END_CHECK = { bank: :current_or }.freeze
-        BANKRUPTCY_ALLOWED = false
 
         MUST_BUY_TRAIN = :never
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
