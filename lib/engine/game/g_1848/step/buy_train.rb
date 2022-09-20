@@ -98,8 +98,13 @@ module Engine
             false
           end
 
-          def must_take_loan?(_entity)
-            true
+          def must_take_loan?(corporation)
+            price = cheapest_train_price(corporation)
+            @game.buying_power(corporation) < price
+          end
+
+          def cheapest_train_price(corporation)
+            buyable_trains(corporation).reject { |t| t.name == '2E' }.min_by(&:price).price
           end
 
           def round_state
