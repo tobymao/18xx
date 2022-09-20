@@ -169,8 +169,9 @@ module Engine
           def process_lay_tile_coal_company(action)
             lay_tile(action)
             ability = abilities(action.entity)
-            token = Engine::Token.new(@game.hidden_coal_corp, logo: '/icons/18_usa/mine.svg')
-            action.tile.cities[0].place_token(@game.hidden_coal_corp, token, check_tokenable: false)
+            @game.coal_token.corporation = action.entity.owner
+            action.tile.cities[0].place_token(action.entity.owner, @game.coal_token, check_tokenable: false)
+            action.entity.owner.tokens << @game.coal_token
             @game.coal_company_used
             ability.use!
           end

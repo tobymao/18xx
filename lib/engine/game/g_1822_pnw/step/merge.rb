@@ -46,7 +46,7 @@ module Engine
             return [] unless @merge_state == :none
 
             @game.unassociated_minors.select do |m|
-              entity_connects?(corporation, m) &&
+              (entity_connects?(corporation, m) || entity_connects?(m, corporation)) &&
                 !valid_par_prices(corporation, m).empty? &&
                 corporation.owner == m.owner
             end

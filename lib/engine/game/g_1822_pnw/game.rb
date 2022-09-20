@@ -15,8 +15,6 @@ module Engine
         include G1822PNW::Map
         include G1822PNW::BuilderCubes
 
-        attr_reader :hidden_coal_corp
-
         CERT_LIMIT = { 3 => 21, 4 => 15, 5 => 12 }.freeze
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
@@ -232,6 +230,10 @@ module Engine
 
         def coal_company_used
           company_by_id('P19').revenue = 0
+        end
+
+        def coal_token
+          @coal_token ||= Engine::Token.new(nil, logo: '/icons/18_usa/mine.svg')
         end
 
         def backroom_company?(entity)
@@ -567,9 +569,6 @@ module Engine
           # Setup exchange token abilities for all corporations
           setup_exchange_tokens
 
-          # Setup hidden coal corporation for P18
-          @hidden_coal_corp = Corporation.new(sym: 'HC', name: 'Hidden Coal', logo: 'open_city', tokens: [0])
-
           # Setup all the destination tokens, icons and abilities
           setup_destinations
         end
@@ -803,20 +802,23 @@ module Engine
           @p7_choice = nil
         end
 
+        def check_other(route)
+          raise NoToken, 'Route must contain token' unless route.visited_stops.any? do |stop|
+                                                             city_tokened_by?(stop, route.corporation) &&
+                                                               !stop.tokens.include?(coal_token)
+                                                           end
+        end
+
         def must_be_on_terrain?(_entity)
           false
         end
 
         def can_only_lay_plain_or_towns?(_entity)
           false
-          # Will be used for privates - not yet implemented in PNW
-          # entity.id == 'P8'
         end
 
         def can_upgrade_one_phase_ahead?(_entity)
           false
-          # Will be used for privates - not yet implemented in PNW
-          # entity.id == 'P8'
         end
 
         def company_ability_extra_track?(entity)
@@ -825,22 +827,6 @@ module Engine
 
         def choices_entities
           []
-        end
-
-        def check_connected(route, corporation)
-          return if route.ordered_paths.each_cons(2).all? do |a, b|
-            a.connects_to?(
-              b,
-              corporation
-            ) || ((corporation.companies.any? do |c|
-                     coal_company?(c)
-                   end) && a.connects_to?(
-                    b,
-                    hidden_coal_corp
-                  ))
-          end
-
-          raise GameError, 'Route is not connected'
         end
 
         def must_remove_town?(entity)
@@ -1060,6 +1046,14 @@ module Engine
 
           trains = transfer(:trains, from, to).map(&:name)
           receiving << "trains (#{trains})" unless trains.empty?
+
+          from.tokens.each do |token|
+            next unless token == coal_token
+
+            token.corporation = to
+            to.tokens << token
+            receiving << 'Mine token'
+          end
 
           log << "#{to.name} receives #{receiving.join(', ')} from #{from.name}" unless receiving.empty?
         end
