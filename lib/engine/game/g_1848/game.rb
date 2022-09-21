@@ -477,7 +477,7 @@ module Engine
             simple_logo: '1848/SAR.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'G6',
-            color: '#593e8f',
+            color: '#9e2a97',
           },
           {
             sym: 'COM',
@@ -514,7 +514,7 @@ module Engine
             simple_logo: '1848/QR.alt',
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'B19',
-            color: '#32763f',
+            color: '#399c42',
           },
         ].freeze
 
