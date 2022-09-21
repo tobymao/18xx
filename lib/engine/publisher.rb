@@ -26,7 +26,7 @@ module Engine
       },
       lonny_games: {
         name: 'Lonny Games',
-        url: 'https://www.lonny.at/',
+        url: 'https://www.lonnygames.com/',
       },
       lookout: {
         name: 'Lookout Games',
