@@ -59,7 +59,7 @@ module View
           color =
             case border.type
             when :mountain
-              :brown
+              :sepia
             when :province
               :orange
             when :water
