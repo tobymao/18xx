@@ -1071,6 +1071,14 @@ module Engine
           minor.close!
           corporations.delete(minor)
         end
+
+        def check_destination_duplicate(entity, hex)
+          city = hex.tile.cities.first
+          return unless city.tokened_by?(entity)
+
+          @log << "#{entity.name} has an existing token on its destination #{hex.name} and will pick it up as an available token"
+          entity.tokens.find { |t| t.city == city }.remove!
+        end
       end
     end
   end

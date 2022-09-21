@@ -1769,7 +1769,10 @@ module Engine
           end
         end
 
+        def check_destination_duplicate(entity, hex); end
+
         def place_destination_token(entity, hex, token)
+          check_destination_duplicate(entity, hex)
           city = hex.tile.cities.first
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }

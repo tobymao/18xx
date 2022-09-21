@@ -529,7 +529,7 @@ module Engine
                   'Associated with the Seattle & Walla Walla Railroad (SWW). Starting location is H11.',
             abilities: [],
             color: '#238541',
-            text_color: 'black',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 9. Wenatchee Valley Railroad',
