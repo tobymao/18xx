@@ -419,7 +419,7 @@ module Engine
             sym: 'P20',
             value: 0,
             revenue: 0,
-            desc: 'MAJOR/MINOR, Phase 2. When this private is '\
+            desc: 'MAJOR/MINOR, Phase 1. When this private is '\
                   'acquired by a non-associated minor company, choose an '\
                   'associated minor company that is currently not operational '\
                   'or in an auction box. That minor is removed from the game '\
