@@ -185,6 +185,12 @@ module Engine
           @minor_associations[new_minor_id] = @minor_associations.delete(old_minor_id)
         end
 
+        def second_icon(corporation)
+          return unless (major_id = major_name_for_associated_minor(corporation.id))
+
+          corporation_by_id(major_id)
+        end
+
         def timeline
           timeline = super
           pairs = @minor_associations.keys.map { |a| "#{a} → #{@minor_associations[a]}" }

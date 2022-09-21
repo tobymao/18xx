@@ -713,6 +713,12 @@ module Engine
             color: '#EF1D24',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for CPR',
+              },
+            ],
           },
           {
             sym: '2',
@@ -781,6 +787,12 @@ module Engine
             color: '#6BCFF7',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for GNR',
+              },
+            ],
           },
           {
             sym: '6',
@@ -815,6 +827,12 @@ module Engine
             color: '#F69B1D',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for CMPS',
+              },
+            ],
           },
           {
             sym: '8',
@@ -832,6 +850,12 @@ module Engine
             color: '#238541',
             text_color: '#black',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for SWW',
+              },
+            ],
           },
           {
             sym: '9',
@@ -985,6 +1009,12 @@ module Engine
             color: '#8D061B',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for SPS',
+              },
+            ],
           },
           {
             sym: '18',
@@ -1002,6 +1032,12 @@ module Engine
             color: '#3078C1',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for ORNC',
+              },
+            ],
           },
           {
             sym: '19',
@@ -1036,6 +1072,12 @@ module Engine
             color: '#221E20',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for NP',
+              },
+            ],
           },
           {
             sym: '21',
