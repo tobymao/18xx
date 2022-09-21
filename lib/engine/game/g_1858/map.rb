@@ -138,7 +138,8 @@ module Engine
             %w[E2] =>
                     'upgrade=cost:40,terrain:mountain;' \
                     'border=type:province,edge:0;' \
-                    'border=type:province,edge:1',
+                    'border=type:province,edge:1;' \
+                    'border=type:province,edge:2',
             %w[E16 G2] =>
                     'upgrade=cost:40,terrain:mountain;' \
                     'border=type:province,edge:0;' \
@@ -276,7 +277,10 @@ module Engine
                     'border=type:province,edge:5',
 
             # Town hexes
-            %w[B15 J3] =>
+            %w[B15] =>
+                    'town=revenue:0;' \
+                    'border=type:impassable,edge:2',
+            %w[J3] =>
                     'town=revenue:0',
             %w[M12] =>
                     'town=revenue:0;' \
@@ -342,7 +346,7 @@ module Engine
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:5',
             %w[M10] =>
-                    'town=revenue:0;' \
+                    'town=revenue:0;upgrade=cost:20,terrain:water;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2;' \
@@ -431,7 +435,8 @@ module Engine
           },
           green: {
             %w[A14] =>
-                    'city=revenue:40,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L',
+                    'city=revenue:40,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L;' \
+                    'border=type:impassable,edge:5',
           },
           red: {
             %w[K2] =>
@@ -463,7 +468,8 @@ module Engine
           },
           gray: {
             %w[D1] =>
-                    'path=a:0,b:1,track:dual;path=a:0,b:5,track:dual',
+                    'path=a:0,b:1,track:dual;path=a:0,b:5,track:dual;' \
+                    'border=type:province,edge:5',
             %w[F1] =>
                     'city=revenue:40,slots:2;path=a:5,b:_0,track:dual;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual',
             %w[F21] =>
