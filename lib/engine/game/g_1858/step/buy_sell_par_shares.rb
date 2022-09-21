@@ -51,7 +51,8 @@ module Engine
           end
 
           def can_convert?(corporation)
-            (corporation.owner == current_entity) && (corporation.type == :medium) && corporation.floated?
+            (corporation.owner == current_entity) && (corporation.type == :medium) &&
+              corporation.floated? && !bought?
           end
 
           def can_convert_any?
@@ -106,7 +107,8 @@ module Engine
           end
 
           def can_bid?(_player)
-            true
+            !bought?
+            # FIXME: check that there is a company that the player can afford to bid on
           end
 
           def auctionable_companies
