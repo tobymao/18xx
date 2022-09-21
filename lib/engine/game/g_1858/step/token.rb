@@ -41,6 +41,10 @@ module Engine
           end
 
           def borders_crossed(hex1, hex2)
+            # FIXME: a bug can occur here when undoing moves, it looks like one of
+            # the arguments passed is nil ("undefined method `coordinates for nil`").
+            # Having a company start with a token in Lisboa seems to be a reliable
+            # way of triggering this bug.
             DISTANCES[hex1.coordinates].find_index { |coords| coords.include?(hex2.coordinates) }
           end
 
