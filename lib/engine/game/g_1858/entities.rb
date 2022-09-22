@@ -128,6 +128,9 @@ module Engine
             discount: 0,
             revenue: 10,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+            ],
           },
           {
             sym: 'B&M',
@@ -136,6 +139,10 @@ module Engine
             discount: 25,
             revenue: 23,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 35, on_phase: '3' },
+            ],
           },
           {
             sym: 'M&A',
@@ -144,6 +151,10 @@ module Engine
             discount: 25,
             revenue: 25,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 38, on_phase: '3' },
+            ],
           },
           {
             sym: 'P&L',
@@ -152,6 +163,10 @@ module Engine
             discount: 20,
             revenue: 22,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 33, on_phase: '3' },
+            ],
           },
           {
             sym: 'V&J',
@@ -160,6 +175,10 @@ module Engine
             discount: 20,
             revenue: 20,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 30, on_phase: '3' },
+            ],
           },
           {
             sym: 'R&T',
@@ -168,6 +187,10 @@ module Engine
             discount: 10,
             revenue: 12,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 18, on_phase: '3' },
+            ],
           },
           {
             sym: 'L&C',
@@ -176,6 +199,10 @@ module Engine
             discount: 20,
             revenue: 18,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 27, on_phase: '3' },
+            ],
           },
           {
             sym: 'M&V',
@@ -184,6 +211,10 @@ module Engine
             discount: 25,
             revenue: 24,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 36, on_phase: '3' },
+            ],
           },
           {
             sym: 'M&Z',
@@ -192,6 +223,10 @@ module Engine
             discount: 20,
             revenue: 19,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 29, on_phase: '3' },
+            ],
           },
           {
             sym: 'C&S',
@@ -200,6 +235,10 @@ module Engine
             discount: 20,
             revenue: 21,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 32, on_phase: '3' },
+            ],
           },
           {
             sym: 'SJ&C',
@@ -208,6 +247,10 @@ module Engine
             discount: 15,
             revenue: 14,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 21, on_phase: '3' },
+            ],
           },
           {
             sym: 'Z&P',
@@ -216,6 +259,10 @@ module Engine
             discount: 15,
             revenue: 16,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 24, on_phase: '3' },
+            ],
           },
           {
             sym: 'C&B',
@@ -224,6 +271,10 @@ module Engine
             discount: 15,
             revenue: 15,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 23, on_phase: '3' },
+            ],
           },
           {
             sym: 'C&M',
@@ -232,6 +283,10 @@ module Engine
             discount: 15,
             revenue: 17,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 26, on_phase: '3' },
+            ],
           },
           {
             sym: 'M&C',
@@ -240,6 +295,10 @@ module Engine
             discount: 15,
             revenue: 14,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 21, on_phase: '3' },
+            ],
           },
           {
             sym: 'A&S',
@@ -248,6 +307,10 @@ module Engine
             discount: 15,
             revenue: 16,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 24, on_phase: '3' },
+            ],
           },
           {
             sym: 'B&C',
@@ -256,6 +319,10 @@ module Engine
             discount: 15,
             revenue: 13,
             color: :yellow,
+            abilities: [
+              { type: 'no_buy' },
+              { type: 'revenue_change', revenue: 20, on_phase: '3' },
+            ],
           },
           {
             sym: 'S&C',
@@ -264,6 +331,9 @@ module Engine
             discount: 0,
             revenue: 30,
             color: :green,
+            abilities: [
+              { type: 'no_buy' },
+            ],
           },
           {
             sym: 'M&S',
@@ -272,6 +342,9 @@ module Engine
             discount: 0,
             revenue: 27,
             color: :green,
+            abilities: [
+              { type: 'no_buy' },
+            ],
           },
           {
             sym: 'C&MP',
@@ -280,6 +353,9 @@ module Engine
             discount: -30,
             revenue: 40,
             color: :green,
+            abilities: [
+              { type: 'no_buy' },
+            ],
           },
           {
             sym: 'O&V',
@@ -288,6 +364,9 @@ module Engine
             discount: 0,
             revenue: 33,
             color: :green,
+            abilities: [
+              { type: 'no_buy' },
+            ],
           },
           {
             sym: 'L&G',
@@ -296,6 +375,9 @@ module Engine
             discount: 0,
             revenue: 36,
             color: :green,
+            abilities: [
+              { type: 'no_buy' },
+            ],
           },
         ].freeze
       end
