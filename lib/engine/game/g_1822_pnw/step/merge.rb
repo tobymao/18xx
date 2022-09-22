@@ -140,6 +140,7 @@ module Engine
             @game.transfer_posessions(@unassociated_minor, @new_corporation)
             @new_corporation.ipoed = true
             @new_corporation.floated = true
+            @new_corporation.capitalization = :incremental
             @game.remove_home_icon(@new_corporation, @associated_minor.coordinates)
 
             @merge_state = :selecting_par
