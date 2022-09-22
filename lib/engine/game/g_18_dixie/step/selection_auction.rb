@@ -45,10 +45,10 @@ module Engine
             company.value
           end
 
-          def next_entity!(auction_triggerer)
+          def next_entity!()
             @round.next_entity_index!
             entity = entities[entity_index]
-            next_entity!(auction_triggerer) if entity != auction_triggerer && (entity&.passed || !entity.companies.empty?)
+            next_entity!() if entity != @auction_triggerer && (entity&.passed || !entity.companies.empty?)
           end
 
           def process_bid(action)
@@ -124,7 +124,7 @@ module Engine
             if initial_auction_entities.empty?
               finish_auction
             else
-              next_entity!(@auction_triggerer)
+              next_entity!()
             end
           end
 
