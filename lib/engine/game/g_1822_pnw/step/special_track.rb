@@ -105,8 +105,9 @@ module Engine
             @game.tiles.select { |tile| abilities(entity).tiles.include?(tile.name) }.uniq
           end
 
-          def legal_tile_rotation_coal_company?(_entity, _hex, _tile)
-            true
+          def legal_tile_rotation_coal_company?(entity, hex, tile)
+            neighbors = tile.exits.map { |exit| hex.neighbors[exit] }
+            neighbors.any? { |h| @game.graph.connected_hexes(entity.owner)[h] }
           end
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
