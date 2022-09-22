@@ -391,9 +391,10 @@ module Engine
             sym: 'P19',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Use this private to use a track '\
-                  'action to place the Rockport Coal special tile (PNW4) in '\
-                  'any mountain hex. Only the owning company can run a '\
+            desc: 'MAJOR/MINOR, Phase 3. Use this private to use a yellow track '\
+                  'placement to place the Rockport Coal special tile (PNW4) in '\
+                  'any mountain hex. The owning company must be able to trace to '\
+                  'the hex the mine is placed on. Only the owning company can run a '\
                   'train through the city spot on the Rockport Coal special tile '\
                   '(PNW4). Any company can pay the upgrade cost or use '\
                   'building cubes to upgrade the Rockport Coal Special tile '\

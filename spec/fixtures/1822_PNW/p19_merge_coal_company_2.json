@@ -700,18 +700,11 @@
       "rotation": 0
     },
     {
-      "type": "pass",
-      "entity": "8",
-      "entity_type": "corporation",
-      "id": 60,
-      "created_at": 1663489024
-    },
-    {
       "type": "run_routes",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 61,
-      "created_at": 1663489029,
+      "id": 60,
+      "created_at": 1663802138,
       "routes": [
         {
           "train": "L-8",
@@ -738,50 +731,50 @@
       "type": "pass",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 62,
-      "created_at": 1663677068
+      "id": 61,
+      "created_at": 1663802140
     },
     {
       "type": "merge",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 63,
-      "created_at": 1663677084,
+      "id": 62,
+      "created_at": 1663802141,
       "corporation": "2"
     },
     {
       "type": "choose",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 64,
-      "created_at": 1663677085,
+      "id": 63,
+      "created_at": 1663802143,
       "choice": "100"
     },
     {
       "type": "choose",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 65,
-      "created_at": 1663677090,
-      "choice": "4"
+      "id": 64,
+      "created_at": 1663802145,
+      "choice": "3"
     },
     {
       "type": "choose",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 66,
-      "created_at": 1663677092,
+      "id": 65,
+      "created_at": 1663802146,
       "choice": "replace"
     },
     {
       "type": "end_game",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 67,
-      "created_at": 1663677743
+      "id": 66,
+      "created_at": 1663802156
     }
   ],
-  "id": "hs_khscaduy_1663485406",
+  "id": "hs_hnicltyy_1663485406",
   "players": [
     {
       "name": "Player 1",
@@ -808,7 +801,7 @@
     "id": 0,
     "name": "You"
   },
-  "created_at": "2022-09-20",
+  "created_at": "2022-09-21",
   "loaded": true,
   "result": {
     "0": 1020,
@@ -821,5 +814,5 @@
   "acting": [
     0
   ],
-  "updated_at": 1663677743
+  "updated_at": 1663802156
 }

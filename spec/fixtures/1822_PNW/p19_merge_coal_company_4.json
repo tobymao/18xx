@@ -721,21 +721,18 @@
       "rotation": 0
     },
     {
-      "type": "lay_tile",
-      "entity": "P19",
-      "entity_type": "company",
+      "type": "pass",
+      "entity": "2",
+      "entity_type": "corporation",
       "id": 65,
-      "created_at": 1663727725,
-      "hex": "E16",
-      "tile": "PNW4-0",
-      "rotation": 0
+      "created_at": 1663804237
     },
     {
       "type": "run_routes",
       "entity": "2",
       "entity_type": "corporation",
       "id": 66,
-      "created_at": 1663727727,
+      "created_at": 1663804410,
       "routes": [
         {
           "train": "L-3",
@@ -763,16 +760,16 @@
       "entity": "2",
       "entity_type": "corporation",
       "id": 67,
-      "created_at": 1663727731
+      "created_at": 1663804412
     },
     {
       "type": "lay_tile",
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 68,
-      "created_at": 1663727863,
+      "created_at": 1663804418,
       "hex": "G14",
-      "tile": "57-1",
+      "tile": "6-0",
       "rotation": 1
     },
     {
@@ -780,25 +777,25 @@
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 69,
-      "created_at": 1663727865,
+      "created_at": 1663804421,
       "auto_actions": [
         {
           "type": "pass",
           "entity": "SWW",
           "entity_type": "corporation",
-          "created_at": 1663727865
+          "created_at": 1663804421
         }
       ],
-      "hex": "G16",
-      "tile": "57-2",
-      "rotation": 1
+      "hex": "F15",
+      "tile": "9-4",
+      "rotation": 0
     },
     {
       "type": "run_routes",
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 70,
-      "created_at": 1663727876,
+      "created_at": 1663804428,
       "routes": [
         {
           "train": "L-7",
@@ -826,7 +823,7 @@
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 71,
-      "created_at": 1663727877,
+      "created_at": 1663804429,
       "kind": "payout"
     },
     {
@@ -834,16 +831,16 @@
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 72,
-      "created_at": 1663727880
+      "created_at": 1663804430
     },
     {
       "type": "lay_tile",
-      "entity": "2",
-      "entity_type": "corporation",
+      "entity": "P19",
+      "entity_type": "company",
       "id": 73,
-      "created_at": 1663727884,
-      "hex": "C18",
-      "tile": "83-0",
+      "created_at": 1663804436,
+      "hex": "E16",
+      "tile": "PNW4-0",
       "rotation": 0
     },
     {
@@ -851,7 +848,7 @@
       "entity": "2",
       "entity_type": "corporation",
       "id": 74,
-      "created_at": 1663727887,
+      "created_at": 1663804439,
       "routes": [
         {
           "train": "L-3",
@@ -879,614 +876,75 @@
       "entity": "2",
       "entity_type": "corporation",
       "id": 75,
-      "created_at": 1663727888
+      "created_at": 1663804440
     },
     {
-      "type": "lay_tile",
+      "type": "pass",
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 76,
-      "created_at": 1663727893,
-      "hex": "G18",
-      "tile": "BC-0",
-      "rotation": 0
+      "created_at": 1663804486,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": "SWW",
+          "entity_type": "corporation",
+          "created_at": 1663804486
+        }
+      ]
     },
     {
-      "type": "lay_tile",
+      "type": "run_routes",
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 77,
-      "created_at": 1663727895,
-      "auto_actions": [
+      "created_at": 1663804488,
+      "routes": [
         {
-          "type": "pass",
-          "entity": "SWW",
-          "entity_type": "corporation",
-          "created_at": 1663727895
+          "train": "L-7",
+          "connections": [
+            [
+              "H11",
+              "I12"
+            ]
+          ],
+          "hexes": [
+            "H11",
+            "I12"
+          ],
+          "revenue": 50,
+          "revenue_str": "H11-I12",
+          "nodes": [
+            "H11-0",
+            "I12-0"
+          ]
         }
-      ],
-      "hex": "G18",
-      "tile": "BC-0",
-      "rotation": 0
+      ]
     },
     {
-      "type": "run_routes",
+      "type": "dividend",
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 78,
-      "created_at": 1663727905,
-      "routes": [
-        {
-          "train": "L-7",
-          "connections": [
-            [
-              "H11",
-              "I12"
-            ]
-          ],
-          "hexes": [
-            "H11",
-            "I12"
-          ],
-          "revenue": 50,
-          "revenue_str": "H11-I12",
-          "nodes": [
-            "H11-0",
-            "I12-0"
-          ]
-        }
-      ]
+      "created_at": 1663804490,
+      "kind": "payout"
     },
     {
-      "type": "dividend",
+      "type": "pass",
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 79,
-      "created_at": 1663727906,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 80,
-      "created_at": 1663727908
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 81,
-      "created_at": 1663727920
-    },
-    {
-      "type": "sell_shares",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 82,
-      "created_at": 1663727925,
-      "shares": [
-        "SWW_1"
-      ],
-      "percent": 10,
-      "share_price": 100
-    },
-    {
-      "type": "pass",
-      "entity": 2,
-      "entity_type": "player",
-      "id": 83,
-      "created_at": 1663727926
-    },
-    {
-      "type": "pass",
-      "entity": 1,
-      "entity_type": "player",
-      "id": 84,
-      "created_at": 1663727927
-    },
-    {
-      "type": "pass",
-      "entity": 0,
-      "entity_type": "player",
-      "id": 85,
-      "created_at": 1663727927
-    },
-    {
-      "type": "lay_tile",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 86,
-      "created_at": 1663727932,
-      "hex": "D19",
-      "tile": "57-3",
-      "rotation": 2
-    },
-    {
-      "type": "run_routes",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 87,
-      "created_at": 1663727934,
-      "routes": [
-        {
-          "train": "L-3",
-          "connections": [
-            [
-              "B19",
-              "A20"
-            ]
-          ],
-          "hexes": [
-            "B19",
-            "A20"
-          ],
-          "revenue": 30,
-          "revenue_str": "B19-A20",
-          "nodes": [
-            "B19-0",
-            "A20-0"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "pass",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 88,
-      "created_at": 1663727937
-    },
-    {
-      "type": "lay_tile",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 89,
-      "created_at": 1663727941,
-      "hex": "G18",
-      "tile": "BC-0",
-      "rotation": 0
-    },
-    {
-      "type": "lay_tile",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 90,
-      "created_at": 1663727945,
-      "auto_actions": [
-        {
-          "type": "pass",
-          "entity": "SWW",
-          "entity_type": "corporation",
-          "created_at": 1663727945
-        }
-      ],
-      "hex": "G18",
-      "tile": "BC-0",
-      "rotation": 0
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 91,
-      "created_at": 1663727948
-    },
-    {
-      "type": "run_routes",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 92,
-      "created_at": 1663727949,
-      "routes": [
-        {
-          "train": "L-7",
-          "connections": [
-            [
-              "H11",
-              "I12"
-            ]
-          ],
-          "hexes": [
-            "H11",
-            "I12"
-          ],
-          "revenue": 50,
-          "revenue_str": "H11-I12",
-          "nodes": [
-            "H11-0",
-            "I12-0"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "dividend",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 93,
-      "created_at": 1663727950,
-      "kind": "payout"
-    },
-    {
-      "type": "buy_train",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 94,
-      "created_at": 1663727952,
-      "train": "3-2",
-      "price": 200,
-      "variant": "3"
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 95,
-      "created_at": 1663727953
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 96,
-      "created_at": 1663727955
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 97,
-      "created_at": 1663727958
-    },
-    {
-      "type": "lay_tile",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 98,
-      "created_at": 1663727962,
-      "hex": "E20",
-      "tile": "4-0",
-      "rotation": 2
-    },
-    {
-      "type": "run_routes",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 99,
-      "created_at": 1663727966,
-      "routes": [
-        {
-          "train": "L-3",
-          "connections": [
-            [
-              "B19",
-              "A20"
-            ]
-          ],
-          "hexes": [
-            "B19",
-            "A20"
-          ],
-          "revenue": 30,
-          "revenue_str": "B19-A20",
-          "nodes": [
-            "B19-0",
-            "A20-0"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "pass",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 100,
-      "created_at": 1663727968
-    },
-    {
-      "type": "lay_tile",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 101,
-      "created_at": 1663727971,
-      "hex": "G18",
-      "tile": "9-4",
-      "rotation": 1
-    },
-    {
-      "type": "lay_tile",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 102,
-      "created_at": 1663727973,
-      "auto_actions": [
-        {
-          "type": "pass",
-          "entity": "SWW",
-          "entity_type": "corporation",
-          "created_at": 1663727973
-        }
-      ],
-      "hex": "G20",
-      "tile": "8-1",
-      "rotation": 1
-    },
-    {
-      "type": "run_routes",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 103,
-      "created_at": 1663727975,
-      "routes": [
-        {
-          "train": "3-2",
-          "connections": [
-            [
-              "M4",
-              "L5",
-              "K6",
-              "J7"
-            ],
-            [
-              "J7",
-              "J9"
-            ]
-          ],
-          "hexes": [
-            "M4",
-            "J7",
-            "J9"
-          ],
-          "revenue": 60,
-          "revenue_str": "M4-J7-J9",
-          "nodes": [
-            "M4-0",
-            "J7-0",
-            "J9-0"
-          ]
-        },
-        {
-          "train": "L-7",
-          "connections": [
-            [
-              "H11",
-              "I12"
-            ]
-          ],
-          "hexes": [
-            "H11",
-            "I12"
-          ],
-          "revenue": 50,
-          "revenue_str": "H11-I12",
-          "nodes": [
-            "H11-0",
-            "I12-0"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "dividend",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 104,
-      "created_at": 1663727976,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 105,
-      "created_at": 1663727977
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 106,
-      "created_at": 1663727978
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 107,
-      "created_at": 1663727979
-    },
-    {
-      "type": "pass",
-      "entity": 2,
-      "entity_type": "player",
-      "id": 108,
-      "created_at": 1663727980
-    },
-    {
-      "type": "pass",
-      "entity": 0,
-      "entity_type": "player",
-      "id": 109,
-      "created_at": 1663727980
-    },
-    {
-      "type": "pass",
-      "entity": 1,
-      "entity_type": "player",
-      "id": 110,
-      "created_at": 1663727981
-    },
-    {
-      "type": "lay_tile",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 111,
-      "created_at": 1663727984,
-      "hex": "F21",
-      "tile": "8-2",
-      "rotation": 0
-    },
-    {
-      "type": "run_routes",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 112,
-      "created_at": 1663727986,
-      "routes": [
-        {
-          "train": "L-3",
-          "connections": [
-            [
-              "B19",
-              "A20"
-            ]
-          ],
-          "hexes": [
-            "B19",
-            "A20"
-          ],
-          "revenue": 30,
-          "revenue_str": "B19-A20",
-          "nodes": [
-            "B19-0",
-            "A20-0"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "pass",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 113,
-      "created_at": 1663727988
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 114,
-      "created_at": 1663727989,
-      "auto_actions": [
-        {
-          "type": "pass",
-          "entity": "SWW",
-          "entity_type": "corporation",
-          "created_at": 1663727989
-        }
-      ]
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 115,
-      "created_at": 1663727990
-    },
-    {
-      "type": "run_routes",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 116,
-      "created_at": 1663727991,
-      "routes": [
-        {
-          "train": "3-2",
-          "connections": [
-            [
-              "M4",
-              "L5",
-              "K6",
-              "J7"
-            ],
-            [
-              "J7",
-              "J9"
-            ]
-          ],
-          "hexes": [
-            "M4",
-            "J7",
-            "J9"
-          ],
-          "revenue": 60,
-          "revenue_str": "M4-J7-J9",
-          "nodes": [
-            "M4-0",
-            "J7-0",
-            "J9-0"
-          ]
-        },
-        {
-          "train": "L-7",
-          "connections": [
-            [
-              "H11",
-              "I12"
-            ]
-          ],
-          "hexes": [
-            "H11",
-            "I12"
-          ],
-          "revenue": 50,
-          "revenue_str": "H11-I12",
-          "nodes": [
-            "H11-0",
-            "I12-0"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "dividend",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 117,
-      "created_at": 1663727992,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 118,
-      "created_at": 1663727993
-    },
-    {
-      "type": "merge",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 119,
-      "created_at": 1663728002,
-      "corporation": "2"
-    },
-    {
-      "type": "choose",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 120,
-      "created_at": 1663728005,
-      "choice": "two_shares"
-    },
-    {
-      "type": "choose",
-      "entity": "SWW",
-      "entity_type": "corporation",
-      "id": 121,
-      "created_at": 1663728007,
-      "choice": "replace"
+      "created_at": 1663804491
     },
     {
       "type": "end_game",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 122,
-      "created_at": 1663729012
+      "id": 80,
+      "created_at": 1663804508
     }
   ],
-  "id": "hs_jvodfnjq_1663485406",
+  "id": "hs_shjumbdb_1663485406",
   "players": [
     {
       "name": "Player 1",
@@ -1513,18 +971,18 @@
     "id": 0,
     "name": "You"
   },
-  "created_at": "2022-09-20",
+  "created_at": "2022-09-21",
   "loaded": true,
   "result": {
-    "0": 1039,
-    "1": 690,
+    "0": 860,
+    "1": 660,
     "2": 500
   },
   "manually_ended": true,
-  "turn": 7,
+  "turn": 5,
   "round": "Operating Round",
   "acting": [
     0
   ],
-  "updated_at": 1663729012
+  "updated_at": 1663804508
 }

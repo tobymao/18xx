@@ -783,29 +783,26 @@
       "rotation": 1
     },
     {
-      "type": "lay_tile",
-      "entity": "P19",
-      "entity_type": "company",
+      "type": "pass",
+      "entity": "SWW",
+      "entity_type": "corporation",
       "id": 70,
-      "created_at": 1663726642,
+      "created_at": 1663803840,
       "auto_actions": [
         {
           "type": "pass",
           "entity": "SWW",
           "entity_type": "corporation",
-          "created_at": 1663726642
+          "created_at": 1663803840
         }
-      ],
-      "hex": "F17",
-      "tile": "PNW4-0",
-      "rotation": 0
+      ]
     },
     {
       "type": "run_routes",
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 71,
-      "created_at": 1663726652,
+      "created_at": 1663803854,
       "routes": [
         {
           "train": "L-7",
@@ -833,7 +830,7 @@
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 72,
-      "created_at": 1663726653,
+      "created_at": 1663803855,
       "kind": "payout"
     },
     {
@@ -841,14 +838,14 @@
       "entity": "SWW",
       "entity_type": "corporation",
       "id": 73,
-      "created_at": 1663726654
+      "created_at": 1663803856
     },
     {
       "type": "lay_tile",
       "entity": "2",
       "entity_type": "corporation",
       "id": 74,
-      "created_at": 1663726658,
+      "created_at": 1663803865,
       "hex": "E18",
       "tile": "8-2",
       "rotation": 0
@@ -858,7 +855,7 @@
       "entity": "2",
       "entity_type": "corporation",
       "id": 75,
-      "created_at": 1663726662,
+      "created_at": 1663803867,
       "routes": [
         {
           "train": "L-3",
@@ -886,29 +883,42 @@
       "entity": "2",
       "entity_type": "corporation",
       "id": 76,
-      "created_at": 1663726691
+      "created_at": 1663803869
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
+      "entity": "P19",
+      "entity_type": "company",
+      "id": 77,
+      "created_at": 1663803888,
+      "hex": "F17",
+      "tile": "PNW4-0",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 77,
-      "created_at": 1663726698,
+      "id": 78,
+      "created_at": 1663803895,
       "auto_actions": [
         {
           "type": "pass",
           "entity": "SWW",
           "entity_type": "corporation",
-          "created_at": 1663726698
+          "created_at": 1663803895
         }
-      ]
+      ],
+      "hex": "I14",
+      "tile": "9-3",
+      "rotation": 1
     },
     {
       "type": "run_routes",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 78,
-      "created_at": 1663726700,
+      "id": 79,
+      "created_at": 1663803905,
       "routes": [
         {
           "train": "L-7",
@@ -935,57 +945,66 @@
       "type": "dividend",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 79,
-      "created_at": 1663726701,
+      "id": 80,
+      "created_at": 1663803906,
       "kind": "payout"
     },
     {
       "type": "pass",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 80,
-      "created_at": 1663726703
+      "id": 81,
+      "created_at": 1663803907
     },
     {
       "type": "merge",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 81,
-      "created_at": 1663726712,
+      "id": 82,
+      "created_at": 1663803911,
       "corporation": "2"
     },
     {
       "type": "choose",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 82,
-      "created_at": 1663726714,
-      "choice": "one_share"
+      "id": 83,
+      "created_at": 1663803912,
+      "choice": "two_shares"
     },
     {
       "type": "choose",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 83,
-      "created_at": 1663726715,
+      "id": 84,
+      "created_at": 1663803913,
       "choice": "replace"
     },
     {
-      "type": "pass",
+      "type": "sell_shares",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 84,
-      "created_at": 1663726716
+      "id": 85,
+      "created_at": 1663803914,
+      "shares": [
+        "SWW_3",
+        "SWW_4",
+        "SWW_5",
+        "SWW_6",
+        "SWW_7"
+      ],
+      "percent": 50,
+      "share_price": 100
     },
     {
       "type": "end_game",
       "entity": 2,
       "entity_type": "player",
-      "id": 85,
-      "created_at": 1663727090
+      "id": 86,
+      "created_at": 1663803920
     }
   ],
-  "id": "hs_izygcfgr_1663485406",
+  "id": "hs_mjeiuprs_1663485406",
   "players": [
     {
       "name": "Player 1",
@@ -1012,10 +1031,10 @@
     "id": 0,
     "name": "You"
   },
-  "created_at": "2022-09-20",
+  "created_at": "2022-09-21",
   "loaded": true,
   "result": {
-    "0": 860,
+    "0": 820,
     "1": 660,
     "2": 500
   },
@@ -1025,5 +1044,5 @@
   "acting": [
     2
   ],
-  "updated_at": 1663727090
+  "updated_at": 1663803920
 }

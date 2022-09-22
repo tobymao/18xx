@@ -98,7 +98,7 @@ module Engine
           end
 
           def available_hex_coal_company(entity, hex)
-            abilities(entity).hexes.include?(hex.id) ? hex.all_neighbors.keys : nil
+            hex.all_neighbors.keys if abilities(entity).hexes.include?(hex.id) && @game.graph.connected_hexes(entity.owner)[hex]
           end
 
           def potential_tiles_coal_company(entity, _hex)
@@ -167,7 +167,11 @@ module Engine
           end
 
           def process_lay_tile_coal_company(action)
+            tile_lay = get_tile_lay(action.entity)
+            raise GameError, 'Cannot lay coal company now' if !tile_lay || !tile_lay[:lay]
+
             lay_tile(action)
+            @round.num_laid_track += 1
             ability = abilities(action.entity)
             @game.coal_token.corporation = action.entity.owner
             action.tile.cities[0].place_token(action.entity.owner, @game.coal_token, check_tokenable: false)

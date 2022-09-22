@@ -648,41 +648,29 @@
       "rotation": 0
     },
     {
-      "type": "lay_tile",
-      "entity": "2",
-      "entity_type": "corporation",
-      "id": 56,
-      "created_at": 1663486054,
-      "hex": "F13",
-      "tile": "14-0",
-      "rotation": 0
-    },
-    {
       "type": "run_routes",
       "entity": "2",
       "entity_type": "corporation",
-      "id": 57,
-      "created_at": 1663486608,
+      "id": 56,
+      "created_at": 1663791645,
       "routes": [
         {
           "train": "L-3",
           "connections": [
             [
-              "E16",
-              "D17",
-              "C18",
-              "B19"
+              "B19",
+              "A20"
             ]
           ],
           "hexes": [
-            "E16",
-            "B19"
+            "B19",
+            "A20"
           ],
-          "revenue": 60,
-          "revenue_str": "E16-B19",
+          "revenue": 30,
+          "revenue_str": "B19-A20",
           "nodes": [
-            "E16-0",
-            "B19-0"
+            "B19-0",
+            "A20-0"
           ]
         }
       ]
@@ -691,22 +679,25 @@
       "type": "pass",
       "entity": "2",
       "entity_type": "corporation",
-      "id": 58,
-      "created_at": 1663486611
+      "id": 57,
+      "created_at": 1663791646
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 59,
-      "created_at": 1663486619
+      "id": 58,
+      "created_at": 1663791654,
+      "hex": "H11",
+      "tile": "X20-0",
+      "rotation": 0
     },
     {
       "type": "run_routes",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 60,
-      "created_at": 1663486626,
+      "id": 59,
+      "created_at": 1663791659,
       "routes": [
         {
           "train": "L-8",
@@ -720,7 +711,7 @@
             "H11",
             "I12"
           ],
-          "revenue": 50,
+          "revenue": 70,
           "revenue_str": "H11-I12",
           "nodes": [
             "H11-0",
@@ -733,50 +724,50 @@
       "type": "pass",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 61,
-      "created_at": 1663676943
+      "id": 60,
+      "created_at": 1663791666
     },
     {
       "type": "merge",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 62,
-      "created_at": 1663676949,
+      "id": 61,
+      "created_at": 1663791667,
       "corporation": "2"
     },
     {
       "type": "choose",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 63,
-      "created_at": 1663676951,
+      "id": 62,
+      "created_at": 1663791669,
       "choice": "100"
     },
     {
       "type": "choose",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 64,
-      "created_at": 1663676955,
-      "choice": "2"
+      "id": 63,
+      "created_at": 1663791670,
+      "choice": "3"
     },
     {
       "type": "choose",
       "entity": "8",
       "entity_type": "corporation",
-      "id": 65,
-      "created_at": 1663676957,
+      "id": 64,
+      "created_at": 1663791673,
       "choice": "replace"
     },
     {
       "type": "end_game",
       "entity": "SWW",
       "entity_type": "corporation",
-      "id": 66,
-      "created_at": 1663677711
+      "id": 65,
+      "created_at": 1663791690
     }
   ],
-  "id": "hs_mssxpbxp_1663485406",
+  "id": "hs_gawciijk_1663485406",
   "players": [
     {
       "name": "Player 1",
@@ -803,10 +794,10 @@
     "id": 0,
     "name": "You"
   },
-  "created_at": "2022-09-20",
+  "created_at": "2022-09-21",
   "loaded": true,
   "result": {
-    "0": 1030,
+    "0": 1025,
     "1": 500,
     "2": 500
   },
@@ -816,5 +807,5 @@
   "acting": [
     0
   ],
-  "updated_at": 1663677711
+  "updated_at": 1663791690
 }
