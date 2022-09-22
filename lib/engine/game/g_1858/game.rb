@@ -258,6 +258,10 @@ module Engine
         def buyable_bank_owned_companies
           super.filter { |company| company.color == :yellow || @phase.status.include?('green_privates') }
         end
+
+        def unowned_purchasable_companies(_entity)
+          @companies.filter { |company| !company.closed? && company.owner == @bank }
+        end
       end
     end
   end
