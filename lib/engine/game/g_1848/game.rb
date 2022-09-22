@@ -448,7 +448,7 @@ module Engine
             simple_logo: '1848/CAR.alt',
             tokens: [0, 40, 100],
             coordinates: 'E4',
-            color: '#232b2b',
+            color: 'black',
           },
           {
             sym: 'VR',
@@ -458,7 +458,7 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'H11',
             text_color: 'black',
-            color: 'gold',
+            color: '#ffe600',
           },
           {
             sym: 'NSW',
@@ -468,7 +468,7 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'F17',
             text_color: 'black',
-            color: 'orange',
+            color: '#ff9027',
           },
           {
             sym: 'SAR',
@@ -477,7 +477,7 @@ module Engine
             simple_logo: '1848/SAR.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'G6',
-            color: 'darkMagenta',
+            color: '#9e2a97',
           },
           {
             sym: 'COM',
@@ -485,7 +485,8 @@ module Engine
             logo: '1848/COM',
             simple_logo: '1848/COM.alt',
             tokens: [0, 0, 100, 100, 100],
-            color: 'dimGray',
+            text_color: 'black',
+            color: '#cfc5a2',
           },
           {
             sym: 'FT',
@@ -494,7 +495,8 @@ module Engine
             simple_logo: '1848/FT.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'G14',
-            color: 'mediumBlue',
+            text_color: 'black',
+            color: '#55c3ec',
           },
           {
             sym: 'WA',
@@ -503,7 +505,7 @@ module Engine
             simple_logo: '1848/WA.alt',
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'D1',
-            color: 'maroon',
+            color: '#ee332a',
           },
           {
             sym: 'QR',
@@ -512,7 +514,7 @@ module Engine
             simple_logo: '1848/QR.alt',
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'B19',
-            color: 'darkGreen',
+            color: '#399c42',
           },
         ].freeze
 
