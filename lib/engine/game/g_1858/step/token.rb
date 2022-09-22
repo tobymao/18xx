@@ -8,26 +8,44 @@ module Engine
     module G1858
       module Step
         class Token < Engine::Step::Token
+          # These are the number of provincial borders crossed when travelling between cities.
+          # This is done as a 2D hash of city coordinates. The rows and columns are ordered
+          # by province:
+          #   1. Galicia (Vigo and La Coruña)
+          #   2. North Portugal (Porto)
+          #   3. South Portugal (Lisboa)
+          #   4. Asturias (Gijón)
+          #   5. Andalucía (Sevilla, Cádiz, Córdoba, Málaga and Granada)
+          #   6. Cantabria (Santander)
+          #   7. Castilla la Vieja (Valladolid)
+          #   8. La Mancha (Madrid)
+          #   9. País Vasco (Bilbao)
+          #  10. Aragón (Zaragoza)
+          #  11. Valenciana (Valencia)
+          #  12. Murcia (Murcia)
+          #  13. Cataluña (Barcelona)
+          # rubocop: disable Layout/LineLength, Layout/HashAlignment
           DISTANCES = {
-            'C2' => [%w[B5], %w[F1 B9], %w[H3 G8 H11 A14], %w[E18 E20 G18 G20 H19 K18 L13 L7 I2], %w[O8]],
-            'B5' => [%w[C2], %w[F1 B9], %w[H3 G8 H11 A14], %w[E18 E20 G18 G20 H19 K18 L13 L7 I2], %w[O8]],
-            'F1' => [[], %w[B5 C2 G8 H3], %w[B9 H11 I2 L7], %w[E18 A14 E20 G18 G20 H19 K18 L13 O8]],
-            'H3' => [[], %w[F1 G8 I2], %w[H11 L7 B5 C2], %w[E18 B9 E20 G18 G20 H19 K18 L13 O8], %w[A14]],
-            'I2' => [[], %w[G8 L7 H3], %w[H11 F1 O8 L13], %w[E18 B5 C2 B9 E20 G18 G20 H19 K18], %w[A14]],
-            'B9' => [[], %w[A14 B5 C2], %w[F1 G8 E18 E20 G18 G20 H19 H11], %w[H3 K18 L13 L7 I2], %w[O8]],
-            'A14' => [[], %w[B9 A14 E18 E20 G18 G20 H19], %w[H11 B5 K18 C2], %w[L13 F1 G8], %w[H3 L7 I2 O8]],
-            'G8' => [[], %w[F1 H3 H11 L7 I2], %w[E18 E20 G18 G20 H19 B5 C2 B9 L13 O8 K18], %w[A14]],
-            'L7' => [[], %w[H11 G8 I2 O8 L13], %w[F1 H3 E18 E20 G18 G20 H19 K18], %w[A14 B5 C2 B9]],
-            'O8' => [[], %w[L7 L13], %w[H11 G8 I2 K18], %w[F1 H3 E18 E20 G18 G20 H19], %w[A14 B5 C2 B9]],
-            'H11' => [[], %w[G8 L7 E18 E20 G18 G20 H19 K18], %w[F1 H3 I2 B5 C2 B9 L13 O8 A14]],
-            'L13' => [[], %w[L7 O8 H11 K18], %w[G8 E18 E20 G18 G20 H19], %w[I2 F1 H3 A14 B5 C2 B9]],
-            'K18' => [[], %w[H11 L13 E18 E20 G18 G20 H19], %w[I2 G8 L7 O8 A14], %w[F1 H3 B5 C2 B9]],
-            'E18' => [%w[E20 G18 G20 H19], %w[K18 A14 H11], %w[G8 L7 L13 B9], %w[F1 H3 I2 B5 C2 O8]],
-            'E20' => [%w[E18 G18 G20 H19], %w[K18 A14 H11], %w[G8 L7 L13 B9], %w[F1 H3 I2 B5 C2 O8]],
-            'G18' => [%w[E18 E20 G20 H19], %w[K18 A14 H11], %w[G8 L7 L13 B9], %w[F1 H3 I2 B5 C2 O8]],
-            'G20' => [%w[E18 E20 G18 H19], %w[K18 A14 H11], %w[G8 L7 L13 B9], %w[F1 H3 I2 B5 C2 O8]],
-            'H19' => [%w[E18 E20 G18 G20], %w[K18 A14 H11], %w[G8 L7 L13 B9], %w[F1 H3 I2 B5 C2 O8]],
+            B5:  { B5: 0, C2: 0, B9: 1, A14: 2, F1: 1, E18: 3, E20: 3, G18: 3, G20: 3, H19: 3, H3: 2, G8: 2, H11: 2, I2: 3, L7: 3, L13: 3, K18: 3, O8: 4 },
+            C2:  { B5: 0, C2: 0, B9: 1, A14: 2, F1: 1, E18: 3, E20: 3, G18: 3, G20: 3, H19: 3, H3: 2, G8: 2, H11: 2, I2: 3, L7: 3, L13: 3, K18: 3, O8: 4 },
+            B9:  { B5: 1, C2: 1, B9: 0, A14: 1, F1: 2, E18: 2, E20: 2, G18: 2, G20: 2, H19: 2, H3: 3, G8: 2, H11: 2, I2: 3, L7: 3, L13: 3, K18: 3, O8: 4 },
+            A14: { B5: 2, C2: 2, B9: 1, A14: 0, F1: 3, E18: 1, E20: 1, G18: 1, G20: 1, H19: 1, H3: 4, G8: 3, H11: 2, I2: 4, L7: 3, L13: 3, K18: 2, O8: 4 },
+            F1:  { B5: 1, C2: 1, B9: 2, A14: 3, F1: 0, E18: 3, E20: 3, G18: 3, G20: 3, H19: 3, H3: 1, G8: 1, H11: 2, I2: 2, L7: 2, L13: 3, K18: 3, O8: 3 },
+            E18: { B5: 3, C2: 3, B9: 2, A14: 1, F1: 3, E18: 0, E20: 0, G18: 0, G20: 0, H19: 0, H3: 3, G8: 2, H11: 1, I2: 3, L7: 2, L13: 2, K18: 1, O8: 3 },
+            E20: { B5: 3, C2: 3, B9: 2, A14: 1, F1: 3, E18: 0, E20: 0, G18: 0, G20: 0, H19: 0, H3: 3, G8: 2, H11: 1, I2: 3, L7: 2, L13: 2, K18: 1, O8: 3 },
+            G18: { B5: 3, C2: 3, B9: 2, A14: 1, F1: 3, E18: 0, E20: 0, G18: 0, G20: 0, H19: 0, H3: 3, G8: 2, H11: 1, I2: 3, L7: 2, L13: 2, K18: 1, O8: 3 },
+            G20: { B5: 3, C2: 3, B9: 2, A14: 1, F1: 3, E18: 0, E20: 0, G18: 0, G20: 0, H19: 0, H3: 3, G8: 2, H11: 1, I2: 3, L7: 2, L13: 2, K18: 1, O8: 3 },
+            H19: { B5: 3, C2: 3, B9: 2, A14: 1, F1: 3, E18: 0, E20: 0, G18: 0, G20: 0, H19: 0, H3: 3, G8: 2, H11: 1, I2: 3, L7: 2, L13: 2, K18: 1, O8: 3 },
+            H3:  { B5: 2, C2: 2, B9: 3, A14: 4, F1: 1, E18: 3, E20: 3, G18: 3, G20: 3, H19: 3, H3: 0, G8: 1, H11: 2, I2: 1, L7: 2, L13: 3, K18: 3, O8: 3 },
+            G8:  { B5: 2, C2: 2, B9: 2, A14: 3, F1: 1, E18: 2, E20: 2, G18: 2, G20: 2, H19: 2, H3: 1, G8: 0, H11: 1, I2: 1, L7: 1, L13: 2, K18: 2, O8: 2 },
+            H11: { B5: 2, C2: 2, B9: 2, A14: 2, F1: 2, E18: 1, E20: 1, G18: 1, G20: 1, H19: 1, H3: 2, G8: 1, H11: 0, I2: 2, L7: 1, L13: 1, K18: 1, O8: 2 },
+            I2:  { B5: 3, C2: 3, B9: 3, A14: 4, F1: 2, E18: 3, E20: 3, G18: 3, G20: 3, H19: 3, H3: 1, G8: 1, H11: 2, I2: 0, L7: 1, L13: 2, K18: 3, O8: 2 },
+            L7:  { B5: 3, C2: 3, B9: 3, A14: 3, F1: 2, E18: 2, E20: 2, G18: 2, G20: 2, H19: 2, H3: 2, G8: 1, H11: 1, I2: 1, L7: 0, L13: 1, K18: 2, O8: 1 },
+            L13: { B5: 3, C2: 3, B9: 3, A14: 3, F1: 3, E18: 2, E20: 2, G18: 2, G20: 2, H19: 2, H3: 3, G8: 2, H11: 1, I2: 2, L7: 1, L13: 0, K18: 1, O8: 1 },
+            K18: { B5: 3, C2: 3, B9: 3, A14: 2, F1: 3, E18: 1, E20: 1, G18: 1, G20: 1, H19: 1, H3: 3, G8: 2, H11: 1, I2: 3, L7: 2, L13: 1, K18: 0, O8: 2 },
+            O8:  { B5: 4, C2: 4, B9: 4, A14: 4, F1: 3, E18: 3, E20: 3, G18: 3, G20: 3, H19: 3, H3: 3, G8: 2, H11: 2, I2: 2, L7: 1, L13: 1, K18: 2, O8: 0 },
           }.freeze
+          # rubocop: enable Layout/LineLength, Layout/HashAlignment
 
           def adjust_token_price_ability!(entity, token, hex, _city, _special_ability)
             # 1858 has no special abilities to do with tokens.
@@ -45,7 +63,7 @@ module Engine
             # the arguments passed is nil ("undefined method `coordinates for nil`").
             # Having a company start with a token in Lisboa seems to be a reliable
             # way of triggering this bug.
-            DISTANCES[hex1.coordinates].find_index { |coords| coords.include?(hex2.coordinates) }
+            DISTANCES[hex1.coordinates][hex2.coordinates]
           end
 
           def available_hex(entity, hex)
