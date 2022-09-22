@@ -7,6 +7,12 @@ module Engine
     module G21Moon
       module Step
         class CorporateBuySellShares < Engine::Step::BuySellParShares
+          def actions(entity)
+            return [] if entity.corporation? && entity.receivership?
+
+            super
+          end
+
           def redeemable_shares(_corp)
             []
           end
