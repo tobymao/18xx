@@ -11,6 +11,7 @@ module Engine
             return [] unless entity == current_entity
             return %w[bid pass] if @auctioning
             return ['sell_shares'] if must_sell?(entity)
+            return [] if bought?
 
             actions = []
 
