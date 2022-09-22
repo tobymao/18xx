@@ -65,6 +65,7 @@ module Engine
         def setup
           @recently_floated = []
           setup_preferred_shares
+          setup_double_shares
           @minors.each do |minor|
             train = @depot.upcoming[0]
             train.buyable = false
@@ -164,7 +165,10 @@ module Engine
           Engine::Step::Route,
           G18Dixie::Step::Dividend,
           Engine::Step::DiscardTrain,
+          # ICG/SCL Merger!
           G18Dixie::Step::MergeConsent,
+          #G18Dixie::Step::PresidencyExchange,
+          # normal stuff
           Engine::Step::BuyTrain,
           [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -297,6 +301,10 @@ module Engine
           preferred_shares_by_major.each { |_corp, shares| shares.each { |s| setup_preferred_share(s) } }
         end
 
+        def setup_double_shares
+          [icg, scl].each { |corp| corp.shares.last.double_cert = true}
+        end
+
         def release_preferred_shares
           @log << 'Unclaimed preferred shares in IPO are put into the open market'
           preferred_shares_by_major.each { |corp, shares| shares.each { |s| release_preferred_share_maybe(s, corp) } }
@@ -398,7 +406,6 @@ module Engine
         end
 
         def close_merger_corp(merger_corp)
-          puts "here? #{merger_corp}"
           @log << "-- Event: #{merger_corp.name} fails to form --"
           merger_corp.close!
         end
@@ -426,13 +433,11 @@ module Engine
           return unless merger_precheck(primary_corp, secondary_corp, merger_corp)
 
           # Since the merger didn't automatically fail, it is up to the presidents to decide
-          puts "hm #{merger_corp} #{primary_corp} #{secondary_corp}"
           @round.merge_consent_merging_corp = merger_corp
           @round.merge_consent_primary_corp = primary_corp
           @round.merge_consent_secondary_corp = secondary_corp
           @round.merge_consent_pending_corps << primary_corp
           @round.merge_consent_pending_corps << secondary_corp if primary_corp.owner != secondary_corp.owner
-          puts @round.merge_consent_pending_corps
           @round.merge_consent_subsidy = subsidy
         end
 
@@ -440,9 +445,23 @@ module Engine
           merger_corp == scl ? icg : scl
         end
 
-        def start_merge(primary_corp, secondary_corp, merger_corp, _subsidy)
+        def start_merge(primary_corp, secondary_corp, merger_corp, subsidy)
           @log << "-- Event: #{primary_corp.name} and #{secondary_corp.name} merge to form #{merger_corp.name} --"
           close_merger_corp(other_merger_corp(merger_corp))
+
+          @log << "Bank gives #{merger_corp.name} a #{format_currency(subsidy)} subsidy"
+          @bank.spend(subsidy, merger_corp)
+
+          exchange_for_merger_presidency(primary_corp, merger_corp)
+          exchange_for_merger_20_share(secondary_corp, merger_corp)
+        end
+
+        def exchange_for_merger_presidency(primary_corp, merger_corp)
+          puts 'exchange for presidency'
+        end
+
+        def exchange_for_merger_20_share(secondary_corp, merger_corp)
+          puts 'exchange for double share'
         end
 
         def event_icg_formation_chance!

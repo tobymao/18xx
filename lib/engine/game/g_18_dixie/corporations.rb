@@ -95,6 +95,7 @@ module Engine
             logo: '18_dixie/ICG.alt',
             simple_logo: '18_dixie/ICG.alt',
             tokens: [nil, nil, nil, nil, nil, nil],
+            shares: [20, 10, 10, 10, 10, 10, 10, 20],
             color: '#FFF',
             text_color: 'black',
             abilities: [
@@ -154,6 +155,7 @@ module Engine
             tokens: [nil, nil, nil, nil, nil, nil],
             color: '#777',
             text_color: 'black',
+            shares: [20, 10, 10, 10, 10, 10, 10, 20],
             abilities: [
               {
                 type: 'train_buy',
