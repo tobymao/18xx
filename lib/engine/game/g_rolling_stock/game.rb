@@ -102,6 +102,8 @@ module Engine
           custom: 'Max stock price in phase 3 or 10 or end card flipped in phase 10',
         )
 
+        ALLOW_MULTIPLE_PROGRAMS = true
+
         STAR_COLORS = {
           #     main color text     card color standard color highlight text
           1 => ['#cd5c5c', 'white', '#f8ecec', :red,          'yellow'],
@@ -193,7 +195,7 @@ module Engine
         # enable conditiional auto-pass for everyone at the start
         def add_default_autopass
           @players.each do |player|
-            @programmed_actions[player] = Engine::Action::ProgramClosePass.new(
+            @programmed_actions[player] << Engine::Action::ProgramClosePass.new(
               player,
               unconditional: false,
             )
@@ -521,7 +523,7 @@ module Engine
           income += self.class::FOREIGN_EXTRA_INCOME if entity == @foreign_investor
           return income if entity.companies.empty?
 
-          income = entity.companies.sum { |c| company_income(c) }
+          income += entity.companies.sum { |c| company_income(c) }
           return income unless entity.corporation?
 
           income += synergy_income(entity)
@@ -680,13 +682,15 @@ module Engine
         end
 
         def disable_auto_close_pass
-          @programmed_actions.reject! do |entity, action|
-            next unless action.is_a?(Engine::Action::ProgramClosePass) &&
+          @programmed_actions.each do |entity, action_list|
+            action_list.reject! do |action|
+              next false unless action.is_a?(Engine::Action::ProgramClosePass) &&
                 !action.unconditional &&
                 any_negative_companies?(entity)
 
-            player_log(entity, "Programmed action '#{action}' removed due to negative company income")
-            true
+              player_log(entity, "Programmed action '#{action}' removed due to negative company income")
+              true
+            end
           end
         end
 
@@ -993,7 +997,7 @@ module Engine
         end
 
         def available_programmed_actions
-          [Action::ProgramClosePass]
+          [Action::ProgramSharePass, Action::ProgramClosePass]
         end
 
         def ipo_name(_corp)
@@ -1020,11 +1024,19 @@ module Engine
           result_players
             .sort_by { |p| [player_value(p), -@players.index(p)] }
             .reverse
-            .to_h { |p| [p.name, player_value(p)] }
+            .to_h { |p| [p.id, player_value(p)] }
         end
 
         def companies_sort(companies)
           companies.sort_by(&:value).reverse
+        end
+
+        def stock_round_name
+          'Investment Phase'
+        end
+
+        def force_unconditional_stock_pass?
+          true
         end
 
         def movement_chart(corporation)
@@ -1042,6 +1054,24 @@ module Engine
           chart <<  ["$0 - $#{(num * one_left) - 1}", "$#{two_left}"] if two_left
           chart << ['', ''] while chart.size < 5
           chart
+        end
+
+        def liquidity(player, emergency: false)
+          total = player.cash
+          player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, shares|
+            total += dump_cash(corporation, shares.size)
+          end
+          total
+        end
+
+        def dump_cash(corporation, num)
+          value = 0
+          price = corporation.share_price
+          num.times do
+            price = next_price_to_left(price)
+            value += price.price
+          end
+          value
         end
       end
     end

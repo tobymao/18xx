@@ -48,6 +48,11 @@ module Engine
         else
           raise GameError, "Invalid target #{target} for assigning company #{company.name}"
         end
+
+        return unless ability.count&.zero? && ability.closed_when_used_up
+
+        action.entity.close!
+        @log << "#{company.name} closes"
       end
 
       def assignable_corporations(company = nil)

@@ -47,6 +47,7 @@ module Engine
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 425, 6 => 375 }.freeze
         TILE_RESERVATION_BLOCKS_OTHERS = true
         TRACK_RESTRICTION = :permissive
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         # OR Constants
         FIRST_TURN_EXTRA_TILE_LAYS = [{ lay: true, upgrade: false }].freeze
@@ -354,6 +355,43 @@ module Engine
           minor.float!
           company_by_id(minor_id).close!
           @recently_floated << minor
+        end
+
+        # Train stuff
+        def info_on_trains(phase)
+          Array(phase[:on]).join(', ')
+        end
+
+        def give_spare_part_to_train(train)
+          raise GameError "Permanent train #{train.name} cannot get a spare part" unless train.rusts_on
+
+          train.name = train.name + SPARE_PART_CHAR
+        end
+
+        def obsolete?(train, purchased_train)
+          train.rusts_on == purchased_train.sym && train.name.include?(SPARE_PART_CHAR)
+        end
+
+        def rust?(train, purchased_train)
+          super && !train.name.include?(SPARE_PART_CHAR)
+        end
+
+        def remove_spare_part(train)
+          return unless train.name[-1] == SPARE_PART_CHAR
+
+          @log << "#{train.name} uses up a spare part"
+          train.name = train.name[0..-2]
+        end
+
+        def rust(train)
+          return if train.name[-1] == SPARE_PART_CHAR
+
+          if train.owner.corporation? && train.salvage
+            @bank.spend(train.salvage, train.owner)
+            @log << "#{train.owner.name} gets #{format_currency(train.salvage)} salvage for rusted #{train.name} train"
+          end
+
+          super
         end
       end
     end

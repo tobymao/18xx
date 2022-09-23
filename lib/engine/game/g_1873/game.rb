@@ -769,10 +769,10 @@ module Engine
           if (diff = r_cost - entity.cash).positive?
             @bank.spend(diff, entity)
             @log << "Bank pays #{format_currency(diff)} to #{entity.name}"
-            price = entity.share_price.price
-            if diff > price
-              [(diff / price).to_i, 3].min.times { @stock_market.move_up(entity) }
-              log_share_price(entity, price)
+            old_price = entity.share_price
+            if diff > old_price.price
+              [(diff / old_price.price).to_i, 3].min.times { @stock_market.move_up(entity) }
+              log_share_price(entity, old_price)
             end
           end
 
@@ -1458,7 +1458,7 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          old_price = corporation.share_price
 
           @share_pool.sell_shares(bundle, allow_president_change: pres_change_ok?(corporation), swap: swap)
           if corporation == @mhe
@@ -1474,7 +1474,7 @@ module Engine
             @stock_market.move_up(corporation)
             @stock_market.move_down(corporation)
           end
-          log_share_price(corporation, price)
+          log_share_price(corporation, old_price)
         end
 
         def pres_change_ok?(corporation)

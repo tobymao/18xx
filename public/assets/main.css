@@ -206,6 +206,10 @@ nav#game_menu {
   height: 1.8rem;
   width: 2.7rem;
 }
+#profile-stats tbody > tr:hover {
+  background-color: gainsboro;
+  color: black;
+}
 ::-webkit-color-swatch {
     background-color: inherit; /* fix iOS/macOS black color inputs */
 }

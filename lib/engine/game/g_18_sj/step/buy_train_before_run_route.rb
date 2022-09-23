@@ -55,7 +55,7 @@ module Engine
           end
 
           def ability(entity)
-            return if !@game.motala_verkstad || entity.minor? || @game.motala_verkstad.owner != entity
+            return if !@game.motala_verkstad || !entity || entity.minor? || @game.motala_verkstad.owner != entity
 
             @game.abilities(@game.motala_verkstad, :train_buy)
           end

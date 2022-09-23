@@ -362,6 +362,16 @@ module Engine
           interest_owed_for_loans(entity.loans.size) + (entity.companies.include?(loan_shark_private) ? 10 : 0)
         end
 
+        def log_interest_payment(entity, amount)
+          amount_fmt = format_currency(amount)
+          interest_sources = []
+          if (loans_due = loans_due_interest(entity)).positive?
+            interest_sources << "#{loans_due} loan#{loans_due > 1 ? 's' : ''}"
+          end
+          interest_sources << 'Loan Shark' if entity.companies.include?(loan_shark_private)
+          @log << "#{entity.name} pays #{amount_fmt} interest for #{interest_sources.join(' and ')}"
+        end
+
         def interest_change
           rate = future_interest_rate
           summary = []
@@ -687,13 +697,13 @@ module Engine
         def take_loan(entity, loan)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
 
-          price = entity.share_price.price
+          old_price = entity.share_price
           name = entity.name
           name += " (#{entity.owner.name})" if @round.is_a?(Engine::Round::Stock)
           @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
           @bank.spend(loan.amount, entity)
           loan_taken_stock_market_movement(entity)
-          log_share_price(entity, price)
+          log_share_price(entity, old_price)
           entity.loans << loan
           @loans.delete(loan)
         end
@@ -713,9 +723,9 @@ module Engine
           @loans << loan
           return unless adjust_share_price
 
-          price = entity.share_price.price
+          old_price = entity.share_price
           loan_payoff_stock_market_movement(entity)
-          log_share_price(entity, price)
+          log_share_price(entity, old_price)
         end
 
         def loan_payoff_stock_market_movement(entity)
@@ -880,30 +890,44 @@ module Engine
         end
 
         def loan_shark_private
+          return unless option_volatility_expansion?
+
           @loan_share_private ||= company_by_id('P12')
         end
 
         def ponzi_scheme_private
+          return unless option_volatility_expansion?
+
           @ponzi_scheme_private ||= company_by_id('P13')
         end
 
         def inventor_private
+          return unless option_volatility_expansion?
+
           @inventor_private ||= company_by_id('P14')
         end
 
         def express_track_private
+          return unless option_volatility_expansion?
+
           @express_track_private ||= company_by_id('P18')
         end
 
         def efficient_track_private
+          return unless option_volatility_expansion?
+
           @efficient_track_private ||= company_by_id('P19')
         end
 
         def golden_parachute_private
+          return unless option_volatility_expansion?
+
           @golden_parachute_private ||= company_by_id('P20')
         end
 
         def station_subsidy_private
+          return unless option_volatility_expansion?
+
           @station_subsidy_private ||= company_by_id('P21')
         end
 

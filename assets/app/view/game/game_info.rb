@@ -88,7 +88,7 @@ module View
           tr_props = @game.phase.available?(phase[:name]) && phase != current_phase ? @dimmed_font_style : {}
 
           h(:tr, tr_props, [
-            h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
+            h(:td, (current_phase == phase ? '→' : '') + phase[:name]),
             h(:td, @game.info_on_trains(phase)),
             h(:td, phase[:operating_rounds]),
             h(:td, train_limit_to_h(phase[:train_limit])),
@@ -169,7 +169,8 @@ module View
         rust_schedule, obsolete_schedule = rust_obsolete_schedule
 
         show_obsolete_schedule = !obsolete_schedule.keys.empty?
-        show_upgrade = @depot.upcoming.any?(&:discount)
+        show_upgrade = @depot.upcoming.any? { |train| train.variants.any? { |_k, v| v['discount'] } }
+        show_salvage = @depot.trains.any?(&:salvage)
         show_available = @depot.upcoming.any?(&:available_on)
         events = []
 
@@ -178,10 +179,23 @@ module View
         rows = @depot.trains.reject(&:reserved).group_by(&:sym).map do |sym, trains|
           remaining = @depot.upcoming.select { |t| t.sym == sym }
           train = trains.first
+          # standard discount for entire train group (all variants)
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
-            h('span.nowrap', "#{price_discounts.map(&:first).join(', ')} → #{@game.format_currency(price)}")
+            h('span.nowrap', "#{price_discounts.map(&:first).join(', ')}→#{@game.format_currency(price)}")
           end
           discounts = discounts.flat_map { |e| [e, ', '] }[0..-2] if discounts
+
+          unless discounts
+            # if no overall discount found, attempt to find discounts for specific variants inside the group
+            discounts = train.variants.select { |_k, v| v['discount'] }.map do |variant_sym, variant_discount_hash|
+              price_string = variant_discount_hash['discount'].group_by { |_k, v| v }&.map do |price, price_discounts|
+                "[#{variant_sym}] #{price_discounts.map(&:first).join(', ')} → #{@game.format_currency(price)}"
+              end
+              h('span.nowrap', price_string)
+            end
+            discounts = discounts.flat_map { |e| [e, '; '] }[0..-2] if discounts
+          end
+
           names_to_prices = train.names_to_prices
 
           event_text = []
@@ -201,7 +215,7 @@ module View
             end
           end
           event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
-          name = (@game.info_available_train(first_train, train) ? '→ ' : '') + @game.info_train_name(train)
+          name = (@game.info_available_train(first_train, train) ? '→' : '') + @game.info_train_name(train)
 
           train_content = [
             h(:td, name),
@@ -223,7 +237,7 @@ module View
 
             # needed for 18CZ where a train can be rusted by multiple different trains
             trains_to_rust = rust_schedule.select { |k, _v| k&.include?(key) }.values.flatten.join(', ')
-            rusts << "#{key} → #{trains_to_rust}"
+            rusts << "#{key}→#{trains_to_rust}"
             show_rusts_inline = false
           end
 
@@ -235,6 +249,7 @@ module View
                            end
 
           train_content << h(:td, discounts) if show_upgrade
+          train_content << h(:td, (train.salvage ? @game.format_currency(train.salvage) : '')) if show_salvage
           train_content << h(:td, train.available_on) if show_available
           train_content << h(:td, event_text) unless event_text.empty?
           tr_props = remaining.empty? ? @dimmed_font_style : {}
@@ -268,6 +283,7 @@ module View
         upcoming_train_header << h(:th, 'Phases out') if show_obsolete_schedule
         upcoming_train_header << h(:th, 'Rusts')
         upcoming_train_header << h(:th, 'Upgrade Discount') if show_upgrade
+        upcoming_train_header << h(:th, 'Salvage') if show_salvage
         if show_available
           upcoming_train_header << h(:th,
                                      { attrs: { title: 'Available after purchase of first train of type' } },

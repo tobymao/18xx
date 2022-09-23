@@ -34,9 +34,9 @@ module Engine
           def pass!
             if @round.issued.positive?
               # drop share price after all issuing is done
-              price = current_entity.share_price.price
+              old_price = current_entity.share_price
               @round.issued.times { @game.stock_market.move_left(current_entity) }
-              @game.log_share_price(current_entity, price)
+              @game.log_share_price(current_entity, old_price)
             end
 
             super

@@ -196,7 +196,7 @@ module View
             line_props[:style][:fontWeight] = 'bold'
             line_props[:style][:marginTop] = '0.5em'
 
-            sender = line.entity.name || line.user
+            sender = line.entity.name || 'Owner'
             line = "#{sender}: #{line.message}"
           end
 

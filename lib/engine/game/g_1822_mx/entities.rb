@@ -43,7 +43,7 @@ module Engine
             sym: 'P3',
             value: 0,
             revenue: 0,
-            desc: 'MAJOR/MINOR, Phase 1. Permanent 3/2-Train. It is a “special train.” Same as P2 except that it runs '\
+            desc: 'MAJOR/MINOR, Phase 1. Permanent 3/2-Train. It is a “special train.” '\
                   'It cannot be sold to another company. It does not count against the train limit. '\
                   'It does not count as a train for the purpose of mandatory train ownership and '\
                   'purchase. A company cannot own more than one special train. Dividends can '\

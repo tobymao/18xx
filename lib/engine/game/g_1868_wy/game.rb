@@ -5,7 +5,9 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'trains'
 require_relative 'step/buy_company'
+require_relative 'step/buy_sell_par_shares'
 require_relative 'step/buy_train'
+require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
 require_relative 'step/dividend'
 require_relative 'step/route'
@@ -37,6 +39,7 @@ module Engine
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
         HOME_TOKEN_TIMING = :par
+        NEXT_SR_PLAYER_ORDER = :first_to_pass
 
         TRACK_POINTS = 6
         YELLOW_POINT_COST = 2
@@ -77,6 +80,8 @@ module Engine
           'rust_coal_dt_4' => ['Remove Phase 4 Coal DTs', 'Remove Phase 4 Coal Development Tokens'],
           'rust_coal_dt_5' => ['Remove Phase 5 Coal DTs', 'Remove Phase 5 Coal Development Tokens'],
           'rust_coal_dt_6' => ['Remove Phase 6 Coal DTs', 'Remove Phase 6 Coal Development Tokens'],
+          'green_par' => ['Green Par Available', 'Railroads may now par at 90 or 100.'],
+          'brown_par' => ['Brown Par Available', 'Railroads may now par at 110 or 120.'],
         ).freeze
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'all_corps_available' => ['All Corporations Available',
@@ -137,6 +142,22 @@ module Engine
           @coal_companies = init_coal_companies
           @minors.concat(@coal_companies)
           update_cache(:minors)
+
+          @available_par_groups = %i[par]
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            G1868WY::Step::BuySellParShares,
+          ])
+        end
+
+        def init_stock_market
+          G1868WY::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def operating_round(round_num)
@@ -158,16 +179,12 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
-            Engine::Step::CompanyPendingPar,
+            G1868WY::Step::CompanyPendingPar,
             G1868WY::Step::WaterfallAuction,
           ])
         end
 
         def init_round_finished
-          p8_company.revenue = 0
-          p8_company.desc = 'Pays $40 revenue ONLY in green phases. Closes, '\
-                            'becomes LHP train at phase 5.'
-
           p9_company.close!
           @log << "#{p9_company.name} closes"
         end
@@ -184,6 +201,22 @@ module Engine
             corporation.capitalization = :full
             corporation.float_percent = 60
           end
+        end
+
+        def event_green_par!
+          @log << "-- Event: #{EVENTS_TEXT[:green_par][1]} --"
+          @available_par_groups << :par_1
+          update_cache(:share_prices)
+        end
+
+        def event_brown_par!
+          @log << "-- Event: #{EVENTS_TEXT[:brown_par][1]} --"
+          @available_par_groups << :par_2
+          update_cache(:share_prices)
+        end
+
+        def par_prices
+          @stock_market.share_prices_with_types(@available_par_groups)
         end
 
         def setup_event_methods
@@ -288,14 +321,6 @@ module Engine
               @log << 'Wind River Canyon turns gray; it can never be upgraded'
             end
           end
-        end
-
-        def isr_payout_companies(p10_bidders)
-          payout_companies
-          bidders = p10_bidders.map(&:name).sort
-          @log << "#{bidders.join(', ')} collect#{bidders.one? ? 's' : ''} $5 "\
-                  "for their bid#{bidders.one? ? '' : 's'} on #{p10_company.name}"
-          p10_bidders.each { |p| @bank.spend(5, p) }
         end
 
         def isr_company_choices
@@ -583,7 +608,7 @@ module Engine
             case @round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
-              reorder_players
+              reorder_players(:first_to_pass, log_player_order: true)
               new_operating_round
             when G1868WY::Round::Operating
               if @round.round_num < @operating_rounds
@@ -599,9 +624,13 @@ module Engine
               end
             when init_round.class
               init_round_finished
-              reorder_players
+              reorder_players(:most_cash, log_player_order: true)
               new_stock_round
             end
+        end
+
+        def player_value(player)
+          player.value - player.companies.sum(&:value)
         end
 
         def sellable_bundles(player, corporation)
@@ -615,6 +644,19 @@ module Engine
           end
 
           bundles
+        end
+
+        def after_par(corporation)
+          return unless corporation.id == 'LNP' || corporation.id == 'OSL'
+
+          hex = hex_by_id(corporation.coordinates)
+          old_tile = hex.tile
+          return if old_tile.color == :green || old_tile.color == :brown
+
+          green_tile = tile_by_id("G#{old_tile.label}-0")
+          update_tile_lists(green_tile, old_tile)
+          hex.lay(green_tile)
+          @log << "#{corporation.name} lays tile #{green_tile.name} on #{hex.id} (#{old_tile.location_name})"
         end
       end
     end

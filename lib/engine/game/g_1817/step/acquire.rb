@@ -291,11 +291,11 @@ module Engine
 
             # Step 7b, unpaid loans affect stock price and may mean a corporation falls into acquisition.
             if @unpaid_loans.positive?
-              price = @buyer.share_price.price
+              old_price = @buyer.share_price
               @unpaid_loans.times do
                 @game.loan_taken_stock_market_movement(@buyer)
               end
-              @game.log_share_price(@buyer, price)
+              @game.log_share_price(@buyer, old_price)
               if @buyer.share_price.acquisition? && @round.offering.include?(@buyer)
                 # Can no longer be offered this round
                 @log << "#{@buyer.name} falls into acquisition and will not be offered for sale this round"
@@ -415,7 +415,7 @@ module Engine
               10 # while technically the bank bids 0 this isn't done by a player.
             else
               # Needs rounding to 10
-              ((corporation.total_shares * corporation.share_price.price).to_f / 10).round * 10
+              ((corporation.total_shares * corporation.share_price.price).to_f / 10).ceil * 10
             end
           end
 
@@ -499,7 +499,8 @@ module Engine
           end
 
           def process_golden_parachute(target, buyer)
-            return if !target.companies.include?(@game.golden_parachute_private) || buyer&.owner == target.owner
+            return unless target.companies.include?(@game.golden_parachute_private)
+            return if buyer&.owner == target.owner || !target.owner.player?
 
             golden_parachute_value = 100
             @game.log << "#{target.owner.name} collects #{@game.format_currency(golden_parachute_value)} "\

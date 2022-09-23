@@ -51,17 +51,17 @@ module Engine
             return if is_discarded
 
             if !@round.any_train_brought && !old_train
-              prev = entity.share_price.price
+              old_price = entity.share_price
               @game.stock_market.move_right(entity)
-              @game.log_share_price(entity, prev, '(new-train bonus)')
+              @game.log_share_price(entity, old_price, '(new-train bonus)')
               @round.any_train_brought = true
             end
 
             return unless @game.first_train_of_new_phase
 
-            prev = entity.share_price.price
+            old_price = entity.share_price
             @game.stock_market.move_right(entity)
-            @game.log_share_price(entity, prev, '(new-phase bonus)')
+            @game.log_share_price(entity, old_price, '(new-phase bonus)')
             @game.first_train_of_new_phase = false
           end
 

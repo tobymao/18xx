@@ -53,17 +53,25 @@ module Engine
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
 
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
+          par_1: :red,
+          par: :peach,
+        ).freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+          par_1: 'Par (Majors and Minors, Phases 2-7)',
+          par: 'Par (Minors only. Phases 1-7)',
+        )
         MARKET = [
           ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '550', '600', '650', '700e'],
           ['', '', '', '', '', '', '', '', '', '', '', '', '', '330', '360', '400', '450', '500', '550', '600', '650'],
           ['', '', '', '', '', '', '', '', '', '200', '220', '245', '270', '300', '330', '360', '400', '450', '500',
            '550', '600'],
           %w[70 80 90 100 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450 500 550],
-          %w[60 70 80 90 100px 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450 500],
-          %w[50 60 70 80 90px 100 110 120 135 150 165 180 200 220 245 270 300 330],
-          %w[45y 50 60 70 80px 90 100 110 120 135 150 165 180 200 220 245],
-          %w[40y 45y 50 60 70px 80 90 100 110 120 135 150 165 180],
-          %w[35y 40y 45y 50 60px 70 80 90 100 110 120 135],
+          %w[60 70 80 90 100xp 110 120 135 150 165 180 200 220 245 270 300 330 360 400 450 500],
+          %w[50 60 70 80 90xp 100 110 120 135 150 165 180 200 220 245 270 300 330],
+          %w[45y 50 60 70 80xp 90 100 110 120 135 150 165 180 200 220 245],
+          %w[40y 45y 50 60 70xp 80 90 100 110 120 135 150 165 180],
+          %w[35y 40y 45y 50 60xp 70 80 90 100 110 120 135],
           %w[30y 35y 40y 45y 50p 60 70 80 90 100],
           %w[25y 30y 35y 40y 45y 50 60 70 80],
           %w[20y 25y 30y 35y 40y 45y 50y 60y],
@@ -685,7 +693,7 @@ module Engine
           discount_info
         end
 
-        def end_game!
+        def end_game!(player_initiated: false)
           finalize_end_game_values
           super
         end
@@ -801,12 +809,11 @@ module Engine
         end
 
         def num_certs(entity)
-          certs = super
+          super + num_certs_modification(entity)
+        end
 
-          # Tax haven does not count towards cert limit
-          company = entity.companies.find { |c| c.id == self.class::COMPANY_OSTH }
-          certs -= 1 if company
-          certs
+        def num_certs_modification(entity)
+          entity.companies.find { |c| c.id == self.class::COMPANY_OSTH } ? -1 : 0
         end
 
         def tile_lays(entity)
@@ -913,9 +920,14 @@ module Engine
         end
 
         def company_header(company)
-          return 'MINOR RAILWAY' if company.id[0] == self.class::COMPANY_MINOR_PREFIX
-
-          super
+          case company.id[0]
+          when self.class::COMPANY_MINOR_PREFIX
+            'MINOR RAILWAY'
+          when self.class::COMPANY_CONCESSION_PREFIX
+            'CONCESSION'
+          else
+            super
+          end
         end
 
         def must_buy_train?(entity)
@@ -1732,7 +1744,7 @@ module Engine
           train = @company_trains[company.id]
 
           unless can_gain_extra_train?(entity, train)
-            raise GameError, "Can't gain an extra #{train.name}, already have a permanent 2P or LP"
+            raise GameError, "Can't gain an extra #{train.name}, already have a permanent 2P, LP, or P+"
           end
 
           buy_train(entity, train, :free)
@@ -2002,6 +2014,19 @@ module Engine
             corporation = corporation_by_id(corp)
             corporation.add_ability(ability)
           end
+        end
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price, < 2x share price ', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Minor company dividend > 0', '1 →'],
+            ['Each share sold', '1 ↓'],
+            ['Corporation sold out at end of SR (including Tax Haven shares) ', '1 ↑'],
+          ]
         end
       end
     end

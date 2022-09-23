@@ -9,7 +9,7 @@ class Api
 
         # '/api/game/<game_id>/'
         r.is do
-          game_data = game.to_h(include_actions: true, player: user&.id)
+          game_data = game.to_h(include_actions: true, logged_in_user_id: user&.id)
 
           game_data
         end
@@ -75,8 +75,23 @@ class Api
                 game.acting = acting.map(&:id)
                 acting.delete(user)
 
+                if game.status != 'finished' && meta['game_status'] == 'finished'
+                  meta['finished_at'] = Time.now
+                  meta['manually_ended'] = true unless meta.key?('manually_ended')
+
+                  # If the game_result keys are not user ids, fix them up here
+                  if meta['game_result'].keys.any? { |key| key.to_i.to_s != key }
+                    meta['game_result'].transform_keys! { |name| game.players.find { |p| p.name == name }.id.to_s }
+                  end
+                else
+                  meta['finished_at'] = nil
+                  meta['manually_ended'] = nil
+                end
+
                 game.result = meta['game_result']
                 game.status = meta['game_status']
+                game.finished_at = meta['finished_at']
+                game.manually_ended = meta['manually_ended']
 
                 game.save
               else
@@ -85,7 +100,7 @@ class Api
 
                 r.params['user'] = user.id
 
-                engine = engine.process_action(r.params)
+                engine = engine.process_action(r.params, validate_auto_actions: true)
                 halt(500, "Illegal action: #{engine.exception}") if engine.exception
                 action = engine.raw_actions.last.to_h
 
@@ -169,6 +184,7 @@ class Api
           params = {
             user: user,
             description: r['description'],
+            min_players: r['min_players'],
             max_players: r['max_players'],
             settings: {
               seed: (r['seed'] || Random.new_seed) % (2**31),
@@ -203,9 +219,13 @@ class Api
 
     if engine.finished
       game.result = engine.result
+      game.finished_at = Time.now
+      game.manually_ended = engine.manually_ended
       game.status = 'finished'
     else
       game.result = {}
+      game.finished_at = nil
+      game.manually_ended = nil
       game.status = 'active'
     end
 

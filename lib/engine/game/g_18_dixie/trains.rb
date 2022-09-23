@@ -4,6 +4,7 @@ module Engine
   module Game
     module G18Dixie
       module Trains
+        SPARE_PART_CHAR = '⛭'
         TRAINS = [
           {
             name: '2M',
@@ -17,6 +18,7 @@ module Engine
             distance: [{ 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
                        { 'nodes' => %w[offboard city], 'pay' => 2, 'visit' => 2 }],
             price: 80,
+            salvage: 20,
             rusts_on: '4',
             num: 5,
           },
@@ -25,6 +27,7 @@ module Engine
             distance: [{ 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
                        { 'nodes' => %w[offboard city], 'pay' => 3, 'visit' => 3 }],
             price: 180,
+            salvage: 30,
             rusts_on: '6+1',
             num: 5,
           },
@@ -33,15 +36,17 @@ module Engine
             distance: [{ 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
                        { 'nodes' => %w[offboard city], 'pay' => 4, 'visit' => 4 }],
             price: 300,
+            salvage: 60,
             rusts_on: '7+3',
             num: 4,
           },
           {
-            name: '5',
+            name: '5⛭',
             distance: [{ 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
                        { 'nodes' => %w[offboard city], 'pay' => 5, 'visit' => 5 }],
             events: [{ 'type' => 'close_companies' }],
             price: 400,
+            salvage: 100,
             rusts_on: '5D',
             num: 4,
           },

@@ -2,11 +2,13 @@
 
 require 'lib/settings'
 require 'lib/truncate'
+require 'lib/profile_link'
 
 module View
   module Game
     class EntityList < Snabberb::Component
       include Lib::Settings
+      include Lib::ProfileLink
 
       needs :round
       needs :entities
@@ -65,10 +67,26 @@ module View
             children << h(:img, logo_props)
           end
 
-          owner = " (#{@game.acting_for_entity(entity).name.truncate})" if !entity.player? && entity.owner
-          owner = ' (CLOSED)' if entity.closed?
-          name = entity.company? ? entity.sym : entity.name
-          children << h(:span, "#{name}#{owner}")
+          name =
+            if entity.company?
+              entity.sym
+            elsif entity.player?
+              profile_link(entity.id, entity.name)
+            else
+              entity.name
+            end
+          acting_owner = @game.acting_for_entity(entity)
+          owner =
+            if entity.closed?
+              ' (CLOSED)'
+            elsif entity.player? || !entity.owner
+              ''
+            elsif acting_owner.player?
+              h(:span, [' (', profile_link(acting_owner.id, acting_owner.name.truncate), ')'])
+            else
+              " (#{acting_owner.name.truncate})"
+            end
+          children << h(:span, [name, owner])
 
           h(:li, entity_props, children)
         end

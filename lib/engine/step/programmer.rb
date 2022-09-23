@@ -6,12 +6,17 @@ module Engine
   module Step
     module Programmer
       def programmed_auto_actions(entity)
-        return unless (program = @game.programmed_actions[entity.player])
+        return if (p_list = @game.programmed_actions[entity.player]).empty?
 
-        method = "activate_#{program.type}"
-        return unless respond_to?(method)
+        a_list = []
+        p_list.each do |program|
+          method = "activate_#{program.type}"
+          next unless respond_to?(method)
 
-        send(method, entity, program)
+          new_actions = send(method, entity, program)
+          a_list.concat(new_actions) if new_actions
+        end
+        a_list
       end
     end
   end

@@ -1201,12 +1201,12 @@ module Engine
           repay_loan(corporation, corporation.loans.first) while corporation.cash >= @loan_value && !corporation.loans.empty?
 
           # Move once automatically
-          price = corporation.share_price.price
+          old_price = corporation.share_price
           stock_market.move_left(corporation)
 
           nationalization_loan_movement(corporation)
           nationalization_transfer_assets(corporation)
-          log_share_price(corporation, price)
+          log_share_price(corporation, old_price)
 
           # Payout players for shares
           per_share = corporation.share_price.price
@@ -1464,21 +1464,21 @@ module Engine
           @final_operating_rounds || super
         end
 
-        def add_neutral_tokens
+        def add_neutral_tokens(hexes)
           @green_tokens = []
           logo = '/logos/1867/neutral.svg'
-          @hexes.each do |hex|
+          hexes.each do |hex|
             case hex.id
             when 'D2'
-              token = Token.new(@national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
+              token = Token.new(national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
               hex.tile.cities.first.exchange_token(token)
               @green_tokens << token
             when 'L12'
-              token = Token.new(@national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
+              token = Token.new(national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
               hex.tile.cities.last.exchange_token(token)
               @green_tokens << token
             when 'F16'
-              hex.tile.cities.first.exchange_token(@national.tokens.first)
+              hex.tile.cities.first.exchange_token(national.tokens.first)
             end
           end
         end
@@ -1515,20 +1515,29 @@ module Engine
           @hidden_company = company_by_id('3')
 
           # CN corporation only exists to hold tokens
-          @national = @corporations.find { |c| c.type == :national }
+          @national = national
           @national.ipoed = true
           @national.shares.clear
           @national.shares_by_corporation[@national].clear
 
           @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
           @corporations.delete(@national)
-          add_neutral_tokens
 
           # Move green and majors out of the normal list
           @corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
           end
           @show_majors = false
+        end
+
+        def national
+          @national ||= @corporations.find { |c| c.type == :national }
+        end
+
+        def init_hexes(_companies, corporations)
+          hexes = super
+          add_neutral_tokens(hexes)
+          hexes
         end
 
         def event_green_minors_available!

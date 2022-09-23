@@ -7,6 +7,12 @@ module Engine
     module G21Moon
       module Step
         class CorporateBuySellShares < Engine::Step::BuySellParShares
+          def actions(entity)
+            return [] if entity.corporation? && entity.receivership?
+
+            super
+          end
+
           def redeemable_shares(_corp)
             []
           end
@@ -95,7 +101,7 @@ module Engine
             corp = action.entity
             bundle = action.bundle
             floated = corp.floated?
-            price = corp.share_price.price
+            old_price = corp.share_price
 
             @log << "#{corp.name} issues #{share_str(bundle)} of #{corp.name} to the market"\
                     " and receives #{@game.format_currency(bundle.price)}"
@@ -104,7 +110,7 @@ module Engine
                                              spender: @game.bank,
                                              receiver: corp)
             @game.stock_market.move_down(corp) if floated
-            @game.log_share_price(corp, price)
+            @game.log_share_price(corp, old_price)
             @game.float_corporation(corp) if corp.floatable && floated != corp.floated?
 
             track_action(action, corp)

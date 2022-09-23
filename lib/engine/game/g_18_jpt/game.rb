@@ -208,7 +208,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18JPT::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -263,12 +263,6 @@ module Engine
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Allow merging of two separate cities into one with two slots
           return to.name == '611' if from.hex.coordinates == 'F92' && from.color == :green
-
-          super
-        end
-
-        def upgrades_to_correct_label?(from, to)
-          return to.labels.empty? if from.label.to_s == 'KU' && from.color != :brown
 
           super
         end

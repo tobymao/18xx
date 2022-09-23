@@ -66,7 +66,7 @@ game config/code:
       be integer to indicate edge number, or an underscore followed by an
       integer to refer by index to a city/town/offboard/junction defined earlier
       on the tile
-    - **terminal** - `1` - indicates that path is part of a non-passthru path, typically for off-board cities. Tapered track will be drawn.
+    - **terminal** - `1` - indicates that path is part of a non-passthru path, typically for off-board cities. Tapered track will be drawn.  If a `2` is used instead, the tapered track will be drawn much shorter.
     - **ignore** - `1` - indicates that path should be ignored when node walk is trying to map available paths and hexes.
     - **a\_lane** - integer.integer - first integer specifies the lane width for the **a** path endpoint, the second integer specifies the lane index, or position within the lane. 0 is the most clockwise position.
     - **b\_lane** - integer.integer - first integer specifies the lane width for the **b** path endpoint, the second integer specifies the lane index, or position within the lane. 0 is the most clockwise position.

@@ -88,6 +88,10 @@ module Engine
             'Skip (Minor acquisition)'
           end
 
+          def token_replace_requires_choice?(entity)
+            entity.id == @game.class::MINOR_14_ID
+          end
+
           def acquire_bank_minor(entity, token_choice)
             # Transfer money from corporation to the bank
             entity.spend(@game.class::MINOR_BIDBOX_PRICE, @game.bank)
@@ -95,7 +99,7 @@ module Engine
             receiving = []
             case token_choice
             when 'replace'
-              if @selected_minor.id == @game.class::MINOR_14_ID
+              if token_replace_requires_choice?(@selected_minor)
                 @game.remove_exchange_token(entity)
                 token = Engine::Token.new(entity)
                 entity.tokens << token

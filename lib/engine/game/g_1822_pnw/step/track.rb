@@ -7,88 +7,60 @@ module Engine
     module G1822PNW
       module Step
         class Track < Engine::Game::G1822::Step::Track
-          def setup
-            if current_entity.id == 'NDEM'
-              @ndem = @game.corporation_by_id('NDEM')
-              @ndem_tiles_laid = []
-              @ndem_tile_layers = @game.players.select do |p|
-                @ndem.player_share_holders.include?(p) && @ndem.player_share_holders[p].positive?
-              end
-              if @ndem_tile_layers.length.positive?
-                @ndem_route_runner = @ndem_tile_layers[0]
-                @game.ndem_acting_player = @ndem_tile_layers[0]
-              else
-                @ndem_route_runner = @game.players[0]
-              end
-            end
-            super
-          end
-
-          def actions(entity)
-            return [] if @ndem && @ndem_tile_layers.empty?
+          def available_hex(entity, hex)
+            return nil if @game.tokencity?(hex) && (!get_tile_lay(entity) & [:upgrade])
+            return true if @game.can_hold_builder_cubes?(hex.tile) && @game.graph.connected_hexes(entity)[hex]
 
             super
-          end
-
-          def active?
-            return super unless @ndem
-
-            !@ndem_tile_layers.empty? || !acted
-          end
-
-          def pass!
-            if @ndem
-              @ndem_tiles_laid << @round.laid_hexes
-              @ndem_tile_layers.shift
-              if @ndem_tile_layers.empty?
-                @round.laid_hexes = @ndem_tiles_laid
-                @game.ndem_acting_player = @ndem_route_runner # Setup for route step
-                super
-              else
-                @round.num_laid_track = 0
-                @round.upgraded_track = false
-                @round.laid_hexes = []
-                @game.ndem_acting_player = @ndem_tile_layers[0]
-              end
-            else
-              super
-            end
-          end
-
-          def process_lay_tile(action)
-            @log << "Tile placement for NDEM by #{@game.ndem_acting_player.name}" if @ndem
-            action.tile.label = 'T' if action.hex.tile.label.to_s == 'T'
-            if action.tile.id == 'BC-0'
-              @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
-              action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
-              @round.num_laid_track += 1
-              @round.laid_hexes << action.hex
-            else
-              super
-              action.hex.tile.icons.reject! { |i| i.name == 'block' }
-            end
           end
 
           def potential_tiles(entity, hex)
             tiles = super
-            if @game.can_hold_builder_cubes?(hex.tile)
-              cube_tile = @game.tile_by_id('BC-0')
-              tiles << cube_tile
-            end
+            tiles << @game.cube_tile if @game.can_hold_builder_cubes?(hex.tile)
+            tiles << @game.tile_by_id('PNW5-0') if hex.tile.name == 'PNW4'
+            tiles = @game.tokencity_potential_tiles(hex, tiles) if @game.tokencity?(hex)
             tiles
           end
 
           def legal_tile_rotation?(entity, hex, tile)
             return true if hex.tile.name == tile.name && hex.tile.rotation == tile.rotation
-            return true if tile.id == 'BC-0'
+            return true if tile == @game.cube_tile
+            return true if @game.legal_city_and_town_tile(hex, tile)
 
             super
           end
 
-          def available_hex(entity, hex)
-            return hex_neighbors(entity, hex) if @game.can_hold_builder_cubes?(hex.tile)
+          def process_lay_tile(action)
+            raise GameError, 'Cannot place a tile or cube now' if @round.num_laid_portage.positive?
+
+            if action.tile == @game.cube_tile
+              tile_lay = get_tile_lay(action.entity)
+              raise GameError, 'Cannot lay a builder cube now' if !tile_lay || !tile_lay[:lay]
+
+              @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
+              action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
+              @round.num_laid_track += 1
+              @round.laid_hexes << action.hex
+            else
+              forest = @game.forest?(action.hex.tile)
+              super
+              action.hex.tile.icons.reject! { |i| i.name == 'block' }
+              action.hex.assign!('forest') if forest
+            end
+          end
+
+          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+            raise GameError, 'Cannot upgrade forests' if action.hex.assigned?('forest')
 
             super
+          end
+
+          def track_upgrade?(_from, _to, hex)
+            @game.tokencity?(hex) || super
+          end
+
+          def border_cost_discount(entity, spender, border, cost, hex)
+            hex == @game.seattle_hex ? 75 : super
           end
         end
       end

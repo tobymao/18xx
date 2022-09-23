@@ -52,7 +52,7 @@ module Engine
         true
       end
 
-      def buy_train_action(action, entity = nil)
+      def buy_train_action(action, entity = nil, borrow_from: nil)
         entity ||= action.entity
         train = action.train
         train.variant = action.variant
@@ -60,7 +60,8 @@ module Engine
         exchange = action.exchange
 
         # Check if the train is actually buyable in the current situation
-        raise GameError, 'Not a buyable train' unless buyable_train_variants(train, entity).include?(train.variant)
+        raise GameError, 'Not a buyable train' unless buyable_exchangeable_train_variants(train, entity,
+                                                                                          exchange).include?(train.variant)
         raise GameError, 'Must pay face value' if must_pay_face_value?(train, entity, price)
         raise GameError, 'An entity cannot buy a train from itself' if train.owner == entity
 
@@ -74,8 +75,18 @@ module Engine
           try_take_player_loan(entity.owner, remaining)
 
           player = entity.owner
-          player.spend(remaining, entity)
-          @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
+
+          if borrow_from && player.cash < remaining
+            current_cash = player.cash
+            extra_needed = remaining - current_cash
+            player.spend(current_cash, entity)
+            @log << "#{player.name} contributes #{@game.format_currency(current_cash)}"
+            borrow_from.spend(extra_needed, entity)
+            @log << "#{borrow_from.name} contributes #{@game.format_currency(extra_needed)}"
+          else
+            player.spend(remaining, entity)
+            @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
+          end
         end
 
         try_take_loan(entity, price)
@@ -163,9 +174,24 @@ module Engine
         depot_trains + other_trains
       end
 
+      def buyable_exchangeable_train_variants(train, entity, exchange)
+        exchange ? exchangeable_train_variants(train, entity) : buyable_train_variants(train, entity)
+      end
+
       def buyable_train_variants(train, entity)
         return [] unless buyable_trains(entity).any? { |bt| bt.variants[bt.name] }
 
+        train_vatiant_helper(train, entity)
+      end
+
+      def exchangeable_train_variants(train, entity)
+        discount_info = @game.discountable_trains_for(entity)
+        return [] unless discount_info.any? { |_, discount_train, _, _| discount_train.variants[discount_train.name] }
+
+        train_vatiant_helper(train, entity)
+      end
+
+      def train_vatiant_helper(train, entity)
         variants = train.variants.values
         return variants if train.owned_by_corporation?
 

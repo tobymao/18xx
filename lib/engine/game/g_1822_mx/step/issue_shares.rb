@@ -9,7 +9,7 @@ module Engine
         class IssueShares < Engine::Game::G1822::Step::IssueShares
           def process_sell_shares(action)
             @game.share_pool.sell_shares(action.bundle)
-            old_price = action.entity.share_price.price
+            old_price = action.entity.share_price
             action.bundle.shares.size.times { @game.stock_market.move_left(action.entity) }
             @game.log_share_price(action.entity, old_price)
             pass!

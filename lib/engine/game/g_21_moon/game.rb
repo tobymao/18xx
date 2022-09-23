@@ -476,7 +476,7 @@ module Engine
         def new_auction_round
           Engine::Round::Auction.new(self, [
           G21Moon::Step::OLSToken,
-          Engine::Step::WaterfallAuction,
+          G21Moon::Step::WaterfallAuction,
         ])
         end
 
@@ -575,7 +575,7 @@ module Engine
 
         def corporate_round_finished
           @corporations.select { |c| c.floated? && c.type != :minor }.sort.each do |corp|
-            prev = corp.share_price.price
+            old_price = corp.share_price
 
             @stock_market.move_up(corp) if sold_out?(corp) && sold_out_increase?(corp)
             if corp.operated?
@@ -591,7 +591,7 @@ module Engine
               price_drops.times { @stock_market.move_down(corp) }
             end
 
-            log_share_price(corp, prev)
+            log_share_price(corp, old_price)
           end
         end
 
@@ -889,7 +889,7 @@ module Engine
           player.shares.sum { |s| @end_bonuses[s.corporation].size * (s.percent / 10) * END_BONUS_VALUE }
         end
 
-        def end_game!
+        def end_game!(player_initiated: false)
           super
 
           if @end_bonuses.empty?
@@ -996,7 +996,7 @@ module Engine
           true
         end
 
-        def map_legend
+        def map_legend(font_color, yellow, green, brown, gray)
           [
             # table-wide props
             {
@@ -1009,42 +1009,57 @@ module Engine
             # header
             [
               { text: 'Tile Color:', props: { style: { border: '1px solid' } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: '#fde900' } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: '#71bf44' } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: '#cb7745' } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: '#bcbdc0' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: yellow.to_s } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: green.to_s } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: brown.to_s } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: gray.to_s } } },
             ],
             # body
             [
-              { text: 'Source-X', props: { style: { color: 'white', backgroundColor: 'black' } } },
+              {
+                text: 'Source-X',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'black' } },
+              },
               { text: '20', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '60', props: { style: { border: '1px solid' } } },
               { text: '80', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Helium-3', props: { style: { color: 'white', backgroundColor: 'red' } } },
+              {
+                text: 'Helium-3',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'red' } },
+              },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '50', props: { style: { border: '1px solid' } } },
               { text: '60', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Regolith', props: { style: { border: '1px solid', backgroundColor: 'orange' } } },
+              {
+                text: 'Regolith',
+                props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'orange' } },
+              },
               { text: '20', props: { style: { border: '1px solid' } } },
               { text: '20', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '50', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Armacolite', props: { style: { border: '1px solid', backgroundColor: 'yellow' } } },
+              {
+                text: 'Armacolite',
+                props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'yellow' } },
+              },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '20', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Magnetite', props: { style: { border: '1px solid' } } },
+              {
+                text: 'Magnetite',
+                props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'white' } },
+              },
               { text: '10', props: { style: { border: '1px solid' } } },
               { text: '10', props: { style: { border: '1px solid' } } },
               { text: '10', props: { style: { border: '1px solid' } } },
