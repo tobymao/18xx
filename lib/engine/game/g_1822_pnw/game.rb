@@ -608,12 +608,14 @@ module Engine
         def after_par(corporation)
           if corporation.type == :major
             minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == corporation.id }
-            @log << "Associated minor #{minor_id} closes"
-            minor_corporation = corporation_by_id(minor_id)
-            minor_city = hex_by_id(minor_corporation.coordinates).tile.cities.find { |c| c.reserved_by?(minor_corporation) }
-            minor_city.reservations.delete(minor_corporation)
-
-            company_by_id(company_id_from_corp_id(minor_id))&.close!
+            minor_company = company_by_id(company_id_from_corp_id(minor_id))
+            unless minor_company.closed?
+              @log << "Associated minor #{minor_id} closes"
+              minor_corporation = corporation_by_id(minor_id)
+              minor_city = hex_by_id(minor_corporation.coordinates).tile.cities.find { |c| c.reserved_by?(minor_corporation) }
+              minor_city.reservations.delete(minor_corporation)
+              minor_company.close!
+            end
           end
           super
         end
