@@ -57,6 +57,8 @@ module Engine
               { share_direction: :right, share_times: 1 }
             elsif !revenue.positive?
               { share_direction: :left, share_times: 1 }
+            else
+              {}
             end
           end
         end
