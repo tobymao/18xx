@@ -391,9 +391,10 @@ module Engine
             sym: 'P19',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Use this private to use a track '\
-                  'action to place the Rockport Coal special tile (PNW4) in '\
-                  'any mountain hex. Only the owning company can run a '\
+            desc: 'MAJOR/MINOR, Phase 3. Use this private to use a yellow track '\
+                  'placement to place the Rockport Coal special tile (PNW4) in '\
+                  'any mountain hex. The owning company must be able to trace to '\
+                  'the hex the mine is placed on. Only the owning company can run a '\
                   'train through the city spot on the Rockport Coal special tile '\
                   '(PNW4). Any company can pay the upgrade cost or use '\
                   'building cubes to upgrade the Rockport Coal Special tile '\
@@ -419,7 +420,7 @@ module Engine
             sym: 'P20',
             value: 0,
             revenue: 0,
-            desc: 'MAJOR/MINOR, Phase 2. When this private is '\
+            desc: 'MAJOR/MINOR, Phase 1. When this private is '\
                   'acquired by a non-associated minor company, choose an '\
                   'associated minor company that is currently not operational '\
                   'or in an auction box. That minor is removed from the game '\
@@ -529,7 +530,7 @@ module Engine
                   'Associated with the Seattle & Walla Walla Railroad (SWW). Starting location is H11.',
             abilities: [],
             color: '#238541',
-            text_color: 'black',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 9. Wenatchee Valley Railroad',
@@ -713,6 +714,12 @@ module Engine
             color: '#EF1D24',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for CPR',
+              },
+            ],
           },
           {
             sym: '2',
@@ -781,6 +788,12 @@ module Engine
             color: '#6BCFF7',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for GNR',
+              },
+            ],
           },
           {
             sym: '6',
@@ -815,6 +828,12 @@ module Engine
             color: '#F69B1D',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for CMPS',
+              },
+            ],
           },
           {
             sym: '8',
@@ -832,6 +851,12 @@ module Engine
             color: '#238541',
             text_color: '#black',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for SWW',
+              },
+            ],
           },
           {
             sym: '9',
@@ -985,6 +1010,12 @@ module Engine
             color: '#8D061B',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for SPS',
+              },
+            ],
           },
           {
             sym: '18',
@@ -1002,6 +1033,12 @@ module Engine
             color: '#3078C1',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for ORNC',
+              },
+            ],
           },
           {
             sym: '19',
@@ -1036,6 +1073,12 @@ module Engine
             color: '#221E20',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for NP',
+              },
+            ],
           },
           {
             sym: '21',
