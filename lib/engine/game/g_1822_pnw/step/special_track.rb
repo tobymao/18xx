@@ -33,7 +33,7 @@ module Engine
             return available_hex_portage_company(entity, hex) if @game.portage_company?(entity)
             return available_hex_boomtown_company(entity, hex) if @game.boomtown_company?(entity)
             return available_hex_coal_company(entity, hex) if @game.coal_company?(entity)
-            return nil if @game.tokencity?(hex) && !get_tile_lay(entity)[:upgrade]
+            return nil if @game.tokencity?(hex) && !get_tile_lay(entity)&.[](:upgrade)
 
             super
           end

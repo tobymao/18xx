@@ -763,6 +763,8 @@ module Engine
           if choice == 'exchange'
             @log << "#{company.owner.name} moves one token from exchange to available"
             move_exchange_token(company.owner)
+            @log << "#{company.name} closes"
+            company.close!
             return
           else
             choice_array = choice.split('_')
