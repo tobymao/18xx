@@ -56,7 +56,7 @@ module Engine
               corporation.floated? && !bought?
           end
 
-          def can_convert_any?
+          def can_convert_any?(_entity)
             @game.corporations.any? { |corporation| can_convert?(corporation) }
           end
 
@@ -64,11 +64,11 @@ module Engine
             @game.convert!(action.corporation)
           end
 
-          def can_exchange_any?
+          def can_exchange_any?(_entity)
             false # TODO: implement this
           end
 
-          def can_start_auction?
+          def can_start_auction?(_entity)
             false # TODO: implement this
           end
 
