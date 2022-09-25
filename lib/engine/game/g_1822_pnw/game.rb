@@ -577,6 +577,21 @@ module Engine
 
           # Setup all the destination tokens, icons and abilities
           setup_destinations
+
+          if @optional_rules&.include?(:four_less_ls)
+            remove_l_trains(4)
+          elsif @optional_rules&.include?(:three_less_ls)
+            remove_l_trains(3)
+          elsif @optional_rules&.include?(:two_less_ls)
+            remove_l_trains(2)
+          elsif @optional_rules&.include?(:one_less_l)
+            remove_l_trains(1)
+          end
+        end
+
+        def remove_l_trains(num_trains)
+          @log << "#{num_trains} L/2 train(s) have been discarded"
+          num_trains.times { @depot.remove_train(@depot.upcoming.first) }
         end
 
         def major_formation_status(major, player: nil)
