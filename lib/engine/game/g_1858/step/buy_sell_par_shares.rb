@@ -83,7 +83,7 @@ module Engine
             end
           end
 
-          def max_bid(player)
+          def max_bid(player, _company)
             return 0 unless @game.num_certs(player) < @game.cert_limit
 
             player.cash
