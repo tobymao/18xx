@@ -7,6 +7,9 @@ module Engine
     module G1858
       module Step
         class BuySellParShares < Engine::Step::BuySellParSharesViaBid
+          # Buy actions that will end a player's turn in the stock round.
+          PURCHASE_ACTIONS = [Action::Bid, Action::BuyShares, Action::Par].freeze
+
           def actions(entity)
             return [] unless entity == current_entity
             return %w[bid pass] if @auctioning
