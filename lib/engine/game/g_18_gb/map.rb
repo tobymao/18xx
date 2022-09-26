@@ -237,7 +237,7 @@ module Engine
           },
           'G35' =>
           {
-            'count' => 3,
+            'count' => 2,
             'color' => 'gray',
             'code' => 'city=revenue:30,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
                       'path=a:5,b:_0',
@@ -350,7 +350,7 @@ module Engine
           red: {
             ['a19'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
             ['a25'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;icon=image:18_gb/south;icon=image:18_gb/west',
-            ['C8'] => 'offboard=revenue:yellow_20|blue_20|gray_20;icon=image:18_gb/south;icon=image:18_gb/north',
+            ['C8'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/south;icon=image:18_gb/north',
             ['C10'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/west;icon=image:18_gb/east',
             ['C14'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
             ['C16'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:1,b:_0;path=a:5,b:_0;icon=image:18_gb/west',
@@ -426,7 +426,7 @@ module Engine
             ['H3'] => 'border=edge:2,type:mountain,cost:50;town=revenue:0',
           },
           red: {
-            ['C8'] => 'offboard=revenue:yellow_20|blue_20|gray_20;icon=image:18_gb/south;icon=image:18_gb/north',
+            ['C8'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/south;icon=image:18_gb/north',
             ['C10'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/west;icon=image:18_gb/east',
             ['D23'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['D25'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:4,b:_0;path=a:5,b:_0;' \
@@ -500,7 +500,7 @@ module Engine
           red: {
             ['a19'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
             ['a25'] => 'offboard=revenue:yellow_20|blue_40|gray_50;path=a:4,b:_0;icon=image:18_gb/south;icon=image:18_gb/west',
-            ['C8'] => 'offboard=revenue:yellow_20|blue_20|gray_20;icon=image:18_gb/south;icon=image:18_gb/north',
+            ['C8'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/south;icon=image:18_gb/north',
             ['C10'] => 'offboard=revenue:yellow_20|blue_30|gray_40;icon=image:18_gb/west;icon=image:18_gb/east',
             ['C14'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:5,b:_0;icon=image:18_gb/west',
             ['C16'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:1,b:_0;path=a:5,b:_0;icon=image:18_gb/west',

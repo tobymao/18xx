@@ -920,9 +920,14 @@ module Engine
         end
 
         def company_header(company)
-          return 'MINOR RAILWAY' if company.id[0] == self.class::COMPANY_MINOR_PREFIX
-
-          super
+          case company.id[0]
+          when self.class::COMPANY_MINOR_PREFIX
+            'MINOR RAILWAY'
+          when self.class::COMPANY_CONCESSION_PREFIX
+            'CONCESSION'
+          else
+            super
+          end
         end
 
         def must_buy_train?(entity)
@@ -1769,7 +1774,10 @@ module Engine
           end
         end
 
+        def check_destination_duplicate(entity, hex); end
+
         def place_destination_token(entity, hex, token)
+          check_destination_duplicate(entity, hex)
           city = hex.tile.cities.first
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }

@@ -15,8 +15,6 @@ module Engine
         include G1822PNW::Map
         include G1822PNW::BuilderCubes
 
-        attr_reader :hidden_coal_corp
-
         CERT_LIMIT = { 3 => 21, 4 => 15, 5 => 12 }.freeze
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
@@ -187,6 +185,12 @@ module Engine
           @minor_associations[new_minor_id] = @minor_associations.delete(old_minor_id)
         end
 
+        def second_icon(corporation)
+          return unless (major_id = major_name_for_associated_minor(corporation.id))
+
+          corporation_by_id(major_id)
+        end
+
         def timeline
           timeline = super
           pairs = @minor_associations.keys.map { |a| "#{a} → #{@minor_associations[a]}" }
@@ -228,6 +232,14 @@ module Engine
 
         def owns_coal_company?(entity)
           entity.companies.any? { |c| coal_company?(c) }
+        end
+
+        def coal_company_used
+          company_by_id('P19').revenue = 0
+        end
+
+        def coal_token
+          @coal_token ||= Engine::Token.new(nil, logo: '/icons/18_usa/mine.svg')
         end
 
         def backroom_company?(entity)
@@ -563,9 +575,6 @@ module Engine
           # Setup exchange token abilities for all corporations
           setup_exchange_tokens
 
-          # Setup hidden coal corporation for P18
-          @hidden_coal_corp = Corporation.new(sym: 'HC', name: 'Hidden Coal', logo: 'open_city', tokens: [0])
-
           # Setup all the destination tokens, icons and abilities
           setup_destinations
         end
@@ -596,13 +605,23 @@ module Engine
           'Convert from minor'
         end
 
-        def float_corporation(corporation)
+        def after_par(corporation)
           if corporation.type == :major
-            remove_home_icon(corporation, corporation.coordinates)
-            minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
-            @log << "Associated minor #{minor_id} closes"
-            company_by_id(company_id_from_corp_id(minor_id))&.close!
+            minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == corporation.id }
+            minor_company = company_by_id(company_id_from_corp_id(minor_id))
+            unless minor_company.closed?
+              @log << "Associated minor #{minor_id} closes"
+              minor_corporation = corporation_by_id(minor_id)
+              minor_city = hex_by_id(minor_corporation.coordinates).tile.cities.find { |c| c.reserved_by?(minor_corporation) }
+              minor_city.reservations.delete(minor_corporation)
+              minor_company.close!
+            end
           end
+          super
+        end
+
+        def float_corporation(corporation)
+          remove_home_icon(corporation, corporation.coordinates) if corporation.type == :major
           super
         end
 
@@ -744,6 +763,8 @@ module Engine
           if choice == 'exchange'
             @log << "#{company.owner.name} moves one token from exchange to available"
             move_exchange_token(company.owner)
+            @log << "#{company.name} closes"
+            company.close!
             return
           else
             choice_array = choice.split('_')
@@ -799,20 +820,23 @@ module Engine
           @p7_choice = nil
         end
 
+        def check_other(route)
+          raise NoToken, 'Route must contain token' unless route.visited_stops.any? do |stop|
+                                                             city_tokened_by?(stop, route.corporation) &&
+                                                               !stop.tokens.include?(coal_token)
+                                                           end
+        end
+
         def must_be_on_terrain?(_entity)
           false
         end
 
         def can_only_lay_plain_or_towns?(_entity)
           false
-          # Will be used for privates - not yet implemented in PNW
-          # entity.id == 'P8'
         end
 
         def can_upgrade_one_phase_ahead?(_entity)
           false
-          # Will be used for privates - not yet implemented in PNW
-          # entity.id == 'P8'
         end
 
         def company_ability_extra_track?(entity)
@@ -821,22 +845,6 @@ module Engine
 
         def choices_entities
           []
-        end
-
-        def check_connected(route, corporation)
-          return if route.ordered_paths.each_cons(2).all? do |a, b|
-            a.connects_to?(
-              b,
-              corporation
-            ) || ((corporation.companies.any? do |c|
-                     coal_company?(c)
-                   end) && a.connects_to?(
-                    b,
-                    hidden_coal_corp
-                  ))
-          end
-
-          raise GameError, 'Route is not connected'
         end
 
         def must_remove_town?(entity)
@@ -1057,6 +1065,14 @@ module Engine
           trains = transfer(:trains, from, to).map(&:name)
           receiving << "trains (#{trains})" unless trains.empty?
 
+          from.tokens.each do |token|
+            next unless token == coal_token
+
+            token.corporation = to
+            to.tokens << token
+            receiving << 'Mine token'
+          end
+
           log << "#{to.name} receives #{receiving.join(', ')} from #{from.name}" unless receiving.empty?
         end
 
@@ -1064,6 +1080,14 @@ module Engine
           minor.owner.shares_by_corporation.delete(minor)
           minor.close!
           corporations.delete(minor)
+        end
+
+        def check_destination_duplicate(entity, hex)
+          city = hex.tile.cities.first
+          return unless city.tokened_by?(entity)
+
+          @log << "#{entity.name} has an existing token on its destination #{hex.name} and will pick it up as an available token"
+          entity.tokens.find { |t| t.city == city }.remove!
         end
       end
     end

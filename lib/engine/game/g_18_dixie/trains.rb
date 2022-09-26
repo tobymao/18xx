@@ -4,6 +4,7 @@ module Engine
   module Game
     module G18Dixie
       module Trains
+        SPARE_PART_CHAR = '⛭'
         TRAINS = [
           {
             name: '2M',
@@ -40,7 +41,7 @@ module Engine
             num: 4,
           },
           {
-            name: '5',
+            name: '5⛭',
             distance: [{ 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
                        { 'nodes' => %w[offboard city], 'pay' => 5, 'visit' => 5 }],
             events: [{ 'type' => 'close_companies' }],
