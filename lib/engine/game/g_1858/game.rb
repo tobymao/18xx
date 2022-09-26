@@ -95,6 +95,17 @@ module Engine
           ], round_num: round_num)
         end
 
+        def purchase_company(player, company, price)
+          player.spend(price, @bank) unless price.zero?
+
+          player.companies << company
+          company.owner = player
+
+          # minor = @game.minors.find { |m| m.id == company.id }
+          # minor.owner = player
+          # minor.float!
+        end
+
         def home_token_locations(corporation)
           # When starting a public company after the start of phase 5 it can
           # choose any unoccupied city space for its first token.

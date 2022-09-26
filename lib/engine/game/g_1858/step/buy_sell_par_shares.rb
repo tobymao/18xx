@@ -92,15 +92,7 @@ module Engine
             price = winner.price
 
             @log << "#{player.name} wins bid on #{company.name} for #{@game.format_currency(price)}"
-            player.spend(price, @game.bank)
-
-            player.companies << company
-            company.owner = player
-
-            # minor = @game.minors.find { |m| m.id == company.id }
-            # minor.owner = player
-            # minor.float!
-
+            @game.purchase_company(player, company, price)
             @auctioning = nil
 
             # Player to the right of the person who started the auction is next to go.
