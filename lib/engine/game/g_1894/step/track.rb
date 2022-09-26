@@ -22,8 +22,8 @@ module Engine
 
             if tile.name == 'X7' || plm_in_city_0
               return true if tile.rotation == hex.tile.rotation
-            else
-              return true if tile.rotation == hex.tile.rotation + 3
+            elsif tile.rotation == hex.tile.rotation + 3
+              true
             end
           end
 
@@ -37,10 +37,10 @@ module Engine
               reservation = old_tile.cities.first.reservations.compact.first
               if reservation
                 old_tile.cities.first.remove_all_reservations!
-                old_tile.add_reservation!(reservation.corporation, nil, reserve_city=false)
+                old_tile.add_reservation!(reservation.corporation, nil, reserve_city: false)
               end
 
-              tokens =  old_tile.cities.flat_map(&:tokens).compact
+              tokens = old_tile.cities.flat_map(&:tokens).compact
               tokens_to_save = []
               tokens.each do |token|
                 token.price = 0
@@ -53,7 +53,7 @@ module Engine
               @game.save_tokens(tokens_to_save)
               @game.save_tokens_hex(hex)
 
-              tokens.each { |t| t.remove! }
+              tokens.each(&:remove!)
             end
             super
           end
@@ -65,20 +65,20 @@ module Engine
 
             if old_tile.name == @game.class::PARIS_HEX && old_tile.paths.empty?
               plm_token = tokens.find { |t| t.corporation.id == 'PLM' }
-              
+
               return unless plm_token
 
               plm_token.move!(cities.first)
               @game.graph.clear
-              
+
             elsif saved_tokens.any?
-              token = saved_tokens.find { |t| t[:entity] == entity}
+              token = saved_tokens.find { |t| t[:entity] == entity }
               return unless token
 
               @round.pending_tokens << {
                 entity: token[:entity],
                 hexes: token[:hexes],
-                token: token[:token]
+                token: token[:token],
               }
               @log << "#{entity.name} must choose city for token"
               saved_tokens.delete(token)

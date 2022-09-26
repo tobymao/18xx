@@ -48,7 +48,7 @@ module Engine
                           owner_type: 'corporation',
                           hexes: ['H17'],
                           tiles: %w[14 15 57 619],
-                          }],
+                        }],
             color: '#d9d9d9',
           },
           {
@@ -78,7 +78,7 @@ module Engine
             value: 100,
             desc: 'Revenue is equal to 70 if Saint-Quentin (G10) is green, to 100 if Saint-Quentin is brown and to 0 otherwise.'\
                   ' Closes in purple phase.',
-            abilities: [{ type: 'close', on_phase: 'Purple' },],
+            abilities: [{ type: 'close', on_phase: 'Purple' }],
             color: '#d9d9d9',
           },
           {

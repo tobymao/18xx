@@ -8,7 +8,6 @@ module Engine
       module Step
         class RedeemShares < Engine::Step::IssueShares
           def actions(entity)
-            puts @game.starting_corporation_ids
             return [] if @game.starting_corporation_ids.include?(entity.id)
 
             super
