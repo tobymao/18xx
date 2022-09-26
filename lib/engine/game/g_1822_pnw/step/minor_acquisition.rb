@@ -10,7 +10,18 @@ module Engine
           include Engine::Game::G1822PNW::Connections
 
           def potentially_mergeable(entity)
-            super + @game.regionals.select { |r| @game.regional_payout_count(r) > 1 } - @game.associated_minors
+            super.reject { |c| @game.associated_minor?(c) } + @game.regionals.select { |r| @game.regional_payout_count(r) > 1 }
+          end
+
+          def extra_transfers(minor, entity)
+            minor.tokens.each do |token|
+              next unless token == @game.coal_token
+
+              token.corporation = entity
+              entity.tokens << token
+              minor.tokens.delete(token)
+              return 'Mine token'
+            end
           end
         end
       end

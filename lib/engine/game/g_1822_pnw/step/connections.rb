@@ -6,7 +6,7 @@ module Engine
       module Connections
         def connected_to_port?(entity)
           @port_hexes ||= %w[E8 D9].map { |id| @game.hex_by_id(id) }
-          !(@game.graph.reachable_hexes(entity).keys & @port_hexes).empty?
+          !(@game.graph.connected_hexes(entity).keys & @port_hexes).empty?
         end
 
         def entity_connects?(entity, minor)

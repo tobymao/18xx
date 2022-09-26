@@ -189,6 +189,7 @@ module Engine
             @game.close_corporation(minor)
 
             # Remove the proxy company for the minor
+            company.close!
             @game.companies.delete(company)
           end
 

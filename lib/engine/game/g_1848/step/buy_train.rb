@@ -53,7 +53,6 @@ module Engine
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
             trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
             trains_to_buy << ghan_train if can_buy_2e?(entity)
-            trains_to_buy += @depot.depot_trains.reject { |t| t.name == '2E' }
             trains_to_buy.uniq
           end
 
@@ -99,8 +98,13 @@ module Engine
             false
           end
 
-          def must_take_loan?(_entity)
-            true
+          def must_take_loan?(corporation)
+            price = cheapest_train_price(corporation)
+            @game.buying_power(corporation) < price
+          end
+
+          def cheapest_train_price(corporation)
+            buyable_trains(corporation).reject { |t| t.name == '2E' }.min_by(&:price).price
           end
 
           def round_state
@@ -127,6 +131,10 @@ module Engine
 
           def president_may_contribute?
             false
+          end
+
+          def pass_if_cannot_buy_train?(entity)
+            !must_buy_train?(entity)
           end
         end
       end
