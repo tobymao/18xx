@@ -89,7 +89,7 @@ module Engine
             G1858::Step::Token,
             Engine::Step::Route,
             G1858::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G1858::Step::DiscardTrain,
             G1858::Step::BuyTrain,
             G1858::Step::IssueShares,
           ], round_num: round_num)
