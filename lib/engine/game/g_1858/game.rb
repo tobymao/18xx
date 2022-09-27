@@ -247,9 +247,11 @@ module Engine
 
           @log << "#{corporation.name} converts to a 10-share company"
           corporation.type = :large
+          corporation.float_percent = 20
 
           shares = @_shares.values.select { |share| share.corporation == corporation }
           shares.each { |share| share.percent /= 2 }
+          corporation.share_holders.transform_values! { |percent| percent / 2 }
 
           new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
           new_shares.each do |share|
