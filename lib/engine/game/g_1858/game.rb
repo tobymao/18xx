@@ -216,7 +216,7 @@ module Engine
 
         def event_corporations_convert!
           @log << '-- Event: All 5-share public companies must convert to 10-share companies --'
-          # TODO: implement this
+          @corporations.select { |c| c.type == :medium }.each { |c| convert!(c) }
         end
 
         def event_privates_close!
