@@ -136,8 +136,8 @@ module Engine
           },
           blue: {
             %w[B7] => 'junction;path=a:3,b:_0,terminal:1',
-            %w[D9] => 'junction;path=a:4,b:_0,terminal:1',
-            %w[E8] => 'junction;path=a:5,b:_0,terminal:1',
+            %w[D9] => 'junction;path=a:4,b:_0,terminal:1;path=a:0,b:4,track:thin',
+            %w[E8] => 'junction;path=a:5,b:_0,terminal:1;path=a:3,b:5,track:thin',
             %w[E10] => 'junction;path=a:0,b:_0,terminal:2;path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2',
             %w[F11] => 'junction;path=a:1,b:_0,terminal:2;path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2;'\
                        'path=a:5,b:_0,terminal:2',
