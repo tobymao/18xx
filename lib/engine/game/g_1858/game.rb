@@ -43,6 +43,28 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
 
+        def init_optional_rules(optional_rules)
+          rules = super
+
+          # The alternate set of private packets can only be used with the
+          # quick start variant.
+          rules -= [:set_b] unless rules.include?(:quick_start)
+
+          rules
+        end
+
+        def option_quick_start?
+          optional_rules.include?(:quick_start)
+        end
+
+        def option_quick_start_packets
+          if optional_rules.include?(:set_b)
+            QUICK_START_PACKETS_B
+          else
+            QUICK_START_PACKETS_A
+          end
+        end
+
         def setup
           # We need three different graphs for tracing routes for entities:
           #  - @graph_broad traces routes along broad and dual gauge track.
@@ -59,6 +81,8 @@ module Engine
 
           # Setup private companies for auction
           @companies.each { |company| company.owner = @bank }
+
+          quick_start if option_quick_start?
         end
 
         def clear_graph_for_entity(_entity)
