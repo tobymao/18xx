@@ -156,6 +156,15 @@ module Engine
             @game.graph_broad.reachable_hexes(entity)[hex] \
               || @game.graph_metre.reachable_hexes(entity)[hex]
           end
+
+          def check_connected(entity, city, hex)
+            return if @game.loading \
+              || @game.graph_broad.connected_nodes(entity)[city] \
+              || @game.graph_metre.connected_nodes(entity)[city]
+
+            city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
+            raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
+          end
         end
       end
     end
