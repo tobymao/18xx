@@ -137,15 +137,15 @@ module Engine
           }.freeze
           # rubocop: enable Layout/HashAlignment, Layout/MultilineHashKeyLineBreaks
 
-          def adjust_token_price_ability!(entity, token, hex, _city, _special_ability)
-            # 1858 has no special abilities to do with tokens.
-            # (Ab)use this method to calculate the token cost from the number of
-            # provincial borders crossed between an existing token and the new one.
-            return [token, nil] unless entity.corporation?
+          def token_cost_override(entity, city, _slot, token)
+            return unless entity.corporation?
 
-            borders = entity.placed_tokens.map { |used_token| borders_crossed(hex, used_token.city.hex) }.min
+            # Calculate the token cost from the number of provincial borders
+            # crossed between an existing token and the new one.
+            borders = entity.placed_tokens.map do |used_token|
+              borders_crossed(city.hex, used_token.city.hex)
+            end.min
             token.price = [20, 40 * borders].max
-            [token, nil]
           end
 
           def borders_crossed(hex1, hex2)
