@@ -58,6 +58,11 @@ module Engine
              400 450 500 550 600e],
         ].freeze
 
+        def reduced_bundle_price_for_market_drop(bundle)
+          bundle.share_price = @stock_market.find_share_price(bundle.corporation, [:left] * bundle.num_shares).price
+          bundle
+        end
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -472,7 +477,7 @@ module Engine
             G1822PNW::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
-            G1822::Step::IssueShares,
+            G1822PNW::Step::IssueShares,
           ], round_num: round_num)
         end
 
