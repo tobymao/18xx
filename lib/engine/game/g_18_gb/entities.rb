@@ -65,12 +65,13 @@ module Engine
             name: 'Great Northern',
             value: 70,
             revenue: 25,
-            desc: 'The GN allows a corporation to lay a Station Marker in York (I14). A space is reserved for the GN until '\
-                  'the blue phase, otherwise an empty space must be available in York. The GN owner may use this ability ' \
-                  'once per game, after the GN has closed, for any corporation which they control. The station is free if ' \
-                  'the corporation can trace a route to York, otherwise it costs £50. After laying the marker, the ' \
-                  'corporation also gains the ability to lay a green tile in York as one of its standard tile actions, ' \
-                  'instead of the usual yellow tile, even before green tiles are normally available.',
+            desc: 'The GN allows a corporation to lay an additional Station Marker in York (I14). A space is reserved for ' \
+                  'the GN until the blue phase, otherwise an empty space must be available in York. The GN owner may use ' \
+                  'this ability once per game, after the GN has closed, for any corporation which they control. The station ' \
+                  'is free if the corporation can trace a route to York, otherwise it costs £50. The marker is in addition to ' \
+                  'the standard station markers of the corporation. After laying the marker, the corporation also gains the ' \
+                  'ability to lay a green tile in York as one of its standard tile actions, instead of the usual yellow tile, ' \
+                  'even before green tiles are normally available.',
             sym: 'GN',
             color: nil,
             abilities: [
@@ -236,12 +237,13 @@ module Engine
             name: 'Maryport & Carlisle',
             value: 50,
             revenue: 20,
-            desc: 'The MC allows a corporation to lay a Station Marker in Carlisle (H9). A space is reserved for the MC ' \
-                  'until the blue phase, otherwise an empty space must be available in Carlisle. The MC owner may use this ' \
-                  'ability once per game, after the MC has closed, for any corporation which they control. The station is ' \
-                  'free if the corporation can trace a route to Carlisle, otherwise it costs £50.  After laying the marker, ' \
-                  'the corporation also gains the ability to lay a green tile in Carlisle as one of its standard tile ' \
-                  'actions, instead of the usual yellow tile, even before green tiles are normally available.',
+            desc: 'The MC allows a corporation to lay an additional Station Marker in Carlisle (H9). A space is reserved for ' \
+                  'the MC until the blue phase, otherwise an empty space must be available in Carlisle. The MC owner may use ' \
+                  'this ability once per game, after the MC has closed, for any corporation which they control. The station ' \
+                  'is free if the corporation can trace a route to Carlisle, otherwise it costs £50.  The marker is in ' \
+                  'addition to the standard station markers of the corporation. After laying the marker, the corporation also ' \
+                  'gains the ability to lay a green tile in Carlisle as one of its standard tile actions, instead of the ' \
+                  'usual yellow tile, even before green tiles are normally available.',
             sym: 'MC',
             color: nil,
             abilities: [
