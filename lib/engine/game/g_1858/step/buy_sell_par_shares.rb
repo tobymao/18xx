@@ -26,7 +26,7 @@ module Engine
             # Buy actions
             actions << 'buy_shares' if can_buy_any?(entity)
             actions << 'par' if can_ipo_any?(entity)
-            actions << 'bid' if can_bid?(entity) # can_start_auction?(entity)
+            actions << 'bid' if can_bid_any?(entity)
 
             actions << 'pass' unless actions.empty?
 
@@ -102,13 +102,17 @@ module Engine
             @round.next_entity_index!
           end
 
-          def can_bid?(_player)
-            !bought?
-            # FIXME: check that there is a company that the player can afford to bid on
-          end
-
           def auctionable_companies
             @game.buyable_bank_owned_companies
+          end
+
+          def can_bid_any?(_player)
+            # auctionable_companies.any? { |company| can_bid_company?(player, company) }
+            # FIXME: this test determines if the player can afford to bid on any companies.
+            # But the game breaks with this in the quick start mode, it can't handle being
+            # thrown straight into a stock round with no possible actions. Setting the initial
+            # round to a operating round does not work either.
+            true
           end
 
           def can_bid_company?(player, company)
