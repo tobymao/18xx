@@ -313,7 +313,7 @@ module Engine
             ],
           },
           {
-            sym: 'B&C',
+            sym: 'B&CR',
             name: 'Badajoz and Ciudad Real Railway',
             value: 65,
             discount: 15,
@@ -385,10 +385,10 @@ module Engine
           3 => [
             { companies: ['M&A', 'V&J', 'M&C', 'B&M', 'R&T', 'H&G'], cost: 500 },
             { companies: ['M&V', 'A&S', 'C&B', 'P&L', 'L&C'], cost: 475 },
-            { companies: ['C&S', 'C&M', 'SJ&C', 'B&C', 'M&Z', 'Z&P'], cost: 500 },
+            { companies: ['C&S', 'C&M', 'SJ&C', 'B&CR', 'M&Z', 'Z&P'], cost: 500 },
           ],
           4 => [
-            { companies: ['M&A', 'V&J', 'M&C', 'B&C'], cost: 360 },
+            { companies: ['M&A', 'V&J', 'M&C', 'B&CR'], cost: 360 },
             { companies: ['B&M', 'R&T', 'M&Z', 'Z&P'], cost: 350 },
             { companies: ['M&V', 'A&S', 'C&B', 'L&C'], cost: 365 },
             { companies: ['C&S', 'C&M', 'SJ&C', 'P&L'], cost: 370 },
@@ -398,13 +398,13 @@ module Engine
             { companies: ['B&M', 'R&T', 'M&Z'], cost: 270 },
             { companies: ['M&V', 'A&S', 'C&B'], cost: 275 },
             { companies: ['C&S', 'C&M', 'SJ&C'], cost: 260 },
-            { companies: ['P&L', 'L&C', 'B&C', 'H&G'], cost: 295 },
+            { companies: ['P&L', 'L&C', 'B&CR', 'H&G'], cost: 295 },
           ],
           6 => [
             { companies: ['M&A', 'M&Z'], cost: 220 },
             { companies: ['B&M', 'R&T', 'C&B'], cost: 250 },
             { companies: ['M&V', 'A&S'], cost: 200 },
-            { companies: ['C&S', 'B&C', 'SJ&C'], cost: 240 },
+            { companies: ['C&S', 'B&CR', 'SJ&C'], cost: 240 },
             { companies: ['P&L', 'L&C', 'H&G'], cost: 230 },
             { companies: ['V&J', 'M&C', 'Z&P'], cost: 250 },
           ],
@@ -412,7 +412,7 @@ module Engine
 
         QUICK_START_PACKETS_B = QUICK_START_PACKETS_A.merge({
           4 => [
-            { companies: ['M&A', 'V&J', 'M&C', 'B&C'], cost: 360 },
+            { companies: ['M&A', 'V&J', 'M&C', 'B&CR'], cost: 360 },
             { companies: ['B&M', 'R&T', 'P&L', 'L&C'], cost: 375 },
             { companies: ['M&V', 'A&S', 'C&B', 'Z&P'], cost: 355 },
             { companies: ['C&S', 'C&M', 'SJ&C', 'M&Z'], cost: 355 },
