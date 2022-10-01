@@ -2957,6 +2957,8 @@ module Engine
       def force_unconditional_stock_pass?
         false
       end
+
+      def second_icon(corporation); end
     end
   end
 end

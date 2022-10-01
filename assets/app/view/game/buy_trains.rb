@@ -91,7 +91,7 @@ module View
 
           if @game.class::ALLOW_TRAIN_BUY_FROM_OTHERS
             text += "#{@corporation.name} must buy a "\
-                    'train from another corporation, or'
+                    'train from another corporation, or '
           end
 
           text += "#{player.name} must " \
