@@ -11,6 +11,6 @@ module StubsAreRestricted
   end
 
   def legal_if_stubbed?(hex, tile)
-    hex.tile.stubs.empty? || tile.exits.include?(hex.tile.stubs.first.edge)
+    hex.tile.stubs.empty? || (hex.tile.stubs.map(&:edge) - tile.exits).empty?
   end
 end
