@@ -6,6 +6,7 @@ require_relative 'entities'
 require_relative 'market'
 require_relative 'trains'
 require_relative '../base'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -16,6 +17,7 @@ module Engine
         include G1858::Entities
         include G1858::Market
         include G1858::Trains
+        include StubsAreRestricted
 
         attr_reader :graph_broad, :graph_metre
 
