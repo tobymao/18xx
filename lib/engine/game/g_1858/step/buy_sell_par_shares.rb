@@ -79,7 +79,7 @@ module Engine
             if @auctioning
               highest_bid(company).price + min_increment
             else
-              company.value - company.discount
+              company.min_bid
             end
           end
 
