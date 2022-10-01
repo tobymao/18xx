@@ -67,6 +67,11 @@ module Engine
           end
         end
 
+        def setup_preround
+          # Companies need to be owned by the bank to be available for auction
+          @companies.each { |company| company.owner = @bank }
+        end
+
         def setup
           # We need three different graphs for tracing routes for entities:
           #  - @graph_broad traces routes along broad and dual gauge track.
@@ -80,11 +85,6 @@ module Engine
           # The rusting event for 6H/4M trains is triggered by the sale of the
           # fifth phase 7 train, so track the number of these sold.
           @phase7_trains_bought = 0
-
-          # Setup private companies for auction
-          @companies.each { |company| company.owner = @bank }
-
-          quick_start if option_quick_start?
         end
 
         def clear_graph_for_entity(_entity)
@@ -94,6 +94,8 @@ module Engine
         end
 
         def init_round
+          quick_start if option_quick_start?
+
           # FIXME: the initial stock round isn't *quite* a normal stock round,
           # you cannot start public companies in the first stock round.
           stock_round

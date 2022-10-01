@@ -5,9 +5,6 @@ module Engine
     module G1858
       module Tiles
         TILE_TYPE = :lawson
-        FIRST_OR_MINOR_TILE_LAYS = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
-        MINOR_TILE_LAYS = [{ lay: true, upgrade: false }].freeze
-        TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
         TILES = {
           '1' => 'unlimited',
