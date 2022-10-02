@@ -250,12 +250,6 @@ module Engine
           str
         end
 
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
-        end
-
         def tile_lays(entity)
           # Enable double tile lay for TR after ability activation
           return self.class::DOUBLE_TILE_LAYS if ABILITY_DOUBLE_TILE_LAY.owner == entity

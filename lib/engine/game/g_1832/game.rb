@@ -263,12 +263,6 @@ module Engine
           true
         end
 
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
-        end
-
         def revenue_for(route, stops)
           revenue = super
 

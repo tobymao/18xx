@@ -1988,7 +1988,13 @@ module Engine
 
       def progress_information; end
 
-      def assignment_tokens(assignment)
+      def assignment_tokens(assignment, simple_logos = false)
+        if assignment.is_a?(Engine::Corporation)
+          return assignment.simple_logo if simple_logos && assignment.simple_logo
+
+          return assignment.logo
+        end
+
         self.class::ASSIGNMENT_TOKENS[assignment]
       end
 
