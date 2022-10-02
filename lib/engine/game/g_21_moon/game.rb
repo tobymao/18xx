@@ -689,7 +689,7 @@ module Engine
         end
 
         def player_sort(entities)
-          entities.reject(&:minor?).sort_by(&:name).group_by(&:owner)
+          super(entities.reject(&:minor?))
         end
 
         def lb_trains(corporation)
