@@ -58,6 +58,11 @@ module Engine
              400 450 500 550 600e],
         ].freeze
 
+        def reduced_bundle_price_for_market_drop(bundle)
+          bundle.share_price = @stock_market.find_share_price(bundle.corporation, [:left] * bundle.num_shares).price
+          bundle
+        end
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -472,7 +477,7 @@ module Engine
             G1822PNW::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
-            G1822::Step::IssueShares,
+            G1822PNW::Step::IssueShares,
           ], round_num: round_num)
         end
 
@@ -1103,6 +1108,11 @@ module Engine
 
           @log << "#{entity.name} has an existing token on its destination #{hex.name} and will pick it up as an available token"
           entity.tokens.find { |t| t.city == city }.remove!
+        end
+
+        def after_lay_tile(hex, old_tile, tile)
+          hex.neighbors[1].tile.borders.shift if hex.id == 'H13' && tile.exits.include?(1)
+          super
         end
       end
     end
