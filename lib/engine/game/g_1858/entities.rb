@@ -128,6 +128,8 @@ module Engine
             discount: 0,
             revenue: 10,
             color: :yellow,
+            text_color: :black,
+            coordinates: [],
             abilities: [
               { type: 'no_buy' },
             ],
@@ -139,6 +141,9 @@ module Engine
             discount: 25,
             revenue: 23,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/BM',
+            coordinates: %w[O8],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 35, on_phase: '3' },
@@ -151,6 +156,9 @@ module Engine
             discount: 25,
             revenue: 25,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/MA',
+            coordinates: %w[H13 H15],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 38, on_phase: '3' },
@@ -163,6 +171,9 @@ module Engine
             discount: 20,
             revenue: 22,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/PL',
+            coordinates: %w[B9 B11],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 33, on_phase: '3' },
@@ -175,6 +186,9 @@ module Engine
             discount: 20,
             revenue: 20,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/VJ',
+            coordinates: %w[L13],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -187,6 +201,9 @@ module Engine
             discount: 10,
             revenue: 12,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/RT',
+            coordinates: %w[N9],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 18, on_phase: '3' },
@@ -199,6 +216,9 @@ module Engine
             discount: 20,
             revenue: 18,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/LC',
+            coordinates: %w[A14 B13],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 27, on_phase: '3' },
@@ -211,6 +231,9 @@ module Engine
             discount: 25,
             revenue: 24,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/MV',
+            coordinates: %w[G8 G10 H11],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 36, on_phase: '3' },
@@ -223,6 +246,9 @@ module Engine
             discount: 20,
             revenue: 19,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/MZ',
+            coordinates: %w[I10 J9 K8 L7],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 29, on_phase: '3' },
@@ -235,6 +261,9 @@ module Engine
             discount: 20,
             revenue: 21,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/CS',
+            coordinates: %w[E18 F17 G18],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 32, on_phase: '3' },
@@ -247,6 +276,9 @@ module Engine
             discount: 15,
             revenue: 14,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/SJC',
+            coordinates: %w[E18 E20],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 21, on_phase: '3' },
@@ -259,6 +291,9 @@ module Engine
             discount: 15,
             revenue: 16,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/ZP',
+            coordinates: %w[K4 K6 L7],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 24, on_phase: '3' },
@@ -271,6 +306,9 @@ module Engine
             discount: 15,
             revenue: 15,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/CB',
+            coordinates: %w[I2],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 23, on_phase: '3' },
@@ -283,6 +321,9 @@ module Engine
             discount: 15,
             revenue: 17,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/CM',
+            coordinates: %w[G18 G20],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 26, on_phase: '3' },
@@ -295,6 +336,9 @@ module Engine
             discount: 15,
             revenue: 14,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/MC',
+            coordinates: %w[K18],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 21, on_phase: '3' },
@@ -307,6 +351,9 @@ module Engine
             discount: 15,
             revenue: 16,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/AS',
+            coordinates: %w[G4 H3],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 24, on_phase: '3' },
@@ -319,6 +366,9 @@ module Engine
             discount: 15,
             revenue: 13,
             color: :yellow,
+            text_color: :black,
+            logo: '1858/BCR',
+            coordinates: %w[D15 E14 F15],
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 20, on_phase: '3' },
@@ -331,6 +381,9 @@ module Engine
             discount: 0,
             revenue: 30,
             color: :green,
+            text_color: :black,
+            logo: '1858/SC',
+            coordinates: %w[C2 C4],
             abilities: [
               { type: 'no_buy' },
             ],
@@ -342,6 +395,9 @@ module Engine
             discount: 0,
             revenue: 27,
             color: :green,
+            text_color: :black,
+            logo: '1858/MS',
+            coordinates: %w[F9],
             abilities: [
               { type: 'no_buy' },
             ],
@@ -353,6 +409,9 @@ module Engine
             discount: -30,
             revenue: 40,
             color: :green,
+            text_color: :black,
+            logo: '1858/CMP',
+            coordinates: %w[D13 E12 F13 G12 H11],
             abilities: [
               { type: 'no_buy' },
             ],
@@ -364,6 +423,9 @@ module Engine
             discount: 0,
             revenue: 33,
             color: :green,
+            text_color: :black,
+            logo: '1858/OV',
+            coordinates: %w[B5 C4],
             abilities: [
               { type: 'no_buy' },
             ],
@@ -375,6 +437,9 @@ module Engine
             discount: 0,
             revenue: 36,
             color: :green,
+            text_color: :black,
+            logo: '1858/LG',
+            coordinates: %w[F1 F3 F5],
             abilities: [
               { type: 'no_buy' },
             ],

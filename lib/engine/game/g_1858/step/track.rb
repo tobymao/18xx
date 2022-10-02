@@ -24,6 +24,13 @@ module Engine
             new_track.uniq
           end
 
+          def process_lay_tile(action)
+            entity = action.entity
+            spender = entity.minor? ? entity.owner : nil
+            lay_tile_action(action, spender: spender)
+            pass! unless can_lay_tile?(entity)
+          end
+
           def tile_lay_cost_override!(tile_lay, action, new_tile, old_tile)
             return if tile_lay[:cost].zero? # first tile
 

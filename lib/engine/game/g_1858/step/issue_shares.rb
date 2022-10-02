@@ -21,6 +21,10 @@ module Engine
             @game.log_share_price(action.entity, old_price)
             pass!
           end
+
+          def log_skip(entity)
+            super unless entity.minor?
+          end
         end
       end
     end

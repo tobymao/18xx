@@ -40,6 +40,10 @@ module Engine
         EBUY_OWNER_MUST_HELP = true
         EBUY_CAN_SELL_SHARES = false
 
+        MINOR_TILE_LAYS = [
+          { lay: true, upgrade: false },
+          { lay: true, upgrade: false, cost: 20, cannot_reuse_same_hex: true },
+        ].freeze
         TILE_LAYS = [
           { lay: true, upgrade: true },
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
@@ -79,12 +83,22 @@ module Engine
           #  - @graph uses any track. This is going to include illegal routes
           #    (using both broad and metre gauge track) but will just be used
           #    by things like the auto-router where the route will get rejected.
-          @graph_broad = Graph.new(self, skip_track: :narrow)
-          @graph_metre = Graph.new(self, skip_track: :broad)
+          @graph_broad = Graph.new(self, skip_track: :narrow, home_as_token: true)
+          @graph_metre = Graph.new(self, skip_track: :broad, home_as_token: true)
 
           # The rusting event for 6H/4M trains is triggered by the sale of the
           # fifth phase 7 train, so track the number of these sold.
           @phase7_trains_bought = 0
+        end
+
+        def init_companies(_players)
+          game_companies.map do |company|
+            G1858::Company.new(**company)
+          end.compact
+        end
+
+        def init_minors
+          @companies.select { |company| company.minor? }
         end
 
         def clear_graph_for_entity(_entity)
@@ -112,10 +126,9 @@ module Engine
         def operating_round(round_num)
           @round_num = round_num
           Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
             G1858::Step::Track,
             G1858::Step::Token,
-            Engine::Step::Route,
+            G1858::Step::Route,
             G1858::Step::Dividend,
             G1858::Step::DiscardTrain,
             G1858::Step::BuyTrain,
@@ -128,10 +141,7 @@ module Engine
 
           player.companies << company
           company.owner = player
-
-          # minor = @game.minors.find { |m| m.id == company.id }
-          # minor.owner = player
-          # minor.float!
+          company.float!
         end
 
         def home_token_locations(corporation)
@@ -140,6 +150,10 @@ module Engine
           hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
+        end
+
+        def tile_lays(entity)
+          entity.minor? ? MINOR_TILE_LAYS : TILE_LAYS
         end
 
         def express_train?(train)
@@ -208,6 +222,7 @@ module Engine
 
         def upgrade_cost(tile, hex, entity, _spender)
           return 0 if tile.upgrades.empty?
+          return 0 if entity.minor? && entity.home_hex?(hex)
 
           cost = tile.upgrades[0].cost
           if metre_gauge_upgrade(tile, hex.tile)

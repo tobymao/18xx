@@ -9,6 +9,12 @@ module Engine
         class Dividend < Engine::Step::Dividend
           DIVIDEND_TYPES = %i[payout half withhold].freeze
 
+          def process_dividend(action)
+            return if action.entity.minor?
+
+            super
+          end
+
           def rust_obsolete_trains!(entity)
             # Wounded trains are not discarded after running
           end

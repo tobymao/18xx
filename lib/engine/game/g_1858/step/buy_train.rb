@@ -74,12 +74,17 @@ module Engine
 
           def pass!
             super
+            return if current_entity.minor?
             return unless current_entity.trains.empty?
 
             @log << "#{current_entity.name} does not own a train"
             old_price = current_entity.share_price
             @game.stock_market.move_left(current_entity)
             @game.log_share_price(current_entity, old_price)
+          end
+
+          def log_skip(entity)
+            super unless entity.minor?
           end
         end
       end
