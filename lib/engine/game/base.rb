@@ -343,6 +343,8 @@ module Engine
       RAND_C = 12_345
       RAND_M = 2**31
 
+      MAX_OPERATING_ORDER = 1000
+
       def setup_preround; end
 
       def setup; end
@@ -2724,7 +2726,7 @@ module Engine
       end
 
       def player_sort(entities)
-        entities.sort_by(&:name).group_by(&:owner)
+        entities.sort_by { |entity| [operating_order.index(entity) || MAX_OPERATING_ORDER, entity.name] }.group_by(&:owner)
       end
 
       def bank_sort(corporations)
