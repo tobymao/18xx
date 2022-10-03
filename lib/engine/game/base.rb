@@ -2724,7 +2724,7 @@ module Engine
       end
 
       def player_sort(entities)
-        entities.sort_by(&:name).group_by(&:owner)
+        entities.sort_by { |entity| [operating_order.index(entity) || Float::INFINITY, entity.name] }.group_by(&:owner)
       end
 
       def bank_sort(corporations)
