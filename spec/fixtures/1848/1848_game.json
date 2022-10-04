@@ -3397,7 +3397,7 @@
         "id": 288,
         "created_at": 1660188608,
         "hex": "G6",
-        "tile": "236-0",
+        "tile": "238-0",
         "rotation": 3
       },
       {
@@ -3927,7 +3927,7 @@
         "id": 333,
         "created_at": 1660189934,
         "hex": "F17",
-        "tile": "236-1",
+        "tile": "238-1",
         "rotation": 1
       },
       {
@@ -3987,7 +3987,7 @@
         "entity_type": "corporation",
         "id": 340,
         "created_at": 1660190034,
-        "city": "236-0-0",
+        "city": "238-0-0",
         "slot": 1,
         "tokener": "WA"
       },
@@ -4371,11 +4371,11 @@
         "id": 366,
         "created_at": 1660190463,
         "hex": "B19",
-        "tile": "236-0",
+        "tile": "238-0",
         "rotation": 0
       },
       {
-        "city": "236-1-0",
+        "city": "238-1-0",
         "slot": 1,
         "type": "place_token",
         "entity": "QR",
@@ -5819,7 +5819,7 @@
         "id": 465,
         "created_at": 1660192794,
         "hex": "H11",
-        "tile": "236-0",
+        "tile": "238-0",
         "rotation": 1
       },
       {
@@ -5828,7 +5828,7 @@
         "entity_type": "corporation",
         "id": 466,
         "created_at": 1660192810,
-        "city": "236-0-0",
+        "city": "238-0-0",
         "slot": 1,
         "tokener": "WA"
       },
