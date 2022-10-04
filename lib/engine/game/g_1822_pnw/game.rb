@@ -402,11 +402,6 @@ module Engine
                 price: 1000,
               },
             ],
-            events: [
-              {
-                'type' => 'phase_revenue',
-              },
-            ],
           },
           {
             name: '2P',
@@ -1113,6 +1108,10 @@ module Engine
         def after_lay_tile(hex, old_tile, tile)
           hex.neighbors[1].tile.borders.shift if hex.id == 'H13' && tile.exits.include?(1)
           super
+        end
+
+        def home_token_can_be_cheater
+          true
         end
       end
     end

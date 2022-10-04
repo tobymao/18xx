@@ -25,22 +25,22 @@ module Engine
           {
             sym: :one_less_l,
             short_name: 'One less L/2 train',
-            desc: 'Game starts with one less L/2 train',
+            desc: 'Game starts with one less L/2 train (Playtest Trial)',
           },
           {
             sym: :two_less_ls,
             short_name: 'Two less L/2 trains',
-            desc: 'Game starts with two less L/2 trains.  Takes priority over earlier options.',
+            desc: 'Game starts with two less L/2 trains.  Takes priority over earlier options. (Playtest Trial)',
           },
           {
             sym: :three_less_ls,
             short_name: 'Three less L/2 trains',
-            desc: 'Game starts with three less L/2 trains.  Takes priority over earlier options.',
+            desc: 'Game starts with three less L/2 trains.  Takes priority over earlier options. (Playtest Trial)',
           },
           {
             sym: :four_less_ls,
             short_name: 'Four less L/2 trains',
-            desc: 'Game starts with four less L/2 trains.  Takes priority over earlier options.',
+            desc: 'Game starts with four less L/2 trains.  Takes priority over earlier options. (Playtest Trial)',
           },
         ].freeze
       end
