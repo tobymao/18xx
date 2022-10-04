@@ -304,7 +304,6 @@ module View
               h(:g, { attrs: { transform: "translate(#{x.round(2)} #{y.round(2)}) rotate(#{-revert_angle})" } }, [
                 h(CitySlot, city: @city,
                             edge: @edge,
-                            game: @game,
                             token: token,
                             slot_index: slot_index,
                             extra_token: @city.extra_tokens.include?(token),
