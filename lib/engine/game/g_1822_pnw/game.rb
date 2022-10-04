@@ -402,11 +402,6 @@ module Engine
                 price: 1000,
               },
             ],
-            events: [
-              {
-                'type' => 'phase_revenue',
-              },
-            ],
           },
           {
             name: '2P',
