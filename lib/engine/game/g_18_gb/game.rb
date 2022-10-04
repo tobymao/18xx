@@ -434,6 +434,14 @@ module Engine
           @corporations.each { |corp| place_home_token(corp) }
         end
 
+        def timeline
+          @timeline = [
+            '- Tier 2 corporations can only be started from SR2 onwards.',
+            '- At the end of each OR, a train is exported if no new train was purchased from the bank during the OR.',
+            '- After an OR ends with 2 or fewer trains remaining, no more tokens may be placed.',
+          ].freeze
+        end
+
         def event_float_60!
           @log << '-- Event: New corporations float once 60% of their shares have been sold --'
           @corporations.reject(&:floated?).each { |c| c.float_percent = 60 }
