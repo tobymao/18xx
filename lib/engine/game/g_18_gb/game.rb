@@ -66,7 +66,7 @@ module Engine
 
         EBUY_OTHER_VALUE = false
 
-        HOME_TOKEN_TIMING = :float
+        HOME_TOKEN_TIMING = :start
 
         DISCARDED_TRAINS = :remove
 
@@ -572,39 +572,12 @@ module Engine
           return if corporation.tokens.first&.used
 
           hex = hex_by_id(corporation.coordinates)
-
           tile = hex&.tile
-          if !tile || (tile.reserved_by?(corporation) && !tile.paths.empty?)
-
-            # If the tile has no paths at the present time, clear up the ambiguity when the tile is laid
-            # Otherwise, for yellow tiles the corporation is placed disconnected and for other tiles it
-            # chooses now
-            if tile.color == :yellow
-              cities = tile.cities
-              city = cities[1]
-              token = corporation.find_token_by_type
-              return unless city.tokenable?(corporation, tokens: token)
-
-              @log << "#{corporation.name} places a token on #{hex.name}"
-              city.place_token(corporation, token)
-            else
-              @log << "#{corporation.name} must choose city for home token"
-              @round.pending_tokens << {
-                entity: corporation,
-                hexes: [hex],
-                token: corporation.find_token_by_type,
-              }
-            end
-
-            return
-          end
-
           cities = tile.cities
           city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
           token = corporation.find_token_by_type
           return unless city.tokenable?(corporation, tokens: token)
 
-          @log << "#{corporation.name} places a token on #{hex.name}"
           city.place_token(corporation, token)
         end
 
