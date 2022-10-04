@@ -476,6 +476,12 @@ module Engine
           end
         end
 
+        def bank_sort(corporations)
+          return super unless @round_counter <= 1
+
+          corporations.sort_by { |c| [@tiers[c.id], c.name] }
+        end
+
         def required_bids_to_pass
           @scenario['required_bids']
         end
