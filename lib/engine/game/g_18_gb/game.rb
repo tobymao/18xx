@@ -647,6 +647,7 @@ module Engine
         end
 
         def stock_round
+          @log << '-- Event: Tier 2 corporations are now available --' if @round_counter == 4
           G18GB::Round::Stock.new(self, [
             Engine::Step::HomeToken,
             G18GB::Step::BuySellParShares,
