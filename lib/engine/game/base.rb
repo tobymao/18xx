@@ -1413,6 +1413,10 @@ module Engine
         raise NotImplementedError
       end
 
+      def home_token_can_be_cheater
+        false
+      end
+
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
         # If a corp has laid it's first token assume it's their home token
@@ -1454,10 +1458,14 @@ module Engine
         cities = tile.cities
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
         token = corporation.find_token_by_type
-        return unless city.tokenable?(corporation, tokens: token)
 
-        @log << "#{corporation.name} places a token on #{hex.name}"
-        city.place_token(corporation, token)
+        if city.tokenable?(corporation, tokens: token)
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token)
+        elsif home_token_can_be_cheater
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token, cheater: true)
+        end
       end
 
       def graph_for_entity(_entity)

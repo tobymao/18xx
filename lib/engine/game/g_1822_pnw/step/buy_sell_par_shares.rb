@@ -7,6 +7,7 @@ module Engine
     module G1822PNW
       module Step
         class BuySellParShares < Engine::Game::G1822::Step::BuySellParShares
+          PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Par]
           def ipo_type(corporation)
             case @game.major_formation_status(corporation, player: current_entity)
             when :parable then :par
@@ -37,7 +38,7 @@ module Engine
             @game.log << "#{major.name} replaces the #{minor.name} token in #{city.hex.name}"
 
             @game.close_minor(minor)
-            pass!
+            track_action(action, major)
           end
         end
       end

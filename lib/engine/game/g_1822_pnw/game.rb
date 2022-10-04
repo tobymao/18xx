@@ -1114,6 +1114,10 @@ module Engine
           hex.neighbors[1].tile.borders.shift if hex.id == 'H13' && tile.exits.include?(1)
           super
         end
+
+        def home_token_can_be_cheater
+          true
+        end
       end
     end
   end
