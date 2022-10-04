@@ -54,10 +54,7 @@ module View
 
           @tile.partitions.each do |partition|
             next if partition.type != :divider && partition.blockers.none? do |blocker|
-              is_blocked = @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
-              puts @tile.name
-              puts is_blocked
-              is_blocked.nil? || is_blocked
+              @game.nil? ||  @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
             end
 
             a_control = VERTICES[(partition.a + partition.a_sign) % 6]
