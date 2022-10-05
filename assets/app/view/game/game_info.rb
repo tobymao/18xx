@@ -152,12 +152,18 @@ module View
         @depot.trains.group_by(&:name).each do |_name, trains|
           first = trains.first
 
-          base_rust = first.variants.first[1][:rusts_on]
-          base_obsolete = first.variants.first[1][:obsolete_on]
+          # the first variant in this list should be the base variant
+          # per the train variant initialization.  If other variants
+          # do not have an explicit rust/obsolete, inherit the base
+          # values for display purposes.
+          _, base_variant = first.variants.first
+
+          base_rust = base_variant[:rusts_on]
+          base_obsolete = base_variant[:obsolete_on]
 
           first.variants.each do |name, train_variant|
-            train_variant[:rusts_on] = train_variant[:rusts_on] || base_rust
-            train_variant[:obsolete_on] = train_variant[:obsolete_on] || base_obsolete
+            train_variant[:rusts_on] ||= base_rust
+            train_variant[:obsolete_on] ||= base_obsolete
 
             unless Array(rust_schedule[train_variant[:rusts_on]]).include?(name)
               rust_schedule[train_variant[:rusts_on]] =
