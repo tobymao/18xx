@@ -115,7 +115,7 @@ module Engine
 
           def can_buy_multiple?(entity, corporation, owner)
             bought = num_shares_bought(corporation)
-            super && corporation&.president?(entity) && bought < 2 && already_president?(corporation)
+            super && corporation&.president?(entity) && bought < 2 && (@round.operating? || already_president?(corporation))
           end
 
           def num_shares_bought(corporation)

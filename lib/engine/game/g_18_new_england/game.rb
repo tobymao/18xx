@@ -463,8 +463,7 @@ module Engine
         end
 
         def player_sort(entities)
-          majors, minors = entities.select(&:corporation?).partition { |c| c.type == :major }
-          (minors.sort_by(&:name) + majors.sort_by(&:name)).group_by(&:owner)
+          super(entities.select(&:corporation?))
         end
 
         def reserve_minor(minor, entity)

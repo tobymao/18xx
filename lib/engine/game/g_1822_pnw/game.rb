@@ -58,6 +58,11 @@ module Engine
              400 450 500 550 600e],
         ].freeze
 
+        def reduced_bundle_price_for_market_drop(bundle)
+          bundle.share_price = @stock_market.find_share_price(bundle.corporation, [:left] * bundle.num_shares).price
+          bundle
+        end
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -397,11 +402,6 @@ module Engine
                 price: 1000,
               },
             ],
-            events: [
-              {
-                'type' => 'phase_revenue',
-              },
-            ],
           },
           {
             name: '2P',
@@ -472,7 +472,7 @@ module Engine
             G1822PNW::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
-            G1822::Step::IssueShares,
+            G1822PNW::Step::IssueShares,
           ], round_num: round_num)
         end
 
@@ -577,6 +577,21 @@ module Engine
 
           # Setup all the destination tokens, icons and abilities
           setup_destinations
+
+          if @optional_rules&.include?(:four_less_ls)
+            remove_l_trains(4)
+          elsif @optional_rules&.include?(:three_less_ls)
+            remove_l_trains(3)
+          elsif @optional_rules&.include?(:two_less_ls)
+            remove_l_trains(2)
+          elsif @optional_rules&.include?(:one_less_l)
+            remove_l_trains(1)
+          end
+        end
+
+        def remove_l_trains(num_trains)
+          @log << "#{num_trains} L/2 train(s) have been discarded"
+          num_trains.times { @depot.remove_train(@depot.upcoming.first) }
         end
 
         def major_formation_status(major, player: nil)
@@ -1088,6 +1103,15 @@ module Engine
 
           @log << "#{entity.name} has an existing token on its destination #{hex.name} and will pick it up as an available token"
           entity.tokens.find { |t| t.city == city }.remove!
+        end
+
+        def after_lay_tile(hex, old_tile, tile)
+          hex.neighbors[1].tile.borders.shift if hex.id == 'H13' && tile.exits.include?(1)
+          super
+        end
+
+        def home_token_can_be_cheater
+          true
         end
       end
     end

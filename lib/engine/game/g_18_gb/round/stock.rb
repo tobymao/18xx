@@ -9,10 +9,20 @@ module Engine
         class Stock < Engine::Round::Stock
           attr_accessor :presidencies
 
+          def record_current_presidencies
+            @presidencies = @game.corporations.select { |corp| corp.president?(current_entity) }
+          end
+
+          def setup
+            super
+
+            record_current_presidencies
+          end
+
           def start_entity
             super
 
-            @presidencies = @game.corporations.select { |corp| corp.president?(current_entity) }
+            record_current_presidencies
           end
         end
       end
