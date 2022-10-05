@@ -725,12 +725,6 @@ module Engine
           true
         end
 
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
-        end
-
         def home_hex(corporation)
           corporation.tokens.first.city&.hex
         end

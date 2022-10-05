@@ -2,12 +2,15 @@
 
 require 'view/game/part/base'
 require 'view/game/part/small_item'
+require 'lib/settings'
 
 module View
   module Game
     module Part
       class Assignments < Base
         include SmallItem
+        include Lib::Settings
+
         needs :game, default: nil, store: true
         ICON_RADIUS = 20
         DELTA = (ICON_RADIUS * 2) + 2
@@ -39,7 +42,7 @@ module View
 
           if @game
             children = @assignments.keys.map.with_index do |assignment, index|
-              img = @game.assignment_tokens(assignment)
+              img = @game.assignment_tokens(assignment, setting_for(:simple_logos, @game))
 
               props = {
                 attrs: {

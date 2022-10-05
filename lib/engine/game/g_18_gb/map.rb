@@ -224,7 +224,7 @@ module Engine
           {
             'count' => 1,
             'color' => 'blue',
-            'code' => 'path=a:2,b:4;path=a:2,b:5,track:dual;path=a:5,b:0;icon=image:18_gb/plus_30;label=S',
+            'code' => 'path=a:2,b:3;path=a:2,b:4;path=a:2,b:5,track:dual;path=a:5,b:0;icon=image:18_gb/plus_30;label=S',
           },
         }.freeze
         GRAY_TILES = {

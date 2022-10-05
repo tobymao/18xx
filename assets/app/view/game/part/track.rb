@@ -30,6 +30,11 @@ module View
             width: 10,
             dash: '0',
           },
+          thin: {
+            color: '#000000',
+            width: 2,
+            dash: '12',
+          },
         }.freeze
 
         # width here is added to track width
@@ -45,6 +50,11 @@ module View
           dual: {
             color: '#000000',
             width: 3,
+          },
+          thin: {
+            color: '#FFFFFF',
+            width: 0,
+            dash: '12',
           },
         }.freeze
 
@@ -117,6 +127,10 @@ module View
             elsif path.offboard
               pass1 << h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use,
                                         border_props: border_props, **props)
+            elsif path.track == :thin
+              pass1 << h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
+                                        pass: 1, border_props: border_props, inner_props: inner_props, **props)
+
             else
               pass0 << h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
                                         pass: 0, border_props: border_props, inner_props: inner_props, **props)
@@ -144,6 +158,7 @@ module View
 
         def value_for_index(index, prop, track)
           return TRACK[track][prop] if index && track == :narrow && prop == :dash
+          return TRACK[track][prop] if track == :thin && prop == :dash
 
           index ? route_prop(index, prop) : TRACK[track][prop]
         end

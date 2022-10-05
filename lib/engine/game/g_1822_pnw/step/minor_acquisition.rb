@@ -22,6 +22,7 @@ module Engine
               minor.tokens.delete(token)
               return 'Mine token'
             end
+            nil
           end
         end
       end
