@@ -113,7 +113,7 @@ module Engine
                   },
                   {
                     name: 'Brown',
-                    on: '5+',
+                    on: '5',
                     train_limit: 3,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
@@ -146,7 +146,7 @@ module Engine
                     name: '3',
                     distance: 3,
                     price: 140,
-                    rusts_on: '5+',
+                    rusts_on: '5',
                     num: 5,
                     discount: { '2' => 40 },
                   },
@@ -159,9 +159,8 @@ module Engine
                     discount: { '3' => 70 },
                   },
                   {
-                    name: '5+',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                    name: '5',
+                    distance: 5,
                     price: 400,
                     rusts_on: 'D',
                     num: 3,
@@ -174,7 +173,7 @@ module Engine
                     price: 600,
                     num: 2,
                     events: [{ 'type' => 'close_companies' }],
-                    discount: { '5+' => 200 },
+                    discount: { '5' => 200 },
                   },
                   {
                     name: '7',
@@ -189,7 +188,7 @@ module Engine
                     price: 820,
                     num: 22,
                     events: [{ 'type' => 'last_or_set_triggered' }],
-                    discount: { '5+' => 200, '6' => 300, '7' => 355 },
+                    discount: { '5' => 200, '6' => 300, '7' => 355 },
                   }].freeze
 
         LAYOUT = :pointy

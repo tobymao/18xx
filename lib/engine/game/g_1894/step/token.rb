@@ -40,7 +40,7 @@ module Engine
 
             tile = action.city.hex.tile
 
-            return if Engine::Game::G1894::Game::BROWN_CITY_TILES.include?(tile.name) && !tile.reservations.empty?
+            return if !Engine::Game::G1894::Game::BROWN_CITY_TILES.include?(tile.name) || tile.reservations.empty?
 
             # If only one city left, move the reservation there
             reservation = tile.reservations.first
