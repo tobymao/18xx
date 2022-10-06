@@ -66,7 +66,7 @@ module Engine
 
         EBUY_OTHER_VALUE = false
 
-        HOME_TOKEN_TIMING = :float
+        HOME_TOKEN_TIMING = :start
 
         DISCARDED_TRAINS = :remove
 
@@ -434,6 +434,14 @@ module Engine
           @corporations.each { |corp| place_home_token(corp) }
         end
 
+        def timeline
+          @timeline = [
+            '- Tier 2 corporations can only be started from SR2 onwards.',
+            '- At the end of each OR, a train is exported if no new train was purchased from the bank during the OR.',
+            '- After an OR ends with 2 or fewer trains remaining, no more tokens may be placed.',
+          ].freeze
+        end
+
         def event_float_60!
           @log << '-- Event: New corporations float once 60% of their shares have been sold --'
           @corporations.reject(&:floated?).each { |c| c.float_percent = 60 }
@@ -474,6 +482,12 @@ module Engine
           else
             []
           end
+        end
+
+        def bank_sort(corporations)
+          return super unless @round_counter <= 1
+
+          corporations.sort_by { |c| [@tiers[c.id], c.name] }
         end
 
         def required_bids_to_pass
@@ -572,39 +586,12 @@ module Engine
           return if corporation.tokens.first&.used
 
           hex = hex_by_id(corporation.coordinates)
-
           tile = hex&.tile
-          if !tile || (tile.reserved_by?(corporation) && !tile.paths.empty?)
-
-            # If the tile has no paths at the present time, clear up the ambiguity when the tile is laid
-            # Otherwise, for yellow tiles the corporation is placed disconnected and for other tiles it
-            # chooses now
-            if tile.color == :yellow
-              cities = tile.cities
-              city = cities[1]
-              token = corporation.find_token_by_type
-              return unless city.tokenable?(corporation, tokens: token)
-
-              @log << "#{corporation.name} places a token on #{hex.name}"
-              city.place_token(corporation, token)
-            else
-              @log << "#{corporation.name} must choose city for home token"
-              @round.pending_tokens << {
-                entity: corporation,
-                hexes: [hex],
-                token: corporation.find_token_by_type,
-              }
-            end
-
-            return
-          end
-
           cities = tile.cities
           city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
           token = corporation.find_token_by_type
           return unless city.tokenable?(corporation, tokens: token)
 
-          @log << "#{corporation.name} places a token on #{hex.name}"
           city.place_token(corporation, token)
         end
 
@@ -668,6 +655,7 @@ module Engine
         end
 
         def stock_round
+          @log << '-- Event: Tier 2 corporations are now available --' if @round_counter == 4
           G18GB::Round::Stock.new(self, [
             Engine::Step::HomeToken,
             G18GB::Step::BuySellParShares,
