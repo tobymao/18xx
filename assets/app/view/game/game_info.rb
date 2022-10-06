@@ -156,7 +156,7 @@ module View
           # per the train variant initialization.  If other variants
           # do not have an explicit rust/obsolete, inherit the base
           # values for display purposes.
-          _, base_variant = first.variants.first
+          base_variant = first.variants.values[0]
 
           base_rust = base_variant[:rusts_on]
           base_obsolete = base_variant[:obsolete_on]
