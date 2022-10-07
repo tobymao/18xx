@@ -148,6 +148,19 @@ module Engine
           custom: 'Fifth corporation is in receivership',
         }.freeze
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['Loan taken - Corporation', '2 ←'],
+            ['Additional loans taken during forced train buy', '3 ←'],
+            ['Loan granted - BOE', '1 →'],
+            ['One or more shares sold (Except BOE)', '1 ↓'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+          ]
+        end
+
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or, custom: :full_or }.freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
