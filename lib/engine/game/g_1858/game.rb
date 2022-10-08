@@ -98,7 +98,7 @@ module Engine
         end
 
         def init_minors
-          @companies.select { |company| company.minor? }
+          @companies.select(&:minor?)
         end
 
         def clear_graph_for_entity(_entity)
