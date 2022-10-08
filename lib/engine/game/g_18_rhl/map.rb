@@ -106,7 +106,7 @@ module Engine
             'color' => 'green',
             'code' => 'city=revenue:40,slots:1,loc:1;city=revenue:40,slots:2,loc:4;label=D;'\
                       'path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_1;path=a:5,b:_1;path=a:_0,b:_1,track:narrow;'\
-                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0;label=D',
+                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
           'X923' =>
           {
