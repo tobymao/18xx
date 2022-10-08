@@ -151,7 +151,20 @@ module View
         obsolete_schedule = {}
         @depot.trains.group_by(&:name).each do |_name, trains|
           first = trains.first
+
+          # the first variant in this list should be the base variant
+          # per the train variant initialization.  If other variants
+          # do not have an explicit rust/obsolete, inherit the base
+          # values for display purposes.
+          base_variant = first.variants.values[0]
+
+          base_rust = base_variant[:rusts_on]
+          base_obsolete = base_variant[:obsolete_on]
+
           first.variants.each do |name, train_variant|
+            train_variant[:rusts_on] ||= base_rust
+            train_variant[:obsolete_on] ||= base_obsolete
+
             unless Array(rust_schedule[train_variant[:rusts_on]]).include?(name)
               rust_schedule[train_variant[:rusts_on]] =
                 Array(rust_schedule[train_variant[:rusts_on]]).append(name)
@@ -168,7 +181,7 @@ module View
       def trains
         rust_schedule, obsolete_schedule = rust_obsolete_schedule
 
-        show_obsolete_schedule = !obsolete_schedule.keys.empty?
+        show_obsolete_schedule = obsolete_schedule.keys.any?
         show_upgrade = @depot.upcoming.any? { |train| train.variants.any? { |_k, v| v['discount'] } }
         show_salvage = @depot.trains.any?(&:salvage)
         show_available = @depot.upcoming.any?(&:available_on)
