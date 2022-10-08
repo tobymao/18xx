@@ -215,7 +215,9 @@ module View
       # Allow privates or minors to be exchanged for shares if they have the ability
       def render_exchanges
         children = []
-        source_entities = @game.companies + @game.minors
+        # 1858 can have the same entity appear as both a private company and a
+        # minor company. Use uniq to get rid of any potential duplicates.
+        source_entities = (@game.companies + @game.minors).uniq
 
         source_entities.each do |entity|
           @game.abilities(entity, :exchange) do |ability|
