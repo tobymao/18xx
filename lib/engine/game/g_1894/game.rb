@@ -180,7 +180,7 @@ module Engine
                     name: '7',
                     distance: 7,
                     price: 710,
-                    num: 2,
+                    num: 3,
                     discount: { '6' => 300 },
                   },
                   {
