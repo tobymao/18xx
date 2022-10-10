@@ -1020,6 +1020,8 @@ module Engine
         end
 
         def tile_cost_with_discount(tile, _hex, _entity, _spender, base_cost)
+          return 0 if tile.name == 'PNW3'
+
           [base_cost - (40 * current_builder_cubes(tile)), 0].max
         end
 
