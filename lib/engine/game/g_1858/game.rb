@@ -118,6 +118,7 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            G1858::Step::Exchange,
             G1858::Step::HomeToken,
             G1858::Step::BuySellParShares,
           ])
@@ -317,6 +318,25 @@ module Engine
 
         def unowned_purchasable_companies(_entity)
           @companies.filter { |company| !company.closed? && company.owner == @bank }
+        end
+
+        def exchange_corporations(exchange_ability)
+          candidates = super
+          # A private railway can be exchanged for a share in any public company
+          # that can trace a route to any of the private's home hexes.
+          company = exchange_ability.owner
+          candidates.select { |corporation| company_corporation_connected?(company, corporation) }
+        end
+
+        # Returns true if there is a valid route from any of the corporation's
+        # tokens to any of the company's home hexes.
+        def company_corporation_connected?(company, corporation)
+          return false if company.closed?
+          return false if corporation.closed?
+          return false unless corporation.floated?
+
+          @graph_broad.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) } \
+            || @graph_metre.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) }
         end
       end
     end

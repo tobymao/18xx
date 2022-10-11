@@ -155,6 +155,13 @@ module Engine
                 revenue: 35,
                 on_phase: '3',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -175,6 +182,13 @@ module Engine
                 type: 'revenue_change',
                 revenue: 38,
                 on_phase: '3',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
@@ -197,6 +211,13 @@ module Engine
                 revenue: 33,
                 on_phase: '3',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -217,6 +238,13 @@ module Engine
                 type: 'revenue_change',
                 revenue: 30,
                 on_phase: '3',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
@@ -239,6 +267,13 @@ module Engine
                 revenue: 18,
                 on_phase: '3',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -259,6 +294,13 @@ module Engine
                 type: 'revenue_change',
                 revenue: 27,
                 on_phase: '3',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
@@ -281,6 +323,13 @@ module Engine
                 revenue: 36,
                 on_phase: '3',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -301,6 +350,13 @@ module Engine
                 type: 'revenue_change',
                 revenue: 29,
                 on_phase: '3',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
@@ -323,6 +379,13 @@ module Engine
                 revenue: 32,
                 on_phase: '3',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -343,6 +406,13 @@ module Engine
                 type: 'revenue_change',
                 revenue: 21,
                 on_phase: '3',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
@@ -365,6 +435,13 @@ module Engine
                 revenue: 24,
                 on_phase: '3',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -385,6 +462,13 @@ module Engine
                 type: 'revenue_change',
                 revenue: 23,
                 on_phase: '3',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
@@ -407,6 +491,13 @@ module Engine
                 revenue: 26,
                 on_phase: '3',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -427,6 +518,13 @@ module Engine
                 type: 'revenue_change',
                 revenue: 21,
                 on_phase: '3',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
@@ -449,6 +547,13 @@ module Engine
                 revenue: 24,
                 on_phase: '3',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -470,6 +575,13 @@ module Engine
                 revenue: 20,
                 on_phase: '3',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -485,6 +597,13 @@ module Engine
             abilities: [
               {
                 type: 'no_buy',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
@@ -502,6 +621,13 @@ module Engine
               {
                 type: 'no_buy',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -517,6 +643,13 @@ module Engine
             abilities: [
               {
                 type: 'no_buy',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
@@ -534,6 +667,13 @@ module Engine
               {
                 type: 'no_buy',
               },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
+              },
             ],
           },
           {
@@ -549,6 +689,13 @@ module Engine
             abilities: [
               {
                 type: 'no_buy',
+              },
+              {
+                type: 'exchange',
+                owner: 'player',
+                when: 'owning_player_sr_turn',
+                corporations: 'ipoed',
+                from: 'ipo',
               },
             ],
           },
