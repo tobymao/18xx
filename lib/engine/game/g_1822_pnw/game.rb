@@ -521,6 +521,13 @@ module Engine
             end
         end
 
+        MERGER_ROUND_NAME = 'Merger'
+
+        def total_rounds(name)
+          # Return the total number of rounds for those with more than one.
+          @operating_rounds if [self.class::OPERATING_ROUND_NAME, self.class::MERGER_ROUND_NAME].include?(name)
+        end
+
         def discountable_trains_for(corporation)
           discount_info = []
 
