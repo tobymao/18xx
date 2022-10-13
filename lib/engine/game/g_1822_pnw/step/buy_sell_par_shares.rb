@@ -26,6 +26,7 @@ module Engine
             @game.transfer_posessions(minor, major)
             major.ipoed = true
             major.floated = true
+            major.capitalization = :incremental
             @game.remove_home_icon(major, minor.coordinates)
 
             @game.log << "#{major.name} share price set to #{@game.format_currency(minor.share_price.price)}"
