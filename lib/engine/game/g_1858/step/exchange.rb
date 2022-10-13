@@ -27,7 +27,10 @@ module Engine
 
             acquire_company(corporation, company)
             buy_shares(player, bundle, exchange: :free)
-            @round.players_history[player][corporation] << action if @round.respond_to?(:players_history)
+
+            # Need to add an action to the action log, but this can't be a
+            # buy shares action as that would end the current player's turn.
+            @round.current_actions << Engine::Action::Base.new(company)
           end
 
           def acquire_company(corporation, company)

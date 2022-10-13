@@ -36,8 +36,10 @@ module Engine
           def pass_description
             if @auctioning
               "Pass (on #{auctioning.id})"
-            else
+            elsif @round.current_actions.empty?
               'Pass'
+            else
+              'Done'
             end
           end
 
