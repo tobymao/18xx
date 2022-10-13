@@ -15,8 +15,6 @@ module Engine
         include G1822PNW::Map
         include G1822PNW::BuilderCubes
 
-        attr_reader :hidden_coal_corp
-
         CERT_LIMIT = { 3 => 21, 4 => 15, 5 => 12 }.freeze
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
@@ -60,6 +58,11 @@ module Engine
              400 450 500 550 600e],
         ].freeze
 
+        def reduced_bundle_price_for_market_drop(bundle)
+          bundle.share_price = @stock_market.find_share_price(bundle.corporation, [:left] * bundle.num_shares).price
+          bundle
+        end
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -82,7 +85,7 @@ module Engine
         PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
 
-        IMPASSABLE_HEX_COLORS = %i[gray red].freeze
+        IMPASSABLE_HEX_COLORS = %i[gray red blue].freeze
 
         ASSIGNMENT_TOKENS = {
           'forest' => '/icons/1822_pnw/tree_plus_10.svg',
@@ -115,7 +118,7 @@ module Engine
           'P17' => { acquire: %i[major minor], phase: 5 },
           'P18' => { acquire: %i[major minor], phase: 3 },
           'P19' => { acquire: %i[major minor], phase: 3 },
-          'P20' => { acquire: %i[major minor], phase: 2 },
+          'P20' => { acquire: %i[major minor], phase: 1 },
           'P21' => { acquire: %i[major minor], phase: 2 },
         }.freeze
 
@@ -187,6 +190,12 @@ module Engine
           @minor_associations[new_minor_id] = @minor_associations.delete(old_minor_id)
         end
 
+        def second_icon(corporation)
+          return unless (major_id = major_name_for_associated_minor(corporation.id))
+
+          corporation_by_id(major_id)
+        end
+
         def timeline
           timeline = super
           pairs = @minor_associations.keys.map { |a| "#{a} → #{@minor_associations[a]}" }
@@ -228,6 +237,14 @@ module Engine
 
         def owns_coal_company?(entity)
           entity.companies.any? { |c| coal_company?(c) }
+        end
+
+        def coal_company_used
+          company_by_id('P19').revenue = 0
+        end
+
+        def coal_token
+          @coal_token ||= Engine::Token.new(nil, logo: '/icons/18_usa/mine.svg')
         end
 
         def backroom_company?(entity)
@@ -385,11 +402,6 @@ module Engine
                 price: 1000,
               },
             ],
-            events: [
-              {
-                'type' => 'phase_revenue',
-              },
-            ],
           },
           {
             name: '2P',
@@ -448,7 +460,7 @@ module Engine
             G1822PNW::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822PNW::Step::Assign,
-            G1822PNW::Step::SpecialChoose,
+            Engine::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
             G1822::Step::SpecialToken,
             G1822PNW::Step::Track,
@@ -460,12 +472,12 @@ module Engine
             G1822PNW::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
-            G1822::Step::IssueShares,
+            G1822PNW::Step::IssueShares,
           ], round_num: round_num)
         end
 
         def choose_step
-          [G1822PNW::Step::Choose]
+          [G1822::Step::Choose]
         end
 
         def next_round!
@@ -563,39 +575,80 @@ module Engine
           # Setup exchange token abilities for all corporations
           setup_exchange_tokens
 
-          # Setup hidden coal corporation for P18
-          @hidden_coal_corp = Corporation.new(sym: 'HC', name: 'Hidden Coal', logo: 'open_city', tokens: [0])
-
           # Setup all the destination tokens, icons and abilities
           setup_destinations
+
+          if @optional_rules&.include?(:four_less_ls)
+            remove_l_trains(4)
+          elsif @optional_rules&.include?(:three_less_ls)
+            remove_l_trains(3)
+          elsif @optional_rules&.include?(:two_less_ls)
+            remove_l_trains(2)
+          elsif @optional_rules&.include?(:one_less_l)
+            remove_l_trains(1)
+          end
         end
 
-        def corporation_available?(corporation)
-          return super if corporation.floated?
+        def remove_l_trains(num_trains)
+          @log << "#{num_trains} L/2 train(s) have been discarded"
+          num_trains.times { @depot.remove_train(@depot.upcoming.first) }
+        end
 
-          minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
-          corporation = corporation_by_id(minor_id)
+        def major_formation_status(major, player: nil)
+          return :formed if major.floated?
+
+          minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == major.id }
+          minor_corp = corporation_by_id(minor_id)
+
+          if minor_corp.owner && player
+            return minor_corp.owner == player ? :convertable : :none
+          end
+
           company_id = company_id_from_corp_id(minor_id)
           company = @companies.find { |c| c.id == company_id }
 
-          # If there is no company, either the minor is already closed (corporation will be nil)
-          # in which case the major can be started, or the minor is owned (corporation will not
-          # be nil), in which case the major cannot be started
-          return corporation.nil? unless company
+          return :parable unless company && @round.respond_to?(:bids) && !@round.bids[company].empty?
 
-          # If there is a company, make sure it has no bids
-          return false if @round.respond_to?(:bids) && !@round.bids[company].empty?
+          :none
+        end
 
-          true
+        def corporation_available?(corporation)
+          major_formation_status(corporation) != :none
+        end
+
+        def form_button_text(_corporation)
+          'Convert from minor'
+        end
+
+        def after_par(corporation)
+          if corporation.type == :major
+            minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == corporation.id }
+            minor_company = company_by_id(company_id_from_corp_id(minor_id))
+            unless minor_company.closed?
+              @log << "Associated minor #{minor_id} closes"
+              minor_corporation = corporation_by_id(minor_id)
+              minor_city = hex_by_id(minor_corporation.coordinates).tile.cities.find { |c| c.reserved_by?(minor_corporation) }
+              minor_city.reservations.delete(minor_corporation)
+              minor_company.close!
+            end
+          end
+          super
         end
 
         def float_corporation(corporation)
-          if corporation.type == :major
-            minor_id = @minor_associations.keys.select { |m| @minor_associations[m] == corporation.id }
-            @log << "Associated minor #{minor_id} closes"
-            company_by_id(company_id_from_corp_id(minor_id)).close!
-          end
+          remove_home_icon(corporation, corporation.coordinates) if corporation.type == :major
           super
+        end
+
+        def add_home_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          # Logo and Icon each add '.svg' to the end - so chop one of them off
+          hex.tile.icons << Part::Icon.new("../#{corporation.logo.chop.chop.chop.chop}", "#{corporation.id}_home")
+        end
+
+        def remove_home_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_home" }
         end
 
         def corp_id_from_company_id(id)
@@ -646,6 +699,10 @@ module Engine
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
 
+        def finalize_end_game_values; end
+
+        def set_private_revenues; end
+
         def setup_regional_payout_count
           @regional_payout_count = {
             'A' => 0,
@@ -663,10 +720,21 @@ module Engine
           @regional_payout_count[regional.id]
         end
 
+        def float_str(entity)
+          regional_railway?(entity) ? '' : super
+        end
+
         def company_choices(company, time)
           return company_choices_p21(company, time) if company.id == 'P21'
 
           {}
+        end
+
+        def sorted_corporations
+          ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
+          corporations = ipoed.sort
+          corporations += others if @phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par')
+          corporations
         end
 
         def company_choices_p21(company, time)
@@ -702,7 +770,7 @@ module Engine
           choices
         end
 
-        def company_made_choice(company, choice)
+        def company_made_choice(company, choice, _time)
           return company_made_choice_p21(company, choice) if company.id == 'P21'
         end
 
@@ -710,6 +778,8 @@ module Engine
           if choice == 'exchange'
             @log << "#{company.owner.name} moves one token from exchange to available"
             move_exchange_token(company.owner)
+            @log << "#{company.name} closes"
+            company.close!
             return
           else
             choice_array = choice.split('_')
@@ -744,7 +814,7 @@ module Engine
 
         def company_bought(company, entity)
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == '16'
+          company.revenue = 0 if cube_company?(company) || company.id == 'P14' || company.id == 'P9'
         end
 
         def reorder_players(_order = nil)
@@ -765,20 +835,23 @@ module Engine
           @p7_choice = nil
         end
 
+        def check_other(route)
+          raise NoToken, 'Route must contain token' unless route.visited_stops.any? do |stop|
+                                                             city_tokened_by?(stop, route.corporation) &&
+                                                               !stop.tokens.include?(coal_token)
+                                                           end
+        end
+
         def must_be_on_terrain?(_entity)
           false
         end
 
         def can_only_lay_plain_or_towns?(_entity)
           false
-          # Will be used for privates - not yet implemented in PNW
-          # entity.id == 'P8'
         end
 
         def can_upgrade_one_phase_ahead?(_entity)
           false
-          # Will be used for privates - not yet implemented in PNW
-          # entity.id == 'P8'
         end
 
         def company_ability_extra_track?(entity)
@@ -787,22 +860,6 @@ module Engine
 
         def choices_entities
           []
-        end
-
-        def check_connected(route, corporation)
-          return if route.ordered_paths.each_cons(2).all? do |a, b|
-            a.connects_to?(
-              b,
-              corporation
-            ) || ((corporation.companies.any? do |c|
-                     coal_company?(c)
-                   end) && a.connects_to?(
-                    b,
-                    hidden_coal_corp
-                  ))
-          end
-
-          raise GameError, 'Route is not connected'
         end
 
         def must_remove_town?(entity)
@@ -894,7 +951,7 @@ module Engine
 
         def legal_city_and_town_tile(hex, tile)
           @city_and_town_yellow_tiles ||= %w[5 6 57]
-          @city_and_town_hex_names ||= %w[H19 M4]
+          @city_and_town_hex_names ||= %w[H19]
           @city_and_town_hex_names.include?(hex.name) && @city_and_town_yellow_tiles.include?(tile.name)
         end
 
@@ -902,6 +959,7 @@ module Engine
           return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
           return true if from.color == :blue && to.color == :blue
           return to.name == 'PNW3' if boomtown_company?(selected_company)
+          return from.color == :brown if to.name == 'PNW4'
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
@@ -938,6 +996,12 @@ module Engine
           nil
         end
 
+        def status_str(corporation)
+          return super unless regional_railway?(corporation)
+
+          "Acquisition value #{format_currency(200)}"
+        end
+
         def total_terrain_cost(tile)
           tile.upgrades.sum { |u| u.terrains.empty? ? 0 : u.cost }
         end
@@ -956,6 +1020,8 @@ module Engine
         end
 
         def tile_cost_with_discount(tile, _hex, _entity, _spender, base_cost)
+          return 0 if tile.name == 'PNW3'
+
           [base_cost - (40 * current_builder_cubes(tile)), 0].max
         end
 
@@ -994,8 +1060,60 @@ module Engine
           corporation_by_id(@minor_associations[minor.id])
         end
 
+        def associated_minor(major)
+          corporation_by_id(@minor_associations.keys.find { |m| @minor_associations[m] == major.id })
+        end
+
         def forest?(tile)
           tile.terrain.include?(:forest)
+        end
+
+        def transfer_posessions(from, to)
+          receiving = []
+
+          if from.cash.positive?
+            receiving << format_currency(from.cash)
+            from.spend(from.cash, to)
+          end
+
+          companies = transfer(:companies, from, to).map(&:name)
+          receiving << "companies (#{companies.join(', ')})" unless companies.empty?
+
+          trains = transfer(:trains, from, to).map(&:name)
+          receiving << "trains (#{trains})" unless trains.empty?
+
+          from.tokens.each do |token|
+            next unless token == coal_token
+
+            token.corporation = to
+            to.tokens << token
+            receiving << 'Mine token'
+          end
+
+          log << "#{to.name} receives #{receiving.join(', ')} from #{from.name}" unless receiving.empty?
+        end
+
+        def close_minor(minor)
+          minor.owner.shares_by_corporation.delete(minor)
+          minor.close!
+          corporations.delete(minor)
+        end
+
+        def check_destination_duplicate(entity, hex)
+          city = hex.tile.cities.first
+          return unless city.tokened_by?(entity)
+
+          @log << "#{entity.name} has an existing token on its destination #{hex.name} and will pick it up as an available token"
+          entity.tokens.find { |t| t.city == city }.remove!
+        end
+
+        def after_lay_tile(hex, old_tile, tile)
+          hex.neighbors[1].tile.borders.shift if hex.id == 'H13' && tile.exits.include?(1)
+          super
+        end
+
+        def home_token_can_be_cheater
+          true
         end
       end
     end

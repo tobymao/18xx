@@ -706,11 +706,6 @@ module Engine
           minors.select { |m| m.owner == player }
         end
 
-        def player_sort(entities)
-          minors, majors = entities.partition(&:minor?)
-          (minors.sort_by { |m| m.name.to_i } + majors.sort_by(&:name)).group_by(&:owner)
-        end
-
         def game_location_names
           if multiplayer?
             {

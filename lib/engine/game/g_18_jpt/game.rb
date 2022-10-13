@@ -208,7 +208,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18JPT::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -248,12 +248,6 @@ module Engine
           route.hexes.each { |hex| str += " + Bonus from #{hex.name}" if ability.hexes.include?(hex.name) }
 
           str
-        end
-
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
         end
 
         def tile_lays(entity)

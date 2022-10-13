@@ -48,11 +48,17 @@ module Engine
 
         EBUY_PRES_SWAP = false
 
+        EBUY_CAN_SELL_SHARES = false
+
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
+        EBUY_CORP_LOANS_RECEIVERSHIP = true
+
         DISCARDED_TRAINS = :remove
+
+        TRACK_RESTRICTION = :permissive
 
         MARKET = [
           %w[0c
@@ -141,6 +147,19 @@ module Engine
           stock_market: 'Corporation hit max stock value or Bank of England has given 16 or more loans',
           custom: 'Fifth corporation is in receivership',
         }.freeze
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['Loan taken - Corporation', '2 ←'],
+            ['Additional loans taken during forced train buy', '3 ←'],
+            ['Loan granted - BOE', '1 →'],
+            ['One or more shares sold (Except BOE)', '1 ↓'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+          ]
+        end
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or, custom: :full_or }.freeze
 
@@ -442,7 +461,7 @@ module Engine
             simple_logo: '1848/CAR.alt',
             tokens: [0, 40, 100],
             coordinates: 'E4',
-            color: '#232b2b',
+            color: 'black',
           },
           {
             sym: 'VR',
@@ -452,7 +471,7 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'H11',
             text_color: 'black',
-            color: 'gold',
+            color: '#ffe600',
           },
           {
             sym: 'NSW',
@@ -462,7 +481,7 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'F17',
             text_color: 'black',
-            color: 'orange',
+            color: '#ff9027',
           },
           {
             sym: 'SAR',
@@ -471,7 +490,7 @@ module Engine
             simple_logo: '1848/SAR.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'G6',
-            color: 'darkMagenta',
+            color: '#9e2a97',
           },
           {
             sym: 'COM',
@@ -479,7 +498,8 @@ module Engine
             logo: '1848/COM',
             simple_logo: '1848/COM.alt',
             tokens: [0, 0, 100, 100, 100],
-            color: 'dimGray',
+            text_color: 'black',
+            color: '#cfc5a2',
           },
           {
             sym: 'FT',
@@ -488,7 +508,8 @@ module Engine
             simple_logo: '1848/FT.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'G14',
-            color: 'mediumBlue',
+            text_color: 'black',
+            color: '#55c3ec',
           },
           {
             sym: 'WA',
@@ -497,7 +518,7 @@ module Engine
             simple_logo: '1848/WA.alt',
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'D1',
-            color: 'maroon',
+            color: '#ee332a',
           },
           {
             sym: 'QR',
@@ -506,7 +527,7 @@ module Engine
             simple_logo: '1848/QR.alt',
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'B19',
-            color: 'darkGreen',
+            color: '#399c42',
           },
         ].freeze
 
@@ -688,16 +709,15 @@ module Engine
 
         def crowded_corps
           # 2E does not create a crowded corp
-          @crowded_corps ||= (minors + corporations).select do |c|
-            c.trains.count { |t| !t.obsolete && t.name != '2E' } > train_limit(c)
+          @crowded_corps ||= corporations.select do |c|
+            c.trains.count { |t| t.name != '2E' } > train_limit(c)
           end
         end
 
         def must_buy_train?(entity)
           # 2E does not count as compulsory train purchase
           entity.trains.reject { |t| t.name == '2E' }.empty? &&
-            !depot.depot_trains.empty? &&
-             (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase))
+            !depot.depot_trains.empty? && @graph.route_info(entity)&.dig(:route_train_purchase)
         end
 
         # for 3 players corp share limit is 70%

@@ -76,13 +76,16 @@ class Api
                 acting.delete(user)
 
                 if game.status != 'finished' && meta['game_status'] == 'finished'
-                  meta['finished_at'] ||= Time.now
-                  meta['manually_ended'] ||= true
+                  meta['finished_at'] = Time.now
+                  meta['manually_ended'] = true unless meta.key?('manually_ended')
 
                   # If the game_result keys are not user ids, fix them up here
                   if meta['game_result'].keys.any? { |key| key.to_i.to_s != key }
                     meta['game_result'].transform_keys! { |name| game.players.find { |p| p.name == name }.id.to_s }
                   end
+                else
+                  meta['finished_at'] = nil
+                  meta['manually_ended'] = nil
                 end
 
                 game.result = meta['game_result']
@@ -221,6 +224,8 @@ class Api
       game.status = 'finished'
     else
       game.result = {}
+      game.finished_at = nil
+      game.manually_ended = nil
       game.status = 'active'
     end
 

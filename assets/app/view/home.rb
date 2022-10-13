@@ -21,12 +21,9 @@ module View
 
       children = [
         render_header,
-        h(Welcome, show_intro: your_games.size < 2),
+        h(Welcome, show_intro: your_games.empty?),
         h(Chat, user: @user, connection: @connection),
       ]
-
-      # these will show up in the profile page
-      your_games.reject! { |game| %w[finished archived].include?(game['status']) }
 
       grouped = other_games.group_by { |game| game['status'] }
 
@@ -49,9 +46,9 @@ module View
 
       render_row(children, 'Your Games', your_games, :personal) if @user
       render_row(children, 'Hotseat Games', hotseat, :hotseat) if hotseat.any?
-      render_row(children, 'New Games', grouped['new'], :new) if @user
-      render_row(children, 'Active Games', grouped['active'], :active)
-      render_row(children, 'Finished Games', grouped['finished'], :finished)
+      render_row(children, 'New Games', grouped['new']&.sort_by { |g| -g['created_at'] }, :new) if @user
+      render_row(children, 'Active Games', grouped['active']&.sort_by { |g| -g['updated_at'] }, :active)
+      render_row(children, 'Finished Games', grouped['finished']&.sort_by { |g| -g['finished_at'] }, :finished)
       render_filter_row(children)
 
       game_refresh

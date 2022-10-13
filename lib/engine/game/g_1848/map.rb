@@ -49,9 +49,21 @@ module Engine
           '69' => 1,
           '70' => 1,
           '235' => 3,
-          '236' => 2,
-          '237' => 1,
-          '238' => 1,
+          '236' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=K',
+          },
+          '237' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=K',
+          },
+          '238' => {
+            'count' => 2,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=K',
+          },
           '239' => 3,
           '240' => 2,
           '241' => {

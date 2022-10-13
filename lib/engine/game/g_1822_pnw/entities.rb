@@ -10,7 +10,7 @@ module Engine
             sym: 'P1',
             value: 0,
             revenue: 5,
-            desc: 'MAJOR, Phase 5. 5-Train. Once a company acquires it, this is a notmal 5-train that is subject to '\
+            desc: 'MAJOR, Phase 5. 5-Train. Once a company acquires it, this is a normal 5-train that is subject to '\
                   'all of the normal rules.  It is not a "special train" and is not subject to the rules that are '\
                   'specific to special trains.  A company can acquire this private company at the start of its turn, '\
                   'even if it is already at it\'s train limit, as this counts as an acquisition action, not a train '\
@@ -162,7 +162,7 @@ module Engine
             desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income '\
                   'into its treasury equal to one half of the base value of the start and end '\
                   'stations from one of the trains operated. Modifications to values (for '\
-                  'E-trains, a 3/2-train, or destination tokens) do not apply. An L-train may '\
+                  'E-trains or destination tokens) do not apply. An L-train may '\
                   'deliver mail within a single city. The company is not required to maximize '\
                   'the dividend from its run if it wishes to maximize its revenue from the mail '\
                   'contract by stopping at a large city and not running beyond it to include '\
@@ -255,7 +255,7 @@ module Engine
             revenue: 10,
             desc: 'MAJOR, Phase 3. Replace a spike going to water with this tile. Lay this tile on '\
                   'a spike that does not already have a port. The spike now counts as a 40 '\
-                  '(gren)/50 (brown)/60 (gray) and is treated like a gray off-board area for '\
+                  '(green)/50 (brown)/60 (gray) and is treated like a gray off-board area for '\
                   'counting train runs for all companies. This is in addition to the company’s '\
                   'normal tile placement and the company does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
@@ -391,9 +391,10 @@ module Engine
             sym: 'P19',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Use this private to use a track '\
-                  'action to place the Rockport Coal special tile (PNW4) in '\
-                  'any mountain hex. Only the owning company can run a '\
+            desc: 'MAJOR/MINOR, Phase 3. Use this private to use a yellow track '\
+                  'placement to place the Rockport Coal special tile (PNW4) in '\
+                  'any mountain hex. The owning company must be able to trace to '\
+                  'the hex the mine is placed on. Only the owning company can run a '\
                   'train through the city spot on the Rockport Coal special tile '\
                   '(PNW4). Any company can pay the upgrade cost or use '\
                   'building cubes to upgrade the Rockport Coal Special tile '\
@@ -419,7 +420,7 @@ module Engine
             sym: 'P20',
             value: 0,
             revenue: 0,
-            desc: 'MAJOR/MINOR, Phase 2. When this private is '\
+            desc: 'MAJOR/MINOR, Phase 1. When this private is '\
                   'acquired by a non-associated minor company, choose an '\
                   'associated minor company that is currently not operational '\
                   'or in an auction box. That minor is removed from the game '\
@@ -448,14 +449,14 @@ module Engine
             color: nil,
           },
           {
-            name: 'MINOR: 1. Pacfic Great Eastern Railway',
+            name: 'MINOR: 1. Pacific Great Eastern Railway',
             sym: 'M1',
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Canadian Pacific Railway (CPR). Starting location is A8.',
+                  'Associated with the Canadian Pacific Railway (CPR). Starting location is A8 (Vancouver, BC).',
             abilities: [],
-            color: '#e51c00',
+            color: '#EF1D24',
             text_color: 'white',
           },
           {
@@ -463,7 +464,7 @@ module Engine
             sym: 'M2',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is B19.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is B19 (Republic).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -473,7 +474,7 @@ module Engine
             sym: 'M3',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D11.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D11 (Bellingham).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -483,7 +484,7 @@ module Engine
             sym: 'M4',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D19.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D19 (Brewster).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -494,9 +495,9 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Great Northern Railway (GNR). Starting location is D23.',
+                  'Associated with the Great Northern Railway (GNR). Starting location is D23 (Newport).',
             abilities: [],
-            color: '#fab506',
+            color: '#6BCFF7',
             text_color: 'white',
           },
           {
@@ -504,7 +505,7 @@ module Engine
             sym: 'M6',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is F9.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is F9 (Port Townsend).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -515,9 +516,9 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Chicago, Milwaukee, & Puget Sound Railway (CMPS). Starting location is F23.',
+                  'Associated with the Chicago, Milwaukee, & Puget Sound Railway (CMPS). Starting location is F23 (Spokane).',
             abilities: [],
-            color: '#000000',
+            color: '#F69B1D',
             text_color: 'white',
           },
           {
@@ -526,17 +527,17 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Seattle & Walla Walla Railroad (SWW). Starting location is H11.',
+                  'Associated with the Seattle & Walla Walla Railroad (SWW). Starting location is H11 (Seattle).',
             abilities: [],
-            color: '#ff3600',
-            text_color: 'black',
+            color: '#238541',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 9. Wenatchee Valley Railroad',
             sym: 'M9',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is H19.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is H19 (Leavenworth).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -546,7 +547,7 @@ module Engine
             sym: 'M10',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is I12.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is I12 (Tacoma).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -556,7 +557,7 @@ module Engine
             sym: 'M11',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J5.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J5 (Aberdeen).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -566,7 +567,7 @@ module Engine
             sym: 'M12',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J23.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J23 (Sprague).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -576,7 +577,7 @@ module Engine
             sym: 'M13',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L19.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L19 (Yakima).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -586,7 +587,7 @@ module Engine
             sym: 'M14',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L23.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L23 (Lewiston Junction).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -596,7 +597,7 @@ module Engine
             sym: 'M15',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M4.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M4 (Ilwaco).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -606,7 +607,7 @@ module Engine
             sym: 'M16',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is N5.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is N5 (Astoria).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -617,9 +618,9 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Spokane, Portland, & Seattle Railroad (SPS). Starting location is O8.',
+                  'Associated with the Spokane, Portland, & Seattle Railroad (SPS). Starting location is O8 (Portland).',
             abilities: [],
-            color: '#004c6c',
+            color: '#8D061B',
             text_color: 'white',
           },
           {
@@ -628,9 +629,9 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Oregon Railroad & Navigation Co. (ORNC). Starting location is O8.',
+                  'Associated with the Oregon Railroad & Navigation Co. (ORNC). Starting location is O8 (Portland).',
             abilities: [],
-            color: '#850040',
+            color: '#3078C1',
             text_color: 'white',
           },
           {
@@ -638,7 +639,8 @@ module Engine
             sym: 'M19',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is O14.',
+            desc: 'A 50% director’s certificate in the associated minor company. '\
+                  'Starting location is O14 (Stevenson Cascade Locks).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -649,17 +651,17 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Northern Pacific Railroad (NP). Starting location is O20.',
+                  'Associated with the Northern Pacific Railroad (NP). Starting location is O20 (Wallula).',
             abilities: [],
-            color: '#ff7b93',
-            text_color: 'black',
+            color: '#221E20',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 21. The Great Southern Railroad',
             sym: 'M21',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is P17.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is P17 (The Dalles).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -669,9 +671,9 @@ module Engine
             sym: 'MA',
             value: 100,
             revenue: 10,
-            desc: 'Ownership certificate in the Vancouver Regional Railway. Starting location is O10.',
+            desc: 'Ownership certificate in the Vancouver Regional Railway. Starting location is O10 (Vancouver, WA).',
             abilities: [],
-            color: '#ffffff',
+            color: '#808080',
             text_color: 'black',
           },
           {
@@ -679,9 +681,9 @@ module Engine
             sym: 'MB',
             value: 100,
             revenue: 10,
-            desc: 'Ownership certificate in the Tacoma Regional Railway. Starting location is I12.',
+            desc: 'Ownership certificate in the Tacoma Regional Railway. Starting location is I12 (Tacoma).',
             abilities: [],
-            color: '#ffffff',
+            color: '#808080',
             text_color: 'black',
           },
           {
@@ -689,9 +691,9 @@ module Engine
             sym: 'MC',
             value: 100,
             revenue: 10,
-            desc: 'Ownership certificate in the Calgary Regional Railway. Starting location is A22/B23.',
+            desc: 'Ownership certificate in the Calgary Regional Railway. Starting location is A22/B23 (Calgary).',
             abilities: [],
-            color: '#ffffff',
+            color: '#808080',
             text_color: 'black',
           },
         ].freeze
@@ -699,7 +701,7 @@ module Engine
         CORPORATIONS = [
           {
             sym: '1',
-            name: 'Pacfic Great Eastern Railway',
+            name: 'Pacific Great Eastern Railway',
             logo: '1822/1',
             tokens: [0],
             type: 'minor',
@@ -710,9 +712,15 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'A8',
             city: 0,
-            color: '#e51c00',
+            color: '#EF1D24',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for CPR',
+              },
+            ],
           },
           {
             sym: '2',
@@ -778,9 +786,15 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'D23',
             city: 0,
-            color: '#fab506',
+            color: '#6BCFF7',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for GNR',
+              },
+            ],
           },
           {
             sym: '6',
@@ -812,9 +826,15 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'F23',
             city: 0,
-            color: '#000000',
+            color: '#F69B1D',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for CMPS',
+              },
+            ],
           },
           {
             sym: '8',
@@ -829,9 +849,15 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'H11',
             city: 0,
-            color: '#ff3600',
+            color: '#238541',
             text_color: '#black',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for SWW',
+              },
+            ],
           },
           {
             sym: '9',
@@ -982,9 +1008,15 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O8',
             city: 0, ## Todo - Check
-            color: '#004c6c',
+            color: '#8D061B',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for SPS',
+              },
+            ],
           },
           {
             sym: '18',
@@ -999,9 +1031,15 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O8',
             city: 1, ## Todo - Check
-            color: '#850040',
+            color: '#3078C1',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for ORNC',
+              },
+            ],
           },
           {
             sym: '19',
@@ -1015,7 +1053,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             coordinates: 'O14',
-            city: 0,
+            city: 1,
             color: '#ffffff',
             text_color: 'black',
             reservation_color: nil,
@@ -1033,9 +1071,15 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O20',
             city: 0,
-            color: '#ff7b93',
-            text_color: '#black',
+            color: '#221E20',
+            text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for NP',
+              },
+            ],
           },
           {
             sym: '21',
@@ -1067,7 +1111,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O10',
             city: 0,
-            color: '#008264',
+            color: '#808080',
             text_color: 'white',
             reservation_color: nil,
           },
@@ -1084,7 +1128,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'I12',
             city: 0,
-            color: '#008264',
+            color: '#808080',
             text_color: 'white',
             reservation_color: nil,
           },
@@ -1101,7 +1145,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'A22',
             city: 0,
-            color: '#008264',
+            color: '#808080',
             text_color: 'white',
             reservation_color: nil,
           },
@@ -1111,11 +1155,11 @@ module Engine
             logo: '1822_pnw/NP',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'O20',
             city: 4,
-            color: '#ff7b93',
+            color: '#221E20',
             reservation_color: nil,
             destination_coordinates: 'I12',
             destination_icon: '1822_pnw/NP_DEST',
@@ -1126,11 +1170,11 @@ module Engine
             logo: '1822_pnw/CPR',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'A8',
             city: 2,
-            color: '#e51c00',
+            color: '#EF1D24',
             reservation_color: nil,
             destination_coordinates: 'A22',
             destination_icon: '1822_pnw/CPR_DEST',
@@ -1141,10 +1185,10 @@ module Engine
             logo: '1822_pnw/GNR',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'D23',
-            color: '#fab506',
+            color: '#6BCFF7',
             text_color: 'black',
             reservation_color: nil,
             destination_coordinates: 'D11',
@@ -1156,11 +1200,11 @@ module Engine
             logo: '1822_pnw/ORNC',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'O8',
             city: 3,
-            color: '#850040',
+            color: '#3078C1',
             reservation_color: nil,
             destination_coordinates: 'O20',
             destination_icon: '1822_pnw/ORNC_DEST',
@@ -1171,10 +1215,10 @@ module Engine
             logo: '1822_pnw/SPS',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'O8',
-            color: '#004c6c',
+            color: '#8D061B',
             reservation_color: nil,
             destination_coordinates: 'F23',
             destination_icon: '1822_pnw/SPS_DEST',
@@ -1185,10 +1229,10 @@ module Engine
             logo: '1822_pnw/CMPS',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'F23',
-            color: '#000000',
+            color: '#F69B1D',
             reservation_color: nil,
             destination_coordinates: 'H11',
             destination_icon: '1822_pnw/CMPS_DEST',
@@ -1199,11 +1243,11 @@ module Engine
             logo: '1822_pnw/SWW',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'H11',
             city: 5,
-            color: '#ff3600',
+            color: '#238541',
             reservation_color: nil,
             destination_coordinates: 'O22',
             destination_icon: '1822_pnw/SWW_DEST',

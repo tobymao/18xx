@@ -222,6 +222,9 @@ module Engine
       # if sold more than needed then cannot then buy a cheaper train in the depot.
       EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = false
 
+      # loans taken during ebuy can lead to receviership
+      EBUY_CORP_LOANS_RECEIVERSHIP = false
+
       # when is the home token placed? on...
       # par
       # float
@@ -878,6 +881,11 @@ module Engine
           (train.obsolete_on == purchased_train.sym && @depot.discarded.include?(train))
       end
 
+      # Before obsoleting, check if this specific train should obsolete.
+      def obsolete?(train, purchased_train)
+        train.obsolete_on == purchased_train.sym
+      end
+
       def shares
         @corporations.flat_map(&:shares)
       end
@@ -1405,6 +1413,10 @@ module Engine
         raise NotImplementedError
       end
 
+      def home_token_can_be_cheater
+        false
+      end
+
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
         # If a corp has laid it's first token assume it's their home token
@@ -1446,10 +1458,14 @@ module Engine
         cities = tile.cities
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
         token = corporation.find_token_by_type
-        return unless city.tokenable?(corporation, tokens: token)
 
-        @log << "#{corporation.name} places a token on #{hex.name}"
-        city.place_token(corporation, token)
+        if city.tokenable?(corporation, tokens: token)
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token)
+        elsif home_token_can_be_cheater
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token, cheater: true)
+        end
       end
 
       def graph_for_entity(_entity)
@@ -1949,7 +1965,7 @@ module Engine
         owners = Hash.new(0)
 
         trains.each do |t|
-          next if t.obsolete || t.obsolete_on != train.sym
+          next if t.obsolete || !obsolete?(t, train)
 
           obsolete_trains << t.name
           t.obsolete = true
@@ -1980,7 +1996,13 @@ module Engine
 
       def progress_information; end
 
-      def assignment_tokens(assignment)
+      def assignment_tokens(assignment, simple_logos = false)
+        if assignment.is_a?(Engine::Corporation)
+          return assignment.simple_logo if simple_logos && assignment.simple_logo
+
+          return assignment.logo
+        end
+
         self.class::ASSIGNMENT_TOKENS[assignment]
       end
 
@@ -2710,7 +2732,7 @@ module Engine
       end
 
       def player_sort(entities)
-        entities.sort_by(&:name).group_by(&:owner)
+        entities.sort_by { |entity| [operating_order.index(entity) || Float::INFINITY, entity.name] }.group_by(&:owner)
       end
 
       def bank_sort(corporations)
@@ -2941,6 +2963,8 @@ module Engine
       def force_unconditional_stock_pass?
         false
       end
+
+      def second_icon(corporation); end
     end
   end
 end

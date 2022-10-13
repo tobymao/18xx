@@ -325,6 +325,14 @@ module Engine
           @cce_corporation ||= corporation_by_id('CCE')
         end
 
+        def cme
+          @cme_corporation ||= corporation_by_id('CME')
+        end
+
+        def dee
+          @dee_corporation ||= corporation_by_id('DEE')
+        end
+
         def keg
           @keg_corporation ||= corporation_by_id('KEG')
         end
@@ -510,13 +518,43 @@ module Engine
         end
 
         def place_home_token(corporation)
-          return super unless corporation == cce
+          # CCE, CME, DEE, RHE used Rhine Metropolis tiles as home location
+          # (in case of CCE one of them, the other is in a normal hex).
+          # These tiles have a varying number of cities depdning on color.
+          # 3 for yellow, 2 for green, 1 for brown/gray. In case of green
+          # the city to choose (west or east bank) depending on corporation.
+          return super unless %w[CCE CME DEE RhE].include?(corporation.id)
           return if corporation.tokens.first&.used == true
 
-          cce.coordinates.each_with_index do |coordinate, index|
-            place_free_token(cce, coordinate, index, silent: false)
+          case corporation.id
+          when 'CCE'
+            cce.coordinates.each do |coordinate|
+              # CCE start at both a normal and a Rhine Metropolis hex.
+              # Green location is city 0 in both case (left bank or only city)
+              place_rhine_metropolis_home_token(cce, coordinate, 0)
+            end
+            cce.coordinates = [cce.coordinates.first]
+          when 'CME'
+            place_rhine_metropolis_home_token(cme, cme.coordinates, 1) # Use right bank if green
+          when 'DEE'
+            place_rhine_metropolis_home_token(dee, dee.coordinates, 1) # Use right bank if green
+          when 'RhE'
+            place_rhine_metropolis_home_token(rhe, rhe.coordinates, 0) # Use left bank if green
           end
-          cce.coordinates = [cce.coordinates.first]
+        end
+
+        def place_rhine_metropolis_home_token(corp, coordinate, green_location)
+          cities = hex_by_id(coordinate).tile.cities
+          index =
+            case cities.size
+            when 3 # Yellow tile
+              corp.city
+            when 2 # Green tile, use bank depending on corporation
+              green_location
+            when 1 # Brown/Gray tile
+              0
+            end
+          place_free_token(corp, coordinate, index, silent: false)
         end
 
         UPGRADES_TO_88 = %w[1 55].freeze
@@ -939,8 +977,6 @@ module Engine
         def place_free_token(corporation, hex_name, city_number, silent: true)
           hex = hex_by_id(hex_name).tile
 
-          # If tile has been upgraded to green - then it is just one city with slots
-          city_number = 0 if hex.cities.one?
           hex.cities[city_number].place_token(corporation, corporation.next_token, free: true)
           @log << "#{corporation.name} places a token on #{hex_name}" unless silent
         end

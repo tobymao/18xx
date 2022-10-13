@@ -51,6 +51,8 @@ def import_game(game_id)
   # Clean up game json
   game_json['created_at'] = Time.at(game_json['created_at'])
   game_json['updated_at'] = Time.at(game_json['updated_at'])
+  game_json['finished_at'] = Time.at(game_json['finished_at']) if game_json['finished_at']
+
   game_json['user_id'] = user_json['id']
   # Synthetic: Denormalized user-specific subset of settings
   game_json.delete('user_settings')
