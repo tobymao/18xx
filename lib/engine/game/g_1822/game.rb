@@ -1104,30 +1104,15 @@ module Engine
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
 
-          # Init all the special upgrades
-          @sharp_city ||= @tiles.find { |t| t.name == '5' }
-          @gentle_city ||= @tiles.find { |t| t.name == '6' }
-          @green_s_tile ||= @tiles.find { |t| t.name == 'X3' }
-          @green_t_tile ||= @tiles.find { |t| t.name == '405' }
-
-          # Initialize the extra city which minor 14 might add
-          @minor_14_city_exit = nil
-
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
-          # Initialize a dummy player for P15-HR and P20-C&WR
+          # Initialize a dummy player for phase revenue companies
           # to hold the cash it generates
           @phase_revenue = {}
           self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
             @phase_revenue[company_id] = Engine::Player.new(-1, company_id)
           end
-
-          # Initialize a dummy player for Tax haven to hold the share and the cash it generates
-          @tax_haven = Engine::Player.new(-1, 'Tax Haven')
-
-          # Initialize the stock round choice for P9-M&GNR
-          @midland_great_northern_choice = nil
 
           # Randomize and setup the companies
           setup_companies
@@ -1140,6 +1125,26 @@ module Engine
 
           # Setup all the destination tokens, icons and abilities
           setup_destinations
+
+          # Setup all the game specific things
+          setup_game_specific
+        end
+
+        def setup_game_specific
+          # Init all the special upgrades
+          @sharp_city ||= @tiles.find { |t| t.name == '5' }
+          @gentle_city ||= @tiles.find { |t| t.name == '6' }
+          @green_s_tile ||= @tiles.find { |t| t.name == 'X3' }
+          @green_t_tile ||= @tiles.find { |t| t.name == '405' }
+
+          # Initialize the extra city which minor 14 might add
+          @minor_14_city_exit = nil
+
+          # Initialize a dummy player for Tax haven to hold the share and the cash it generates
+          @tax_haven = Engine::Player.new(-1, 'Tax Haven')
+
+          # Initialize the stock round choice for P9-M&GNR
+          @midland_great_northern_choice = nil
         end
 
         def sorted_corporations
