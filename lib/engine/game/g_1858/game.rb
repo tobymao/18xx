@@ -338,6 +338,12 @@ module Engine
           @graph_broad.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) } \
             || @graph_metre.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) }
         end
+
+        def payout_companies
+          # Private railways owned by public companies don't pay out.
+          exchanged_companies = @companies.select { |company| company.owner.corporation? }
+          super(ignore: exchanged_companies.map(&:id))
+        end
       end
     end
   end
