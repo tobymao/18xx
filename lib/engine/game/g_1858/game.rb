@@ -126,7 +126,7 @@ module Engine
 
         def operating_round(round_num)
           @round_num = round_num
-          Round::Operating.new(self, [
+          G1858::Round::Operating.new(self, [
             G1858::Step::Track,
             G1858::Step::Token,
             G1858::Step::Route,
@@ -343,6 +343,17 @@ module Engine
           # Private railways owned by public companies don't pay out.
           exchanged_companies = @companies.select { |company| company.owner.corporation? }
           super(ignore: exchanged_companies.map(&:id))
+        end
+
+        def close_company(company)
+          owner = company.owner
+          message = "#{company.id} closes."
+          unless owner == @bank
+            message += " #{owner.name} receives #{format_currency(company.value)}."
+            @bank.spend(company.value, owner)
+          end
+          company.close!
+          @log << message
         end
       end
     end
