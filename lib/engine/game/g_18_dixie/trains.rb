@@ -78,6 +78,7 @@ module Engine
               events: [{ 'type' => 'scl_formation_chance' }],
               price: 800,
             ],
+            variant_event_handling: :individual,
           },
           {
             name: '5D',
@@ -86,6 +87,7 @@ module Engine
             events: [{ 'type' => 'icg_formation_chance' }],
             price: 900,
             num: 5,
+            variant_event_handling: :individual,
           },
         ].freeze
       end
