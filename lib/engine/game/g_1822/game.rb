@@ -335,6 +335,8 @@ module Engine
         BIDDING_BOX_START_CONCESSION = 'C1'
         BIDDING_BOX_START_PRIVATE = 'P1'
 
+        TWO_HOME_CORPORATION = 'LNWR'
+
         BIDDING_TOKENS = {
           '2': 7,
           '3': 6,
@@ -384,17 +386,17 @@ module Engine
         COMPANY_MTONR = 'P2'
         COMPANY_LCDR = 'P5'
         COMPANY_EGR = 'P8'
-        COMPANY_MGNR = 'P9'
-        COMPANY_MGNR_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
+        COMPANY_DOUBLE_CASH = 'P9'
+        COMPANY_DOUBLE_CASH_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
         COMPANY_GSWR = 'P10'
         COMPANY_GSWR_DISCOUNT = 40
         COMPANY_BER = 'P11'
         COMPANY_LSR = 'P12'
-        COMPANY_HR = 'P15'
+        COMPANY_10X_REVENUE = 'P15'
         COMPANY_OSTH = 'P16'
         COMPANY_LUR = 'P17'
         COMPANY_CHPR = 'P18'
-        COMPANY_CWR = 'P20'
+        COMPANY_5X_REVENUE = 'P20'
         COMPANY_HSBC = 'P21'
         COMPANY_HSBC_TILE_LAYS = [
           { lay: true, upgrade: true },
@@ -628,7 +630,7 @@ module Engine
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
           on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
           on_acquired_phase_revenue(company) if self.class::PRIVATE_PHASE_REVENUE.include?(company.id)
-          on_aqcuired_midland_great_northern(company) if self.class::COMPANY_MGNR == company.id
+          on_aqcuired_double_cash(company) if self.class::COMPANY_DOUBLE_CASH == company.id
         end
 
         def company_status_str(company)
@@ -975,9 +977,9 @@ module Engine
 
             if self.class::PRIVATE_PHASE_REVENUE.include?(c.id)
               multiplier = case c.id
-                           when self.class::COMPANY_HR
+                           when self.class::COMPANY_10X_REVENUE
                              10
-                           when self.class::COMPANY_CWR
+                           when self.class::COMPANY_5X_REVENUE
                              5
                            end
               revenue = @phase.name.to_i * multiplier
@@ -986,8 +988,8 @@ module Engine
               @log << "#{c.name} collects #{format_currency(revenue)}"
             end
 
-            if c.id == self.class::COMPANY_MGNR && c.owner.corporation?
-              c.revenue = self.class::COMPANY_MGNR_REVENUE[@phase.name.to_i]
+            if c.id == self.class::COMPANY_DOUBLE_CASH && c.owner.corporation?
+              c.revenue = self.class::COMPANY_DOUBLE_CASH_REVENUE[@phase.name.to_i]
             end
           end
         end
@@ -999,7 +1001,7 @@ module Engine
 
           # Special for LNWR, it gets its destination token. But wont get the bonus until home
           # and destination is connected
-          return unless corporation.id == 'LNWR'
+          return unless corporation.id == self.class::TWO_HOME_CORPORATION
 
           hex = hex_by_id(corporation.destination_coordinates)
           token = corporation.find_token_by_type(:destination)
@@ -1029,19 +1031,19 @@ module Engine
           current_order = @players.dup.reverse
           @players.sort_by! do |p|
             cash = p.cash
-            cash *= 2 if @midland_great_northern_choice == p
+            cash *= 2 if @double_cash_choice == p
             [cash, current_order.index(p)]
           end.reverse!
 
           player_order = @players.map do |p|
-            double = ' doubled' if @midland_great_northern_choice == p
+            double = ' doubled' if @double_cash_choice == p
             "#{p.name} (#{format_currency(p.cash)}#{double})"
           end.join(', ')
 
           @log << "-- New player order: #{player_order}"
 
           # Reset the choice for P9-M&GNR
-          @midland_great_northern_choice = nil
+          @double_cash_choice = nil
         end
 
         def revenue_for(route, stops)
@@ -1144,7 +1146,7 @@ module Engine
           @tax_haven = Engine::Player.new(-1, 'Tax Haven')
 
           # Initialize the stock round choice for P9-M&GNR
-          @midland_great_northern_choice = nil
+          @double_cash_choice = nil
         end
 
         def sorted_corporations
@@ -1421,7 +1423,7 @@ module Engine
         end
 
         def choices_entities
-          company = company_by_id(self.class::COMPANY_MGNR)
+          company = company_by_id(self.class::COMPANY_DOUBLE_CASH)
           return [] unless company&.owner&.player?
 
           [company.owner]
@@ -1445,8 +1447,8 @@ module Engine
             company_choices_lcdr(company, time)
           when self.class::COMPANY_LUR
             company_choices_lur(company, time)
-          when self.class::COMPANY_MGNR
-            company_choices_mgnr(company, time)
+          when self.class::COMPANY_DOUBLE_CASH
+            company_choices_double_cash(company, time)
           when self.class::COMPANY_OSTH
             company_choices_osth(company, time)
           else
@@ -1520,8 +1522,8 @@ module Engine
           choices
         end
 
-        def company_choices_mgnr(company, time)
-          return {} if @midland_great_northern_choice || !company.owner&.player? || time != :choose
+        def company_choices_double_cash(company, time)
+          return {} if @double_cash_choice || !company.owner&.player? || time != :choose
 
           choices = {}
           choices['double'] = 'Double your actual cash holding when determining player turn order.'
@@ -1550,8 +1552,8 @@ module Engine
           case company.id
           when self.class::COMPANY_EGR
             company_made_choice_egr(company, choice, time)
-          when self.class::COMPANY_MGNR
-            company_made_choice_mgnr(company)
+          when self.class::COMPANY_DOUBLE_CASH
+            company_made_choice_double_cash(company)
           when self.class::COMPANY_LCDR
             company_made_choice_lcdr(company)
           when self.class::COMPANY_LUR
@@ -1626,8 +1628,8 @@ module Engine
           company.close!
         end
 
-        def company_made_choice_mgnr(company)
-          @midland_great_northern_choice = company.owner
+        def company_made_choice_double_cash(company)
+          @double_cash_choice = company.owner
           @log << "#{company.owner.name} chooses to double actual cash holding when determining player turn order."
         end
 
@@ -1737,8 +1739,8 @@ module Engine
           company.close!
         end
 
-        def on_aqcuired_midland_great_northern(company)
-          company.revenue = self.class::COMPANY_MGNR_REVENUE[@phase.name.to_i]
+        def on_aqcuired_double_cash(company)
+          company.revenue = self.class::COMPANY_DOUBLE_CASH_REVENUE[@phase.name.to_i]
         end
 
         def on_aqcuired_remove_revenue(company)
@@ -1825,7 +1827,7 @@ module Engine
           end
 
           # Reset the choice for P9-M&GNR
-          @midland_great_northern_choice = nil
+          @double_cash_choice = nil
         end
 
         def starting_companies
@@ -1996,7 +1998,7 @@ module Engine
           @corporations.each do |c|
             next unless c.destination_coordinates
 
-            description = if c.id == 'LNWR'
+            description = if c.id == self.class::TWO_HOME_CORPORATION
                             "Gets destination token at #{c.destination_coordinates} when floated"
                           else
                             "Connect to #{c.destination_coordinates} for your destination token"

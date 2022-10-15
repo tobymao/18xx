@@ -13,9 +13,18 @@ module Engine
         include G1822CA::Entities
         include G1822CA::Map
 
+        DOUBLE_HEX = %w[G13 I15 AB22 AG13 AH10].freeze
+
         BIDDING_BOX_START_MINOR = 'M6'
         BIDDING_BOX_START_CONCESSION = 'C2'
         BIDDING_BOX_START_PRIVATE = 'P1'
+
+        PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
+        COMPANY_DOUBLE_CASH = 'P7'
+        COMPANY_10X_REVENUE = 'P8'
+        COMPANY_5X_REVENUE = 'P9'
+
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
 
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1 (5-Train)',
@@ -113,6 +122,8 @@ module Engine
         MINOR_14_ID = '13'
         MINOR_14_HOME_HEX = 'AC21'
 
+        TWO_HOME_CORPORATION = 'CPR'
+
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
           'P2' => { acquire: %i[major minor], phase: 1 },
@@ -123,28 +134,52 @@ module Engine
           'P7' => { acquire: %i[major], phase: 3 },
           'P8' => { acquire: %i[major minor], phase: 2 },
           'P9' => { acquire: %i[major minor], phase: 2 },
-          'P10' => { acquire: %i[major], phase: 3 },
-          'P11' => { acquire: %i[none], phase: 0 },
+          'P10' => { acquire: %i[major minor], phase: 1 },
+          'P11' => { acquire: %i[major minor], phase: 1 },
           'P12' => { acquire: %i[major minor], phase: 1 },
-          'P13' => { acquire: %i[major], phase: 3 },
+          'P13' => { acquire: %i[major minor], phase: 1 },
           'P14' => { acquire: %i[major minor], phase: 1 },
           'P15' => { acquire: %i[major minor], phase: 1 },
           'P16' => { acquire: %i[major minor], phase: 1 },
           'P17' => { acquire: %i[major minor], phase: 1 },
           'P18' => { acquire: %i[major minor], phase: 1 },
-          'P19' => { acquire: %i[major], phase: 3 },
-          'P20' => { acquire: %i[major], phase: 3 },
-          'P21' => { acquire: %i[major], phase: 3 },
-          'P22' => { acquire: %i[major], phase: 3 },
-          'P23' => { acquire: %i[major], phase: 3 },
-          'P24' => { acquire: %i[major], phase: 3 },
-          'P25' => { acquire: %i[major], phase: 3 },
-          'P26' => { acquire: %i[major], phase: 3 },
-          'P27' => { acquire: %i[major], phase: 3 },
-          'P28' => { acquire: %i[major minor], phase: 3 },
+          'P19' => { acquire: %i[major minor], phase: 1 },
+          'P20' => { acquire: %i[major minor], phase: 1 },
+          'P21' => { acquire: %i[major minor], phase: 1 },
+          'P22' => { acquire: %i[major minor], phase: 1 },
+          'P23' => { acquire: %i[major minor], phase: 1 },
+          'P24' => { acquire: %i[major minor], phase: 1 },
+          'P25' => { acquire: %i[major minor], phase: 1 },
+          'P26' => { acquire: %i[major minor], phase: 1 },
+          'P27' => { acquire: %i[major minor], phase: 1 },
+          'P28' => { acquire: %i[major minor], phase: 1 },
           'P29' => { acquire: %i[major minor], phase: 1 },
           'P30' => { acquire: %i[major minor], phase: 1 },
         }.freeze
+
+        #        PRIVATE_COMPANIES_ACQUISITION = {
+        #          'P10' => { acquire: %i[major], phase: 3 },
+        #          'P11' => { acquire: %i[none], phase: 0 },
+        #          'P12' => { acquire: %i[major minor], phase: 1 },
+        #          'P13' => { acquire: %i[major], phase: 3 },
+        #          'P14' => { acquire: %i[major minor], phase: 1 },
+        #          'P15' => { acquire: %i[major minor], phase: 1 },
+        #          'P16' => { acquire: %i[major minor], phase: 1 },
+        #          'P17' => { acquire: %i[major minor], phase: 1 },
+        #          'P18' => { acquire: %i[major minor], phase: 1 },
+        #          'P19' => { acquire: %i[major], phase: 3 },
+        #          'P20' => { acquire: %i[major], phase: 3 },
+        #          'P21' => { acquire: %i[major], phase: 3 },
+        #          'P22' => { acquire: %i[major], phase: 3 },
+        #          'P23' => { acquire: %i[major], phase: 3 },
+        #          'P24' => { acquire: %i[major], phase: 3 },
+        #          'P25' => { acquire: %i[major], phase: 3 },
+        #          'P26' => { acquire: %i[major], phase: 3 },
+        #          'P27' => { acquire: %i[major], phase: 3 },
+        #          'P28' => { acquire: %i[major minor], phase: 3 },
+        #          'P29' => { acquire: %i[major minor], phase: 1 },
+        #          'P30' => { acquire: %i[major minor], phase: 1 },
+        #        }.freeze
 
         STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18 P19 P20 P21 P22 P23
                                 P24 P25 P26 P27 P28 P29 P30 C1 C2 C3 C4 C5 C6 C7 C8 C9 C10
@@ -160,25 +195,66 @@ module Engine
           format('$%.1<val>f', val: val)
         end
 
-        def setup_destinations
-          @corporations.each do |c|
-            next unless c.destination_coordinates
-
-            description = if c.id == 'CPR'
-                            "Gets destination token at #{c.destination_coordinates} when floated"
-                          else
-                            "Connect to #{c.destination_coordinates} for your destination token"
-                          end
-            ability = Ability::Base.new(
-              type: 'destination',
-              description: description
-            )
-            c.add_ability(ability)
-            c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
-                                             simple_logo: "../#{c.destination_icon}.svg",
-                                             type: :destination)
-          end
+        def setup_game_specific
+          # Initialize the stock round choice for P7-Double Cash
+          @double_cash_choice = nil
         end
+
+        # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
+        def setup_companies
+          # Randomize from preset seed to get same order
+          @companies.sort_by! { rand }
+
+          minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
+          concessions = @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
+          privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
+
+          if bidbox_start_minor
+            m6 = minors.find { |c| c.id == bidbox_start_minor }
+            minors.delete(m6)
+            minors.unshift(m6)
+          end
+
+          c2 = concessions.find { |c| c.id == bidbox_start_concession }
+          concessions.delete(c2)
+          concessions.unshift(c2)
+
+          p1 = privates.find { |c| c.id == bidbox_start_private }
+          privates.delete(p1)
+          privates.unshift(p1)
+
+          # Clear and add the companies in the correct randomize order sorted by type
+          @companies.clear
+          @companies.concat(minors)
+          @companies.concat(concessions)
+          @companies.concat(privates)
+
+          # Set the min bid on the Concessions and Minors
+          @companies.each do |c|
+            c.min_price = case c.id[0]
+                          when self.class::COMPANY_CONCESSION_PREFIX, self.class::COMPANY_MINOR_PREFIX
+                            c.value
+                          else
+                            0
+                          end
+            c.max_price = 10_000
+          end
+
+          # Setup company abilities
+          @company_trains = {}
+          @company_trains['P3'] = find_and_remove_train_by_id('2P-0', buyable: false)
+          @company_trains['P4'] = find_and_remove_train_by_id('2P-1', buyable: false)
+          @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
+          @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
+          @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
+          @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
+        end
+
+        # Stubbed out because this game doesn't it, but base 22 does
+        def company_tax_haven_bundle(choice); end
+
+        # Stubbed out because this game doesn't it, but base 22 does
+        def company_tax_haven_payout(entity, per_share); end
       end
     end
   end
