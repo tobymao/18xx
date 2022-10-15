@@ -9,6 +9,21 @@ module Engine
         class Dividend < Engine::Step::Dividend
           DIVIDEND_TYPES = %i[payout half withhold].freeze
 
+          def actions(entity)
+            return [] unless entity.corporation?
+            return [] if total_revenue(entity).zero?
+
+            ACTIONS
+          end
+
+          def total_revenue(entity)
+            @game.routes_revenue(routes) + entity.companies.sum(&:revenue)
+          end
+
+          def dividend_adjustment(entity)
+            entity.companies.sum(&:revenue)
+          end
+
           def process_dividend(action)
             return if action.entity.minor?
 
