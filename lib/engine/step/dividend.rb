@@ -32,7 +32,7 @@ module Engine
       end
 
       def dividend_options(entity)
-        revenue = @game.routes_revenue(routes)
+        revenue = @game.routes_revenue(routes) + dividend_adjustment(entity)
         dividend_types.to_h do |type|
           payout = send(type, entity, revenue)
           payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
@@ -40,9 +40,13 @@ module Engine
         end
       end
 
+      def dividend_adjustment(entity)
+        0
+      end
+
       def process_dividend(action)
         entity = action.entity
-        revenue = @game.routes_revenue(routes)
+        revenue = @game.routes_revenue(routes) + dividend_adjustment(entity)
         kind = action.kind.to_sym
         payout = dividend_options(entity)[kind]
 
