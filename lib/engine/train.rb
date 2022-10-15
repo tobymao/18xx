@@ -30,9 +30,10 @@ module Engine
       @obsolete = false
       @operated = false
       @ever_operated = false
-      @events = (opts[:events] || []).select { |e| @index == (e['when'] || 1) - 1 }
+      @events = select_events(opts[:events])
       @reserved = opts[:reserved] || false
       @requires_token = opts[:requires_token].nil? ? true : opts[:requires_token]
+      @variant_event_handling = opts[:variant_event_handling] || :default
       init_variants(opts[:variants])
     end
 
@@ -60,11 +61,16 @@ module Engine
       @variants = variants.group_by { |h| h[:name] }.transform_values(&:first)
     end
 
+    def select_events(events)
+      (events || []).select { |e| @index == (e['when'] || 1) - 1 }
+    end
+
     def variant=(new_variant)
       return unless new_variant
 
       @variant = @variants[new_variant]
-      @variant.each { |k, v| instance_variable_set("@#{k}", v) }
+      @variant.each { |k, v| instance_variable_set("@#{k}", v) unless @variant_event_handling == :individual && k == :events }
+      @events = select_events(@variant[:events]) if @variant_event_handling == :individual
 
       # Remove the @local variable, this to get the local? method evaluate the new variant
       remove_instance_variable(:@local) if defined?(@local)
