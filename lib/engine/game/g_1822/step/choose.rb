@@ -43,7 +43,7 @@ module Engine
           end
 
           def find_company(entity)
-            @company = @game.company_by_id(@game.class::COMPANY_MGNR)
+            @company = @game.company_by_id(@game.class::COMPANY_DOUBLE_CASH)
             return nil if !@company || @company&.owner != entity
 
             @company
