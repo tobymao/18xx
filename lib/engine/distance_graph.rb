@@ -60,12 +60,12 @@ module Engine
       distance,
       node_distances,
       path_distances,
+      a_distances,
+      b_distances,
       corporation,
       counter: Hash.new(0),
       &block
     )
-      return if smaller_or_equal_distance?(node_distances[node], distance)
-
       merge_distance(node_distances, node, distance)
       return if corporation && node.blocks?(corporation)
 
@@ -90,11 +90,24 @@ module Engine
           path.nodes.each do |next_node|
             next if next_node == node
 
+            # prune if we've visited next_node before from the same path and the distance isn't smaller
+            if path.a == next_node
+              next if smaller_or_equal_distance?(a_distances[path], distance)
+
+              merge_distance(a_distances, path, distance)
+            else
+              next if smaller_or_equal_distance?(b_distances[path], distance)
+
+              merge_distance(b_distances, path, distance)
+            end
+
             node_walk(
               next_node,
               distance,
               node_distances,
               path_distances,
+              a_distances,
+              b_distances,
               corporation,
               counter: ct,
               &block
@@ -124,6 +137,8 @@ module Engine
           @separate_node_types ? { city: 0, town: 0 } : { node: 0 },
           n_distances,
           p_distances,
+          {},
+          {},
           corporation,
         ) do |path, dist|
           merge_distance(h_distances, path.hex, dist)
