@@ -300,6 +300,12 @@ module Engine
 
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
+        def format_currency(val)
+          return super if (val % 1).zero?
+
+          format('$%.1<val>f', val: val)
+        end
+
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             G1822::Step::PendingToken,
