@@ -156,7 +156,7 @@ module Engine
           end
         end
 
-        if entity.company? && !ability_found
+        if entity.company? && !entity.minor? && !ability_found
           raise GameError, "#{entity.name} does not have an ability that allows them to lay this tile"
         end
 
