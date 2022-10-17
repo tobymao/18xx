@@ -56,9 +56,13 @@ module Engine
           end
 
           def process_sell_shares(action)
-            @last_share_issued_price = action.bundle.price_per_share if action.entity == current_entity
+            raise GameError, "#{entity.name} cannot sell shares at this time" unless action.entity.corporation?
 
-            super
+            @last_share_issued_price = action.bundle.price_per_share
+            @game.share_pool.sell_shares(action.bundle)
+            old_price = action.entity.share_price
+            @game.stock_market.move_left(action.entity)
+            @game.log_share_price(action.entity, old_price)
           end
 
           def process_buy_train(action)
@@ -73,6 +77,10 @@ module Engine
           end
 
           def pass!
+            if @last_share_issued_price && current_entity.trains.empty?
+              raise GameError, 'Must buy a train from the train depot after issuing shares'
+            end
+
             super
             return if current_entity.minor?
             return unless current_entity.trains.empty?
