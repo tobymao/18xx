@@ -341,7 +341,7 @@ module Engine
 
         def payout_companies
           # Private railways owned by public companies don't pay out.
-          exchanged_companies = @companies.select { |company| company.owner.corporation? }
+          exchanged_companies = @companies.select { |company| company.owner&.corporation? }
           super(ignore: exchanged_companies.map(&:id))
         end
 
