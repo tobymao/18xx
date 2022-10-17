@@ -7,6 +7,14 @@ module Engine
     module G1858
       module Step
         class Track < Engine::Step::Track
+          def actions(entity)
+            return [] unless entity == current_entity
+            return [] unless entity.minor? || entity.corporation?
+            return [] unless can_lay_tile?(entity)
+
+            ACTIONS
+          end
+
           def round_state
             # An extra field to track whether each tile lay only adds narrow gauge track.
             super.merge({ gauges_added: [] })

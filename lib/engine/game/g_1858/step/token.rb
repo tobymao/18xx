@@ -137,6 +137,12 @@ module Engine
           }.freeze
           # rubocop: enable Layout/HashAlignment, Layout/MultilineHashKeyLineBreaks
 
+          def available_tokens(entity)
+            return [] unless entity.corporation?
+
+            entity.tokens_by_type
+          end
+
           def token_cost_override(entity, city, _slot, token)
             return unless entity.corporation?
 

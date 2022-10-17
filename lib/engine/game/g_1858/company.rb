@@ -29,6 +29,14 @@ module Engine
           @floated = false
         end
 
+        def company?
+          # This should inherit from Engine::Company but for unknown reasons
+          # this isn't happening when the game is run in hotseat mode (it does
+          # work as expected in server mode). So we explicitly set this property
+          # to get rid of any differences in behaviour.
+          true
+        end
+
         def minor?
           # H&G is the exception
           !@coordinates.empty?
