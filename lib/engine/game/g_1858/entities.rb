@@ -157,7 +157,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -185,7 +185,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -213,7 +213,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -241,7 +241,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -269,7 +269,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -297,7 +297,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -325,7 +325,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -353,7 +353,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -381,7 +381,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -409,7 +409,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -437,7 +437,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -465,7 +465,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -493,7 +493,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -521,7 +521,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -549,7 +549,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -577,7 +577,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -600,7 +600,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -623,7 +623,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -646,7 +646,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -669,7 +669,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
@@ -692,7 +692,7 @@ module Engine
               },
               {
                 type: 'exchange',
-                owner: 'player',
+                owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
