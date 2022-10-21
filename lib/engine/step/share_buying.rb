@@ -5,7 +5,8 @@ require_relative 'base'
 module Engine
   module Step
     module ShareBuying
-      def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil, silent: nil)
+      def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
+                     allow_president_change: true, borrow_from: nil, silent: nil)
         check_legal_buy(entity,
                         shares,
                         exchange: exchange,
@@ -15,6 +16,7 @@ module Engine
         @game.share_pool.buy_shares(entity,
                                     shares,
                                     exchange: exchange,
+                                    exchange_price: exchange_price,
                                     swap: swap,
                                     borrow_from: borrow_from,
                                     allow_president_change: allow_president_change,
