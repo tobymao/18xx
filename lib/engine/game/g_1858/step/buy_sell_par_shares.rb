@@ -122,6 +122,10 @@ module Engine
             auctionable_companies.include?(company) &&
               (min_bid(company) <= player.cash)
           end
+
+          def log_skip(entity)
+            super unless @round.current_actions.any?
+          end
         end
       end
     end

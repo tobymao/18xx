@@ -15,7 +15,7 @@ module Engine
       class Company < Engine::Company
         include Operator
 
-        attr_reader :home_hexes, :full_name, :type, :cash
+        attr_reader :home_hexes, :full_name, :type, :cash, :reservation_color
 
         def initialize(sym:, name:, value:, revenue: 0, desc: '', abilities: [], **opts)
           super
@@ -56,6 +56,17 @@ module Engine
 
         def home_hex?(hex)
           @coordinates.include?(hex.coordinates)
+        end
+
+        # Returns the par price for a public company started using this private
+        # railway. Throws an error if called on a private that cannot be used
+        # to start a public company.
+        def par_price(stock_market)
+          unless abilities.any? { |ability| ability.type == :reservation }
+            raise GameError, "#{@sym} cannot start a public company as it does not have a home city"
+          end
+
+          stock_market.par_prices.max_by { |share_price| share_price.price <= @value ? share_price.price : 0 }
         end
       end
     end

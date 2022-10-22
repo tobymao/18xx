@@ -145,11 +145,52 @@ module Engine
           company.float!
         end
 
+        # Finds the cities that can be tokened by a public company that is
+        # being formed from a private railway company.
+        def reserved_cities(corporation, company)
+          cities.select do |city|
+            # Some cities (Zaragoza, Seville, Córdoba) have two private companies
+            # that share the space, so we need to check that there is an available
+            # space for the corporation to place a token.
+            city.reserved_by?(company) && city.tokenable?(corporation, free: true)
+          end
+        end
+
+        def place_home_token(corporation)
+          return [] if corporation.tokens.any?(&:used)
+
+          # There are two ways a public company can start, and three scenarios
+          # for placing its home token:
+          #   1) Formed by converting a private railway into a public company.
+          #      1a) The private company has one available city in its home hexes.
+          #      1b) The private company has two cities in its home hexes.
+          #   2) The public company is started by someone buying its presidency.
+          #
+          # Scenario 1a is handled by setting the home hex of the corporation. The
+          # other two scenarios require the player to make a choice, these are both
+          # done through G1858::Step::HomeToken and its call to home_token_locations.
+          if corporation.companies.any?
+            # This public company has been started from a private company.
+            company = corporation.companies.first
+            home_cities = reserved_cities(corporation, company)
+            raise GameError, "No available token slots for #{company.id}" if home_cities.empty?
+
+            corporation.coordinates = home_cities.first.hex.coordinates if home_cities.one?
+          end
+          super
+        end
+
         def home_token_locations(corporation)
-          # When starting a public company after the start of phase 5 it can
-          # choose any unoccupied city space for its first token.
-          hexes.select do |hex|
-            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+          if corporation.companies.any?
+            # This corporation is being formed from a private company and there
+            # are multiple cities that could be chosen as the starting location.
+            reserved_cities(corporation, corporation.companies.first).map(&:hex)
+          else
+            # When starting a public company after the start of phase 5 it can
+            # choose any unoccupied city space for its first token.
+            hexes.select do |hex|
+              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+            end
           end
         end
 
@@ -320,12 +361,23 @@ module Engine
           @companies.filter { |company| !company.closed? && company.owner == @bank }
         end
 
+        def exchange_for_partial_presidency?
+          true
+        end
+
+        def exchange_partial_percent(_share)
+          50
+        end
+
         def exchange_corporations(exchange_ability)
-          candidates = super
-          # A private railway can be exchanged for a share in any public company
-          # that can trace a route to any of the private's home hexes.
-          company = exchange_ability.owner
-          candidates.select { |corporation| company_corporation_connected?(company, corporation) }
+          if exchange_ability.corporations == 'any'
+            corporations.reject(&:ipoed)
+          else
+            # A private railway can be exchanged for a share in any public company
+            # that can trace a route to any of the private's home hexes.
+            company = exchange_ability.owner
+            super.select { |corporation| company_corporation_connected?(company, corporation) }
+          end
         end
 
         # Returns true if there is a valid route from any of the corporation's
