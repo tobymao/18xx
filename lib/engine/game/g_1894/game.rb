@@ -15,7 +15,7 @@ module Engine
         include G1894::Entities
         include StubsAreRestricted
 
-        CURRENCY_FORMAT_STR = '%d F'
+        CURRENCY_FORMAT_STR = '%s F'
 
         BANK_CASH = 8000
 

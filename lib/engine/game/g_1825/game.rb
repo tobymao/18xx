@@ -335,7 +335,7 @@ module Engine
           trains
         end
 
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :none

@@ -12,7 +12,7 @@ module Engine
 
         attr_reader :new_zealand_city
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 99_999
 

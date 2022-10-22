@@ -12,7 +12,7 @@ module Engine
         include CitiesPlusTownsRouteDistanceStr
         include_meta(G18AL::Meta)
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 8000
 

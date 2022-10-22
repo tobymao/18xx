@@ -14,7 +14,7 @@ module Engine
         include Map
 
         BANK_CASH = 12_000
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
         STARTING_CASH = { 2 => 750, 3 => 500, 4 => 375, 5 => 300, 6 => 250 }.freeze
         CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 

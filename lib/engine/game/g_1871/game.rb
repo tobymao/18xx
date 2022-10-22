@@ -40,7 +40,7 @@ module Engine
         BANK_CASH = 99_999
         CAPITALIZATION = :full
         CERT_LIMIT = { 3 => 20, 4 => 16 }.freeze
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
         DISCARDED_TRAINS = :remove
         EBUY_OTHER_VALUE = false
         EBUY_PRES_SWAP = true

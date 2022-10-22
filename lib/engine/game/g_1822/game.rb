@@ -29,7 +29,7 @@ module Engine
 
         BANKRUPTCY_ALLOWED = false
 
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 12_000
 
@@ -755,12 +755,6 @@ module Engine
 
           # Make sure after its floated its incremental.
           corporation.capitalization = :incremental if corporation.type == :major
-        end
-
-        def format_currency(val)
-          return super if (val % 1).zero?
-
-          format('£%.1<val>f', val: val)
         end
 
         def home_token_locations(corporation)

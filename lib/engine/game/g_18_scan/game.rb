@@ -19,7 +19,7 @@ module Engine
 
         BANK_CASH = 6_000
 
-        CURRENCY_FORMAT_STR = 'K%d'
+        CURRENCY_FORMAT_STR = 'K%s'
 
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450 }.freeze
 

@@ -30,7 +30,7 @@ module Engine
           yellow: '#FFF500' # MYJ
         )
 
-        CURRENCY_FORMAT_STR = '%d kr'
+        CURRENCY_FORMAT_STR = '%s kr'
 
         BANK_CASH = 10_000
 

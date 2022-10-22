@@ -9,7 +9,7 @@ module Engine
   module Game
     module G18ZOO
       class SharedGame < Game::Base
-        CURRENCY_FORMAT_STR = '%d$N'
+        CURRENCY_FORMAT_STR = '%s$N'
 
         BANK_CASH = 99_999
 

@@ -15,7 +15,7 @@ module Engine
 
         attr_reader :osterath_tile
 
-        CURRENCY_FORMAT_STR = '%dM'
+        CURRENCY_FORMAT_STR = '%sM'
 
         BANK_CASH = 9000
 

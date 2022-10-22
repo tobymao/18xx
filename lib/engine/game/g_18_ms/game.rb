@@ -19,7 +19,7 @@ module Engine
 
         attr_accessor :chattanooga_reached
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 10_000
 

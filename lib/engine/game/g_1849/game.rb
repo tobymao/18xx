@@ -24,7 +24,7 @@ module Engine
                         brown: '#7b352a',
                         goldenrod: '#f9b231')
 
-        CURRENCY_FORMAT_STR = 'L.%d'
+        CURRENCY_FORMAT_STR = 'L.%s'
 
         BANK_CASH = 7760
 

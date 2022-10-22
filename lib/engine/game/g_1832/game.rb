@@ -15,7 +15,7 @@ module Engine
 
         attr_accessor :sell_queue, :connection_run, :reissued
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000
 

@@ -73,6 +73,7 @@ module Engine
           end
 
           def possible_exchanged_shares(par, minors_cash, minors_value, player_cash)
+            return [6] if (6 * par) < minors_value && par == 100 && minors_cash >= (minors_value - 600)
             return [] if (6 * par) < minors_value
 
             min_shares = min_exchange_shares(par, minors_value, minors_cash)
@@ -86,7 +87,7 @@ module Engine
 
           def valid_par_prices(minor_one, minor_two)
             minors_value = (minor_one.share_price.price + minor_two.share_price.price) * 2
-            minors_cash = minor_one.cash + minor_two.cash
+            minors_cash = (@merge_state == :none ? (minor_one.cash + minor_two.cash) : @new_corporation.cash)
             @game.stock_market.par_prices.map(&:price).sort.select do |par|
               # 50 is valid for par for minors, but cannot be used here
               par != 50 && can_par_at?(par, minors_cash, minors_value, minor_one.owner.cash)
