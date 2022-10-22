@@ -10,7 +10,7 @@ module Engine
       class Game < G1817::Game
         include_meta(G1877::Meta)
 
-        CURRENCY_FORMAT_STR = 'Bs.%d'
+        CURRENCY_FORMAT_STR = 'Bs.%s'
 
         BANK_CASH = 99_999
 

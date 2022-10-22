@@ -99,7 +99,7 @@ module Engine
           'M30' => '30',
         }.freeze
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         EXCHANGE_TOKENS = {
           'CNoR' => 3,
@@ -188,12 +188,6 @@ module Engine
 
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
                                    CNoR CPR GNWR GT GTP GWR ICR NTR PGE QMOO].freeze
-
-        def format_currency(val)
-          return super if (val % 1).zero?
-
-          format('$%.1<val>f', val: val)
-        end
 
         def setup_game_specific
           # Initialize the stock round choice for P7-Double Cash

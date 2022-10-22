@@ -109,7 +109,7 @@ module Engine
 
       BANK_CASH = 12_000
 
-      CURRENCY_FORMAT_STR = '$%d'
+      CURRENCY_FORMAT_STR = '$%s'
 
       STARTING_CASH = {}.freeze
 
@@ -910,7 +910,7 @@ module Engine
       end
 
       def format_currency(val)
-        self.class::CURRENCY_FORMAT_STR % val
+        self.class::CURRENCY_FORMAT_STR % val.round(1)
       end
 
       def format_revenue_currency(val)

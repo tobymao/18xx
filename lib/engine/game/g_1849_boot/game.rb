@@ -13,7 +13,7 @@ module Engine
         include G1849Boot::Entities
         include G1849Boot::Map
 
-        CURRENCY_FORMAT_STR = 'L.%d'
+        CURRENCY_FORMAT_STR = 'L.%s'
 
         BANK_CASH = 7760
 

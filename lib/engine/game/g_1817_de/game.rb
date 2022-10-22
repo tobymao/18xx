@@ -13,7 +13,7 @@ module Engine
         include G1817DE::Entities
         include G1817DE::Map
 
-        CURRENCY_FORMAT_STR = '%d ℳ'
+        CURRENCY_FORMAT_STR = '%s ℳ'
 
         BANK_CASH = 99_999
 
@@ -184,13 +184,6 @@ module Engine
         SEED_MONEY = 150
         LOANS_PER_INCREMENT = 5
 
-        def format_currency(val)
-          # On dividends per share can be a float
-          # But don't show decimal points on all
-          return super if (val % 1).zero?
-
-          format('%.1<val>f ℳ', val: val)
-        end
       end
     end
   end

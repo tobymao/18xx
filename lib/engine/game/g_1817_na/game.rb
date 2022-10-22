@@ -9,7 +9,7 @@ module Engine
       class Game < G1817::Game
         include_meta(G1817NA::Meta)
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 99_999
 

@@ -37,7 +37,7 @@ module Engine
                         cream: '#fffdd0',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 15_000
 

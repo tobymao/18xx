@@ -39,7 +39,7 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
 
         CERT_LIMIT_TYPES = [].freeze
         CERT_LIMIT_INCLUDES_PRIVATES = false

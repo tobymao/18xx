@@ -23,7 +23,7 @@ module Engine
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000
 

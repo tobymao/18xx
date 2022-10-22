@@ -24,7 +24,7 @@ module Engine
                     :reserved_tiles, :subtrains
         attr_accessor :premium, :premium_order, :premium_winner, :reimbursed_hexes
 
-        CURRENCY_FORMAT_STR = '%d ℳ'
+        CURRENCY_FORMAT_STR = '%s ℳ'
         BANK_CASH = 100_000
         CERT_LIMIT = {
           2 => 999,
