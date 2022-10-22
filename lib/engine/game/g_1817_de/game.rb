@@ -183,7 +183,6 @@ module Engine
 
         SEED_MONEY = 150
         LOANS_PER_INCREMENT = 5
-
       end
     end
   end

@@ -613,7 +613,6 @@ module Engine
 
           revenue
         end
-
       end
     end
   end

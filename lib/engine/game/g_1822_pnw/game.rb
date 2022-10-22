@@ -453,7 +453,6 @@ module Engine
 
         UPGRADE_COST_L_TO_2_PHASE_2 = 80
 
-
         def operating_round(round_num)
           Engine::Game::G1822PNW::Round::Operating.new(self, [
             G1822::Step::PendingToken,

@@ -1862,7 +1862,6 @@ module Engine
         def train_limit(entity)
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
         end
-
       end
     end
   end
