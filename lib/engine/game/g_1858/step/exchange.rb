@@ -50,11 +50,13 @@ module Engine
 
             buy_shares(player, bundle, exchange: :free)
             cities = @game.reserved_cities(corporation, company)
+            return if cities.empty?
+
             @round.pending_tokens << {
               entity: corporation,
               hexes: cities.map(&:hex),
               token: corporation.next_token,
-            } if cities.any?
+            }
           end
 
           def acquire_company(corporation, company)

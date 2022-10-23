@@ -18,7 +18,7 @@ module Engine
           end
 
           def pass_description
-            "Do not place station token"
+            'Do not place station token'
           end
 
           def process_place_token(action)
