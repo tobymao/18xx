@@ -110,8 +110,9 @@ module Engine
         def init_round
           quick_start if option_quick_start?
 
-          # FIXME: the initial stock round isn't *quite* a normal stock round,
+          # The initial stock round isn't *quite* a normal stock round,
           # you cannot start public companies in the first stock round.
+          # This difference is handled in exchange_corporations().
           stock_round
         end
 
@@ -370,6 +371,9 @@ module Engine
         end
 
         def exchange_corporations(exchange_ability)
+          # Can't start public companies in the first stock round.
+          return [] if @turn == 1
+
           if exchange_ability.corporations == 'any'
             corporations.reject(&:ipoed)
           else
