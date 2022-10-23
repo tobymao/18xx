@@ -56,6 +56,12 @@ module Engine
             'Convert to 10-share company'
           end
 
+          def can_ipo_any?(entity)
+            # Can't start a public company by directly buying its president's
+            # certificate until the start of phase 5.
+            super && @game.phase.status.include?('public_companies')
+          end
+
           def can_convert?(corporation)
             (corporation.owner == current_entity) && (corporation.type == :medium) &&
               corporation.floated? && !bought?
