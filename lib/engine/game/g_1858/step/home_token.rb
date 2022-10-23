@@ -37,6 +37,11 @@ module Engine
 
             super
           end
+
+          def process_pass(action)
+            super
+            @round.pending_tokens.shift
+          end
         end
       end
     end
