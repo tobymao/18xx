@@ -18,12 +18,17 @@ module Engine
 
             actions = []
 
-            # Sell actions
+            # Sell actions.
+            # Exchanging a private company for a share certificate from the
+            # company treasury is also a sell action, but this is handled
+            # through the companies' abilities rather than these actions.
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'exchange_private' if can_exchange_any?(entity)
             actions << 'convert' if can_convert_any?(entity)
 
-            # Buy actions
+            # Buy actions.
+            # Starting a public companys by exchanging a private company for the
+            # president's certificate is also a buy action, but this is handled
+            # through the companies' abilities rather than these actions.
             actions << 'buy_shares' if can_buy_any?(entity)
             actions << 'par' if can_ipo_any?(entity)
             actions << 'bid' if can_bid_any?(entity)
@@ -73,10 +78,6 @@ module Engine
 
           def process_convert(action)
             @game.convert!(action.corporation)
-          end
-
-          def can_exchange_any?(_entity)
-            false # TODO: implement this
           end
 
           def can_start_auction?(_entity)
