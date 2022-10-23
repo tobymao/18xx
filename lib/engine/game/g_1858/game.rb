@@ -374,13 +374,17 @@ module Engine
           # Can't start public companies in the first stock round.
           return [] if @turn == 1
 
-          if exchange_ability.corporations == 'any'
-            corporations.reject(&:ipoed)
-          else
+          company = exchange_ability.owner
+          if exchange_ability.corporations == 'ipoed'
             # A private railway can be exchanged for a share in any public company
             # that can trace a route to any of the private's home hexes.
-            company = exchange_ability.owner
             super.select { |corporation| company_corporation_connected?(company, corporation) }
+          elsif company.par_price(@stock_market).price > current_entity.cash
+            # Can't afford to start a public company using this private.
+            []
+          else
+            # Can exchange the private railway for any unstarted public company.
+            corporations.reject(&:ipoed)
           end
         end
 
