@@ -29,10 +29,9 @@ def create_user(player_id, name)
     },
   }
   User.create(params)
-
 rescue Sequel::ValidationFailed
   # user email already registered
-  return
+  nil
 end
 
 def import_game(game_id)
