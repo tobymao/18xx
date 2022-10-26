@@ -974,10 +974,11 @@ module Engine
         def emergency_issuable_bundles(corp)
           bundles = bundles_for_corporation(corp, corp)
           cash_needed = @depot.depot_trains.first.variants.map { |_, v| v[:price] }.max - corp.cash
-          return [] if cash_needed.negative?
+          share_price = corp.share_price.price.to_f
+          return [] if cash_needed.negative? || share_price.zero?
 
           max_issuable_shares = [5, corp.num_player_shares].min - corp.num_market_shares
-          num_issuable_shares = [max_issuable_shares, (cash_needed / corp.share_price.price.to_f).ceil].min
+          num_issuable_shares = [max_issuable_shares, (cash_needed / share_price).ceil].min
           bundles.reject { |bundle| bundle.num_shares > num_issuable_shares }.sort_by(&:price)
         end
 
