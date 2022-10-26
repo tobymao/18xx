@@ -13,6 +13,28 @@ require_relative 'models/user'
 
 raise 'You probably only want to import games into dev servers' unless ENV['RACK_ENV'] == 'development'
 
+def create_user(player_id, name)
+  return if User[id: player_id]
+
+  params = {
+    id: player_id,
+    name: name,
+    email: "#{name.gsub(/\s/, '_')}@example.com",
+    password: 'password',
+    settings: {
+      notifications: 'none',
+      webhook: nil,
+      webhook_url: nil,
+      webhook_user_id: nil,
+    },
+  }
+  User.create(params)
+
+rescue Sequel::ValidationFailed
+  # user email already registered
+  return
+end
+
 def import_game(game_id)
   game_uri = URI.parse("https://18xx.games/api/game/#{game_id}")
   res = Net::HTTP.get_response game_uri
@@ -27,25 +49,12 @@ def import_game(game_id)
 
   # Create users that don't already exist
   User.unrestrict_primary_key
-  players_json.each do |player_json|
-    player_id = player_json['id']
-    name = player_json['name']
-    next if User[id: player_id]
 
-    params = {
-      id: player_id,
-      name: name,
-      email: "#{name.gsub(/\s/, '_')}@example.com",
-      password: 'password',
-      settings: {
-        notifications: 'none',
-        webhook: nil,
-        webhook_url: nil,
-        webhook_user_id: nil,
-      },
-    }
-    User.create(params)
+  players_json.each do |player_json|
+    create_user(player_json['id]'], player_json['name'])
   end
+  create_user(user_json['id'], user_json['name'])
+
   User.restrict_primary_key
 
   # Clean up game json
