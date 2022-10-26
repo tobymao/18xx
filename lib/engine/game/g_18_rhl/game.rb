@@ -506,6 +506,8 @@ module Engine
         end
 
         class WithNameAdapter
+          include Engine::Entity
+
           def name
             'Receivership'
           end
