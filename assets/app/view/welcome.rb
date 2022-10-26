@@ -18,6 +18,7 @@ module View
     def render_notification
       message = <<~MESSAGE
         <p>Individualized statistics are now available in your profile (once enabled in your settings). If you have any ideas for additional statistics, please submit a feature request.</p>
+        <p>18Rhl now in beta.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. Join the
