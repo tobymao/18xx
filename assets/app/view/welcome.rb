@@ -17,6 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p><a href='https://github.com/tobymao/18xx/wiki/18GB'>18GB</a> is now in beta.</p>
         <p><a href='https://github.com/tobymao/18xx/wiki/1848'>1848</a> is now in production.</p>
         <p>Individualized statistics are now available in your profile (once enabled in your settings). If you have any ideas for additional statistics, please submit a feature request.</p>
         <p>18Rhl now in beta.</p>
