@@ -182,7 +182,7 @@ module Engine
         end
 
         def tile_lays(entity)
-          entity.minor? ? MINOR_TILE_LAYS : TILE_LAYS
+          entity.corporation? ? TILE_LAYS : MINOR_TILE_LAYS
         end
 
         def express_train?(train)
