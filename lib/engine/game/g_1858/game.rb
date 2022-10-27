@@ -160,32 +160,18 @@ module Engine
         def place_home_token(corporation)
           return [] if corporation.tokens.any?(&:used)
 
-          # There are two ways a public company can start, and three scenarios
-          # for placing its home token:
-          #   1) Formed by converting a private railway into a public company.
-          #      1a) The private company has one available city in its home hexes.
-          #      1b) The private company has two cities in its home hexes.
-          #   2) The public company is started by someone buying its presidency.
-          #
-          # Scenario 1a is handled by setting the home hex of the corporation. The
-          # other two scenarios require the player to make a choice, these are both
-          # done through G1858::Step::HomeToken and its call to home_token_locations.
-          if corporation.companies.any?
-            # This public company has been started from a private company.
-            company = corporation.companies.first
-            home_cities = reserved_cities(corporation, company)
-            raise GameError, "No available token slots for #{company.id}" if home_cities.empty?
-
-            corporation.coordinates = home_cities.first.hex.coordinates if home_cities.one?
-          end
           super
         end
 
         def home_token_locations(corporation)
           if corporation.companies.any?
-            # This corporation is being formed from a private company and there
-            # are multiple cities that could be chosen as the starting location.
-            reserved_cities(corporation, corporation.companies.first).map(&:hex)
+            # This corporation is being formed from a private company. Its first
+            # token is in one of the city spaces reserved for the private.
+            company = corporation.companies.first
+            home_cities = reserved_cities(corporation, company)
+            raise GameError, "No available token slots for #{company.id}" if home_cities.empty?
+
+            home_cities.map(&:hex)
           else
             # When starting a public company after the start of phase 5 it can
             # choose any unoccupied city space for its first token.
