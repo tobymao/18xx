@@ -297,8 +297,10 @@ module Engine
         end
 
         def buy_train(operator, train, price = nil)
+          bought_from_depot = (train.owner == @depot)
           super
           return if @phase7_trains_bought >= 5
+          return unless bought_from_depot
           return unless %w[7E 6M 5D].include?(train.name)
 
           @phase7_trains_bought += 1
