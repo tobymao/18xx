@@ -19,7 +19,7 @@ module Engine
         AXES = { x: :number, y: :letter }.freeze
         CORPORATIONS_WITHOUT_NEUTRAL = %w[CPR CN].freeze
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 9000
 

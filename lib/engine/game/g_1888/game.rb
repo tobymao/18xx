@@ -23,7 +23,7 @@ module Engine
                         orange: '#f48221',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '¥%d'
+        CURRENCY_FORMAT_STR = '¥%s'
 
         PROTOTYPE_BANK_CASH = 10_000
         BANK_CASH = 9_000

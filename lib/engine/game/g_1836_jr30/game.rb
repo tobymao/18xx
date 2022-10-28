@@ -9,7 +9,7 @@ module Engine
       class Game < Game::Base
         include_meta(G1836Jr30::Meta)
 
-        CURRENCY_FORMAT_STR = '%d F'
+        CURRENCY_FORMAT_STR = '%s F'
 
         BANK_CASH = 6000
 
@@ -426,11 +426,11 @@ module Engine
           },
           blue: {
             %w[E3 G1] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0',
+            'offboard=revenue:green_20|brown_30,format:+%s,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0',
           },
           green: {
             ['J2'] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0',
+            'offboard=revenue:green_20|brown_30,format:+%s,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0',
           },
         }.freeze
 

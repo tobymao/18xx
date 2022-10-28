@@ -109,7 +109,7 @@ module Engine
 
       BANK_CASH = 12_000
 
-      CURRENCY_FORMAT_STR = '$%d'
+      CURRENCY_FORMAT_STR = '$%s'
 
       STARTING_CASH = {}.freeze
 

@@ -27,7 +27,7 @@ module Engine
                         pink: '#FF0099',
                         purple: '#9900FF',
                         white: '#FFFFFF')
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 10_000
 

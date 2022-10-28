@@ -15,7 +15,7 @@ module Engine
 
         attr_reader :osterath_tile
 
-        CURRENCY_FORMAT_STR = '%dM'
+        CURRENCY_FORMAT_STR = '%sM'
 
         BANK_CASH = 9000
 
@@ -506,6 +506,8 @@ module Engine
         end
 
         class WithNameAdapter
+          include Engine::Entity
+
           def name
             'Receivership'
           end

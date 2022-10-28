@@ -27,7 +27,7 @@ module Engine
                         yellow: '#ffe600',
                         green: '#32763f')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = { 2 => 7000, 3 => 6500, 4 => 7500, 5 => 9000 }.freeze
 

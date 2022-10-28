@@ -36,7 +36,7 @@ module Engine
                         white: '#fff36b',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 99_999
 
@@ -396,14 +396,6 @@ module Engine
             loan_table << [r, loans_per_increment(r)]
           end
           [summary, loan_table]
-        end
-
-        def format_currency(val)
-          # On dividends per share can be a float
-          # But don't show decimal points on all
-          return super if (val % 1).zero?
-
-          format('$%.1<val>f', val: val)
         end
 
         def maximum_loans(entity)

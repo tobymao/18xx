@@ -36,7 +36,7 @@ module Engine
                         cream: '#fffdd0',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '₡%d'
+        CURRENCY_FORMAT_STR = '₡%s'
         BANK_CASH = 12_000
         CERT_LIMIT = { 2 => 18, 3 => 15, 4 => 12, 5 => 10 }.freeze
         STARTING_CASH = { 2 => 600, 3 => 540, 4 => 410, 5 => 340 }.freeze

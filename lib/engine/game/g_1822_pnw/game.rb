@@ -41,7 +41,7 @@ module Engine
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 A B C
                                    NP CPR GNR ORNC SPS CMPS SWW].freeze
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par_1: :red,
@@ -521,6 +521,13 @@ module Engine
             end
         end
 
+        MERGER_ROUND_NAME = 'Merger'
+
+        def total_rounds(name)
+          # Return the total number of rounds for those with more than one.
+          @operating_rounds if [self.class::OPERATING_ROUND_NAME, self.class::MERGER_ROUND_NAME].include?(name)
+        end
+
         def discountable_trains_for(corporation)
           discount_info = []
 
@@ -555,38 +562,9 @@ module Engine
           corporation_by_id(company.id[1..-1])
         end
 
-        def setup
-          setup_associated_minors
+        def setup_game_specific
           setup_regional_payout_count
           setup_tokencity_tiles
-
-          # Setup the bidding token per player
-          @bidding_token_per_player = init_bidding_token
-
-          # Initialize the player depts, if player have to take an emergency loan
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
-
-          # Randomize and setup the companies
-          setup_companies
-
-          # Actual bidbox setup happens in the stock round.
-          @bidbox_minors_cache = []
-
-          # Setup exchange token abilities for all corporations
-          setup_exchange_tokens
-
-          # Setup all the destination tokens, icons and abilities
-          setup_destinations
-
-          if @optional_rules&.include?(:four_less_ls)
-            remove_l_trains(4)
-          elsif @optional_rules&.include?(:three_less_ls)
-            remove_l_trains(3)
-          elsif @optional_rules&.include?(:two_less_ls)
-            remove_l_trains(2)
-          elsif @optional_rules&.include?(:one_less_l)
-            remove_l_trains(1)
-          end
         end
 
         def remove_l_trains(num_trains)
@@ -661,6 +639,7 @@ module Engine
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
         def setup_companies
+          setup_associated_minors
           @companies.sort_by! { rand }
 
           minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }

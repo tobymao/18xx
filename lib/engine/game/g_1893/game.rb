@@ -18,7 +18,7 @@ module Engine
           gray50: '#7F7F7F'
         )
 
-        CURRENCY_FORMAT_STR = '%dM'
+        CURRENCY_FORMAT_STR = '%sM'
 
         BANK_CASH = 7200
 

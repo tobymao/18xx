@@ -20,7 +20,7 @@ module Engine
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :p_any_operate
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         LAYOUT = :pointy
 
