@@ -17,7 +17,7 @@ module Engine
 
         attr_accessor :skip_track_and_token
 
-        CURRENCY_FORMAT_STR = '%d F'
+        CURRENCY_FORMAT_STR = '%s F'
 
         BANK_CASH = 99_999
 

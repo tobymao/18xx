@@ -242,7 +242,7 @@ module Engine
         NORTH_CORPORATIONS = %w[NCR SEA WNC WW].freeze
         SOUTH_CORPORATIONS = %w[CAR CSC SR WM].freeze
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 6_000
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false

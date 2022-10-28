@@ -17,7 +17,7 @@ module Engine
         include Map
         include CitiesPlusTownsRouteDistanceStr
 
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 10_000
 

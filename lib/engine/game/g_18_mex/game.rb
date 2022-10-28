@@ -14,7 +14,7 @@ module Engine
 
         attr_reader :merged_major
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 9000
 

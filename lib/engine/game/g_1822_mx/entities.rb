@@ -490,7 +490,7 @@ module Engine
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes £100 to conversion into the IRM director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the IRM director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
