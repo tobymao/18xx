@@ -10,7 +10,7 @@ module Engine
           attr_reader :ferry_marker
 
           def buyable_items(entity)
-            return [@ferry_marker] if @game.loading || @game.can_buy_ferry_marker?(entity)
+            return [@ferry_marker] if @game.loading || (@game.can_buy_ferry_marker?(entity) && current_entity == entity)
 
             []
           end
@@ -21,8 +21,9 @@ module Engine
 
           def process_special_buy(action)
             raise GameError, "Cannot buy unknown item: #{item.description}" if action.item != @ferry_marker
+
             if !@game.loading && !@game.can_buy_ferry_marker?(action.entity)
-              raise GameError, 'Must be connected to England to purchase'
+              raise GameError, 'Must be connected to London to purchase'
             end
 
             @game.buy_ferry_marker(action.entity)
@@ -30,7 +31,7 @@ module Engine
 
           def setup
             super
-            @ferry_marker ||= Item.new(description: 'Ferry marker', cost: 60)
+            @ferry_marker ||= Item.new(description: 'Ferry marker', cost: Engine::Game::G1894::Game::FERRY_MARKER_COST)
           end
         end
       end
