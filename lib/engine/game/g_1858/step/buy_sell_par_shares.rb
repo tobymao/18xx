@@ -108,6 +108,7 @@ module Engine
             @auctioning = nil
 
             # Player to the right of the person who started the auction is next to go.
+            @acted = false
             @round.next_entity_index!
           end
 
@@ -115,13 +116,8 @@ module Engine
             @game.buyable_bank_owned_companies
           end
 
-          def can_bid_any?(_player)
-            # auctionable_companies.any? { |company| can_bid_company?(player, company) }
-            # FIXME: this test determines if the player can afford to bid on any companies.
-            # But the game breaks with this in the quick start mode, it can't handle being
-            # thrown straight into a stock round with no possible actions. Setting the initial
-            # round to a operating round does not work either.
-            true
+          def can_bid_any?(player)
+            auctionable_companies.any? { |company| can_bid_company?(player, company) }
           end
 
           def can_bid_company?(player, company)
