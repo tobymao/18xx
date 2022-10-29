@@ -26,7 +26,7 @@ module Engine
             actions << 'convert' if can_convert_any?(entity)
 
             # Buy actions.
-            # Starting a public companys by exchanging a private company for the
+            # Starting a public company by exchanging a private company for the
             # president's certificate is also a buy action, but this is handled
             # through the companies' abilities rather than these actions.
             actions << 'buy_shares' if can_buy_any?(entity)
