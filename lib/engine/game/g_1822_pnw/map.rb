@@ -313,14 +313,14 @@ module Engine
             {
               'count' => 1,
               'color' => 'gray',
-              'code' => 'city=revenue:100,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;upgrade=cost:20;label=Sea',
+              'code' => 'city=revenue:100,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Sea',
             },
           'X27' =>
             {
               'count' => 1,
               'color' => 'gray',
               'code' => 'city=revenue:100,slots:4;'\
-                        'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:20;label=Por',
+                        'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;label=Por',
             },
           'PNW3' =>
             {
