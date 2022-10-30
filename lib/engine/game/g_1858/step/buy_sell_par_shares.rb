@@ -80,10 +80,6 @@ module Engine
             @game.convert!(action.corporation)
           end
 
-          def can_start_auction?(_entity)
-            false # TODO: implement this
-          end
-
           def min_bid(company)
             if @auctioning
               highest_bid(company).price + min_increment
