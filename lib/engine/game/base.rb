@@ -1558,7 +1558,7 @@ module Engine
         # - TODO: account for games that allow double dits to upgrade to one town
         return false if from.towns.size != to.towns.size
         return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
-        return false unless from.city_town_edges_are_subset_of?(to.city_town_edges)
+        return false if from.cities.size > 1 && !from.city_town_edges_are_subset_of?(to.city_town_edges)
 
         # but don't permit a labelled city to be downgraded to 0 cities.
         return false if from.label && !from.cities.empty? && to.cities.empty?
