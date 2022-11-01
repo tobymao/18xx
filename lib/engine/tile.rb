@@ -395,15 +395,11 @@ module Engine
       ct_edges.values
     end
 
-    def city_town_edges_match?(city_edges, other_city_edges)
-      city_edges.all? { |e| other_city_edges.include?(e) }
-    end
-
     def city_town_edges_are_subset_of?(other_cte)
       cte = city_town_edges
       ALL_EDGES.any? do |rotation|
         rotated = other_cte.map { |city| city.map { |edge| rotate(edge, rotation) } }
-        cte.all? { |city| rotated.any? { |other_city| city_town_edges_match?(city, other_city) } }
+        cte.all? { |city| rotated.any? { |other_city| (city - other_city).empty? } }
       end
     end
 
