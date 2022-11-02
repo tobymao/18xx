@@ -345,11 +345,8 @@ module Engine
 
           @last_or_set_triggered = false
           @skip_track_and_token = false
-          @corporation_parred = false
 
           @log << "-- Setting game up for #{@players.size} players --"
-          # remove_extra_trains
-          # remove_extra_late_corporations
 
           @ferry_marker_ability =
             Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
@@ -432,10 +429,6 @@ module Engine
 
           super
         end
-
-        # def par_prices(corporation)
-        #   @stock_market.par_prices - 100
-        # end
 
         def place_home_token(corporation)
           return if corporation.tokens.first&.used == true
