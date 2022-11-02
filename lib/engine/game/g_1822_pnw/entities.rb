@@ -713,7 +713,7 @@ module Engine
             coordinates: 'A8',
             city: 0,
             color: '#EF1D24',
-            text_color: '#white',
+            text_color: 'white',
             reservation_color: nil,
             abilities: [
               {
@@ -1072,7 +1072,7 @@ module Engine
             coordinates: 'O20',
             city: 0,
             color: '#221E20',
-            text_color: '#white',
+            text_color: 'white',
             reservation_color: nil,
             abilities: [
               {
