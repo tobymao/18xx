@@ -21,7 +21,7 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 22, 4 => 18 }.freeze
+        CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
 
         STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
 
@@ -30,66 +30,82 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[76
-             82
-             90
-             100p
+          %w[89
+             96
+             103
              112
-             126
-             142
-             160
-             180
-             200
+             121
+             134
+             149
+             155
+             177
+             205
+             240
+             270
+             305
+             350
+             400
+             455e
+          ],
+          %w[82
+             90p
+             94
+             100p
+             110
+             121
+             134
+             148
+             165
+             190
              225
              255
              285
              325
              375
-             425e],
-          %w[70
-             76
+             425],
+          %w[77
              82
-             90p
+             88
+             95
              100
              112
-             126
-             142
-             160
-             180
+             125
+             139
+             154
+             176
              200
              225
              250
              275
              300
              330],
-          %w[65
-             70
-             76
+          %w[70o
+             75
              82p
-             90
+             87
+             93
              100
-             111
-             125
-             140
-             155
+             109
+             120
+             132
+             150
              170
              190
              210],
-          %w[60o
-             66
-             71
-             76p
-             82
-             90
+          %w[66o
+             70
+             75
+             80
+             85
+             92
              100
              110
              120
              130],
-          %w[55o 62 67 71p 76 82 90 100],
-          %w[50o 58o 65 67p 71 75 80],
-          %w[45o 54o 63 67 69 70],
-          %w[40o 50o 60o 67 68],
-          %w[30o 40o 50o 60o],
+          %w[63o 66o 70 76p 81 88 97 107],
+          %w[59o 62o 65 69 74 81 89],
+          %w[44o 54o 61o 64 67p 74],
+          %w[30o 40o 53o 54],
           %w[20o 30o 40o 50o],
           %w[10o 20o 30o 40o],
         ].freeze
@@ -219,7 +235,8 @@ module Engine
         MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Par',
                                               unlimited: 'Corporation shares can be held above 60% and ' \
                                                          'President may buy two shares at a time and ' \
-                                                         'additional move up if sold out.')
+                                                         'additional move up if sold out and don\`t count '\
+                                                         'towards the cert limit.')
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :red,
                                                             unlimited: :gray)
@@ -328,6 +345,7 @@ module Engine
 
           @last_or_set_triggered = false
           @skip_track_and_token = false
+          @corporation_parred = false
 
           @log << "-- Setting game up for #{@players.size} players --"
           # remove_extra_trains
@@ -391,6 +409,7 @@ module Engine
 
         def init_round_finished
           @players.rotate!(@round.entity_index)
+          stock_market.remove_par!(stock_market.share_price(1, 3))
         end
 
         def assignment_tokens(assignment)
@@ -400,7 +419,7 @@ module Engine
         end
 
         def init_stock_market
-          G1894::StockMarket.new(self.class::MARKET, [],
+          G1894::StockMarket.new(self.class::MARKET, [:unlimited],
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
@@ -413,6 +432,10 @@ module Engine
 
           super
         end
+
+        # def par_prices(corporation)
+        #   @stock_market.par_prices - 100
+        # end
 
         def place_home_token(corporation)
           return if corporation.tokens.first&.used == true
@@ -477,8 +500,15 @@ module Engine
         def action_processed(action)
           super
 
+          case action
+          when Action::PlaceToken
+            return unless action.city.hex.id == LONDON_BONUS_FERRY_SUPPLY_HEX
+
+            action.entity.add_ability(
+              Engine::Ability::Description.new(type: 'description', description: 'London shipping')
+            )
           # If only one city tokenable, the reservation goes there
-          if action.is_a?(Action::PlaceToken)
+          when Action::PlaceToken
             tile = hex_by_id(action.city.hex.id).tile
 
             return unless BROWN_CITY_TILES.include?(tile.name)
@@ -498,33 +528,31 @@ module Engine
             end
 
             tile.reservations = []
-          end
+          when Action::LayTile
+            tile = hex_by_id(action.hex.id).tile
 
-          return unless action.is_a?(Action::LayTile)
+            if BROWN_CITY_TILES.include?(tile.name)
+              # The city splits into two cities, so the reservation has to be for the whole hex
+              reservation = tile.cities.first.reservations.first
+              if reservation
+                tile.cities.first.remove_all_reservations!
+                tile.add_reservation!(reservation.corporation, nil, reserve_city: false)
+              end
 
-          tile = hex_by_id(action.hex.id).tile
-
-          if BROWN_CITY_TILES.include?(tile.name)
-            # The city splits into two cities, so the reservation has to be for the whole hex
-            reservation = tile.cities.first.reservations.first
-            if reservation
-              tile.cities.first.remove_all_reservations!
-              tile.add_reservation!(reservation.corporation, nil, reserve_city: false)
+              # Clear all routes as they could be affected by the cities getting disjointed
+              graph.clear_graph_for_all
             end
 
-            # Clear all routes as they could be affected by the cities getting disjointed
-            graph.clear_graph_for_all
-          end
+            return if action.hex.id != SQ_HEX || tile.color == :yellow
 
-          return if action.hex.id != SQ_HEX || tile.color == :yellow
-
-          case tile.color
-          when :green
-            sqg.revenue = 70
-          when :brown
-            sqg.revenue = 100
+            case tile.color
+            when :green
+              sqg.revenue = 70
+            when :brown
+              sqg.revenue = 100
+            end
+            @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
           end
-          @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
         end
 
         def issuable_shares(entity)
