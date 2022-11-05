@@ -108,12 +108,15 @@ module Engine
         end
 
         def init_round
-          quick_start if option_quick_start?
-
-          # The initial stock round isn't *quite* a normal stock round,
-          # you cannot start public companies in the first stock round.
-          # This difference is handled in exchange_corporations().
-          stock_round
+          if option_quick_start?
+            quick_start
+            operating_round
+          else
+            # The initial stock round isn't *quite* a normal stock round,
+            # you cannot start public companies in the first stock round.
+            # This difference is handled in exchange_corporations().
+            stock_round
+          end
         end
 
         def stock_round
