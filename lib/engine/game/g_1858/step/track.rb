@@ -40,10 +40,10 @@ module Engine
           end
 
           def tile_lay_cost_override!(tile_lay, action, new_tile, old_tile)
-            return if tile_lay[:cost].zero? # first tile
+            @round.gauges_added << new_track_gauge(old_tile, new_tile)
 
-            gauges_added = @round.gauges_added + [new_track_gauge(old_tile, new_tile)]
-            return unless gauges_added.include?([:narrow])
+            return if tile_lay[:cost].zero? # first tile
+            return unless @round.gauges_added.include?([:narrow])
 
             @log << "#{action.entity.name} receives a #{@game.format_currency(10)} " \
                     'discount on its second tile for metre gauge track'
