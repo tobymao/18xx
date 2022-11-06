@@ -67,12 +67,10 @@ module Engine
             action[:lay] || action[:upgrade]
           end
 
-          def try_take_loan(corporation, cost)
-            # 1858 does not have any loans, but this method gets called at the
-            # start of Engine::Step::Tracker.pay_tile_cost! and so can be used
-            # to catch when a public company does not have enough money to pay
-            # its terrain or extra tile costs, and have the company's president
-            # contribute money to pay for these.
+          # If a public company does not have enough money to pay its terrain or
+          # extra tile costs then transfer money from the company's president to
+          # pay for these.
+          def subsidise_track(corporation, cost)
             return unless corporation.corporation?
             return unless cost.positive?
             return unless cost > corporation.cash
@@ -87,6 +85,23 @@ module Engine
             @game.log << "#{president.name} contributes #{@game.format_currency(shortfall)} " \
                          "towards the cost of #{corporation.name}'s tile lay"
             president.spend(shortfall, corporation)
+          end
+
+          # Override the default implementation to give a better log message.
+          # This also allows a more intuitive name to be used for the method for
+          # the player contributing money for the tile, instead of abusing
+          # try_take_loan.
+          def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
+            subsidise_track(spender, cost)
+            spender.spend(cost, @game.bank) if cost.positive?
+
+            message = ''
+            message += "#{spender.name} spends #{@game.format_currency(cost)} and " if cost.positive?
+            message += "#{entity.name} " if cost.zero? || (entity != spender)
+            message += "lays tile ##{tile.name}"
+            message += " with rotation #{rotation} on #{hex.name}"
+            message += " (#{tile.location_name})" unless tile.location_name.to_s.empty?
+            @log << message
           end
 
           def hex_neighbors(entity, hex)
