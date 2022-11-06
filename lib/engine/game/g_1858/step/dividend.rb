@@ -28,6 +28,7 @@ module Engine
             return if action.entity.minor?
 
             super
+            @game.close_companies(action.entity)
           end
 
           def rust_obsolete_trains!(entity)

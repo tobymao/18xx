@@ -130,7 +130,7 @@ module Engine
 
         def operating_round(round_num)
           @round_num = round_num
-          G1858::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G1858::Step::Track,
             G1858::Step::Token,
             G1858::Step::Route,
@@ -405,6 +405,17 @@ module Engine
           end
           company.close!
           @log << message
+        end
+
+        # Closes the private railway companies owned by a public company,
+        # paying their face value to the public company's treasury.
+        def close_companies(corporation)
+          return unless corporation.corporation?
+
+          # The corporation.companies array is modified by company.close!, so we
+          # need to take a copy rather than iterating over original array.
+          companies = corporation.companies.dup
+          companies.each { |company| close_company(company) }
         end
       end
     end
