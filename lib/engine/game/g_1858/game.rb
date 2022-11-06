@@ -357,10 +357,6 @@ module Engine
           true
         end
 
-        def exchange_partial_percent(_share)
-          50
-        end
-
         def exchange_corporations(exchange_ability)
           # Can't start public companies in the first stock round.
           return [] if @turn == 1
