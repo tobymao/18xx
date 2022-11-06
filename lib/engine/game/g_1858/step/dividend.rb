@@ -31,7 +31,7 @@ module Engine
             @game.close_companies(action.entity)
           end
 
-          def rust_obsolete_trains!(entity)
+          def rust_obsolete_trains!(_entity)
             # Wounded trains are not discarded after running
           end
 
