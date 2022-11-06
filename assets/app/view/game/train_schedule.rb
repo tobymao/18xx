@@ -53,17 +53,21 @@ module View
         }
 
         rust_schedule, obsolete_schedule = rust_obsolete_schedule
-        trs = @game.depot.upcoming.group_by(&:name).map do |name, trains|
-          events = []
-          events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") if rust_schedule[name]
-          events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") if obsolete_schedule[name]
-          tds = [h(:td, @game.info_train_name(trains.first)),
-                 h("td#{price_str_class}", @game.info_train_price(trains.first)),
-                 h('td.right', "×#{trains.size}")]
-          tds << h('td.right', events) unless events.empty?
+        trs = if @game.depot.upcoming.empty?
+                'No Upcoming Trains'
+              else
+                @game.depot.upcoming.group_by(&:name).map do |name, trains|
+                  events = []
+                  events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") if rust_schedule[name]
+                  events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") if obsolete_schedule[name]
+                  tds = [h(:td, @game.info_train_name(trains.first)),
+                         h("td#{price_str_class}", @game.info_train_price(trains.first)),
+                         h('td.right', "×#{trains.size}")]
+                  tds << h('td.right', events) unless events.empty?
 
-          h(:tr, tds)
-        end
+                  h(:tr, tds)
+                end
+              end
 
         h('div#upcoming_trains.card', [
           h('div.title', title_props, 'Upcoming Trains'),
