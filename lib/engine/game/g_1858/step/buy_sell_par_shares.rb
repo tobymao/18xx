@@ -29,7 +29,7 @@ module Engine
             # Starting a public company by exchanging a private company for the
             # president's certificate is also a buy action, but this is handled
             # through the companies' abilities rather than these actions.
-            actions << 'buy_shares' if can_buy_any?(entity)
+            actions << 'buy_shares' if can_buy_any?(entity) || can_exchange_any?(entity)
             actions << 'par' if can_ipo_any?(entity)
             actions << 'bid' if can_bid_any?(entity)
 
@@ -74,6 +74,34 @@ module Engine
 
           def can_convert_any?(_entity)
             @game.corporations.any? { |corporation| can_convert?(corporation) }
+          end
+
+          def can_exchange_for_share?(company)
+            @game.corporations.any? do |corporation|
+              corporation.num_treasury_shares.positive? &&
+              @game.company_corporation_connected?(company, corporation)
+            end
+          end
+
+          def can_exchange_for_presidency?(company, player)
+            (company.par_price(@game.stock_market).price <= player.cash) &&
+              @game.corporations.reject(&:ipoed).any?
+          end
+
+          def can_exchange_company?(company, player)
+            company.all_abilities.any? do |ability|
+              next unless ability.type == :exchange
+
+              if ability.corporations == 'ipoed'
+                can_exchange_for_share?(company)
+              else
+                can_exchange_for_presidency?(company, player)
+              end
+            end
+          end
+
+          def can_exchange_any?(entity)
+            entity.companies.any? { |company| can_exchange_company?(company, entity) }
           end
 
           def process_convert(action)
