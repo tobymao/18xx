@@ -65,7 +65,6 @@ module Engine
             @game.minors.delete(company)
             company.owner = corporation
             corporation.companies << company
-            # TODO: offer option to place a token
             @log << "#{corporation.name} acquires #{company.name} from #{player.name}"
           end
         end
