@@ -184,7 +184,7 @@ module Engine
             color: :yellow,
             text_color: :black,
             logo: '1858/MA',
-            coordinates: %w[H13 H15],
+            coordinates: %w[H11 H13],
             abilities: [
               {
                 type: 'no_buy',
