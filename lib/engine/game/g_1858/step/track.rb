@@ -68,8 +68,8 @@ module Engine
             # couple of operating rounds many of the private railway companies
             # will not be able to lay track, so this step (and so their entire
             # operating turn) can be skipped if it not possible to add track.
-            hexes= (@game.graph_broad.connected_hexes(entity).keys +
-                    @game.graph_metre.connected_hexes(entity).keys).uniq
+            hexes = (@game.graph_broad.connected_hexes(entity).keys +
+                     @game.graph_metre.connected_hexes(entity).keys).uniq
             hexes.any? { |hex| available_hex(entity, hex) }
           end
 
