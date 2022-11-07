@@ -173,6 +173,10 @@ module Engine
                 type: 'reservation',
                 hex: 'O8',
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[O8],
+              },
             ],
           },
           {
@@ -252,6 +256,10 @@ module Engine
                 type: 'reservation',
                 hex: 'B9',
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[B9 B11],
+              },
             ],
           },
           {
@@ -291,6 +299,10 @@ module Engine
                 type: 'reservation',
                 hex: 'L13',
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[L13],
+              },
             ],
           },
           {
@@ -318,6 +330,10 @@ module Engine
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
+              },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[N9],
               },
             ],
           },
@@ -358,6 +374,10 @@ module Engine
                 type: 'reservation',
                 hex: 'A14',
                 slot: 0,
+              },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[B13],
               },
             ],
           },
@@ -403,6 +423,10 @@ module Engine
                 hex: 'H11',
                 city: 1,
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[G8 G10],
+              },
             ],
           },
           {
@@ -441,6 +465,10 @@ module Engine
               {
                 type: 'reservation',
                 hex: 'L7',
+              },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[I10 J9 K8],
               },
             ],
           },
@@ -485,6 +513,10 @@ module Engine
                 type: 'reservation',
                 hex: 'G18',
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[E18 F17 G18],
+              },
             ],
           },
           {
@@ -528,6 +560,10 @@ module Engine
                 type: 'reservation',
                 hex: 'E20',
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[E18 E20],
+              },
             ],
           },
           {
@@ -567,6 +603,10 @@ module Engine
                 type: 'reservation',
                 hex: 'L7',
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[K4 K6],
+              },
             ],
           },
           {
@@ -605,6 +645,10 @@ module Engine
               {
                 type: 'reservation',
                 hex: 'I2',
+              },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[I2],
               },
             ],
           },
@@ -649,6 +693,10 @@ module Engine
                 type: 'reservation',
                 hex: 'G20',
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[G18 G20],
+              },
             ],
           },
           {
@@ -687,6 +735,10 @@ module Engine
               {
                 type: 'reservation',
                 hex: 'K18',
+              },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[K18],
               },
             ],
           },
@@ -727,6 +779,10 @@ module Engine
                 type: 'reservation',
                 hex: 'H3',
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[G4 H3],
+              },
             ],
           },
           {
@@ -754,6 +810,10 @@ module Engine
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
+              },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[D15 E14 F15],
               },
             ],
           },
@@ -789,6 +849,10 @@ module Engine
                 type: 'reservation',
                 hex: 'C2',
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[C2 C4],
+              },
             ],
           },
           {
@@ -811,6 +875,10 @@ module Engine
                 when: 'owning_player_sr_turn',
                 corporations: 'ipoed',
                 from: 'ipo',
+              },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[F9],
               },
             ],
           },
@@ -847,6 +915,10 @@ module Engine
                 hex: 'H11',
                 city: 0,
               },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[D13 E12 F13 G12],
+              },
             ],
           },
           {
@@ -880,6 +952,10 @@ module Engine
               {
                 type: 'reservation',
                 hex: 'B5',
+              },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[B5 C4],
               },
             ],
           },
@@ -915,6 +991,10 @@ module Engine
                 type: 'reservation',
                 hex: 'F1',
                 slot: 0,
+              },
+              {
+                type: 'blocks_hexes',
+                hexes: %w[F3 F5],
               },
             ],
           },

@@ -150,6 +150,26 @@ module Engine
 
             used_new_track || changed_city
           end
+
+          # Finds whether track lays in a hex are blocked by a private company.
+          # Some hexes are blocked by two private companies. In this case either
+          # one can lay track in the hex. Track can also be laid in a blocked
+          # hex if a corporation owns the blocking company.
+          def ability_blocking_hex(operator, hex)
+            blocking_abilities = @game.companies.reject(&:closed?).map do |company|
+              ability = @game.abilities(company, :blocks_hexes)
+              next unless ability
+
+              ability if @game.hex_blocked_by_ability?(operator, ability, hex)
+            end.compact
+            return false unless blocking_abilities.any?
+
+            # This hex is blocked by something. Check if this can be ignored.
+            blocking_abilities.all? do |ability|
+              company = ability.owner
+              (operator != company) && (operator != company.owner)
+            end
+          end
         end
       end
     end
