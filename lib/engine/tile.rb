@@ -398,8 +398,11 @@ module Engine
     def city_town_edges_are_subset_of?(other_cte)
       cte = city_town_edges
       ALL_EDGES.any? do |rotation|
-        rotated = other_cte.map { |city| city.map { |edge| rotate(edge, rotation) } }
-        cte.all? { |city| rotated.any? { |other_city| (city - other_city).empty? } }
+        cte.all? do |city|
+          other_cte.any? do |other_city|
+            city.all? { |edge| other_city.include?(rotate(edge, rotation)) }
+          end
+        end
       end
     end
 
