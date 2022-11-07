@@ -64,7 +64,13 @@ module Engine
             action = get_tile_lay(entity)
             return false unless action
 
-            action[:lay] || action[:upgrade]
+            # Check whether there are any hexes where track can be laid. After a
+            # couple of operating rounds many of the private railway companies
+            # will not be able to lay track, so this step (and so their entire
+            # operating turn) can be skipped if it not possible to add track.
+            hexes= (@game.graph_broad.connected_hexes(entity).keys +
+                    @game.graph_metre.connected_hexes(entity).keys).uniq
+            hexes.any? { |hex| available_hex(entity, hex) }
           end
 
           # If a public company does not have enough money to pay its terrain or
