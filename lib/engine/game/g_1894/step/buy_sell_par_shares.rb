@@ -34,7 +34,8 @@ module Engine
           end
 
           def process_choose(action)
-            choice = action.choice
+            # extract hex id from the choice string
+            choice = action.choice[/\((.*?)\)/, 1]
             @game.late_corporation_home_hex(@pending_late_corporation, choice)
             @game.log << "#{@pending_late_corporation.name}'s home location is #{choice}"
             @pending_late_corporation = nil

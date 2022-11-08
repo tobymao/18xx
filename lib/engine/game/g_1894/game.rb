@@ -409,7 +409,7 @@ module Engine
 
         def init_round_finished
           @players.rotate!(@round.entity_index)
-          stock_market.remove_par!(stock_market.share_price(1, 3))
+          stock_market.remove_par!(stock_market.share_price(1, 5))
         end
 
         def assignment_tokens(assignment)
@@ -588,7 +588,7 @@ module Engine
 
           raise GameError, 'No possible home location' if possible_home_hexes.nil?
 
-          possible_home_hexes.map(&:id)
+          possible_home_hexes.map { |h| "#{location_name(h.name)} (#{h.id})" }
         end
 
         def late_corporation_home_hex(corporation, coordinates)
