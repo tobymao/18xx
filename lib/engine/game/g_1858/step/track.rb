@@ -162,6 +162,8 @@ module Engine
           # one can lay track in the hex. Track can also be laid in a blocked
           # hex if a corporation owns the blocking company.
           def ability_blocking_hex(operator, hex)
+            return false unless hex.tile.color == :white # Upgrades are never blocked.
+
             blocking_abilities = @game.companies.reject(&:closed?).map do |company|
               ability = @game.abilities(company, :blocks_hexes)
               next unless ability
