@@ -302,7 +302,7 @@ module Engine
             abilities: [
               {
                 type: 'assign_hexes',
-                hexes: %w[D11 D19 F9 F13 G14 G16 H19 L11 L19 N5 O14],
+                hexes: %w[D11 D19 F9 F13 G14 G16 H19 H21 J5 L11 L19 N5 O14],
                 count: 1,
                 owner_type: 'corporation',
                 when: 'owning_corp_or_turn',
