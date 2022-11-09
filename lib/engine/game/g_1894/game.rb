@@ -4,7 +4,6 @@ require_relative '../base'
 require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
-require_relative 'stock_market'
 require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
@@ -419,8 +418,8 @@ module Engine
         end
 
         def init_stock_market
-          G1894::StockMarket.new(self.class::MARKET, [:unlimited],
-                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          StockMarket.new(self.class::MARKET, [:unlimited],
+                          multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def ipo_reserved_name(_entity = nil)
@@ -498,13 +497,15 @@ module Engine
 
           case action
           when Action::PlaceToken
-            return unless action.city.hex.id == LONDON_BONUS_FERRY_SUPPLY_HEX
+            # Mark the corporation that has London bonus
+            if action.city.hex.id == LONDON_BONUS_FERRY_SUPPLY_HEX
+              action.entity.add_ability(
+                Engine::Ability::Description.new(type: 'description', description: 'London shipping')
+              )
+              return
+            end
 
-            action.entity.add_ability(
-              Engine::Ability::Description.new(type: 'description', description: 'London shipping')
-            )
-          # If only one city tokenable, the reservation goes there
-          when Action::PlaceToken
+            # If only one city tokenable, the reservation goes there
             tile = hex_by_id(action.city.hex.id).tile
 
             return unless BROWN_CITY_TILES.include?(tile.name)
@@ -532,7 +533,7 @@ module Engine
               reservation = tile.cities.first.reservations.first
               if reservation
                 tile.cities.first.remove_all_reservations!
-                tile.add_reservation!(reservation.corporation, nil, reserve_city: false)
+                tile.add_reservation!(reservation.corporation, nil, false)
               end
 
               # Clear all routes as they could be affected by the cities getting disjointed
@@ -601,17 +602,10 @@ module Engine
 
           return tile.add_reservation!(corporation, 0) if coordinates == BRUXELLES_HEX
 
-          tile.add_reservation!(corporation, nil, reserve_city: false)
+          tile.add_reservation!(corporation, nil, false)
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # return to.name == AMIENS_TILE if from.hex.name == AMIENS_HEX && from.color == :white
-          # return to.name == ROUEN_TILE if from.hex.name == ROUEN_HEX && from.color == :white
-          # return to.name == SQ_TILE if from.hex.name == SQ_HEX && from.color == :white
-          # return GREEN_CITY_TILES.include?(to.name) if from.hex.name == AMIENS_HEX && from.color == :yellow
-          # return GREEN_CITY_TILES.include?(to.name) if from.hex.name == ROUEN_HEX && from.color == :yellow
-          # return GREEN_CITY_TILES.include?(to.name) if from.hex.name == SQ_HEX && from.color == :yellow
-          # return BROWN_CITY_TILES.include?(to.name) if from.hex.tile.name == CALAIS_HEX
           return BROWN_CITY_14_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
