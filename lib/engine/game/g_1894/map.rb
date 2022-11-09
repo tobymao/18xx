@@ -201,7 +201,7 @@ module Engine
             ['A4'] => 'offboard=revenue:50;path=a:0,b:_0;path=a:1,b:_0',
             ['C16'] => 'offboard=revenue:30;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['I2'] => 'offboard=revenue:30;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            ['I18'] => 'offboard=revenue:0,hide:1;label=Largest;path=a:1,b:_0;path=a:2,b:_00',
+            ['I18'] => 'offboard=revenue:0,hide:1;icon=image:1894/largest;path=a:1,b:_0;path=a:2,b:_00',
           },
         }.freeze
       end
