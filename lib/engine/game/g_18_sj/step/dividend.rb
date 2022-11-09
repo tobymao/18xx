@@ -55,10 +55,8 @@ module Engine
             # For Oscarian era shares in the Bank pool pay to corporation.
             # Corporations cannot have shares in Treasury.
             return dividends_for_entity(entity, @game.bank, per_share) if @game.oscarian_era
-            # Do not pay for any shares for full capitalization corporation
-            return 0 if entity.capitalization == :full
 
-            # Pay out for shares in treasury only. (No IPO for incremental cap corporations)
+            # Pay out for shares in treasury only.
             dividends_for_entity(entity, entity, per_share)
           end
         end

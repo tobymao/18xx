@@ -1552,12 +1552,13 @@ module Engine
         # correct label?
         return false unless upgrades_to_correct_label?(from, to)
 
-        # honors existing town/city counts?
+        # honors existing town/city counts and connections?
         # - allow labelled cities to upgrade regardless of count; they're probably
         #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
         # - TODO: account for games that allow double dits to upgrade to one town
         return false if from.towns.size != to.towns.size
         return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
+        return false if from.cities.size > 1 && to.cities.size > 1 && !from.city_town_edges_are_subset_of?(to.city_town_edges)
 
         # but don't permit a labelled city to be downgraded to 0 cities.
         return false if from.label && !from.cities.empty? && to.cities.empty?

@@ -1179,7 +1179,7 @@ module Engine
             ['> stock value/2', '1 →'],
             ['≥ 2× stock value', '2 →'],
             ['≥ 3× stock value', '3 →'],
-            ['≥ 4× stock value', '3 →'],
+            ['≥ 4× stock value', '4 →'],
           ]
         end
 
