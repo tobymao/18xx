@@ -143,7 +143,7 @@ module Engine
               next unless ability.hex == coordinates
 
               ability.tile = new_city.tile
-              ability.city = new_city.index
+              ability.city = new_city.tile.cities.find_index(new_city)
             end
           end
 
