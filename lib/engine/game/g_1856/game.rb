@@ -1071,6 +1071,11 @@ module Engine
           end
         end
 
+        def type(corp)
+          return "#{corp.capitalization_type_desc} (#{corp.escrow || 0})" if corp.capitalization_type == :escrow
+          corp.capitalization_type_desc
+        end
+
         #
         # Get the currently possible upgrades for a tile
         # from: Tile - Tile to upgrade from

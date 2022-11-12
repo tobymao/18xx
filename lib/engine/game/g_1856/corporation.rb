@@ -53,7 +53,6 @@ module Engine
         end
 
         def capitalization_type
-          # TODO: escrow
           return :escrow if !@destinated && @game.phase.status.include?('escrow')
           return :incremental if (@destinated && @game.phase.status.include?('escrow')) ||
             @game.phase.status.include?('incremental')
