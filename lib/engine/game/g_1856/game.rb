@@ -1072,7 +1072,10 @@ module Engine
         end
 
         def type(corp)
+          return "" unless corp.ipoed
+
           return "#{corp.capitalization_type_desc} (#{corp.escrow || 0})" if corp.capitalization_type == :escrow
+
           corp.capitalization_type_desc
         end
 
