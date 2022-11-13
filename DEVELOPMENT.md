@@ -108,7 +108,8 @@ make CONTAINER_ENGINE=podman …
 
 #### Before filing a pull request
 
-Run `docker-compose exec rack rake` while a docker instance is running to run rubocop (to ensure your changes meet the project's code style guidelines) as well as the test suite.
+- Run `git fetch && git diff-tree -r --no-commit-id --name-only master@\{u\} HEAD | xargs ls -1 2>/dev/null | grep '\.rb$' | xargs bundle exec rubocop --force-exclusion -a` to fix formatting errors (after the files are committed, see [StackOverflow](https://stackoverflow.com/questions/32553877/how-to-run-rubocop-only-on-the-changed-files-in-a-pull-request/64272049#64272049))
+- Run `docker-compose exec rack rake` while a docker instance is running to run rubocop (to ensure your changes meet the project's code style guidelines) as well as the test suite.
 
 #### Profiling the code
 
