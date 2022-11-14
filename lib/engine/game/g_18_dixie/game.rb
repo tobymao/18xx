@@ -167,7 +167,7 @@ module Engine
           Engine::Step::DiscardTrain,
           # ICG/SCL Merger!
           G18Dixie::Step::MergeConsent,
-          #G18Dixie::Step::PresidencyExchange,
+          G18Dixie::Step::PresidencyShareExchange,
           # normal stuff
           Engine::Step::BuyTrain,
           [Engine::Step::BuyCompany, { blocks: true }],
@@ -302,7 +302,7 @@ module Engine
         end
 
         def setup_double_shares
-          [icg, scl].each { |corp| corp.shares.last.double_cert = true}
+          [icg, scl].each { |corp| corp.shares.last.double_cert = true }
         end
 
         def release_preferred_shares
@@ -445,23 +445,112 @@ module Engine
           merger_corp == scl ? icg : scl
         end
 
+        def merger_price(merging_corps)
+          # Putting the value, lower, and upper bounds in an array, sorting, and taking the new middle value
+          #  is a pretty easy & lazy way to get the "capped" value. Sorting an array of length 3 is also pretty quick
+          merger_value = [90, merging_corps.sum { |c| c.share_price.price } / 2, 140].sort[1]
+          # The 'highest stock value that does not exceed this sum'
+          # Search from right to left (highest to lowest), take the first that does not exceed and call it a day
+          @stock_market.market[0].reverse.find { |p| p.price <= merger_value }
+        end
+
+        def ipo_merger_corp(primary_corp, secondary_corp, merger_corp)
+          merger_value = merger_price([primary_corp, secondary_corp])
+          @stock_market.set_par(merger_corp, merger_value)
+          @log << "#{merger_corp.name} IPOs at #{merger_value.price}"
+        end
+
         def start_merge(primary_corp, secondary_corp, merger_corp, subsidy)
           @log << "-- Event: #{primary_corp.name} and #{secondary_corp.name} merge to form #{merger_corp.name} --"
+          ipo_merger_corp(primary_corp, secondary_corp, merger_corp)
           close_merger_corp(other_merger_corp(merger_corp))
 
           @log << "Bank gives #{merger_corp.name} a #{format_currency(subsidy)} subsidy"
           @bank.spend(subsidy, merger_corp)
 
-          exchange_for_merger_presidency(primary_corp, merger_corp)
-          exchange_for_merger_20_share(secondary_corp, merger_corp)
+          exchange_presidencies(primary_corp, secondary_corp, merger_corp)
         end
 
-        def exchange_for_merger_presidency(primary_corp, merger_corp)
-          puts 'exchange for presidency'
+        def exchange_presidencies(primary_corp, secondary_corp, merger_corp)
+          # Setup
+          @round.merge_presidency_exchange_merging_corp = merger_corp
+          @round.merge_presidency_exchange_corps = [primary_corp, secondary_corp]
+          @round.merge_presidency_exchange_subsidy = @round.merge_consent_subsidy
+          # Kick off presidency exchange
+          try_exchange_for_merger_presidency(primary_corp, secondary_corp, merger_corp)
         end
 
-        def exchange_for_merger_20_share(secondary_corp, merger_corp)
-          puts 'exchange for double share'
+        def try_exchange_for_merger_presidency(primary_corp, secondary_corp, merger_corp)
+          president = primary_corp.owner
+          @log << "#{president.name} exchanges 40% combined shares of " \
+                  " #{primary_corp&.name} and #{secondary_corp&.name} for #{merger_corp&.name}'s presidency"
+          if try_double_share_exchange(primary_corp, secondary_corp, merger_corp, president, merger_corp.shares.first)
+            try_exchange_for_merger_20_share(primary_corp, secondary_corp, merger_corp)
+          else
+            @round.merge_presidency_cash_crisis_corp = primary_corp
+            @round.merge_presidency_cash_crisis_player = president
+          end
+        end
+
+        def try_exchange_for_merger_20_share(primary_corp, secondary_corp, merger_corp)
+          president = secondary_corp.owner
+          @log << "#{president.name} exchanges 40% combined shares of " \
+                  " #{primary_corp&.name} and #{secondary_corp&.name} for #{merger_corp&.name}'s double share"
+          if try_double_share_exchange(primary_corp, secondary_corp, merger_corp, president, merger_corp.shares.last)
+            finish_exchanges
+          else
+            @round.merge_presidency_cash_crisis_corp = secondary_corp
+            @round.merge_presidency_cash_crisis_player = president
+          end
+        end
+
+        def finish_exchanges(_primary_corp, _secondary_corp, _merger_corp)
+          @log << 'Exchanges done'
+        end
+
+        # Return true if exchange was done automatically, return false if intervention is needed
+        def try_double_share_exchange(primary_corp, secondary_corp, merger_corp, president, exchange_share)
+          @share_pool.buy_shares(president, exchange_share, exchange: :free, exchange_price: 0)
+          shares_to_exchange = 4
+          # exchange presidency certificates first to make the later 2-for-1 share swap step easier
+          [primary_corp, secondary_corp].each do |corp|
+            president.shares_of(corp).each do |share|
+              next unless share&.president
+
+              @log << "#{president.name} exchanges #{corp.name}'s president's certificate"
+              share.transfer(corp)
+              shares_to_exchange -= 2
+            end
+          end
+          return true if shares_to_exchange.zero?
+
+          # The player still has to exchange shares, now try 10% shares of the primary
+          president.shares_of(primary_corp).each do |share|
+            next if share.president
+
+            @log << "#{president.name} exchanges a 10% share of #{primary_corp.name}"
+            share.transfer(primary_corp)
+            shares_to_exchange -= 1
+          end
+          return true if shares_to_exchange.zero?
+
+          # The player still has to exchange shares, finally try 10% shares of the secondary
+          president.shares_of(secondary_corp).each do |share|
+            # If the player is president of the other corp, then they'll get a chance to exchange this later.
+            next if share.president
+
+            @log << "#{president.name} exchanges a 10% share of #{secondary_corp.name}"
+            share.transfer(secondary_corp)
+            shares_to_exchange -= 1
+          end
+          return true if shares_to_exchange.zero?
+
+          # The player has a share shortfall and has to pay a penalty of merger_corp's market price _for_each_share_short_
+          penalty = shares_to_exchange * merger_corp.share_price.price
+          @log << "#{president.name} is short #{shares_to_exchange} exchange shares" \
+                  " and must immediately pay a penalty of #{format_currency(penalty)} to the bank"
+          president.spend(penalty, @bank, check_cash: false)
+          false
         end
 
         def event_icg_formation_chance!

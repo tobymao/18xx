@@ -14,6 +14,11 @@ module Engine
               merge_consent_secondary_corp: nil,
               merge_consent_pending_corps: [],
               merge_consent_subsidy: nil,
+              merge_presidency_cash_crisis_corp: nil,
+              merge_presidency_cash_crisis_player: nil,
+              merge_presidency_exchange_corps: [],
+              merge_presidency_exchange_merging_corp: nil,
+              merge_presidency_exchange_subsidy: nil,
             }
           end
 
@@ -62,7 +67,7 @@ module Engine
           end
 
           def turn_to_choose(entity)
-            return false unless entity.corporation
+            return false unless entity.corporation?
             return false unless @round.merge_consent_merging_corp
             return false if @round.merge_consent_pending_corps.empty?
             return false unless entity == @round.merge_consent_pending_corps[0]
