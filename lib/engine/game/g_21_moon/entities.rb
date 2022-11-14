@@ -17,8 +17,8 @@ module Engine
             max_price: 1,
             desc: 'When buying the private, a player must immediately place the black “SD” token on any '\
                   'mineral resource hex on the board in which the black “SD” token blocks an SD spot. '\
-                  'A player owning OLS can sell it to corporation for 1 credit. When sold to a corporation, '\
-                  'the black SD token will be replaced by a token from the owning corporation.',
+                  'When sold to a corporation, the black SD token will be replaced by a token from the owning corporation. '\
+                  'Can be sold to a corporation for ₡1.',
             abilities: [],
             color: nil,
           },
@@ -31,7 +31,7 @@ module Engine
             max_price: 45,
             desc: 'When this private is bought by a company, the president of the company may choose to add or remove '\
                   'a 3/4/5/6 train to/from the depot. If a train is added, it must be of the '\
-                  'current phase or later. This will close the company.',
+                  'current phase or later. This will close the company. Can be sold to a corporation for ₡1-₡45.',
             abilities: [],
             color: nil,
           },
@@ -44,7 +44,7 @@ module Engine
             max_price: 60,
             desc: 'The corporation owning the SBC can build and upgrade road tiles crossing the rift. '\
                   'The owning company receives a bonus of 60 credits after the connection across the rift is '\
-                  'made for the first time.',
+                  'made for the first time. Can be sold to a corporation for ₡1-₡60.',
             abilities: [],
             color: nil,
           },
@@ -56,7 +56,7 @@ module Engine
             min_price: 1,
             max_price: 90,
             desc: 'The owning corporation may place the +20 marker on a mineral or Home Base hex. The +20 '\
-                  'token lasts until the end of the game. This will close the company',
+                  'token lasts until the end of the game. This will close the company. Can be sold to a corporation for ₡1-₡90.',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -76,7 +76,7 @@ module Engine
             min_price: 1,
             max_price: 120,
             desc: 'The owning corporation may teleport place the T tile, then may place its cheapest supply '\
-                  'depot on it. This closes the private company',
+                  'depot on it. This closes the private company. Can be sold to a corporation for ₡1-₡120.',
             abilities: [
               {
                 type: 'teleport',
@@ -96,7 +96,8 @@ module Engine
             max_price: 150,
             desc: 'The owning player or corporation may take one share from the pool for free (may be '\
                   'used once per game, cannot be used in first stock round). In addition, mountain terrain is '\
-                  'discounted to 10 cost when owned by a corporation. Exchanging closes this company.',
+                  'discounted to 10 cost when owned by a corporation. Exchanging closes this company. '\
+                  'Can be sold to a corporation for ₡1-₡150.',
             abilities: [
               {
                 type: 'exchange',
