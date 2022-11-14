@@ -1,145 +1,123 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
+require_relative '../../../step/emergency_money'
 
 module Engine
   module Game
     module G18Dixie
       module Step
-        class PresidencyExchange < Engine::Step::Base
-          def round_state
-            {
-              presidency_exchange_merging_corp: nil,
-              presidency_exchange_primary_corp: nil,
-              presidency_exchange_secondary_corp: nil,
-              presidency_exchange_pending_corps: [],
-              presidency_exchange_shares_remaining: nil,
-              presidency_exchange_subsidy: nil,
-            }
-          end
-
-          def merger_corp_name
-            @round.presidency_exchange_merging_corp&.name || 'SCL/ICG'
-          end
-
-          def active_corp_name
-            @round.presidency_exchange_pending_corps[0]&.name || 'current corporation'
-          end
-
-          def primary_corp_name
-            @round.presidency_exchange_primary_corp&.name || 'first forming corporation'
-          end
-
-          def secondary_corp_name
-            @round.presidency_exchange_secondary_corp&.name || 'second forming corporation'
-          end
-
-          def secondary_corp_president
-            @round.presidency_exchange_pending_corps[1]&.owner&.name || 'other merging corporation\'s president'
-          end
-
-          def shares_remaining
-            shares_remaining = @round.presidency_exchange_shares_remaining
-            raise Engine::GameError << "presidency_exchange_shares_remaining should be set" unless shares_remaining
-
-            shares_remaining
-          end
-
-          def merge_description
-            raise Engine::GameError << "DO NOT USE"
-          end
-
-          def active_entities
-            @round.presidency_exchange_pending_corps.map { |c| c.owner }
-          end
-
-          def active?
-            !@round.presidency_exchange_pending_corps.empty?
-          end
-
+        # Mostly actionless unless bad things happen
+        class PresidencyShareExchange < Engine::Step::Base
+          include Engine::Step::EmergencyMoney
+          # In the case that a president of an ICG/SCL merger company needing to raise funds
+          # this is used to do that. Bankruptcy can happen.
           def actions(entity)
-            return %w[choose] if turn_to_choose(entity)
+            return [] unless entity == current_entity
 
-            []
-          end
+            unless @active_entity
+              @active_entity = entity
+              @game.log << "#{@active_entity.name} enters Emergency Fundraising and owes"\
+                           " the bank #{@game.format_currency(needed_cash(@active_entity))}"
+            end
 
-          def show_other
-            [@round.presidency_exchange_primary_corp,
-             @round.presidency_exchange_secondary_corp,
-             @round.presidency_exchange_merging_corp].freeze - [current_entity]
-          end
-
-          def turn_to_choose(entity)
-            return false unless entity.corporation
-            return false unless @round.presidency_exchange_merging_corp
-            return false if @round.presidency_exchange_pending_corps.empty?
-            return false unless entity == @round.presidency_exchange_pending_corps[0]
-
-            true
-          end
-
-          def help
-            return "Choosing to merge WILL form the #{merger_corp_name}" if @round.presidency_exchange_pending_corps.length < 2
-
-            "The formation of the #{merger_corp_name} is also conditional on the consent of #{secondary_corp_president}"
+            ['sell_shares']
           end
 
           def description
-            "#{merger_corp_name} formation: #{active_corp_name} president's consent"
+            'Presidency Exchange'
           end
 
-          def choices
-            @choices = {}
-            @choices['merge'] = "Consent to #{merge_description}"
-            @choices['decline'] = "Decline to #{merge_description}"
-            @choices
+          def cash_crisis?
+            true
           end
 
-          def choice_name
-            "Choose whether or not to #{merge_description}"
+          def active?
+            active_entities.any?
           end
 
-          def pass_description
-            "Decline to merge. #{@merger_corp_name} will not form"
+          def active_entities
+            if @round&.merge_presidency_cash_crisis_player&.cash&.negative?
+              [@round.merge_presidency_cash_crisis_player]
+            else
+              []
+            end
           end
 
-          def process_choose(action)
-            return choose_to_merge(action) if action.choice == 'merge'
-
-            decline_to_merge(action)
+          def needed_cash(entity)
+            -entity.cash
           end
 
-          def process_pass(_action)
-            raise Engine::GameError, "It shouldn't be possible to pass on consenting to merge into the ICG/SCL"
+          def available_cash(_player)
+            0
           end
 
-          def choose_to_merge(action)
-            @game.log << "#{action&.entity&.name} consents to merge into #{merger_corp_name}"
-            @round.presidency_exchange_pending_corps.shift
-            return unless @round.presidency_exchange_pending_corps.empty?
+          def process_sell_shares(action)
+            super
+            player = action.entity
+            return if player.cash.negative?
 
-            @game.start_merge(
-              @round.presidency_exchange_primary_corp,
-              @round.presidency_exchange_secondary_corp,
-              @round.presidency_exchange_merging_corp,
-              @round.presidency_exchange_subsidy
-            )
-            reset_presidency_exchange
+            @active_entity = nil
+            # Player has resolved cash obligations
+            if @round.merge_presidency_cash_crisis_corp == @round.merge_presidency_exchange_corps[0]
+              unless player == @round.merge_presidency_cash_crisis_player
+                raise Engine::GameError, 'Only the player in cash crisis can sell shares right now'
+              end
+
+              @round.merge_presidency_cash_crisis_player = nil
+              @round.merge_presidency_cash_crisis_corp = nil
+              @game.try_exchange_for_merger_20_share(
+                @round.merge_presidency_exchange_corps[0],
+                @round.merge_presidency_exchange_corps[1],
+                @round.merge_presidency_exchange_merging_corp
+              )
+            elsif @round.merge_presidency_cash_crisis_corp == @round.merge_presidency_exchange_corps[1]
+              unless player == @round.merge_presidency_cash_crisis_player
+                raise Engine::GameError, 'Only the player in cash crisis can sell shares right now'
+              end
+
+              @round.merge_presidency_cash_crisis_player = nil
+              @round.merge_presidency_cash_crisis_corp = nil
+              @game.finish_exchanges(
+                @round.merge_presidency_exchange_corps[0],
+                @round.merge_presidency_exchange_corps[1],
+                @round.merge_presidency_exchange_merging_corp
+              )
+            else
+              # This shouldn't happen, provided for defensive coding
+              raise Engine::GameError, 'Selling shares in presidency exchange with no cash crisis player is not allowed'
+            end
           end
 
-          def decline_to_merge(action)
-            @game.log << "#{action&.entity&.owner&.name} declines to merge into #{merger_corp_name}"
-            @game.close_merger_corp(@round.presidency_exchange_merging_corp)
-            reset_presidency_exchange
-          end
+          # In the double share exchanges, the primary is resolved before the secondary.
+          # If a player is president of both, and is in serious financial trouble, could they dump
+          # the presidency of the secondary company to raise funds for the first one to duck out of that responsibility?
+          # RAW is not explicit so I'll let what happens here happen and make sure that the president of the secondary
+          # corporation is determined only when its needed for the secondary 20 percent exchange
+          def sellable_bundle?(bundle)
+            return false
+            player = bundle.owner
+            # Can't sell president's share
+            return false unless bundle.can_dump?(player)
 
-          def reset_presidency_exchange
-            @round.presidency_exchange_merging_corp = nil
-            @round.presidency_exchange_pending_corps = []
-            @round.presidency_exchange_primary_corp = nil
-            @round.presidency_exchange_secondary_corp = nil
-            @round.presidency_exchange_subsidy = nil
+            # Can't oversaturate the market
+            return false unless @game.share_pool.fit_in_bank?(bundle)
+
+            # Can't swap presidency
+            corporation = bundle.corporation
+            if corporation.president?(player) && @round.merge_presidency_cash_crisis_corp == corporation
+              share_holders = corporation.player_share_holders
+              remaining = share_holders[player] - bundle.percent
+              next_highest = share_holders.reject { |k, _| k == player }.values.max || 0
+              return false if remaining < next_highest
+            end
+
+            # Otherwise we're good
+            true
           end
+          # Use EmergencyMoney can_sell?
+
+          def swap_sell(_player, _corporation, _bundle, _pool_share); end
         end
       end
     end
