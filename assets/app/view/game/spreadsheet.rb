@@ -9,6 +9,10 @@ require 'view/game/stock_market'
 require 'view/game/tranches'
 require 'view/game/actionable'
 
+FLOATED = 2
+UNFLOATED = 1
+UNSTARTED = 0
+
 module View
   module Game
     class Spreadsheet < Snabberb::Component
@@ -337,8 +341,20 @@ module View
             @game.operating_order
           end
 
+        unfloated_corporations =
+          (@game.all_corporations - operating_corporations)
+            .filter { |c| c.respond_to?(:sort_order_key) && c.sort_order_key }
+            .sort
+
         result = @game.all_corporations.map do |c|
-          operating_order = (operating_corporations.find_index(c) || -1) + 1
+          operating_order =
+            if (index = operating_corporations.find_index(c))
+              [FLOATED, index + 1]
+            elsif (index = unfloated_corporations.find_index(c))
+              [UNFLOATED, index + 1]
+            else
+              [UNSTARTED, 0]
+            end
           [operating_order, c]
         end
 
@@ -360,7 +376,7 @@ module View
             when :market_shares
               num_shares_of(@game.share_pool, corporation)
             when :share_price
-              [corporation.share_price&.price || 0, -operating_order]
+              [corporation.share_price&.price || 0, operating_order[0], -operating_order[1]]
             when :par_price
               corporation.par_price&.price || 0
             when :cash
@@ -432,7 +448,7 @@ module View
 
         order_props = { style: { paddingLeft: '1.2em' } }
         order_props[:style][:color] =
-          if operating_order.zero?
+          if operating_order[0] == UNSTARTED
             'transparent'
           elsif corporation.operating_history.keys[-1] == current_round
             convert_hex_to_rgba(color_for(:font2), 0.5)
@@ -510,7 +526,9 @@ module View
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
           *treasury,
-          h('td.padded_number', order_props, operating_order),
+          h('td.padded_number', order_props, if operating_order[0] == UNFLOATED
+                                               "[#{operating_order[1]}]" else
+                                                                           operating_order[1] end),
           h(:td, corporation.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(', ')),
           h(:td, @game.token_string(corporation)),
           *extra,
