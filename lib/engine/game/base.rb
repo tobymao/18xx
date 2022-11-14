@@ -1484,6 +1484,10 @@ module Engine
         graph_for_entity(entity).clear
       end
 
+      def clear_token_graph_for_entity(entity)
+        token_graph_for_entity(entity).clear
+      end
+
       def graph_skip_paths(_entity)
         nil
       end
