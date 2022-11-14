@@ -11,17 +11,17 @@ module Engine
             super
             return if @game.loading
 
-            return unless route_includes_england?(action.routes) && !@game.ferry_marker?(action.entity)
+            return unless route_includes_london?(action.routes) && !@game.ferry_marker?(action.entity)
 
-            raise GameError, 'Cannot run to England without a ferry marker'
+            raise GameError, 'Cannot run to London without a ferry marker'
           end
 
-          def route_includes_england?(routes)
-            routes.flat_map(&:connection_hexes).include?(Engine::Game::G1894::Game::ENGLAND_HEX)
+          def route_includes_london?(routes)
+            routes.flat_map(&:connection_hexes).include?(Engine::Game::G1894::Game::LONDON_HEX)
           end
 
           def available_hex(entity, hex)
-            return @game.ferry_marker?(entity) if hex.id == Engine::Game::G1894::Game::ENGLAND_HEX
+            return @game.ferry_marker?(entity) if hex.id == Engine::Game::G1894::Game::LONDON_HEX
 
             super
           end
