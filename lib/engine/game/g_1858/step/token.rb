@@ -143,6 +143,14 @@ module Engine
             entity.tokens_by_type
           end
 
+          def can_place_token?(entity)
+            current_entity == entity &&
+              !@round.tokened &&
+              !(tokens = available_tokens(entity)).empty? &&
+              min_token_price(tokens) <= buying_power(entity) &&
+              (@game.graph_broad.can_token?(entity) || @game.graph_metre.can_token?(entity))
+          end
+
           def token_cost_override(entity, city, _slot, token)
             return unless entity.corporation?
 
