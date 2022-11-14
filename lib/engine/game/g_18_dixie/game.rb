@@ -155,6 +155,7 @@ module Engine
         # OR Stuff
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+          G18Dixie::Step::Bankrupt,
           Engine::Step::Bankrupt,
           G18Dixie::Step::HomeToken,
           Engine::Step::Exchange,
