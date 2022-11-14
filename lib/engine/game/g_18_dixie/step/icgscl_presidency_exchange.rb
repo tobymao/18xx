@@ -95,7 +95,6 @@ module Engine
           # RAW is not explicit so I'll let what happens here happen and make sure that the president of the secondary
           # corporation is determined only when its needed for the secondary 20 percent exchange
           def sellable_bundle?(bundle)
-            return false
             player = bundle.owner
             # Can't sell president's share
             return false unless bundle.can_dump?(player)
