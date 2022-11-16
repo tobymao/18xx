@@ -114,7 +114,7 @@ module Engine
         def init_round
           if option_quick_start?
             quick_start
-            operating_round
+            operating_round(1)
           else
             # The initial stock round isn't *quite* a normal stock round,
             # you cannot start public companies in the first stock round.
