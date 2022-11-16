@@ -193,6 +193,16 @@ This company comes with a share of a corporation when acquired.
   randomly selected at game setup.
 - `corporations`: A list of corporations to be used with `"share": "random_share"`
 
+## stubs
+
+Create stubs of track on hex edges that must have track connected when
+laying a tile on the hex.
+
+- `hex_edges`: An hash defining which hex edges must be connected.
+  Each hash key is the coordinates of a hex and its value is either an
+  edge number (0 to 5) or an array of edge numbers if there are
+  multiple stubs in the same hex.
+
 ## teleport
 
 Lay a tile and place a station token without connectivity

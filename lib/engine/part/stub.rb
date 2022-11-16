@@ -5,10 +5,11 @@ require_relative 'base'
 module Engine
   module Part
     class Stub < Base
-      attr_reader :edge
+      attr_reader :edge, :owner
 
-      def initialize(edge)
+      def initialize(edge, owner: nil)
         @edge = edge
+        @owner = owner
       end
 
       def stub?
@@ -17,6 +18,10 @@ module Engine
 
       def track
         :broad
+      end
+
+      def inspect
+        "<#{self.class.name} edge=#{@edge}>"
       end
     end
   end
