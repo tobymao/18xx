@@ -260,6 +260,10 @@ module Engine
                 type: 'blocks_hexes',
                 hexes: %w[B9 B11],
               },
+              {
+                type: 'stubs',
+                hex_edges: { B9: 0, B11: 3 },
+              },
             ],
           },
           {
@@ -379,6 +383,10 @@ module Engine
                 type: 'blocks_hexes',
                 hexes: %w[B13],
               },
+              {
+                type: 'stubs',
+                hex_edges: { B13: 1 },
+              },
             ],
           },
           {
@@ -427,6 +435,10 @@ module Engine
                 type: 'blocks_hexes',
                 hexes: %w[G8 G10],
               },
+              {
+                type: 'stubs',
+                hex_edges: { G8: 0, G10: [3, 5] },
+              },
             ],
           },
           {
@@ -469,6 +481,10 @@ module Engine
               {
                 type: 'blocks_hexes',
                 hexes: %w[I10 J9 K8],
+              },
+              {
+                type: 'stubs',
+                hex_edges: { I10: 4, J9: [1, 4], K8: [1, 4] },
               },
             ],
           },
@@ -517,6 +533,10 @@ module Engine
                 type: 'blocks_hexes',
                 hexes: %w[E18 F17 G18],
               },
+              {
+                type: 'stubs',
+                hex_edges: { E18: 4, F17: [1, 5], G18: 2 },
+              },
             ],
           },
           {
@@ -564,6 +584,10 @@ module Engine
                 type: 'blocks_hexes',
                 hexes: %w[E18 E20],
               },
+              {
+                type: 'stubs',
+                hex_edges: { E18: 0, E20: 3 },
+              },
             ],
           },
           {
@@ -606,6 +630,10 @@ module Engine
               {
                 type: 'blocks_hexes',
                 hexes: %w[K4 K6],
+              },
+              {
+                type: 'stubs',
+                hex_edges: { K4: 0, K6: [3, 5] },
               },
             ],
           },
@@ -697,6 +725,10 @@ module Engine
                 type: 'blocks_hexes',
                 hexes: %w[G18 G20],
               },
+              {
+                type: 'stubs',
+                hex_edges: { G18: 0, G20: 3 },
+              },
             ],
           },
           {
@@ -739,6 +771,10 @@ module Engine
               {
                 type: 'blocks_hexes',
                 hexes: %w[K18],
+              },
+              {
+                type: 'stubs',
+                hex_edges: { K18: 5 },
               },
             ],
           },
@@ -783,6 +819,10 @@ module Engine
                 type: 'blocks_hexes',
                 hexes: %w[G4 H3],
               },
+              {
+                type: 'stubs',
+                hex_edges: { G4: 4, H3: 1 },
+              },
             ],
           },
           {
@@ -814,6 +854,10 @@ module Engine
               {
                 type: 'blocks_hexes',
                 hexes: %w[D15 E14 F15],
+              },
+              {
+                type: 'stubs',
+                hex_edges: { D15: 4, E14: [1, 5], F15: 2 },
               },
             ],
           },
@@ -852,6 +896,10 @@ module Engine
               {
                 type: 'blocks_hexes',
                 hexes: %w[C2 C4],
+              },
+              {
+                type: 'stubs',
+                hex_edges: { C2: 0, C4: 3 },
               },
             ],
           },
@@ -919,6 +967,10 @@ module Engine
                 type: 'blocks_hexes',
                 hexes: %w[D13 E12 F13 G12],
               },
+              {
+                type: 'stubs',
+                hex_edges: { D13: 4, E12: [1, 5], F13: [2, 4], G12: [1, 4] },
+              },
             ],
           },
           {
@@ -956,6 +1008,10 @@ module Engine
               {
                 type: 'blocks_hexes',
                 hexes: %w[B5 C4],
+              },
+              {
+                type: 'stubs',
+                hex_edges: { B5: 4, C4: 1 },
               },
             ],
           },
@@ -995,6 +1051,10 @@ module Engine
               {
                 type: 'blocks_hexes',
                 hexes: %w[F3 F5],
+              },
+              {
+                type: 'stubs',
+                hex_edges: { F3: [0, 3], F5: 3 },
               },
             ],
           },

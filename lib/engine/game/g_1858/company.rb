@@ -68,6 +68,11 @@ module Engine
 
           stock_market.par_prices.max_by { |share_price| share_price.price <= @value ? share_price.price : 0 }
         end
+
+        # Closes the company's stubs abilities.
+        def release_stubs
+          abilities.each { |ability| remove_ability(ability) if ability.type == :stubs }
+        end
       end
     end
   end

@@ -65,6 +65,7 @@ module Engine
             @game.minors.delete(company)
             company.owner = corporation
             corporation.companies << company
+            company.release_stubs
             @log << "#{corporation.name} acquires #{company.name} from #{player.name}"
           end
         end

@@ -81,12 +81,10 @@ module Engine
                     'border=type:province,edge:2',
             %w[K8] =>
                     'icon=image:1858/MZ;' \
-                    'stub=edge:1;stub=edge:4;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2',
             %w[F17] =>
                     'icon=image:1858/CS;' \
-                    'stub=edge:1;stub=edge:5;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3',
             %w[J11 J13] =>
@@ -133,14 +131,12 @@ module Engine
                     'border=type:province,edge:5',
             %w[G4] =>
                     'icon=image:1858/AS;' \
-                    'stub=edge:4;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3;' \
                     'border=type:province,edge:4',
             %w[J9] =>
                     'icon=image:1858/MZ;' \
-                    'stub=edge:1;stub=edge:4;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3;' \
                     'border=type:province,edge:4;' \
@@ -202,7 +198,6 @@ module Engine
             %w[F3] =>
                     'upgrade=cost:80,terrain:mountain;' \
                     'icon=image:1858/LG;' \
-                    'stub=edge:0;stub=edge:3;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:5',
@@ -242,8 +237,7 @@ module Engine
 
             %w[E14] =>
                     'upgrade=cost:20,terrain:water;' \
-                    'icon=image:1858/BCR;' \
-                    'stub=edge:1;stub=edge:5;',
+                    'icon=image:1858/BCR;',
             %w[C8] =>
                     'upgrade=cost:20,terrain:water;' \
                     'border=type:province,edge:3',
@@ -267,7 +261,6 @@ module Engine
             %w[F15] =>
                     'upgrade=cost:20,terrain:water;' \
                     'icon=image:1858/BCR;' \
-                    'stub=edge:2;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:4;' \
                     'border=type:province,edge:5',
@@ -279,7 +272,6 @@ module Engine
             %w[K6] =>
                     'upgrade=cost:20,terrain:water;' \
                     'icon=image:1858/ZP;' \
-                    'stub=edge:3;stub=edge:5;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3',
@@ -291,14 +283,12 @@ module Engine
             %w[E12] =>
                     'upgrade=cost:20,terrain:water;' \
                     'icon=image:1858/CMP;' \
-                    'stub=edge:1;stub=edge:5;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3;' \
                     'border=type:province,edge:4',
             %w[F13] =>
                     'upgrade=cost:20,terrain:water;' \
                     'icon=image:1858/CMP;' \
-                    'stub=edge:2;stub=edge:4;' \
                     'border=type:province,edge:3;' \
                     'border=type:province,edge:4;' \
                     'border=type:province,edge:5',
@@ -321,7 +311,6 @@ module Engine
             %w[B11] =>
                     'town=revenue:0;' \
                     'icon=image:1858/PL;' \
-                    'stub=edge:3;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:1',
             %w[H15] =>
@@ -335,7 +324,6 @@ module Engine
             %w[I10] =>
                     'town=revenue:0;' \
                     'icon=image:1858/MZ;' \
-                    'stub=edge:4;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3',
             %w[B7 H5] =>
@@ -349,7 +337,6 @@ module Engine
             %w[K4] =>
                     'town=revenue:0;' \
                     'icon=image:1858/ZP;' \
-                    'stub=edge:0;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:5',
             %w[I4] =>
@@ -381,14 +368,12 @@ module Engine
             %w[F5] =>
                     'town=revenue:0;' \
                     'icon=image:1858/LG;' \
-                    'stub=edge:3;' \
                     'border=type:province,edge:3;' \
                     'border=type:province,edge:4;' \
                     'border=type:province,edge:5',
             %w[G10] =>
                     'town=revenue:0;' \
                     'icon=image:1858/MV;' \
-                    'stub=edge:3;stub=edge:5;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2;' \
@@ -412,21 +397,18 @@ module Engine
                     'town=revenue:0;' \
                     'upgrade=cost:20,terrain:water;' \
                     'icon=image:1858/BCR;' \
-                    'stub=edge:4;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2',
             %w[B13] =>
                     'town=revenue:0;' \
                     'upgrade=cost:20,terrain:water;' \
                     'icon=image:1858/LC;' \
-                    'stub=edge:1;' \
                     'border=type:province,edge:3;' \
                     'border=type:province,edge:4',
             %w[D13] =>
                     'town=revenue:0;' \
                     'upgrade=cost:20,terrain:water;' \
                     'icon=image:1858/CMP;' \
-                    'stub=edge:4;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3',
@@ -434,7 +416,6 @@ module Engine
                     'town=revenue:0;' \
                     'upgrade=cost:20,terrain:water;' \
                     'icon=image:1858/CMP;' \
-                    'stub=edge:1;stub=edge:4;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3',
@@ -455,28 +436,24 @@ module Engine
             %w[C4] =>
                     'town=revenue:0;town=revenue:0;' \
                     'upgrade=cost:40,terrain:mountain;' \
-                    'icon=image:1858/SC;icon=image:1858/OV;' \
-                    'stub=edge:1;stub=edge:3',
+                    'icon=image:1858/SC;icon=image:1858/OV',
 
             # City hexes
             %w[C2] =>
                     'city=revenue:0;' \
-                    'icon=image:1858/SC;' \
-                    'stub=edge:0',
+                    'icon=image:1858/SC',
             %w[H19] =>
                     'city=revenue:0',
             %w[B5] =>
                     'city=revenue:0;' \
                     'border=type:province,edge:0;' \
-                    'icon=image:1858/OV;' \
-                    'stub=edge:4',
+                    'icon=image:1858/OV',
             %w[I2] =>
                     'city=revenue:0;' \
                     'icon=image:1858/CB;' \
                     'border=type:province,edge:1',
             %w[G8] =>
                     'icon=image:1858/MV;' \
-                    'stub=edge:0;' \
                     'city=revenue:0;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2',
@@ -484,13 +461,11 @@ module Engine
                     'city=revenue:0;label=Y;' \
                     'future_label=label:P,color:brown;' \
                     'upgrade=cost:20,terrain:water;' \
-                    'icon=image:1858/PL;' \
-                    'stub=edge:0',
+                    'icon=image:1858/PL',
             %w[G20] =>
                     'city=revenue:0;label=Y;' \
                     'upgrade=cost:20,terrain:water;' \
-                    'icon=image:1858/CM;' \
-                    'stub=edge:3;',
+                    'icon=image:1858/CM',
             %w[L13] =>
                     'city=revenue:0;label=Y;' \
                     'upgrade=cost:20,terrain:water;' \
@@ -499,29 +474,24 @@ module Engine
                     'city=revenue:0;label=Y;' \
                     'upgrade=cost:20,terrain:water;' \
                     'icon=image:1858/CS;icon=image:1858/SJC;' \
-                    'stub=edge:0;stub=edge:4;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3',
             %w[E20] =>
                     'city=revenue:0;' \
                     'upgrade=cost:20,terrain:water;' \
-                    'icon=image:1858/SJC;' \
-                    'stub=edge:3;',
+                    'icon=image:1858/SJC',
             %w[G18] =>
                     'city=revenue:0;' \
                     'upgrade=cost:20,terrain:water;' \
-                    'icon=image:1858/CM;icon=image:1858/CS;' \
-                    'stub=edge:0;stub=edge:2;',
+                    'icon=image:1858/CM;icon=image:1858/CS',
             %w[K18] =>
                     'city=revenue:0;' \
                     'upgrade=cost:20,terrain:water;' \
-                    'icon=image:1858/MC;' \
-                    'stub=edge:5;',
+                    'icon=image:1858/MC',
             %w[H3] =>
                     'city=revenue:0;' \
                     'upgrade=cost:40,terrain:mountain;' \
                     'icon=image:1858/AS;' \
-                    'stub=edge:1;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2;' \
