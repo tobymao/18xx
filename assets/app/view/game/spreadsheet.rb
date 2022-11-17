@@ -189,6 +189,9 @@ module View
         treasury << h(:th, render_sort_link('Shares', :treasury)) if @game.separate_treasury?
 
         extra = []
+        if @game.respond_to?(:capitalization_type_desc)
+          extra << h(:th, render_sort_link('Capitalization', :capitalization_type_desc))
+        end
         extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
         extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
         if @game.total_loans.positive?
@@ -372,6 +375,8 @@ module View
               corporation.floated? ? [ct.size, [Array.new(train_limit) { |i| ct[i]&.name }]] : [-1, []]
             when :tokens
               @game.count_available_tokens(corporation)
+            when :capitalization_type_desc
+              @game.capitalization_type_desc(corporation) if @game.respond_to?(:capitalization_type_desc)
             when :loans
               corporation.loans.size
             when :shorts
@@ -448,6 +453,7 @@ module View
         end
 
         extra = []
+        extra << h(:td, @game.capitalization_type_desc(corporation)) if @game.respond_to?(:capitalization_type_desc)
         extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
         if @game.respond_to?(:available_shorts)
           taken, total = @game.available_shorts(corporation)
