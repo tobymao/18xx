@@ -204,7 +204,7 @@ module Engine
             simple_logo: '1894/AG.alt',
             tokens: [0, 40, 100, 100],
             max_ownership_percent: 60,
-            coordinates: 'D15',
+            coordinates: 'D17',
             color: '#fcf75e',
             text_color: 'black',
           },
@@ -225,7 +225,7 @@ module Engine
             simple_logo: '1894/Belge.alt',
             tokens: [0, 40, 100],
             max_ownership_percent: 60,
-            coordinates: 'D17',
+            coordinates: 'E16',
             color: '#61b229',
             abilities: [
               {

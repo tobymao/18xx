@@ -181,7 +181,7 @@ module Engine
                     distance: 5,
                     price: 400,
                     rusts_on: 'D',
-                    num: 3,
+                    num: 4,
                     events: [{ 'type' => 'late_corporations_available' }],
                     discount: { '4' => 150 },
                   },
@@ -262,6 +262,7 @@ module Engine
         SQ_HEX = 'G10'
         BRUXELLES_HEX = 'F15'
 
+        AL_YELLOW_TILES = %w[X3a X3b]
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
         BROWN_CITY_14_UPGRADE_TILES = %w[X14 X15 36].freeze
@@ -606,6 +607,7 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return GREEN_CITY_TILES.include?(to.name) if AL_YELLOW_TILES.include?(from.hex.tile.name)
           return BROWN_CITY_14_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
