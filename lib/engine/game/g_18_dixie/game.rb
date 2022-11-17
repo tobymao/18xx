@@ -43,6 +43,14 @@ module Engine
         CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12, 6 => 11 }.freeze
         CURRENCY_FORMAT_STR = '$%s'
         GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :full_or }.freeze
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge({
+                                                'scl_formation_chance' => ['SCL may form',
+                                                                           'SCL may form on purchase of first 4D '\
+                                                                           'if ICG not formed'],
+                                                'icg_formation_chance' => ['ICG may form',
+                                                                           'ICG may form on purchase of first 5D '\
+                                                                           'if SCL not formed'],
+                                              }).freeze
         SELL_BUY_ORDER = :sell_buy_sell
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 425, 6 => 375 }.freeze
         TILE_RESERVATION_BLOCKS_OTHERS = true
@@ -253,6 +261,12 @@ module Engine
           ])
         end
 
+        def float_str(entity)
+          return nil if entity == scl || entity == icg
+
+          super
+        end
+
         def share_flags(shares)
           return if shares.empty?
 
@@ -355,6 +369,23 @@ module Engine
           minor.float!
           company_by_id(minor_id).close!
           @recently_floated << minor
+        end
+
+        # ICG/SCL merger stuff
+        def icg
+          @icg ||= corporation_by_id('ICG')
+        end
+
+        def scl
+          @scl ||= corporation_by_id('SCL')
+        end
+
+        def event_icg_formation_chance!
+          @log << '-- Event: ICG Formation opportunity --'
+        end
+
+        def event_scl_formation_chance!
+          @log << '-- Event: SCL Formation opportunity -- '
         end
 
         # Train stuff

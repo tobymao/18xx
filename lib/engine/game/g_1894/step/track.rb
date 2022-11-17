@@ -37,7 +37,7 @@ module Engine
               reservation = old_tile.cities.first.reservations.compact.first
               if reservation
                 old_tile.cities.first.remove_all_reservations!
-                old_tile.add_reservation!(reservation.corporation, nil, reserve_city: false)
+                old_tile.add_reservation!(reservation.corporation, nil, false)
               end
 
               tokens = old_tile.cities.flat_map(&:tokens).compact
