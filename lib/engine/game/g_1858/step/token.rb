@@ -143,23 +143,40 @@ module Engine
             entity.tokens_by_type
           end
 
+          # Finds all the cities that a corporation could place a token in.
+          # Does not consider whether the corporation can afford to place the token.
+          def tokenable_cities(corporation)
+            nodes = (@game.graph_broad.connected_nodes(corporation).keys +
+                     @game.graph_metre.connected_nodes(corporation).keys).uniq
+            nodes.select { |node| node.tokenable?(corporation, free: true) }
+          end
+
+          # Finds the cost of the cheapest token that can be placed by a corporation.
+          def min_token_price(corporation)
+            tokenable_cities(corporation).map { |city| token_cost(corporation, city) }.min
+          end
+
           def can_place_token?(entity)
             current_entity == entity &&
               !@round.tokened &&
-              !(tokens = available_tokens(entity)).empty? &&
-              min_token_price(tokens) <= buying_power(entity) &&
+              available_tokens(entity).any? &&
+              (min_token_price(entity) <= buying_power(entity)) &&
               (@game.graph_broad.can_token?(entity) || @game.graph_metre.can_token?(entity))
+          end
+
+          # Calculate the token cost from the number of provincial borders
+          # crossed between an existing token and the new one.
+          def token_cost(corporation, city)
+            borders = corporation.placed_tokens.map do |token|
+              borders_crossed(city.hex, token.city.hex)
+            end.min
+            [20, 40 * borders].max
           end
 
           def token_cost_override(entity, city, _slot, token)
             return unless entity.corporation?
 
-            # Calculate the token cost from the number of provincial borders
-            # crossed between an existing token and the new one.
-            borders = entity.placed_tokens.map do |used_token|
-              borders_crossed(city.hex, used_token.city.hex)
-            end.min
-            token.price = [20, 40 * borders].max
+            token.price = token_cost(entity, city)
           end
 
           def borders_crossed(hex1, hex2)
