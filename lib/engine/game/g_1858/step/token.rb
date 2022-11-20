@@ -160,8 +160,8 @@ module Engine
             current_entity == entity &&
               !@round.tokened &&
               available_tokens(entity).any? &&
-              (min_token_price(entity) <= buying_power(entity)) &&
-              (@game.graph_broad.can_token?(entity) || @game.graph_metre.can_token?(entity))
+              (@game.graph_broad.can_token?(entity) || @game.graph_metre.can_token?(entity)) &&
+              (min_token_price(entity) <= buying_power(entity))
           end
 
           # Calculate the token cost from the number of provincial borders
