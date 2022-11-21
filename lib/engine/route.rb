@@ -311,14 +311,14 @@ module Engine
       @game.check_other(self)
     end
 
-    def revenue(suppress_check_other: false)
+    def revenue(suppress_check_other: false, supress_route_token_check: false)
       @revenue ||=
         begin
           visited = visited_stops
           raise RouteTooShort, 'Route must have at least 2 stops' if !connection_data.empty? && visited.size < 2 && !@train.local?
 
           token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) }
-          @game.check_route_token(self, token)
+          @game.check_route_token(self, token) unless supress_route_token_check
 
           visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
             raise GameError, "Cannot use group #{key} more than once" unless group.one?
