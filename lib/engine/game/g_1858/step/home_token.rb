@@ -10,7 +10,7 @@ module Engine
           def actions(entity)
             return [] unless entity == pending_entity
 
-            if @round.pending_tokens.any?
+            if entity.placed_tokens.any?
               %w[place_token pass]
             else
               %w[place_token]
