@@ -70,7 +70,7 @@ module Engine
           @log << "#{player.name} bids #{@game.format_currency(price)} for #{entity.name}"
         else
           @log << "#{player.name} auctions #{entity.name} for #{@game.format_currency(price)}"
-          @game.place_home_token(action.entity) if entity.corporation? && @game.class::HOME_TOKEN_TIMING == :par
+          @game.place_home_token(entity) if (@game.class::HOME_TOKEN_TIMING == :par) && !entity.company?
         end
         super(action)
 
