@@ -20,7 +20,7 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
+        CERT_LIMIT = { 3 => 17, 4 => 13 }.freeze
 
         STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
 
@@ -278,7 +278,7 @@ module Engine
         FRENCH_LATE_CORPORATIONS = %w[LF].freeze
         FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 H7 I8].freeze
         BELGIAN_LATE_CORPORATIONS = %w[LB].freeze
-        BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 H17].freeze
+        BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 G18 H17].freeze
 
         DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
 
@@ -584,6 +584,8 @@ module Engine
           possible_home_hexes = possible_home_hexes.map { |coord| hex_by_id(coord) }.select do |hex|
             hex.tile.reservations.none? && hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
+
+          puts possible_home_hexes.inspect
 
           possible_home_hexes_without_track = possible_home_hexes.select { |h| h.tile.color == :white }
           possible_home_hexes = possible_home_hexes_without_track unless possible_home_hexes_without_track.none?

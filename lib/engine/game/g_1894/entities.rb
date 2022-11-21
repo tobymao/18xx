@@ -204,9 +204,23 @@ module Engine
             simple_logo: '1894/AG.alt',
             tokens: [0, 40, 100, 100],
             max_ownership_percent: 60,
-            coordinates: 'D17',
+            coordinates: 'D15',
             color: '#fcf75e',
             text_color: 'black',
+            abilities: [
+              {
+                type: 'token',
+                description: 'Reservation in Antwerpen (D17)',
+                desc_detail: 'Has one slot in Antwerpen (D17) reserved and may place a token there for 40 F if connected. '\
+                             'The reservation is removed when Antwerpen is upgraded to brown.',
+                hexes: ['D17'],
+                price: 40,
+              },
+              {
+                type: 'reservation',
+                hex: 'D17',
+              },
+            ],
           },
           {
             sym: 'CFOR',
