@@ -40,7 +40,7 @@ module Engine
         end
       end
 
-      def dividend_adjustment(entity)
+      def dividend_adjustment(_entity)
         0
       end
 
