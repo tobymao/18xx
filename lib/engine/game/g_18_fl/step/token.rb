@@ -72,7 +72,7 @@ module Engine
             @game.log << "#{entity.name} places a hotel on #{hex.name} for #{@game.format_currency(cost)}"
             entity.spend(cost, @game.bank)
 
-            hex.place_token(token)
+            hex.place_token(token, preprinted: false)
             pass!
           end
 
