@@ -392,7 +392,7 @@ module Engine
           },
           {
             sym: 'M&V',
-            name: 'Madrid and Vallodolid Railway',
+            name: 'Madrid and Valladolid Railway',
             value: 120,
             discount: 25,
             revenue: 24,
@@ -492,7 +492,7 @@ module Engine
           },
           {
             sym: 'C&S',
-            name: 'Cordoba and Seville Railway',
+            name: 'Córdoba and Seville Railway',
             value: 105,
             discount: 20,
             revenue: 21,
