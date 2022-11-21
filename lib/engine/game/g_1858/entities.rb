@@ -189,6 +189,7 @@ module Engine
             text_color: :black,
             logo: '1858/MA',
             coordinates: %w[H11 H13],
+            city: 2,
             abilities: [
               {
                 type: 'no_buy',
@@ -398,7 +399,8 @@ module Engine
             color: :yellow,
             text_color: :black,
             logo: '1858/MV',
-            coordinates: %w[G8 G10 H11],
+            coordinates: %w[G8 H11 G10],
+            city: [0, 1],
             abilities: [
               {
                 type: 'no_buy',
@@ -940,6 +942,7 @@ module Engine
             text_color: :black,
             logo: '1858/CMP',
             coordinates: %w[D13 E12 F13 G12 H11],
+            city: 0,
             abilities: [
               {
                 type: 'no_buy',
