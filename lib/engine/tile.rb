@@ -18,6 +18,7 @@ module Engine
                   :name, :opposite, :reservations, :upgrades, :color, :future_label
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
                 :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
+    attr_writer :revenue_to_render
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
