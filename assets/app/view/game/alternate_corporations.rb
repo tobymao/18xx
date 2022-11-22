@@ -510,6 +510,67 @@ module View
           h(:div, { style: { gridColumnStart: 2 } }, [movement_table]),
         ])
       end
+
+      # This is used by 1858 which has private railway companies that act a bit
+      # like minor railways, laying track in operating rounds. This rendering
+      # code is a simplified version of Engine::View::Game::Company.render.
+      def render_private_railway
+        company = @corporation
+
+        select_company = lambda do
+          if @selectable
+            selected_corporation = selected? ? nil : company
+            store(:selected_corporation, selected_corporation)
+          end
+        end
+
+        header_style = {
+          background: company.color,
+          color: company.text_color,
+          border: '1px solid',
+          borderRadius: '5px',
+          marginBottom: '0.5rem',
+          fontSize: '90%',
+        }
+        description_style = {
+          margin: '0.5rem 0',
+          fontSize: '80%',
+          textAlign: 'left',
+          fontWeight: 'normal',
+        }
+        value_style = {
+          float: 'left',
+        }
+        revenue_style = {
+          float: 'right',
+        }
+        props = {
+          style: {
+            cursor: 'pointer',
+            boxSizing: 'border-box',
+            padding: '0.5rem',
+            margin: '0.5rem 5px 0 0',
+            textAlign: 'center',
+            fontWeight: 'bold',
+          },
+          on: { click: select_company },
+        }
+        if selected?
+          props[:style][:backgroundColor] = 'lightblue'
+          props[:style][:color] = 'black'
+          props[:style][:border] = '1px solid'
+        end
+
+        children = [
+          h(:div, { style: header_style }, @game.company_header(company)),
+          h(:div, company.name),
+          h(:div, { style: description_style }, company.desc),
+          h(:div, { style: value_style }, "Value: #{@game.format_currency(company.value)}"),
+          h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(company.revenue)}"),
+        ]
+
+        h('div.company.card', props, children)
+      end
     end
   end
 end

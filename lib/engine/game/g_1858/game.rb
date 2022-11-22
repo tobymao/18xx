@@ -59,6 +59,16 @@ module Engine
           rules
         end
 
+        def corporation_view(entity)
+          return unless entity.minor?
+
+          # Override the default rendering for private railway companies that
+          # are owned by players. These would be rendered as minor companies
+          # (with treasury, trains and revenue). Instead render them in the same
+          # way as private companies that are owned by the bank.
+          'private_railway'
+        end
+
         def option_quick_start?
           optional_rules.include?(:quick_start)
         end
