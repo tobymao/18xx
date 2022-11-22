@@ -14,8 +14,7 @@ module Engine
               @game.remove_train(train)
               @log << "#{action.entity.name} discards #{train.name}, #{train.name} is removed from the game"
             else
-              # Remove any variants on the train before reclaiming it
-              train.variants.select! { |v| v == train.name }
+              train.remove_variants!
               @game.depot.reclaim_train(train)
               @log << "#{action.entity.name} discards #{train.name}"
             end
