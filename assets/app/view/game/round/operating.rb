@@ -18,6 +18,7 @@ require 'view/game/map'
 require 'view/game/buy_corporation'
 require 'view/game/route_selector'
 require 'view/game/cash_crisis'
+require 'view/game/double_head_trains'
 
 module View
   module Game
@@ -43,6 +44,8 @@ module View
           left << h(Convert) if @current_actions.include?('convert')
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')
           left << h(ReassignTrains) if @current_actions.include?('reassign_trains')
+          left << h(DoubleHeadTrains) if @current_actions.include?('double_head_trains')
+
           if @current_actions.include?('buy_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares') || @current_actions.include?('buy_shares')
             left << h(BuyTrains)
