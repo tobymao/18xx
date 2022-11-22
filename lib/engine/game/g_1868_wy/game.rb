@@ -6,6 +6,7 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'share_pool'
 require_relative 'trains'
+require_relative 'step/assign'
 require_relative 'step/buy_company'
 require_relative 'step/buy_train'
 require_relative 'step/company_pending_par'
@@ -176,6 +177,9 @@ module Engine
           up_double_share.double_cert = true
           @up_double_share_protection = {}
 
+          @lhp_train = find_and_remove_train_by_id('2+1-0', buyable: false)
+          @lhp_train_pending = false
+
           setup_spikes
         end
 
@@ -203,6 +207,7 @@ module Engine
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialTrack,
+            G1868WY::Step::Assign,
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::HomeToken,
             G1868WY::Step::DoubleShareProtection,
@@ -220,6 +225,7 @@ module Engine
             G1868WY::Step::DevelopmentToken,
             Engine::Step::Bankrupt,
             Engine::Step::SpecialTrack,
+            G1868WY::Step::Assign,
             G1868WY::Step::BuyCompany,
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::Track,
@@ -305,6 +311,47 @@ module Engine
           super
 
           corporation.capitalization = :incremental
+        end
+
+        def event_convert_lhp!
+          if (corporation = lhp_private.corporation)
+            convert_lhp_train!(corporation)
+          else
+            @lhp_train_pending = true unless lhp_private.closed?
+          end
+        end
+
+        def convert_lhp_train!(corporation)
+          train = @lhp_train
+          buy_train(corporation, train, :free)
+          @log << "#{lhp_private.name} converts to a #{train.name} train for #{corporation.id}"
+          lhp_private.close!
+          @lhp_train_pending = false
+        end
+
+        def pass_converting_lhp_train!
+          train = @lhp_train
+          @log << "#{lhp_private.name} closes without converting to a #{train.name} train"
+          lhp_private.close!
+          @lhp_train_pending = false
+        end
+
+        def extra_train?(train)
+          train == @lhp_train
+        end
+
+        def crowded_corps
+          @crowded_corps ||= corporations.select do |c|
+            c.trains.count { |t| !extra_train?(t) } > train_limit(c)
+          end
+        end
+
+        def must_buy_train?(entity)
+          entity.trains.none? { |t| !extra_train?(t) }
+        end
+
+        def lhp_train_pending?
+          @lhp_train_pending
         end
 
         def init_track_points
