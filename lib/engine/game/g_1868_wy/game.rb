@@ -10,6 +10,7 @@ require_relative 'step/buy_train'
 require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
 require_relative 'step/dividend'
+require_relative 'step/manual_close_company'
 require_relative 'step/route'
 require_relative 'step/token'
 require_relative 'step/track'
@@ -164,6 +165,7 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             G1868WY::Step::BuySellParShares,
+            G1868WY::Step::ManualCloseCompany,
           ])
         end
 
@@ -179,6 +181,7 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             G1868WY::Step::BuyCompany,
+            G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::Track,
             G1868WY::Step::Token,
             G1868WY::Step::Route,
