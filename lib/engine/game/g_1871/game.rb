@@ -68,7 +68,7 @@ module Engine
         # Change the companies text to clearly talk about the Hunslet
         STATUS_TEXT = {
           'can_buy_companies' =>
-          ['Can Buy Hunslet', 'Corporation owned by the owner of the Hunslet maybe purchase it from the player'],
+          ['Can Buy Hunslet', 'Corporation owned by the owner of the Hunslet may purchase it from the owning player'],
         }.freeze
 
         # The numbers needed to assign proper private numbers to the PEIR
@@ -85,6 +85,10 @@ module Engine
 
         # In this game most shares start in the market, but if you split a
         # corporation shares end up in the treasury. We have no IPO.
+        def ipo_verb(_entity = nil)
+          'starts'
+        end
+
         def ipo_name(_entity = nil)
           'Treasury'
         end
@@ -413,15 +417,15 @@ module Engine
         end
 
         # Events to remove pars on certain trains
-        def event_remove_par_80!
+        def event_remove_smv_80!
           stock_market.remove_par!(stock_market.share_price(3, 1))
         end
 
-        def event_remove_par_74!
+        def event_remove_smv_74!
           stock_market.remove_par!(stock_market.share_price(4, 1))
         end
 
-        def event_remove_par_65!
+        def event_remove_smv_65!
           stock_market.remove_par!(stock_market.share_price(5, 1))
         end
 
