@@ -2,6 +2,7 @@
 
 require_relative '../../../step/track'
 require_relative '../skip_coal_and_oil'
+require_relative 'tracker'
 
 module Engine
   module Game
@@ -9,16 +10,13 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include G1868WY::SkipCoalAndOil
-
-          def lay_tile_action(action)
-            super
-            @game.spend_tile_lay_points(action)
-          end
+          include G1868WY::Step::Tracker
 
           def can_lay_tile?(entity)
             return true if super
 
-            # if 1 track point remains and P7 can be bought, block in the track step
+            # if 1 track point remains and a track laying private can be bought,
+            # block in the track step
             (corporation = entity).corporation? &&
               @game.phase.status.include?('can_buy_companies') &&
               @game.dodge.owned_by_player? &&
@@ -32,6 +30,10 @@ module Engine
             else
               super
             end
+          end
+
+          def process_lay_tile(action)
+            lay_tile_action(action)
           end
         end
       end
