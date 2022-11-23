@@ -799,6 +799,21 @@ module Engine
           bundles
         end
 
+        def total_emr_buying_power(player, corporation)
+          emergency = (issuable = emergency_issuable_cash(corporation)).zero?
+          corporation.cash + issuable + liquidity(player, emergency: emergency)
+        end
+
+        def emergency_issuable_bundles(corp)
+          return [] if corp.trains.any?
+
+          train = @depot.min_depot_train
+          _min_train_price, max_train_price = train.variants.map { |_, v| v[:price] }.minmax
+          return [] if corp.cash >= max_train_price
+
+          issuable_shares(corp)
+        end
+
         def sellable_bundles(player, corporation)
           bundles = super
 
