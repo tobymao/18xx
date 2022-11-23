@@ -11,6 +11,15 @@ module Engine
             super
             @game.spend_tile_lay_points(action)
           end
+
+          def tracker_available_hex(entity, hex, check_billings: true)
+            if @game.billings_hex?(hex)
+              super(entity, hex) ||
+                (check_billings && tracker_available_hex(entity, @game.other_billings(hex), check_billings: false))
+            else
+              super(entity, hex)
+            end
+          end
         end
       end
     end
