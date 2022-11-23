@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'entities'
+require_relative 'golden_spike'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'share_pool'
@@ -31,6 +32,7 @@ module Engine
         include Entities
         include Map
         include Trains
+        include GoldenSpike
 
         # Engine::Game includes
         include CompanyPriceUpToFace
@@ -172,6 +174,8 @@ module Engine
           union_pacific.shares.last.buyable = false
           up_double_share.double_cert = true
           @up_double_share_protection = {}
+
+          setup_spikes
         end
 
         def init_share_pool
