@@ -5,13 +5,13 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'trains'
 require_relative 'step/buy_company'
-require_relative 'step/buy_sell_par_shares'
 require_relative 'step/buy_train'
 require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
 require_relative 'step/dividend'
 require_relative 'step/manual_close_company'
 require_relative 'step/route'
+require_relative 'step/stock_round_action'
 require_relative 'step/token'
 require_relative 'step/track'
 require_relative 'step/waterfall_auction'
@@ -164,8 +164,8 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            G1868WY::Step::BuySellParShares,
             G1868WY::Step::ManualCloseCompany,
+            G1868WY::Step::StockRoundAction,
           ])
         end
 
