@@ -44,6 +44,7 @@ module Engine
             reason = "all players #{reasons.join(' or ')}"
             @log << "#{@cheapest.name} is removed (#{reason})"
 
+            @cheapest.close!
             @companies.delete(@cheapest)
             @cheapest = @companies.first
 
