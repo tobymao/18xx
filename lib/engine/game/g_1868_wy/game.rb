@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'credit_mobilier'
 require_relative 'entities'
 require_relative 'golden_spike'
 require_relative 'map'
@@ -33,6 +34,7 @@ module Engine
         include Entities
         include Map
         include Trains
+        include CreditMobilier
         include GoldenSpike
 
         # Engine::Game includes
@@ -162,6 +164,7 @@ module Engine
 
           @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
           @late_corps.each { |corp| corp.reservation_color = nil }
+          setup_credit_mobilier
 
           @coal_companies = init_coal_companies
           @minors.concat(@coal_companies)
