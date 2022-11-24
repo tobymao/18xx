@@ -247,6 +247,8 @@ module Engine
         def event_full_capitalization!
           @log << '-- Event: Railroad Companies now float at 60% and receive full capitalization --'
           @corporations.each do |corporation|
+            next if corporation.floated?
+
             corporation.capitalization = :full
             corporation.float_percent = 60
           end
