@@ -371,6 +371,18 @@ module Engine
           true
         end
 
+        # Returns true if there is a city token space that is available to be
+        # used by a public company started from this private railway company.
+        # This can only be false for one of the private railway companies that
+        # share reservations on a city (Sevilla, Córdoba or Zaragoza) if the
+        # other company has been used to token that city, and the tile has not
+        # yet been upgraded to green.
+        def company_reservation_available?(company)
+          cities.any? do |city|
+            city.reserved_by?(company) && (city.tokens.compact.size < city.slots)
+          end
+        end
+
         def exchange_corporations(exchange_ability)
           # Can't start public companies in the first stock round.
           return [] if @turn == 1
@@ -382,6 +394,9 @@ module Engine
             super.select { |corporation| company_corporation_connected?(company, corporation) }
           elsif company.par_price(@stock_market).price > current_entity.cash
             # Can't afford to start a public company using this private.
+            []
+          elsif !company_reservation_available?(company)
+            # There is no currently available token space for this company.
             []
           else
             # Can exchange the private railway for any unstarted public company.
