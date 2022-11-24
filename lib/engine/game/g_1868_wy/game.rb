@@ -139,8 +139,6 @@ module Engine
           init_track_points
           setup_company_price_up_to_face
 
-          setup_event_methods
-
           @development_hexes = init_development_hexes
           @development_token_count = Hash.new(0)
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
@@ -227,14 +225,6 @@ module Engine
 
         def par_prices
           @stock_market.share_prices_with_types(@available_par_groups)
-        end
-
-        def setup_event_methods
-          (2..6).each do |phase|
-            self.class.define_method("event_remove_coal_dt_#{phase}!") do
-              event_remove_coal_dt!(phase.to_s)
-            end
-          end
         end
 
         def event_remove_coal_dt!(phase_name)
