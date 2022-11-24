@@ -50,7 +50,14 @@ module Engine
       end
 
       def find_reservation(corporation)
-        @reservations.find_index { |r| r && [r, r.owner].include?(corporation) }
+        slot = @reservations.find_index { |r| r && [r, r.owner].include?(corporation) }
+
+        # Special case for 1858 where two private companies can have reservations
+        # in the same city, which only has a single slot on its yellow tile.
+        # The first of the companies to token the city takes the slot.
+        slot = 0 if (slot == 1) && (slots == 1)
+
+        slot
       end
 
       def reserved_by?(corporation)
