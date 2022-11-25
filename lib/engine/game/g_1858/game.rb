@@ -405,14 +405,16 @@ module Engine
         end
 
         # Returns true if there is a valid route from any of the corporation's
-        # tokens to any of the company's home hexes.
+        # tokens to any of the company's home hexes, or if a token is in one of
+        # the private company's home hexes.
         def company_corporation_connected?(company, corporation)
           return false if company.closed?
           return false if corporation.closed?
           return false unless corporation.floated?
 
-          @graph_broad.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) } \
-            || @graph_metre.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) }
+          @graph_broad.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) } ||
+            @graph_metre.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) } ||
+            corporation.placed_tokens.any? { |token| company.home_hex?(token.city.hex) }
         end
 
         def payout_companies
