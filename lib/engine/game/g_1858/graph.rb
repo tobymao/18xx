@@ -32,8 +32,13 @@ module Engine
               hex.neighbors.each { |e, _| hexes[hex][e] = true }
               if city_idx
                 nodes[hex.tile.cities[city_idx]] = true
-              else
+              elsif hex.tile.city_towns.any?
                 hex.tile.city_towns.each { |ct| nodes[ct] = true }
+              else
+                # Plain track in a home hex (or no tile or track). Create a
+                # node for each track path to allow routes to be traced out
+                # from this hex.
+                hex.tile.paths.each { |path| nodes[G1858::Part::PathNode.new(path)] = true }
               end
             end
           end
