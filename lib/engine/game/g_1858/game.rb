@@ -395,7 +395,7 @@ module Engine
           elsif company.par_price(@stock_market).price > current_entity.cash
             # Can't afford to start a public company using this private.
             []
-          elsif !company_reservation_available?(company)
+          elsif !company_reservation_available?(company) # rubocop: disable Lint/DuplicateBranch
             # There is no currently available token space for this company.
             []
           else
