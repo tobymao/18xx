@@ -17,6 +17,8 @@ module Engine
         GAME_PUBLISHER = :grand_trunk_games
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/212807/18611867-rulebook'
 
+        KEYWORDS = ['1861'].freeze
+
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
           {

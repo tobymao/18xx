@@ -4,11 +4,12 @@ module View
   module Game
     class GameMeta < Snabberb::Component
       needs :game
+      needs :show_title, default: true
 
       def render
         children = [h(:h3, 'Game Info')]
 
-        children.concat(render_title)
+        children.concat(render_title) if @show_title
         children.concat(render_publisher)
         children.concat(render_designer)
         children.concat(render_implementer)

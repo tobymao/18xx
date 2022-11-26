@@ -429,3 +429,24 @@ div#game:focus {
     float: left;
   }
 }
+
+table.create-game-table thead tr th {
+  text-align: left;
+}
+
+table.create-game-table tbody tr td {
+  vertical-align: middle;
+}
+
+table.create-game-table tbody tr td button {
+  width: 150px;
+  margin: 0.25rem 1rem 0.25rem 0;
+}
+
+table.create-game-table tbody tr td button.selected {
+  background-color: yellow;
+}
+
+#keyword_search {
+  margin-top: 50px;
+}

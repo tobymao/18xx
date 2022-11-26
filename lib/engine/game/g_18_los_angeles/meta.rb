@@ -13,7 +13,8 @@ module Engine
 
         GAME_DESIGNER = 'Anthony Fryer'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
-        GAME_PUBLISHER = %i[traxx].freeze
+        GAME_PUBLISHER = :traxx
+        GAME_LOCATION = 'LA County, California, USA'
         GAME_RULES_URL = {
           '18 Los Angeles 2nd Edition Rules' =>
                           'https://drive.google.com/file/d/1mno-8gmYlSjUSB91IcfW_Pvtcr1xUWiy/view?usp=sharing',
