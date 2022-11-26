@@ -266,7 +266,9 @@ module View
 
         stage = variant[:meta]::DEV_STAGE
         stage_str = stage == :production ? '' : "(#{stage}) "
-        label_text = "#{stage_str}#{variant[:name]}: #{variant[:desc]}"
+
+        desc_text = variant[:desc] ? ": #{variant[:desc]}" : ''
+        label_text = "#{stage_str}#{variant[:name]}#{desc_text}"
 
         h(:li, [render_input(
           label_text,
@@ -280,7 +282,8 @@ module View
       optional_rules = selected_game_or_variant::OPTIONAL_RULES.map do |o_r|
         next if o_r[:hidden]
 
-        label_text = "#{o_r[:short_name]}: #{o_r[:desc]}"
+        desc_text = o_r[:desc] ? ": #{o_r[:desc]}" : ''
+        label_text = "#{o_r[:short_name]}#{desc_text}"
         h(:li, [render_input(
           label_text,
           type: 'checkbox',
