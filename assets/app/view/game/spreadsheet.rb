@@ -61,6 +61,7 @@ module View
               render_player_value,
               render_player_liquidity,
               render_player_shares,
+              render_player_share_percentages,
               render_player_companies,
               render_player_certs,
             ]),
@@ -568,6 +569,15 @@ module View
           h('th.left', 'Shares'),
           *@game.players.map do |p|
             h('td.padded_number', @game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(p, c) })
+          end,
+        ])
+      end
+
+      def render_player_share_percentages
+        h(:tr, tr_default_props, [
+          h('th.left', 'Shares %'),
+          *@game.players.map do |p|
+            h('td.padded_number', @game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_percentage_of(p, c) })
           end,
         ])
       end
