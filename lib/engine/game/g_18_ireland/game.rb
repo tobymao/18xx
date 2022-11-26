@@ -566,6 +566,10 @@ module Engine
             .select { |p| p.price * 2 <= entity.cash }
         end
 
+        def ipo_name(_entity = nil)
+          'Treasury'
+        end
+
         def after_buy_company(player, company, price)
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
