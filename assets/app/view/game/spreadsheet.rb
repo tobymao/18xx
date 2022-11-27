@@ -589,7 +589,7 @@ module View
       end
 
       def render_player_rusted_book_value
-        render_player_book_value('Rusted Value', ->(c) { rusted_book_value(c) })
+        render_player_book_value('Rusted BV', ->(c) { rusted_book_value(c) })
       end
 
       def render_player_book_value(name, getter)
