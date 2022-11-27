@@ -22,32 +22,30 @@ module Engine
   module Game
     module G1868WY
       class Game < Game::Base
+        # Engine::Game::G1868WY includes
         include_meta(G1868WY::Meta)
         include Entities
         include Map
         include Trains
 
+        # Engine::Game includes
         include CompanyPriceUpToFace
         include StubsAreRestricted
 
+        # overrides
         BANK_CASH = 99_999
         STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440 }.freeze
         CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12 }.freeze
-
         SELL_AFTER = :any_time
-        POOL_SHARE_DROP = :each
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
         HOME_TOKEN_TIMING = :par
         NEXT_SR_PLAYER_ORDER = :first_to_pass
-
-        TRACK_POINTS = 6
-        YELLOW_POINT_COST = 2
-        UPGRADE_POINT_COST = 3
-
+        MUST_SELL_IN_BLOCKS = true
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         MUST_BUY_TRAIN = :always
-
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_OTHER_VALUE = true
         MARKET = [
           [''] + %w[82 90 100 110z 120z 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525 560],
           %w[72 76 82 90x 100x 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490],
@@ -58,42 +56,54 @@ module Engine
           %w[50 55 60 64 68 72 76],
           %w[40 50 55 60 64 68],
         ].freeze
-
         STOCKMARKET_COLORS = {
           par: :yellow,
           par_1: :green,
           par_2: :brown,
         }.freeze
-
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'company starting values',
-                                              par_1: 'additional starting values in phase 3+',
-                                              par_2: 'additional starting values in phase 5+').freeze
-
         LATE_CORPORATIONS = %w[C&N DPR LNP OSL].freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Railroad Company par values',
+                                              par_1: 'additional par values in Phase 3+',
+                                              par_2: 'additional par values in Phase 5+').freeze
+        # rubocop:disable Layout/LineLength
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'all_corps_available' => ['All Corporations Available',
-                                    'C&N, DPR, LNP, OSL are now available to start'],
-          'full_capitalization' => ['Full Capitalization',
-                                    'Railroads now float at 60% and receive full capitalization'],
-          'rust_coal_dt_2' => ['Remove Phase 2 Coal DTs', 'Remove Phase 2 Coal Development Tokens'],
-          'rust_coal_dt_3' => ['Remove Phase 3 Coal DTs', 'Remove Phase 3 Coal Development Tokens'],
-          'rust_coal_dt_4' => ['Remove Phase 4 Coal DTs', 'Remove Phase 4 Coal Development Tokens'],
-          'rust_coal_dt_5' => ['Remove Phase 5 Coal DTs', 'Remove Phase 5 Coal Development Tokens'],
-          'rust_coal_dt_6' => ['Remove Phase 6 Coal DTs', 'Remove Phase 6 Coal Development Tokens'],
-          'green_par' => ['Green Par Available', 'Railroads may now par at 90 or 100.'],
-          'brown_par' => ['Brown Par Available', 'Railroads may now par at 110 or 120.'],
+          green_par: ['Green Par Available', 'Phase 3: Railroad Companies may now additionally start at $90 or $100'],
+          brown_par: ['Brown Par Available', 'Phase 5: Railroad Companies may now additionally start at $110 or $120'],
+          all_corps_available: ['All Railroad Companies Available',
+                                'Phase 5: All Railroad Companies are now available to start'],
+          full_capitalization: ['Full Capitalization',
+                                'Phase 5: Railroad Companies now float at 60% and receive full capitalization'],
+          oil_companies_available: ['Oil Companies Available', 'Phase 5: Oil Companies begin to Develop after Coal Companies'],
+          uranium_boom: ['Uranium Boom',
+                         'Phase 5-6: Uranium Boom token added to appropriate Uranium location(s); counts as a DT and adds +$20 revenue'],
+          trigger_endgame: ['Trigger Endgame',
+                            'Phase 7: Begin final SR after current OR (even if this skips OR 2 of 2); see see the "Endgame Sequence" timeline for more details'],
+          uranium_bust: ['Uranium BUST', 'Phase 7: Uranium locations BUST into Ghost Towns'],
+          close_privates: ['Close Privates',
+                           'Phase 5-8: various private companies close at each of these phases'],
+          close_coal_companies: ['Close Coal Companies', 'Phase 8: Coal Companies stop Developing; gray Coal DTs remain on the board'],
+          remove_placed_coal_dt: ['"Rust" Coal DTs', 'Phase 4-8: Coal DTs placed 2 phases ago are removed from the board'],
+          remove_unplaced_coal_dt: ['Remove Unplaced Coal DTs', 'Phase 3-7: Coal DTs still on a Coal Company\'s charter from the previous phase are discarded'],
         ).freeze
-        STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'all_corps_available' => ['All Corporations Available',
-                                    'C&N, DPR, LNP, OSL are available to start'],
+        # rubocop:enable Layout/LineLength
+        STATUS_TEXT = {
+          'can_buy_companies' => ['Can Buy Privates',
+                                  'All Railroad Companies can buy private companies from players'],
+          'all_corps_available' => ['All Railroad Companies Available',
+                                    'All Railroad Companies are now available to start'],
           'full_capitalization' =>
-            ['Full Capitalization', 'Railroads float at 60% and receive full capitalization'],
-        ).freeze
+            ['Full Capitalization', 'Railroad Companies float at 60% and receive full capitalization'],
+        }.freeze
 
+        # track points
+        TRACK_POINTS = 6
+        YELLOW_POINT_COST = 2
+        UPGRADE_POINT_COST = 3
+
+        # boomtowns, coal/oil/uranium
         DTC_GHOST_TOWN = 0
         DTC_BOOMCITY = 3
         DTC_REVENUE = 4
-
         BOOMING_REVENUE_BONUS = 10
         BUSTED_REVENUE = {
           yellow: 10,
@@ -196,7 +206,7 @@ module Engine
         end
 
         def event_full_capitalization!
-          @log << '-- Event: Railroads now float at 60% and receive full capitalization --'
+          @log << '-- Event: Railroad Companies now float at 60% and receive full capitalization --'
           @corporations.each do |corporation|
             corporation.capitalization = :full
             corporation.float_percent = 60
