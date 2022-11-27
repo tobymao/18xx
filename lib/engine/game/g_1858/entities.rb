@@ -981,7 +981,7 @@ module Engine
             color: :green,
             text_color: :black,
             logo: '1858/CMP',
-            coordinates: %w[D13 E12 F13 G12 H11],
+            coordinates: %w[H11 D13 E12 F13 G12],
             city: 0,
             abilities: [
               {
