@@ -1362,6 +1362,45 @@ module Engine
           postevent_trainless_nationalization! if @trainless_nationalization
         end
 
+        def player_value(player)
+          return player.value if @finished
+
+          share_prices = {}
+
+          player.cash + player.companies.sum(&:value) + player.shares.sum do |share|
+            corp = share.corporation
+            next 0 unless corp.ipoed
+
+            share_prices[corp] ||=
+              if corp.loans.empty?
+                share.price
+              else
+                # corporations with loans will move to the left once per loan when
+                # the game is over
+                stock_market.find_share_price(corp, [:left] * corp.loans.size).price
+              end
+          end
+        end
+
+        def end_game!(player_initiated: false)
+          return if @finished
+
+          logged_drop = false
+          @corporations.each do |corporation|
+            next if corporation.loans.empty?
+
+            @log << '-- Share prices move left one step per outstanding loan --' unless logged_drop
+            logged_drop = true
+
+            old_price = corporation.share_price
+            loans = corporation.loans.size
+            loans.times { stock_market.move_left(corporation) }
+            log_share_price(corporation, old_price, loans)
+          end
+
+          super
+        end
+
         private
 
         def new_auction_round
