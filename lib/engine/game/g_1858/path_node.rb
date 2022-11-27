@@ -18,6 +18,11 @@ module Engine
           def paths
             [@path]
           end
+
+          def inspect
+            "<#{self.class.name}: hex: #{@path.hex.coordinates}, " \
+              "exits: #{@path.exits.join(',')}, track: #{@path.track}>"
+          end
         end
       end
     end
