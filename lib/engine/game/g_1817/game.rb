@@ -332,6 +332,12 @@ module Engine
           @loan_value
         end
 
+        def corporation_opts
+          {
+            token_book_value_override: 50,
+          }
+        end
+
         def cannot_pay_interest_str
           '(Liquidate)'
         end

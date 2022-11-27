@@ -26,6 +26,7 @@ module Engine
       @text_color = opts[:text_color] || '#ffffff'
       @destination_coordinates = opts[:destination_coordinates]
       @destination_icon = opts[:destination_icon] ? "/icons/#{opts[:destination_icon]}" : ''
+      @token_book_value_override = opts[:token_book_value_override]
     end
 
     def operator?
@@ -59,6 +60,13 @@ module Engine
 
     def placed_tokens
       @tokens.select(&:city)
+    end
+
+    def book_value
+      trains = @trains.sum(&:price)
+      tokens = @tokens.filter(&:used).sum { |t| @token_book_value_override || t.price }
+      loans = @loans.sum(&:amount)
+      trains + tokens + @cash - loans
     end
   end
 end

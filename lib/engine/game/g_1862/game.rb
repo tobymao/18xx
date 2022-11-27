@@ -803,6 +803,12 @@ module Engine
           corporation.spend(CHARTERED_TOKEN_COST * 3, @bank)
         end
 
+        def corporation_opts
+          {
+            token_book_value_override: 50, # average between chartered and unchartered token cost
+          }
+        end
+
         def convert_to_full!(corporation)
           corporation.capitalization = :full
           corporation.always_market_price = false

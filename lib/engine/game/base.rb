@@ -2163,7 +2163,10 @@ module Engine
       end
 
       def corporation_opts
-        {}
+        {
+          # use to change the book value of tokens when the tokens are pre-purchased
+          token_book_value_override: nil,
+        }
       end
 
       def init_corporations(stock_market)
