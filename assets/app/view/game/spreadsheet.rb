@@ -343,7 +343,7 @@ module View
 
         unfloated_corporations =
           (@game.all_corporations - operating_corporations)
-            .filter { |c| c.respond_to?(:sort_order_key) && c.sort_order_key }
+            .select { |c| c.respond_to?(:sort_order_key) && c.sort_order_key }
             .sort
 
         result = @game.all_corporations.map do |c|
