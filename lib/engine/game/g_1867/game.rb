@@ -1401,6 +1401,10 @@ module Engine
           super
         end
 
+        def game_end_check
+          @game_end_check ||= super
+        end
+
         private
 
         def new_auction_round
