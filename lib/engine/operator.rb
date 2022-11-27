@@ -64,7 +64,11 @@ module Engine
 
     def current_book_value
       trains = @trains.sum(&:price)
-      tokens = @tokens.filter(&:used).sum { |t| @token_book_value_override || t.price }
+      tokens = if @token_book_value_override
+                 @tokens.size * @token_book_value_override
+               else
+                 @tokens.filter(&:used).sum(&:price)
+               end
       loans = @loans.sum(&:amount)
       trains + tokens + @cash - loans
     end
