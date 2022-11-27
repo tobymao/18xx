@@ -527,8 +527,10 @@ module View
           h('td.padded_number', @game.format_currency(corporation.cash)),
           *treasury,
           h('td.padded_number', order_props, if operating_order[0] == UNFLOATED
-                                               "[#{operating_order[1]}]" else
-                                                                           operating_order[1] end),
+                                               "[#{operating_order[1]}]"
+                                             else
+                                               operating_order[1]
+                                             end),
           h(:td, corporation.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(', ')),
           h(:td, @game.token_string(corporation)),
           *extra,
