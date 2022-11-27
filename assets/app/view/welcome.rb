@@ -17,6 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>18 Los Angeles 2nd Edition is in production! It is now the default way to play 18 Los Angeles; the 1st Edition is available as a variant.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. Join the
