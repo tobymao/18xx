@@ -16,25 +16,6 @@ module View
         max_size == 1 ? '.right' : ''
       end
 
-      def rust_obsolete_schedule
-        rust_schedule = {}
-        obsolete_schedule = {}
-        @game.depot.trains.group_by(&:name).each do |_name, trains|
-          first = trains.first
-          first.variants.each do |name, train_variant|
-            unless Array(rust_schedule[train_variant[:rusts_on]]).include?(name)
-              rust_schedule[train_variant[:rusts_on]] =
-                Array(rust_schedule[train_variant[:rusts_on]]).append(name)
-            end
-            unless Array(obsolete_schedule[train_variant[:obsolete_on]]).include?(name)
-              obsolete_schedule[train_variant[:obsolete_on]] =
-                Array(obsolete_schedule[train_variant[:obsolete_on]]).append(name)
-            end
-          end
-        end
-        [rust_schedule, obsolete_schedule]
-      end
-
       def render
         title_props = {
           style: {
@@ -52,11 +33,12 @@ module View
           },
         }
 
-        rust_schedule, obsolete_schedule = rust_obsolete_schedule
-        trs = if @game.depot.upcoming.empty?
+        depot = @game.depot
+        rust_schedule, obsolete_schedule = depot.rust_obsolete_schedule
+        trs = if depot.upcoming.empty?
                 'No Upcoming Trains'
               else
-                @game.depot.upcoming.group_by(&:name).map do |name, trains|
+                depot.upcoming.group_by(&:name).map do |name, trains|
                   events = []
                   events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") if rust_schedule[name]
                   events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") if obsolete_schedule[name]

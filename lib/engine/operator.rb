@@ -62,11 +62,32 @@ module Engine
       @tokens.select(&:city)
     end
 
-    def book_value
+    def current_book_value
       trains = @trains.sum(&:price)
       tokens = @tokens.filter(&:used).sum { |t| @token_book_value_override || t.price }
       loans = @loans.sum(&:amount)
       trains + tokens + @cash - loans
+    end
+
+    def rusted_book_value(depot)
+      rust_value = 0
+
+      rust_schedule, obsolete_schedule = depot.rust_obsolete_schedule
+      unless depot.upcoming.empty?
+        depot.upcoming.group_by(&:name).map do |name, _|
+          rusted_trains = rust_schedule[name] || []
+          obsolete_trains = obsolete_schedule[name] || []
+
+          trains = rusted_trains + obsolete_trains
+
+          unless trains.empty?
+            rust_value = @trains.filter { |t| trains.include?(t.name) }.sum(&:price)
+            break
+          end
+        end
+      end
+
+      current_book_value - rust_value
     end
   end
 end

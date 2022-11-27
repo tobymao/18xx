@@ -62,7 +62,8 @@ module View
               render_player_liquidity,
               render_player_shares,
               render_player_share_percentages,
-              render_player_book_value,
+              render_player_current_book_value,
+              render_player_rusted_book_value,
               render_player_companies,
               render_player_certs,
             ]),
@@ -220,7 +221,8 @@ module View
             h(:th, th_props[@game.players.size], 'Players'),
             h(:th, th_props[bank_width], 'Bank'),
             h(:th, th_props[2], 'Prices'),
-            h(:th, th_props[6 + extra.size + treasury.size, false], ['Corporation ', render_toggle_not_floated_link]),
+            h(:th, th_props[2], 'Book Value'),
+            h(:th, th_props[5 + extra.size + treasury.size, false], ['Corporation ', render_toggle_not_floated_link]),
             h(:th, ''),
             *connection_run_header,
             h(:th, th_props[or_history_titles.size, false], 'OR History'),
@@ -237,8 +239,9 @@ module View
             h(:th, render_sort_link('Market', :market_shares)),
             h(:th, render_sort_link(@game.ipo_name, :par_price)),
             h(:th, render_sort_link('Market', :share_price)),
+            h(:th, render_sort_link('Current', :current_book_value)),
+            h(:th, render_sort_link('Rusted', :rusted_book_value)),
             h(:th, render_sort_link('Cash', :cash)),
-            h(:th, render_sort_link('Book Value', :book_value)),
             *treasury,
             h(:th, render_sort_link('Order', :order)),
             h(:th, render_sort_link('Trains', :trains)),
@@ -370,8 +373,10 @@ module View
               corporation.cash
             when :treasury
               num_shares_of(corporation, corporation)
-            when :book_value
-              corporation.book_value
+            when :current_book_value
+              corporation.current_book_value
+            when :rusted_book_value
+              rusted_book_value(corporation)
             when :order
               operating_order
             when :trains
@@ -513,8 +518,10 @@ module View
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+          h('td.padded_number', @game.format_currency(corporation.current_book_value)),
+          h('td.padded_number', { style: { borderRight: border_style } },
+            @game.format_currency(rusted_book_value(corporation))),
           h('td.padded_number', @game.format_currency(corporation.cash)),
-          h('td.padded_number', @game.format_currency(corporation.book_value)),
           *treasury,
           h('td.padded_number', order_props, operating_order),
           h(:td, corporation.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(', ')),
@@ -577,9 +584,17 @@ module View
         render_player_corporation_summary('Shares %', ->(p, c) { c.minor? ? 0 : percentage_of(p, c) })
       end
 
-      def render_player_book_value
-        render_player_corporation_summary('Book Value',
-                                          ->(p, c) { num_shares_of(p, c) * c.book_value / c.total_shares },
+      def render_player_current_book_value
+        render_player_book_value('Book Value', ->(c) { c.current_book_value })
+      end
+
+      def render_player_rusted_book_value
+        render_player_book_value('Rusted Value', ->(c) { rusted_book_value(c) })
+      end
+
+      def render_player_book_value(name, getter)
+        render_player_corporation_summary(name,
+                                          ->(p, c) { num_shares_of(p, c) * getter.call(c) / c.total_shares },
                                           ->(p) { p.cash })
       end
 
@@ -635,6 +650,10 @@ module View
       end
 
       private
+
+      def rusted_book_value(corporation)
+        corporation.rusted_book_value(@game.depot)
+      end
 
       def num_ipo_shares(corporation)
         num_shares_of(@game.separate_treasury? ? @game.bank : corporation, corporation) - num_reserved_shares(corporation)
