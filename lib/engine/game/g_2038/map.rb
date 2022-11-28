@@ -65,8 +65,9 @@ module Engine
         {
           'count' => 7,
           'color' => 'yellow',
-          'code' => 'city=revenue:green_20|brown_60;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;path=a:1,b:_0;path=a:1,b:_1;'\
-                    'path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=N/N',
+          'code' => 'city=revenue:green_20|brown_60;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
+                    'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                    'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=N/N',
         },
           # TODO: Fill in the rest of these once confirmed (also note that all these lanes should probably be double)
           '2010' =>
