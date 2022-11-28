@@ -67,7 +67,7 @@ module Engine
       tokens = if @token_book_value_override
                  @tokens.size * @token_book_value_override
                else
-                 @tokens.filter(&:used).sum(&:price)
+                 @tokens.sum { |t| t.used ? t.price : 0 }
                end
       loans = @loans.sum(&:amount)
       trains + tokens + @cash - loans
