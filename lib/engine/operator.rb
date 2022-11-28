@@ -85,7 +85,7 @@ module Engine
           trains = rusted_trains + obsolete_trains
 
           unless trains.empty?
-            rust_value = @trains.filter { |t| trains.include?(t.name) }.sum(&:price)
+            rust_value = @trains.sum { |t| trains.include?(t.name) ? t.price : 0 }
             break
           end
         end

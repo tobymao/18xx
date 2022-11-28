@@ -581,7 +581,8 @@ module View
       end
 
       def render_player_share_percentages
-        render_player_corporation_summary('Shares %', ->(p, c) { c.minor? ? 0 : percentage_of(p, c) })
+        render_player_corporation_summary('Shares %', ->(p, c) { c.minor? ? 0 : percentage_of(p, c) },
+                                          format: ->(x) { format('%d%%', x) })
       end
 
       def render_player_current_book_value
@@ -595,14 +596,16 @@ module View
       def render_player_book_value(name, getter)
         render_player_corporation_summary(name,
                                           ->(p, c) { num_shares_of(p, c) * getter.call(c) / c.total_shares },
-                                          ->(p) { p.cash })
+                                          format: ->(x) { @game.format_currency(x.round) },
+                                          extra: ->(p) { p.cash })
       end
 
-      def render_player_corporation_summary(name, getter, extra = ->(_) { 0 })
+      def render_player_corporation_summary(name, getter, format: ->(x) { x }, extra: ->(_) { 0 })
         h(:tr, tr_default_props, [
           h('th.left', name),
           *@game.players.map do |p|
-            h('td.padded_number', @game.all_corporations.sum { |c| getter.call(p, c) } + extra.call(p))
+            h('td.padded_number',
+              format.call(@game.all_corporations.sum { |c| getter.call(p, c) } + extra.call(p)))
           end,
         ])
       end
