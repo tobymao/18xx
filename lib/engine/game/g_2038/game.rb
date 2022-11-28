@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative 'map'
 require_relative '../base'
 
 module Engine
@@ -8,6 +9,7 @@ module Engine
     module G2038
       class Game < Game::Base
         include_meta(G2038::Meta)
+        include Map
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -22,8 +24,6 @@ module Engine
         SELL_AFTER = :p_any_operate
         CURRENCY_FORMAT_STR = '$%s'
 
-        LAYOUT = :pointy
-
         BANK_CASH = 10_000
 
         CERT_LIMIT = { 3 => 22, 4 => 16, 5 => 13, 6 => 11 }.freeze
@@ -31,26 +31,6 @@ module Engine
         STARTING_CASH = { 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
 
         HOME_TOKEN_TIMING = :never
-
-        TILES = {
-          '70' => 1,
-        }.freeze
-
-        LOCATION_NAMES = {
-          'A1' => 'MM',
-          'B6' => 'Torch',
-          'D8' => 'RU',
-          'D14' => 'Drill Hound',
-          'F18' => 'RCC',
-          'G7' => 'Fast Buck',
-          'H14' => 'Lucky',
-          'J2' => 'VP',
-          'J18' => 'OCP',
-          'K9' => 'TSI',
-          'M5' => 'Ore Crusher',
-          'M13' => 'Ice Finder',
-          'O1' => 'LE',
-        }.freeze
 
         MARKET = [
           %w[71 80 90 101 113 126 140 155 171 188 206 225 245 266 288 311 335 360 386 413 441 470 500],
@@ -85,7 +65,7 @@ module Engine
             name: '2',
             on: '4dc3',
             train_limit: 4,
-            tiles: %i[yellow green],
+            tiles: %i[yellow],
             operating_rounds: 2,
             status: ['can_buy_companies'],
           },
@@ -93,7 +73,7 @@ module Engine
             name: '3',
             on: '5dc4',
             train_limit: 3,
-            tiles: %i[yellow green],
+            tiles: %i[yellow],
             operating_rounds: 2,
             status: ['can_buy_companies'],
           },
@@ -101,21 +81,21 @@ module Engine
             name: '4',
             on: '6d5c',
             train_limit: 3,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow, gray],
             operating_rounds: 2,
           },
           {
             name: '5',
             on: '7d6c',
             train_limit: 3,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow, gray],
             operating_rounds: 2,
           },
           {
             name: '6',
             on: '9d7c',
             train_limit: 2,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow, gray],
             operating_rounds: 2,
           },
         ].freeze
@@ -634,26 +614,6 @@ module Engine
             reservation_color: nil,
           },
         ].freeze
-
-        GAME_HEXES = {
-          black: { %w[A13 D2 H10 H18 O11] => '' },
-          gray: { %w[A1 B6 D8 D14 F18 G7 H14 J2 J18 K9 M5 M13 O1] => '' },
-          blue: {
-            %w[
-                A3 A5 A7 A9 A11 B2 B4 B8 B10 B12 B14 C1 C3 C5 C7 C9
-                C11 C13 C15 D4 D6 D10 D12 D16 E3 E5 E7 E9 E11 E13 E15
-                E17 F2 F4 F6 F8 F10 F12 F14 F16 G3 G5 G9 G11 G13 G15
-                G17 H4 H6 H8 H12 H16 I3 I5 I7 I9 I11 I13 I15 I17 J4
-                J6 J8 J10 J12 J14 J16 K3 K5 K7 K11 K13 K15 K17 L2 L4
-                L6 L8 L10 L12 L14 L16 M1 M3 M7 M9 M11 M15 N2 N4 N6 N8
-                N10 N12 N14 O3 O5 O7 O9 O13
-            ] => '',
-          },
-        }.freeze
-
-        def game_hexes
-          GAME_HEXES
-        end
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'asteroid_league_can_form' => ['Asteroid League may be formed'],
