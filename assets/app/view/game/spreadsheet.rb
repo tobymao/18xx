@@ -334,23 +334,25 @@ module View
       end
 
       def sorted_corporations
-        operating_corporations =
+        operating_array =
           if @game.round.operating?
             @game.round.entities
           else
             @game.operating_order
           end
+        operating_corporations = operating_array.each_with_index.to_h
 
         unfloated_corporations =
-          (@game.all_corporations - operating_corporations)
+          (@game.all_corporations - operating_array)
             .select { |c| c.respond_to?(:sort_order_key) && c.sort_order_key }
             .sort
+            .each_with_index.to_h
 
         result = @game.all_corporations.map do |c|
           operating_order =
-            if (index = operating_corporations.find_index(c))
+            if (index = operating_corporations[c])
               [FLOATED, index + 1]
-            elsif (index = unfloated_corporations.find_index(c))
+            elsif (index = unfloated_corporations[c])
               [UNFLOATED, index + 1]
             else
               [UNSTARTED, 0]
