@@ -579,14 +579,13 @@ module View
     end
 
     def render_game_row_title(title, game_meta)
-      style =
-        if selected_game && game_meta == (selected_game::GAME_IS_VARIANT_OF || selected_game)
-          {
-            'background-color': 'lightblue',
-          }
-        else
-          {}
-        end
+      style = {
+        width: '150px',
+        margin: '0',
+      }
+      if selected_game && game_meta == (selected_game::GAME_IS_VARIANT_OF || selected_game)
+        style['background-color'] = 'lightblue'
+      end
 
       render_button(title, style: style) do
         select_game(game_meta)
@@ -609,18 +608,20 @@ module View
         end
       end
 
+      props = { style: { 'vertical-align': 'middle' } }
       game_rows = selected_games.map do |game|
         h(:tr, [
-            h(:td, {}, [render_game_row_title(game['title'], game['meta'])]),
-          ] + cols.map { |col| h(:td, game[col].to_s) })
+            h(:td, props, [render_game_row_title(game['title'], game['meta'])]),
+          ] + cols.map { |col| h(:td, props, game[col].to_s) })
       end
 
+      props = { style: { 'text-align': 'left' } }
       h(
         'table.create-game-table',
         {},
         [
           h(:thead, [
-              h(:tr, [h(:th, 'Title')] + cols.map { |col| h(:th, col.capitalize) }),
+              h(:tr, [h(:th, { style: { 'text-align': 'center' } }, 'Title')] + cols.map { |col| h(:th, props, col.capitalize) }),
             ]),
           h(:tbody, game_rows),
         ]
@@ -634,6 +635,7 @@ module View
         'Keywords',
         id: :keywords,
         placeholder: 'Search by Keyword',
+        input_style: { 'margin-top': '50px' },
         label_style: { display: 'none' },
         attrs: attrs,
         on: {
