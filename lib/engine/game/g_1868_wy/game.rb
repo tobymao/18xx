@@ -139,8 +139,6 @@ module Engine
           init_track_points
           setup_company_price_up_to_face
 
-          setup_event_methods
-
           @development_hexes = init_development_hexes
           @development_token_count = Hash.new(0)
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
@@ -195,8 +193,8 @@ module Engine
         end
 
         def init_round_finished
-          p9_company.close!
-          @log << "#{p9_company.name} closes"
+          durant.close!
+          @log << "#{durant.name} closes"
         end
 
         def event_all_corps_available!
@@ -227,14 +225,6 @@ module Engine
 
         def par_prices
           @stock_market.share_prices_with_types(@available_par_groups)
-        end
-
-        def setup_event_methods
-          (2..6).each do |phase|
-            self.class.define_method("event_remove_coal_dt_#{phase}!") do
-              event_remove_coal_dt!(phase.to_s)
-            end
-          end
         end
 
         def event_remove_coal_dt!(phase_name)
@@ -279,24 +269,100 @@ module Engine
           end
         end
 
-        def p1_company
-          @p1_company ||= company_by_id('P1')
+        def hell_on_wheels
+          @hell_on_wheels ||= company_by_id('P1')
         end
 
-        def p5_company
-          @p5_company ||= company_by_id('P5')
+        def wylie
+          @wylie ||= company_by_id('P2a')
         end
 
-        def p8_company
-          @p8_company ||= company_by_id('P8')
+        def trabing_bros
+          @trabing_bros ||= company_by_id('P2b')
         end
 
-        def p9_company
-          @p9_company ||= company_by_id('P9')
+        def midwest_oil
+          @midwest_oil ||= company_by_id('P2c')
         end
 
-        def p10_company
-          @p10_company ||= company_by_id('P10')
+        def upc_private
+          @upc_private ||= company_by_id('P3a')
+        end
+
+        def bonanza_private
+          @bonanza_private ||= company_by_id('P3b')
+        end
+
+        def fremont
+          @fremont ||= company_by_id('P3c')
+        end
+
+        def dodge
+          @dodge ||= company_by_id('P4a')
+        end
+
+        def lander
+          @lander ||= company_by_id('P4c')
+        end
+
+        def casement
+          @casement ||= company_by_id('P5a')
+        end
+
+        def foncier
+          @foncier ||= company_by_id('P5b')
+        end
+
+        def pac_rr_a
+          @pac_rr_a ||= company_by_id('P5c')
+        end
+
+        def strikebreakers_private
+          @strikebreakers_private ||= company_by_id('P6a')
+        end
+
+        def strikebreakers_coal
+          @strikebreakers_coal ||= @minors.find { |m| m.type == :coal && m.player == strikebreakers_private.player }
+        end
+
+        def teapot_dome_private
+          @teapot_dome_private ||= company_by_id('P6b')
+        end
+
+        def teapot_dome_oil
+          @teapot_dome_oil ||= @minors.find { |m| m.type == :oil && m.player == teapot_dome_private.player }
+        end
+
+        def no_bust
+          @no_bust ||= company_by_id('P6c')
+        end
+
+        def big_boy_private
+          @big_boy_private ||= company_by_id('P7')
+        end
+
+        def pure_oil
+          @pure_oil ||= company_by_id('P8')
+        end
+
+        def lhp_private
+          @lhp_private ||= company_by_id('P9')
+        end
+
+        def durant
+          @durant ||= company_by_id('P10')
+        end
+
+        def ames_bros
+          @ames_bros ||= company_by_id('P11')
+        end
+
+        def union_pacific_coal
+          @union_pacific_coal ||= minor_by_id('UPC')
+        end
+
+        def bonanza
+          @bonanza ||= minor_by_id('BZ')
         end
 
         def track_points_available(entity)
