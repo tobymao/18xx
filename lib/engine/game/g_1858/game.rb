@@ -162,16 +162,16 @@ module Engine
           ], round_num: round_num)
         end
 
-        def new_closure_round
+        def new_closure_round(round_num)
           @log << '-- Private Closure Round --'
-          closure_round
+          closure_round(round_num)
         end
 
-        def closure_round
+        def closure_round(round_num)
           G1858::Round::Closure.new(self, [
             G1858::Step::HomeToken,
             G1858::Step::PrivateClosure,
-          ])
+          ], round_num: round_num)
         end
 
         def next_round!
@@ -179,7 +179,7 @@ module Engine
 
           @round =
             if @private_closure_round == :next
-              new_closure_round
+              new_closure_round(@round.round_num)
             else
               case @round
               when Engine::Round::Stock
