@@ -19,6 +19,7 @@ module Engine
         include G1858::Trains
         include StubsAreRestricted
 
+        attr_accessor :private_closure_round
         attr_reader :graph_broad, :graph_metre
 
         GAME_END_CHECK = { bank: :current_or }.freeze
@@ -133,6 +134,12 @@ module Engine
           end
         end
 
+        def round_description(name, round_number = nil)
+          return 'Private Closure Round' if name == 'Closure'
+
+          super
+        end
+
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
@@ -153,6 +160,41 @@ module Engine
             G1858::Step::BuyTrain,
             G1858::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        def new_closure_round
+          @log << '-- Private Closure Round --'
+          closure_round
+        end
+
+        def closure_round
+          G1858::Round::Closure.new(self, [
+            G1858::Step::HomeToken,
+            G1858::Step::PrivateClosure,
+          ])
+        end
+
+        def next_round!
+          @private_closure_round = :done if @private_closure_round == :in_progress
+
+          @round =
+            if @private_closure_round == :next
+              new_closure_round
+            else
+              case @round
+              when Engine::Round::Stock
+                @operating_rounds = @phase.operating_rounds
+                reorder_players
+                new_operating_round
+              when Engine::Round::Operating, G1858::Round::Closure
+                if @round.round_num < @operating_rounds
+                  new_operating_round(@round.round_num + 1)
+                else
+                  @turn += 1
+                  new_stock_round
+                end
+              end
+            end
         end
 
         def purchase_company(player, company, price)
@@ -310,7 +352,7 @@ module Engine
 
         def event_privates_close!
           @log << '-- Event: Private companies will close at the end of this operating round --'
-          # TODO: implement this
+          @private_closure_round = :next
         end
 
         def buy_train(operator, train, price = nil)
@@ -418,6 +460,8 @@ module Engine
         end
 
         def payout_companies
+          return if private_closure_round == :in_progress
+
           # Private railways owned by public companies don't pay out.
           exchanged_companies = @companies.select { |company| company.owner&.corporation? }
           super(ignore: exchanged_companies.map(&:id))
