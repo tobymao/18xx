@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/exchange'
+require_relative 'company_exchange'
 
 module Engine
   module Game
     module G1858
       module Step
         class Exchange < Engine::Step::Exchange
+          include CompanyExchange
+
           def actions(entity)
             if entity.minor?
               ['buy_shares']
@@ -27,6 +30,7 @@ module Engine
               @round.current_actions << action
             else
               exchange_for_share(bundle, corporation, company, player)
+              claim_token(corporation, company)
               # Need to add an action to the action log, but this can't be a
               # buy shares action as that would end the current player's turn.
               @round.current_actions << Engine::Action::Base.new(company)
@@ -41,32 +45,6 @@ module Engine
             @round.players_bought[player][corporation] += bundle.percent
             buy_shares(player, bundle, exchange: company, exchange_price: share_price.price)
             @game.after_par(corporation)
-          end
-
-          def exchange_for_share(bundle, corporation, company, player)
-            unless @game.company_corporation_connected?(company, corporation)
-              raise GameError, "#{company.name} is not connected to #{corporation.full_name}"
-            end
-
-            buy_shares(player, bundle, exchange: :free)
-            cities = @game.reserved_cities(corporation, company)
-            return if cities.empty?
-
-            @round.pending_tokens << {
-              entity: corporation,
-              hexes: cities.map(&:hex),
-              token: corporation.next_token,
-            }
-          end
-
-          def acquire_company(corporation, company)
-            player = company.owner
-            player.companies.delete(company)
-            @game.minors.delete(company)
-            company.owner = corporation
-            corporation.companies << company
-            company.release_stubs
-            @log << "#{corporation.name} acquires #{company.name} from #{player.name}"
           end
         end
       end
