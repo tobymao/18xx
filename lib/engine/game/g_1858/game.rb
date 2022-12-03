@@ -108,7 +108,7 @@ module Engine
         end
 
         def init_minors
-          @companies.select(&:minor?)
+          @companies.reject { |company| company.sym == 'H&G' }
         end
 
         def clear_graph_for_entity(_entity)

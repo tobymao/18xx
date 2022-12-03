@@ -38,8 +38,7 @@ module Engine
         end
 
         def minor?
-          # H&G is the exception
-          !@coordinates.empty?
+          true
         end
 
         def assignments
