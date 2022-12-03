@@ -21,6 +21,10 @@ module Engine
           'Treasury'
         end
 
+        def can_hold_above_corp_limit?(_entity)
+          true
+        end
+
         def issuable_shares(entity)
           return [] unless entity.corporation?
           return [] if entity.num_ipo_shares.zero?
