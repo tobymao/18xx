@@ -37,6 +37,12 @@ module Engine
           true
         end
 
+        def closed?
+          # Another method that doesn't inherit from Engine::Company when in
+          # hotseat mode.
+          @closed
+        end
+
         def minor?
           true
         end
