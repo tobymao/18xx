@@ -131,6 +131,7 @@ module Engine
             revenue: 10,
             color: :yellow,
             text_color: :black,
+            logo: '1858/HG',
             coordinates: [],
             abilities: [
               {
