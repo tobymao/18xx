@@ -478,8 +478,8 @@ module View
         min_players = min_p
       else
         # Letters resolve to 0 when converted to integers
-        max_players = max_players_elm.value.to_i.zero? ? nil : max_players_elm.value.to_i if max_players_elm
-        min_players = min_players_elm.value.to_i.zero? ? nil : min_players_elm.value.to_i if min_players_elm
+        max_players = (val = max_players_elm&.value.to_i).zero? ? nil : val
+        min_players = (val = min_players_elm&.value.to_i).zero? ? nil : val
       end
 
       if max_players
