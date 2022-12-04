@@ -600,7 +600,7 @@ module View
           row_style['color'] = 'black'
         end
 
-        row_props = { on: { click: -> {select_game(game['meta'])}}, style: row_style }
+        row_props = { on: { click: -> { select_game(game['meta']) } }, style: row_style }
 
         h(:tr, row_props, cols.map { |col| h(:td, td_props, game[col].to_s) })
       end
