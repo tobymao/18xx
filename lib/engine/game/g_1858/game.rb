@@ -488,6 +488,12 @@ module Engine
           companies = corporation.companies.dup
           companies.each { |company| close_company(company) }
         end
+
+        def entity_can_use_company?(_entity, _company)
+          # Don't show abilities buttons in a stock round for the companies
+          # owned by the player.
+          false
+        end
       end
     end
   end
