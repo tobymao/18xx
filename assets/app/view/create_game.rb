@@ -576,21 +576,7 @@ module View
       end.compact
     end
 
-    def render_game_row_title(title, game_meta)
-      style = {
-        width: '150px',
-        margin: '0',
-      }
-      if selected_game && game_meta == (selected_game::GAME_IS_VARIANT_OF || selected_game)
-        style['background-color'] = 'lightblue'
-      end
-
-      render_button(title, style: style) do
-        select_game(game_meta)
-      end
-    end
-
-    def render_games_table(cols = %w[location status])
+    def render_games_table(cols = %w[title location status])
       selected_games = game_rows_data.sort_by { |g| [g['meta']::PROTOTYPE ? 1 : 0, g['meta']] }
       selected_games = selected_games.select { |g| %i[alpha beta production].include?(g['meta']::DEV_STAGE) } if @production
 
@@ -606,11 +592,17 @@ module View
         end
       end
 
-      props = { style: { 'vertical-align': 'middle' } }
+      td_props = { style: { 'vertical-align': 'middle' } }
       game_rows = selected_games.map do |game|
-        h(:tr, [
-            h(:td, props, [render_game_row_title(game['title'], game['meta'])]),
-          ] + cols.map { |col| h(:td, props, game[col].to_s) })
+        row_style = { cursor: 'pointer' }
+        if selected_game && game['meta'] == (selected_game::GAME_IS_VARIANT_OF || selected_game)
+          row_style['background-color'] = 'lightblue'
+          row_style['color'] = 'black'
+        end
+
+        row_props = { on: { click: -> {select_game(game['meta'])}}, style: row_style }
+
+        h(:tr, row_props, cols.map { |col| h(:td, td_props, game[col].to_s) })
       end
 
       props = { style: { 'text-align': 'left' } }
@@ -619,7 +611,7 @@ module View
         {},
         [
           h(:thead, [
-              h(:tr, [h(:th, { style: { 'text-align': 'center' } }, 'Title')] + cols.map { |col| h(:th, props, col.capitalize) }),
+              h(:tr, cols.map { |col| h(:th, props, col.capitalize) }),
             ]),
           h(:tbody, game_rows),
         ]
