@@ -339,7 +339,7 @@ module View
 
     def mode_input(mode, text)
       click_handler = lambda do
-        store(:mode, mode, skip: !!selected_game_or_variant)
+        store(:mode, mode, skip: !selected_game_or_variant.nil?)
         update_inputs
       end
 
@@ -470,15 +470,13 @@ module View
       title = selected_game_or_variant.title
       max_p = @max_p[title]
       min_p = @min_p[title]
-      if selected_game_or_variant
-        max_players_elm = Native(@inputs[:max_players])&.elm
-        min_players_elm = Native(@inputs[:min_players])&.elm
-      end
+      max_players_elm = Native(@inputs[:max_players])&.elm
+      min_players_elm = Native(@inputs[:min_players])&.elm
 
       if title_change
         max_players = max_p
         min_players = min_p
-      elsif selected_game_or_variant
+      else
         # Letters resolve to 0 when converted to integers
         max_players = max_players_elm.value.to_i.zero? ? nil : max_players_elm.value.to_i if max_players_elm
         min_players = min_players_elm.value.to_i.zero? ? nil : min_players_elm.value.to_i if min_players_elm
