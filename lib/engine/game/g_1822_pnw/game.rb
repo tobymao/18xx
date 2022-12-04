@@ -548,7 +548,7 @@ module Engine
 
         def stock_round
           G1822PNW::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822PNW::Step::BuySellParShares,
           ])
         end
