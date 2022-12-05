@@ -43,7 +43,14 @@ module Engine
             share_price = company.par_price(@game.stock_market)
             @game.stock_market.set_par(corporation, share_price)
             @round.players_bought[player][corporation] += bundle.percent
-            buy_shares(player, bundle, exchange: company, exchange_price: share_price.price)
+            @log << "#{player.name} exchanges #{company.name} and " \
+                    "#{@game.format_currency(share_price.price)} for a " \
+                    "#{bundle.percent}% share of #{corporation.id}"
+            buy_shares(player,
+                       bundle,
+                       exchange: company,
+                       exchange_price: share_price.price,
+                       silent: true)
             @game.after_par(corporation)
           end
         end
