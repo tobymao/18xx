@@ -1425,7 +1425,7 @@ module Engine
 
         def corporations_repay_loans
           @corporations.each do |corp|
-            next unless corp.floated? && corp.loans.size.positive?
+            next if !corp.floated? || !corp.loans.size.positive?
 
             loans_repaid = [corp.loans.size, (corp.cash / loan_value).to_i].min
             amount_repaid = loan_value * loans_repaid

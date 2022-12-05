@@ -12,7 +12,7 @@ module Engine
             super
 
             # Activate ability if token placed where needed
-            return unless (dest_ability = @game.abilities(entity, :assign_hexes)) && dest_ability.hexes.include?(city.hex.name)
+            return if !(dest_ability = @game.abilities(entity, :assign_hexes)) || !dest_ability.hexes.include?(city.hex.name)
 
             ability = @game.class::DELAYED_ABILITIES[entity.name]
 

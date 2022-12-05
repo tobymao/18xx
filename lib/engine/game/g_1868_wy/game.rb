@@ -724,7 +724,7 @@ module Engine
         end
 
         def after_par(corporation)
-          return unless corporation.id == 'LNP' || corporation.id == 'OSL'
+          return if corporation.id != 'LNP' && corporation.id != 'OSL'
 
           hex = hex_by_id(corporation.coordinates)
           old_tile = hex.tile

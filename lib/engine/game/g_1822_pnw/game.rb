@@ -587,7 +587,7 @@ module Engine
           company_id = company_id_from_corp_id(minor_id)
           company = @companies.find { |c| c.id == company_id }
 
-          return :parable unless company && @round.respond_to?(:bids) && !@round.bids[company].empty?
+          return :parable if !company || !@round.respond_to?(:bids) || @round.bids[company].empty?
 
           :none
         end

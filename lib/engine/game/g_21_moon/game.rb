@@ -786,7 +786,8 @@ module Engine
               offboards['SW'] = true if SW_HEXES.include?(hid)
             end
 
-            next unless (offboards['NE'] || offboards['SE']) && (offboards['NW'] || offboards['SW'])
+            next if !(offboards['NE'] || offboards['SE']) ||
+                    !(offboards['NW'] || offboards['SW'])
 
             offboards.keys.each do |bonus|
               next if @end_bonuses[corp].include?(bonus)

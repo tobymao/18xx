@@ -22,7 +22,7 @@ module Engine
           def process_pass(_action)
             ndem = @game.corporation_by_id('NDEM')
             @game.players.each do |p|
-              next unless ndem.player_share_holders.include?(p) && ndem.player_share_holders[p].positive?
+              next if !ndem.player_share_holders.include?(p) || !ndem.player_share_holders[p].positive?
 
               shares = p.shares_of(ndem)
               @game.share_pool.sell_shares(ShareBundle.new(shares), allow_president_change: false) unless shares.empty?

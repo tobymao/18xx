@@ -15,7 +15,7 @@ module Engine
           def actions(_entity)
             # TODO: Maximum of 3 trams per corporation
             actions = []
-            actions << 'pass' unless @auctioning && @bids[@auctioning].empty?
+            actions << 'pass' if !@auctioning || !@bids[@auctioning].empty?
             actions << 'bid' if @auctioning
             actions << 'merge' unless @auctioning
 

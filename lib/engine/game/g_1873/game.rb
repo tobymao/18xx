@@ -422,7 +422,7 @@ module Engine
           return if @subtrains[s_train].one? # always leave one allocated per supertrain
 
           @subtrains[s_train].dup.each do |sub|
-            next unless @diesel_pool[sub][:allocated] && !@diesel_pool[sub][:used] && @subtrains[s_train].size > 1
+            next if !@diesel_pool[sub][:allocated] || @diesel_pool[sub][:used] || @subtrains[s_train].size <= 1
 
             @diesel_pool[sub][:allocated] = false
             @subtrains[s_train].delete(sub)
@@ -1110,7 +1110,7 @@ module Engine
         end
 
         def advance_concession_phase!(entity)
-          return unless concession_pending?(entity) && !(info = @corporation_info[entity])[:advanced]
+          return if !concession_pending?(entity) || (info = @corporation_info[entity])[:advanced]
 
           info[:concession_phase] = (info[:concession_phase].to_i - 1).to_s
           info[:advanced] = true

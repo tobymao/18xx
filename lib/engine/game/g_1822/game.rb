@@ -623,7 +623,7 @@ module Engine
           end
 
           # Check Merthyr Tydfil and Pontypool, only one of the 2 tracks may be used
-          return unless merthyr_tydfil_pontypool[1] && merthyr_tydfil_pontypool[2]
+          return if !merthyr_tydfil_pontypool[1] || !merthyr_tydfil_pontypool[2]
 
           raise GameError, 'May only use one of the tracks connecting Merthyr Tydfil and Pontypool'
         end
@@ -705,7 +705,7 @@ module Engine
 
         def finalize_end_game_values
           company = company_by_id(self.class::COMPANY_OSTH)
-          return unless company && @tax_haven.value.positive?
+          return if !company || !@tax_haven.value.positive?
 
           # Make sure tax havens value is correct
           company.value = @tax_haven.value
@@ -1312,7 +1312,7 @@ module Engine
           upgrade_minor_14_home_hex(hex) if hex.name == self.class::MINOR_14_HOME_HEX
 
           # If we upgraded the english channel to brown, upgrade france as well since we got 2 lanes to france.
-          return unless hex.name == self.class::ENGLISH_CHANNEL_HEX && tile.color == :brown
+          return if hex.name != self.class::ENGLISH_CHANNEL_HEX || tile.color != :brown
 
           upgrade_france_to_brown
         end
