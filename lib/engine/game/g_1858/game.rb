@@ -494,6 +494,17 @@ module Engine
           # owned by the player.
           false
         end
+
+        def revenue_bonuses(corporation)
+          corporation.companies.map do |company|
+            {
+              name: company.id,
+              used: 'n/a',
+              revenue: company.revenue,
+              route: 'n/a',
+            }
+          end
+        end
       end
     end
   end
