@@ -22,7 +22,7 @@ module Engine
           end
 
           def process_place_token(action)
-            if action.entity.companies.empty?
+            if action.entity.companies.empty? && action.entity.placed_tokens.empty?
               # This is a public company floated directly after the start of phase 5.
               # Home token cost for public companies is twice the city's revenue.
               city = action.city
