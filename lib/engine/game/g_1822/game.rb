@@ -373,6 +373,9 @@ module Engine
         LOCAL_TRAINS = %w[L LP].freeze
         E_TRAIN = 'E'
 
+        # see https://github.com/tobymao/18xx/issues/8479#issuecomment-1336324812
+        LOCAL_TRAIN_CAN_CARRY_MAIL = false
+
         LIMIT_TOKENS_AFTER_MERGER = 9
 
         DOUBLE_HEX = %w[D35 F7 H21 H37].freeze
@@ -1710,10 +1713,10 @@ module Engine
 
           mail_bonuses = routes.map do |r|
             stops = r.visited_stops
-            next if stops.size < 2
+            next if stops.size < 2 && !self.class::LOCAL_TRAIN_CAN_CARRY_MAIL
 
             first = stops.first.route_base_revenue(r.phase, r.train) / 2
-            last = stops.last.route_base_revenue(r.phase, r.train) / 2
+            last = stops.size < 2 ? 0 : stops.last.route_base_revenue(r.phase, r.train) / 2
             { route: r, subsidy: first + last }
           end.compact
           mail_bonuses.sort_by { |v| v[:subsidy] }.reverse.take(mail_contracts)
