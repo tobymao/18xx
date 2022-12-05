@@ -28,7 +28,7 @@ module Engine
 
           def process_pass(action)
             entity = action.entity
-            return super unless entity.trains.empty? && entity.type == :minor
+            return super if !entity.trains.empty? || entity.type != :minor
 
             @game.close_corporation(entity)
           end

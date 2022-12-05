@@ -44,7 +44,7 @@ class Api
             game.to_h
           end
 
-          not_authorized! unless users.any? { |u| u.id == user.id } || game.user_id == user.id
+          not_authorized! if users.none? { |u| u.id == user.id } && game.user_id != user.id
 
           # POST '/api/game/<game_id>/action'
           r.is 'action' do

@@ -540,14 +540,14 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          return [] unless entity.corporation? && entity.type != :minor
+          return [] if !entity.corporation? || entity.type == :minor
 
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| entity.cash < bundle.price }
         end
 
         def issuable_shares(entity)
-          return [] unless entity.corporation? && entity.type != :minor
+          return [] if !entity.corporation? || entity.type == :minor
 
           treasury = bundles_for_corporation(entity, entity)
           ipo = bundles_for_corporation(@bank, entity)

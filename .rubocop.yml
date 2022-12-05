@@ -77,12 +77,12 @@ Metrics/PerceivedComplexity:
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
+Naming/MethodParameterName:
+  Enabled: false
+
 Naming/VariableNumber: # TODO enable & check offenses, default or snake_case?
   Enabled: false
   # EnforcedStyle: snake_case
-
-Naming/MethodParameterName:
-  Enabled: false
 
 Performance/AncestorsInclude:
   Enabled: false
@@ -133,6 +133,9 @@ Style/CommandLiteral:
 Style/Documentation:
   Enabled: false
 
+Style/DoubleNegation:
+  Enabled: false
+
 # unsafe, problems with 1860
 Style/HashEachMethods:
   Enabled: false
@@ -167,5 +170,6 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: comma
 
-Style/DoubleNegation:
-  Enabled: false
+Style/UnlessLogicalOperators:
+  Enabled: true
+  EnforcedStyle: forbid_logical_operators

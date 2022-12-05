@@ -60,13 +60,13 @@ module Engine
 
           def skip_steps
             # We must be careful not to skip through Dividends because the game can end between Route and Dividends
-            super unless @cash_crisis_player&.cash&.negative? || @game.bankrupted
+            super if !@cash_crisis_player&.cash&.negative? && !@game.bankrupted
           end
 
           def force_repay_loans!(entity)
             loans_to_payoff = entity.loans.size - @game.maximum_loans(entity)
             @cash_crisis_due_to_forced_repay = nil
-            return unless step_passed?(Engine::Step::BuyTrain) && loans_to_payoff.positive?
+            return if !step_passed?(Engine::Step::BuyTrain) || !loans_to_payoff.positive?
 
             bank = @game.bank
             owed = 100 * loans_to_payoff

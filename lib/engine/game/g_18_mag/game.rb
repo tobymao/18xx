@@ -417,7 +417,7 @@ module Engine
           end
 
           @ors_no_train += 1
-          return unless @phase.upcoming && @ors_no_train >= MAX_ORS_NO_TRAIN
+          return if !@phase.upcoming || @ors_no_train < MAX_ORS_NO_TRAIN
 
           @log << "-- No trains purchased in #{MAX_ORS_NO_TRAIN} Operating Rounds --"
           @ors_no_train = 0
@@ -591,7 +591,7 @@ module Engine
 
         # Change "Stop" displayed if G&C power is used
         def route_distance(route)
-          return super unless gc_train?(route) && !other_gc_train?(route)
+          return super if !gc_train?(route) || other_gc_train?(route)
 
           n_cities = route.stops.select { |s| s.visit_cost.positive? }.count { |n| n.city? || n.offboard? }
           n_towns = route.stops.count(&:town?)
