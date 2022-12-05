@@ -49,11 +49,16 @@ module View
           color = ((@reservation&.corporation? || @reservation&.minor?) &&
                     @reservation&.reservation_color) ||
                     'white'
+          dash = nil
+          stroke_width = nil
 
           radius = @radius
           show_player_colors = setting_for(:show_player_colors, @game)
           if show_player_colors && (owner = @token&.corporation&.owner) && @game&.players&.include?(owner)
-            color = player_colors(@game.players)[owner]
+            props = player_colors_with_dash(@game.players)[owner]
+            color = props[:color]
+            dash = props[:dash]
+            stroke_width = props[:width]
             radius -= 4
           end
 
@@ -61,6 +66,9 @@ module View
             r: @radius,
             fill: color,
           }
+          token_attrs[:'stroke'] = color
+          token_attrs[:'stroke-dasharray'] = dash if dash
+          token_attrs[:'stroke-width'] = stroke_width if stroke_width
 
           if (highlight = @game&.highlight_token?(@token))
             radius -= 3

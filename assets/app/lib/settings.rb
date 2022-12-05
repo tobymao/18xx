@@ -86,12 +86,26 @@ module Lib
     end
 
     def player_colors(players)
+      player_route_props(players, ->(index) { route_prop(index, :color) })
+    end
+
+    def player_colors_with_dash(players)
+      player_route_props(players, lambda { |index|
+        {
+          'color' => route_prop(index, :color),
+          'width' => route_prop(index, :width),
+          'dash' => route_prop(index, :dash),
+        }
+      })
+    end
+
+    def player_route_props(players, getter)
       # Rotate around the user if they're logged in
       if @user && (player_idx = players.index { |p| p.id == @user['id'] })
         players = players.rotate(player_idx)
       end
 
-      players.map.with_index { |p, idx| [p, route_prop(idx, 'color')] }.to_h
+      players.map.with_index { |p, idx| [p, getter.call(idx)] }.to_h
     end
   end
 end
