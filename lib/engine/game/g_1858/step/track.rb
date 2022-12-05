@@ -9,7 +9,7 @@ module Engine
         class Track < Engine::Step::Track
           def actions(entity)
             return [] unless entity == current_entity
-            return [] unless entity.minor? || entity.corporation?
+            return [] if !entity.minor? && !entity.corporation?
             return [] unless can_lay_tile?(entity)
 
             ACTIONS
@@ -130,9 +130,9 @@ module Engine
             # The check for private railways home hexes is needed in case a private
             # builds plain track that's not connected to a revenue centre, it will
             # not be classed as a connected path.
-            unless valid_tile_lay?(entity, old_tile, new_tile, @game.graph_broad) ||
-                   valid_tile_lay?(entity, old_tile, new_tile, @game.graph_metre) ||
-                   (entity.minor? && entity.home_hex?(new_tile.hex))
+            if !valid_tile_lay?(entity, old_tile, new_tile, @game.graph_broad) &&
+                !valid_tile_lay?(entity, old_tile, new_tile, @game.graph_metre) &&
+                !(entity.minor? && entity.home_hex?(new_tile.hex))
               raise GameError, 'Must use new track or change city value'
             end
           end
