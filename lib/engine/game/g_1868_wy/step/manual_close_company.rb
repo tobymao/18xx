@@ -14,10 +14,10 @@ module Engine
           end
 
           def actions(entity)
-            return [] unless entity.company? &&
-                             !entity.closed? &&
-                             entity.player == current_entity.player &&
-                             @game.abilities(entity, :manual_close_company)
+            return [] if !entity.company? ||
+                         entity.closed? ||
+                         entity.player != current_entity.player ||
+                         !@game.abilities(entity, :manual_close_company)
 
             ACTIONS
           end
