@@ -172,7 +172,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -218,7 +218,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -260,7 +260,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -309,7 +309,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -388,7 +388,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -439,7 +439,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -493,7 +493,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -542,7 +542,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -595,7 +595,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -648,7 +648,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -697,7 +697,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -742,7 +742,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -795,7 +795,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -844,7 +844,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -926,7 +926,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -1000,7 +1000,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -1045,7 +1045,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
@@ -1089,7 +1089,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 corporations: 'any',
-                from: 'ipo',
+                from: 'presidency',
               },
               {
                 type: 'reservation',
