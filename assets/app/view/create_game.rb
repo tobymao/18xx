@@ -10,8 +10,6 @@ module View
     include Lib::WhatsThis::AutoRoute
 
     needs :mode, default: :multi, store: true
-    needs :min_players, default: nil, store: true
-    needs :max_players, default: nil, store: true
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
     needs :visible_optional_rules, default: nil, store: true
@@ -22,36 +20,23 @@ module View
     needs :production, default: nil
     needs :optional_rules, default: [], store: true
     needs :is_async, default: true, store: true
+    needs :keywords, default: nil, store: true
+
+    # hashmap, game title to min/max player count
+    needs :min_p, default: {}, store: false
+    needs :max_p, default: {}, store: false
+
+    # int, min/max player count for the currently selected title
+    needs :min_players, default: nil, store: true
+    needs :max_players, default: nil, store: true
 
     def render_content
       @label_style = { display: 'block' }
-      inputs = [
-        mode_selector,
-        render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' } }) { submit },
-        render_inputs,
-      ]
 
-      case @mode
-      when :multi
-        inputs << h(:label, { style: @label_style }, 'Game Options')
-        inputs << render_game_type
-        inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
-                                                   container_style: { paddingLeft: '0.5rem' })
-        if selected_game_or_variant::AUTOROUTE
-          inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
-        end
-        inputs << h(:p, [render_input('Random Seed', id: :seed, placeholder: 'Optional random seed', label_style: @label_style)])
-        inputs << render_game_info
-      when :hotseat
-        inputs << h(:label, { style: @label_style }, 'Player Names')
-        @max_players.times do |index|
-          n = index + 1
-          inputs << render_input('', id: "player_#{n}", attrs: { value: "Player #{n}" })
-        end
-        inputs << h(:div,
-                    [render_input('Random Seed', id: :seed, placeholder: 'Optional random seed', label_style: @label_style)])
-        inputs << render_game_info
-      when :json
+      inputs = [mode_selector]
+
+      if @mode == :json
+        inputs << (render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' } }) { submit })
         inputs << render_upload_button
         inputs << render_input(
           '',
@@ -70,6 +55,36 @@ module View
             margin: '1rem 0',
           },
         )
+      else
+        if selected_game_or_variant
+          update_player_range(selected_game_or_variant)
+          inputs << (render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' } }) { submit })
+          inputs << h(:h2, selected_game_or_variant.meta.full_title)
+          inputs << render_inputs
+
+          case @mode
+          when :multi
+            inputs << h(:label, { style: @label_style }, 'Game Options')
+            inputs << render_game_type
+            inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
+                                                       container_style: { paddingLeft: '0.5rem' })
+            if selected_game_or_variant::AUTOROUTE
+              inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
+            end
+          when :hotseat
+            inputs << h(:label, { style: @label_style }, 'Player Names')
+            (1..(@max_players || @max_p[selected_game_or_variant.title])).each do |n|
+              inputs << render_input('', id: "player_#{n}", attrs: { value: "Player #{n}" })
+            end
+          end
+
+          inputs << render_random_seed
+          inputs << render_optional if should_render_optional?
+          inputs << render_game_info
+        end
+
+        inputs << render_keyword_search
+        inputs << render_games_table
       end
 
       description = []
@@ -84,49 +99,6 @@ module View
     end
 
     def render_inputs
-      @min_p = {}
-      @max_p = {}
-      closest_title = @title && Engine.closest_title(@title)
-
-      game_options = visible_games
-      .group_by { |game| game::DEV_STAGE == :production && game::PROTOTYPE ? :prototype : game::DEV_STAGE }
-      .flat_map do |dev_stage, game_list|
-        option_list = game_list.map do |game|
-          @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
-
-          title = game.display_title
-          title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
-          title += ' [Prototype]' if game::PROTOTYPE
-
-          attrs = { value: game.title }
-          attrs[:selected] = (game.title == closest_title) ||
-                             (game == Engine.meta_by_title(closest_title)::GAME_IS_VARIANT_OF)
-
-          h(:option, { attrs: attrs }, game::GAME_DROPDOWN_TITLE || title)
-        end
-
-        if dev_stage == :production
-          option_list
-        else
-          [h(:optgroup, { attrs: { label: dev_stage } }, option_list)]
-        end
-      end
-
-      title_change = lambda do
-        @selected_game = Engine.meta_by_title(Native(@inputs[:title]).elm&.value)
-
-        uncheck_game_variant
-        @selected_variant = nil
-        @game_variants = {}
-
-        uncheck_optional_rules
-        @optional_rules = []
-
-        preselect_variant(@selected_game)
-        preselect_optional_rules(@selected_game)
-        update_inputs(title_change: true)
-      end
-
       title = selected_game_or_variant.title
       min_p = @min_p[title]
       max_p = @max_p[title]
@@ -137,9 +109,6 @@ module View
       min_players = @min_players || min_p
 
       inputs = [
-        render_input('Game Title', id: :title, el: 'select', on: { input: title_change },
-                                   container_style: @label_style, label_style: @label_style,
-                                   input_style: { maxWidth: '90vw' }, children: game_options),
         render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
         render_input(
           'Min Players',
@@ -172,10 +141,6 @@ module View
         ),
       ]
 
-      @game_variants = selected_game.game_variants
-      @visible_optional_rules = selected_game_or_variant::OPTIONAL_RULES.reject { |rule| filtered_rule?(rule) }
-      inputs << render_optional if !@game_variants.empty? || !selected_game_or_variant::OPTIONAL_RULES.empty?
-
       div_props = {}
       div_props[:style] = { display: 'none' } if @mode == :json
 
@@ -203,12 +168,16 @@ module View
     end
 
     def uncheck_optional_rules
+      return unless selected_game_or_variant
+
       selected_game_or_variant::OPTIONAL_RULES.each do |o_r|
         Native(@inputs[o_r[:sym]])&.elm&.checked = false
       end
     end
 
     def sync_rules
+      return unless selected_game_or_variant
+
       selected_game_or_variant::OPTIONAL_RULES.each do |o_r|
         Native(@inputs[o_r[:sym]])&.elm&.checked = @optional_rules.include?(o_r[:sym])
       end
@@ -228,11 +197,12 @@ module View
           else
             selected_game.game_variants[sym]
           end
-        update_inputs
+        update_inputs(title_change: true)
       end
     end
 
     def uncheck_mutex(sym)
+      return unless selected_game_or_variant
       return if selected_game_or_variant::MUTEX_RULES.empty?
 
       selected_game_or_variant::MUTEX_RULES.each do |set|
@@ -261,8 +231,7 @@ module View
 
     def render_optional
       game_variants = @game_variants.map do |sym, variant|
-        title = variant[:title]
-        @min_p[title], @max_p[title] = variant[:meta]::PLAYER_RANGE
+        update_player_range(variant[:meta])
 
         stage = variant[:meta]::DEV_STAGE
         stage_str = stage == :production ? '' : "(#{stage}) "
@@ -310,7 +279,7 @@ module View
 
       if info
         h(:div, [
-          h(:label, 'Game Variants / Optional Rules'),
+          h(:h4, 'Game Variants / Optional Rules'),
           h(:ul, ul_props, [*game_variants, *optional_rules]),
           h(:h4, 'Option Info/Errors'),
           h(:div, info),
@@ -318,7 +287,7 @@ module View
         ])
       else
         h(:div, [
-          h(:label, 'Game Variants / Optional Rules'),
+          h(:h4, 'Game Variants / Optional Rules'),
           h(:ul, ul_props, [*game_variants, *optional_rules]),
         ])
       end
@@ -357,7 +326,7 @@ module View
     end
 
     def render_game_info
-      h(Game::GameMeta, game: selected_game_or_variant)
+      h(Game::GameMeta, game: selected_game_or_variant, show_title: false)
     end
 
     def mode_selector
@@ -370,7 +339,7 @@ module View
 
     def mode_input(mode, text)
       click_handler = lambda do
-        store(:mode, mode, skip: true)
+        store(:mode, mode, skip: !selected_game_or_variant.nil?)
         update_inputs
       end
 
@@ -403,6 +372,8 @@ module View
     end
 
     def submit
+      return unless selected_game_or_variant
+
       game_params = params
       game_params[:seed] = game_params[:seed].to_i
       game_params[:seed] = nil if (game_params[:seed]).zero?
@@ -451,12 +422,14 @@ module View
     def params
       params = super
 
-      params['title'] = @selected_variant[:title] if @selected_variant
+      params['title'] = @selected_variant ? @selected_variant[:title] : @selected_game&.title
 
-      game = Engine.meta_by_title(params['title'])
-      params[:optional_rules] = game::OPTIONAL_RULES
-                                  .map { |o_r| o_r[:sym] }
-                                  .select { |rule| params.delete(rule) }
+      if params['title']
+        game = Engine.meta_by_title(params['title'])
+        params[:optional_rules] = game::OPTIONAL_RULES
+                                    .map { |o_r| o_r[:sym] }
+                                    .select { |rule| params.delete(rule) }
+      end
 
       params
     end
@@ -466,21 +439,19 @@ module View
     end
 
     def selected_game
-      return @selected_game if @selected_game
+      @selected_game ||=
+        if @title
+          closest = Engine.meta_by_title(@title)
 
-      title = visible_games.first.title
-      if @title
-        closest = Engine.meta_by_title(@title)
+          if (parent_game = Engine.meta_by_title(closest.title)::GAME_IS_VARIANT_OF)
+            title = parent_game.title
+            @selected_variant = parent_game.game_variants.values.find { |v| v[:title] == closest.title }
+          else
+            title = closest.title
+          end
 
-        if visible_games.include?(closest)
-          title = closest.title
-        elsif (parent_game = Engine.meta_by_title(closest.title)::GAME_IS_VARIANT_OF)
-          title = parent_game.title
-          @selected_variant = parent_game.game_variants.values.find { |v| v[:title] == closest.title }
+          Engine.meta_by_title(title)
         end
-      end
-
-      @selected_game = Engine.meta_by_title(title)
     end
 
     def selected_game_or_variant
@@ -494,19 +465,21 @@ module View
     end
 
     def update_inputs(title_change: false)
+      return unless selected_game_or_variant
+
       title = selected_game_or_variant.title
       max_p = @max_p[title]
       min_p = @min_p[title]
-      max_players_elm = Native(@inputs[:max_players]).elm
-      min_players_elm = Native(@inputs[:min_players]).elm
+      max_players_elm = Native(@inputs[:max_players])&.elm
+      min_players_elm = Native(@inputs[:min_players])&.elm
 
       if title_change
         max_players = max_p
         min_players = min_p
       else
         # Letters resolve to 0 when converted to integers
-        max_players = max_players_elm.value.to_i.zero? ? nil : max_players_elm.value.to_i
-        min_players = min_players_elm.value.to_i.zero? ? nil : min_players_elm.value.to_i
+        max_players = (val = max_players_elm&.value.to_i).zero? ? nil : val
+        min_players = (val = min_players_elm&.value.to_i).zero? ? nil : val
       end
 
       if max_players
@@ -514,13 +487,13 @@ module View
         if selected_game_or_variant.respond_to?(:min_players)
           min_p = selected_game_or_variant.min_players(@optional_rules, max_players)
         end
-        max_players_elm.value = max_players
+        max_players_elm&.value = max_players
       end
 
       if min_players
         min_players = [min_players, min_p].max
         min_players = [min_players, max_players || max_p].min
-        min_players_elm.value = min_players
+        min_players_elm&.value = min_players
       end
 
       store(:max_players, max_players, skip: true)
@@ -544,6 +517,141 @@ module View
 
       store(:optional_rules, @optional_rules, skip: true)
       store(:visible_optional_rules, visible_rules)
+    end
+
+    def select_game(meta)
+      @selected_game = meta
+
+      update_player_range(meta)
+
+      uncheck_game_variant
+      @selected_variant = nil
+      @game_variants = {}
+
+      uncheck_optional_rules
+      @optional_rules = []
+
+      preselect_variant(@selected_game)
+      preselect_optional_rules(@selected_game)
+
+      update_inputs(title_change: true)
+
+      `window.scroll(0, 0)`
+    end
+
+    def render_random_seed
+      h(:div, [
+          render_input(
+            'Random Seed',
+            id: :seed,
+            placeholder: 'Optional random seed',
+            label_style: { display: 'none' },
+            on: {
+              keyup: lambda { |e|
+                Native(e)['key'] == 'Enter' && e.JS.stopPropagation
+              },
+            }
+          ),
+        ])
+    end
+
+    def game_rows_data
+      @game_rows_data ||= visible_games.map do |game|
+        next if game.meta::GAME_IS_VARIANT_OF
+
+        status =
+          begin
+            parts = []
+            parts << 'Prototype' if game.meta::PROTOTYPE
+            parts << game.meta::DEV_STAGE.capitalize
+            parts.join(', ')
+          end
+
+        {
+          'title' => game.display_title,
+          'status' => status,
+          'location' => game.meta::GAME_LOCATION,
+          'meta' => game.meta,
+        }
+      end.compact
+    end
+
+    def render_games_table(cols = %w[title location status])
+      selected_games = game_rows_data.sort_by { |g| [g['meta']::PROTOTYPE ? 1 : 0, g['meta']] }
+      selected_games = selected_games.select { |g| %i[alpha beta production].include?(g['meta']::DEV_STAGE) } if @production
+
+      if @keywords&.size&.positive?
+        searches = @keywords.split(/[:, ]+/).map(&:upcase)
+
+        selected_games = selected_games.select do |game|
+          searches.all? do |search|
+            game['meta'].keywords.any? do |keyword|
+              keyword =~ /#{search}/
+            end
+          end
+        end
+      end
+
+      td_props = { style: { 'vertical-align': 'middle' } }
+      game_rows = selected_games.map do |game|
+        row_style = { cursor: 'pointer' }
+        if selected_game && game['meta'] == (selected_game::GAME_IS_VARIANT_OF || selected_game)
+          row_style['background-color'] = 'lightblue'
+          row_style['color'] = 'black'
+        end
+
+        row_props = { on: { click: -> { select_game(game['meta']) } }, style: row_style }
+
+        h(:tr, row_props, cols.map { |col| h(:td, td_props, game[col].to_s) })
+      end
+
+      props = { style: { 'text-align': 'left' } }
+      h(
+        'table.create-game-table',
+        {},
+        [
+          h(:thead, [
+              h(:tr, cols.map { |col| h(:th, props, col.capitalize) }),
+            ]),
+          h(:tbody, game_rows),
+        ]
+      )
+    end
+
+    def render_keyword_search
+      attrs = @keywords ? { value: @keywords } : {}
+
+      render_input(
+        'Keywords',
+        id: :keywords,
+        placeholder: 'Search by Keyword',
+        input_style: { 'margin-top': '50px' },
+        label_style: { display: 'none' },
+        attrs: attrs,
+        on: {
+          input: ->(e) { update_keyword_search(e) },
+          keyup: ->(e) { Native(e)['key'] == 'Enter' && e.JS.stopPropagation },
+        },
+      )
+    end
+
+    def update_keyword_search(_e, *_args, **_kwargs)
+      @keywords = Native(@inputs[:keywords]).elm&.value
+      store(:keywords, @keywords)
+      update_inputs
+    end
+
+    def should_render_optional?
+      return false unless selected_game_or_variant
+
+      @game_variants = selected_game.game_variants
+      @visible_optional_rules = selected_game_or_variant::OPTIONAL_RULES.reject { |rule| filtered_rule?(rule) }
+      !@game_variants.empty? || !selected_game_or_variant::OPTIONAL_RULES.empty?
+    end
+
+    def update_player_range(meta)
+      title = meta.title
+      @min_p[title], @max_p[title] = meta::PLAYER_RANGE
     end
   end
 end

@@ -29,6 +29,7 @@ class App < Snabberb::Component
   needs :pin, default: nil
   needs :title, default: nil
   needs :production, default: nil
+  needs :keywords, default: nil
 
   def render
     props = {
@@ -60,7 +61,7 @@ class App < Snabberb::Component
     page =
       case @app_route
       when /new_game/
-        h(View::CreateGame, title: @title, production: @production)
+        h(View::CreateGame, title: @title, production: @production, keywords: @keywords)
       when /[^?](game|hotseat|tutorial|fixture)/
         render_game
       when /signup/

@@ -13,7 +13,7 @@ module Engine
         GAME_SUBTITLE = 'The Railroads Come to Virginia'
         GAME_DESIGNER = 'David Hecht'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18VA'
-        GAME_LOCATION = 'Virginia, US'
+        GAME_LOCATION = 'Virginia, USA'
         GAME_RULES_URL = 'https://drive.google.com/file/d/1BoU7zvESW9h3HZky44Fo59HfNAm0IfYR/view?usp=sharing'
 
         PLAYER_RANGE = [2, 5].freeze
