@@ -748,7 +748,7 @@ module Engine
           routes_revenue(routes.select { |r| @train_base[r.train] == :lb || r.train.owner.receivership? })
         end
 
-        def submit_revenue_str(routes, _render_halts)
+        def submit_revenue_str(routes, _render_halts, _bonuses)
           "#{format_revenue_currency(sp_revenue(routes))} (+#{format_revenue_currency(lb_revenue(routes))} Withhold)"
         end
 

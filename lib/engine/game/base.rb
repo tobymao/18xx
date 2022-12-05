@@ -882,6 +882,17 @@ module Engine
         entity.runnable_trains
       end
 
+      # Revenue bonuses that should be added to the list of train revenues
+      # displayed in the route selector. This method should return an array of
+      # hashes, with each item having these keys:
+      #  - id: The label to show in the `train` column of the route selector.
+      #  - used: Text to show in the `used` column.
+      #  - revenue: The bonus revenue.
+      #  - route: Text to show in the `route` column.
+      def revenue_bonuses(_entity)
+        []
+      end
+
       def discarded_train_placement
         self.class::DISCARDED_TRAINS
       end
@@ -927,8 +938,9 @@ module Engine
         0
       end
 
-      def submit_revenue_str(routes, show_subsidy)
-        revenue_str = format_revenue_currency(routes_revenue(routes))
+      def submit_revenue_str(routes, show_subsidy, bonuses)
+        total_revenue = routes_revenue(routes) + bonuses.sum { |bonus| bonus[:revenue] }
+        revenue_str = format_revenue_currency(total_revenue)
         subsidy = routes_subsidy(routes)
         subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (subsidy)" : ''
         revenue_str + subsidy_str
