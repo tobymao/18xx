@@ -16,6 +16,7 @@ require_relative 'step/track'
 require_relative 'step/waterfall_auction'
 require_relative '../base'
 require_relative '../company_price_up_to_face'
+require_relative '../swap_color_and_stripes'
 require_relative '../stubs_are_restricted'
 
 module Engine
@@ -31,6 +32,7 @@ module Engine
         # Engine::Game includes
         include CompanyPriceUpToFace
         include StubsAreRestricted
+        include SwapColorAndStripes
 
         # overrides
         BANK_CASH = 99_999
@@ -113,6 +115,8 @@ module Engine
         }.freeze
 
         GHOST_TOWN_NAME = 'ghost town'
+
+        WIND_RIVER_CANYON_HEX = 'F12'
 
         def dotify(tile)
           tile.towns.each { |town| town.style = :dot }
@@ -392,10 +396,7 @@ module Engine
         def action_processed(action)
           case action
           when Action::LayTile
-            if action.hex.name == 'G15'
-              action.hex.tile.color = :gray
-              @log << 'Wind River Canyon turns gray; it can never be upgraded'
-            end
+            swap_color_and_stripes(action.hex.tile) if action.hex.name == WIND_RIVER_CANYON_HEX
           end
         end
 

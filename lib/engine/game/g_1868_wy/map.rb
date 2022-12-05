@@ -193,6 +193,13 @@ module Engine
           # gray
           '51' => 2,
 
+          # custom yellow-gray
+          'WRC' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'path=a:0,b:2;label=WRC;stripes=color:gray',
+          },
+
           # custom yellow
           'YC' => {
             'count' => 3,
