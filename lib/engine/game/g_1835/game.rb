@@ -29,7 +29,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '%dM'
+        CURRENCY_FORMAT_STR = '%sM'
         # game end current or, when the bank is empty
         GAME_END_CHECK = { bank: :current_or }.freeze
         # bankrupt is allowed, player leaves game

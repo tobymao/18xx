@@ -21,9 +21,32 @@ ASSETS = Assets.new(precompiled: PRODUCTION)
 
 scheduler = Rufus::Scheduler.new
 
+def days_ago(days)
+  Time.now - (86_400 * days)
+end
+
 scheduler.cron '00 09 * * *' do
   LOGGER.info('Calculating user stats')
   UserStats.calculate_stats
+
+  LOGGER.info('Archiving Games')
+
+  filter = <<~SQL
+    (status = 'finished' AND created_at <= :finished) OR
+    (status = 'active' AND updated_at <= :active)
+  SQL
+
+  Game.where(
+    Sequel.lit(filter, finished: days_ago(365), active: days_ago(90))
+  ).all.each(&:archive!)
+
+  Game.where(status: 'new').all.each do |game|
+    if game.settings['unlisted']
+      game.destroy if game.created_at < days_ago(180)
+    elsif game.created_at < days_ago(14)
+      game.destroy
+    end
+  end
 end
 
 def send_webhook_notification(user, message)

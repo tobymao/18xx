@@ -42,7 +42,7 @@ module Engine
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
                                    FCM MC CHP FNM MIR FCP IRM NDEM].freeze
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         MARKET = [
           %w[5y 10y 15y 20y 25y 30y 35y 40y 45y 50p 60xp 70xp 80xp 90xp 100xp 110 120 135 150 165 180 200 220 245 270 300 330
@@ -57,6 +57,8 @@ module Engine
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
         P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
+
+        LOCAL_TRAIN_CAN_CARRY_MAIL = true
 
         # Don't run 1822 specific code for the LCDR
         COMPANY_LCDR = nil
@@ -438,29 +440,8 @@ module Engine
           end
         end
 
-        def setup
-          # Setup the bidding token per player
-          @bidding_token_per_player = init_bidding_token
-
-          # Initialize the player depts, if player have to take an emergency loan
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
-
-          # Randomize and setup the companies
-          setup_companies
-
-          # Initialize the stock round choice for P7
+        def setup_game_specific
           @p7_choice = nil
-
-          # Actual bidbox setup happens in the stock round.
-          @bidbox_minors_cache = []
-
-          # Setup exchange token abilities for all corporations
-          setup_exchange_tokens
-
-          # Setup all the destination tokens, icons and abilities
-          setup_destinations
-
-          # Setup the NdeM
           setup_ndem
         end
 
@@ -762,6 +743,10 @@ module Engine
         end
 
         def finalize_end_game_values; end
+
+        def num_certs_modification(_entity)
+          0
+        end
 
         def reduced_bundle_price_for_market_drop(bundle)
           bundle.share_price = @stock_market.find_share_price(bundle.corporation, [:left] * bundle.num_shares).price

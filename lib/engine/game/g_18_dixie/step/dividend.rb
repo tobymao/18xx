@@ -12,6 +12,14 @@ module Engine
           DIVIDEND_TYPES = %i[payout withhold].freeze
           include Engine::Step::HalfPay
           include Engine::Step::MinorHalfPay
+          def rust_obsolete_trains!(entity)
+            rusted_trains = entity.trains.select(&:obsolete).each do |train|
+              @game.remove_spare_part(train)
+              @game.rust(train)
+            end
+
+            @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
+          end
         end
       end
     end

@@ -252,10 +252,10 @@ module Engine
       end
     end
 
-    def place_token(token, logo: nil)
+    def place_token(token, logo: nil, preprinted: true)
       token.place(self)
       @tokens << token
-      icon = Part::Icon.new('', token.corporation.id, true)
+      icon = Part::Icon.new('', token.corporation.id, true, false, preprinted)
       icon.image = logo || token.corporation.logo
       @tile.icons << icon
     end

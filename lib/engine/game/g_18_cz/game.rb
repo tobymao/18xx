@@ -22,7 +22,7 @@ module Engine
                         yellow: '#ffe600',
                         lightRed: '#F3B1B3')
 
-        CURRENCY_FORMAT_STR = '%d K'
+        CURRENCY_FORMAT_STR = '%s K'
 
         BANK_CASH = 99_999
 
@@ -433,7 +433,7 @@ module Engine
         end
 
         def status_array(corporation)
-          return unless @vaclavs_corporations.include?(corporation) && @round.current_entity&.player?
+          return if !@vaclavs_corporations.include?(corporation) || !@round.current_entity&.player?
 
           ["Track: #{player_for_track(corporation).name}", "Token: #{player_for_token(corporation).name}"]
         end
@@ -673,12 +673,6 @@ module Engine
           runnable = super
 
           runnable.select { |item| train_of_size?(item, entity.type) }
-        end
-
-        def format_currency(val)
-          return format('%0.1f K', val) if (val - val.to_i).positive?
-
-          self.class::CURRENCY_FORMAT_STR % val
         end
 
         def show_progress_bar?

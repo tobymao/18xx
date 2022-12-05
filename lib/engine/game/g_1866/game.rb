@@ -34,7 +34,7 @@ module Engine
         }.freeze
 
         BANKRUPTCY_ALLOWED = false
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
         BANK_CASH = 99_999
 
         CAPITALIZATION = :incremental
@@ -984,12 +984,6 @@ module Engine
 
         def float_str(_entity)
           ''
-        end
-
-        def format_currency(val)
-          return super if (val % 1).zero?
-
-          format('£%.1<val>f', val: val)
         end
 
         def game_cert_limit

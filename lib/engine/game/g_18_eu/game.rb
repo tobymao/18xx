@@ -221,11 +221,6 @@ module Engine
           @minors + @corporations
         end
 
-        def player_sort(entities)
-          minors, majors = entities.partition(&:minor?)
-          (minors.sort_by { |m| m.name.to_i } + majors.sort_by(&:name)).group_by(&:owner)
-        end
-
         def place_home_token(corporation)
           return if corporation.placed_tokens.any?
 

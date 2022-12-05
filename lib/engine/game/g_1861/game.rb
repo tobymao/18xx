@@ -9,7 +9,7 @@ module Engine
       class Game < G1867::Game
         include_meta(G1861::Meta)
 
-        CURRENCY_FORMAT_STR = '%d₽'
+        CURRENCY_FORMAT_STR = '%s₽'
 
         TILES = {
           '3' => 2,

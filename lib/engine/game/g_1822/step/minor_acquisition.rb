@@ -144,6 +144,8 @@ module Engine
             @game.close_corporation(@selected_minor)
           end
 
+          def extra_transfers(minor, entity); end
+
           def acquire_entity_minor(entity, token_choice)
             share_difference = pay_choice_difference(entity, @selected_minor, @selected_share_num)
             log_choice = pay_choice_str(entity, @selected_minor, @selected_share_num, show_owner_name: true)
@@ -169,6 +171,9 @@ module Engine
 
             trains = @game.transfer(:trains, @selected_minor, entity).map(&:name)
             receiving << "trains (#{trains})" if trains.any?
+
+            extra = extra_transfers(@selected_minor, entity)
+            receiving << extra if extra
 
             case token_choice
             when 'replace'

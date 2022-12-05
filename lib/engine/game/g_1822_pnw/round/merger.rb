@@ -39,6 +39,13 @@ module Engine
             skip_steps
             next_entity! if finished?
           end
+
+          def after_process(action)
+            return if action.free?
+            return if active_step
+
+            next_entity!
+          end
         end
       end
     end

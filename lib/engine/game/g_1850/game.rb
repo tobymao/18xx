@@ -132,7 +132,7 @@ module Engine
 
         # Everything below this line is also included in 1870's game.rb file
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000
 

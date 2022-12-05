@@ -41,7 +41,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 15_000
 
@@ -1559,7 +1559,7 @@ module Engine
         end
 
         def check_london(visits)
-          return unless london_hex?(visits.first) || london_hex?(visits.last)
+          return if !london_hex?(visits.first) && !london_hex?(visits.last)
 
           raise GameError, 'Train cannot visit London w/o link' unless london_link?(current_entity)
         end
@@ -2215,8 +2215,8 @@ module Engine
         def remove_colocated_tokens(survivor, nonsurvivor)
           @hexes.each do |hex|
             hex.tile.cities.each do |city|
-              next unless (city.tokened_by?(survivor) && city.tokened_by?(nonsurvivor)) ||
-                  (city.tokened_by?(nonsurvivor) && london_link?(survivor) && LONDON_TOKEN_HEXES.include?(hex.id))
+              next if !(city.tokened_by?(survivor) && city.tokened_by?(nonsurvivor)) &&
+                  !(city.tokened_by?(nonsurvivor) && london_link?(survivor) && LONDON_TOKEN_HEXES.include?(hex.id))
 
               token = city.tokens.find { |t| t&.corporation == nonsurvivor }
               token.destroy!

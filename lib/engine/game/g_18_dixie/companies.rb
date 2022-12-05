@@ -111,11 +111,12 @@ module Engine
             sym: 'P7',
             value: 100,
             revenue: 15,
-            desc: 'The owner of this Private Company may assign one or two spare parts tokens to any existing trains owned by '\
+            desc: 'The owner of this Private Company may assign one or two spare parts tokens (represented on the site by '\
+                  'appending to the train name a ⛭ for each spare part like 5⛭, 3⛭⛭, or 5⛭⛭⛭) to any existing trains owned by '\
                   'a Corporation of which they are the president. This must be done during the Corporation\'s operating turn. '\
                   'The spare parts tokens give the trains delayed obsolecense as described in section [4.6]. If assigning two '\
                   'tokens, both tokens must be assigned at the same time and to the same non-permanent train. Assigning either '\
-                  'or both tokens closes the Private Company. THese tokens cannot be reassigned to another train but the trains '\
+                  'or both tokens closes the Private Company. These tokens cannot be reassigned to another train but the trains '\
                   'can transfer to the SCL or ICG if previously assigned to a train owned by a predecessor. Once assigned '\
                   'to a train, that train cannot be sold to any other Corporation.',
             abilities: [

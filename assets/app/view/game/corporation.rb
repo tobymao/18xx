@@ -174,6 +174,11 @@ module View
           children << h(:img, logo_props)
         end
 
+        if @game.second_icon(@corporation)
+          logo_props[:attrs][:src] = logo_for_user(@game.second_icon(@corporation))
+          children << h(:img, logo_props)
+        end
+
         h('div.corp__title', title_row_props, children)
       end
 

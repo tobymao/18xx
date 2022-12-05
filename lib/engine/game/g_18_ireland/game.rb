@@ -38,7 +38,7 @@ module Engine
           { lay: true, upgrade: true },
           { lay: :not_if_upgraded, upgrade: true, cost: 20, upgrade_cost: 30 },
         ].freeze
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 4000
 
@@ -564,6 +564,10 @@ module Engine
             .stock_market
             .par_prices
             .select { |p| p.price * 2 <= entity.cash }
+        end
+
+        def ipo_name(_entity = nil)
+          'Treasury'
         end
 
         def after_buy_company(player, company, price)

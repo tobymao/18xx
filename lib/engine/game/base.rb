@@ -109,7 +109,7 @@ module Engine
 
       BANK_CASH = 12_000
 
-      CURRENCY_FORMAT_STR = '$%d'
+      CURRENCY_FORMAT_STR = '$%s'
 
       STARTING_CASH = {}.freeze
 
@@ -221,6 +221,9 @@ module Engine
 
       # if sold more than needed then cannot then buy a cheaper train in the depot.
       EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = false
+
+      # loans taken during ebuy can lead to receviership
+      EBUY_CORP_LOANS_RECEIVERSHIP = false
 
       # when is the home token placed? on...
       # par
@@ -664,27 +667,13 @@ module Engine
       # Initialize actions respecting the undo state
       def initialize_actions(actions, at_action: nil)
         @loading = true unless @strict
-        filtered_actions, active_undos = self.class.filtered_actions(actions)
+        @filtered_actions, active_undos = self.class.filtered_actions(actions)
 
         # Store all actions for history navigation
         @raw_all_actions = actions
-        filtered_actions.each.with_index { |action, index| @raw_all_actions[index]['skip'] = true unless action }
 
         @undo_possible = false
-        # replay all actions with a copy
-        filtered_actions.each.with_index do |action, index|
-          next if @exception
-          break if at_action && action && action['id'] > at_action
-
-          if action
-            action = action.copy(self) if action.is_a?(Action::Base)
-
-            process_action(action)
-          else
-            # Restore the original action to the list to ensure action ids remain consistent but don't apply them
-            @raw_actions << actions[index]
-          end
-        end
+        process_to_action(at_action || actions.last['id']) unless actions.empty?
         @redo_possible = active_undos.any?
         @loading = false
       end
@@ -736,7 +725,7 @@ module Engine
       end
 
       def process_single_action(action)
-        if action.user && action.user != acting_for_player(action.entity&.player)&.id
+        if action.user && action.user != acting_for_player(action.entity&.player)&.id && action.type != 'message'
           @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
         end
 
@@ -830,27 +819,28 @@ module Engine
 
       def previous_action_id_from(action_id)
         # Skips messages and undone actions
-        @raw_all_actions.reverse.find { |a| a['id'] < action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id') || 0
+        @filtered_actions.reverse.find { |a| a && a['id'] < action_id && a['type'] != 'message' }&.fetch('id') || 0
       end
 
       def next_action_id_from(action_id)
         # Skips messages and undone actions
-        @raw_all_actions.find { |a| a['id'] > action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id')
+        @filtered_actions.find { |a| a && a['id'] > action_id && a['type'] != 'message' }&.fetch('id')
       end
 
       def process_to_action(id)
         last_processed_action_id = @raw_actions.last&.fetch('id') || 0
-        @raw_all_actions.each do |action|
+        @raw_all_actions.each.with_index do |action, index|
+          next if @exception
           next if action['id'] <= last_processed_action_id
           break if action['id'] > id
 
-          if action['skip']
-            @raw_actions << action
-          else
+          if @filtered_actions[index]
             process_action(action)
             # maintain original action ids
             @raw_actions.last['id'] = action['id']
             @last_processed_action = action['id']
+          else
+            @raw_actions << action
           end
         end
       end
@@ -901,6 +891,11 @@ module Engine
       def rust?(train, purchased_train)
         train.rusts_on == purchased_train.sym ||
           (train.obsolete_on == purchased_train.sym && @depot.discarded.include?(train))
+      end
+
+      # Before obsoleting, check if this specific train should obsolete.
+      def obsolete?(train, purchased_train)
+        train.obsolete_on == purchased_train.sym
       end
 
       def shares
@@ -992,7 +987,7 @@ module Engine
             when :operate
               next unless corporation.operated?
             when :p_any_operate
-              next unless corporation.operated? || corporation.president?(player)
+              next if !corporation.operated? && !corporation.president?(player)
             end
 
             value += value_for_dumpable(player, corporation)
@@ -1387,7 +1382,7 @@ module Engine
       end
 
       def get(type, id)
-        return nil unless type && id
+        return nil if !type || !id
 
         send("#{type}_by_id", id)
       end
@@ -1431,6 +1426,10 @@ module Engine
         raise NotImplementedError
       end
 
+      def home_token_can_be_cheater
+        false
+      end
+
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
         # If a corp has laid it's first token assume it's their home token
@@ -1472,10 +1471,14 @@ module Engine
         cities = tile.cities
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
         token = corporation.find_token_by_type
-        return unless city.tokenable?(corporation, tokens: token)
 
-        @log << "#{corporation.name} places a token on #{hex.name}"
-        city.place_token(corporation, token)
+        if city.tokenable?(corporation, tokens: token)
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token)
+        elsif home_token_can_be_cheater
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token, cheater: true)
+        end
       end
 
       def graph_for_entity(_entity)
@@ -1574,12 +1577,13 @@ module Engine
         # correct label?
         return false unless upgrades_to_correct_label?(from, to)
 
-        # honors existing town/city counts?
+        # honors existing town/city counts and connections?
         # - allow labelled cities to upgrade regardless of count; they're probably
         #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
         # - TODO: account for games that allow double dits to upgrade to one town
         return false if from.towns.size != to.towns.size
-        return false if !from.label && from.cities.size != to.cities.size
+        return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
+        return false if from.cities.size > 1 && to.cities.size > 1 && !from.city_town_edges_are_subset_of?(to.city_town_edges)
 
         # but don't permit a labelled city to be downgraded to 0 cities.
         return false if from.label && !from.cities.empty? && to.cities.empty?
@@ -1588,6 +1592,10 @@ module Engine
         return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
 
         true
+      end
+
+      def upgrade_ignore_num_cities(_from)
+        false
       end
 
       def upgrades_to_correct_color?(from, to, selected_company: nil)
@@ -1983,7 +1991,7 @@ module Engine
         owners = Hash.new(0)
 
         trains.each do |t|
-          next if t.obsolete || t.obsolete_on != train.sym
+          next if t.obsolete || !obsolete?(t, train)
 
           obsolete_trains << t.name
           t.obsolete = true
@@ -2014,7 +2022,13 @@ module Engine
 
       def progress_information; end
 
-      def assignment_tokens(assignment)
+      def assignment_tokens(assignment, simple_logos = false)
+        if assignment.is_a?(Engine::Corporation)
+          return assignment.simple_logo if simple_logos && assignment.simple_logo
+
+          return assignment.logo
+        end
+
         self.class::ASSIGNMENT_TOKENS[assignment]
       end
 
@@ -2765,7 +2779,7 @@ module Engine
       end
 
       def player_sort(entities)
-        entities.sort_by(&:name).group_by(&:owner)
+        entities.sort_by { |entity| [operating_order.index(entity) || Float::INFINITY, entity.name] }.group_by(&:owner)
       end
 
       def bank_sort(corporations)
@@ -2996,6 +3010,8 @@ module Engine
       def force_unconditional_stock_pass?
         false
       end
+
+      def second_icon(corporation); end
     end
   end
 end

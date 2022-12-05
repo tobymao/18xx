@@ -14,7 +14,7 @@ module Engine
 
         attr_reader :merged_major
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 9000
 
@@ -725,7 +725,7 @@ module Engine
           @cert_limit_adjust ||= 0
         end
 
-        def cert_limit
+        def cert_limit(_player = nil)
           super + cert_limit_adjust
         end
 

@@ -15,7 +15,7 @@ module Engine
 
         attr_accessor :sell_queue, :connection_run, :reissued
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000
 
@@ -261,12 +261,6 @@ module Engine
 
         def can_hold_above_corp_limit?(_entity)
           true
-        end
-
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
         end
 
         def revenue_for(route, stops)

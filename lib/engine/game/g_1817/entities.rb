@@ -9,7 +9,7 @@ module Engine
             name: 'P4 - Pittsburgh Steel Mill',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place special Pittsburgh (F13) yellow tile during '\
+            desc: 'Owning corp may place a special yellow tile (#X00) on Pittsburgh (F13) during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
                   'reserved, and the power is lost if another corp builds there first.',
             sym: 'PSM',
@@ -330,7 +330,7 @@ module Engine
             name: 'P16 - Buffalo Rail Center',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place special Buffalo (C14) yellow tile during '\
+            desc: 'Owning corp may place a special yellow tile (#X00) on Buffalo (C14) during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
                   'reserved, and the power is lost if another corp builds there first.',
             sym: 'P16',
@@ -353,7 +353,7 @@ module Engine
             name: 'P17 - Toledo Industry',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place special Toledo (D7) yellow tile during '\
+            desc: 'Owning corp may place a special yellow tile (#X00) on Toledo (D7) during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
                   'reserved, and the power is lost if another corp builds there first.',
             sym: 'P17',
@@ -471,7 +471,7 @@ module Engine
             name: 'P24 - Indianapolis Market',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place special Indianapolis (F3) yellow tile during '\
+            desc: 'Owning corp may place a special (#X00) yellow tile on Indianapolis (F3) during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
                   'reserved, and the power is lost if another corp builds there first.',
             sym: 'P24',

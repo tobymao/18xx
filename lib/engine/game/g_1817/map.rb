@@ -34,7 +34,7 @@ module Engine
           '619' => 'unlimited',
           'X00' =>
           {
-            'count' => 'unlimited',
+            'count' => 1,
             'color' => 'yellow',
             'code' =>
             'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',

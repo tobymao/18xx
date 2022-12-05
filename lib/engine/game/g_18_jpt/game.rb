@@ -28,7 +28,7 @@ module Engine
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy_sell
         TILE_RESERVATION_BLOCKS_OTHERS = true
-        CURRENCY_FORMAT_STR = '¥%d'
+        CURRENCY_FORMAT_STR = '¥%s'
 
         BANK_CASH = 12_000
 
@@ -208,7 +208,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18JPT::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -217,7 +217,7 @@ module Engine
           super
 
           # Place second starting token for TR
-          return unless corporation == tr && !corporation.tokens[1]&.used
+          return if corporation != tr || corporation.tokens[1]&.used
 
           @hexes.find { |hex| hex.name == TR_SECOND_STARTING_TOKEN }.tile.cities.first.place_token(tr, tr.next_token)
         end
@@ -250,17 +250,11 @@ module Engine
           str
         end
 
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
-        end
-
         def tile_lays(entity)
           # Enable double tile lay for TR after ability activation
           return self.class::DOUBLE_TILE_LAYS if ABILITY_DOUBLE_TILE_LAY.owner == entity
 
-          return self.class::TILE_LAYS unless entity == tc && @round.num_additional_lays.positive?
+          return self.class::TILE_LAYS if entity != tc || !@round.num_additional_lays.positive?
 
           # Each tile lay on hex with a town provides additional tile lay to TC
           Array.new(1 + @round.num_additional_lays) { { lay: true, upgrade: true } }

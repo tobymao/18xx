@@ -44,7 +44,7 @@ class Api
             game.to_h
           end
 
-          not_authorized! unless users.any? { |u| u.id == user.id } || game.user_id == user.id
+          not_authorized! if users.none? { |u| u.id == user.id } && game.user_id != user.id
 
           # POST '/api/game/<game_id>/action'
           r.is 'action' do
@@ -75,8 +75,23 @@ class Api
                 game.acting = acting.map(&:id)
                 acting.delete(user)
 
+                if game.status != 'finished' && meta['game_status'] == 'finished'
+                  meta['finished_at'] = Time.now
+                  meta['manually_ended'] = true unless meta.key?('manually_ended')
+
+                  # If the game_result keys are not user ids, fix them up here
+                  if meta['game_result'].keys.any? { |key| key.to_i.to_s != key }
+                    meta['game_result'].transform_keys! { |name| game.players.find { |p| p.name == name }.id.to_s }
+                  end
+                else
+                  meta['finished_at'] = nil
+                  meta['manually_ended'] = nil
+                end
+
                 game.result = meta['game_result']
                 game.status = meta['game_status']
+                game.finished_at = meta['finished_at']
+                game.manually_ended = meta['manually_ended']
 
                 game.save
               else
@@ -209,6 +224,8 @@ class Api
       game.status = 'finished'
     else
       game.result = {}
+      game.finished_at = nil
+      game.manually_ended = nil
       game.status = 'active'
     end
 

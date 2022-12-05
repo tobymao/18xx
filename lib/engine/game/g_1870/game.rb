@@ -20,7 +20,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000
 
@@ -723,12 +723,6 @@ module Engine
 
         def can_hold_above_corp_limit?(_entity)
           true
-        end
-
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
         end
 
         def home_hex(corporation)

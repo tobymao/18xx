@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Part
     class Stripes < Base
-      attr_reader :color
+      attr_accessor :color
 
       def initialize(color)
         @color = color

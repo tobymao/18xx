@@ -13,6 +13,7 @@ module Engine
         GAME_SUBTITLE = 'The Birth of American Railroads'
         GAME_DESIGNER = 'Scott Petersen'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Chesapeake'
+        GAME_LOCATION = 'Chesapeake Bay Region, USA'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://www.dropbox.com/s/x0dsehrxqr1tl6w/18Chesapeake_Rules.pdf'
         GAME_VARIANTS = [

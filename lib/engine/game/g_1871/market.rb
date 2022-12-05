@@ -16,10 +16,10 @@ module Engine
 
         # We use par, par_1, par_2, par_3 for our four par options. Use orange
         # as the 400+40 end square just cause...
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Par value until 5H',
-                                              par_1: 'Par value until 3+',
-                                              par_2: 'Par value until 7',
-                                              par_3: 'Par value',
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Starting price until 5H',
+                                              par_1: 'Starting price until 3+',
+                                              par_2: 'Starting price until 7',
+                                              par_3: 'Starting price',
                                               pays_bonus: 'Stock bumps increase run value by $40').freeze
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow,
                                                             par_1: :green,

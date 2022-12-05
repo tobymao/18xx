@@ -22,7 +22,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 10_000
 
@@ -1541,7 +1541,7 @@ module Engine
           # no need to check whether cities are tokened out because of the above
           super(route, nil)
 
-          return unless blocked && route.routes.any? { |r| r != route && tokened_out?(r) }
+          return if !blocked || route.routes.none? { |r| r != route && tokened_out?(r) }
 
           raise GameError, 'Only one train can bypass a tokened-out city'
         end

@@ -11,12 +11,12 @@ module Engine
       class Game < G1856::Game
         include_meta(G18KA::Meta)
 
-        CURRENCY_FORMAT_STR = '%dc'
+        CURRENCY_FORMAT_STR = '%sc'
 
         BANK_CASH = 12_000
 
         CERT_LIMIT = { 2 => 20, 3 => 13, 4 => 10 }.freeze
-        def cert_limit
+        def cert_limit(_player = nil)
           # cert limit isn't dynamic in 1836jr56
           CERT_LIMIT[@players.size]
         end
@@ -1091,14 +1091,6 @@ module Engine
           super if corp == national
 
           "../logos/18_ka/#{corp}"
-        end
-
-        def format_currency(val)
-          # On dividends per share can be a float
-          # But don't show decimal points on all
-          return super if (val % 1).zero?
-
-          format('$%.1<val>c', val: val)
         end
 
         #

@@ -7,8 +7,11 @@ module Engine
         CORPORATION_RESERVATION_COLOR = '#c6e9af'
 
         COMPANY_CHOICES = {
+          'P2' => %w[P2a P2b P2c],
           'P3' => %w[P3a P3b P3c],
           'P4' => %w[P4a P4b P4c],
+          'P5' => %w[P5a P5b P5c],
+          'P6' => %w[P6a P6b P6c],
         }.freeze
 
         def self.def_corporation(**kwargs)
@@ -23,6 +26,39 @@ module Engine
         end
 
         CORPORATIONS = [
+          # rubocop:disable Layout/LineLength
+          # always floats after auction
+          def_corporation(
+            sym: 'UP',
+            name: 'Union Pacific Railroad',
+            coordinates: 'M25',
+            color: '#006D9C',
+            shares: [20, 10, 10, 10, 10, 10, 10, 20],
+            abilities: [
+              {
+                type: 'base',
+                description: 'Ames Brothers 20% Certificate (d)',
+                desc_detail: "Before phase 5, as a Stock Round action, P11 may be exchanged for the 20% certificate (the bank capitalizes UP according to its share value at the time of exchange) and then one or both of the shares may immediately be sold (if one share is sold, the cert is exchanged with a 10% cert from the bank pool). At phase 5, the exchange (and capitalization) happens automatically, but no immediate sale is allowed. If P11 is unsold in the initial auction, UP may issue the 20% cert or players may buy it even if other shares are in UP's treasury. If the 20% cert is in the bank pool, UP may not redeem it, and players may only buy it if it is the last available UP certificate. If the UP presidency is dumped on the holder of the 20% cert holder, they may choose to exchange the 20% cert or two 10% certs for the president's cert. If they don't have two 10% certs, and there are sufficient shares in the bank pool, they may immediately buy shares from the bank pool (at the price UP was when the previous president sold) until they have two 10% certs, and then exchange those for the president's certificate. Shares bought in that way effectively subtract from the number of shares sold by the previous president, which may reduce the number of net rows the UP stock price drops due to the previous president's sale.",
+              },
+              {
+                type: 'base',
+                description: 'Credit Mobilier',
+                desc_detail: 'After yellow track is laid by any Railroad Company in the Credit Mobilier region (row J and south, column 23 and west, outlined in brown) which either extends track west from Omaha or east from Ogden, UP shareholders are paid the total terrain costs of the hex as dividends, even if the track was laid by the Railroad Company for free via a private company ability. Credit Mobilier closes at phase 5, or when the Golden Spike bonus is collected, whichever comes first.',
+                remove: '5',
+              },
+            ]
+          ),
+
+          # always bottom of stack of corporations
+          def_corporation(
+            sym: 'DPR',
+            name: 'Denver Pacific Railway and Telegraph Company',
+            coordinates: '',
+            color: '#4D2674',
+          ),
+
+          # all corporations after this point are randomly ordered
+
           def_corporation(
             sym: 'BH',
             name: 'Bighorn Railroad Company',
@@ -36,12 +72,19 @@ module Engine
             color: '#c00000',
           ),
           def_corporation(
-            sym: 'DPR',
-            name: 'Denver Pacific Railway and Telegraph Company',
-            coordinates: '',
-            color: '#4D2674',
+            sym: 'FE&MV',
+            name: 'Fremont, Elkhorn, & Missouri Valley Railroad',
+            coordinates: 'G27',
+            color: '#5E0000',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Purple Home Hex',
+                desc_detail: 'No other Railroad Company may run routes to Chadron (G27).',
+              },
+
+            ],
           ),
-          # rubocop:disable Layout/LineLength
           def_corporation(
             sym: 'LNP',
             name: 'Laramie, North Park and Pacific Railroad and Telegraph Company',
@@ -68,29 +111,17 @@ module Engine
           def_corporation(
             sym: 'RCL',
             name: 'Rapid City, Black Hills & Western Railroad Company',
-            coordinates: 'D28',
+            coordinates: 'C27',
             color: '#FFFFFF',
             text_color: 'black',
-          ),
-          def_corporation(
-            sym: 'UP',
-            name: 'Union Pacific Railroad',
-            coordinates: 'M25',
-            color: '#006D9C',
-            shares: [20, 10, 10, 10, 10, 10, 10, 20],
             abilities: [
               {
                 type: 'base',
-                description: 'Ames Brothers 20% Certificate',
-                desc_detail: "Before phase 5, as a Stock Round action, P10 may be exchanged for the 20% certificate (the bank capitalizes UP according to its share value at the time of exchange) and then one or both of the shares may immediately be sold (if one share is sold, the cert is exchanged with a 10% cert from the bank pool). At phase 5, the exchange (and capitalization) happens automatically, but no immediate sale is allowed. If P10 is unsold in the initial auction, UP may issue the 20% cert or players may buy it even if other shares are in UP's treasury. If the 20% cert is in the bank pool, UP may not redeem it, and players may only buy it if it is the last available UP certificate. If the UP presidency is dumped on the holder of the 20% cert holder, they may choose to exchange the 20% cert or two 10% certs for the president's cert. If they don't have two 10% certs, and there are sufficient shares in the bank pool, they may immediately buy shares from the bank pool (at the price UP was when the previous president sold) until they have two 10% certs, and then exchange those for the president's certificate. Shares bought in that way effectively subtract from the number of shares sold by the previous president, which may reduce the number of net rows the UP stock price drops due to the previous president's sale.",
+                description: 'Purple Home Hex',
+                desc_detail: 'No other Railroad Company may run routes to Rapid City (C27).',
               },
-              {
-                type: 'base',
-                description: 'Credit Mobilier',
-                desc_detail: 'After yellow track is laid by any Railroad Company in the Credit Mobilier region (row J and south, column 23 and west, outlined in brown) which either extends track west from Omaha or east from Ogden, UP shareholders are paid the total terrain costs of the hex as dividends, even if the track was laid by the Railroad Company for free via a private company ability. Credit Mobilier closes at phase 5, or when the Golden Spike bonus is collected, whichever comes first.',
-                remove: '5',
-              },
-            ]
+
+            ],
           ),
           # rubocop:enable Layout/LineLength
           def_corporation(
@@ -113,23 +144,53 @@ module Engine
             sym: 'P1',
             value: 40,
             revenue: 10,
-            abilities: [{ type: 'close', on_phase: '5' }],
+            abilities: [{ type: 'close', on_phase: '5' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: 'Closes at phase 5, or the Golden Spike.',
           },
           {
-            name: 'P2 Wylie Permanent Camping Company',
+            name: 'P2 Supplier',
             sym: 'P2',
             value: 45,
             revenue: 10,
+            abilities: [{ type: 'close', on_phase: '5' }],
+            desc: 'Buyer or auction winner chooses one of Wylie Permanent Camping Company '\
+                  '($10 bonus for running routes to Yellowstone--C5 or D4), Trabing Brothers Frontier Fort Resupply '\
+                  '($10 bonus for running routes to Forts), or Midwest Oil Refinery '\
+                  '($10 bonus for any train owned by any Railroad Company running a route to Casper--H18)',
+          },
+          {
+            name: 'P2a Wylie Permanent Camping Company',
+            sym: 'P2a',
+            value: 45,
+            revenue: 10,
             abilities: [{ type: 'close', on_phase: '5' },
-                        { type: 'revenue_change', revenue: 0, when: 'sold' }],
-            desc: 'Revenue changes to $0 when bought by a Railroad. Provides '\
-                  'its owning Railroad Company a +$10 revenue bonus for routes '\
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            desc: 'Provides its owning Railroad Company a +$10 revenue bonus for routes '\
                   'starting or ending at either of the accessible Yellowstone entrances. '\
                   'Closes at phase 5.',
           },
           {
-            name: 'P3 Developer',
+            name: 'P2b Trabing Brothers Frontier Fort Resupply',
+            sym: 'P2b',
+            value: 45,
+            revenue: 10,
+            abilities: [{ type: 'close', on_phase: '5' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            desc: 'Owning Railroad Company receives a +$10 revenue bonus for each fort served. Closes at phase 5.',
+          },
+          {
+            name: 'P2c Midwest Oil Refinery',
+            sym: 'P2c',
+            value: 45,
+            revenue: 10,
+            abilities: [{ type: 'close', on_phase: '5' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            desc: 'Every train which serves Casper (H18) triggers a $10 payment '\
+                  'to the owner of this private company. Closes at phase 5.',
+          },
+          {
+            name: 'P3 Developer I',
             sym: 'P3',
             value: 70,
             revenue: 10,
@@ -143,7 +204,8 @@ module Engine
             sym: 'P3a',
             value: 70,
             revenue: 10,
-            abilities: [{ type: 'close', on_phase: '5' }, { type: 'no_buy' }],
+            abilities: [{ type: 'close', on_phase: '5' }, { type: 'no_buy' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: 'Comes with black coal DT, usable in phases 2-4. Can be placed '\
                   'or moved for terrain cost. May exceed hex\'s coal DT limit. '\
                   'No RR buy-in. Closes at phase 5, removing DT from the game.',
@@ -153,7 +215,8 @@ module Engine
             sym: 'P3b',
             value: 70,
             revenue: 10,
-            abilities: [{ type: 'close', on_phase: '8' }, { type: 'no_buy' }],
+            abilities: [{ type: 'close', on_phase: '8' }, { type: 'no_buy' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: 'Comes with Oil DT available in phase 5. May exceed hex\'s oil '\
                   'DT limit. No RR buy-in. Closes at phase 8, removing DT from the game.',
           },
@@ -162,12 +225,13 @@ module Engine
             sym: 'P3c',
             value: 70,
             revenue: 10,
-            abilities: [{ type: 'close', on_phase: '6' }, { type: 'no_buy' }],
+            abilities: [{ type: 'close', on_phase: '6' }, { type: 'no_buy' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: 'Gives a $20 discount to terrain costs for each Development Token '\
                   'placement. No RR buy-in. Closes at phase 6.',
           },
           {
-            name: 'P4 Surveyor',
+            name: 'P4 Surveyor I',
             sym: 'P4',
             value: 90,
             revenue: 15,
@@ -193,7 +257,8 @@ module Engine
                           tiles: %w[3 4 5 6 7 8 9 57 58 YC YL YG Y5b Y5B Y6b Y6B Y57b Y57B],
                           special: false,
                           closed_when_used_up: true,
-                        }],
+                        },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: 'Allows placement of up to three yellow tiles ignoring terrain costs '\
                   'as a free action during tile laying phase. Closes on tile placement or at phase 5.',
           },
@@ -206,7 +271,8 @@ module Engine
                         {
                           type: 'tile_discount',
                           discount: 15,
-                        }],
+                        },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: 'Gives owning Railroad Company a $15 discount to terrain costs for '\
                   'each tile lay. Closes at phase 6.',
           },
@@ -226,13 +292,24 @@ module Engine
                           special: false,
                           hexes: [],
                           tiles: [],
-                        }],
+                        },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: 'Gives owning Railroad Company a $60 discount for one tile lay per OR. Closes at phase 6.',
           },
-
           {
-            name: 'P5 John S. "General Jack" Casement',
+            name: 'P5 Surveyor II',
             sym: 'P5',
+            value: 100,
+            revenue: 20,
+            abilities: [{ type: 'close', on_phase: '6' }],
+            desc: 'Buyer or auction winner chooses one of "General Jack" (three '\
+                  'time use, 3 free tile laying actions), Credit Foncier of America (earn money '\
+                  'for each tile lay), or Pacific Railroad Acts of 1862 and 1864 (terrain costs '\
+                  'are halved, including for DTs when player-owned)',
+          },
+          {
+            name: 'P5a John S. "General Jack" Casement',
+            sym: 'P5a',
             value: 100,
             revenue: 20,
             abilities: [{ type: 'close', on_phase: '6' },
@@ -247,29 +324,110 @@ module Engine
                           tiles: [],
                           special: false,
                           closed_when_used_up: true,
-                        }],
+                        },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: 'Grants owning Railroad Company one extra tile lay/upgrade. '\
                   'May be used 3 times, then closes. Terrain or upgrade costs '\
                   'for this action are ignored. Closes at phase 6.',
           },
           {
-            name: 'P6 American Locomotive Corporation 4-8-8-4 "Big Boy" Wasatch Class Locomotive',
-            sym: 'P6',
+            name: 'P5b Credit Foncier of America',
+            sym: 'P5b',
             value: 100,
             revenue: 20,
-            abilities: [{ type: 'close', on_phase: '8' }],
+            abilities: [{ type: 'close', on_phase: '6' },
+                        { type: 'revenue_change', revenue: 0o0, when: 'sold' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            desc: 'Owning Railroad Company is paid per tile it places: $40/city, $30/Boomtown or '\
+                  'Boom City, $10/yellow town. $20 revenue is only paid while owned by a player. Closes at phase 6.',
+          },
+          {
+            name: 'P5c Pacific Railroad Acts of 1862 and 1864',
+            sym: 'P5c',
+            value: 100,
+            revenue: 20,
+            abilities: [{ type: 'close', on_phase: '6' },
+                        { type: 'base', description: 'P5c 50% terrain/upgrade discount', when: 'sold' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            desc: 'While player-owned, DT terrain costs are halved; while Railroad Company-owned, tile placement '\
+                  'terrain or upgrade costs are halved. Closes at phase 6.',
+          },
+          {
+            name: 'P6 Developer II',
+            sym: 'P6',
+            value: 100,
+            revenue: 10,
+            abilities: [
+              { type: 'close', on_phase: '8' },
+              { type: 'no_buy' },
+            ],
+            desc: 'Buyer or auction winner chooses one of the Coal Strikebreakers (extra Coal DT '\
+                  'and placement for each phase), Teapot Dome Oil Leases (Oil DTs add +$5 bonus '\
+                  'revenue), or Edward Ivinson (NO BUST token prevents a Boom City from BUSTing to '\
+                  'a Boomtown). Closes at phase 8.',
+          },
+          {
+            name: 'P6a James E. Shepperson\'s Coal Strikebreakers',
+            sym: 'P6a',
+            value: 100,
+            revenue: 10,
+            abilities: [{ type: 'close', on_phase: '8' },
+                        { type: 'no_buy' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            desc: 'The owning player receives one extra Coal DT of each color (the extra gray cube '\
+                  'remains even when this closes). In first Development Round of each phase, owning '\
+                  'player may place one extra Coal DT. No RR buy-in. Closes at phase 8.',
+          },
+          {
+            name: 'P6b Teapot Dome Oil Leases',
+            sym: 'P6b',
+            value: 100,
+            revenue: 10,
+            abilities: [{ type: 'close', on_phase: '8' },
+                        { type: 'no_buy' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            desc: 'For each of the owning player\'s Oil DTs adjacent to/in a Boom City, add $5 revenue '\
+                  'to that city. Only applies to the owning player\'s Railroad Companies. No RR buy-in. Closes at phase 8.',
+          },
+          {
+            name: 'P6c Edward Ivinson, Laramie Banker and Philanthropist',
+            sym: 'P6c',
+            value: 100,
+            revenue: 10,
+            abilities: [{ type: 'close', on_phase: '8' },
+                        { type: 'no_buy' },
+                        {
+                          type: 'assign_hexes',
+                          when: 'any',
+                          hexes: %w[B10 C11 C17 D12 D20 D24 F18 F22 H22 H6 I3 I9 J2 K15 K17 L8 L10],
+                          count: 1,
+                          owner_type: 'player',
+                        },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            desc: 'Comes with a NO BUST token which may be placed on Boomtown/Boom City hex other '\
+                  'than J12, J20, or the Pure Oil Camp hex. The Boom City does not BUST, but '\
+                  'revenue changes as normal. No RR buy-in. Closes at phase 8.',
+          },
+          {
+            name: 'P7 American Locomotive Corporation 4-8-8-4 "Big Boy" Wasatch Class Locomotive',
+            sym: 'P7',
+            value: 100,
+            revenue: 20,
+            abilities: [{ type: 'close', on_phase: '8' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: '[+1+1] token extends a train by 1 city and 1 town. The token '\
                   'is assigned to a train when a Railroad Company buys this '\
                   'private company, and may be moved to another train during the '\
                   'train purchasing phase. Closes at phase 8.',
           },
           {
-            name: 'P7 The Pure Oil Camp',
-            sym: 'P7',
+            name: 'P8 The Pure Oil Camp',
+            sym: 'P8',
             value: 120,
             revenue: 20,
             abilities: [
               { type: 'close', on_phase: '7' },
+              { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] },
               {
                 type: 'assign_hexes',
                 owner_type: 'corporation',
@@ -298,21 +456,22 @@ module Engine
                   'becomes a Ghost Town.',
           },
           {
-            name: "P8 Laramie, Hahn's Peak & Pacific Railway",
-            sym: 'P8',
+            name: "P9 Laramie, Hahn's Peak & Pacific Railway",
+            sym: 'P9',
             value: 150,
             revenue: 40,
             abilities: [{ type: 'revenue_change', revenue: 40, on_phase: '3' },
                         { type: 'revenue_change', revenue: 0, on_phase: '5' },
-                        { type: 'assign_corporation', owner_type: 'player' }],
+                        { type: 'assign_corporation', owner_type: 'player' },
+                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: 'Pays $40 revenue ONLY in green phases. Closes, becomes '\
                   'LHP train (permanent 2+1) at phase 5. If owned by a player at '\
                   'the start of phase 5, the LHP train may be immediately assigned '\
                   'to a Railroad Company for no compensation.',
           },
           {
-            name: 'P9 Thomas C. Durant',
-            sym: 'P9',
+            name: 'P10 Thomas C. Durant',
+            sym: 'P10',
             value: 180,
             revenue: 0,
             abilities: [{ type: 'shares', shares: 'UP_0' }],
@@ -321,8 +480,8 @@ module Engine
                   'Closes at end of private companies auction.',
           },
           {
-            name: 'P10 Oakes and Oliver Ames, Jr.',
-            sym: 'P10',
+            name: 'P11 Oakes and Oliver Ames, Jr.',
+            sym: 'P11',
             value: 200,
             revenue: 30,
             abilities: [{ type: 'no_buy' },

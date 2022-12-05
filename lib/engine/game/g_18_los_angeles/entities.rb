@@ -325,7 +325,7 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$60 Culver City (C4) token',
+                description: 'Reserved $40/$100 Culver City (C4) token',
                 hexes: ['C4'],
                 price: 40,
                 teleport_price: 100,

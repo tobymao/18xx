@@ -184,6 +184,8 @@ module Engine
           end
 
           def process_bid(action)
+            raise GameError, "Minimum bid is #{min_player_bid}" if action.price < min_player_bid
+
             if action.price > max_bid_for_token(@remaining_bidders[0])
               raise GameError,
                     "#{@remaining_choosers[0].name} can bid a maximum of " \

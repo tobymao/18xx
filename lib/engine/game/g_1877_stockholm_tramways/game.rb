@@ -26,7 +26,7 @@ module Engine
 
         register_colors(black: '#000000')
 
-        CURRENCY_FORMAT_STR = '%dkr'
+        CURRENCY_FORMAT_STR = '%skr'
 
         BANK_CASH = 99_999
 

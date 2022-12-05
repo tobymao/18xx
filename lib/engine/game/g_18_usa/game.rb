@@ -17,7 +17,7 @@ module Engine
         attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles,
                     :mexico_hexes
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 99_999
 
@@ -436,7 +436,7 @@ module Engine
 
             @log << "#{ability.owner.name} contributes the #{resource} resource"
             ability.use!
-            next unless ability.count&.zero? && ability.closed_when_used_up
+            next if !ability.count&.zero? || !ability.closed_when_used_up
 
             company = ability.owner
             @log << "#{company.name} closes"

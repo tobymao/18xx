@@ -17,7 +17,7 @@ module Engine
         include Map
         include CitiesPlusTownsRouteDistanceStr
 
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 10_000
 
@@ -48,11 +48,17 @@ module Engine
 
         EBUY_PRES_SWAP = false
 
+        EBUY_CAN_SELL_SHARES = false
+
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
+        EBUY_CORP_LOANS_RECEIVERSHIP = true
+
         DISCARDED_TRAINS = :remove
+
+        TRACK_RESTRICTION = :permissive
 
         MARKET = [
           %w[0c
@@ -141,6 +147,19 @@ module Engine
           stock_market: 'Corporation hit max stock value or Bank of England has given 16 or more loans',
           custom: 'Fifth corporation is in receivership',
         }.freeze
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['Loan taken - Corporation', '2 ←'],
+            ['Additional loans taken during forced train buy', '3 ←'],
+            ['Loan granted - BOE', '1 →'],
+            ['One or more shares sold (Except BOE)', '1 ↓'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+          ]
+        end
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or, custom: :full_or }.freeze
 
@@ -312,7 +331,7 @@ module Engine
             min_price: 1,
             max_price: 40,
             revenue: 5,
-            desc: 'No special abilities. Can be bought for £1-£60',
+            desc: 'No special abilities. Can be bought for £1-£40',
           },
           {
             sym: 'P2',
@@ -440,9 +459,9 @@ module Engine
             name: 'Central Australian Railway',
             logo: '1848/CAR',
             simple_logo: '1848/CAR.alt',
-            tokens: [0, 40, 100],
+            tokens: [0, 40, 100, 100],
             coordinates: 'E4',
-            color: '#232b2b',
+            color: 'black',
           },
           {
             sym: 'VR',
@@ -452,7 +471,7 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'H11',
             text_color: 'black',
-            color: 'gold',
+            color: '#ffe600',
           },
           {
             sym: 'NSW',
@@ -462,7 +481,7 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'F17',
             text_color: 'black',
-            color: 'orange',
+            color: '#ff9027',
           },
           {
             sym: 'SAR',
@@ -471,7 +490,7 @@ module Engine
             simple_logo: '1848/SAR.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'G6',
-            color: 'darkMagenta',
+            color: '#9e2a97',
           },
           {
             sym: 'COM',
@@ -479,7 +498,8 @@ module Engine
             logo: '1848/COM',
             simple_logo: '1848/COM.alt',
             tokens: [0, 0, 100, 100, 100],
-            color: 'dimGray',
+            text_color: 'black',
+            color: '#cfc5a2',
           },
           {
             sym: 'FT',
@@ -488,7 +508,8 @@ module Engine
             simple_logo: '1848/FT.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'G14',
-            color: 'mediumBlue',
+            text_color: 'black',
+            color: '#55c3ec',
           },
           {
             sym: 'WA',
@@ -497,7 +518,7 @@ module Engine
             simple_logo: '1848/WA.alt',
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'D1',
-            color: 'maroon',
+            color: '#ee332a',
           },
           {
             sym: 'QR',
@@ -506,7 +527,7 @@ module Engine
             simple_logo: '1848/QR.alt',
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'B19',
-            color: 'darkGreen',
+            color: '#399c42',
           },
         ].freeze
 
@@ -688,16 +709,15 @@ module Engine
 
         def crowded_corps
           # 2E does not create a crowded corp
-          @crowded_corps ||= (minors + corporations).select do |c|
-            c.trains.count { |t| !t.obsolete && t.name != '2E' } > train_limit(c)
+          @crowded_corps ||= corporations.select do |c|
+            c.trains.count { |t| t.name != '2E' } > train_limit(c)
           end
         end
 
         def must_buy_train?(entity)
           # 2E does not count as compulsory train purchase
           entity.trains.reject { |t| t.name == '2E' }.empty? &&
-            !depot.depot_trains.empty? &&
-             (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase))
+            !depot.depot_trains.empty? && @graph.route_info(entity)&.dig(:route_train_purchase)
         end
 
         # for 3 players corp share limit is 70%
@@ -809,10 +829,11 @@ module Engine
 
         # routing logic
         def visited_stops(route)
-          modified_guage_changes = get_modified_guage_distance(route)
-          added_stops = modified_guage_changes.positive? ? Array.new(modified_guage_changes) { Engine::Part::City.new('0') } : []
+          modified_gauge_changes = get_modified_gauge_distance(route)
+          added_stops = modified_gauge_changes.positive? ? Array.new(modified_gauge_changes) { Engine::Part::City.new('0') } : []
           route_stops = super
-          route.train.name == '2E' ? route_stops : route_stops + added_stops
+          route_stops_2e = route_stops.select { |stop| stop.tokened_by?(route.train.owner) || ghan_visited?(stop) }
+          route.train.name == '2E' ? route_stops_2e : route_stops + added_stops
         end
 
         def check_distance(route, visits, _train = nil)
@@ -821,7 +842,7 @@ module Engine
           raise GameError, 'Route must include Alice Springs'
         end
 
-        def get_modified_guage_distance(route)
+        def get_modified_gauge_distance(route)
           gauge_changes = edge_crossings(route)
           modifier = route.train.name.include?('+') ? 1 : 0
           gauge_changes - modifier
@@ -857,6 +878,62 @@ module Engine
           k_sum_string = ' + k'
           (k_sum(route, route.stops) - 1).times { k_sum_string += '-k' }
           super + k_sum_string
+        end
+
+        def compute_stops(route, train = nil)
+          train ||= route.train
+          visits = route.visited_stops
+          distance = train.distance
+          return visits if distance.is_a?(Numeric)
+          return [] if visits.empty?
+
+          # distance is an array of hashes defining how many locations of
+          # each type can be hit. A 2+2 train (4 locations, at most 2 of
+          # which can be cities) looks like this:
+          #   [ { nodes: [ 'town' ],                     pay: 2},
+          #     { nodes: [ 'city', 'town', 'offboard' ], pay: 2} ]
+          # Stops use the first available slot, so for each stop in this case
+          # we'll try to put it in a town slot if possible and then
+          # in a city/town/offboard slot.
+          distance = distance.sort_by { |types, _| types.size }
+
+          max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
+
+          max_num_stops.downto(1) do |num_stops|
+            # to_i to work around Opal bug
+            stops, revenue = visits.combination(num_stops.to_i).map do |stops|
+              # Make sure this set of stops is legal
+              # 1) At least one stop must have a token (if enabled)
+              next if train.requires_token && stops.none? { |stop| stop.tokened_by?(route.corporation) }
+
+              # 2) if 2E one stop must be alice springs
+              next if train.name == '2E' && stops.none? { |stop| ghan_visited?(stop) }
+
+              # 3) We can't ask for more revenue centers of a type than are allowed
+              types_used = Array.new(distance.size, 0) # how many slots of each row are filled
+
+              next unless stops.all? do |stop|
+                row = distance.index.with_index do |h, i|
+                  h['nodes'].include?(stop.type) && types_used[i] < h['pay']
+                end
+
+                types_used[row] += 1 if row
+                row
+              end
+
+              [stops, revenue_for(route, stops)]
+            end.compact.max_by(&:last)
+
+            revenue ||= 0
+
+            # We assume that no stop collection with m < n stops could be
+            # better than a stop collection with n stops, so if we found
+            # anything usable with this number of stops we return it
+            # immediately.
+            return stops if revenue.positive?
+          end
+
+          []
         end
 
         # recievership

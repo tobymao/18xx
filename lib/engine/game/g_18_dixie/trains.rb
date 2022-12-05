@@ -4,6 +4,7 @@ module Engine
   module Game
     module G18Dixie
       module Trains
+        SPARE_PART_CHAR = '⛭'
         TRAINS = [
           {
             name: '2M',
@@ -40,7 +41,7 @@ module Engine
             num: 4,
           },
           {
-            name: '5',
+            name: '5⛭',
             distance: [{ 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
                        { 'nodes' => %w[offboard city], 'pay' => 5, 'visit' => 5 }],
             events: [{ 'type' => 'close_companies' }],
@@ -72,10 +73,9 @@ module Engine
             price: 600,
             num: 2,
             variants: [
-
               name: '4D',
               distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4, 'multiplier' => 2 }],
-              events: [], # SCL Merger chance
+              events: [{ 'type' => 'scl_formation_chance' }],
               price: 800,
             ],
           },
@@ -83,7 +83,7 @@ module Engine
             name: '5D',
             available_on: '7',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5, 'multiplier' => 2 }],
-            events: [], # ICG Merger Chance
+            events: [{ 'type' => 'icg_formation_chance' }],
             price: 900,
             num: 5,
           },

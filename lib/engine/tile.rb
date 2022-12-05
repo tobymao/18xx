@@ -143,7 +143,6 @@ module Engine
                               loc: params['loc'],
                               boom: params['boom'],
                               style: params['style'],
-                              double: params['double'],
                               to_city: params['to_city'])
         cache << town
         town
@@ -395,8 +394,19 @@ module Engine
       ct_edges.values
     end
 
+    def city_town_edges_are_subset_of?(other_cte)
+      cte = city_town_edges
+      ALL_EDGES.any? do |rotation|
+        cte.all? do |city|
+          other_cte.any? do |other_city|
+            city.all? { |edge| other_city.include?(rotate(edge, rotation)) }
+          end
+        end
+      end
+    end
+
     def compute_loc(loc = nil)
-      return nil unless loc && loc != 'center'
+      return nil if !loc || loc == 'center'
 
       (loc.to_f + @rotation) % 6
     end

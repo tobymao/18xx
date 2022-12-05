@@ -42,7 +42,7 @@ module Engine
           end
 
           def merger_auto_pass_entity
-            current_entity unless @converting || @merging
+            current_entity if !@converting && !@merging
           end
 
           def merge_name(_entity = nil)

@@ -36,7 +36,9 @@ module Engine
             place_token(
               @round.teleported,
               action.city,
-              action.token,
+              # Due to changing the token type, this can cause problems when doing undo.
+              # As a fall back assume first available token of type normal/neutral is OK
+              @game.get_token(entity, action.token),
               connected: false,
               special_ability: ability(entity),
               spender: @game.current_entity,

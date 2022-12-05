@@ -11,7 +11,7 @@ module Engine
       class Game < Game::Base
         include_meta(G18TN::Meta)
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 8000
 

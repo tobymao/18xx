@@ -13,7 +13,7 @@ module Engine
         include Entities
         include Map
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 8_000
         CERT_LIMIT = { 2 => 21, 3 => 15, 4 => 12, 5 => 10 }.freeze
         STARTING_CASH = { 2 => 670, 3 => 500, 4 => 430, 5 => 400 }.freeze

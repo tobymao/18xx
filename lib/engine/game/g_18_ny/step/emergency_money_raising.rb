@@ -12,7 +12,7 @@ module Engine
 
           def actions(entity)
             current = current_entity
-            return [] unless entity == current || entity == current.owner
+            return [] if entity != current && entity != current.owner
 
             @active_entity = nil if @active_entity != @round.cash_crisis_entity
             if !@active_entity && current == entity

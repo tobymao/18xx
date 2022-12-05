@@ -11,12 +11,12 @@ module Engine
       class Game < G1856::Game
         include_meta(G1836Jr56::Meta)
 
-        CURRENCY_FORMAT_STR = '%d F'
+        CURRENCY_FORMAT_STR = '%s F'
 
         BANK_CASH = 6000
 
         CERT_LIMIT = { 2 => 20, 3 => 13, 4 => 10 }.freeze
-        def cert_limit
+        def cert_limit(_player = nil)
           # cert limit isn't dynamic in 1836jr56
           CERT_LIMIT[@players.size]
         end
@@ -447,12 +447,12 @@ module Engine
           },
           blue: {
             %w[E3 G1] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;'\
+            'offboard=revenue:green_20|brown_30,format:+%s,groups:port,route:never;'\
             'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
           },
           green: {
             ['J2'] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;'\
+            'offboard=revenue:green_20|brown_30,format:+%s,groups:port,route:never;'\
             'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
           },
         }.freeze
@@ -612,14 +612,6 @@ module Engine
           end
 
           revenue
-        end
-
-        def format_currency(val)
-          # On dividends per share can be a float
-          # But don't show decimal points on all
-          return super if (val % 1).zero?
-
-          format('%.1<val>fF', val: val)
         end
       end
     end

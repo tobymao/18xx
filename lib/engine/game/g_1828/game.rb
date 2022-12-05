@@ -32,7 +32,7 @@ module Engine
                         plum: '#DDA0DD',
                         lightGoldenrod: '#EEDD82')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 99_999
 

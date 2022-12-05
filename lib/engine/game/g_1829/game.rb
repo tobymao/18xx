@@ -23,7 +23,7 @@ module Engine
                         brightGreen: '#6ec037')
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy_sell
-        CURRENCY_FORMAT_STR = '$%dP'
+        CURRENCY_FORMAT_STR = '$%sP'
         GAME_END_CHECK = { bank: :immediate }.freeze
         MARKET_SHARE_LIMIT = 100
         SELL_MOVEMENT = :none

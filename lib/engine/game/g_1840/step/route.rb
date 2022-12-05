@@ -27,12 +27,12 @@ module Engine
             route_1 = route_for_node(entity, starting_nodes[0])
             route_2 = route_for_node(entity, starting_nodes[1])
 
-            route = if route_2.connection_hexes.empty?
+            route = if route_2.connection_hexes.empty? ||
+               (!route_1.connection_hexes.empty? &&
+                 route_1.revenue(supress_route_token_check: true) > route_2.revenue(supress_route_token_check: true))
                       route_1
-                    elsif route_1.connection_hexes.empty?
-                      route_2
                     else
-                      route_1.revenue > route_2.revenue ? route_1 : route_2
+                      route_2
                     end
 
             [Engine::Action::RunRoutes.new(

@@ -129,7 +129,7 @@ module JaroWinkler
     end
 
     def validate!(str1, str2)
-      raise TypeError unless str1.is_a?(String) && str2.is_a?(String)
+      raise TypeError if !str1.is_a?(String) || !str2.is_a?(String)
     end
   end
 end

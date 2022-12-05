@@ -48,7 +48,7 @@ module Engine
             return unless step_passed?(Engine::Step::BuyTrain)
 
             @paid_loans[entity] = true
-            return if entity.loans.empty?
+            return if @game.interest_owed(entity).zero?
 
             bank = @game.bank
             return unless (owed = @game.pay_interest!(entity))

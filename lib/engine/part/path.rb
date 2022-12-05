@@ -142,6 +142,7 @@ module Engine
         return if @junction && counter[@junction] > 1
         return if edges.sum { |edge| counter[edge.id] }.positive?
         return if track == skip_track
+        return if @junction && @terminal
 
         visited[self] = true
         counter[@junction] += 1 if @junction

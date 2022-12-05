@@ -21,7 +21,7 @@ module Engine
 
           def actions(entity)
             return [] unless @hunslet == entity
-            return [] unless current_entity.corporation? && (current_entity == @hunslet.owner)
+            return [] if !current_entity.corporation? || current_entity != @hunslet.owner
             return [] unless can_purchase?(current_entity)
 
             ACTIONS

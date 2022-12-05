@@ -10,7 +10,7 @@ module Engine
             sym: 'P1',
             value: 0,
             revenue: 5,
-            desc: 'MAJOR, Phase 5. 5-Train. Once a company acquires it, this is a notmal 5-train that is subject to '\
+            desc: 'MAJOR, Phase 5. 5-Train. Once a company acquires it, this is a normal 5-train that is subject to '\
                   'all of the normal rules.  It is not a "special train" and is not subject to the rules that are '\
                   'specific to special trains.  A company can acquire this private company at the start of its turn, '\
                   'even if it is already at it\'s train limit, as this counts as an acquisition action, not a train '\
@@ -162,7 +162,7 @@ module Engine
             desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income '\
                   'into its treasury equal to one half of the base value of the start and end '\
                   'stations from one of the trains operated. Modifications to values (for '\
-                  'E-trains, a 3/2-train, or destination tokens) do not apply. An L-train may '\
+                  'E-trains or destination tokens) do not apply. An L-train may '\
                   'deliver mail within a single city. The company is not required to maximize '\
                   'the dividend from its run if it wishes to maximize its revenue from the mail '\
                   'contract by stopping at a large city and not running beyond it to include '\
@@ -255,7 +255,7 @@ module Engine
             revenue: 10,
             desc: 'MAJOR, Phase 3. Replace a spike going to water with this tile. Lay this tile on '\
                   'a spike that does not already have a port. The spike now counts as a 40 '\
-                  '(gren)/50 (brown)/60 (gray) and is treated like a gray off-board area for '\
+                  '(green)/50 (brown)/60 (gray) and is treated like a gray off-board area for '\
                   'counting train runs for all companies. This is in addition to the company’s '\
                   'normal tile placement and the company does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
@@ -299,7 +299,16 @@ module Engine
                   'token adds $10 to a single train starting in phase 3 and '\
                   '$30 starting in phase 5. Can be used with E-train and '\
                   'Mail Contract.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[D11 D19 F9 F13 G14 G16 H19 H21 J5 L11 L19 N5 O14],
+                count: 1,
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -307,7 +316,7 @@ module Engine
             sym: 'P16',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Rotate this private to place '\
+            desc: 'MAJOR/MINOR, Phase 2. Use this private to place '\
                   'one or both special tiles (PNW1, PNW2) in any blue '\
                   'water hex on the map. This tile lay replaces a '\
                   'company\'s normal tile lay. The owning company may '\
@@ -315,7 +324,7 @@ module Engine
                   'train company uses the tiles, they subtract $10 from '\
                   'their run for each special tile crossed. The owning '\
                   'company receives $10 per special track used from the '\
-                  'bank. Once rotated, this private no longer pays revenue '\
+                  'bank. Once used, this private no longer pays revenue '\
                   'to the company.',
             abilities: [
               {
@@ -325,7 +334,7 @@ module Engine
                 count: 2,
                 reachable: false,
                 closed_when_used_up: false,
-                hexes: %w[D9 E8 E10 F11 G10 H9 I10 M6 M8 N9 O16 O18],
+                hexes: %w[E10 F11 G10 H9 I10 M6 M8 N9 O16 O18],
                 tiles: %w[PNW1 PNW2],
               },
             ],
@@ -361,10 +370,20 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 3. Close this private to upgrade '\
-                  'any plain yellow track tile to the special boom town tile '\
+                  'any plain yellow track tile to the special $30 boom town tile '\
                   '(PNW3). This tile ignores any tile\'s normal tile '\
                   'placement restrictions.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[PNW3],
+              },
+            ],
             color: nil,
           },
           {
@@ -372,25 +391,36 @@ module Engine
             sym: 'P19',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Rotate this private to use a track '\
-                  'action to place the Rockport Coal special tile (PNW4) in '\
-                  'any mountain hex. Only the owning company can run a '\
+            desc: 'MAJOR/MINOR, Phase 3. Use this private to use a yellow track '\
+                  'placement to place the Rockport Coal special tile (PNW4) in '\
+                  'any mountain hex. The owning company must be able to trace to '\
+                  'the hex the mine is placed on. Only the owning company can run a '\
                   'train through the city spot on the Rockport Coal special tile '\
                   '(PNW4). Any company can pay the upgrade cost or use '\
                   'building cubes to upgrade the Rockport Coal Special tile '\
                   '(PNW4) to include the pass around route tile (PNW5). No '\
                   'other private bonus can combine with this one. Once '\
-                  'rotated, this private no longer pays revenue to the '\
+                  'used, this private no longer pays revenue to the '\
                   'company.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                closed_when_used_up: false,
+                hexes: %w[B15 C14 D15 E16 F17 H17 I18 K16 L15],
+                tiles: %w[PNW4],
+              },
+            ],
             color: nil,
           },
           {
-            name: 'P20-Backoom Negotiations (Minor Status Upgrade)',
+            name: 'P20-Backroom Negotiations (Minor Status Upgrade)',
             sym: 'P20',
             value: 0,
             revenue: 0,
-            desc: 'MAJOR/MINOR, Phase 2. When this private is '\
+            desc: 'MAJOR/MINOR, Phase 1. When this private is '\
                   'acquired by a non-associated minor company, choose an '\
                   'associated minor company that is currently not operational '\
                   'or in an auction box. That minor is removed from the game '\
@@ -419,14 +449,14 @@ module Engine
             color: nil,
           },
           {
-            name: 'MINOR: 1. Pacfic Great Eastern Railway',
+            name: 'MINOR: 1. Pacific Great Eastern Railway',
             sym: 'M1',
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Canadian Pacific Railway (CPR). Starting location is A8.',
+                  'Associated with the Canadian Pacific Railway (CPR). Starting location is A8 (Vancouver, BC).',
             abilities: [],
-            color: '#e51c00',
+            color: '#EF1D24',
             text_color: 'white',
           },
           {
@@ -434,40 +464,40 @@ module Engine
             sym: 'M2',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is B19.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is B19 (Republic).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
           },
           {
-            name: 'MINOR: 3. Bellingham Bay @ British Columbia Railroad',
+            name: 'MINOR: 3. Bellingham Bay & British Columbia Railroad',
             sym: 'M3',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D11.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D11 (Bellingham).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
           },
           {
-            name: 'MINOR: 4. Brewster @ Davenport Railroad',
+            name: 'MINOR: 4. Brewster & Davenport Railroad',
             sym: 'M4',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D19.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D19 (Brewster).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
           },
           {
-            name: 'MINOR: 5. Idaho @ Washington Northern Railway',
+            name: 'MINOR: 5. Idaho & Washington Northern Railway',
             sym: 'M5',
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Great Northern Railway (GNR). Starting location is D23.',
+                  'Associated with the Great Northern Railway (GNR). Starting location is D23 (Newport).',
             abilities: [],
-            color: '#fab506',
+            color: '#6BCFF7',
             text_color: 'white',
           },
           {
@@ -475,20 +505,20 @@ module Engine
             sym: 'M6',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is F9.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is F9 (Port Townsend).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
           },
           {
-            name: 'MINOR: 7. SPokane Falls and Northern Railway',
+            name: 'MINOR: 7. Spokane Falls and Northern Railway',
             sym: 'M7',
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Chicago, Milwaukee, & Puget Sound Railway (CMPS). Starting location is F23.',
+                  'Associated with the Chicago, Milwaukee, & Puget Sound Railway (CMPS). Starting location is F23 (Spokane).',
             abilities: [],
-            color: '#000000',
+            color: '#F69B1D',
             text_color: 'white',
           },
           {
@@ -497,17 +527,17 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Seattle & Walla Walla Railroad (SWW). Starting location is H11.',
+                  'Associated with the Seattle & Walla Walla Railroad (SWW). Starting location is H11 (Seattle).',
             abilities: [],
-            color: '#ff3600',
-            text_color: 'black',
+            color: '#238541',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 9. Wenatchee Valley Railroad',
             sym: 'M9',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is H19.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is H19 (Leavenworth).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -517,7 +547,7 @@ module Engine
             sym: 'M10',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is I12.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is I12 (Tacoma).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -527,7 +557,7 @@ module Engine
             sym: 'M11',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J5.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J5 (Aberdeen).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -537,7 +567,7 @@ module Engine
             sym: 'M12',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J23.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J23 (Sprague).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -547,7 +577,7 @@ module Engine
             sym: 'M13',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L19.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L19 (Yakima).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -557,7 +587,7 @@ module Engine
             sym: 'M14',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L23.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L23 (Lewiston Junction).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -567,17 +597,17 @@ module Engine
             sym: 'M15',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M4.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M4 (Ilwaco).',
             abilities: [],
             color: '#ffffff',
-            text_color: 'white',
+            text_color: 'black',
           },
           {
             name: 'MINOR: 16. Astoria and Columbia River Railroad Company',
             sym: 'M16',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is N5.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is N5 (Astoria).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -588,9 +618,9 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Spokane, Portland, & Seattle Railroad (SPS). Starting location is O8.',
+                  'Associated with the Spokane, Portland, & Seattle Railroad (SPS). Starting location is O8 (Portland).',
             abilities: [],
-            color: '#004c6c',
+            color: '#8D061B',
             text_color: 'white',
           },
           {
@@ -599,9 +629,9 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Oregon Railroad & Navigation Co. (ORNC). Starting location is O8.',
+                  'Associated with the Oregon Railroad & Navigation Co. (ORNC). Starting location is O8 (Portland).',
             abilities: [],
-            color: '#850040',
+            color: '#3078C1',
             text_color: 'white',
           },
           {
@@ -609,7 +639,8 @@ module Engine
             sym: 'M19',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is O14.',
+            desc: 'A 50% director’s certificate in the associated minor company. '\
+                  'Starting location is O14 (Stevenson Cascade Locks).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -620,57 +651,57 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. '\
-                  'Associated with the Northern Pacific Railroad (NP). Starting location is O20.',
+                  'Associated with the Northern Pacific Railroad (NP). Starting location is O20 (Wallula).',
             abilities: [],
-            color: '#ff7b93',
-            text_color: 'black',
+            color: '#221E20',
+            text_color: 'white',
           },
           {
             name: 'MINOR: 21. The Great Southern Railroad',
             sym: 'M21',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is P21.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is P17 (The Dalles).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
           },
           {
-            name: 'Regional: A. Vancouver Regional Railway',
+            name: 'REGIONAL: A. Vancouver Regional Railway',
             sym: 'MA',
             value: 100,
             revenue: 10,
-            desc: 'Ownership certificate in the Vancouver Regional Railway. Starting location is O10.',
+            desc: 'Ownership certificate in the Vancouver Regional Railway. Starting location is O10 (Vancouver, WA).',
             abilities: [],
-            color: '#008264',
-            text_color: 'white',
+            color: '#808080',
+            text_color: 'black',
           },
           {
-            name: 'Regional: B. Tacoma Regional Railway',
+            name: 'REGIONAL: B. Tacoma Regional Railway',
             sym: 'MB',
             value: 100,
             revenue: 10,
-            desc: 'Ownership certificate in the Tacoma Regional Railway. Starting location is I12.',
+            desc: 'Ownership certificate in the Tacoma Regional Railway. Starting location is I12 (Tacoma).',
             abilities: [],
-            color: '#008264',
-            text_color: 'white',
+            color: '#808080',
+            text_color: 'black',
           },
           {
-            name: 'Regional: C. Calgary Regional Railway',
+            name: 'REGIONAL: C. Calgary Regional Railway',
             sym: 'MC',
             value: 100,
             revenue: 10,
-            desc: 'Ownership certificate in the Calgary Regional Railway. Starting location is A22/B23.',
+            desc: 'Ownership certificate in the Calgary Regional Railway. Starting location is A22/B23 (Calgary).',
             abilities: [],
-            color: '#008264',
-            text_color: 'white',
+            color: '#808080',
+            text_color: 'black',
           },
         ].freeze
 
         CORPORATIONS = [
           {
             sym: '1',
-            name: '1',
+            name: 'Pacific Great Eastern Railway',
             logo: '1822/1',
             tokens: [0],
             type: 'minor',
@@ -681,13 +712,19 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'A8',
             city: 0,
-            color: '#e51c00',
-            text_color: '#white',
+            color: '#EF1D24',
+            text_color: 'white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for CPR',
+              },
+            ],
           },
           {
             sym: '2',
-            name: '2',
+            name: 'Spokane & British Columbia Railway',
             logo: '1822/2',
             tokens: [0],
             type: 'minor',
@@ -704,7 +741,7 @@ module Engine
           },
           {
             sym: '3',
-            name: '3',
+            name: 'Bellingham Bay & British Columbia Railroad',
             logo: '1822/3',
             tokens: [0],
             type: 'minor',
@@ -721,7 +758,7 @@ module Engine
           },
           {
             sym: '4',
-            name: '4',
+            name: 'Brewster & Davenport Railroad',
             logo: '1822/4',
             tokens: [0],
             type: 'minor',
@@ -738,7 +775,7 @@ module Engine
           },
           {
             sym: '5',
-            name: '5',
+            name: 'Idaho & Washington Northern Railway',
             logo: '1822/5',
             tokens: [0],
             type: 'minor',
@@ -749,13 +786,19 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'D23',
             city: 0,
-            color: '#fab506',
+            color: '#6BCFF7',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for GNR',
+              },
+            ],
           },
           {
             sym: '6',
-            name: '6',
+            name: 'Port Townsend and Southern Railroad',
             logo: '1822/6',
             tokens: [0],
             type: 'minor',
@@ -772,7 +815,7 @@ module Engine
           },
           {
             sym: '7',
-            name: '7',
+            name: 'Spokane Falls and Northern Railway',
             logo: '1822/7',
             tokens: [0],
             type: 'minor',
@@ -783,13 +826,19 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'F23',
             city: 0,
-            color: '#000000',
+            color: '#F69B1D',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for CMPS',
+              },
+            ],
           },
           {
             sym: '8',
-            name: '8',
+            name: 'Puget Sound Shore Railroad',
             logo: '1822/8',
             tokens: [0],
             type: 'minor',
@@ -800,13 +849,19 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'H11',
             city: 0,
-            color: '#ff3600',
+            color: '#238541',
             text_color: '#black',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for SWW',
+              },
+            ],
           },
           {
             sym: '9',
-            name: '9',
+            name: 'Wenatchee Valley Railroad',
             logo: '1822/9',
             tokens: [0],
             type: 'minor',
@@ -823,7 +878,7 @@ module Engine
           },
           {
             sym: '10',
-            name: 'Grand Junction Railway',
+            name: 'Tacoma, Olympia and Grays Harbor Railroad Company',
             logo: '1822/10',
             tokens: [0],
             type: 'minor',
@@ -840,7 +895,7 @@ module Engine
           },
           {
             sym: '11',
-            name: '11',
+            name: 'Aberdeen & Oakville Railroad',
             logo: '1822/11',
             tokens: [0],
             type: 'minor',
@@ -857,7 +912,7 @@ module Engine
           },
           {
             sym: '12',
-            name: '12',
+            name: 'Connell Northern Railway Company',
             logo: '1822/12',
             tokens: [0],
             type: 'minor',
@@ -874,7 +929,7 @@ module Engine
           },
           {
             sym: '13',
-            name: '13',
+            name: 'North Yakima Valley Railroad',
             logo: '1822/13',
             tokens: [0],
             type: 'minor',
@@ -891,7 +946,7 @@ module Engine
           },
           {
             sym: '14',
-            name: '14',
+            name: 'Camas Prarie Railroad',
             logo: '1822/14',
             tokens: [20],
             type: 'minor',
@@ -908,7 +963,7 @@ module Engine
           },
           {
             sym: '15',
-            name: '15',
+            name: 'Ilwaco Railroad Company',
             logo: '1822/15',
             tokens: [0],
             type: 'minor',
@@ -925,7 +980,7 @@ module Engine
           },
           {
             sym: '16',
-            name: '16',
+            name: 'Astoria and Columbia River Railroad Company',
             logo: '1822/16',
             tokens: [0],
             type: 'minor',
@@ -942,7 +997,7 @@ module Engine
           },
           {
             sym: '17',
-            name: '17',
+            name: 'Oregon Central Railroad',
             logo: '1822/17',
             tokens: [0],
             type: 'minor',
@@ -953,13 +1008,19 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O8',
             city: 0, ## Todo - Check
-            color: '#004c6c',
+            color: '#8D061B',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for SPS',
+              },
+            ],
           },
           {
             sym: '18',
-            name: '18',
+            name: 'Portland and Willamette Valley Railway',
             logo: '1822/18',
             tokens: [0],
             type: 'minor',
@@ -970,13 +1031,19 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O8',
             city: 1, ## Todo - Check
-            color: '#850040',
+            color: '#3078C1',
             text_color: '#white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for ORNC',
+              },
+            ],
           },
           {
             sym: '19',
-            name: '19',
+            name: 'Cascade Portage Railway',
             logo: '1822/19',
             tokens: [0],
             type: 'minor',
@@ -986,14 +1053,14 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             coordinates: 'O14',
-            city: 0,
+            city: 1,
             color: '#ffffff',
             text_color: 'black',
             reservation_color: nil,
           },
           {
             sym: '20',
-            name: '20',
+            name: 'Walla Walla Valley Railway',
             logo: '1822/20',
             tokens: [0],
             type: 'minor',
@@ -1004,13 +1071,19 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O20',
             city: 0,
-            color: '#ff7b93',
-            text_color: '#black',
+            color: '#221E20',
+            text_color: 'white',
             reservation_color: nil,
+            abilities: [
+              {
+                type: 'description',
+                description: 'Associated minor for NP',
+              },
+            ],
           },
           {
             sym: '21',
-            name: '21',
+            name: 'The Great Southern Railroad',
             logo: '1822/21',
             tokens: [0],
             type: 'minor',
@@ -1019,7 +1092,7 @@ module Engine
             hide_shares: true,
             shares: [100],
             max_ownership_percent: 100,
-            coordinates: 'P21',
+            coordinates: 'P17',
             city: 0,
             color: '#ffffff',
             text_color: 'black',
@@ -1027,7 +1100,7 @@ module Engine
           },
           {
             sym: 'A',
-            name: 'A',
+            name: 'Vancouver Regional Railway',
             logo: '1822_pnw/a',
             tokens: [0],
             type: 'minor',
@@ -1038,13 +1111,13 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'O10',
             city: 0,
-            color: '#008264',
+            color: '#808080',
             text_color: 'white',
             reservation_color: nil,
           },
           {
             sym: 'B',
-            name: 'B',
+            name: 'Tacoma Regional Railway',
             logo: '1822_pnw/b',
             tokens: [0],
             type: 'minor',
@@ -1055,13 +1128,13 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'I12',
             city: 0,
-            color: '#008264',
+            color: '#808080',
             text_color: 'white',
             reservation_color: nil,
           },
           {
             sym: 'C',
-            name: 'C',
+            name: 'Calgary Regional Railway',
             logo: '1822_pnw/c',
             tokens: [0],
             type: 'minor',
@@ -1072,7 +1145,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'A22',
             city: 0,
-            color: '#008264',
+            color: '#808080',
             text_color: 'white',
             reservation_color: nil,
           },
@@ -1082,11 +1155,11 @@ module Engine
             logo: '1822_pnw/NP',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'O20',
             city: 4,
-            color: '#ff7b93',
+            color: '#221E20',
             reservation_color: nil,
             destination_coordinates: 'I12',
             destination_icon: '1822_pnw/NP_DEST',
@@ -1097,11 +1170,11 @@ module Engine
             logo: '1822_pnw/CPR',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'A8',
             city: 2,
-            color: '#e51c00',
+            color: '#EF1D24',
             reservation_color: nil,
             destination_coordinates: 'A22',
             destination_icon: '1822_pnw/CPR_DEST',
@@ -1112,10 +1185,10 @@ module Engine
             logo: '1822_pnw/GNR',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'D23',
-            color: '#fab506',
+            color: '#6BCFF7',
             text_color: 'black',
             reservation_color: nil,
             destination_coordinates: 'D11',
@@ -1127,11 +1200,11 @@ module Engine
             logo: '1822_pnw/ORNC',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'O8',
             city: 3,
-            color: '#850040',
+            color: '#3078C1',
             reservation_color: nil,
             destination_coordinates: 'O20',
             destination_icon: '1822_pnw/ORNC_DEST',
@@ -1142,10 +1215,10 @@ module Engine
             logo: '1822_pnw/SPS',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'O8',
-            color: '#004c6c',
+            color: '#8D061B',
             reservation_color: nil,
             destination_coordinates: 'F23',
             destination_icon: '1822_pnw/SPS_DEST',
@@ -1156,10 +1229,10 @@ module Engine
             logo: '1822_pnw/CMPS',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'F23',
-            color: '#000000',
+            color: '#F69B1D',
             reservation_color: nil,
             destination_coordinates: 'H11',
             destination_icon: '1822_pnw/CMPS_DEST',
@@ -1170,16 +1243,60 @@ module Engine
             logo: '1822_pnw/SWW',
             tokens: [0, 100],
             type: 'major',
-            float_percent: 20,
+            float_percent: 50,
             always_market_price: true,
             coordinates: 'H11',
             city: 5,
-            color: '#ff3600',
+            color: '#238541',
             reservation_color: nil,
             destination_coordinates: 'O22',
             destination_icon: '1822_pnw/SWW_DEST',
           },
         ].freeze
+
+        # Portland and Seattle
+        def portland_hex
+          @portland_hex ||= hex_by_id('O8')
+        end
+
+        def seattle_hex
+          @seattle_hex ||= hex_by_id('H11')
+        end
+
+        def setup_tokencity_tiles
+          @tokencity_tiles = {}
+          @tokencity_tiles[portland_hex] = %w[X24 X25 X26 X27].map { |id| tile_by_id("#{id}-0") }
+          @tokencity_tiles[seattle_hex] = %w[X20 X21 X22 X23].map { |id| tile_by_id("#{id}-0") }
+        end
+
+        def tokencity?(hex)
+          @tokencity_tiles.key?(hex)
+        end
+
+        def tokencity_tile_index_of(hex, tile)
+          @tokencity_tiles[hex].find_index(tile) || -1
+        end
+
+        def tokencity_upgrades_to?(from, to)
+          from_index = tokencity_tile_index_of(from.hex, from)
+          to_index = tokencity_tile_index_of(from.hex, to)
+          to_index > from_index
+        end
+
+        def tokencity_potential_tiles(hex, tiles)
+          return [] if tiles.empty?
+          if @tokencity_tiles.keys.any? { |h| h != hex && h.tile.color == tiles[0].color }
+            return tiles.size > 1 ? [tiles[1]] : []
+          end
+
+          [tiles[0]]
+        end
+
+        def tokencity_upgrade_cost(old_tile, hex)
+          from_index = tokencity_tile_index_of(hex, old_tile)
+          to_index = tokencity_tile_index_of(hex, hex.tile)
+          20 * (to_index - from_index)
+        end
       end
     end
   end

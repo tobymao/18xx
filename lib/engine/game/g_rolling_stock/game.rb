@@ -35,7 +35,7 @@ module Engine
                         cream: '#fffdd0',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 10_000
         STARTING_CASH = { 2 => 30, 3 => 30, 4 => 30, 5 => 30, 6 => 25 }.freeze
 
@@ -684,9 +684,9 @@ module Engine
         def disable_auto_close_pass
           @programmed_actions.each do |entity, action_list|
             action_list.reject! do |action|
-              next false unless action.is_a?(Engine::Action::ProgramClosePass) &&
-                !action.unconditional &&
-                any_negative_companies?(entity)
+              next false if !action.is_a?(Engine::Action::ProgramClosePass) ||
+                action.unconditional ||
+                !any_negative_companies?(entity)
 
               player_log(entity, "Programmed action '#{action}' removed due to negative company income")
               true

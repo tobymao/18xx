@@ -76,7 +76,7 @@ module Engine
               @company_choices = companies
             end
 
-            company.revenue = 0 if company == @game.p8_company
+            company.revenue = 0 if company == @game.lhp_private
 
             @cheapest = @companies.first
             @passed_on_cheapest = {}
@@ -95,14 +95,14 @@ module Engine
 
           def all_passed!
             case @cheapest
-            when @game.p1_company
+            when @game.hell_on_wheels
               unless @passed_on_cheapest.value?('bid')
                 remove_cheapest!
                 @passed_on_cheapest = {}
               end
-            when @game.p9_company
-              increase_discount!(@game.p10_company, 10) if @bids[@game.p10_company].empty?
-              increase_discount!(@game.p9_company, 10)
+            when @game.durant
+              increase_discount!(@game.ames_bros, 10) if @bids[@game.ames_bros].empty?
+              increase_discount!(@game.durant, 10)
               @passed_on_cheapest = {}
             else
               remove_cheapest!

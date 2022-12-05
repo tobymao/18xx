@@ -124,9 +124,7 @@ class Api < Roda
           end
         end
         render(
-          title: request.params['title'],
-          pin: request.params['pin'],
-          games: Game.home_games(profile, **request.params).map(&:to_h),
+          games: Game.profile_games(profile).map(&:to_h),
           **needs,
         )
       end

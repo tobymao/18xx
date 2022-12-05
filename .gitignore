@@ -32,3 +32,5 @@ validate*.json
 
 # RubyMine configfiles
 .idea
+
+.vscode

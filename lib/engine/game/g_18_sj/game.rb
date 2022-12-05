@@ -30,7 +30,7 @@ module Engine
           yellow: '#FFF500' # MYJ
         )
 
-        CURRENCY_FORMAT_STR = '%d kr'
+        CURRENCY_FORMAT_STR = '%s kr'
 
         BANK_CASH = 10_000
 
@@ -163,7 +163,13 @@ module Engine
                     num: 20,
                     available_on: '6',
                     discount: { '4' => 300, '5' => 300, '6' => 300 },
-                    variants: [{ name: 'E', price: 1300 }],
+                    variants: [
+                      {
+                        name: 'E',
+                        price: 1300,
+                        discount: { '4' => 300, '5' => 300, '6' => 300 },
+                      },
+                    ],
                     events: [{ 'type' => 'nationalization' }],
                   }].freeze
 
@@ -463,7 +469,7 @@ module Engine
           end
         end
 
-        def cert_limit
+        def cert_limit(_player = nil)
           current_cert_limit
         end
 

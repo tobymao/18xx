@@ -156,7 +156,7 @@ module Engine
             desc: 'When acting as a director of a corporation the owner may place a tile on hex E12 for free during '\
                   'the green phase. The placement of this tile is in addition to the normal tile placement of the '\
                   'corporation. However the corporation needs an unblocked track link from one of its stations to '\
-                  'the hex E12. This action closes the "Angertalhabn".',
+                  'the hex E12. This action closes the "Angertalbahn".',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[E12] },
                         {
                           type: 'tile_lay',
@@ -237,7 +237,7 @@ module Engine
               {
                 type: 'teleport',
                 owner_type: 'player',
-                tiles: %w[921 922 923 924 925 926],
+                tiles: %w[X921 X922 X923 X924 X925 X926],
                 hexes: %w[D9 F9 I10],
                 count: 1,
                 when: %w[owning_player_or_turn],

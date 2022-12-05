@@ -8,25 +8,18 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
 
         GAME_DISPLAY_TITLE = '18GB'
 
         GAME_DESIGNER = 'Dave Berry'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18GB'
         GAME_LOCATION = 'Great Britain'
-        GAME_PUBLISHER = :golden_spike
+        GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://docs.google.com/document/d/12yNo5WAi6ywc6N5XmTl-FvAZeI5kLwCMkxhgf7jgNSk/view'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
-          {
-            sym: :second_ed_test,
-            short_name: '2E Playtest changes',
-            title: '2E Playtest changes',
-            desc: 'Play with the proposed extra set of 2E changes (see wiki)',
-            default: true,
-          },
           {
             sym: :two_player_ew,
             short_name: '2P EW',

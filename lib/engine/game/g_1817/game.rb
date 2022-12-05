@@ -36,7 +36,7 @@ module Engine
                         white: '#fff36b',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 99_999
 
@@ -364,15 +364,12 @@ module Engine
 
         def log_interest_payment(entity, amount)
           amount_fmt = format_currency(amount)
-          loans_due = loans_due_interest(entity)
-          loans =
-            if loans_due != 1
-              " #{loans_due} loans"
-            else
-              ' 1 loan'
-            end
-          loan_shark_msg = ' and Loan Shark' if entity.companies.include?(loan_shark_private)
-          @log << "#{entity.name} pays #{amount_fmt} interest for #{loans}#{loan_shark_msg}"
+          interest_sources = []
+          if (loans_due = loans_due_interest(entity)).positive?
+            interest_sources << "#{loans_due} loan#{loans_due > 1 ? 's' : ''}"
+          end
+          interest_sources << 'Loan Shark' if entity.companies.include?(loan_shark_private)
+          @log << "#{entity.name} pays #{amount_fmt} interest for #{interest_sources.join(' and ')}"
         end
 
         def interest_change
@@ -399,14 +396,6 @@ module Engine
             loan_table << [r, loans_per_increment(r)]
           end
           [summary, loan_table]
-        end
-
-        def format_currency(val)
-          # On dividends per share can be a float
-          # But don't show decimal points on all
-          return super if (val % 1).zero?
-
-          format('$%.1<val>f', val: val)
         end
 
         def maximum_loans(entity)

@@ -219,7 +219,7 @@ module Engine
                     " with rotation #{rotation} on #{hex.name}"\
                     "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
 
-            return unless reimburse && cost.positive?
+            return if !reimburse || !cost.positive?
 
             @game.bank.spend(cost, entity.owner)
             @log << "#{entity.owner.name} is reimbursed for building the tile"

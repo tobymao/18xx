@@ -50,9 +50,12 @@ module Engine
           end
 
           def destination_node_check?(entity)
-            destination_hex = entity.destination_coordinates
-            node_keys = @game.graph.connected_nodes(entity).keys
-            node_keys.select(&:city?).any? { |c| c.hex.id == destination_hex }
+            destination_hex = @game.hex_by_id(entity.destination_coordinates)
+            home_node = entity.tokens.first.city
+            destination_hex.tile.nodes.first&.walk(corporation: entity) do |path, _, _|
+              return true if path.nodes.include?(home_node)
+            end
+            false
           end
 
           def process_hex_token(action)

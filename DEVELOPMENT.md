@@ -5,6 +5,25 @@ development.
 
 See [Developing on Windows](https://github.com/tobymao/18xx/wiki/Developing-For-18xx.games#developing-on-windows) to get setup on Windows
 
+## Use a Github Codespace
+
+If you would like a repeatable build environment, click the `Code` button in the repo, click `Codespace` then the `plus sign` button to create [a new Codespace](https://github.com/features/codespaces). 
+
+![Screenshot 2022-11-13 10 09 46 AM](https://user-images.githubusercontent.com/1711810/201537600-294512b8-3a99-4762-8c16-d64294706434.png)
+
+This will create a VM hosted by Github just for you with the repo already cloned and a generic Linux build environment installed.
+
+> Note that Codespaces are limited to a monthly free usage quota
+
+You are able to run `make` from the Terminal tab to build and start the 18xx server (based on the current branch checked out)
+
+After the server is running, a pop-up in the bottom right should appear informing you that the server can be opened in a browser.
+
+If that pop-up doesn't appear, open the `Ports` tab in the Codespace, hover the "local address" for port `9292` and click the globe to open the server in a browser.
+
+![image](https://user-images.githubusercontent.com/1711810/201538007-a5b4bf8a-9214-4ca3-a6a5-6304601c34c2.png)
+
+
 ### Droplet configuration
 
 If configuring the droplet from scratch, these are the requirements:
@@ -105,6 +124,25 @@ Yes.
 make CONTAINER_ENGINE=podman …
 ```
 
+#### How to troubleshoot a failing test
+
+Let's say you got an error message like this:
+
+```
+Failures:
+
+  1) Assets #html 18MEX 17849 renders endgame
+     Failure/Error:
+       MiniRacer::Context
+         .new(snapshot: @snapshot)
+         .eval(script, filename: @file)
+```
+
+1. Look for a file `17849.json` (in the spec folder)
+2. Start a new game in the UI
+3. Import a hotseat game
+4. Copy the file content in the box and click `create`
+5. Look for an error in the browser console
 
 #### Before filing a pull request
 

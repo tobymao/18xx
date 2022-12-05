@@ -33,7 +33,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000
 
@@ -1071,6 +1071,14 @@ module Engine
           end
         end
 
+        def capitalization_type_desc(corp)
+          return '' unless corp.ipoed
+
+          return "#{corp.capitalization_type_desc} (#{corp.escrow || 0})" if corp.capitalization_type == :escrow
+
+          corp.capitalization_type_desc
+        end
+
         #
         # Get the currently possible upgrades for a tile
         # from: Tile - Tile to upgrade from
@@ -1417,7 +1425,7 @@ module Engine
 
         def corporations_repay_loans
           @corporations.each do |corp|
-            next unless corp.floated? && corp.loans.size.positive?
+            next if !corp.floated? || !corp.loans.size.positive?
 
             loans_repaid = [corp.loans.size, (corp.cash / loan_value).to_i].min
             amount_repaid = loan_value * loans_repaid
@@ -1861,14 +1869,6 @@ module Engine
 
         def train_limit(entity)
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
-        end
-
-        def format_currency(val)
-          # On dividends per share can be a float
-          # But don't show decimal points on all
-          return super if (val % 1).zero?
-
-          format('$%.1<val>f', val: val)
         end
       end
     end
