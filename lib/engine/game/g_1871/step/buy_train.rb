@@ -57,6 +57,7 @@ module Engine
             return false if entity != bundle.owner
             return false unless @game.check_sale_timing(entity, bundle)
             return false unless sellable_bundle?(bundle)
+            return false if @game.class::MUST_SELL_IN_BLOCKS && @corporations_sold.include?(bundle.corporation)
 
             # This is our new clause for 1871, if this is the corporation
             # selling, we can sell all of them
