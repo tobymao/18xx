@@ -459,7 +459,7 @@ module Engine
             name: 'Central Australian Railway',
             logo: '1848/CAR',
             simple_logo: '1848/CAR.alt',
-            tokens: [0, 40, 100],
+            tokens: [0, 40, 100, 100],
             coordinates: 'E4',
             color: 'black',
           },
