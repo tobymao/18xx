@@ -91,7 +91,6 @@ module Engine
             rusts_on: '6E',
             distance: 2,
             price: 100,
-            num: 6,
           },
           {
             name: '4H',
@@ -99,7 +98,6 @@ module Engine
             rusts_on: '7E',
             distance: 4,
             price: 200,
-            num: 5,
             events: [{ 'type' => 'green_privates_available' }],
             variants: [
               {
@@ -118,7 +116,6 @@ module Engine
             # the rusting is handled in the game code.
             distance: 6,
             price: 300,
-            num: 4,
             variants: [
               {
                 name: '3M',
@@ -133,7 +130,6 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 500,
-            num: 3,
             events: [{ 'type' => 'corporations_convert' },
                      { 'type' => 'privates_close' }],
             variants: [
@@ -150,7 +146,6 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 650,
-            num: 2,
             variants: [
               {
                 name: '5M',
@@ -165,7 +160,6 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 7 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 800,
-            num: 16,
             variants: [
               {
                 name: '6M',
@@ -180,15 +174,39 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 1_100,
-            num: 8,
             multiplier: 2,
             available_on: '7',
           },
         ].freeze
 
+        TRAIN_COUNTS_NORMAL = {
+          '2H' => 6,
+          '4H' => 5,
+          '6H' => 4,
+          '5E' => 3,
+          '6E' => 2,
+          '7E' => 16,
+          '5D' => 8,
+        }.freeze
+
+        TRAIN_COUNTS_2P = {
+          '2H' => 4,
+          '4H' => 3,
+          '6H' => 3,
+          '5E' => 2,
+          '6E' => 2,
+          '7E' => 16,
+          '5D' => 8,
+        }.freeze
+
+        def num_trains(train)
+          two_player? ? TRAIN_COUNTS_2P[train[:name]] : TRAIN_COUNTS_NORMAL[train[:name]]
+        end
+
         def timeline
+          ordinal = two_player? ? 'third' : 'fifth'
           @timeline = ['5D trains are available after the first 7E/6M train has been bought',
-                       '6H/3M trains rust when the fifth 7E/6M/5D train is bought']
+                       "6H/3M trains rust when the #{ordinal} 7E/6M/5D train is bought"]
         end
       end
     end

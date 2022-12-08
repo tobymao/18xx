@@ -53,11 +53,18 @@ module Engine
         def init_optional_rules(optional_rules)
           rules = super
 
+          # Quick start variant doesn't work for two players.
+          rules -= [:quick_start] if two_player?
+
           # The alternate set of private packets can only be used with the
           # quick start variant.
           rules -= [:set_b] unless rules.include?(:quick_start)
 
           rules
+        end
+
+        def corporation_opts
+          two_player? ? { max_ownership_percent: 70 } : {}
         end
 
         def corporation_view(entity)
@@ -97,9 +104,34 @@ module Engine
           @graph_broad = Graph.new(self, skip_track: :narrow, home_as_token: true)
           @graph_metre = Graph.new(self, skip_track: :broad, home_as_token: true)
 
-          # The rusting event for 6H/4M trains is triggered by the sale of the
-          # fifth phase 7 train, so track the number of these sold.
+          # The rusting event for 6H/4M trains is triggered by the number of
+          # phase 7 trains purchased, so track the number of these sold.
           @phase7_trains_bought = 0
+          @phase7_train_trigger = two_player? ? 3 : 5
+
+          setup_company_reservations
+        end
+
+        # Some companies cannot be bought in the two-player variant: five from
+        # P2–P17 and two from P18–P22.
+        def setup_company_reservations
+          return unless two_player?
+
+          batch1 = @companies.select { |c| c.color == :yellow && c.sym != 'H&G' }
+          batch2 = @companies.select { |c| c.color == :green }
+          random = Random.new(rand)
+          reserved = (batch1.sample(5, random: random) +
+                      batch2.sample(2, random: random))
+          @log << "These private companies cannot be bought in this game: #{reserved.map(&:id).join(', ')}"
+
+          rx = /(P\d+)\. .*\. (Home hex.*)\. .*/
+          reserved.each do |company|
+            company.desc = company.desc.sub(rx, '\1. \2. Cannot be purchased in this game.')
+            # Setting the company color to grey both makes it clear to the player
+            # that this company is different, and also ensures that this company
+            # will never be selected in buyable_bank_owned_companies.
+            company.color = :gray
+          end
         end
 
         def init_companies(_players)
@@ -358,14 +390,14 @@ module Engine
         def buy_train(operator, train, price = nil)
           bought_from_depot = (train.owner == @depot)
           super
-          return if @phase7_trains_bought >= 5
+          return if @phase7_trains_bought >= @phase7_train_trigger
           return unless bought_from_depot
           return unless %w[7E 6M 5D].include?(train.name)
 
           @phase7_trains_bought += 1
           ordinal = %w[First Second Third Fourth Fifth][@phase7_trains_bought - 1]
           @log << "#{ordinal} phase 7 train has been bought"
-          rust_phase4_trains!(train) if @phase7_trains_bought == 5
+          rust_phase4_trains!(train) if @phase7_trains_bought == @phase7_train_trigger
         end
 
         def rust_phase4_trains!(purchased_train)
@@ -402,7 +434,9 @@ module Engine
         end
 
         def buyable_bank_owned_companies
-          super.filter { |company| company.color == :yellow || @phase.status.include?('green_privates') }
+          available_colors = [:yellow]
+          available_colors << :green if @phase.status.include?('green_privates')
+          super.filter { |company| available_colors.include?(company.color) }
         end
 
         def unowned_purchasable_companies(_entity)
