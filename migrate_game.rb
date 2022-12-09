@@ -41,7 +41,6 @@ def repair(game, original_actions, actions, broken_action)
     pass = Engine::Action::Pass.new(game.active_step.current_entity)
     pass.user = pass.entity.player.id
     actions.insert(action_idx, pass.to_h)
-    puts "adding pass at #{action_idx}"
   end
 
   if broken_action['type'] == 'move_token'
