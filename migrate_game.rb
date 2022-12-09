@@ -41,6 +41,7 @@ def repair(game, original_actions, actions, broken_action)
     pass = Engine::Action::Pass.new(game.active_step.current_entity)
     pass.user = pass.entity.player.id
     actions.insert(action_idx, pass.to_h)
+    puts "adding pass at #{action_idx}"
   end
 
   if broken_action['type'] == 'move_token'
@@ -53,6 +54,9 @@ def repair(game, original_actions, actions, broken_action)
     elsif prev_action['type'] == 'pass'
       actions.delete(prev_action)
     end
+    return
+  elsif game.is_a?(Engine::Game::G21Moon::Game) and game.active_step.is_a?(Engine::Step::BuySellParShares)
+    add_pass.call
     return
   elsif broken_action['type'] == 'buy_tokens'
     # 1817 no longer needs buy tokens
