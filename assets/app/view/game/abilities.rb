@@ -78,6 +78,7 @@ module View
         views = []
         views << render_purchase_train_button if actions.include?('purchase_train')
         views << render_sell_company_button if actions.include?('sell_company')
+        views << render_close_company_button if actions.include?('manual_close_company')
         views << render_ability_choice_buttons if actions.include?('choose_ability')
         views << h(Exchange) if actions.include?('buy_shares')
         views << h(Map, game: @game) if !@game.round.is_a?(Engine::Round::Operating) &&
@@ -119,6 +120,16 @@ module View
         end
 
         h(:button, { on: { click: sell } }, "Sell company (#{@game.format_currency(@selected_company.value)})")
+      end
+
+      def render_close_company_button
+        close = lambda do
+          process_action(Engine::Action::ManualCloseCompany.new(
+            @selected_company,
+          ))
+        end
+
+        h(:button, { on: { click: close } }, 'Close company')
       end
 
       def render_ability_choice_buttons

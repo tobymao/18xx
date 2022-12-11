@@ -90,10 +90,10 @@ module Engine
     end
 
     def <=>(other)
-      return 1 unless (self_key = sort_order_key)
-      return -1 unless (other_key = other.sort_order_key)
+      return -1 unless (self_key = sort_order_key)
+      return 1 unless (other_key = other.sort_order_key)
 
-      other_key <=> self_key
+      self_key <=> other_key
     end
 
     # sort in operating order, then name: corporation with higher share price,
@@ -101,7 +101,7 @@ module Engine
     def sort_order_key
       return unless (sp = share_price)
 
-      [sp.price, sp.coordinates.last, -sp.coordinates.first, -(sp.corporations.find_index(self) || 0), name]
+      [-sp.price, -sp.coordinates.last, sp.coordinates.first, (sp.corporations.find_index(self) || 0), name]
     end
 
     def counts_for_limit

@@ -187,7 +187,7 @@ module Engine
           end
 
           def check_company_closing(ability)
-            return unless ability.count.zero? && ability.closed_when_used_up
+            return if !ability.count.zero? || !ability.closed_when_used_up
 
             @log << "#{ability.owner.name} closes"
             ability.owner.close!

@@ -40,7 +40,7 @@ module Engine
             @game.tiles.delete(tile)
             @game.tiles << old_tile unless old_tile.preprinted
 
-            return unless tile.cities.empty? && tile.color != old_tile.color && tile.color != :yellow
+            return if !tile.cities.empty? || tile.color == old_tile.color || tile.color == :yellow
 
             # if an upgrade without cities => remove/restore base tile
             new_base_name = @game.base_tile_name(tile)

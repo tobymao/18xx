@@ -37,7 +37,7 @@ module Engine
           end
 
           def process_convert(action)
-            return unless action.entity.corporation? && can_convert?(action.entity)
+            return if !action.entity.corporation? || !can_convert?(action.entity)
 
             @game.convert_to_ten_share(action.entity, 3)
             @round.emergency_converted = true

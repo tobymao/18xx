@@ -25,7 +25,7 @@ module Engine
           end
 
           def log_skip(entity)
-            super unless @game.sl && !entity.trains.empty?
+            super if !@game.sl || entity.trains.empty?
           end
 
           def process_buy_train(action)

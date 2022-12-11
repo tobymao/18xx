@@ -11,7 +11,7 @@ module Engine
             super
             return if @game.loading
 
-            return unless route_includes_london?(action.routes) && !@game.ferry_marker?(action.entity)
+            return if !route_includes_london?(action.routes) || @game.ferry_marker?(action.entity)
 
             raise GameError, 'Cannot run to London without a ferry marker'
           end

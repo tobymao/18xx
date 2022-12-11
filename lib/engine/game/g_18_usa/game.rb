@@ -436,7 +436,7 @@ module Engine
 
             @log << "#{ability.owner.name} contributes the #{resource} resource"
             ability.use!
-            next unless ability.count&.zero? && ability.closed_when_used_up
+            next if !ability.count&.zero? || !ability.closed_when_used_up
 
             company = ability.owner
             @log << "#{company.name} closes"

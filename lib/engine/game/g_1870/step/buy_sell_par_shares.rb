@@ -17,7 +17,7 @@ module Engine
                                          entity.num_ipo_shares < 4
 
               shares = entity.shares_of(entity)
-              actions << 'sell_shares' unless shares.none? || shares.any?(&:buyable)
+              actions << 'sell_shares' if shares.any? && shares.none?(&:buyable)
 
               return actions
             end
@@ -30,7 +30,7 @@ module Engine
           end
 
           def redeemable_shares(entity)
-            return [] unless entity.corporation? && entity.share_price.price <= @round.redeem_cash[entity]
+            return [] if !entity.corporation? || entity.share_price.price > @round.redeem_cash[entity]
 
             bank_share = @game.share_pool.shares_of(entity).first
             return [Engine::ShareBundle.new(bank_share)] if bank_share

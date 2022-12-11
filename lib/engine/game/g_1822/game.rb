@@ -373,6 +373,9 @@ module Engine
         LOCAL_TRAINS = %w[L LP].freeze
         E_TRAIN = 'E'
 
+        # see https://github.com/tobymao/18xx/issues/8479#issuecomment-1336324812
+        LOCAL_TRAIN_CAN_CARRY_MAIL = false
+
         LIMIT_TOKENS_AFTER_MERGER = 9
 
         DOUBLE_HEX = %w[D35 F7 H21 H37].freeze
@@ -620,7 +623,7 @@ module Engine
           end
 
           # Check Merthyr Tydfil and Pontypool, only one of the 2 tracks may be used
-          return unless merthyr_tydfil_pontypool[1] && merthyr_tydfil_pontypool[2]
+          return if !merthyr_tydfil_pontypool[1] || !merthyr_tydfil_pontypool[2]
 
           raise GameError, 'May only use one of the tracks connecting Merthyr Tydfil and Pontypool'
         end
@@ -702,7 +705,7 @@ module Engine
 
         def finalize_end_game_values
           company = company_by_id(self.class::COMPANY_OSTH)
-          return unless company && @tax_haven.value.positive?
+          return if !company || !@tax_haven.value.positive?
 
           # Make sure tax havens value is correct
           company.value = @tax_haven.value
@@ -1309,7 +1312,7 @@ module Engine
           upgrade_minor_14_home_hex(hex) if hex.name == self.class::MINOR_14_HOME_HEX
 
           # If we upgraded the english channel to brown, upgrade france as well since we got 2 lanes to france.
-          return unless hex.name == self.class::ENGLISH_CHANNEL_HEX && tile.color == :brown
+          return if hex.name != self.class::ENGLISH_CHANNEL_HEX || tile.color != :brown
 
           upgrade_france_to_brown
         end
@@ -1710,10 +1713,10 @@ module Engine
 
           mail_bonuses = routes.map do |r|
             stops = r.visited_stops
-            next if stops.size < 2
+            next if stops.size < 2 && !self.class::LOCAL_TRAIN_CAN_CARRY_MAIL
 
             first = stops.first.route_base_revenue(r.phase, r.train) / 2
-            last = stops.last.route_base_revenue(r.phase, r.train) / 2
+            last = stops.size < 2 ? 0 : stops.last.route_base_revenue(r.phase, r.train) / 2
             { route: r, subsidy: first + last }
           end.compact
           mail_bonuses.sort_by { |v| v[:subsidy] }.reverse.take(mail_contracts)

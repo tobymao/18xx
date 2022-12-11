@@ -1541,7 +1541,7 @@ module Engine
           # no need to check whether cities are tokened out because of the above
           super(route, nil)
 
-          return unless blocked && route.routes.any? { |r| r != route && tokened_out?(r) }
+          return if !blocked || route.routes.none? { |r| r != route && tokened_out?(r) }
 
           raise GameError, 'Only one train can bypass a tokened-out city'
         end

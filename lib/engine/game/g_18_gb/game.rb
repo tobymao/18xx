@@ -800,7 +800,7 @@ module Engine
         end
 
         def routes_intersect(first, second)
-          !(first.visited_stops & second.visited_stops).empty?
+          !(first.visited_stops & second.visited_stops).reject(&:offboard?).empty?
         end
 
         def route_sets_intersect(first, second)

@@ -12,7 +12,7 @@ module Engine
 
         GAME_SUBTITLE = 'Railways & Robber Barons'
         GAME_DESIGNER = 'Francis Tresham'
-        GAME_LOCATION = 'Northeastern USA and Southeastern Canada'
+        GAME_LOCATION = 'NE USA and SE Canada'
         GAME_PUBLISHER = :lookout
         GAME_RULES_URL = 'https://lookout-spiele.de/upload/en_1830re.html_Rules_1830-RE_EN.pdf'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1830'

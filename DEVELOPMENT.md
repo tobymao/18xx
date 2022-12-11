@@ -124,6 +124,25 @@ Yes.
 make CONTAINER_ENGINE=podman …
 ```
 
+#### How to troubleshoot a failing test
+
+Let's say you got an error message like this:
+
+```
+Failures:
+
+  1) Assets #html 18MEX 17849 renders endgame
+     Failure/Error:
+       MiniRacer::Context
+         .new(snapshot: @snapshot)
+         .eval(script, filename: @file)
+```
+
+1. Look for a file `17849.json` (in the spec folder)
+2. Start a new game in the UI
+3. Import a hotseat game
+4. Copy the file content in the box and click `create`
+5. Look for an error in the browser console
 
 #### Before filing a pull request
 

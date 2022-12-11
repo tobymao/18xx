@@ -31,7 +31,7 @@ module Engine
       # Returns the index in the current tranch that is open, or nil if
       # nothing is open
       def current_tranch_slot_index
-        return nil unless @tranches && current_tranch
+        return nil if !@tranches || !current_tranch
 
         current_tranch.find_index(nil)
       end

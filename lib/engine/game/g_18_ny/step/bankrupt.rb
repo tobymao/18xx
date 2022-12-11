@@ -34,7 +34,7 @@ module Engine
               bundle = ShareBundle.new(shares)
               @game.share_pool.transfer_shares(bundle, @game.share_pool, allow_president_change: true)
 
-              next unless corporation.owner == player && corporation.share_price.price.positive?
+              next if corporation.owner != player || !corporation.share_price.price.positive?
 
               @log << "-- #{corporation.name} enters receivership (it has no president) --"
               corporation.owner = @game.share_pool

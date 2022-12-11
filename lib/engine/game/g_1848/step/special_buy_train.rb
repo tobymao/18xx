@@ -29,7 +29,7 @@ module Engine
             return unless entity&.company?
 
             @game.abilities(entity, :train_discount, time: ability_timing) do |ability|
-              break unless entity.owner == @game.current_entity || entity.owner == @game.current_entity.owner
+              break if entity.owner != @game.current_entity && entity.owner != @game.current_entity.owner
               return ability if !train || ability.trains.include?(train.name)
             end
 

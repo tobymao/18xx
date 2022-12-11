@@ -31,7 +31,7 @@ module Engine
             distance: 5,
             price: 160,
             rusts_on: '3+',
-            events: [{ 'type' => 'remove_par_80' }],
+            events: [{ 'type' => 'remove_smv_80' }],
             num: 3,
           },
           {
@@ -55,7 +55,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 240,
             rusts_on: 'D',
-            events: [{ 'type' => 'remove_par_74' }],
+            events: [{ 'type' => 'remove_smv_74' }],
             num: 3,
           },
           {
@@ -71,7 +71,7 @@ module Engine
             name: '7',
             distance: 7,
             price: 500,
-            events: [{ 'type' => 'remove_par_65' }],
+            events: [{ 'type' => 'remove_smv_65' }],
             num: 4,
           },
           {

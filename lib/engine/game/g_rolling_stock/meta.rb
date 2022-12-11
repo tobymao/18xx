@@ -11,7 +11,6 @@ module Engine
         DEV_STAGE = :beta
 
         GAME_TITLE = 'Rolling Stock'
-        GAME_SUBTITLE = ''
         GAME_DESIGNER = 'Björn Rabenstein'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'http://rabenste.in/rollingstock/rules.pdf'
