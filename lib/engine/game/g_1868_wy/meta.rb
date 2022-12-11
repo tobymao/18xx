@@ -15,6 +15,7 @@ module Engine
         # GAME_INFO_URL = ''
         # GAME_PUBLISHER = ''
         # GAME_RULES_URL = ''
+        GAME_LOCATION = 'Wyoming, USA'
         GAME_TITLE = '1868 Wyoming'
         GAME_FULL_TITLE = '1868: Boom and Bust in the Coal Mines and Oil Fields of Wyoming'
 

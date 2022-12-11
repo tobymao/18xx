@@ -143,7 +143,6 @@ module Engine
                               loc: params['loc'],
                               boom: params['boom'],
                               style: params['style'],
-                              double: params['double'],
                               to_city: params['to_city'])
         cache << town
         town
@@ -407,7 +406,7 @@ module Engine
     end
 
     def compute_loc(loc = nil)
-      return nil unless loc && loc != 'center'
+      return nil if !loc || loc == 'center'
 
       (loc.to_f + @rotation) % 6
     end

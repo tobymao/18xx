@@ -45,7 +45,7 @@ module Engine
           end
 
           def merger_auto_pass_entity
-            current_entity unless @converting || @merge_major
+            current_entity if !@converting && !@merge_major
           end
 
           def others_acted?

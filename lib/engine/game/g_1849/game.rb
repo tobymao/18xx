@@ -382,7 +382,7 @@ module Engine
         end
 
         def update_garibaldi
-          return unless afg && !afg.slot_open && !home_token_locations(afg).empty?
+          return if !afg || afg.slot_open || home_token_locations(afg).empty?
 
           afg.slot_open = true
           afg.closed_recently = true

@@ -974,7 +974,7 @@ module Engine
             when :operate
               next unless corporation.operated?
             when :p_any_operate
-              next unless corporation.operated? || corporation.president?(player)
+              next if !corporation.operated? && !corporation.president?(player)
             end
 
             value += value_for_dumpable(player, corporation)
@@ -1369,7 +1369,7 @@ module Engine
       end
 
       def get(type, id)
-        return nil unless type && id
+        return nil if !type || !id
 
         send("#{type}_by_id", id)
       end

@@ -34,6 +34,10 @@ module Engine
       OPTIONAL_RULES = [].freeze
       MUTEX_RULES = [].freeze
 
+      # terms to match with on the create games page; see keywords function for
+      # values automatically considered as keywords
+      KEYWORDS = [].freeze
+
       def self.included(klass)
         klass.extend(ClassMethods)
       end
@@ -88,6 +92,25 @@ module Engine
           @game_variants ||= self::GAME_VARIANTS.to_h do |v|
             [v[:sym], v.merge({ meta: Engine.meta_by_title(v[:title]) })]
           end
+        end
+
+        def keywords
+          @keywords ||= [
+            *self::KEYWORDS,
+            title,
+            full_title,
+            display_title,
+            *self::GAME_ALIASES,
+            self::DEPENDS_ON,
+            self::GAME_LOCATION,
+            *self::GAME_VARIANTS.map { |v| v[:title] },
+            *self::OPTIONAL_RULES.map { |o_r| o_r[:short_name] },
+            self::DEV_STAGE.to_s,
+            self::PROTOTYPE ? 'PROTOTYPE' : nil,
+            self::GAME_DESIGNER,
+            *Array(self::GAME_PUBLISHER).map { |pub| (Engine::Publisher::INFO[pub] || { name: pub })[:name] },
+            self::GAME_IMPLEMENTER,
+          ].compact.flat_map { |c| c.upcase.split(/[:, ]+/) }.uniq
         end
       end
     end

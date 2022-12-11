@@ -217,7 +217,7 @@ module Engine
           super
 
           # Place second starting token for TR
-          return unless corporation == tr && !corporation.tokens[1]&.used
+          return if corporation != tr || corporation.tokens[1]&.used
 
           @hexes.find { |hex| hex.name == TR_SECOND_STARTING_TOKEN }.tile.cities.first.place_token(tr, tr.next_token)
         end
@@ -254,7 +254,7 @@ module Engine
           # Enable double tile lay for TR after ability activation
           return self.class::DOUBLE_TILE_LAYS if ABILITY_DOUBLE_TILE_LAY.owner == entity
 
-          return self.class::TILE_LAYS unless entity == tc && @round.num_additional_lays.positive?
+          return self.class::TILE_LAYS if entity != tc || !@round.num_additional_lays.positive?
 
           # Each tile lay on hex with a town provides additional tile lay to TC
           Array.new(1 + @round.num_additional_lays) { { lay: true, upgrade: true } }

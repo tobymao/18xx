@@ -10,44 +10,45 @@ require_relative 'step/buy_train'
 require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
 require_relative 'step/dividend'
+require_relative 'step/manual_close_company'
 require_relative 'step/route'
 require_relative 'step/token'
 require_relative 'step/track'
 require_relative 'step/waterfall_auction'
 require_relative '../base'
 require_relative '../company_price_up_to_face'
+require_relative '../swap_color_and_stripes'
 require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
     module G1868WY
       class Game < Game::Base
+        # Engine::Game::G1868WY includes
         include_meta(G1868WY::Meta)
         include Entities
         include Map
         include Trains
 
+        # Engine::Game includes
         include CompanyPriceUpToFace
         include StubsAreRestricted
+        include SwapColorAndStripes
 
+        # overrides
         BANK_CASH = 99_999
         STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440 }.freeze
         CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12 }.freeze
-
         SELL_AFTER = :any_time
-        POOL_SHARE_DROP = :each
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
         HOME_TOKEN_TIMING = :par
         NEXT_SR_PLAYER_ORDER = :first_to_pass
-
-        TRACK_POINTS = 6
-        YELLOW_POINT_COST = 2
-        UPGRADE_POINT_COST = 3
-
+        MUST_SELL_IN_BLOCKS = true
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         MUST_BUY_TRAIN = :always
-
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_OTHER_VALUE = true
         MARKET = [
           [''] + %w[82 90 100 110z 120z 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525 560],
           %w[72 76 82 90x 100x 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490],
@@ -58,42 +59,54 @@ module Engine
           %w[50 55 60 64 68 72 76],
           %w[40 50 55 60 64 68],
         ].freeze
-
         STOCKMARKET_COLORS = {
           par: :yellow,
           par_1: :green,
           par_2: :brown,
         }.freeze
-
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'company starting values',
-                                              par_1: 'additional starting values in phase 3+',
-                                              par_2: 'additional starting values in phase 5+').freeze
-
         LATE_CORPORATIONS = %w[C&N DPR LNP OSL].freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Railroad Company par values',
+                                              par_1: 'additional par values in Phase 3+',
+                                              par_2: 'additional par values in Phase 5+').freeze
+        # rubocop:disable Layout/LineLength
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'all_corps_available' => ['All Corporations Available',
-                                    'C&N, DPR, LNP, OSL are now available to start'],
-          'full_capitalization' => ['Full Capitalization',
-                                    'Railroads now float at 60% and receive full capitalization'],
-          'rust_coal_dt_2' => ['Remove Phase 2 Coal DTs', 'Remove Phase 2 Coal Development Tokens'],
-          'rust_coal_dt_3' => ['Remove Phase 3 Coal DTs', 'Remove Phase 3 Coal Development Tokens'],
-          'rust_coal_dt_4' => ['Remove Phase 4 Coal DTs', 'Remove Phase 4 Coal Development Tokens'],
-          'rust_coal_dt_5' => ['Remove Phase 5 Coal DTs', 'Remove Phase 5 Coal Development Tokens'],
-          'rust_coal_dt_6' => ['Remove Phase 6 Coal DTs', 'Remove Phase 6 Coal Development Tokens'],
-          'green_par' => ['Green Par Available', 'Railroads may now par at 90 or 100.'],
-          'brown_par' => ['Brown Par Available', 'Railroads may now par at 110 or 120.'],
+          green_par: ['Green Par Available', 'Phase 3: Railroad Companies may now additionally start at $90 or $100'],
+          brown_par: ['Brown Par Available', 'Phase 5: Railroad Companies may now additionally start at $110 or $120'],
+          all_corps_available: ['All Railroad Companies Available',
+                                'Phase 5: All Railroad Companies are now available to start'],
+          full_capitalization: ['Full Capitalization',
+                                'Phase 5: Railroad Companies now float at 60% and receive full capitalization'],
+          oil_companies_available: ['Oil Companies Available', 'Phase 5: Oil Companies begin to Develop after Coal Companies'],
+          uranium_boom: ['Uranium Boom',
+                         'Phase 5-6: Uranium Boom token added to appropriate Uranium location(s); counts as a DT and adds +$20 revenue'],
+          trigger_endgame: ['Trigger Endgame',
+                            'Phase 7: Begin final SR after current OR (even if this skips OR 2 of 2); see see the "Endgame Sequence" timeline for more details'],
+          uranium_bust: ['Uranium BUST', 'Phase 7: Uranium locations BUST into Ghost Towns'],
+          close_privates: ['Close Privates',
+                           'Phase 5-8: various private companies close at each of these phases'],
+          close_coal_companies: ['Close Coal Companies', 'Phase 8: Coal Companies stop Developing; gray Coal DTs remain on the board'],
+          remove_placed_coal_dt: ['"Rust" Coal DTs', 'Phase 4-8: Coal DTs placed 2 phases ago are removed from the board'],
+          remove_unplaced_coal_dt: ['Remove Unplaced Coal DTs', 'Phase 3-7: Coal DTs still on a Coal Company\'s charter from the previous phase are discarded'],
         ).freeze
-        STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'all_corps_available' => ['All Corporations Available',
-                                    'C&N, DPR, LNP, OSL are available to start'],
+        # rubocop:enable Layout/LineLength
+        STATUS_TEXT = {
+          'can_buy_companies' => ['Can Buy Privates',
+                                  'All Railroad Companies can buy private companies from players'],
+          'all_corps_available' => ['All Railroad Companies Available',
+                                    'All Railroad Companies are now available to start'],
           'full_capitalization' =>
-            ['Full Capitalization', 'Railroads float at 60% and receive full capitalization'],
-        ).freeze
+            ['Full Capitalization', 'Railroad Companies float at 60% and receive full capitalization'],
+        }.freeze
 
+        # track points
+        TRACK_POINTS = 6
+        YELLOW_POINT_COST = 2
+        UPGRADE_POINT_COST = 3
+
+        # boomtowns, coal/oil/uranium
         DTC_GHOST_TOWN = 0
         DTC_BOOMCITY = 3
         DTC_REVENUE = 4
-
         BOOMING_REVENUE_BONUS = 10
         BUSTED_REVENUE = {
           yellow: 10,
@@ -103,6 +116,8 @@ module Engine
         }.freeze
 
         GHOST_TOWN_NAME = 'ghost town'
+
+        WIND_RIVER_CANYON_HEX = 'F12'
 
         def dotify(tile)
           tile.towns.each { |town| town.style = :dot }
@@ -129,8 +144,6 @@ module Engine
           init_track_points
           setup_company_price_up_to_face
 
-          setup_event_methods
-
           @development_hexes = init_development_hexes
           @development_token_count = Hash.new(0)
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
@@ -152,6 +165,7 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             G1868WY::Step::BuySellParShares,
+            G1868WY::Step::ManualCloseCompany,
           ])
         end
 
@@ -167,6 +181,7 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             G1868WY::Step::BuyCompany,
+            G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::Track,
             G1868WY::Step::Token,
             G1868WY::Step::Route,
@@ -185,8 +200,8 @@ module Engine
         end
 
         def init_round_finished
-          p9_company.close!
-          @log << "#{p9_company.name} closes"
+          durant.close!
+          @log << "#{durant.name} closes"
         end
 
         def event_all_corps_available!
@@ -196,7 +211,7 @@ module Engine
         end
 
         def event_full_capitalization!
-          @log << '-- Event: Railroads now float at 60% and receive full capitalization --'
+          @log << '-- Event: Railroad Companies now float at 60% and receive full capitalization --'
           @corporations.each do |corporation|
             corporation.capitalization = :full
             corporation.float_percent = 60
@@ -217,14 +232,6 @@ module Engine
 
         def par_prices
           @stock_market.share_prices_with_types(@available_par_groups)
-        end
-
-        def setup_event_methods
-          (2..6).each do |phase|
-            self.class.define_method("event_remove_coal_dt_#{phase}!") do
-              event_remove_coal_dt!(phase.to_s)
-            end
-          end
         end
 
         def event_remove_coal_dt!(phase_name)
@@ -269,24 +276,100 @@ module Engine
           end
         end
 
-        def p1_company
-          @p1_company ||= company_by_id('P1')
+        def hell_on_wheels
+          @hell_on_wheels ||= company_by_id('P1')
         end
 
-        def p5_company
-          @p5_company ||= company_by_id('P5')
+        def wylie
+          @wylie ||= company_by_id('P2a')
         end
 
-        def p8_company
-          @p8_company ||= company_by_id('P8')
+        def trabing_bros
+          @trabing_bros ||= company_by_id('P2b')
         end
 
-        def p9_company
-          @p9_company ||= company_by_id('P9')
+        def midwest_oil
+          @midwest_oil ||= company_by_id('P2c')
         end
 
-        def p10_company
-          @p10_company ||= company_by_id('P10')
+        def upc_private
+          @upc_private ||= company_by_id('P3a')
+        end
+
+        def bonanza_private
+          @bonanza_private ||= company_by_id('P3b')
+        end
+
+        def fremont
+          @fremont ||= company_by_id('P3c')
+        end
+
+        def dodge
+          @dodge ||= company_by_id('P4a')
+        end
+
+        def lander
+          @lander ||= company_by_id('P4c')
+        end
+
+        def casement
+          @casement ||= company_by_id('P5a')
+        end
+
+        def foncier
+          @foncier ||= company_by_id('P5b')
+        end
+
+        def pac_rr_a
+          @pac_rr_a ||= company_by_id('P5c')
+        end
+
+        def strikebreakers_private
+          @strikebreakers_private ||= company_by_id('P6a')
+        end
+
+        def strikebreakers_coal
+          @strikebreakers_coal ||= @minors.find { |m| m.type == :coal && m.player == strikebreakers_private.player }
+        end
+
+        def teapot_dome_private
+          @teapot_dome_private ||= company_by_id('P6b')
+        end
+
+        def teapot_dome_oil
+          @teapot_dome_oil ||= @minors.find { |m| m.type == :oil && m.player == teapot_dome_private.player }
+        end
+
+        def no_bust
+          @no_bust ||= company_by_id('P6c')
+        end
+
+        def big_boy_private
+          @big_boy_private ||= company_by_id('P7')
+        end
+
+        def pure_oil
+          @pure_oil ||= company_by_id('P8')
+        end
+
+        def lhp_private
+          @lhp_private ||= company_by_id('P9')
+        end
+
+        def durant
+          @durant ||= company_by_id('P10')
+        end
+
+        def ames_bros
+          @ames_bros ||= company_by_id('P11')
+        end
+
+        def union_pacific_coal
+          @union_pacific_coal ||= minor_by_id('UPC')
+        end
+
+        def bonanza
+          @bonanza ||= minor_by_id('BZ')
         end
 
         def track_points_available(entity)
@@ -316,10 +399,7 @@ module Engine
         def action_processed(action)
           case action
           when Action::LayTile
-            if action.hex.name == 'G15'
-              action.hex.tile.color = :gray
-              @log << 'Wind River Canyon turns gray; it can never be upgraded'
-            end
+            swap_color_and_stripes(action.hex.tile) if action.hex.name == WIND_RIVER_CANYON_HEX
           end
         end
 
@@ -647,7 +727,7 @@ module Engine
         end
 
         def after_par(corporation)
-          return unless corporation.id == 'LNP' || corporation.id == 'OSL'
+          return if corporation.id != 'LNP' && corporation.id != 'OSL'
 
           hex = hex_by_id(corporation.coordinates)
           old_tile = hex.tile

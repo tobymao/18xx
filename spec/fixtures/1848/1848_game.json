@@ -7139,6 +7139,14 @@
         "rotation": 2
       },
       {
+        "type": "pass",
+        "entity": "CAR",
+        "entity_type": "corporation",
+        "id": 554,
+        "created_at": 1660194319,
+        "skip": true
+      },
+      {
         "type": "run_routes",
         "entity": "CAR",
         "entity_type": "corporation",

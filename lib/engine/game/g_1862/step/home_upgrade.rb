@@ -26,7 +26,7 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
-            return [] unless entity && @round.upgrade_before_token.include?(entity)
+            return [] if !entity || !@round.upgrade_before_token.include?(entity)
             return [] if entity.company?
 
             %w[lay_tile]

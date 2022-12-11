@@ -58,6 +58,8 @@ module Engine
              400 450 500 550 600e],
         ].freeze
 
+        LOCAL_TRAIN_CAN_CARRY_MAIL = true
+
         def reduced_bundle_price_for_market_drop(bundle)
           bundle.share_price = @stock_market.find_share_price(bundle.corporation, [:left] * bundle.num_shares).price
           bundle
@@ -548,7 +550,7 @@ module Engine
 
         def stock_round
           G1822PNW::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822PNW::Step::BuySellParShares,
           ])
         end
@@ -585,7 +587,7 @@ module Engine
           company_id = company_id_from_corp_id(minor_id)
           company = @companies.find { |c| c.id == company_id }
 
-          return :parable unless company && @round.respond_to?(:bids) && !@round.bids[company].empty?
+          return :parable if !company || !@round.respond_to?(:bids) || @round.bids[company].empty?
 
           :none
         end

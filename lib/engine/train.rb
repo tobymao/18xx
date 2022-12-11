@@ -70,6 +70,12 @@ module Engine
       remove_instance_variable(:@local) if defined?(@local)
     end
 
+    # remove unused variants, i.e., the physical train card is not allowed to be
+    # flipped/rotated any more
+    def remove_variants!
+      @variants.select! { |name, _| @name == name }
+    end
+
     def names_to_prices
       @variants.transform_values { |v| v[:price] }
     end
