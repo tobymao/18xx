@@ -64,7 +64,7 @@ module Engine
           'X3b' => {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:20,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=AL',
+            'code' => 'city=revenue:20,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=AL',
           },
           'X4' => {
             'count' => 1,
@@ -205,7 +205,7 @@ module Engine
           },
           blue: {
             ['A8'] => 'path=a:0,b:4;path=a:5,b:4;',
-            ['A10'] => 'city=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
+            ['A10'] => 'town=revenue:yellow_30|brown_70;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
             ['A12'] => 'city=revenue:0;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
           },
           red: {
