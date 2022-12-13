@@ -24,6 +24,15 @@ module Engine
           def log_run_payout(entity, kind, revenue, action, payout)
             super unless entity.minor?
           end
+
+          def rust_obsolete_trains!(entity, log: false)
+            super(entity, log: false)
+          end
+
+          def process_dividend(action)
+            super
+            @game.double_headed_trains = []
+          end
         end
       end
     end

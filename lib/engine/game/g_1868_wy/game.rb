@@ -35,6 +35,8 @@ module Engine
         include StubsAreRestricted
         include SwapColorAndStripes
 
+        attr_accessor :double_headed_trains
+
         # overrides
         BANK_CASH = 99_999
         STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440 }.freeze
@@ -157,6 +159,8 @@ module Engine
           update_cache(:minors)
 
           @available_par_groups = %i[par]
+
+          @double_headed_trains = []
         end
 
         def stock_round
@@ -184,6 +188,7 @@ module Engine
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::Track,
             G1868WY::Step::Token,
+            G1868WY::Step::DoubleHeadTrains,
             G1868WY::Step::Route,
             G1868WY::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -737,6 +742,24 @@ module Engine
           update_tile_lists(green_tile, old_tile)
           hex.lay(green_tile)
           @log << "#{corporation.name} lays tile #{green_tile.name} on #{hex.id} (#{old_tile.location_name})"
+        end
+
+        def double_head_candidates(corporation)
+          corporation.trains.reject do |train|
+            train.operated || train.obsolete
+          end
+        end
+
+        def find_and_remove_train_by_id(train_id, buyable: true)
+          train = train_by_id(train_id)
+          @depot.remove_train(train)
+          train.buyable = buyable
+          train.reserved = true
+          train
+        end
+
+        def update_trains_cache
+          update_cache(:trains)
         end
       end
     end
