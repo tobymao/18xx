@@ -587,8 +587,6 @@ module Engine
             hex.tile.reservations.none? && hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
 
-          puts possible_home_hexes.inspect
-
           possible_home_hexes_without_track = possible_home_hexes.select { |h| h.tile.color == :white }
           possible_home_hexes = possible_home_hexes_without_track unless possible_home_hexes_without_track.none?
 
