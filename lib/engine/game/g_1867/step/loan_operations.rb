@@ -24,6 +24,8 @@ module Engine
 
             owed = @game.pay_interest!(entity)
             if owed
+              @log << "#{entity.name} owes #{@game.format_currency(owed)} in loan "\
+                      "interest but only has #{@game.format_currency(entity.cash)}"
               @game.nationalize!(entity)
               # @todo: will this skip the rest of the entities turn?
               return
