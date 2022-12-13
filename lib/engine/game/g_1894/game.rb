@@ -261,7 +261,7 @@ module Engine
         SQ_HEX = 'G10'
         BRUXELLES_HEX = 'F15'
 
-        AL_YELLOW_TILES = %w[X3a X3b]
+        AL_YELLOW_TILES = %w[X3a X3b].freeze
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
         BROWN_CITY_14_UPGRADE_TILES = %w[X14 X15 36].freeze
@@ -408,7 +408,6 @@ module Engine
 
         def init_round_finished
           @players.rotate!(@round.entity_index)
-          stock_market.remove_par!(stock_market.share_price(1, 5))
         end
 
         def assignment_tokens(assignment)
@@ -420,6 +419,10 @@ module Engine
         def init_stock_market
           StockMarket.new(self.class::MARKET, [:unlimited],
                           multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def par_prices
+          stock_market.par_prices.reject { |p| p.price == 100 }
         end
 
         def ipo_reserved_name(_entity = nil)
@@ -734,7 +737,7 @@ module Engine
         end
 
         def block_london
-          london = hex_by_id(LONDON_HEX).tile.cities.first
+          london = hex_by_id(LONDON_HEX).tile.towns.first
           london.instance_variable_set(:@game, self)
 
           def london.blocks?(corporation)

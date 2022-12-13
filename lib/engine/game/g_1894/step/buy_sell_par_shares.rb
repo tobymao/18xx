@@ -21,6 +21,10 @@ module Engine
             @round.current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
           end
 
+          def get_par_prices(_entity, corp)
+            @game.par_prices(corp)
+          end
+
           def process_par(action)
             super
 
