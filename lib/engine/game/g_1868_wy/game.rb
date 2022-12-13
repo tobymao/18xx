@@ -5,13 +5,13 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'trains'
 require_relative 'step/buy_company'
-require_relative 'step/buy_sell_par_shares'
 require_relative 'step/buy_train'
 require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
 require_relative 'step/dividend'
 require_relative 'step/manual_close_company'
 require_relative 'step/route'
+require_relative 'step/stock_round_action'
 require_relative 'step/token'
 require_relative 'step/track'
 require_relative 'step/waterfall_auction'
@@ -34,6 +34,8 @@ module Engine
         include CompanyPriceUpToFace
         include StubsAreRestricted
         include SwapColorAndStripes
+
+        attr_accessor :double_headed_trains
 
         # overrides
         BANK_CASH = 99_999
@@ -157,6 +159,8 @@ module Engine
           update_cache(:minors)
 
           @available_par_groups = %i[par]
+
+          @double_headed_trains = []
         end
 
         def stock_round
@@ -164,8 +168,8 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            G1868WY::Step::BuySellParShares,
             G1868WY::Step::ManualCloseCompany,
+            G1868WY::Step::StockRoundAction,
           ])
         end
 
@@ -184,6 +188,7 @@ module Engine
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::Track,
             G1868WY::Step::Token,
+            G1868WY::Step::DoubleHeadTrains,
             G1868WY::Step::Route,
             G1868WY::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -737,6 +742,24 @@ module Engine
           update_tile_lists(green_tile, old_tile)
           hex.lay(green_tile)
           @log << "#{corporation.name} lays tile #{green_tile.name} on #{hex.id} (#{old_tile.location_name})"
+        end
+
+        def double_head_candidates(corporation)
+          corporation.trains.reject do |train|
+            train.operated || train.obsolete
+          end
+        end
+
+        def find_and_remove_train_by_id(train_id, buyable: true)
+          train = train_by_id(train_id)
+          @depot.remove_train(train)
+          train.buyable = buyable
+          train.reserved = true
+          train
+        end
+
+        def update_trains_cache
+          update_cache(:trains)
         end
       end
     end
