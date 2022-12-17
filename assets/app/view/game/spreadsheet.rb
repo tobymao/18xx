@@ -549,20 +549,25 @@ module View
 
         n_ipo_shares = num_ipo_shares(corporation)
         n_market_shares = num_shares_of(@game.share_pool, corporation)
-        h(:tr, tr_props, [
-          h(:th, name_props, corporation.name),
-          *@game.players.map do |p|
-            props = { style: {} }
-            if @game.round.active_step&.did_sell?(corporation, p)
-              props[:style][:backgroundColor] = '#9e0000'
-              props[:style][:color] = 'white'
-            end
-            n_shares = num_shares_of(p, corporation)
-            props[:style][:color] = 'transparent' if n_shares.zero?
-            share_holding = corporation.president?(p) ? '*' : ''
-            share_holding += n_shares.to_s unless corporation.minor?
-            h('td.padded_number', props, share_holding)
-          end,
+
+        players_row_content = []
+        @game.players.map do |p|
+          props = { style: {} }
+          if @game.round.active_step&.did_sell?(corporation, p)
+            props[:style][:backgroundColor] = '#9e0000'
+            props[:style][:color] = 'white'
+          end
+          n_shares = num_shares_of(p, corporation)
+          props[:style][:color] = 'transparent' if n_shares.zero?
+          share_holding = corporation.president?(p) ? '*' : ''
+          share_holding += n_shares.to_s unless corporation.minor?
+          players_row_content << h('td.padded_number', props, share_holding)
+        end
+
+        bank_market_props = { style: { color: n_market_shares.zero? ? 'transparent' : 'inherit' } }
+        bank_market_props[:style][:borderRight] = border_style unless @corporations_first
+        puts bank_market_props
+        bank_row_content = [
           *reserved,
           h('td.padded_number', {
               style: {
@@ -571,16 +576,17 @@ module View
               },
             },
             n_ipo_shares),
-          h('td.padded_number', {
-              style: {
-                borderRight: border_style,
-                color: n_market_shares.zero? ? 'transparent' : 'inherit',
-              },
-            },
+          h('td.padded_number', bank_market_props,
             "#{corporation.receivership? ? '*' : ''}#{n_market_shares}"),
+        ]
+
+        prices_row_content = [
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
-          h('td.padded_number', market_props,
-            corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+          h('td.padded_number', market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+        ]
+
+        corporation_row_content = @corporations_first ? [corporation.owner&.name] : []
+        corporation_row_content.concat([
           h('td.padded_number', @game.format_currency(corporation.cash)),
           *treasury,
           h('td.padded_number', order_props, if operating_order[0] == UNFLOATED
@@ -592,6 +598,24 @@ module View
           h(:td, @game.token_string(corporation)),
           *extra,
           render_companies(corporation),
+        ])
+
+        row_content = []
+        if @corporations_first
+          row_content.concat(corporation_row_content)
+          row_content.concat(prices_row_content)
+          row_content.concat(players_row_content)
+          row_content.concat(bank_row_content)
+        else
+          row_content.concat(players_row_content)
+          row_content.concat(bank_row_content)
+          row_content.concat(prices_row_content)
+          row_content.concat(corporation_row_content)
+        end
+
+        h(:tr, tr_props, [
+          h(:th, name_props, corporation.name),
+          *row_content,
           h(:th, name_props, corporation.name),
           *render_connection_run(corporation),
           *render_history(corporation),
@@ -608,6 +632,12 @@ module View
             },
           }
           props[:style][:minWidth] = min_width(entity)
+        elsif @corporations_first
+          props = {
+            style: {
+              borderRight: "1px solid #{color_for(:font2)}"
+            },
+          }
         end
         h(:td, props, entity.companies.map(&:sym).join(', '))
       end
