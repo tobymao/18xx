@@ -8,6 +8,7 @@ require 'view/game/bank'
 require 'view/game/stock_market'
 require 'view/game/tranches'
 require 'view/game/actionable'
+require 'lib/truncate'
 
 FLOATED = 2
 UNFLOATED = 1
@@ -566,7 +567,6 @@ module View
 
         bank_market_props = { style: { color: n_market_shares.zero? ? 'transparent' : 'inherit' } }
         bank_market_props[:style][:borderRight] = border_style unless @corporations_first
-        puts bank_market_props
         bank_row_content = [
           *reserved,
           h('td.padded_number', {
@@ -585,7 +585,7 @@ module View
           h('td.padded_number', market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         ]
 
-        corporation_row_content = @corporations_first ? [corporation.owner&.name] : []
+        corporation_row_content = @corporations_first ? [corporation.owner&.name&.truncate] : []
         corporation_row_content.concat([
           h('td.padded_number', @game.format_currency(corporation.cash)),
           *treasury,
