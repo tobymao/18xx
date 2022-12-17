@@ -646,7 +646,7 @@ module Engine
         end
 
         def london_bonus(corporation, stops)
-          london_bonus_city = hex_by_id(LONDON_BONUS_FERRY_SUPPLY_HEX).tile.towns.first
+          london_bonus_city = hex_by_id(LONDON_BONUS_FERRY_SUPPLY_HEX).tile.cities.first
 
           return 0 if !london_bonus_city.tokened_by?(corporation) || stops.none? { |s| s.hex.id == LONDON_HEX }
 
