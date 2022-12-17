@@ -29,6 +29,7 @@ module View
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
         @delta_value = Lib::Storage['spreadsheet_delta_value']
         @hide_not_floated = Lib::Storage['spreadsheet_hide_not_floated']
+        @corporations_first = Lib::Storage['spreadsheet_corporations_first'] 
 
         h('div#spreadsheet', {
             style: {
@@ -57,9 +58,11 @@ module View
       end
 
       def render_player_table
+        first_header = @corporations_first ? render_player_names_header : h(:thead)
+
         h('div#player_table', { style: { float: 'left', marginRight: '1rem' } }, [
           h(:table, table_props, [
-            h(:thead),
+            first_header,
             h('tbody#player_details', [
               render_player_cash,
               render_player_value,
@@ -68,15 +71,19 @@ module View
               render_player_companies,
               render_player_certs,
             ]),
-            h(:thead, [
-              h(:th, { style: { minWidth: '5rem' } }, ''),
-              *@game.players.map do |p|
-                h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', p.name)
-              end,
-            ]),
+            render_player_names_header,
             h('tbody#player_or_history', [*render_player_or_history]),
           ]),
           render_spreadsheet_controls,
+        ])
+      end
+
+      def render_player_names_header
+        player_names_header = h(:thead, [
+          h(:th, { style: { minWidth: '5rem' } }, ''),
+          *@game.players.map do |p|
+            h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', p.name)
+          end,
         ])
       end
 
@@ -216,36 +223,74 @@ module View
           reserved_header << h(:th, render_sort_link(@game.ipo_reserved_name, :reserved_shares))
         end
 
+        titles = []
+        bank_props_right_border = @corporations_first ? false : true
+        corporation_props_right_border = @corporations_first ? true : false
+        corporation_props_size = (@corporations_first ? 6 : 5) + extra.size + treasury.size
+
+        players_title = h(:th, th_props[@game.players.size], 'Players')
+        prices_title = h(:th, th_props[2], 'Prices')
+        bank_title = h(:th, th_props[bank_width, bank_props_right_border], 'Bank')
+        corporation_title = h(:th, th_props[corporation_props_size, corporation_props_right_border], ['Corporation ', render_toggle_not_floated_link])
+
+        subtitles = []
+        players_subtitles = []
+        @game.players.map do |p|
+          props = p == @game.priority_deal_player ? pd_props : { style: {} }
+          props[:style][:minWidth] = min_width(p)
+          players_subtitles << h('th.name.nowrap', props, render_sort_link(p.name, p.id))
+        end
+        bank_subtitles = [
+          *reserved_header,
+          h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
+          h(:th, render_sort_link('Market', :market_shares)),
+        ]
+        prices_subtitles = [
+          h(:th, render_sort_link(@game.ipo_name, :par_price)),
+          h(:th, render_sort_link('Market', :share_price)),
+        ]
+        corporation_subtitles = @corporations_first ? [h(:th, render_sort_link('President', :president))] : []
+        corporation_subtitles.concat([
+          h(:th, render_sort_link('Cash', :cash)),
+          *treasury,
+          h(:th, render_sort_link('Order', :order)),
+          h(:th, render_sort_link('Trains', :trains)),
+          h(:th, render_sort_link('Tokens', :tokens)),
+          *extra,
+          h(:th, render_sort_link('Companies', :companies)),
+        ])
+
+        if @corporations_first
+          titles << corporation_title
+          titles << prices_title
+          titles << players_title
+          titles << bank_title
+          subtitles.concat(corporation_subtitles)
+          subtitles.concat(prices_subtitles)
+          subtitles.concat(players_subtitles)
+          subtitles.concat(bank_subtitles)
+        else
+          titles << players_title
+          titles << bank_title
+          titles << prices_title
+          titles << corporation_title
+          subtitles.concat(players_subtitles)
+          subtitles.concat(bank_subtitles)
+          subtitles.concat(prices_subtitles)
+          subtitles.concat(corporation_subtitles)
+        end
+
         [
           h(:tr, [
             h(:th, { style: { minWidth: '5rem' } }, ''),
-            h(:th, th_props[@game.players.size], 'Players'),
-            h(:th, th_props[bank_width], 'Bank'),
-            h(:th, th_props[2], 'Prices'),
-            h(:th, th_props[5 + extra.size + treasury.size, false], ['Corporation ', render_toggle_not_floated_link]),
+            *titles,
             h(:th, ''),
             *connection_run_header,
             h(:th, th_props[or_history_titles.size, false], 'OR History'),
           ]),
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
-            *@game.players.map do |p|
-              props = p == @game.priority_deal_player ? pd_props : { style: {} }
-              props[:style][:minWidth] = min_width(p)
-              h('th.name.nowrap', props, render_sort_link(p.name, p.id))
-            end,
-            *reserved_header,
-            h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
-            h(:th, render_sort_link('Market', :market_shares)),
-            h(:th, render_sort_link(@game.ipo_name, :par_price)),
-            h(:th, render_sort_link('Market', :share_price)),
-            h(:th, render_sort_link('Cash', :cash)),
-            *treasury,
-            h(:th, render_sort_link('Order', :order)),
-            h(:th, render_sort_link('Trains', :trains)),
-            h(:th, render_sort_link('Tokens', :tokens)),
-            *extra,
-            h(:th, render_sort_link('Companies', :companies)),
+            *subtitles,
             h(:th, ''),
             *connection_run_subheader,
             *or_history_titles,
@@ -290,6 +335,11 @@ module View
         update
       end
 
+      def toggle_corporations_first
+        Lib::Storage['spreadsheet_corporations_first'] = !@corporations_first
+        update
+      end
+
       def render_toggle_not_floated_link
         toggle = lambda do
           Lib::Storage['spreadsheet_hide_not_floated'] = !@hide_not_floated
@@ -322,6 +372,11 @@ module View
               on: { click: -> { toggle_delta_value } },
             },
             "Show #{@delta_value ? 'Total' : 'Delta'} Values"),
+          h(:button, {
+              style: { minWidth: '9.5rem' },
+              on: { click: -> { toggle_corporations_first } },
+            },
+            "#{@corporations_first ? 'Players' : 'Corporations'} First"),
         ])
       end
 
