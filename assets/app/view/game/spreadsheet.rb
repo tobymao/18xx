@@ -30,7 +30,7 @@ module View
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
         @delta_value = Lib::Storage['spreadsheet_delta_value']
         @hide_not_floated = Lib::Storage['spreadsheet_hide_not_floated']
-        @corporations_first = Lib::Storage['spreadsheet_corporations_first'] 
+        @corporations_first = Lib::Storage['spreadsheet_corporations_first']
 
         h('div#spreadsheet', {
             style: {
@@ -80,7 +80,7 @@ module View
       end
 
       def render_player_names_header
-        player_names_header = h(:thead, [
+        h(:thead, [
           h(:th, { style: { minWidth: '5rem' } }, ''),
           *@game.players.map do |p|
             h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', p.name)
@@ -232,7 +232,8 @@ module View
         players_title = h(:th, th_props[@game.players.size], 'Players')
         prices_title = h(:th, th_props[2], 'Prices')
         bank_title = h(:th, th_props[bank_width, bank_props_right_border], 'Bank')
-        corporation_title = h(:th, th_props[corporation_props_size, corporation_props_right_border], ['Corporation ', render_toggle_not_floated_link])
+        corporation_title = h(:th, th_props[corporation_props_size, corporation_props_right_border],
+                              ['Corporation ', render_toggle_not_floated_link])
 
         subtitles = []
         players_subtitles = []
@@ -582,7 +583,8 @@ module View
 
         prices_row_content = [
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
-          h('td.padded_number', market_props, corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+          h('td.padded_number', market_props,
+            corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         ]
 
         corporation_row_content = @corporations_first ? [corporation.owner&.name&.truncate] : []
@@ -635,7 +637,7 @@ module View
         elsif @corporations_first
           props = {
             style: {
-              borderRight: "1px solid #{color_for(:font2)}"
+              borderRight: "1px solid #{color_for(:font2)}",
             },
           }
         end
