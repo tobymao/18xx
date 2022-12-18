@@ -423,6 +423,7 @@ module Engine
 
           @log << "#{corporation.id} places a token on #{hex_id} (#{hex.location_name}) as the city is green"
           @second_tokens_in_green.delete(hex_id)
+          @graph.clear
         end
 
         def num_trains(train)
