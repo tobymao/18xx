@@ -296,7 +296,7 @@ module Engine
               abilities(corporation, :reservation) do |ability|
                 corporation.remove_ability(ability)
               end
-              place_second_token(corporation, **place_second_token_kwargs)
+              place_second_token(corporation, **place_second_token_kwargs(corporation))
             end
           end
           @log << "Privates in the game: #{@companies.reject { |c| c.name.include?('Pass') }.map(&:name).sort.join(', ')}"
@@ -385,8 +385,8 @@ module Engine
           two_player? ? [NORTH_GROUP, SOUTH_GROUP] : [GREEN_GROUP]
         end
 
-        def place_second_token_kwargs
-          { deferred: true }
+        def place_second_token_kwargs(corporation = nil)
+          { deferred: corporation != erie }
         end
 
         def place_second_token(corporation, two_player_only: true, deferred: true)
@@ -536,6 +536,10 @@ module Engine
 
         def lake_shore_line
           @lake_shore_line ||= company_by_id('LSL')
+        end
+
+        def erie
+          @erie ||= corporation_by_id('ERIE')
         end
 
         def illinois_central

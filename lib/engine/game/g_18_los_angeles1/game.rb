@@ -82,7 +82,7 @@ module Engine
           [GREEN_GROUP]
         end
 
-        def place_second_token_kwargs
+        def place_second_token_kwargs(_corporation)
           { two_player_only: false, deferred: false }
         end
 
