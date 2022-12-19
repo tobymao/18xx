@@ -2249,7 +2249,7 @@ module Engine
         end
 
         stubs = Hash.new { |k, v| k[v] = [] }
-        (companies + minors + corporations).uniq.each do |company|
+        (companies + minors + corporations).each do |company|
           abilities(company, :stubs) do |ability|
             ability.hex_edges.each do |hex, edges|
               [edges].flatten.each do |edge|

@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/exchange'
-require_relative 'company_exchange'
+require_relative 'private_exchange'
 
 module Engine
   module Game
     module G1858
       module Step
         class Exchange < Engine::Step::Exchange
-          include CompanyExchange
+          include PrivateExchange
 
           def actions(entity)
-            if entity.minor?
+            if entity.company? || entity.minor?
               ['buy_shares']
             else
               []
@@ -21,26 +21,26 @@ module Engine
           def process_buy_shares(action)
             bundle = action.bundle
             corporation = bundle.corporation
-            company = action.entity
-            player = company.owner
+            minor = action.entity
+            player = minor.owner
 
-            acquire_company(corporation, company)
+            acquire_private(corporation, minor)
             if bundle.percent == 40
-              exchange_for_presidency(bundle, corporation, company, player)
+              exchange_for_presidency(bundle, corporation, minor, player)
               @round.current_actions << action
             else
-              exchange_for_share(bundle, corporation, company, player)
-              claim_token(corporation, company)
+              exchange_for_share(bundle, corporation, minor, player)
+              claim_token(corporation, minor)
               # Need to add an action to the action log, but this can't be a
               # buy shares action as that would end the current player's turn.
-              @round.current_actions << Engine::Action::Base.new(company)
+              @round.current_actions << Engine::Action::Base.new(minor)
             end
           end
 
           def exchange_for_presidency(bundle, corporation, company, player)
             raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, player)
 
-            share_price = company.par_price(@game.stock_market)
+            share_price = @game.par_price(company)
             @game.stock_market.set_par(corporation, share_price)
             @round.players_bought[player][corporation] += bundle.percent
             @log << "#{player.name} exchanges #{company.name} and " \

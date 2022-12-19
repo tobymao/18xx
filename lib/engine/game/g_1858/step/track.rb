@@ -127,12 +127,13 @@ module Engine
 
             # Need to check twice whether this tile is OK, once using routes along
             # broad/dual gauge track, and once allow metre/dual gauge.
-            # The check for private railways home hexes is needed in case a private
-            # builds plain track that's not connected to a revenue centre, it will
-            # not be classed as a connected path.
             if !valid_tile_lay?(entity, old_tile, new_tile, @game.graph_broad) &&
-                !valid_tile_lay?(entity, old_tile, new_tile, @game.graph_metre) &&
-                !(entity.minor? && entity.home_hex?(new_tile.hex))
+                !valid_tile_lay?(entity, old_tile, new_tile, @game.graph_metre)
+              # # The check for private railways home hexes is needed in case a private
+              # # builds plain track that's not connected to a revenue centre, it will
+              # # not be classed as a connected path.
+              # XXX Is this still needed after the graphing changes? XXX
+              # && !(entity.minor? && entity.home_hex?(new_tile.hex))
               raise GameError, 'Must use new track or change city value'
             end
           end
@@ -159,13 +160,13 @@ module Engine
 
           # Finds whether track lays in a hex are blocked by a private company.
           # Some hexes are blocked by two private companies. In this case either
-          # one can lay track in the hex. Track can also be laid in a blocked
-          # hex if a corporation owns the blocking company.
+          # one can lay track in the hex.
           def ability_blocking_hex(operator, hex)
             return false unless hex.tile.color == :white # Upgrades are never blocked.
 
-            blocking_abilities = @game.companies.reject(&:closed?).map do |company|
-              ability = @game.abilities(company, :blocks_hexes)
+            privates = (@game.companies + @game.minors).reject(:closed?)
+            blocking_abilities = privates.map do |entity|
+              ability = @game.abilities(entity, :blocks_hexes)
               next unless ability
 
               ability if @game.hex_blocked_by_ability?(operator, ability, hex)
@@ -173,9 +174,9 @@ module Engine
             return false unless blocking_abilities.any?
 
             # This hex is blocked by something. Check if this can be ignored.
-            blocking_abilities.all? do |ability|
-              company = ability.owner
-              (operator != company) && (operator != company.owner)
+            blocking_abilities.none? do |ability|
+              blocker = ability.owner
+              (operator == blocker) || (operator == blocker.owner)
             end
           end
         end
