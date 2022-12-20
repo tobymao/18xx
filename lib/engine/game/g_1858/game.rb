@@ -403,6 +403,15 @@ module Engine
           end
         end
 
+        def submit_revenue_str(routes, _show_subsidy)
+          corporation = current_entity
+          train_revenue = super
+          return train_revenue if corporation.companies.none?
+
+          private_revenue = format_revenue_currency(corporation.companies.sum(&:revenue))
+          "#{train_revenue} train + #{private_revenue} private revenue"
+        end
+
         def event_green_privates_available!
           @log << '-- Event: Green private companies can be started --'
           # Don't need to change anything, the check in buyable_bank_owned_companies
@@ -596,17 +605,6 @@ module Engine
           # Don't show abilities buttons in a stock round for the companies
           # owned by the player.
           false
-        end
-
-        def revenue_bonuses(corporation)
-          corporation.companies.map do |company|
-            {
-              name: company.id,
-              used: 'n/a',
-              revenue: company.revenue,
-              route: 'n/a',
-            }
-          end
         end
       end
     end

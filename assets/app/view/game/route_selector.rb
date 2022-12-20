@@ -167,27 +167,6 @@ module View
           ]
         end
 
-        bonuses = @game.revenue_bonuses(current_entity).map do |bonus|
-          style = {
-            border: "solid 1px #{color_for(:font)}",
-            display: 'inline-block',
-            margin: '0.1rem 0rem',
-            padding: '3px 6px',
-            minWidth: '1.5rem',
-            textAlign: 'center',
-            whiteSpace: 'nowrap',
-          }
-          td_props = { style: { paddingRight: '0.8rem' } }
-          revenue = @game.format_revenue_currency(bonus[:revenue])
-          children = [
-            h('td.middle', [h(:div, { style: style }, bonus[:name])]),
-            h('td.right.middle', td_props, bonus[:used]),
-            h('td.right.middle', td_props, revenue),
-            h('td.left.middle', bonus[:route]),
-          ]
-          h(:tr, children)
-        end
-
         div_props = {
           key: 'route_selector',
           hook: {
@@ -223,7 +202,7 @@ module View
                 h(:th, th_route_props, 'Route'),
               ]),
             ]),
-            h(:tbody, trains + bonuses),
+            h(:tbody, trains),
           ]),
           actions(render_halts),
           dividend_chart,
@@ -328,7 +307,7 @@ module View
         }
 
         revenue_str = begin
-          @game.submit_revenue_str(active_routes, render_halts, @game.revenue_bonuses(current_entity))
+          @game.submit_revenue_str(active_routes, render_halts)
         rescue Engine::GameError
           '(Invalid Route)'
         end

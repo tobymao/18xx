@@ -9,7 +9,7 @@ module Engine
         class Route < Engine::Step::Route
           def actions(entity)
             return [] unless entity.corporation?
-            return [] if entity.runnable_trains.empty? && entity.companies.empty?
+            return [] if entity.runnable_trains.empty?
 
             ACTIONS
           end
@@ -28,7 +28,10 @@ module Engine
           end
 
           def log_skip(entity)
-            super unless entity.minor?
+            return if entity.minor?
+
+            super
+            log_company_revenue(entity)
           end
         end
       end
