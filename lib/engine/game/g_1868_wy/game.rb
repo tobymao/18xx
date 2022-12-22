@@ -3,12 +3,14 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'share_pool'
 require_relative 'trains'
 require_relative 'step/buy_company'
 require_relative 'step/buy_train'
 require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
 require_relative 'step/dividend'
+require_relative 'step/double_share_protection'
 require_relative 'step/manual_close_company'
 require_relative 'step/route'
 require_relative 'step/stock_round_action'
@@ -35,7 +37,7 @@ module Engine
         include StubsAreRestricted
         include SwapColorAndStripes
 
-        attr_accessor :double_headed_trains
+        attr_accessor :double_headed_trains, :up_double_share_protection
 
         # overrides
         BANK_CASH = 99_999
@@ -121,6 +123,10 @@ module Engine
 
         WIND_RIVER_CANYON_HEX = 'F12'
 
+        # special shares
+        UP_PRESIDENTS_SHARE = 'UP_0'
+        UP_DOUBLE_SHARE = 'UP_7'
+
         def dotify(tile)
           tile.towns.each { |town| town.style = :dot }
           tile
@@ -161,14 +167,35 @@ module Engine
           @available_par_groups = %i[par]
 
           @double_headed_trains = []
+
+          # reserve the double share for Ames Bros exchange
+          union_pacific.shares.last.buyable = false
+          up_double_share.double_cert = true
+          @up_double_share_protection = {}
+        end
+
+        def init_share_pool
+          G1868WY::SharePool.new(self)
+        end
+
+        def union_pacific
+          @union_pacific ||= corporation_by_id('UP')
+        end
+
+        def up_presidency
+          @up_presidency ||= share_by_id(self.class::UP_PRESIDENTS_SHARE)
+        end
+
+        def up_double_share
+          @up_double_share ||= share_by_id(self.class::UP_DOUBLE_SHARE)
         end
 
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             G1868WY::Step::ManualCloseCompany,
+            G1868WY::Step::DoubleShareProtection,
             G1868WY::Step::StockRoundAction,
           ])
         end
@@ -182,7 +209,6 @@ module Engine
           G1868WY::Round::Operating.new(self, [
             G1868WY::Step::DevelopmentToken,
             Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             G1868WY::Step::BuyCompany,
             G1868WY::Step::ManualCloseCompany,
@@ -191,6 +217,7 @@ module Engine
             G1868WY::Step::DoubleHeadTrains,
             G1868WY::Step::Route,
             G1868WY::Step::Dividend,
+            G1868WY::Step::DoubleShareProtection,
             Engine::Step::DiscardTrain,
             G1868WY::Step::BuyTrain,
             [G1868WY::Step::BuyCompany, { blocks: true }],
@@ -205,6 +232,8 @@ module Engine
         end
 
         def init_round_finished
+          up_double_share.buyable = true unless ames_bros.player
+
           durant.close!
           @log << "#{durant.name} closes"
         end
@@ -760,6 +789,159 @@ module Engine
 
         def update_trains_cache
           update_cache(:trains)
+        end
+
+        def abilities(entity, type = nil, **kwargs)
+          if type == :exchange
+            return unless entity == ames_bros
+            return unless active_step.is_a?(G1868WY::Step::StockRoundAction)
+            return if active_step.sold? || active_step.bought? || active_step.tokened?
+          end
+
+          super
+        end
+
+        def bundles_for_corporation(share_holder, corporation, shares: nil)
+          return [] unless corporation.ipoed
+
+          shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
+
+          bundles = shares.flat_map.with_index do |share, index|
+            bundle = shares.take(index + 1)
+            percent = bundle.sum(&:percent)
+            bundles = [Engine::ShareBundle.new(bundle, percent)]
+            bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if share.president
+            bundles
+          end
+
+          # handle the UP double share
+          if corporation == union_pacific && shares.include?(up_double_share)
+            # player may swap with a normal share in the market to sell only 10%
+            # of the double share
+            if share_holder.player? && (10..40).cover?(@share_pool.percent_of(union_pacific))
+              bundles << up_double_share.to_bundle(10)
+            end
+
+            # double share may be sold by player or bought directly from UP
+            # treasury while other shares are present (but may not be bought
+            # from the market if other shares are there)
+            bundles << up_double_share.to_bundle if shares.size > 1 && share_holder != @share_pool
+          end
+
+          bundles.sort_by(&:percent)
+        end
+
+        def event_close_ames_brothers!
+          return if ames_bros.closed?
+
+          player = ames_bros.owner
+          cash = union_pacific.share_price.price * 2
+          @log << "Company #{ames_bros.name} closes."
+          @log << "#{player.name} exchanges the #{ames_bros.id} certificate for the Ames Brothers "\
+                  "20% share of UP, and UP receives #{format_currency(cash)} from the bank"
+
+          up_double_share.buyable = true
+          @share_pool.buy_shares(player, up_double_share, exchange: :free, allow_president_change: true, silent: true)
+          @bank.spend(cash, union_pacific)
+          ames_bros.close!
+        end
+
+        def before_sell_up(bundle)
+          return unless (corporation = bundle.corporation) == union_pacific
+          return unless corporation.president?(president = bundle.owner)
+          return unless (double_holder = up_double_share.owner).player?
+          return if president == double_holder
+
+          {
+            president: president,
+            double_holder: double_holder,
+            share_price: corporation.share_price,
+            num_shares: bundle.num_shares,
+            bundle_share_price: bundle.share_price,
+          }
+        end
+
+        def after_sell_up(bundle, before)
+          return unless before
+          return unless (president = union_pacific.owner) == before[:double_holder]
+          return unless up_double_share.owner == @share_pool
+
+          singles = {
+            president: president.shares_of(union_pacific).reject(&:president),
+            share_pool: @share_pool.shares_of(union_pacific).reject(&:double_cert),
+          }
+          return if singles.values.sum(&:size) < 2
+
+          # if the player who held the double share chooses to protect, they buy
+          # `num_buyable` shares and the price becomes `share_price`; if the UP
+          # dump happened on/near a ledge, protection might not increase the
+          # price
+          num_buyable = [2 - singles[:president].size, 0].max
+          return if president.cash < (before[:share_price].price * num_buyable)
+
+          net_sold = before[:num_shares] - num_buyable
+          share_price = @stock_market.find_relative_share_price(before[:share_price], [:up] * net_sold)
+
+          after = {
+            president: president,
+            num_buyable: num_buyable,
+            share_price: share_price,
+          }
+
+          # if shares will be bought from the pool to protect the double share,
+          # the price will increase and the net drop from selling shares will be
+          # lessened; therefore, if the president sold the shares before UP
+          # operated, they will be owed additional cash since pre-operational shares
+          # are sold at their final share price, and the true final price will
+          # not be reached until after the double share is protected
+          if before[:bundle_share_price] == union_pacific.share_price.price
+            price_delta = share_price.price - before[:bundle_share_price]
+            cash = price_delta * bundle.num_shares
+            after[:cash] = cash if cash.positive?
+          end
+
+          after
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          before = before_sell_up(bundle)
+          super
+          return unless (after = after_sell_up(bundle, before))
+
+          @up_double_share_protection = {
+            prev_president: before[:president],
+            player: after[:president],
+            num_buyable: after[:num_buyable],
+            buy_at_price: before[:share_price],
+            new_price: after[:share_price],
+            cash: after[:cash],
+          }
+
+          swap_up_double_share_and_presidency!
+        end
+
+        def swap_up_double_share_and_presidency!
+          old_pres = up_presidency.owner
+          old_double = up_double_share.owner
+
+          share_pool.move_share(up_presidency, old_double)
+          share_pool.move_share(up_double_share, old_pres)
+          union_pacific.owner = old_double
+        end
+
+        def up_protection_player_bundle
+          return unless @up_double_share_protection[:num_buyable] < 2
+
+          player = @up_double_share_protection[:player]
+          shares = player.shares_of(union_pacific).reject(&:double_cert)
+          Engine::ShareBundle.new(shares)
+        end
+
+        def event_close_privates!
+          case @phase.name
+          when '5'
+            event_close_ames_brothers!
+          end
         end
       end
     end
