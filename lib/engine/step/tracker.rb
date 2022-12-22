@@ -50,7 +50,6 @@ module Engine
 
       def lay_tile_action(action, entity: nil, spender: nil)
         tile = action.tile
-        raise GameError, "Cannot lay tile #{tile.id} on #{action.hex.id}; it is already on #{tile.hex.id}" if tile.hex
 
         old_tile = action.hex.tile
         tile_lay = get_tile_lay(action.entity)
