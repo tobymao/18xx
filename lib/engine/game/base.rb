@@ -2236,22 +2236,6 @@ module Engine
           end
         end
 
-        stubs = Hash.new { |k, v| k[v] = [] }
-        (companies + minors + corporations).each do |company|
-          abilities(company, :stubs) do |ability|
-            ability.hex_edges.each do |hex, edges|
-              [edges].flatten.each do |edge|
-                stubs[hex] << {
-                  hex: hex,
-                  edge: edge,
-                  owner: company,
-                  ability: ability,
-                }
-              end
-            end
-          end
-        end
-
         optional_hexes.map do |color, hexes|
           hexes.map do |coords, tile_string|
             coords.map.with_index do |coord, index|
@@ -2277,11 +2261,6 @@ module Engine
               reservations[coord].each do |res|
                 res[:ability].tile = tile if res[:ability]
                 tile.add_reservation!(res[:entity], res[:city], res[:slot])
-              end
-
-              stubs[coord].each do |stub|
-                stub[:ability].tiles |= [tile]
-                tile.stubs << Part::Stub.new(stub[:edge], owner: stub[:owner])
               end
 
               # name the location (city/town)

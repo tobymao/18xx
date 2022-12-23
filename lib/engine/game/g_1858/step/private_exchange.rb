@@ -12,7 +12,7 @@ module Engine
             company = @game.private_company(entity)
             minor = @game.private_minor(entity)
 
-            release_stubs(minor)
+            @game.release_stubs(minor)
             transfer_abilities(minor, company)
             minor.close!
             player.companies.delete(company)
@@ -29,15 +29,6 @@ module Engine
             return unless blocker
 
             company.add_ability(blocker)
-          end
-
-          # Removes the stubs from the private railway's home hexes.
-          def release_stubs(minor)
-            # TODO: this needs to be redone without the Stubs ability.
-            stubs = @game.abilities(minor, :stubs)
-            return unless stubs
-
-            minor.remove_ability(stubs)
           end
 
           def exchange_for_share(bundle, corporation, minor, player)

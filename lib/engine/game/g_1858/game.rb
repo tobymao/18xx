@@ -111,6 +111,8 @@ module Engine
 
           @unbuyable_companies = []
           setup_unbuyable_privates
+
+          @stubs = setup_stubs
         end
 
         # Some private railways cannot be bought in the two-player variant:
@@ -131,6 +133,39 @@ module Engine
             company.desc = company.desc.sub(rx, '\1. \2. Cannot be purchased in this game.')
             @unbuyable_companies << company
           end
+        end
+
+        # Create stubs along the routes of the private railways.
+        def setup_stubs
+          stubs = Hash.new { |k, v| k[v] = [] }
+          @minors.each do |minor|
+            next unless minor.coordinates.size > 1
+
+            home_hexes = hexes.select { |hex| minor.coordinates.include?(hex.coordinates) }
+            home_hexes.each do |hex|
+              tile = hex.tile
+              next unless tile.color == :white
+
+              hex.neighbors.each do |edge, neighbor|
+                next unless home_hexes.include?(neighbor)
+
+                stub = Engine::Part::Stub.new(edge)
+                tile.stubs << stub
+                stubs[minor] << { tile: tile, stub: stub }
+              end
+            end
+          end
+
+          stubs
+        end
+
+        # Removes the stubs from the private railway's home hexes.
+        def release_stubs(minor)
+          stubs = @stubs[minor]
+          return unless stubs
+
+          stubs.each { |tile:, stub:| tile.stubs.delete(stub) }
+          @stubs.delete(minor)
         end
 
         def clear_graph_for_entity(_entity)
@@ -597,6 +632,7 @@ module Engine
           company = private_company(entity)
           minor = private_minor(entity)
 
+          release_stubs(minor)
           minor&.close!
           close_company(company)
         end

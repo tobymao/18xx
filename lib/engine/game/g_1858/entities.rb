@@ -194,7 +194,6 @@ module Engine
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 33, on_phase: '3' },
               { type: 'reservation', hex: 'B9' },
-              { type: 'stubs', hex_edges: { B9: 0, B11: 3 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -701,7 +700,6 @@ module Engine
             coordinates: %w[A14 B13],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[B13] },
-              { type: 'stubs', hex_edges: { B13: 1 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -722,7 +720,6 @@ module Engine
             city: [0, 1],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[G8 G10] },
-              { type: 'stubs', hex_edges: { G8: 0, G10: [3, 5] } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -742,7 +739,6 @@ module Engine
             coordinates: %w[I10 J9 K8 L7],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[I10 J9 K8] },
-              { type: 'stubs', hex_edges: { I10: 4, J9: [1, 4], K8: [1, 4] } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -762,7 +758,6 @@ module Engine
             coordinates: %w[E18 F17 G18],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[E18 F17 G18] },
-              { type: 'stubs', hex_edges: { E18: 4, F17: [1, 5], G18: 2 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -782,7 +777,6 @@ module Engine
             coordinates: %w[E18 E20],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[E18 E20] },
-              { type: 'stubs', hex_edges: { E18: 0, E20: 3 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -802,7 +796,6 @@ module Engine
             coordinates: %w[K4 K6 L7],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[K4 K6] },
-              { type: 'stubs', hex_edges: { K4: 0, K6: [3, 5] } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -841,7 +834,6 @@ module Engine
             coordinates: %w[G18 G20],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[G18 G20] },
-              { type: 'stubs', hex_edges: { G18: 0, G20: 3 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -858,10 +850,9 @@ module Engine
             color: :yellow,
             text_color: :black,
             logo: '1858/MC',
-            coordinates: %w[K18],
+            coordinates: %w[K18 L19],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[K18] },
-              { type: 'stubs', hex_edges: { K18: 5 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -881,7 +872,6 @@ module Engine
             coordinates: %w[G4 H3],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[G4 H3] },
-              { type: 'stubs', hex_edges: { G4: 4, H3: 1 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -901,7 +891,6 @@ module Engine
             coordinates: %w[D15 E14 F15],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[D15 E14 F15] },
-              { type: 'stubs', hex_edges: { D15: 4, E14: [1, 5], F15: 2 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -921,7 +910,6 @@ module Engine
             coordinates: %w[C2 C4],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[C2 C4] },
-              { type: 'stubs', hex_edges: { C2: 0, C4: 3 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -961,7 +949,6 @@ module Engine
             city: 0,
             abilities: [
               { type: 'blocks_hexes', hexes: %w[D13 E12 F13 G12] },
-              { type: 'stubs', hex_edges: { D13: 4, E12: [1, 5], F13: [2, 4], G12: [1, 4] } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -981,7 +968,6 @@ module Engine
             coordinates: %w[B5 C4],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[B5 C4] },
-              { type: 'stubs', hex_edges: { B5: 4, C4: 1 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -1001,7 +987,6 @@ module Engine
             coordinates: %w[F1 F3 F5],
             abilities: [
               { type: 'blocks_hexes', hexes: %w[F3 F5] },
-              { type: 'stubs', hex_edges: { F3: [0, 3], F5: 3 } },
               {
                 type: 'exchange',
                 owner_type: 'player',
