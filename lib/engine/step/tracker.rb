@@ -50,6 +50,7 @@ module Engine
 
       def lay_tile_action(action, entity: nil, spender: nil)
         tile = action.tile
+
         old_tile = action.hex.tile
         tile_lay = get_tile_lay(action.entity)
         raise GameError, 'Cannot lay an upgrade now' if track_upgrade?(old_tile, tile,

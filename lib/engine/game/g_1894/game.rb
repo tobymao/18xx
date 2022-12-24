@@ -4,7 +4,6 @@ require_relative '../base'
 require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
-require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
@@ -20,7 +19,7 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
+        CERT_LIMIT = { 3 => 17, 4 => 13 }.freeze
 
         STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
 
@@ -171,7 +170,7 @@ module Engine
                   {
                     name: '4',
                     distance: 4,
-                    price: 300,
+                    price: 280,
                     rusts_on: '7',
                     num: 4,
                     discount: { '3' => 70 },
@@ -181,9 +180,9 @@ module Engine
                     distance: 5,
                     price: 400,
                     rusts_on: 'D',
-                    num: 3,
+                    num: 4,
                     events: [{ 'type' => 'late_corporations_available' }],
-                    discount: { '4' => 150 },
+                    discount: { '4' => 140 },
                   },
                   {
                     name: '6',
@@ -196,8 +195,8 @@ module Engine
                   {
                     name: '7',
                     distance: 7,
-                    price: 710,
-                    num: 3,
+                    price: 700,
+                    num: 4,
                     discount: { '6' => 300 },
                   },
                   {
@@ -206,7 +205,7 @@ module Engine
                     price: 820,
                     num: 22,
                     events: [{ 'type' => 'last_or_set_triggered' }],
-                    discount: { '5' => 200, '6' => 300, '7' => 355 },
+                    discount: { '5' => 200, '6' => 300, '7' => 350 },
                   }].freeze
 
         LAYOUT = :pointy
@@ -262,6 +261,7 @@ module Engine
         SQ_HEX = 'G10'
         BRUXELLES_HEX = 'F15'
 
+        AL_YELLOW_TILES = %w[X3a X3b].freeze
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
         BROWN_CITY_14_UPGRADE_TILES = %w[X14 X15 36].freeze
@@ -277,7 +277,7 @@ module Engine
         FRENCH_LATE_CORPORATIONS = %w[LF].freeze
         FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 H7 I8].freeze
         BELGIAN_LATE_CORPORATIONS = %w[LB].freeze
-        BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 H17].freeze
+        BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 G18 H17].freeze
 
         DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
 
@@ -408,7 +408,6 @@ module Engine
 
         def init_round_finished
           @players.rotate!(@round.entity_index)
-          stock_market.remove_par!(stock_market.share_price(1, 5))
         end
 
         def assignment_tokens(assignment)
@@ -420,6 +419,10 @@ module Engine
         def init_stock_market
           StockMarket.new(self.class::MARKET, [:unlimited],
                           multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def par_prices
+          stock_market.par_prices.reject { |p| p.price == 100 }
         end
 
         def ipo_reserved_name(_entity = nil)
@@ -606,6 +609,7 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return GREEN_CITY_TILES.include?(to.name) if AL_YELLOW_TILES.include?(from.hex.tile.name)
           return BROWN_CITY_14_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
@@ -731,7 +735,7 @@ module Engine
         end
 
         def block_london
-          london = hex_by_id(LONDON_HEX).tile.cities.first
+          london = hex_by_id(LONDON_HEX).tile.towns.first
           london.instance_variable_set(:@game, self)
 
           def london.blocks?(corporation)

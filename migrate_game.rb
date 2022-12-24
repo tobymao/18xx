@@ -54,6 +54,9 @@ def repair(game, original_actions, actions, broken_action)
       actions.delete(prev_action)
     end
     return
+  elsif game.is_a?(Engine::Game::G21Moon::Game) and game.active_step.is_a?(Engine::Step::BuySellParShares)
+    add_pass.call
+    return
   elsif broken_action['type'] == 'buy_tokens'
     # 1817 no longer needs buy tokens
     actions.delete(broken_action)

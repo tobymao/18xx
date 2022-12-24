@@ -185,12 +185,12 @@ module Engine
         @round.routes
       end
 
-      def rust_obsolete_trains!(entity)
+      def rust_obsolete_trains!(entity, log: true)
         rusted_trains = entity.trains.select(&:obsolete).each do |train|
           @game.rust(train)
         end
 
-        @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
+        @log << '-- Event: Obsolete trains rust --' if log && !rusted_trains.empty?
       end
 
       def pass!

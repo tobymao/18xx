@@ -1131,7 +1131,7 @@ module Engine
         self.class::SOLD_OUT_INCREASE
       end
 
-      def log_share_price(entity, from, steps = nil)
+      def log_share_price(entity, from, steps = nil, log_steps: false)
         from_price = from.price
         to = entity.share_price
         to_price = to.price
@@ -1140,7 +1140,7 @@ module Engine
         jumps = ''
         if steps
           steps = share_jumps(steps)
-          jumps = " (#{steps} steps)" unless steps < 2
+          jumps = " (#{steps} step#{steps == 1 ? '' : 's'})" if (steps > 1) || log_steps
         end
 
         r1, c1 = from.coordinates
