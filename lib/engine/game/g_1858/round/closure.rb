@@ -39,6 +39,10 @@ module Engine
 
             super
           end
+
+          def any_to_act?
+            super || !pending_tokens.empty?
+          end
         end
       end
     end
