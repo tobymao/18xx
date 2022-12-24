@@ -41,6 +41,7 @@ module Engine
         CERT_LIMIT = { 2 => 18, 3 => 15, 4 => 12, 5 => 10 }.freeze
         STARTING_CASH = { 2 => 600, 3 => 540, 4 => 410, 5 => 340 }.freeze
         CAPITALIZATION = :incremental
+        SELL_AFTER = :any_time
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_block
         SOLD_OUT_INCREASE = true
@@ -748,7 +749,7 @@ module Engine
           routes_revenue(routes.select { |r| @train_base[r.train] == :lb || r.train.owner.receivership? })
         end
 
-        def submit_revenue_str(routes, _render_halts, _bonuses)
+        def submit_revenue_str(routes, _render_halts)
           "#{format_revenue_currency(sp_revenue(routes))} (+#{format_revenue_currency(lb_revenue(routes))} Withhold)"
         end
 

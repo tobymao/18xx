@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
-require_relative 'company_exchange'
+require_relative 'private_exchange'
 
 module Engine
   module Game
     module G1858
       module Step
         class PrivateClosure < Engine::Step::Base
-          include CompanyExchange
+          include PrivateExchange
 
           def actions(entity)
             return [] unless entity == current_entity
@@ -26,13 +26,13 @@ module Engine
           end
 
           def process_pass(action)
-            @game.close_company(action.entity)
+            @game.close_private(action.entity)
           end
 
           def log_skip(_entity); end
 
           def skip!
-            @game.close_company(current_entity)
+            @game.close_private(current_entity)
             pass!
           end
 
@@ -80,24 +80,25 @@ module Engine
             choice = decode_choice(action.choice)
             corporation = choice[:corporation]
             share_location = choice[:location]
-            company = action.entity
+            minor = action.entity
+            company = @game.private_company(minor)
             player = company.owner
 
             share = share_chosen(corporation, share_location)
-            exchange_for_share(share, corporation, company, player)
+            exchange_for_share(share, corporation, minor, player)
 
             if share_location == 'treasury'
-              acquire_company(corporation, company)
-              claim_token(corporation, company)
+              acquire_private(corporation, minor)
+              claim_token(corporation, minor)
             else
               company.owner = @game.bank
             end
-            @game.close_company(company)
+            @game.close_private(company)
           end
 
-          def exchange_corporations(company)
+          def exchange_corporations(minor)
             @game.corporations.select do |corporation|
-              @game.company_corporation_connected?(company, corporation) &&
+              @game.corporation_private_connected?(corporation, minor) &&
                 (corporation.num_treasury_shares.positive? ||
                  corporation.num_market_shares.positive?)
             end

@@ -12,6 +12,8 @@ module Engine
 
             end_auction! if companies_without_bids.empty?
 
+            entities.each(&:unpass!)
+
             # cheapest company without a bid gets decreased by 10
             company = companies_without_bids.first
             value = company.min_bid

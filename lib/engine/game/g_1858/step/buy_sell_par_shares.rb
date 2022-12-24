@@ -76,32 +76,33 @@ module Engine
             @game.corporations.any? { |corporation| can_convert?(corporation) }
           end
 
-          def can_exchange_for_share?(company)
+          def can_exchange_for_share?(entity)
             @game.corporations.any? do |corporation|
               corporation.num_treasury_shares.positive? &&
-              @game.company_corporation_connected?(company, corporation)
+                @game.corporation_private_connected?(corporation, entity)
             end
           end
 
-          def can_exchange_for_presidency?(company, player)
-            (company.par_price(@game.stock_market).price <= player.cash) &&
+          def can_exchange_for_presidency?(entity, player)
+            (@game.par_price(entity).price <= player.cash) &&
               @game.corporations.reject(&:ipoed).any?
           end
 
-          def can_exchange_company?(company, player)
-            company.all_abilities.any? do |ability|
+          def can_exchange?(entity, player)
+            entity.all_abilities.any? do |ability|
               next unless ability.type == :exchange
 
               if ability.corporations == 'ipoed'
-                can_exchange_for_share?(company)
+                can_exchange_for_share?(entity)
               else
-                can_exchange_for_presidency?(company, player)
+                can_exchange_for_presidency?(entity, player)
               end
             end
           end
 
-          def can_exchange_any?(entity)
-            entity.companies.any? { |company| can_exchange_company?(company, entity) }
+          def can_exchange_any?(player)
+            minors = @game.minors.select { |m| m.owner == player }
+            (player.companies + minors).any? { |entity| can_exchange?(entity, player) }
           end
 
           def process_convert(action)

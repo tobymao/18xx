@@ -58,8 +58,8 @@ module Engine
       "#{self.class.name} - #{id}"
     end
 
-    def to_bundle
-      ShareBundle.new(self)
+    def to_bundle(percent = nil)
+      ShareBundle.new(self, percent)
     end
 
     def inspect

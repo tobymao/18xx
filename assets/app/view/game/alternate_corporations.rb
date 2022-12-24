@@ -515,18 +515,18 @@ module View
       # like minor railways, laying track in operating rounds. This rendering
       # code is a simplified version of Engine::View::Game::Company.render.
       def render_private_railway
-        company = @corporation
+        minor = @corporation
 
-        select_company = lambda do
+        select_minor = lambda do
           if @selectable
-            selected_corporation = selected? ? nil : company
+            selected_corporation = selected? ? nil : minor
             store(:selected_corporation, selected_corporation)
           end
         end
 
         header_style = {
-          background: company.color,
-          color: company.text_color,
+          background: minor.color,
+          color: minor.text_color,
           border: '1px solid',
           borderRadius: '5px',
           marginBottom: '0.5rem',
@@ -553,7 +553,7 @@ module View
             textAlign: 'center',
             fontWeight: 'bold',
           },
-          on: { click: select_company },
+          on: { click: select_minor },
         }
         if selected?
           props[:style][:backgroundColor] = 'lightblue'
@@ -562,11 +562,11 @@ module View
         end
 
         children = [
-          h(:div, { style: header_style }, @game.company_header(company)),
-          h(:div, company.name),
-          h(:div, { style: description_style }, company.desc),
-          h(:div, { style: value_style }, "Value: #{@game.format_currency(company.value)}"),
-          h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(company.revenue)}"),
+          h(:div, { style: header_style }, @game.company_header(minor)),
+          h(:div, minor.full_name),
+          h(:div, { style: description_style }, @game.private_description(minor)),
+          h(:div, { style: value_style }, "Value: #{@game.private_value(minor)}"),
+          h(:div, { style: revenue_style }, "Revenue: #{@game.private_revenue(minor)}"),
         ]
 
         h('div.company.card', props, children)

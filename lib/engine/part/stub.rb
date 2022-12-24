@@ -5,11 +5,10 @@ require_relative 'base'
 module Engine
   module Part
     class Stub < Base
-      attr_reader :edge, :owner
+      attr_reader :edge
 
-      def initialize(edge, owner: nil)
+      def initialize(edge)
         @edge = edge
-        @owner = owner
       end
 
       def stub?

@@ -1363,22 +1363,22 @@ module Engine
         end
 
         def player_value(player)
-          return player.value if @finished
-
           share_prices = {}
 
-          player.cash + player.companies.sum(&:value) + player.shares.sum do |share|
-            corp = share.corporation
+          player.cash + player.companies.sum(&:value) + player.shares.sum do |cert|
+            corp = cert.corporation
             next 0 unless corp.ipoed
 
             share_prices[corp] ||=
               if corp.loans.empty?
-                share.price
+                corp.share_price.price
               else
                 # corporations with loans will move to the left once per loan when
                 # the game is over
                 stock_market.find_share_price(corp, [:left] * corp.loans.size).price
               end
+
+            share_prices[corp] * cert.num_shares
           end
         end
 
@@ -1389,13 +1389,16 @@ module Engine
           @corporations.each do |corporation|
             next if corporation.loans.empty?
 
-            @log << '-- Share prices move left one step per outstanding loan --' unless logged_drop
+            @log << '-- Loans are "paid off" by moving share price left one step per loan --' unless logged_drop
             logged_drop = true
 
             old_price = corporation.share_price
-            loans = corporation.loans.size
-            loans.times { stock_market.move_left(corporation) }
-            log_share_price(corporation, old_price, loans)
+
+            (num_loans = corporation.loans.size).times do
+              stock_market.move_left(corporation)
+              @loans << corporation.loans.pop
+            end
+            log_share_price(corporation, old_price, num_loans, log_steps: true)
           end
 
           super

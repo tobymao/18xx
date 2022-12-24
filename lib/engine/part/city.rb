@@ -50,14 +50,7 @@ module Engine
       end
 
       def find_reservation(corporation)
-        slot = @reservations.find_index { |r| r && [r, r.owner].include?(corporation) }
-
-        # Special case for 1858 where two private companies can have reservations
-        # in the same city, which only has a single slot on its yellow tile.
-        # The first of the companies to token the city takes the slot.
-        slot = 0 if (slot == 1) && (slots == 1)
-
-        slot
+        @reservations.find_index { |r| r && [r, r.owner].include?(corporation) }
       end
 
       def reserved_by?(corporation)
@@ -168,7 +161,19 @@ module Engine
         token.place(self, extra: extra_slot)
         return @extra_tokens << token if extra_slot
 
-        @tokens[get_slot(token.corporation, cheater: cheater)] = token
+        slot = get_slot(token.corporation, cheater: cheater)
+
+        # Special case for 1858 where two private companies can have reservations
+        # in the same city, which only has a single slot on its yellow tile.
+        if (slot == 1) && (normal_slots == 1) && (@reservations.size == 2)
+          # The first of the companies to token the city takes the slot.
+          slot = 0
+          # Switch the reservations so that the other company gets a reserved
+          # slot when the tile is upgraded to green.
+          @reservations.reverse!
+        end
+
+        @tokens[slot] = token
       end
 
       def reset!

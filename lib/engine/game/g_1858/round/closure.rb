@@ -9,10 +9,11 @@ module Engine
         class Closure < Engine::Round::Operating
           def setup
             @game.private_closure_round = :in_progress
-            select_entities.each do |company|
-              next unless company.owner == @game.bank
+            # Close unsold privates and the H&G.
+            @game.companies.each do |company|
+              next if (company.sym != 'H&G') && (company.owner != @game.bank)
 
-              @game.close_company(company)
+              @game.close_private(company)
             end
             super
           end
@@ -30,7 +31,7 @@ module Engine
           end
 
           def select_entities
-            @game.companies.reject(&:closed?)
+            @game.minors.reject(&:closed?)
           end
 
           def next_entity!

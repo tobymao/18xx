@@ -872,17 +872,6 @@ module Engine
         entity.runnable_trains
       end
 
-      # Revenue bonuses that should be added to the list of train revenues
-      # displayed in the route selector. This method should return an array of
-      # hashes, with each item having these keys:
-      #  - id: The label to show in the `train` column of the route selector.
-      #  - used: Text to show in the `used` column.
-      #  - revenue: The bonus revenue.
-      #  - route: Text to show in the `route` column.
-      def revenue_bonuses(_entity)
-        []
-      end
-
       def discarded_train_placement
         self.class::DISCARDED_TRAINS
       end
@@ -933,9 +922,8 @@ module Engine
         0
       end
 
-      def submit_revenue_str(routes, show_subsidy, bonuses)
-        total_revenue = routes_revenue(routes) + bonuses.sum { |bonus| bonus[:revenue] }
-        revenue_str = format_revenue_currency(total_revenue)
+      def submit_revenue_str(routes, show_subsidy)
+        revenue_str = format_revenue_currency(routes_revenue(routes))
         subsidy = routes_subsidy(routes)
         subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (subsidy)" : ''
         revenue_str + subsidy_str
@@ -1143,7 +1131,7 @@ module Engine
         self.class::SOLD_OUT_INCREASE
       end
 
-      def log_share_price(entity, from, steps = nil)
+      def log_share_price(entity, from, steps = nil, log_steps: false)
         from_price = from.price
         to = entity.share_price
         to_price = to.price
@@ -1152,7 +1140,7 @@ module Engine
         jumps = ''
         if steps
           steps = share_jumps(steps)
-          jumps = " (#{steps} steps)" unless steps < 2
+          jumps = " (#{steps} step#{steps == 1 ? '' : 's'})" if (steps > 1) || log_steps
         end
 
         r1, c1 = from.coordinates
@@ -2248,22 +2236,6 @@ module Engine
           end
         end
 
-        stubs = Hash.new { |k, v| k[v] = [] }
-        (companies + minors + corporations).uniq.each do |company|
-          abilities(company, :stubs) do |ability|
-            ability.hex_edges.each do |hex, edges|
-              [edges].flatten.each do |edge|
-                stubs[hex] << {
-                  hex: hex,
-                  edge: edge,
-                  owner: company,
-                  ability: ability,
-                }
-              end
-            end
-          end
-        end
-
         optional_hexes.map do |color, hexes|
           hexes.map do |coords, tile_string|
             coords.map.with_index do |coord, index|
@@ -2289,11 +2261,6 @@ module Engine
               reservations[coord].each do |res|
                 res[:ability].tile = tile if res[:ability]
                 tile.add_reservation!(res[:entity], res[:city], res[:slot])
-              end
-
-              stubs[coord].each do |stub|
-                stub[:ability].tiles |= [tile]
-                tile.stubs << Part::Stub.new(stub[:edge], owner: stub[:owner])
               end
 
               # name the location (city/town)

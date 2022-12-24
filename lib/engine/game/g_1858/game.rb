@@ -53,11 +53,18 @@ module Engine
         def init_optional_rules(optional_rules)
           rules = super
 
+          # Quick start variant doesn't work for two players.
+          rules -= [:quick_start] if two_player?
+
           # The alternate set of private packets can only be used with the
           # quick start variant.
           rules -= [:set_b] unless rules.include?(:quick_start)
 
           rules
+        end
+
+        def corporation_opts
+          two_player? ? { max_ownership_percent: 70 } : {}
         end
 
         def corporation_view(entity)
@@ -97,19 +104,68 @@ module Engine
           @graph_broad = Graph.new(self, skip_track: :narrow, home_as_token: true)
           @graph_metre = Graph.new(self, skip_track: :broad, home_as_token: true)
 
-          # The rusting event for 6H/4M trains is triggered by the sale of the
-          # fifth phase 7 train, so track the number of these sold.
+          # The rusting event for 6H/4M trains is triggered by the number of
+          # phase 7 trains purchased, so track the number of these sold.
           @phase7_trains_bought = 0
+          @phase7_train_trigger = two_player? ? 3 : 5
+
+          @unbuyable_companies = []
+          setup_unbuyable_privates
+
+          @stubs = setup_stubs
         end
 
-        def init_companies(_players)
-          game_companies.map do |company|
-            G1858::Company.new(**company)
-          end.compact
+        # Some private railways cannot be bought in the two-player variant:
+        # five from P2–P17 and two from P18–P22.
+        def setup_unbuyable_privates
+          return unless two_player?
+
+          batch1, batch2 = @minors.partition { |minor| minor.color == :yellow }
+          random = Random.new(rand)
+          reserved = (batch1.sample(5, random: random) +
+                      batch2.sample(2, random: random))
+          @log << "These private companies cannot be bought in this game: #{reserved.map(&:id).join(', ')}"
+
+          rx = /(P\d+)\. .*\. (Home hex.*)\. .*/
+          reserved.each do |minor|
+            minor.close!
+            company = private_company(minor)
+            company.desc = company.desc.sub(rx, '\1. \2. Cannot be purchased in this game.')
+            @unbuyable_companies << company
+          end
         end
 
-        def init_minors
-          @companies.reject { |company| company.sym == 'H&G' }
+        # Create stubs along the routes of the private railways.
+        def setup_stubs
+          stubs = Hash.new { |k, v| k[v] = [] }
+          @minors.each do |minor|
+            next unless minor.coordinates.size > 1
+
+            home_hexes = hexes.select { |hex| minor.coordinates.include?(hex.coordinates) }
+            home_hexes.each do |hex|
+              tile = hex.tile
+              next unless tile.color == :white
+
+              hex.neighbors.each do |edge, neighbor|
+                next unless home_hexes.include?(neighbor)
+
+                stub = Engine::Part::Stub.new(edge)
+                tile.stubs << stub
+                stubs[minor] << { tile: tile, stub: stub }
+              end
+            end
+          end
+
+          stubs
+        end
+
+        # Removes the stubs from the private railway's home hexes.
+        def release_stubs(minor)
+          stubs = @stubs[minor]
+          return unless stubs
+
+          stubs.each { |tile:, stub:| tile.stubs.delete(stub) }
+          @stubs.delete(minor)
         end
 
         def clear_graph_for_entity(_entity)
@@ -197,12 +253,50 @@ module Engine
             end
         end
 
+        # Returns all operating entities, both minors and corporations
+        def operators
+          @minors + @corporations
+        end
+
+        # Returns the company object for a private railway given its associated
+        # minor object. If passed a company then returns that company.
+        def private_company(entity)
+          return entity if entity.company?
+
+          @companies.find { |company| company.sym == entity.id }
+        end
+
+        # Returns the minor object for a private railway given its associated
+        # company object. If passed a minor then returns that minor.
+        def private_minor(entity)
+          return entity if entity.minor?
+
+          @minors.find { |minor| minor.id == entity.sym }
+        end
+
+        def private_description(minor)
+          private_company(minor).desc
+        end
+
+        def private_revenue(minor)
+          format_currency(private_company(minor).revenue)
+        end
+
+        def private_value(minor)
+          format_currency(private_company(minor).value)
+        end
+
         def purchase_company(player, company, price)
           player.spend(price, @bank) unless price.zero?
 
           player.companies << company
           company.owner = player
-          company.float!
+
+          minor = private_minor(company)
+          return unless minor # H&G doesn't have an associated minor.
+
+          minor.owner = player
+          minor.float!
         end
 
         # Finds the cities that can be tokened by a public company that is
@@ -238,6 +332,11 @@ module Engine
               hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
             end
           end
+        end
+
+        # Returns true if the hex is this private railway's home hex.
+        def home_hex?(operator, hex)
+          operator.coordinates.include?(hex.coordinates)
         end
 
         def tile_lays(entity)
@@ -310,7 +409,7 @@ module Engine
 
         def upgrade_cost(tile, hex, entity, _spender)
           return 0 if tile.upgrades.empty?
-          return 0 if entity.minor? && entity.home_hex?(hex)
+          return 0 if entity.minor? && home_hex?(entity, hex)
 
           cost = tile.upgrades[0].cost
           if metre_gauge_upgrade(tile, hex.tile)
@@ -339,6 +438,15 @@ module Engine
           end
         end
 
+        def submit_revenue_str(routes, _show_subsidy)
+          corporation = current_entity
+          train_revenue = super
+          return train_revenue if corporation.companies.none?
+
+          private_revenue = format_revenue_currency(corporation.companies.sum(&:revenue))
+          "#{train_revenue} train + #{private_revenue} private revenue"
+        end
+
         def event_green_privates_available!
           @log << '-- Event: Green private companies can be started --'
           # Don't need to change anything, the check in buyable_bank_owned_companies
@@ -358,14 +466,14 @@ module Engine
         def buy_train(operator, train, price = nil)
           bought_from_depot = (train.owner == @depot)
           super
-          return if @phase7_trains_bought >= 5
+          return if @phase7_trains_bought >= @phase7_train_trigger
           return unless bought_from_depot
           return unless %w[7E 6M 5D].include?(train.name)
 
           @phase7_trains_bought += 1
           ordinal = %w[First Second Third Fourth Fifth][@phase7_trains_bought - 1]
           @log << "#{ordinal} phase 7 train has been bought"
-          rust_phase4_trains!(train) if @phase7_trains_bought == 5
+          rust_phase4_trains!(train) if @phase7_trains_bought == @phase7_train_trigger
         end
 
         def rust_phase4_trains!(purchased_train)
@@ -402,11 +510,28 @@ module Engine
         end
 
         def buyable_bank_owned_companies
-          super.filter { |company| company.color == :yellow || @phase.status.include?('green_privates') }
+          available_colors = [:yellow]
+          available_colors << :green if @phase.status.include?('green_privates')
+          @companies.select do |company|
+            !company.closed? && (company.owner == @bank) &&
+              available_colors.include?(company.color) &&
+              !@unbuyable_companies.include?(company)
+          end
+        end
+
+        def unstarted_corporation_summary
+          # Don't show minors in the list of bank-owned entities, their
+          # associated private company will be listed.
+          ['Public companies', @corporations.reject(&:ipoed)]
         end
 
         def unowned_purchasable_companies(_entity)
           @companies.filter { |company| !company.closed? && company.owner == @bank }
+        end
+
+        def bank_sort(entities)
+          minors, corporations = entities.partition(&:minor?)
+          minors.sort_by { |m| PRIVATE_ORDER[m.id] } + corporations.sort_by(&:name)
         end
 
         def exchange_for_partial_presidency?
@@ -425,19 +550,32 @@ module Engine
           end
         end
 
+        # Returns the par price for a public company started from a private
+        # railway. Throws an error if called on a private that cannot be used
+        # to start a public company.
+        def par_price(company)
+          unless company.abilities.any? { |ability| ability.type == :exchange }
+            raise GameError, "#{company.sym} cannot start a public company as it does not have a home city"
+          end
+
+          @stock_market.par_prices.max_by do |share_price|
+            share_price.price <= company.value ? share_price.price : 0
+          end
+        end
+
         def exchange_corporations(exchange_ability)
           # Can't start public companies in the first stock round.
           return [] if @turn == 1
 
-          company = exchange_ability.owner
+          entity = exchange_ability.owner
           if exchange_ability.corporations == 'ipoed'
             # A private railway can be exchanged for a share in any public company
             # that can trace a route to any of the private's home hexes.
-            super.select { |corporation| company_corporation_connected?(company, corporation) }
-          elsif company.par_price(@stock_market).price > current_entity.cash
+            super.select { |corporation| corporation_private_connected?(corporation, entity) }
+          elsif par_price(entity).price > current_entity.cash
             # Can't afford to start a public company using this private.
             []
-          elsif !company_reservation_available?(company) # rubocop: disable Lint/DuplicateBranch
+          elsif !company_reservation_available?(entity) # rubocop: disable Lint/DuplicateBranch
             # There is no currently available token space for this company.
             []
           else
@@ -447,16 +585,15 @@ module Engine
         end
 
         # Returns true if there is a valid route from any of the corporation's
-        # tokens to any of the company's home hexes, or if a token is in one of
-        # the private company's home hexes.
-        def company_corporation_connected?(company, corporation)
-          return false if company.closed?
+        # tokens to any of the private railway's home hexes, or if a token is in
+        # one of the private's home hexes.
+        def corporation_private_connected?(corporation, minor)
           return false if corporation.closed?
           return false unless corporation.floated?
 
-          @graph_broad.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) } ||
-            @graph_metre.reachable_hexes(corporation).any? { |hex, _| company.home_hex?(hex) } ||
-            corporation.placed_tokens.any? { |token| company.home_hex?(token.city.hex) }
+          @graph_broad.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex) } ||
+            @graph_metre.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex) } ||
+            corporation.placed_tokens.any? { |token| home_hex?(minor, token.city.hex) }
         end
 
         def payout_companies
@@ -489,21 +626,21 @@ module Engine
           companies.each { |company| close_company(company) }
         end
 
+        # Closes both the company and minor parts of a private railway. Can be
+        # called using either one as its argument.
+        def close_private(entity)
+          company = private_company(entity)
+          minor = private_minor(entity)
+
+          release_stubs(minor)
+          minor&.close!
+          close_company(company)
+        end
+
         def entity_can_use_company?(_entity, _company)
           # Don't show abilities buttons in a stock round for the companies
           # owned by the player.
           false
-        end
-
-        def revenue_bonuses(corporation)
-          corporation.companies.map do |company|
-            {
-              name: company.id,
-              used: 'n/a',
-              revenue: company.revenue,
-              route: 'n/a',
-            }
-          end
         end
       end
     end
