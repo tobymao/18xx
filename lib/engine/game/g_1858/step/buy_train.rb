@@ -59,6 +59,10 @@ module Engine
             !scrappable_trains(entity).empty?
           end
 
+          def pass_if_cannot_buy_train?(entity)
+            !can_scrap_train?(entity)
+          end
+
           def process_sell_shares(action)
             raise GameError, "#{entity.name} cannot sell shares at this time" unless action.entity.corporation?
 
