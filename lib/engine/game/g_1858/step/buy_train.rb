@@ -14,7 +14,7 @@ module Engine
             actions = []
             actions << 'sell_shares' if ebuy_can_issue?(entity)
             actions << 'buy_train' if can_buy_train?(entity)
-            actions << 'scrap_train' unless scrappable_trains(entity).empty?
+            actions << 'scrap_train' if can_scrap_train?(entity)
             actions << 'pass' unless actions.empty?
             actions
           end
@@ -53,6 +53,10 @@ module Engine
 
             @depot.min_depot_price <= entity.cash + entity.owner.cash +
                                       issuable_shares(entity).map(&:price).max
+          end
+
+          def can_scrap_train?(entity)
+            !scrappable_trains(entity).empty?
           end
 
           def process_sell_shares(action)
