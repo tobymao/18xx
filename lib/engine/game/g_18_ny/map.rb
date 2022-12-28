@@ -33,7 +33,7 @@ module Engine
             'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=R',
           },
           '14' => 4,
-          '15' => 8,
+          '15' => 9,
           '16' => 2,
           '17' => 2,
           '18' => 2,
@@ -83,12 +83,12 @@ module Engine
           '40' => 2,
           '41' => 2,
           '42' => 2,
-          '43' => 2,
+          '43' => 3,
           '44' => 2,
           '45' => 2,
           '46' => 2,
           '47' => 2,
-          '63' => 6,
+          '63' => 5,
           '70' => 2,
           'X31' => {
             'count' => 1,
@@ -236,7 +236,7 @@ module Engine
             %w[K15] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia;' \
                        'path=a:3,b:_0;border=edge:2,type:divider;border=edge:4',
             %w[K17] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_120,groups:Philadelphia,hide:1;' \
-                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;border=edge:4,type:water,cost:40',
+                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1',
           },
           blue: {
             %w[B10 C1 C3 C5 C7 C9 K25] => '',
@@ -295,12 +295,11 @@ module Engine
                        'icon=image:18_ny/canal',
             %w[E21] => 'city=revenue:0;border=edge:1,type:water,cost:80;border=edge:2,type:water,cost:60',
             %w[H14] => 'city=revenue:0',
-            %w[J18] => 'city=revenue:0;border=edge:5,type:water,cost:40',
+            %w[J18] => 'city=revenue:0',
             %w[H20] => 'city=revenue:0;border=edge:0,type:water,cost:80;border=edge:1,type:water,cost:80;' \
                        'border=edge:2,type:water,cost:80',
-            %w[K19] => 'town=revenue:0;border=edge:1,type:water,cost:40;border=edge:2,type:water,cost:40;' \
-                       'border=edge:4,type:water,cost:80',
-            %w[K21] => 'future_label=label:Br,color:brown;city=revenue:0;border=edge:1,type:water,cost:80',
+            %w[K19] => 'town=revenue:0;upgrade=cost:80,terrain:water',
+            %w[K21] => 'future_label=label:Br,color:brown;city=revenue:0',
           },
           yellow: {
             %w[E3] => 'future_label=label:Bu,color:gray;city=revenue:20,slots:2;border=edge:1,type:water,cost:80;'\
