@@ -128,7 +128,6 @@ module Engine
 
           rx = /(P\d+)\. .*\. (Home hex.*)\. .*/
           reserved.each do |minor|
-            minor.close!
             company = private_company(minor)
             company.desc = company.desc.sub(rx, '\1. \2. Cannot be purchased in this game.')
             @unbuyable_companies << company
@@ -205,7 +204,7 @@ module Engine
           ])
         end
 
-        def operating_round(round_num)
+        def operating_round(round_num = 1)
           @round_num = round_num
           Engine::Round::Operating.new(self, [
             G1858::Step::Track,
@@ -251,11 +250,6 @@ module Engine
                 end
               end
             end
-        end
-
-        # Returns all operating entities, both minors and corporations
-        def operators
-          @minors + @corporations
         end
 
         # Returns the company object for a private railway given its associated
