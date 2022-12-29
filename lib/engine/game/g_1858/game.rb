@@ -204,7 +204,7 @@ module Engine
           ])
         end
 
-        def operating_round(round_num)
+        def operating_round(round_num = 1)
           @round_num = round_num
           Engine::Round::Operating.new(self, [
             G1858::Step::Track,
