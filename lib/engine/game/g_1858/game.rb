@@ -128,7 +128,6 @@ module Engine
 
           rx = /(P\d+)\. .*\. (Home hex.*)\. .*/
           reserved.each do |minor|
-            minor.close!
             company = private_company(minor)
             company.desc = company.desc.sub(rx, '\1. \2. Cannot be purchased in this game.')
             @unbuyable_companies << company
