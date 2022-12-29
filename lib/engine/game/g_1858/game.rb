@@ -252,11 +252,6 @@ module Engine
             end
         end
 
-        # Returns all operating entities, both minors and corporations
-        def operators
-          @minors + @corporations
-        end
-
         # Returns the company object for a private railway given its associated
         # minor object. If passed a company then returns that company.
         def private_company(entity)
