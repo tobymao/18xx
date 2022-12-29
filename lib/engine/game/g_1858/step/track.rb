@@ -164,7 +164,7 @@ module Engine
           def ability_blocking_hex(operator, hex)
             return false unless hex.tile.color == :white # Upgrades are never blocked.
 
-            privates = (@game.companies + @game.minors).reject(:closed?)
+            privates = (@game.companies + @game.minors).reject(&:closed?)
             blocking_abilities = privates.map do |entity|
               ability = @game.abilities(entity, :blocks_hexes)
               next unless ability
