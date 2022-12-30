@@ -88,8 +88,10 @@ module Engine
       def pass_description
         if @auctioning
           'Pass (Bid)'
+        elsif @round.current_actions.empty?
+          'Pass (Share)'
         else
-          super
+          'Done (Share)'
         end
       end
 
