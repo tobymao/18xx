@@ -272,8 +272,10 @@ module Engine
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
             G18NY::Step::StagecoachExchange,
+            G18NY::Step::ViewAcquirable,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
+            G18NY::Step::AcquireCorporation,
             G18NY::Step::Track,
             G18NY::Step::Token,
             G18NY::Step::ClaimCoalToken,
@@ -929,6 +931,24 @@ module Engine
           entity.cash + (num_loans * loan_value(entity))
         end
 
+        def acquisition_candidates(entity)
+          @corporations.select { |c| can_acquire?(entity, c) }
+        end
+
+        def can_acquire?(entity, corporation)
+          return false if entity == corporation
+          return false if corporation.closed? || !corporation.floated?
+
+          acquisition_cost = acquisition_cost(entity, corporation)
+          if (num_loans_over_the_limit = entity.loans.size + corporation.loans.size - maximum_loans(entity)).positive?
+            acquisition_cost += num_loans_over_the_limit * loan_face_value
+          end
+          return false if acquisition_cost > entity.cash
+
+          corporation_tokened_cities = corporation.tokens.select(&:used).map(&:city)
+          !(graph.connected_nodes(entity).keys & corporation_tokened_cities).empty?
+        end
+
         def acquisition_cost(entity, corporation)
           multiplier = acquisition_cost_multiplier(entity, corporation)
           return corporation.share_price.price * multiplier if corporation.type == :minor
@@ -1008,7 +1028,8 @@ module Engine
           end
         end
 
-        def complete_acquisition(_entity, corporation)
+        def complete_acquisition(entity, corporation)
+          graph.clear_graph_for(entity)
           @round.acquisition_corporations = []
           close_corporation(corporation, quiet: true)
         end
@@ -1029,7 +1050,10 @@ module Engine
           unless from.trains.empty?
             trains_str = from.trains.map(&:name).join(', ')
             @log << "#{to.name} acquires a #{trains_str} from #{from.name}"
-            from.trains.dup.each { |t| buy_train(to, t, :free) }
+            from.trains.dup.each do |t|
+              buy_train(to, t, :free)
+              t.operated = true
+            end
           end
 
           if from.tokens.include?(stagecoach_token)
