@@ -70,11 +70,9 @@ module Engine
           when 2
             # Second batch of private companies are available.
             batch2, @future_corporations = @future_corporations.partition do |corporation|
-              corporation.type == :minor && corporation.reservation_color = :palegreen
+              corporation.type == :minor && corporation.reservation_color == :palegreen
             end
             @corporations += batch2
-          else
-            # Nothing changes.
           end
 
           super
@@ -101,10 +99,10 @@ module Engine
         end
 
         def event_minors_batch3!
-            batch3, @future_corporations = @future_corporations.partition do |corporation|
-              corporation.type == :minor && corporation.reservation_color = :green
-            end
-            @corporations += batch3
+          batch3, @future_corporations = @future_corporations.partition do |corporation|
+            corporation.type == :minor && corporation.reservation_color == :green
+          end
+          @corporations += batch3
         end
 
         def event_u1_available!
