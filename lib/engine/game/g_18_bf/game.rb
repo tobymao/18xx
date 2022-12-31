@@ -79,6 +79,26 @@ module Engine
           super
         end
 
+        def operating_round(round_num)
+          calculate_interest
+          G1867::Round::Operating.new(self, [
+            G1867::Step::MajorTrainless,
+            Engine::Step::BuyCompany,
+            G1867::Step::RedeemShares,
+            G18BF::Step::SpecialTrack,
+            G1867::Step::Track,
+            G1867::Step::Token,
+            Engine::Step::Route,
+            G1867::Step::Dividend,
+            # The blocking buy company needs to be before loan operations
+            [G1867::Step::BuyCompanyPreloan, { blocks: true }],
+            G1867::Step::LoanOperations,
+            Engine::Step::DiscardTrain,
+            G1867::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
         def event_minors_batch3!
             batch3, @future_corporations = @future_corporations.partition do |corporation|
               corporation.type == :minor && corporation.reservation_color = :green
