@@ -32,6 +32,7 @@ module Engine
 
           @show_majors = false
           setup_london_hexes
+          setup_bonuses
         end
 
         def setup_preround
@@ -134,6 +135,19 @@ module Engine
           # Number of loans interest is due on is set before taking loans in that OR
           @interest.clear
           @corporations.each { |c| calculate_corporation_interest(c) }
+        end
+
+        def revenue_for(route, stops)
+          train = route.train
+          bonuses =
+            if goods_train?(train)
+              bonus_mine(train, stops)
+            else
+              bonus_scottish_border(train, stops) +
+              bonus_welsh_border(train, stops) +
+              bonus_london_offboard(train, stops)
+            end
+          super + bonuses
         end
       end
     end

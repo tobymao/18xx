@@ -244,12 +244,6 @@ module Engine
           },
         }.freeze
 
-        # For calculating whether routes cross borders, these are the hexes
-        # with cities, towns or off-board areas in Scotland and Wales. All
-        # revenue centres in other hexes are in England.
-        SCOTTISH_REVENUE_CENTRES = %w[A9 A11 A13 C5 C7 C11 D4 D6 D8 D10 F4 H2].freeze
-        WELSH_REVENUE_CENTRES = %w[N4 S3 T10 U7 U9 U11].freeze
-
         # London has twelve token slots (six cities with two slots each). This
         # is too many to render correctly, so an expanded view of London is
         # generated, with one hex for each of the six cities. To allow routes
@@ -268,16 +262,72 @@ module Engine
 
         def setup_london_hexes
           # Join the hexes adjacent to London to the expanded hexes.
-          LONDON_HEX_NEIGHBOURS.each do |coord1:, edge1:, coord2:, edge2:|
-            hex1 = @hexes.find { |hex| hex.coordinates == coord1 }
-            hex2 = @hexes.find { |hex| hex.coordinates == coord2 }
-            hex1.neighbors[edge1] = hex2
-            hex2.neighbors[edge2] = hex1
+          LONDON_HEX_NEIGHBOURS.each do |item|
+            hex1 = @hexes.find { |hex| hex.coordinates == item[:coord1] }
+            hex2 = @hexes.find { |hex| hex.coordinates == item[:coord2] }
+            hex1.neighbors[item[:edge1]] = hex2
+            hex2.neighbors[item[:edge2]] = hex1
           end
 
           # Sever all connections from the London hex on the main map.
           london = @hexes.find { |hex| hex.coordinates == LONDON_HEX_CENTRE }
           london.neighbors.clear
+        end
+
+        # Bonus revenues are shown on the map as detached offboard areas.
+        # These are their locations.
+        BONUS_REVENUE_HEXES = {
+          london: 'I28',
+          mine: 'G28',
+          scotland: 'J6',
+          wales: 'L6',
+        }
+        # For calculating whether routes cross borders, these are the hexes
+        # with cities, towns or off-board areas in Scotland and Wales. All
+        # revenue centres in other hexes are in England.
+        SCOTTISH_REVENUE_CENTRES = %w[A9 A11 A13 C5 C7 C11 D4 D6 D8 D10 F4 H2].freeze
+        WELSH_REVENUE_CENTRES = %w[N4 S3 T10 U7 U9 U11].freeze
+
+        def setup_bonuses
+          @bonuses = BONUS_REVENUE_HEXES.transform_values do |coordinates|
+            @hexes.find { |hex| hex.coordinates == coordinates }.tile.offboards.first
+          end
+          @scotland = @hexes.select { |hex| SCOTTISH_REVENUE_CENTRES.include?(hex.coordinates) }
+          @wales = @hexes.select { |hex| WELSH_REVENUE_CENTRES.include?(hex.coordinates) }
+        end
+
+        def revenue_bonus(bonus, train)
+          @bonuses[bonus].route_revenue(@phase, train)
+        end
+
+        def bonus_london_offboard(train, stops)
+          return 0 if stops.none? { |stop| stop.offboard? } ||
+                      stops.none? { |stop| stop.groups.include?('London') }
+
+          revenue_bonus(:london, train)
+        end
+
+        def bonus_mine(train, stops)
+          return 0 if stops.none?
+
+          revenue_bonus(:mine, train)
+        end
+
+        def bonus_scottish_border(train, stops)
+          hexes = stops.map(&:hex)
+          # The border bonus is payable if:
+          # - At least one of the route's stops is in Scotland.
+          # - At least one stop is outside Scotland.
+          return 0 if !hexes.intersect?(@scotland) || hexes.difference(@scotland).none?
+
+          revenue_bonus(:scotland, train)
+        end
+
+        def bonus_welsh_border(train, stops)
+          hexes = stops.map(&:hex)
+          return 0 if !hexes.intersect?(@wales) || hexes.difference(@wales).none?
+
+          revenue_bonus(:wales, train)
         end
       end
     end
