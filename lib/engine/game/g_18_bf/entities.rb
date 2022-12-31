@@ -12,7 +12,7 @@ module Engine
             value: 30,
             revenue: 10,
             discount: 10,
-            desc: 'No special abilities.',
+            desc: 'P1. No special abilities.',
             color: 'yellow',
           },
           {
@@ -22,7 +22,7 @@ module Engine
             value: 45,
             revenue: 15,
             discount: 15,
-            desc: 'Gives an extra, free, track lay in Darlington (I17) when owned by a player.',
+            desc: 'P2. Gives an extra, free, track lay in Darlington (I17) when owned by a player.',
             color: 'yellow',
             abilities: [
               {
@@ -41,7 +41,7 @@ module Engine
             value: 45,
             revenue: 15,
             discount: 15,
-            desc: 'Gives an extra, free, track lay in Falkirk (D8) when owned by a player.',
+            desc: 'P3. Gives an extra, free, track lay in Falkirk (D8) when owned by a player.',
             color: 'yellow',
             abilities: [
               {
@@ -60,7 +60,7 @@ module Engine
             value: 45,
             revenue: 15,
             discount: 15,
-            desc: 'Gives an extra, free, track lay in Canterbury (V28) when owned by a player.',
+            desc: 'P4. Gives an extra, free, track lay in Canterbury (V28) when owned by a player.',
             color: 'yellow',
             abilities: [
               {
@@ -76,10 +76,10 @@ module Engine
             name: 'Leicester and Swannington',
             sym: 'P5',
             type: 'railway',
-            value: 40,
+            value: 60,
             revenue: 20,
             discount: 20,
-            desc: 'Gives an extra, free, track lay in Leicester (P18) when owned by a player.',
+            desc: 'P5. Gives an extra, free, track lay in Leicester (P18) when owned by a player.',
             color: 'yellow',
             abilities: [
               {
@@ -95,10 +95,10 @@ module Engine
             name: 'Newcastle and Carlisle',
             sym: 'P6',
             type: 'railway',
-            value: 40,
+            value: 60,
             revenue: 20,
             discount: 20,
-            desc: 'Gives a £10 revenue bonus for Newcastle (G17) when owned by a public company or a system.',
+            desc: 'P6. Gives a £10 revenue bonus for Newcastle (G17) when owned by a public company or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -116,7 +116,7 @@ module Engine
             value: 75,
             revenue: 25,
             discount: 25,
-            desc: 'Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'P7. Gives a £10 revenue bonus for London when owned by a public company or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -134,7 +134,7 @@ module Engine
             value: 75,
             revenue: 25,
             discount: 25,
-            desc: 'Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'P8. Gives a £10 revenue bonus for London when owned by a public company or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -153,7 +153,7 @@ module Engine
             value: 75,
             revenue: 25,
             discount: 25,
-            desc: 'Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'P9. Gives a £10 revenue bonus for London when owned by a public company or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -171,7 +171,7 @@ module Engine
             value: 90,
             revenue: 30,
             discount: 30,
-            desc: 'Gives a £10 revenue bonus for Liverpool (M11) when owned by a public company or a system.',
+            desc: 'P10. Gives a £10 revenue bonus for Liverpool (M11) when owned by a public company or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -188,7 +188,7 @@ module Engine
             type: 'ferry',
             value: 50,
             revenue: 10,
-            desc: 'Gives a £10 revenue bonus for one of the Ireland off-board areas when owned by a public company or a system.',
+            desc: 'F1. Gives a £10 revenue bonus for one of the Ireland off-board areas when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
@@ -208,7 +208,7 @@ module Engine
             type: 'ferry',
             value: 50,
             revenue: 10,
-            desc: 'Gives a £10 revenue bonus for one of the Ireland off-board areas when owned by a public company or a system.',
+            desc: 'F2. Gives a £10 revenue bonus for one of the Ireland off-board areas when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
@@ -228,7 +228,7 @@ module Engine
             type: 'ferry',
             value: 50,
             revenue: 10,
-            desc: 'Gives a £10 revenue bonus for one of the Ireland off-board areas when owned by a public company or a system.',
+            desc: 'F3. Gives a £10 revenue bonus for one of the Ireland off-board areas when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
@@ -248,7 +248,7 @@ module Engine
             type: 'ferry',
             value: 100,
             revenue: 20,
-            desc: 'Gives a £10 revenue bonus for the Hull off-board area (L22) when owned by a public company or a system.',
+            desc: 'F4. Gives a £10 revenue bonus for the Hull off-board area (L22) when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -268,7 +268,7 @@ module Engine
             type: 'ferry',
             value: 100,
             revenue: 20,
-            desc: 'Gives a £10 revenue bonus for the Harwich off-board area (S29) when owned by a public company or a system.',
+            desc: 'F5. Gives a £10 revenue bonus for the Harwich off-board area (S29) when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -288,7 +288,7 @@ module Engine
             type: 'ferry',
             value: 100,
             revenue: 20,
-            desc: 'Gives a £10 revenue bonus for the Plymouth off-board area (X8) when owned by a public company or a system.',
+            desc: 'F6. Gives a £10 revenue bonus for the Plymouth off-board area (X8) when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -308,7 +308,7 @@ module Engine
             type: 'ferry',
             value: 150,
             revenue: 30,
-            desc: 'Gives a £10 revenue bonus for the Dover off-board area (V30) when owned by a public company or a system.',
+            desc: 'F7. Gives a £10 revenue bonus for the Dover off-board area (V30) when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
@@ -328,7 +328,7 @@ module Engine
             type: 'ferry',
             value: 150,
             revenue: 30,
-            desc: 'Gives a £10 revenue bonus for the Aberdeen off-board area (A13) when owned by a public company or a system.',
+            desc: 'F8. Gives a £10 revenue bonus for the Aberdeen off-board area (A13) when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
@@ -348,7 +348,7 @@ module Engine
             type: 'underground',
             value: 100,
             revenue: 40,
-            desc: 'Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'U1. Gives a £10 revenue bonus for London when owned by a public company or a system.',
             color: '#9b0056',
             text_color: 'white',
             abilities: [
@@ -367,7 +367,7 @@ module Engine
             type: 'underground',
             value: 150,
             revenue: 75,
-            desc: 'Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'U2. Gives a £10 revenue bonus for London when owned by a public company or a system.',
             color: 'black',
             text_color: 'white',
             abilities: [
@@ -924,8 +924,8 @@ module Engine
           },
         ].freeze
 
-        MINORS_GROUP_A = %w[EG EPD GA GC ML ND NU YNM]
-        MINORS_GROUP_B = %w[BE BG GJ NM MC SAM TV VN EC EK LB LH LR LS LY SE]
+        MINORS_GROUP_A = %w[EG EPD GA GC ML ND NU YNM].freeze
+        MINORS_GROUP_B = %w[BE BG GJ NM MC SAM TV VN EC EK LB LH LR LS LY SE].freeze
 
         def company_header(company)
           case company.type
@@ -961,7 +961,7 @@ module Engine
         end
 
         def setup_companies(random)
-          msg = "The three private railway companies removed from play are: "
+          msg = 'The three private railway companies removed from play are: '
           rejected = @companies.select { |c| c.type == :railway  }.sample(3, random: random)
           rejected.sort_by { |c| @companies.find_index(c) }.each do |company|
             msg += "#{company.sym} (#{company.name}), "
@@ -986,11 +986,11 @@ module Engine
           minors_sr2.each { |minor| minor.reservation_color = :palegreen }
           minors_phase3.each { |minor| minor.reservation_color = :green }
 
-          @log << "The minor companies available from the start of the game are: " +
+          @log << 'The minor companies available from the start of the game are: ' \
                   "#{minors_start.map(&:id).sort.join(', ')}."
-          @log << "The minor companies available from the second stock round are: " +
+          @log << 'The minor companies available from the second stock round are: ' \
                   "#{minors_sr2.map(&:id).sort.join(', ')}."
-          @log << "The minor companies available from phase 3 are: " +
+          @log << 'The minor companies available from phase 3 are: ' \
                   "#{minors_phase3.map(&:id).sort.join(', ')}."
         end
       end
