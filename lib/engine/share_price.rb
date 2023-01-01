@@ -16,6 +16,7 @@ module Engine
       'r' => :repar,
       'i' => :ignore_one_sale,
       'j' => :ignore_two_sales,
+      'k' => :ignore_sale_unless_pres,
       's' => :safe_par,
       'P' => :par_overlap,
       'x' => :par_1,

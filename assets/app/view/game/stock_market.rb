@@ -27,6 +27,8 @@ module View
         olive: '#d1e189',
         purple: '#9a4eae',
         peach: '#ffe5b4',
+        lightblue: '#add8e6',
+        violet: '#c71585',
       }.freeze
 
       # All markets

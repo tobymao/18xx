@@ -17,13 +17,26 @@ module Engine
 
         STARTING_CASH = { 3 => 400, 4 => 300, 5 => 250 }.freeze
 
-        MARKET = [].freeze
+        MARKET = [
+          %w[40 44 47 50p 53p 57p 61p 65p 70p 75p 80p 86p 92p 98p 105x 112x 120x 128x 137x 147x 157x 168z 180z 193z
+             206z 221 236 253 270 289 310 331 354 379 406k 434k 465k 497k 532k 569k 609k 652k 700k 750e 800e],
+        ].freeze
 
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Major Corporation Par',
-                                              par_1: 'Minor Corporation Par',
-                                              par_2: 'NYC Par')
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+          par: 'Par available SR1+',
+          par_1: 'Par available SR2+',
+          par_2: 'Par available SR3+',
+          ignore_sale_unless_pres: 'Stock price does not change on sale, unless by president',
+          endgame: 'End game trigger'
+        ).freeze
 
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :gray, par_2: :blue, par: :red).freeze
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
+          par: :yellow,
+          par_1: :lightblue,
+          par_2: :blue,
+          ignore_sale_unless_pres: :violet,
+          endgame: :red
+        ).freeze
 
         PHASES = [
           {
@@ -106,6 +119,10 @@ module Engine
         ].freeze
 
         def setup; end
+
+        def init_stock_market
+          StockMarket.new(self.class::MARKET, [], zigzag: true)
+        end
       end
     end
   end
