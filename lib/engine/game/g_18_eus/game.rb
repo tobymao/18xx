@@ -118,10 +118,122 @@ module Engine
           },
         ].freeze
 
-        def setup; end
+        def setup
+          subsidy_hexes = []
+          randomize_subsidies(subsidy_hexes)
+        end
 
         def init_stock_market
           StockMarket.new(self.class::MARKET, [], zigzag: true)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @final_operating_rounds || @phase.operating_rounds
+              remove_subsidies if @turn == 1 && @round.round_num == 1
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              reorder_players
+              new_stock_round
+            end
+        end
+
+        def export_train
+          turn = "#{@turn}.#{@round.round_num}"
+          case turn
+          when '1.1'
+            @depot.export_all!('2')
+          when '1.2'
+            @depot.export_all!('2+')
+            @phase.next! unless @phase.tiles.include?(:green)
+          when '2.2'
+            @depot.export_all!('3')
+          else
+            @depot.export! unless turn == '2.1'
+          end
+        end
+
+        def stock_round
+          Round::Stock.new(self, [
+            Step::DiscardTrain,
+            Step::HomeToken,
+            Step::BuySellParShares,
+          ])
+        end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Step::Bankrupt,
+            Step::Exchange,
+            Step::SpecialTrack,
+            Step::BuyCompany,
+            Step::Track,
+            Step::Token,
+            Step::Route,
+            Step::Dividend,
+            Step::DiscardTrain,
+            Step::BuyTrain,
+            [Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
+        #
+        # Subsidies
+        #
+        def randomize_subsidies(hex_ids)
+          randomized_subsidies = self.class.SUBSIDIES.sort_by { rand }.take(hex_ids.size)
+          hex_ids.zip(randomized_subsidies).each do |hex_id, subsidy|
+            hex_by_id(hex_id).tile.icons << Engine::Part::Icon.new("18_usa/#{subsidy['icon']}")
+          end
+        end
+
+        def claim_subsidy(corporation, hex)
+          return unless (subsidy = @subsidies_by_hex.delete(hex.coordinates))
+
+          hex.tile.icons.reject! { |icon| icon.name.include?('subsidy') }
+          subsidy_company = create_company_from_subsidy(subsidy)
+          subsidy_company.owner = corporation
+          corporation.companies << subsidy_company
+        end
+
+        def create_company_from_subsidy(subsidy)
+          company = Engine::Company.new(**subsidy)
+          @companies << company
+          update_cache(:companies)
+          company
+        end
+
+        def apply_subsidy(corporation)
+          return unless (subsidy = corporation.companies.first)
+
+          if subsidy.value.positive?
+            @log << "#{corporation.name} receives #{format_currency(subsidy.value)} from subsidy"
+            @bank.spend(subsidy.value, corporation)
+            subsidy.close!
+          elsif subsidy.sym == 'S1'
+            subsidy.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_eus/plus_ten', 'plus_ten', true)
+            subsidy.close!
+          elsif subsidy.sym == 'S9'
+            subsidy.all_abilities.each do |ability|
+              ability.hexes << hex.id if ability.type == :tile_lay
+              ability.corporation = corporation.id if ability.type == :close
+            end
+          end
+        end
+
+        def remove_subsidy(hex_id)
+          hex_by_id(hex_id).tile.icons.reject! { |icon| icon.name.include?('subsidy') }
         end
       end
     end
