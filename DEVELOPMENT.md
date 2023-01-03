@@ -177,3 +177,21 @@ You may want example games in your development environment to test. One way to d
 3. Execute `import_game(<product_game_id>)`
 
 A copy of that game is now available locally. 
+
+#### Pinning a game in your local test enviornment
+
+You may want to pin a specific game in your local development environment. Pinning a game allows for breaking changes to be introduced while 'freezing' the existing game to a previous code commit version. Pinning is designed to work in production environments only, the following workaround can be applied to pin games in your local development environment.
+
+1. Run `docker-compose exec rack irb`
+2. Import all the dependcies that will allow you to run `Game` class. Alternativly you can run `load "import_game.rb"`
+3. Run `game = Game[id: <id of game you want to pin>]`
+4. Run `game.settings['pin'] ='<sha of commit>'` . The sha should be of length 9 of the commit you want to pin to. 
+5. Run `game.save` to save the changes.
+
+For the pin to work you need to generate the pin.js file. Doing so will break your development environment. Perform the following steps to generate the pin file and fix your development environment
+1. Run `docker-compose exec rack rake precompile`
+2. Delete the contents of build folder
+3. Restart your  development environment server
+
+Note: The precompile step creates a <pinned sha>.js.gzip in public/pinned. If you're still seeing js errors unzip the compressed file. You can run `gzip -d <pin>.js.gz> to extract the js file`
+
