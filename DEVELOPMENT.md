@@ -193,5 +193,5 @@ For the pin to work you need to generate the pin.js file. Doing so will break yo
 2. Delete the contents of build folder
 3. Restart your  development environment server
 
-Note: The precompile step creates a <pinned sha>.js.gzip in public/pinned. If you're still seeing js errors unzip the compressed file. You can run `gzip -d <pin>.js.gz> to extract the js file`
+Note: The precompile step creates a <pinned sha>.js.gzip in public/pinned. If you're still seeing js errors unzip the compressed file. You can run `gzip -d <pin>.js.gz>` to extract the js file
 
