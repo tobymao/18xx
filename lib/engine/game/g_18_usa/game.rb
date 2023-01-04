@@ -743,8 +743,6 @@ module Engine
         GNR_HALF_BONUS_HEXES = %w[B8 B14].freeze
 
         def revenue_for(route, stops)
-          puts route.train.inspect
-
           duplicates = route.ordered_hexes.group_by(&:itself).select { |_, nodes| nodes.size > 1 }.keys
           if duplicates.find { |hex| resource_tile?(hex.tile) }
             raise GameError, 'Cannot pass through resource tiles more than once'
