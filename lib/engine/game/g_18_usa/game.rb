@@ -743,6 +743,8 @@ module Engine
         GNR_HALF_BONUS_HEXES = %w[B8 B14].freeze
 
         def revenue_for(route, stops)
+          puts route.train.inspect
+
           duplicates = route.ordered_hexes.group_by(&:itself).select { |_, nodes| nodes.size > 1 }.keys
           if duplicates.find { |hex| resource_tile?(hex.tile) }
             raise GameError, 'Cannot pass through resource tiles more than once'
@@ -839,12 +841,11 @@ module Engine
           return nil if counted_stops.size < route.train.distance
 
           # Count how many of our tokens are on the route; if only one we cannot skip that one.
-          our_tokened_stops = counted_stops.select { |stop| stop.tokened_by?(route.train.owner) }
+          tokened_stops = counted_stops.select { |stop| stop.tokened_by?(route.train.owner) }
+          counted_stops.delete(tokened_stops.first) if tokened_stops.one?
 
           # Find the lowest revenue stop that can be skipped
-          counted_stops = counted_stops[1..-2]
-          counted_stops.reject! { |stop| stop == our_tokened_stops.first } if our_tokened_stops.one?
-          counted_stops.min_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
+          counted_stops.max_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
         end
 
         def check_distance(route, visits)
