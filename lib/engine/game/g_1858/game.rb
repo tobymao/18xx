@@ -163,7 +163,7 @@ module Engine
           stubs = @stubs[minor]
           return unless stubs
 
-          stubs.each { |tile:, stub:| tile.stubs.delete(stub) }
+          stubs.each { |tile_stub| tile_stub[:tile].stubs.delete(tile_stub[:stub]) }
           @stubs.delete(minor)
         end
 
