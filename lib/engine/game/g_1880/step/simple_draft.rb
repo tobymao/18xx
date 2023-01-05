@@ -64,8 +64,6 @@ module Engine
             minor = action.minor
             player = action.entity
 
-            puts("here in process, #{action.entity}")
-
             minor.owner = player
             minor.float!
 
