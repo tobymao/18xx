@@ -78,6 +78,7 @@ module Engine
             float_percent: 20,
             sym: 'JHA',
             logo: '1880/JHA',
+            city: 2,
             name: 'Jingha Railway',
             tokens: [0, 40, 100],
             coordinates: 'F8',
@@ -86,6 +87,7 @@ module Engine
           {
             float_percent: 20,
             sym: 'JHU',
+            city: 3,
             name: 'Jinghu Railway',
             logo: '1830/JHU',
             tokens: [0, 40, 100],
@@ -95,6 +97,7 @@ module Engine
           {
             float_percent: 20,
             sym: 'JGG',
+            city: 0,
             name: 'Jingguang Railway',
             logo: '1830/JGG',
             tokens: [0, 40, 100],
@@ -104,6 +107,7 @@ module Engine
           {
             float_percent: 20,
             sym: 'JLR',
+            city: 1,
             name: 'Jinglan Railway',
             logo: '1830/JLR',
             tokens: [0, 40, 100],
