@@ -167,6 +167,12 @@ module Engine
                   },
                   { name: '10', distance: 10, price: 1000, num: 10 }].freeze
 
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1880::Step::SelectionAuction,
+          ])
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -182,6 +188,10 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def p1
+          company_by_id('P1')
         end
       end
     end
