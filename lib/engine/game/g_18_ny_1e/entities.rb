@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18NY
+    module G18NY1E
       module Entities
         COMPANIES = [
           {
@@ -109,7 +109,7 @@ module Engine
           {
             name: 'D&H Private Company',
             sym: 'DPC',
-            value: 170,
+            value: 150,
             revenue: 30,
             desc: 'The owning player gets the President\'s certificate of the D&H corporation, ' \
                   'and must immediately set its stock price. The corporation floats and receives ' \
@@ -318,10 +318,10 @@ module Engine
           },
           {
             name: 'New York, New Haven, & Hartford Railroad',
-            sym: 'NH',
+            sym: 'NYNH',
             logo: '18_ny/nynh',
             simple_logo: '18_ny/nynh.alt',
-            tokens: [0, 20, 20, 20],
+            tokens: [0, 20, 20],
             type: 'major',
             always_market_price: true,
             float_percent: 20,
@@ -348,7 +348,7 @@ module Engine
             sym: 'B&A',
             logo: '18_ny/ba',
             simple_logo: '18_ny/ba.alt',
-            tokens: [0, 20, 20, 20],
+            tokens: [0, 20, 20],
             type: 'major',
             always_market_price: true,
             float_percent: 20,

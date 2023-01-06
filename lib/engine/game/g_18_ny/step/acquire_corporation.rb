@@ -10,12 +10,15 @@ module Engine
           def actions(entity)
             return [] if entity != current_entity
             return [] unless entity.corporation?
+            return [] unless @round.view_merge_options
 
             %w[merge pass]
           end
 
           def auto_actions(entity)
-            return [Engine::Action::Pass.new(entity)] if acquisition_candidates(entity).empty?
+            return if entity != current_entity || !@round.view_merge_options || !@game.acquisition_candidates(entity).empty?
+
+            [Engine::Action::Pass.new(entity)]
           end
 
           def merge_name(entity = nil)
@@ -36,14 +39,26 @@ module Engine
             'Mergers and Takeovers'
           end
 
+          def blocks?
+            @round.view_merge_options
+          end
+
+          def pass_description
+            'Done (Mergers/Takeovers)'
+          end
+
           def process_merge(action)
             entity = action.entity
             corporation = action.corporation
 
             raise GameError, 'Must select a company to merge or takeover' unless corporation
-            raise GameError, "Unable to merge or takeover #{corporation.name}" unless can_acquire?(entity, corporation)
+            raise GameError, "Unable to merge or takeover #{corporation.name}" unless @game.can_acquire?(entity, corporation)
 
             @game.acquire_corporation(entity, corporation)
+          end
+
+          def process_pass(_action)
+            @round.view_merge_options = false
           end
 
           def mergeable_type(entity)
@@ -51,25 +66,7 @@ module Engine
           end
 
           def mergeable(entity)
-            acquisition_candidates(entity)
-          end
-
-          def acquisition_candidates(entity)
-            @game.corporations.select { |c| can_acquire?(entity, c) }
-          end
-
-          def can_acquire?(entity, corporation)
-            return false if entity == corporation
-            return false if corporation.closed? || !corporation.floated?
-
-            acquisition_cost = @game.acquisition_cost(entity, corporation)
-            if (num_loans_over_the_limit = entity.loans.size + corporation.loans.size - @game.maximum_loans(entity)).positive?
-              acquisition_cost += num_loans_over_the_limit * @game.loan_face_value
-            end
-            return false if acquisition_cost > entity.cash
-
-            corporation_tokened_cities = corporation.tokens.select(&:used).map(&:city)
-            !(@game.graph.connected_nodes(entity).keys & corporation_tokened_cities).empty?
+            @game.acquisition_candidates(entity)
           end
 
           def show_other_players

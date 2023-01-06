@@ -119,8 +119,8 @@ module Engine
             operating_rounds: 3,
           },
           {
-            name: '5DE',
-            on: '5DE',
+            name: '4DE',
+            on: '4DE',
             train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
@@ -134,40 +134,7 @@ module Engine
           },
         ].freeze
 
-        def game_phases
-          unless @game_phases
-            @game_phases = super.dup
-            if second_edition? || fourde_variant?
-              i = @game_phases.find_index { |p| p[:name] == '5DE' }
-              @game_phases[i] = @game_phases[i].dup.merge({ name: '4DE', on: '4DE' })
-            end
-          end
-          @game_phases
-        end
-
-        FIRST_EDITION_TRAINS = [
-          { name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
-          { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', events: [{ 'type' => 'float_30' }] },
-          { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
-          {
-            name: '12H',
-            num: 3,
-            distance: 12,
-            price: 600,
-            events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' },
-                     { 'type' => 'capitalization_round', 'when' => 3 }],
-          },
-          {
-            name: '5DE',
-            num: 2,
-            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99, 'multiplier' => 2 }],
-            price: 800,
-            events: [{ 'type' => 'float_60' }],
-          },
-          { name: 'D', num: 20, distance: 99, price: 1000 },
-        ].freeze
-
-        SECOND_EDITION_TRAINS = [
+        TRAINS = [
           { name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
           { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '4DE', events: [{ 'type' => 'float_30' }] },
           { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
@@ -199,26 +166,6 @@ module Engine
           },
         ].freeze
 
-        def game_trains
-          unless @game_trains
-            @game_trains = (second_edition? ? self.class::SECOND_EDITION_TRAINS : self.class::FIRST_EDITION_TRAINS).dup
-            if fourde_variant?
-              @game_trains.map! do |t|
-                train = t.dup
-                case train[:name]
-                when '4H'
-                  train[:rusts_on] = '4DE'
-                when '5DE'
-                  train[:name] = '4DE'
-                  train[:distance][0]['pay'] = 4
-                end
-                train
-              end
-            end
-          end
-          @game_trains
-        end
-
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'float_30' => ['30% to Float', 'Corporations must have 30% of their shares sold to float'],
           'float_40' => ['40% to Float', 'Corporations must have 40% of their shares sold to float'],
@@ -239,68 +186,6 @@ module Engine
           'coal' => '/icons/18_ny/coal.svg',
         }.freeze
 
-        def game_corporations
-          unless @game_corporations
-            @game_corporations = super.dup
-            if second_edition?
-              @game_corporations.map! do |c|
-                corp = c.dup
-                case corp[:sym]
-                when 'B&A'
-                  corp[:tokens] = [0, 20, 20, 20]
-                when 'NYNH'
-                  corp[:tokens] = [0, 20, 20, 20]
-                  corp[:sym] = 'NH'
-                end
-                corp
-              end
-            end
-          end
-          @game_corporations
-        end
-
-        def game_companies
-          unless @game_companies
-            @game_companies = super.dup
-            if second_edition?
-              @game_companies.map! do |c|
-                company = c.dup
-                company[:value] = 170 if company[:sym] == 'DPC'
-                company
-              end
-            end
-          end
-          @game_companies
-        end
-
-        def location_name(coord)
-          unless @locations
-            @locations = self.class::LOCATION_NAMES.dup
-            @locations.merge!(self.class::SECOND_EDITION_LOCATION_NAMES) if second_edition?
-          end
-          @locations[coord]
-        end
-
-        def game_hexes
-          unless @game_hexes
-            @game_hexes = super.dup
-            if second_edition?
-              self.class::SECOND_EDITION_HEXES.each do |color, hexes|
-                @game_hexes[color] = @game_hexes[color].dup.merge(hexes)
-              end
-            end
-          end
-          @game_hexes
-        end
-
-        def game_tiles
-          unless @game_tiles
-            @game_tiles = super.dup
-            @game_tiles.merge!(self.class::SECOND_EDITION_TILES) if second_edition?
-          end
-          @game_tiles
-        end
-
         def setup
           @float_percent = 20
           @interest = {}
@@ -313,8 +198,7 @@ module Engine
         end
 
         def init_connection_bonuses
-          hexes = self.class::CONNECTION_BONUS_HEXES.dup
-          hexes << self.class::SECOND_EDITION_CONNECTION_BONUS_HEXES if second_edition?
+          hexes = self.class::CONNECTION_BONUS_HEXES
           hexes.each do |hex_id|
             hex_id = hex_id.first if hex_id.is_a?(Array)
             hex_by_id(hex_id).assign!(CONNECTION_BONUS_ICON)
@@ -349,15 +233,7 @@ module Engine
         end
 
         def second_edition?
-          @second_edition_optional_rule ||= @optional_rules.include?(:second_edition)
-        end
-
-        def de_runs_stations_and_offboards_only?
-          second_edition? || @optional_rules.include?(:fivede)
-        end
-
-        def fourde_variant?
-          @fourde_optional_rule ||= @optional_rules.include?(:fourde)
+          true
         end
 
         def active_minors
@@ -396,8 +272,10 @@ module Engine
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
             G18NY::Step::StagecoachExchange,
+            G18NY::Step::ViewAcquirable,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
+            G18NY::Step::AcquireCorporation,
             G18NY::Step::Track,
             G18NY::Step::Token,
             G18NY::Step::ClaimCoalToken,
@@ -750,6 +628,7 @@ module Engine
           distance = route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
           # Springfield is considered one hex
           distance -= 1 if route.all_hexes.include?(hex_by_id('E25'))
+          # Toronto is considered one hex
           distance -= 1 if second_edition? && route.all_hexes.include?(hex_by_id('E1'))
           distance
         end
@@ -771,7 +650,8 @@ module Engine
           stops = route.visited_stops
           return [] unless stops.any? { |stop| stop.tokened_by?(route.corporation) }
 
-          if de_runs_stations_and_offboards_only?
+          if second_edition?
+            # Only count revenue for tokened stops
             stops.select! { |stop| stop.tokened_by?(route.corporation) || stop.tile.color == :red }
           end
           count = route.train.distance.first['pay']
@@ -1051,6 +931,24 @@ module Engine
           entity.cash + (num_loans * loan_value(entity))
         end
 
+        def acquisition_candidates(entity)
+          @corporations.select { |c| can_acquire?(entity, c) }
+        end
+
+        def can_acquire?(entity, corporation)
+          return false if entity == corporation
+          return false if corporation.closed? || !corporation.floated?
+
+          acquisition_cost = acquisition_cost(entity, corporation)
+          if (num_loans_over_the_limit = entity.loans.size + corporation.loans.size - maximum_loans(entity)).positive?
+            acquisition_cost += num_loans_over_the_limit * loan_face_value
+          end
+          return false if acquisition_cost > entity.cash
+
+          corporation_tokened_cities = corporation.tokens.select(&:used).map(&:city)
+          !(graph.connected_nodes(entity).keys & corporation_tokened_cities).empty?
+        end
+
         def acquisition_cost(entity, corporation)
           multiplier = acquisition_cost_multiplier(entity, corporation)
           return corporation.share_price.price * multiplier if corporation.type == :minor
@@ -1130,7 +1028,8 @@ module Engine
           end
         end
 
-        def complete_acquisition(_entity, corporation)
+        def complete_acquisition(entity, corporation)
+          graph.clear_graph_for(entity)
           @round.acquisition_corporations = []
           close_corporation(corporation, quiet: true)
         end
@@ -1151,7 +1050,10 @@ module Engine
           unless from.trains.empty?
             trains_str = from.trains.map(&:name).join(', ')
             @log << "#{to.name} acquires a #{trains_str} from #{from.name}"
-            from.trains.dup.each { |t| buy_train(to, t, :free) }
+            from.trains.dup.each do |t|
+              buy_train(to, t, :free)
+              t.operated = true
+            end
           end
 
           if from.tokens.include?(stagecoach_token)

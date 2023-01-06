@@ -77,6 +77,7 @@ module View
           end
           left << h(ScrapTrains) if @current_actions.include?('scrap_train')
           left << h(Loans, corporation: entity) if !loans_rendered && (%w[take_loan payoff_loan] & @current_actions).any?
+          left << h(ViewMergeOptions, corporation: entity) if @current_actions.include?('view_merge_options')
 
           if entity.player?
             left << h(Player, player: entity, game: @game)
