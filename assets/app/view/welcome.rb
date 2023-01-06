@@ -17,8 +17,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>18NY and 18USA are now in production.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
-        <p>18Cuba by Lonny Orgler is now available on <a href='https://www.kickstarter.com/projects/1840vienna/18cuba'>Kickstarter</a>!</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. Join the
         <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx Slack</a>.
