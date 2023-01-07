@@ -6,8 +6,8 @@ module Engine
   module Game
     module G1880
       module Step
-        class SimpleDraft < Engine::Step::Base
-          attr_reader :minors, :choices
+        class SimpleDraft < Engine::Step::SimpleDraft
+          attr_reader :minors
 
           ACTIONS = %w[bid].freeze
 
@@ -20,44 +20,12 @@ module Engine
             @minors
           end
 
-          def may_purchase?(_company)
-            true
-          end
-
-          def may_choose?(_company)
-            true
-          end
-
-          def auctioning; end
-
-          def bids
-            {}
-          end
-
-          def visible?
-            true
-          end
-
-          def players_visible?
-            true
-          end
-
-          def name
-            'Draft'
-          end
-
           def description
             'Draft One Foreign Investor Each'
           end
 
           def finished?
             @leftover_minors == @minors.size
-          end
-
-          def actions(entity)
-            return [] if finished?
-
-            entity == current_entity ? ACTIONS : []
           end
 
           def process_bid(action)
