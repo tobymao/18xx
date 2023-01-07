@@ -19,7 +19,7 @@ module Engine
             num: 6,
             price: 120,
             available_on: '2',
-            rusts_on: '3g',
+            rusts_on: %w[3g 4g 5g 10],
           },
           {
             name: '3',
@@ -36,7 +36,7 @@ module Engine
             num: 5,
             price: 240,
             available_on: '3',
-            rusts_on: '4g',
+            rusts_on: %w[4g 5g 10],
             discount: { '1g' => 60 },
           },
           {
@@ -55,7 +55,7 @@ module Engine
             num: 4,
             price: 360,
             available_on: '4',
-            rusts_on: '5g',
+            rusts_on: %w[5g 10],
             discount: { '2g' => 120 },
           },
           {
@@ -124,7 +124,7 @@ module Engine
             num: 3,
             price: 120,
             available_on: '2',
-            rusts_on: '3g',
+            rusts_on: %w[3g 4g 5g 10],
           },
           {
             name: '3',
@@ -141,7 +141,7 @@ module Engine
             num: 2,
             price: 240,
             available_on: '3',
-            rusts_on: '4g',
+            rusts_on: %w[4g 5g 10],
             discount: { '1g' => 60 },
           },
           {
@@ -160,7 +160,7 @@ module Engine
             num: 2,
             price: 360,
             available_on: '4',
-            rusts_on: '5g',
+            rusts_on: %w[5g 10],
             discount: { '2g' => 120 },
           },
           {
@@ -177,7 +177,6 @@ module Engine
             distance: 6,
             num: 2,
             price: 600,
-            events: [],
             discount: { '5' => 200 },
           },
           {
@@ -229,7 +228,7 @@ module Engine
             num: 5,
             price: 120,
             available_on: '2',
-            rusts_on: '3g',
+            rusts_on: %w[3g 4g 5g 10],
           },
           {
             name: '3',
@@ -246,7 +245,7 @@ module Engine
             num: 4,
             price: 240,
             available_on: '3',
-            rusts_on: '4g',
+            rusts_on: %w[4g 5g 10],
             discount: { '1g' => 60 },
           },
           {
@@ -265,7 +264,7 @@ module Engine
             num: 3,
             price: 360,
             available_on: '4',
-            rusts_on: '5g',
+            rusts_on: %w[5g 10],
             discount: { '2g' => 120 },
           },
           {

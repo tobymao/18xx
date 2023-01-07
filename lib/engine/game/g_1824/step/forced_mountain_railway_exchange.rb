@@ -62,7 +62,11 @@ module Engine
           end
 
           def can_gain?(entity, bundle, exchange: false)
-            super && @game.buyable?(bundle.corporation)
+            return if !bundle || !entity || !@game.buyable?(bundle.corporation)
+            # Via exchanges it is possible to exceed 60%
+            return @game.num_certs(entity) + bundle.num_shares <= @game.cert_limit(entity) if exchange
+
+            super
           end
 
           def can_exchange?(entity, bundle = nil)

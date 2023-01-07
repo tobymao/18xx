@@ -311,10 +311,10 @@ module Engine
             },
             white: {
               %w[A8 A20 C10 C16 D25 E24 G2] => TOWN,
-              %w[A6 A10] => TOWN_WITH_MOUNTAIN,
-              %w[B13 B25 F11] => DOUBLE_TOWN_WITH_WATER,
+              %w[A6 A10 E24] => TOWN_WITH_MOUNTAIN,
+              %w[B13 B25 F11] => DOUBLE_TOWN,
               %w[H3] => CITY_WITH_MOUNTAIN,
-              %w[A18 C26 E26 I8] => CITY_WITH_MOUNTAIN,
+              %w[A18 C26 E26 I8] => CITY_LABEL_T,
               %w[B5 B9 B15 B23 C12 E8 F7 G4 G10] => CITY,
               %w[B7 B11 B19 B21 C8 C14 C20 C22 C24 D9 D11 D13 D15 E6
                  F9 F13 G6 H9 H11] => PLAIN,
@@ -323,6 +323,34 @@ module Engine
               ['E12'] => WIEN,
             },
           }
+        end
+
+        def show_map_legend?
+          true
+        end
+
+        def map_legend(font_color, *_extra_colors)
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            # header
+            [
+              { text: 'Bonus', props: { style: { border: '1px solid' } } },
+            ],
+            # body
+            [
+              {
+                text: "Prag/Wien - a Bukowina hex +#{format_currency(50)}",
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+            ],
+          ]
         end
       end
     end

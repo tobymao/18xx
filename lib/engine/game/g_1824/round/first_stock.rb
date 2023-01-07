@@ -50,7 +50,7 @@ module Engine
 
             @game.log << 'First stock round is finished - any unsold Pre-State Railways, Coal Railways, ' \
                          ' and Montain Railways are removed from the game'
-
+            coordinates = nil
             @game.companies.each do |c|
               next if c.owner&.player? || c.closed?
 
@@ -62,13 +62,33 @@ module Engine
 
               minor = @game.minor_by_id(c.id)
               if @game.pre_staatsbahn?(minor)
+                coordinates = minor.coordinates if @game.primary_pre_state?(minor)
                 # Private is a control of a pre-staatsbahn
                 state = @game.associated_state_railway(c)
-                @game.log << "Pre-Staatsbahn #{minor.name} closes; "\
-                             "corresponding share in #{state.name} is no longer reserved"
+                if @game.primary_pre_state?(minor)
+                  # President share in Staatsbahn still need to be reserved as the
+                  # presidency will be transfered to a player that owns 20% or more
+                  @game.log << "Pre-Staatsbahn #{minor.name} closes; presidency share in #{state.name} is still reserved "\
+                               "and will be given to a player with 20%% or more after #{state.name} is formed."
+                else
+                  @game.log << "Pre-Staatsbahn #{minor.name} closes; "\
+                               "corresponding share in #{state.name} is no longer reserved"
+
+                  state.shares.find { |s| !s.president && s.buyable == false }.buyable = true
+                end
 
                 close_minor(minor)
                 c.close!
+
+                if @game.associated_pre_state_railways(state).all?(&:removed)
+                  @game.log << "Staatsbahn #{state.name} reserves a token location"
+                  tile = @game.hex_by_id(coordinates).tile
+                  # Put in the right city in Wien/Budapest
+                  city = @game.get_city_number_for_staatsbahn_reservation(state)
+                  tile.cities[city].add_reservation!(state)
+                  state.coordinates = coordinates
+                end
+
                 next
               end
 
@@ -79,6 +99,11 @@ module Engine
 
               close_minor(minor)
               c.close!
+
+              # Put in a neutral token to stop it being tokened
+              coordinates = minor.coordinates
+              hex = hex_by_id(minor.coordinates)
+              hex.tile.cities[0].place_token(@game.neutral, @game.neutral.next_token)
 
               # Make reserved share of associated corporation unreserved
               regional.shares.find(&:president).buyable = true
