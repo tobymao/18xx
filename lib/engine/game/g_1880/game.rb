@@ -203,23 +203,6 @@ module Engine
             end
         end
 
-        def operating_round(round_num)
-          Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
-            Engine::Step::HomeToken,
-            Engine::Step::Track,
-            Engine::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
-          ], round_num: round_num)
-        end
-
         def p1
           company_by_id('P1')
         end
