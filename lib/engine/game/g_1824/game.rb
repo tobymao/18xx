@@ -1004,15 +1004,10 @@ module Engine
         end
 
         def rust?(train, purchased_train)
-          return super unless g_train?(train)
+          return super if !g_train?(purchased_train) || !g_train?(train)
 
-          if g_train?(purchased_train)
-            # 3g rust 1g etc.
-            g_number(train) + 2 <= g_number(purchased_train)
-          else
-            # 10 train rust 3g and older
-            purchased_train.name == '10' && g_number(train) <= 3
-          end
+          # 3g rust 1g etc.
+          g_number(train) + 2 <= g_number(purchased_train)
         end
 
         def home_token_locations(corporation)
