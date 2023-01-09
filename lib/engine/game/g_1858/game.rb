@@ -484,9 +484,9 @@ module Engine
         end
 
         def rust_phase4_trains!(purchased_train)
-          trains.select { |train| %i[6H 3M].include?(train.name) }
+          trains.select { |train| %w[6H 3M].include?(train.name) }
                 .each { |train| train.rusts_on = purchased_train.sym }
-          rust_trains!(purchased_train)
+          rust_trains!(purchased_train, purchased_train.owner)
         end
 
         def convert!(corporation)
