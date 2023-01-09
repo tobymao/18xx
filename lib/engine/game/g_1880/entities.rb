@@ -205,6 +205,72 @@ module Engine
             color: '#A4391F',
           },
         ].freeze
+
+        MINORS = [
+          {
+            sym: 'A1',
+            name: 'Russian Investor',
+            logo: '1880/Russia',
+            tokens: [0],
+            coordinates: 'A3',
+            color: :gray,
+            text_color: 'black',
+          },
+          {
+            sym: 'A2',
+            name: 'Japanese Investor',
+            logo: '1880/Japan',
+            tokens: [0],
+            coordinates: 'E13',
+            color: :gray,
+            text_color: 'black',
+          },
+          {
+            sym: 'A3',
+            name: 'Belgian Investor',
+            logo: '1880/Belgium',
+            tokens: [0],
+            coordinates: 'H6',
+            color: :gray,
+            text_color: 'black',
+          },
+          {
+            sym: 'A4',
+            name: 'German Investor',
+            logo: '1880/Germany',
+            tokens: [0],
+            coordinates: 'H14',
+            color: :gray,
+            text_color: 'black',
+          },
+          {
+            sym: 'A5',
+            name: 'British Investor',
+            logo: '1880/UK',
+            tokens: [0],
+            coordinates: 'Q15',
+            color: :gray,
+            text_color: 'black',
+          },
+          {
+            sym: 'A6',
+            name: 'Portuguese Investor',
+            logo: '1880/Portugal',
+            tokens: [0],
+            coordinates: 'P12',
+            color: :gray,
+            text_color: 'black',
+          },
+          {
+            sym: 'A7',
+            name: 'French Investor',
+            logo: '1880/France',
+            tokens: [0],
+            coordinates: 'Q7',
+            color: :gray,
+            text_color: 'black',
+          },
+        ].freeze
       end
     end
   end
