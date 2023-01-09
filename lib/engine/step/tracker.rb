@@ -60,7 +60,6 @@ module Engine
           raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
         end
 
-        tile_lay_cost_override!(tile_lay, action, tile, old_tile)
         extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
 
         lay_tile(action, extra_cost: extra_cost, entity: entity, spender: spender)
@@ -71,9 +70,6 @@ module Engine
         @round.num_laid_track += 1
         @round.laid_hexes << action.hex
       end
-
-      # This method can be implemented to adjust the cost of a tile lay
-      def tile_lay_cost_override!(tile_lay, action, new_tile, old_tile); end
 
       def track_upgrade?(from, _to, _hex)
         from.color != :white
