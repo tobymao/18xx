@@ -529,7 +529,8 @@ module Engine
         def unstarted_corporation_summary
           # Don't show minors in the list of bank-owned entities, their
           # associated private company will be listed.
-          ['Public companies', @corporations.reject(&:ipoed)]
+          unstarted = @corporations.reject(&:ipoed)
+          [unstarted.size, unstarted]
         end
 
         def unowned_purchasable_companies(_entity)
