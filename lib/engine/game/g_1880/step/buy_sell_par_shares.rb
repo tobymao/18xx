@@ -137,6 +137,10 @@ module Engine
             @round.last_to_act = player
             @round.current_actions << action
           end
+
+          def get_par_prices(entity, _corp)
+            super.reject { |p| @game.par_order[p.price].length == 4 }
+          end
         end
       end
     end

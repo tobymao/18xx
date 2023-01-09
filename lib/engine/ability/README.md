@@ -154,8 +154,8 @@ This company may not be bought in.
 
 ## purchase_train
 
-Immediately purchases (for normal amount) the currently available depot train
-for the owning corporation.
+Immediately purchases the currently available depot train for the owning corporation.
+- `free`: If true, the train cost is free, otherwase at cost. Default false.
 
 ## reservation
 

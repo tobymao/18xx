@@ -3002,6 +3002,8 @@ module Engine
       end
 
       def second_icon(corporation); end
+
+      def after_buying_train(train); end
     end
   end
 end

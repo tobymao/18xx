@@ -15,7 +15,7 @@ module Engine
         include Entities
 
         attr_accessor :train_marker
-        attr_reader :full_cap_event, :communism, :end_game_triggered
+        attr_reader :full_cap_event, :communism, :end_game_triggered, :par_order
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
@@ -330,6 +330,7 @@ module Engine
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           setup_foreign_investors
+          @par_order = { 100 => [], 90 => [], 80 => [], 70 => [] }
           setup_building_permits
           setup_unsaleable_shares
         end
@@ -356,6 +357,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
+            G1880::Step::CompanyPendingPar,
             G1880::Step::SelectionAuction,
           ])
         end
@@ -368,9 +370,14 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
-              @operating_rounds = @phase.operating_rounds
-              reorder_players
-              new_operating_round
+              if @saved_or_round
+                @log << '--Return to Operating Round--'
+                @saved_or_round
+              else
+                @operating_rounds = @phase.operating_rounds
+                reorder_players
+                new_operating_round
+              end
             when Engine::Round::Operating
               if @round.round_num
                 or_round_finished
@@ -387,7 +394,6 @@ module Engine
 
         def stock_round
           G1880::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             G1880::Step::BuySellParShares,
           ])
@@ -395,6 +401,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1880::Step::RocketPurchaseTrain,
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
             G1880::Step::Track,
@@ -449,9 +456,12 @@ module Engine
         end
 
         def status_array(corporation)
-          return if corporation.minor? || !corporation.floated?
+          return if corporation.minor? || !corporation.original_par_price
 
-          ["Building Permits: #{corporation.building_permits}"]
+          status = ["Building Permits: #{corporation.building_permits}"]
+          par_location = @par_order[corporation.original_par_price.price].find_index(corporation) + 1
+          status << ["Par Price: #{corporation.original_par_price.price}-#{par_location}"]
+          status
         end
 
         def corporation_show_individual_reserved_shares?(_corporation)
@@ -466,8 +476,12 @@ module Engine
 
           # reserve share for foreign investor
           foreign_investor = @minors.find { |m| m.owner == corporation.owner }
-          return unless foreign_investor.shares.empty?
+          return unless foreign_investor&.shares&.empty?
 
+          assign_share_to_fi(corporation, foreign_investor)
+        end
+
+        def assign_share_to_fi(corporation, foreign_investor)
           @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, foreign_investor)
           @log << "#{foreign_investor.full_name} receives a share of #{corporation.name}"
         end
@@ -649,6 +663,23 @@ module Engine
 
           graph = Graph.new(self, no_blocking: true)
           graph.reachable_hexes(corporation).include?(fi_home_token)
+        end
+
+        def after_par(corporation)
+          super
+          @par_order[corporation.par_price.price] << corporation
+        end
+
+        def operating_order
+          @minors.select(&:floated?) + @par_order.values.flatten
+        end
+
+        def after_buying_train(train)
+          return if train.name == @depot.upcoming.first.name
+
+          @turn += 1
+          @saved_or_round = @round.dup
+          @round = new_stock_round
         end
       end
     end

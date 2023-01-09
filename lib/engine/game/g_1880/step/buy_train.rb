@@ -34,6 +34,19 @@ module Engine
             { bought_trains: false }
           end
 
+          def pass!
+            return super unless current_entity == @game.train_marker && !@round.bought_trains
+
+            discard_all_trains
+          end
+
+          def discard_all_trains
+            train_name = @game.depot.upcoming.first.name
+            @game.log << "#{train_name} has not been bought for a full operating order, "\
+                         "removing all remaining #{train_name} trains"
+            @game.depot.export_all!(train_name, silent: true)
+          end
+
           def setup
             super
             @round.bought_trains = false
