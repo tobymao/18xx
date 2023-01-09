@@ -167,21 +167,44 @@ module Engine
                   },
                   { name: '10', distance: 10, price: 1000, num: 10 }].freeze
 
-        def operating_round(round_num)
-          Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
-            Engine::Step::HomeToken,
-            Engine::Step::Track,
-            Engine::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
-          ], round_num: round_num)
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1880::Step::SelectionAuction,
+          ])
+        end
+
+        def new_draft_round
+          Engine::Round::Draft.new(self, [G1880::Step::SimpleDraft], reverse_order: false)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when Round::Draft
+              new_stock_round
+            when init_round.class
+              init_round_finished
+              reorder_players(:least_cash, log_player_order: true)
+              new_draft_round
+            end
+        end
+
+        def p1
+          company_by_id('P1')
         end
       end
     end
