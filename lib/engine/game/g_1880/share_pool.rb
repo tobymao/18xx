@@ -6,35 +6,16 @@ module Engine
   module Game
     module G1880
       class SharePool < Engine::SharePool
-        def sell_shares(bundle, allow_president_change: true, swap: nil, silent: nil)
-          entity = bundle.owner
+        def log_sell_shares(entity, verb, bundle, price, swap_text)
+          fee = additional_price_adjustments(bundle)
+          @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
+                  "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}" \
+                  " (broker fee: #{@game.format_currency(fee)})#{swap_text}"
+        end
 
-          verb = entity.corporation? && entity == bundle.corporation ? 'issues' : 'sells'
-
-          price = bundle.price
-          price -= swap.price if swap
-
+        def additional_price_adjustments(bundle)
           percent = bundle.percent
-          percent -= swap.percent if swap
-          broker_fee = (percent / 10) * 5
-          price -= broker_fee
-          swap_text = swap ? " and a #{swap.percent}% share" : ''
-          swap_to_entity = swap ? entity : nil
-
-          unless silent
-            @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
-                    "of #{bundle.corporation.name} and receives #{@game.format_currency(price)} '\
-                    '(broker fee: #{@game.format_currency(broker_fee)})#{swap_text}"
-          end
-
-          transfer_shares(bundle,
-                          bundle.corporation,
-                          spender: @bank,
-                          receiver: entity,
-                          price: price,
-                          allow_president_change: allow_president_change,
-                          swap: swap,
-                          swap_to_entity: swap_to_entity)
+          (percent / 10) * 5
         end
       end
     end

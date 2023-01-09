@@ -17,9 +17,9 @@ module Engine
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_per_10
-        MARKET_SHARE_LIMIT = 100
         EBUY_PRES_SWAP = false
         CURRENCY_FORMAT_STR = '¥%s'
+        SOLD_SHARES_DESTINATION = :corporation
 
         BANK_CASH = 37_860
 
@@ -292,7 +292,7 @@ module Engine
 
           # reserve share for foreign investor
           foreign_investor = @minors.find { |m| m.owner == corporation.owner }
-          return if foreign_investor.shares.any?
+          return unless foreign_investor.shares.empty?
 
           @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, foreign_investor)
           @log << "#{foreign_investor.full_name} receives a share of #{corporation.name}"
