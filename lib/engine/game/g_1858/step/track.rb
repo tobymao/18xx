@@ -32,22 +32,19 @@ module Engine
             new_track.uniq
           end
 
+          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+            old_tile = action.hex.tile
+            new_tile = action.tile
+            @round.gauges_added << new_track_gauge(old_tile, new_tile)
+
+            super
+          end
+
           def process_lay_tile(action)
             entity = action.entity
             spender = entity.minor? ? entity.owner : nil
             lay_tile_action(action, spender: spender)
             pass! unless can_lay_tile?(entity)
-          end
-
-          def tile_lay_cost_override!(tile_lay, action, new_tile, old_tile)
-            @round.gauges_added << new_track_gauge(old_tile, new_tile)
-
-            return if tile_lay[:cost].zero? # first tile
-            return unless @round.gauges_added.include?([:narrow])
-
-            @log << "#{action.entity.name} receives a #{@game.format_currency(10)} " \
-                    'discount on its second tile for metre gauge track'
-            tile_lay[:cost] = tile_lay[:upgrade_cost] = 10
           end
 
           def potential_tiles(entity, hex)

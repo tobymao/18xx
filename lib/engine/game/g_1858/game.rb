@@ -406,14 +406,27 @@ module Engine
           return 0 if entity.minor? && home_hex?(entity, hex)
 
           cost = tile.upgrades[0].cost
-          if metre_gauge_upgrade(tile, hex.tile)
-            discount = cost / 2
-            @log << "#{entity.name} receives a #{format_currency(discount)} " \
-                    'terrain discount for metre gauge track'
-            cost - discount
-          else
-            cost
-          end
+          return cost unless metre_gauge_upgrade(tile, hex.tile)
+
+          discount = cost / 2
+          log_cost_discount(entity, nil, discount, :terrain)
+          cost - discount
+        end
+
+        def tile_cost_with_discount(_tile, _hex, entity, _spender, cost)
+          return cost if cost.zero? || !@round.gauges_added.include?([:narrow])
+
+          discount = 10
+          log_cost_discount(entity, nil, discount, :tile_lay)
+          cost - discount
+        end
+
+        def log_cost_discount(entity, _ability, discount, reason = :terrain)
+          return unless discount.positive?
+
+          @log << "#{entity.name} receives a #{format_currency(discount)} " \
+                  "#{reason == :terrain ? 'terrain' : 'second tile'} " \
+                  'discount for metre gauge track'
         end
 
         def route_distance_str(route)
