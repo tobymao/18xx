@@ -649,6 +649,12 @@ module Engine
           # owned by the player.
           false
         end
+
+        def operated_operators
+          # Don't include minors in the route history selector as they do not
+          # have any routes to show.
+          @corporations.select(&:operated?)
+        end
       end
     end
   end
