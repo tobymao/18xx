@@ -16,6 +16,12 @@ module Engine
             @auction_triggerer = current_entity
           end
 
+          def round_state
+            {
+              companies_pending_par: [],
+            }
+          end
+
           def all_passed!
             # Everyone has passed so we need to run a fake OR.
             if @companies.include?(@game.p1)

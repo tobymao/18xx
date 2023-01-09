@@ -39,8 +39,14 @@ module Engine
 
             @log << "#{player.name} chooses #{minor.full_name} (#{minor.name})"
 
+            assign_bcr_share_to_fi(action.entity, minor) if player.shares.find { |s| s.corporation.id == 'BCR' }
+
             @round.next_entity_index!
             action_finalized
+          end
+
+          def assign_bcr_share_to_fi(player, fi)
+            @game.assign_share_to_fi(player.shares.first.corporation, fi)
           end
 
           def action_finalized

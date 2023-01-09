@@ -118,6 +118,10 @@ module Engine
             super
             @game.receive_capital(action.corporation) if @game.full_cap_event
           end
+
+          def get_par_prices(entity, _corp)
+            super.reject { |p| @game.par_order[p.price].length == 4 }
+          end
         end
       end
     end
