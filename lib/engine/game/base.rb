@@ -1825,6 +1825,10 @@ module Engine
         !corporation.minor?
       end
 
+      def corporation_show_individual_reserved_shares?(_corporation)
+        true
+      end
+
       def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
         return nil unless entity
 
