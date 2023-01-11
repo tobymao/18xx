@@ -89,7 +89,7 @@ module Engine
             end
 
             @log << "#{@parring[:entity].name} selects #{permit} building permit"
-            @game.select_building_permit(@parring[:corporation], action.choice)
+            @parring[:corporation].building_permits = action.choice
 
             @parring[:state] = :par_corporation
             process_par(Action::Par.new(@parring[:entity], corporation: @parring[:corporation],

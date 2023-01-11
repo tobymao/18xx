@@ -200,6 +200,7 @@ module Engine
 
       COMPANIES = [].freeze
 
+      CORPORATION_CLASS = Corporation
       CORPORATIONS = [].freeze
 
       MINORS = [].freeze
@@ -2178,7 +2179,7 @@ module Engine
 
       def init_corporations(stock_market)
         game_corporations.map do |corporation|
-          Corporation.new(
+          self.class::CORPORATION_CLASS.new(
             min_price: stock_market.par_prices.map(&:price).min,
             capitalization: self.class::CAPITALIZATION,
             **corporation.merge(corporation_opts),

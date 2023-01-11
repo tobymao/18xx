@@ -27,6 +27,8 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340, 7 => 300 }.freeze
 
+        CORPORATION_CLASS = G1880::Corporation
+
         HOME_TOKEN_TIMING = :operating_round
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
@@ -194,9 +196,9 @@ module Engine
                   { name: '10', distance: 10, price: 1000, num: 10 }].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'float_30' => ['30% to Float', 'Corporations must have 30% of their shares sold to float'],
-          'float_40' => ['40% to Float', 'Corporations must have 40% of their shares sold to float'],
-          'float_60' => ['60% to Float', 'Corporations must have 60% of their shares sold to float'],
+          'float_30' => ['30% to Float', "Corporation's President must own 30% or corporation sold out to float"],
+          'float_40' => ['40% to Float', "Corporation's President must own 40% or corporation sold out to float"],
+          'float_60' => ['60% to Float', "Corporation's President must own 60% or corporation sold out to float"],
           'permit_b' => ['B Permit', 'Only corporations with a B building permit can build track'],
           'permit_c' => ['C Permit', 'Only corporations with a C building permit can build track'],
           'permit_d' => ['D Permit', 'Only corporations with a D building permit can build track'],
@@ -247,7 +249,6 @@ module Engine
         end
 
         def setup_building_permits
-          @corporation_building_permits = {}
           @active_building_permit = 'A'
           @building_permit_choices_by_president_percent = {
             20 => %w[ABC BCD],
@@ -257,7 +258,10 @@ module Engine
         end
 
         def setup_unsaleable_shares
-          @corporations.each { |c| c.shares[4..-1].each { |s| s.buyable = false } }
+          # reserve last 5 shares of each corp
+          @corporations.each do |c|
+            c.shares.last(5).each { |s| s.buyable = false }
+          end
         end
 
         def new_auction_round
@@ -268,12 +272,6 @@ module Engine
 
         def new_draft_round
           Engine::Round::Draft.new(self, [G1880::Step::SimpleDraft], reverse_order: false)
-        end
-
-        def stock_round
-          Engine::Round::Stock.new(self, [
-            G1880::Step::BuySellParShares,
-          ])
         end
 
         def next_round!
@@ -301,7 +299,7 @@ module Engine
           G1880::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
-            Engine::Step::BuySellParShares,
+            G1880::Step::BuySellParShares,
           ])
         end
 
@@ -325,15 +323,14 @@ module Engine
           game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
-        def setup
-          # reserve last 5 shares of each corp
-          @corporations.each do |c|
-            c.shares.last(5).each { |s| s.buyable = false }
-          end
-        end
-
         def p1
           company_by_id('P1')
+        end
+
+        def status_array(corporation)
+          return [] unless corporation.floated?
+
+          ["Building Permits: #{corporation.building_permits}"]
         end
 
         def corporation_show_individual_reserved_shares?(_corporation)
@@ -357,14 +354,10 @@ module Engine
           @building_permit_choices_by_president_percent[corporation.presidents_percent]
         end
 
-        def select_building_permit(corporation, permit)
-          corporation.add_ability(G1880::Ability::BuildingPermits.new(type: :building_permits, permits: permit))
-        end
-
         def can_build_track?(corporation)
           return @foreign_investors_can_build if corporation.minor?
 
-          abilities(corporation, :building_permits).permits.include?(@active_building_permit)
+          corporation.building_permits&.include?(@active_building_permit)
         end
 
         def player_card_minors(player)
