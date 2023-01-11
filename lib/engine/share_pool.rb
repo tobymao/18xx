@@ -127,22 +127,31 @@ module Engine
 
       price = bundle.price
       price -= swap.price if swap
+      price -= additional_price_adjustments(bundle)
       swap_text = swap ? " and a #{swap.percent}% share" : ''
       swap_to_entity = swap ? entity : nil
 
-      unless silent
-        @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
-                "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
-      end
+      log_sell_shares(entity, verb, bundle, price, swap_text) unless silent
+
+      transfer_to = @game.class::SOLD_SHARES_DESTINATION == :corporation ? bundle.corporation : self
 
       transfer_shares(bundle,
-                      self,
+                      transfer_to,
                       spender: @bank,
                       receiver: entity,
                       price: price,
                       allow_president_change: allow_president_change,
                       swap: swap,
                       swap_to_entity: swap_to_entity)
+    end
+
+    def log_sell_shares(entity, verb, bundle, price, swap_text)
+      @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
+              "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
+    end
+
+    def additional_price_adjustments(_bundle)
+      0
     end
 
     def share_pool?

@@ -225,6 +225,11 @@ module Engine
       # loans taken during ebuy can lead to receviership
       EBUY_CORP_LOANS_RECEIVERSHIP = false
 
+      # where should sold shares go to?
+      # :bank - bank pool
+      # :corporation - back to corporation/ipo
+      SOLD_SHARES_DESTINATION = :bank
+
       # when is the home token placed? on...
       # par
       # float

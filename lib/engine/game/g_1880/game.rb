@@ -16,13 +16,22 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
+        SELL_MOVEMENT = :down_per_10
+        EBUY_PRES_SWAP = false
         CURRENCY_FORMAT_STR = '¥%s'
+        SOLD_SHARES_DESTINATION = :corporation
 
         BANK_CASH = 37_860
 
         CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 14, 6 => 12, 7 => 11 }.freeze
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340, 7 => 300 }.freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'float_30' => ['30% to Float', 'Corporations must have 30% of their shares sold to float'],
+          'float_40' => ['40% to Float', 'Corporations must have 40% of their shares sold to float'],
+          'float_60' => ['60% to Float', 'Corporations must have 60% of their shares sold to float'],
+        ).freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           pays_bonus: :yellow,
@@ -133,7 +142,14 @@ module Engine
                     rusts_on: '4+4',
                     num: 5,
                   },
-                  { name: '3', distance: 3, price: 180, rusts_on: '6', num: 5 },
+                  {
+                    name: '3',
+                    distance: 3,
+                    price: 180,
+                    rusts_on: '6',
+                    num: 5,
+                    events: [{ 'type' => 'float_30' }],
+                  },
                   {
                     name: '3+3',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
@@ -142,7 +158,14 @@ module Engine
                     rusts_on: '6E',
                     num: 5,
                   },
-                  { name: '4', distance: 4, price: 300, rusts_on: '8', num: 5 },
+                  {
+                    name: '4',
+                    distance: 4,
+                    price: 300,
+                    rusts_on: '8',
+                    num: 5,
+                    events: [{ 'type' => 'float_40' }],
+                  },
                   {
                     name: '4+4',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
@@ -151,7 +174,13 @@ module Engine
                     rusts_on: '8E',
                     num: 5,
                   },
-                  { name: '6', distance: 6, price: 600, num: 5 },
+                  {
+                    name: '6',
+                    distance: 6,
+                    price: 600,
+                    num: 5,
+                    events: [{ 'type' => 'float_60' }],
+                  },
                   {
                     name: '6E',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 99 }],
@@ -180,21 +209,16 @@ module Engine
         def next_round!
           @round =
             case @round
-            when Round::Stock
+            when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Round::Operating
-              if @round.round_num < @operating_rounds
+            when Engine::Round::Operating
+              if @round.round_num
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
-              else
-                @turn += 1
-                or_round_finished
-                or_set_finished
-                new_stock_round
               end
-            when Round::Draft
+            when Engine::Round::Draft
               new_stock_round
             when init_round.class
               init_round_finished
@@ -203,8 +227,91 @@ module Engine
             end
         end
 
+        def stock_round
+          G1880::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::BuySellParShares,
+          ])
+        end
+
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Exchange,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            G1880::Step::Route,
+            G1880::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
+        def init_share_pool
+          G1880::SharePool.new(self)
+        end
+
+        def init_minors
+          game_minors.map { |minor| G1880::Minor.new(**minor) }
+        end
+
+        def setup
+          # reserve last 5 shares of each corp
+          @corporations.each do |c|
+            c.shares.last(5).each { |s| s.buyable = false }
+          end
+        end
+
         def p1
           company_by_id('P1')
+        end
+
+        def event_float_30!
+          @log << "-- Event: #{EVENTS_TEXT['float_30'][1]} --"
+          @float_percent = 30
+          non_floated_corporations { |c| c.float_percent = @float_percent }
+        end
+
+        def event_float_40!
+          @log << "-- Event: #{EVENTS_TEXT['float_40'][1]} --"
+          @float_percent = 40
+          non_floated_corporations { |c| c.float_percent = @float_percent }
+        end
+
+        def event_float_60!
+          @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
+          @float_percent = 60
+          non_floated_corporations { |c| c.float_percent = @float_percent }
+        end
+
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats"
+
+          @bank.spend(corporation.par_price.price * 5, corporation)
+          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+
+          # reserve share for foreign investor
+          foreign_investor = @minors.find { |m| m.owner == corporation.owner }
+          return unless foreign_investor.shares.empty?
+
+          @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, foreign_investor)
+          @log << "#{foreign_investor.full_name} receives a share of #{corporation.name}"
+        end
+
+        def player_card_minors(player)
+          @minors.select { |m| m.owner == player }
+        end
+
+        def route_trains(entity)
+          entity.minor? ? [@depot.min_depot_train] : super
+        end
+
+        def train_owner(train)
+          train.owner == @depot ? lessee : train.owner
+        end
+
+        def lessee
+          current_entity
         end
       end
     end
