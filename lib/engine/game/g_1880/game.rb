@@ -27,11 +27,9 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340, 7 => 300 }.freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'float_30' => ['30% to Float', 'Corporations must have 30% of their shares sold to float'],
-          'float_40' => ['40% to Float', 'Corporations must have 40% of their shares sold to float'],
-          'float_60' => ['60% to Float', 'Corporations must have 60% of their shares sold to float'],
-        ).freeze
+        CORPORATION_CLASS = G1880::Corporation
+
+        HOME_TOKEN_TIMING = :operating_round
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           pays_bonus: :yellow,
@@ -148,7 +146,7 @@ module Engine
                     price: 180,
                     rusts_on: '6',
                     num: 5,
-                    events: [{ 'type' => 'float_30' }],
+                    events: [{ 'type' => 'float_30' }, { 'type' => 'permit_b' }],
                   },
                   {
                     name: '3+3',
@@ -173,6 +171,7 @@ module Engine
                     price: 450,
                     rusts_on: '8E',
                     num: 5,
+                    events: [{ 'type' => 'float_40' }, { 'type' => 'permit_c' }],
                   },
                   {
                     name: '6',
@@ -187,7 +186,7 @@ module Engine
                     price: 600,
                     num: 5,
                   },
-                  { name: '8', distance: 8, price: 800, num: 2 },
+                  { name: '8', distance: 8, price: 800, num: 2, events: [{ 'type' => 'permit_d' }] },
                   {
                     name: '8E',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 99 }],
@@ -195,6 +194,75 @@ module Engine
                     num: 2,
                   },
                   { name: '10', distance: 10, price: 1000, num: 10 }].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'float_30' => ['30% to Float', "Corporation's President must own 30% or corporation sold out to float"],
+          'float_40' => ['40% to Float', "Corporation's President must own 40% or corporation sold out to float"],
+          'float_60' => ['60% to Float', "Corporation's President must own 60% or corporation sold out to float"],
+          'permit_b' => ['B Permit', 'Only corporations with a B building permit can build track'],
+          'permit_c' => ['C Permit', 'Only corporations with a C building permit can build track'],
+          'permit_d' => ['D Permit', 'Only corporations with a D building permit can build track'],
+        ).freeze
+
+        def event_float_30!
+          @log << "-- Event: #{EVENTS_TEXT['float_30'][1]} --"
+          update_float_percent(30)
+        end
+
+        def event_float_40!
+          @log << "-- Event: #{EVENTS_TEXT['float_40'][1]} --"
+          update_float_percent(40)
+        end
+
+        def event_float_60!
+          @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
+          update_float_percent(60)
+        end
+
+        def update_float_percent(percent)
+          @corporations.each do |c|
+            next if c.type == :minor || c.floated?
+
+            c.float_percent = percent
+          end
+        end
+
+        def event_permit_b!
+          @log << "-- Event: #{EVENTS_TEXT['permit_b'][1]} --"
+          @active_building_permit = 'B'
+        end
+
+        def event_permit_c!
+          @log << "-- Event: #{EVENTS_TEXT['permit_c'][1]} --"
+          @active_building_permit = 'C'
+        end
+
+        def event_permit_d!
+          @log << "-- Event: #{EVENTS_TEXT['permit_d'][1]} --"
+          @active_building_permit = 'D'
+        end
+
+        def setup
+          @foreign_investors_can_build = true
+          setup_building_permits
+          setup_unsaleable_shares
+        end
+
+        def setup_building_permits
+          @active_building_permit = 'A'
+          @building_permit_choices_by_president_percent = {
+            20 => %w[ABC BCD],
+            30 => %w[AB BC CD],
+            40 => %w[A B C D],
+          }
+        end
+
+        def setup_unsaleable_shares
+          # reserve last 5 shares of each corp
+          @corporations.each do |c|
+            c.shares.last(5).each { |s| s.buyable = false }
+          end
+        end
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
@@ -231,7 +299,7 @@ module Engine
           G1880::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
-            Engine::Step::BuySellParShares,
+            G1880::Step::BuySellParShares,
           ])
         end
 
@@ -255,33 +323,18 @@ module Engine
           game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
-        def setup
-          # reserve last 5 shares of each corp
-          @corporations.each do |c|
-            c.shares.last(5).each { |s| s.buyable = false }
-          end
-        end
-
         def p1
           company_by_id('P1')
         end
 
-        def event_float_30!
-          @log << "-- Event: #{EVENTS_TEXT['float_30'][1]} --"
-          @float_percent = 30
-          non_floated_corporations { |c| c.float_percent = @float_percent }
+        def status_array(corporation)
+          return [] unless corporation.floated?
+
+          ["Building Permits: #{corporation.building_permits}"]
         end
 
-        def event_float_40!
-          @log << "-- Event: #{EVENTS_TEXT['float_40'][1]} --"
-          @float_percent = 40
-          non_floated_corporations { |c| c.float_percent = @float_percent }
-        end
-
-        def event_float_60!
-          @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
-          @float_percent = 60
-          non_floated_corporations { |c| c.float_percent = @float_percent }
+        def corporation_show_individual_reserved_shares?(_corporation)
+          false
         end
 
         def float_corporation(corporation)
@@ -289,13 +342,22 @@ module Engine
 
           @bank.spend(corporation.par_price.price * 5, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+        end
 
-          # reserve share for foreign investor
-          foreign_investor = @minors.find { |m| m.owner == corporation.owner }
-          return unless foreign_investor.shares.empty?
+        def tile_lays(entity)
+          return [] unless can_build_track?(entity)
 
-          @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, foreign_investor)
-          @log << "#{foreign_investor.full_name} receives a share of #{corporation.name}"
+          super
+        end
+
+        def building_permit_choices(corporation)
+          @building_permit_choices_by_president_percent[corporation.presidents_percent]
+        end
+
+        def can_build_track?(corporation)
+          return @foreign_investors_can_build if corporation.minor?
+
+          corporation.building_permits&.include?(@active_building_permit)
         end
 
         def player_card_minors(player)
