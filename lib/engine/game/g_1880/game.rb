@@ -196,7 +196,13 @@ module Engine
                     price: 600,
                     num: 5,
                   },
-                  { name: '8', distance: 8, price: 800, num: 2, events: [{ 'type' => 'permit_d' }] },
+                  {
+                    name: '8',
+                    distance: 8,
+                    price: 800,
+                    num: 2,
+                    events: [{ 'type' => 'permit_d' }, { 'type' => 'token_cost_doubled' }],
+                  },
                   {
                     name: '8E',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 99 }],
@@ -216,6 +222,7 @@ module Engine
           'receive_capital' => ['Corporations receive capital',
                                 'Corporations with 5 shares sold receive the rest of their capital'],
           'fi_stop_operating' => ['Foreign Investors stop operating'],
+          'token_cost_doubled' => ['Token Cost Doubled', 'Token costs twice as much to place'],
         ).freeze
 
         def event_float_30!
@@ -284,6 +291,13 @@ module Engine
         def event_fi_stop_operating!
           @log << "-- Event: #{EVENTS_TEXT['fi_stop_operating'][1]} --"
           # #TO-DO stop operation logic
+        end
+
+        def event_token_cost_doubled!
+          @log << "-- Event: #{EVENTS_TEXT['token_cost_doubled'][1]} --"
+          @corporations.each do |c|
+            c.tokens.select(&:unused).each { |t| t.cost = t.cost * 2 }
+          end
         end
 
         def setup
