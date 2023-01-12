@@ -34,6 +34,7 @@ module Engine
         CORPORATION_CLASS = G1880::Corporation
 
         HOME_TOKEN_TIMING = :operating_round
+        TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
 
         TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
 
@@ -222,7 +223,7 @@ module Engine
           'receive_capital' => ['Corporations receive capital',
                                 'Corporations with 5 shares sold receive the rest of their capital'],
           'fi_stop_operating' => ['Foreign Investors stop operating'],
-          'token_cost_doubled' => ['Token Cost Doubled', 'Token costs twice as much to place'],
+          'token_cost_doubled' => ['Token Cost Doubled', 'Tokens cost twice as much to place'],
         ).freeze
 
         def event_float_30!
@@ -427,7 +428,7 @@ module Engine
           tile_lays = [{ lay: true, upgrade: true }]
           return tile_lays if entity.minor? || (entity != bcr && !@phase.tiles.include?(:green))
 
-          tiles_lays << { lay: :not_if_upgraded, upgrade: false }
+          tile_lays << { lay: :not_if_upgraded, upgrade: false }
           tile_lays
         end
 

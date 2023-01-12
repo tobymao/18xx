@@ -921,7 +921,7 @@ module Engine
 
         HOME_TOKEN_TIMING = :operate
 
-        TILE_RESERVATION_BLOCKS_OTHERS = true
+        TILE_RESERVATION_BLOCKS_OTHERS = :always
 
         GAME_END_CHECK = {
           bankrupt: :immediate,

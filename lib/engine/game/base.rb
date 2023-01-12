@@ -196,7 +196,10 @@ module Engine
       NEXT_SR_PLAYER_ORDER = :after_last_to_act
 
       # do tile reservations completely block other companies?
-      TILE_RESERVATION_BLOCKS_OTHERS = false
+      # :never -- token can be placed as long as there is a city space for existing tile reservations
+      # :always -- token cannot be placed until tile reservation resolved
+      # :yellow_only -- token cannot be placed while tile is yellow or until the tile reservation is resolved
+      TILE_RESERVATION_BLOCKS_OTHERS = :never
 
       COMPANIES = [].freeze
 
