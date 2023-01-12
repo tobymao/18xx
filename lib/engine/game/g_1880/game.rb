@@ -35,6 +35,8 @@ module Engine
 
         HOME_TOKEN_TIMING = :operating_round
 
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
+
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           pays_bonus: :yellow,
           pays_bonus_1: :orange,
@@ -284,6 +286,12 @@ module Engine
           # #TO-DO stop operation logic
         end
 
+        def setup
+          @foreign_investors_can_operate = true
+          setup_building_permits
+          setup_unsaleable_shares
+        end
+
         def setup_building_permits
           @active_building_permit = 'A'
           @building_permit_choices_by_president_percent = {
@@ -368,7 +376,11 @@ module Engine
         end
 
         def p1
-          company_by_id('P1')
+          @p1 ||= company_by_id('P1')
+        end
+
+        def bcr
+          @bcr ||= company_by_id('BCR')
         end
 
         def status_array(corporation)
@@ -398,7 +410,11 @@ module Engine
         def tile_lays(entity)
           return [] unless can_build_track?(entity)
 
-          super
+          tile_lays = [{ lay: true, upgrade: true }]
+          return tile_lays if entity.minor? || (entity != bcr && !@phase.tiles.include?(:green))
+
+          tiles_lays << { lay: :not_if_upgraded, upgrade: false }
+          tile_lays
         end
 
         def building_permit_choices(corporation)
@@ -406,7 +422,7 @@ module Engine
         end
 
         def can_build_track?(corporation)
-          return @foreign_investors_can_build if corporation.minor?
+          return @foreign_investors_can_operate if corporation.minor?
 
           corporation.building_permits&.include?(@active_building_permit)
         end
