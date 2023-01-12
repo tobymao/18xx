@@ -35,9 +35,13 @@ module Engine
           end
 
           def pass!
-            return super unless current_entity == @game.train_marker && !@round.bought_trains
+            return super unless discard_trains?
 
             discard_all_trains
+          end
+
+          def discard_trains?
+            @game.train_marker && !@round.bought_trains
           end
 
           def discard_all_trains
