@@ -113,6 +113,11 @@ module Engine
 
             process_presidents_percent_choice(Action::Choose.new(@parring[:entity], choice: percent_choices.keys.first))
           end
+
+          def process_buy_shares(action)
+            super
+            @game.receive_capital(action.corporation) if @game.full_cap_event
+          end
         end
       end
     end

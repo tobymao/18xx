@@ -14,12 +14,16 @@ module Engine
         include Map
         include Entities
 
+        attr_accessor :train_marker
+        attr_reader :full_cap_event
+
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_per_10
         EBUY_PRES_SWAP = false
         CURRENCY_FORMAT_STR = '¥%s'
         SOLD_SHARES_DESTINATION = :corporation
+        MINORS_CAN_OWN_SHARES = true
 
         BANK_CASH = 37_860
 
@@ -146,7 +150,10 @@ module Engine
                     price: 180,
                     rusts_on: '6',
                     num: 5,
-                    events: [{ 'type' => 'float_30' }, { 'type' => 'permit_b' }],
+                    events: [{ 'type' => 'float_30' },
+                             { 'type' => 'permit_b' },
+                             { 'type' => 'all_shares_available' },
+                             { 'type' => 'receive_capital' }],
                   },
                   {
                     name: '3+3',
@@ -162,7 +169,8 @@ module Engine
                     price: 300,
                     rusts_on: '8',
                     num: 5,
-                    events: [{ 'type' => 'float_40' }],
+                    events: [{ 'type' => 'float_40' },
+                             { 'type' => 'fi_stop_operating' }],
                   },
                   {
                     name: '4+4',
@@ -202,6 +210,10 @@ module Engine
           'permit_b' => ['B Permit', 'Only corporations with a B building permit can build track'],
           'permit_c' => ['C Permit', 'Only corporations with a C building permit can build track'],
           'permit_d' => ['D Permit', 'Only corporations with a D building permit can build track'],
+          'all_shares_available' => ['All 10 shares are available', 'Players can now buy all 10 shares'],
+          'receive_capital' => ['Corporations receive capital',
+                                'Corporations with 5 shares sold receive the rest of their capital'],
+          'fi_stop_operating' => ['Foreign Investors stop operating'],
         ).freeze
 
         def event_float_30!
@@ -242,10 +254,34 @@ module Engine
           @active_building_permit = 'D'
         end
 
-        def setup
-          @foreign_investors_can_build = true
-          setup_building_permits
-          setup_unsaleable_shares
+        def event_all_shares_available!
+          @log << "-- Event: #{EVENTS_TEXT['all_shares_available'][1]} --"
+          @corporations.each do |c|
+            c.shares.each { |s| s.buyable = true }
+          end
+        end
+
+        def event_receive_capital!
+          @log << "-- Event: #{EVENTS_TEXT['receive_capital'][1]} --"
+          @corporations.each do |c|
+            receive_capital(c)
+          end
+          @full_cap_event = true
+        end
+
+        def receive_capital(corporation)
+          return if corporation.ipo_shares > 5 || corporation.fully_funded
+
+          amount = corporation.par_price.price * 5
+          @log << "Five shares of #{corporation.name} have been boought. '\
+                  '#{corporation.name} receives #{@game.format_currency(amount)}"
+          @bank.spend(amount, corporation)
+          corporation.fully_funded = true
+        end
+
+        def event_fi_stop_operating!
+          @log << "-- Event: #{EVENTS_TEXT['fi_stop_operating'][1]} --"
+          # #TO-DO stop operation logic
         end
 
         def setup_building_permits
@@ -311,7 +347,8 @@ module Engine
             G1880::Step::Route,
             G1880::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1880::Step::BuyTrain,
+            G1880::Step::CheckFIConnection,
           ], round_num: round_num)
         end
 
@@ -323,12 +360,19 @@ module Engine
           game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
+        def setup
+          @full_cap_event = false
+          @foreign_investors_can_build = true
+          setup_building_permits
+          setup_unsaleable_shares
+        end
+
         def p1
           company_by_id('P1')
         end
 
         def status_array(corporation)
-          return [] unless corporation.floated?
+          return if corporation.minor? || !corporation.floated?
 
           ["Building Permits: #{corporation.building_permits}"]
         end
@@ -342,6 +386,13 @@ module Engine
 
           @bank.spend(corporation.par_price.price * 5, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+
+          # reserve share for foreign investor
+          foreign_investor = @minors.find { |m| m.owner == corporation.owner }
+          return unless foreign_investor.shares.empty?
+
+          @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, foreign_investor)
+          @log << "#{foreign_investor.full_name} receives a share of #{corporation.name}"
         end
 
         def tile_lays(entity)
@@ -374,6 +425,22 @@ module Engine
 
         def lessee
           current_entity
+        end
+
+        def round_description(name, round_number = nil)
+          description = super
+          description += " - Train Marker at #{@train_marker.name}" if @train_marker
+          description
+        end
+
+        def check_for_foreign_investor_connection(fi)
+          return false unless fi&.shares&.first
+
+          corporation = fi.shares.first.corporation
+          fi_home_token = fi.tokens.first.hex
+
+          graph = Graph.new(self, no_blocking: true)
+          graph.reachable_hexes(corporation).include?(fi_home_token)
         end
       end
     end

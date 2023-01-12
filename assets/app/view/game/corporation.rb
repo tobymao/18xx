@@ -388,6 +388,8 @@ module View
 
         other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation && !c.treasury_as_holding })
 
+        other_minor_rows = entities_rows(@game.minors) if @game.class::MINORS_CAN_OWN_SHARES
+
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         if @game.respond_to?(:reissued?) && @game.reissued?(@corporation) && !num_ipo_shares.empty?
           num_ipo_shares = '* ' + num_ipo_shares
@@ -456,6 +458,7 @@ module View
           *pool_rows,
           *player_rows,
           *other_corp_rows,
+          *other_minor_rows,
         ]
 
         props = { style: { borderCollapse: 'collapse' } }

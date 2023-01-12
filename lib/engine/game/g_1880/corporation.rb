@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1880
       class Corporation < Engine::Corporation
-        attr_accessor :building_permits
+        attr_accessor :building_permits, :fully_funded
 
         def floated?
           @floated ||= percent_to_float.zero?

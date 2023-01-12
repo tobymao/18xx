@@ -258,6 +258,9 @@ module Engine
       # :lawson Tile type like 1817, 1822
       TILE_TYPE = :normal
 
+      # games where minors can own shares
+      MINORS_CAN_OWN_SHARES = false
+
       # Must an upgrade use the maximum number of exits
       # for track and/or cities?
       # :cities for cities, as in  #611 and #63 in 1822
