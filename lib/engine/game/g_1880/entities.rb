@@ -10,7 +10,7 @@ module Engine
             sym: 'P0',
             value: 5,
             revenue: 0,
-            desc: 'Owner recieves one-off payment of 40/70/100 when last 2+2/3/3+3 train is purchased',
+            desc: 'Owner receives one-off payment of 40/70/100 when last 2+2/3/3+3 train is purchased',
             color: nil,
           },
           {

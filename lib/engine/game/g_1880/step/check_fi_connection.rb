@@ -38,10 +38,10 @@ module Engine
             @game.log << "#{action.entity.full_name} and #{corporation.name} are connected"
             process_merger
 
-            @merging[:state] = :choose_precent
+            @merging[:state] = :choose_percent
             return if action.entity.cash.positive?
 
-            process_precent(Action::Choose.new(action.entity, choice: nil))
+            process_percent(Action::Choose.new(action.entity, choice: nil))
           end
 
           def skip!
@@ -53,13 +53,13 @@ module Engine
             share = @merging[:corporation].shares.first
             @game.share_pool.transfer_shares(share.to_bundle, fi.owner)
             @game.bank.spend(50, fi.owner)
-            @game.log << "#{fi.owner.name} recieves #{@game.format_currency(50)} and a share of #{share.corporation.name}"
+            @game.log << "#{fi.owner.name} receives #{@game.format_currency(50)} and a share of #{share.corporation.name}"
           end
 
           def process_choose(action)
             case @merging[:state]
-            when :choose_precent
-              process_precent(action)
+            when :choose_percent
+              process_percent(action)
             when :choose_token
               process_token(action)
             end
@@ -69,14 +69,16 @@ module Engine
             @merging
           end
 
-          def process_precent(action)
+          def process_percent(action)
             fi = @merging[:fi]
             if fi.cash.positive?
               amount = action.choice.include?('treasury') ? fi.cash : fi.cash * 0.2
               destination = action.choice.include?('treasury') ? @merging[:corporation] : current_entity.owner
               fi.spend(amount, destination, check_positive: false)
-              @game.log << "#{fi.full_name} transfers #{@game.format_currency(amount)} to #{destination.name}"
+              log_msg = "#{fi.full_name} transfers #{@game.format_currency(amount)} to #{destination.name}"
             end
+            log_msg ||= "#{fi.full_name} has 0 in treasury, no money is transferred"
+            @game.log << log_msg
             @merging[:state] = :choose_token
             return if cheapest_unused_token(@merging[:corporation])
 
@@ -86,11 +88,16 @@ module Engine
           def process_token(action)
             fi = @merging[:fi]
             replace_token(fi, fi.tokens.first, cheapest_unused_token(@merging[:corporation])) if action.choice == 'Replace'
-            fi.tokens.first.city.remove_tokens! if action.choice == 'Discard'
+            discard_token(fi) if action.choice == 'Discard'
             @game.log << "#{fi.full_name} closes"
             fi.close!
 
             pass!
+          end
+
+          def discard_token(fi)
+            fi.tokens.first.city.remove_tokens!
+            @game.log << "#{fi.name} token is discarded"
           end
 
           def cheapest_unused_token(corp)
@@ -105,7 +112,7 @@ module Engine
 
           def choice_name
             case @merging[:state]
-            when :choose_precent
+            when :choose_percent
               "Choose destination for Foreign Investor cash\n"
             when :choose_token
               "Replace Token of Foreign Investor with Corporation token?\n"
@@ -114,7 +121,7 @@ module Engine
 
           def choices
             case @merging[:state]
-            when :choose_precent
+            when :choose_percent
               ["#{@game.format_currency(@merging[:fi].cash)} to #{@merging[:corporation].name} treasury",
                "#{@game.format_currency(@merging[:fi].cash * 0.2)} to #{current_entity.owner.name}"]
             when :choose_token
