@@ -302,6 +302,7 @@ module Engine
         end
 
         def setup
+          @full_cap_event = false
           @foreign_investors_can_operate = true
           setup_building_permits
           setup_unsaleable_shares
@@ -381,13 +382,6 @@ module Engine
 
         def init_minors
           game_minors.map { |minor| G1880::Minor.new(**minor) }
-        end
-
-        def setup
-          @full_cap_event = false
-          @foreign_investors_can_build = true
-          setup_building_permits
-          setup_unsaleable_shares
         end
 
         def p1
