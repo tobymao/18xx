@@ -364,7 +364,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Exchange,
-            Engine::Step::Track,
+            G1880::Step::Track,
             Engine::Step::Token,
             G1880::Step::Route,
             G1880::Step::Dividend,
@@ -429,6 +429,21 @@ module Engine
 
           tiles_lays << { lay: :not_if_upgraded, upgrade: false }
           tile_lays
+        end
+
+        def upgrades_to_correct_label?(from, _to)
+          return true if from.color == :white && from.cities.size == 2
+
+          super
+        end
+
+        def upgrades_to_correct_city_town?(from, to)
+          # Handle city/town option tile lays
+          if !from.cities.empty? && !from.towns.empty?
+            return to.cities.size == from.cities.size || to.towns.size == from.towns.size
+          end
+
+          super
         end
 
         def building_permit_choices(corporation)
