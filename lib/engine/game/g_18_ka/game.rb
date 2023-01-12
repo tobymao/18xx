@@ -926,7 +926,7 @@ module Engine
         EXTRA_TRAIN_PULLMAN = %w[+1 +2 +3 +4 +5].freeze
         SELL_BUY_ORDER = :sell_buy_sell
         TRACK_RESTRICTION = :permissive
-        TILE_RESERVATION_BLOCKS_OTHERS = true
+        TILE_RESERVATION_BLOCKS_OTHERS = :always
         def national
           @national ||= corporation_by_id('MGM')
         end

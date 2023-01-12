@@ -34,6 +34,9 @@ module Engine
         CORPORATION_CLASS = G1880::Corporation
 
         HOME_TOKEN_TIMING = :operating_round
+        TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
+
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           pays_bonus: :yellow,
@@ -194,7 +197,13 @@ module Engine
                     price: 600,
                     num: 5,
                   },
-                  { name: '8', distance: 8, price: 800, num: 2, events: [{ 'type' => 'permit_d' }] },
+                  {
+                    name: '8',
+                    distance: 8,
+                    price: 800,
+                    num: 2,
+                    events: [{ 'type' => 'permit_d' }, { 'type' => 'token_cost_doubled' }],
+                  },
                   {
                     name: '8E',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 99 }],
@@ -214,6 +223,7 @@ module Engine
           'receive_capital' => ['Corporations receive capital',
                                 'Corporations with 5 shares sold receive the rest of their capital'],
           'fi_stop_operating' => ['Foreign Investors stop operating'],
+          'token_cost_doubled' => ['Token Cost Doubled', 'Tokens cost twice as much to place'],
         ).freeze
 
         def event_float_30!
@@ -284,6 +294,20 @@ module Engine
           # #TO-DO stop operation logic
         end
 
+        def event_token_cost_doubled!
+          @log << "-- Event: #{EVENTS_TEXT['token_cost_doubled'][1]} --"
+          @corporations.each do |c|
+            c.tokens.select(&:unused).each { |t| t.cost = t.cost * 2 }
+          end
+        end
+
+        def setup
+          @full_cap_event = false
+          @foreign_investors_can_operate = true
+          setup_building_permits
+          setup_unsaleable_shares
+        end
+
         def setup_building_permits
           @active_building_permit = 'A'
           @building_permit_choices_by_president_percent = {
@@ -342,7 +366,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Exchange,
-            Engine::Step::Track,
+            G1880::Step::Track,
             Engine::Step::Token,
             G1880::Step::Route,
             G1880::Step::Dividend,
@@ -360,15 +384,12 @@ module Engine
           game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
-        def setup
-          @full_cap_event = false
-          @foreign_investors_can_build = true
-          setup_building_permits
-          setup_unsaleable_shares
+        def p1
+          @p1 ||= company_by_id('P1')
         end
 
-        def p1
-          company_by_id('P1')
+        def bcr
+          @bcr ||= company_by_id('BCR')
         end
 
         def status_array(corporation)
@@ -398,6 +419,25 @@ module Engine
         def tile_lays(entity)
           return [] unless can_build_track?(entity)
 
+          tile_lays = [{ lay: true, upgrade: true }]
+          return tile_lays if entity.minor? || (entity != bcr && !@phase.tiles.include?(:green))
+
+          tile_lays << { lay: :not_if_upgraded, upgrade: false }
+          tile_lays
+        end
+
+        def upgrades_to_correct_label?(from, _to)
+          return true if from.color == :white && from.cities.size == 2
+
+          super
+        end
+
+        def upgrades_to_correct_city_town?(from, to)
+          # Handle city/town option tile lays
+          if !from.cities.empty? && !from.towns.empty?
+            return to.cities.size == from.cities.size || to.towns.size == from.towns.size
+          end
+
           super
         end
 
@@ -406,7 +446,7 @@ module Engine
         end
 
         def can_build_track?(corporation)
-          return @foreign_investors_can_build if corporation.minor?
+          return @foreign_investors_can_operate if corporation.minor?
 
           corporation.building_permits&.include?(@active_building_permit)
         end

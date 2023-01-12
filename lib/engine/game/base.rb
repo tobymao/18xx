@@ -196,7 +196,10 @@ module Engine
       NEXT_SR_PLAYER_ORDER = :after_last_to_act
 
       # do tile reservations completely block other companies?
-      TILE_RESERVATION_BLOCKS_OTHERS = false
+      # :never -- token can be placed as long as there is a city space for existing tile reservations
+      # :always -- token cannot be placed until tile reservation resolved
+      # :yellow_only -- token cannot be placed while tile is yellow or until the tile reservation is resolved
+      TILE_RESERVATION_BLOCKS_OTHERS = :never
 
       COMPANIES = [].freeze
 
@@ -1562,19 +1565,8 @@ module Engine
         # correct label?
         return false unless upgrades_to_correct_label?(from, to)
 
-        # honors existing town/city counts and connections?
-        # - allow labelled cities to upgrade regardless of count; they're probably
-        #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
-        # - TODO: account for games that allow double dits to upgrade to one town
-        return false if from.towns.size != to.towns.size
-        return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
-        return false if from.cities.size > 1 && to.cities.size > 1 && !from.city_town_edges_are_subset_of?(to.city_town_edges)
-
-        # but don't permit a labelled city to be downgraded to 0 cities.
-        return false if from.label && !from.cities.empty? && to.cities.empty?
-
-        # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
-        return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
+        # correct number of cities and towns
+        return false unless upgrades_to_correct_city_town?(from, to)
 
         true
       end
@@ -1592,6 +1584,24 @@ module Engine
         return from.future_label.label == to.label&.to_s if from.future_label && to.color.to_s == from.future_label.color
 
         from.label == to.label
+      end
+
+      def upgrades_to_correct_city_town?(from, to)
+        # honors existing town/city counts and connections?
+        # - allow labelled cities to upgrade regardless of count; they're probably
+        #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+        # - TODO: account for games that allow double dits to upgrade to one town
+        return false if from.towns.size != to.towns.size
+        return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
+        return false if from.cities.size > 1 && to.cities.size > 1 && !from.city_town_edges_are_subset_of?(to.city_town_edges)
+
+        # but don't permit a labelled city to be downgraded to 0 cities.
+        return false if from.label && !from.cities.empty? && to.cities.empty?
+
+        # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
+        return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
+
+        true
       end
 
       def legal_tile_rotation?(_entity, _hex, _tile)
