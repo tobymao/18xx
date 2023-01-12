@@ -65,10 +65,9 @@ module Engine
         # This is a feature we added to 18xx.games controlled by this variable.
         TURN_SELL_LIMIT = 30
 
-        # Change the companies text to clearly talk about the Hunslet
         STATUS_TEXT = {
           'can_buy_companies' =>
-          ['Can Buy Hunslet', 'Corporation owned by the owner of the Hunslet may purchase it from the owning player'],
+          ['Can Buy Hunslet', 'A corporation may purchase the Hunslet from its owning player'],
         }.freeze
 
         # The numbers needed to assign proper private numbers to the PEIR
@@ -141,7 +140,7 @@ module Engine
           # Setup tranches
           init_tranches([[mainline, shortline], [nil], [nil, nil], [nil, nil, nil]])
 
-          # Setup hash to map each non-ml/sl corp to it's PEIR share
+          # Setup hash to map each non-ml/sl corp to its PEIR share
           @peir_corporation_shares = {}
           @peir_company_shares = {}
           @corporations[2, 5].sort_by { |c| NUMBERS[c.id] }.each_with_index do |c, i|
@@ -158,7 +157,7 @@ module Engine
           token.type = :neutral
           neutral_city.exchange_token(token)
 
-          # For each non-ml/sl corporation, replace it's token with a PEIR token
+          # For each non-ml/sl corporation, replace its token with a PEIR token
           # and create the company that represents a PEIR share
           @peir_companies = []
           @corporations[2, 5].each_with_index do |c, i|
@@ -170,7 +169,7 @@ module Engine
             company = Company.new(sym: "P#{NUMBERS[c.name]}",
                                   name: "PEIR - #{c.full_name}",
                                   desc: "Exchanges for a #{c.name} share from the bank if and when #{c.name} floats.",
-                                  abilities: [{ type: 'close', on_phase: 'never' }],
+                                  abilities: [{ type: 'close', on_phase: 'never' }, { type: 'no_buy' }],
                                   value: 80)
 
             @peir_companies << company
@@ -196,7 +195,7 @@ module Engine
             share.buyable = false
           end
 
-          # Asssign King's Mail
+          # Assign King's Mail
           kings_mail = company_by_id('KM')
           kings_mail.owner = peir
           peir.companies << kings_mail
@@ -206,7 +205,7 @@ module Engine
           peir.cash = 200
           @peir_shares = peir.shares
 
-          # If Ice Boat shipping is in the game, set it's corporations
+          # If Ice Boat shipping is in the game, set its corporations
           if @players.size == 5 # due to Union Bank already being added
             ice_boat_shipping = company_by_id('IB')
             ice_boat_ability = Engine::Ability::Exchange.new(type: :exchange,
@@ -509,20 +508,11 @@ module Engine
           end
         end
 
-        # The base version of purchasable_companies allows you to purchase most
-        # companies even if you aren't the owner of the private. In this game
-        # only one company is lootable and it's only lootable by a corporation
-        # owned by the privates owner. This means we can simplify this method a
-        # lot.
         def purchasable_companies(entity = nil)
           # PEIR isn't allowed to buy the hunslet
           return [] if entity == @peir
 
-          hunslet = company_by_id('HSE')
-
-          # Return the hunslet if we aren't given a purchaser, or if the
-          # purchaser has the same owner as the hunslet
-          !entity || (entity.owner == hunslet.owner) ? [hunslet] : []
+          super
         end
 
         # We added the ability to exchange for any ipoed company, however this
@@ -719,8 +709,8 @@ module Engine
         end
 
         # Find all shares that need to be exchanged and do so. Also places
-        # remaining corporation shares in it's treasury and gives the branch
-        # company it's partial cap.
+        # remaining corporation shares in its treasury and gives the branch
+        # company its partial cap.
         def exchange_split_shares(corporation, branch)
           # Setup the corporation to be incremental capitalization now
           corporation.capitalization = :incremental
