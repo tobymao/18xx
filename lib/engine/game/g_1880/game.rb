@@ -341,7 +341,7 @@ module Engine
             case @round
             when Engine::Round::Stock
               if @saved_or_round
-                @log << "--Return to Operating Round--"
+                @log << '--Return to Operating Round--'
                 @saved_or_round
               else
                 @operating_rounds = @phase.operating_rounds
@@ -508,9 +508,10 @@ module Engine
 
         def after_buying_train(train)
           return if train.name == @depot.upcoming.first.name
+
           @turn += 1
           @saved_or_round = @round.dup
-          @round = new_stock_round 
+          @round = new_stock_round
         end
       end
     end
