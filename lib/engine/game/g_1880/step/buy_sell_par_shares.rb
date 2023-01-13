@@ -13,6 +13,12 @@ module Engine
             super
           end
 
+          def can_sell?(entity, bundle)
+            return false if @game.communism && entity == bundle.corporation.owner
+
+            super
+          end
+
           def choice_available?(entity)
             @parring && entity == current_entity
           end
