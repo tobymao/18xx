@@ -30,7 +30,6 @@ module View
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
         @delta_value = Lib::Storage['spreadsheet_delta_value']
         @hide_not_floated = Lib::Storage['spreadsheet_hide_not_floated']
-        @corporations_first = Lib::Storage['spreadsheet_corporations_first']
 
         h('div#spreadsheet', {
             style: {
@@ -59,7 +58,7 @@ module View
       end
 
       def render_player_table
-        first_header = @corporations_first ? render_player_names_header : h(:thead)
+        first_header = render_player_names_header
 
         h('div#player_table', { style: { float: 'left', marginRight: '1rem' } }, [
           h(:table, table_props, [
@@ -224,14 +223,12 @@ module View
           reserved_header << h(:th, render_sort_link(@game.ipo_reserved_name, :reserved_shares))
         end
 
-        titles = []
-        bank_props_right_border = @corporations_first ? false : true
-        corporation_props_right_border = @corporations_first ? true : false
-        corporation_props_size = (@corporations_first ? 6 : 5) + extra.size + treasury.size
+        corporation_props_right_border = true
+        corporation_props_size = 6 + extra.size + treasury.size
 
         players_title = h(:th, th_props[@game.players.size], 'Players')
         prices_title = h(:th, th_props[2], 'Prices')
-        bank_title = h(:th, th_props[bank_width, bank_props_right_border], 'Bank')
+        bank_title = h(:th, th_props[bank_width, false], 'Bank')
         corporation_title = h(:th, th_props[corporation_props_size, corporation_props_right_border],
                               ['Corporation ', render_toggle_not_floated_link])
 
@@ -251,8 +248,9 @@ module View
           h(:th, render_sort_link(@game.ipo_name, :par_price)),
           h(:th, render_sort_link('Market', :share_price)),
         ]
-        corporation_subtitles = @corporations_first ? [h(:th, render_sort_link('President', :president))] : []
-        corporation_subtitles.concat([
+
+        corporation_subtitles = [
+          h(:th, render_sort_link('President', :president)),
           h(:th, render_sort_link('Cash', :cash)),
           *treasury,
           h(:th, render_sort_link('Order', :order)),
@@ -260,27 +258,18 @@ module View
           h(:th, render_sort_link('Tokens', :tokens)),
           *extra,
           h(:th, render_sort_link('Companies', :companies)),
-        ])
+        ]
 
-        if @corporations_first
-          titles << corporation_title
-          titles << prices_title
-          titles << players_title
-          titles << bank_title
-          subtitles.concat(corporation_subtitles)
-          subtitles.concat(prices_subtitles)
-          subtitles.concat(players_subtitles)
-          subtitles.concat(bank_subtitles)
-        else
-          titles << players_title
-          titles << bank_title
-          titles << prices_title
-          titles << corporation_title
-          subtitles.concat(players_subtitles)
-          subtitles.concat(bank_subtitles)
-          subtitles.concat(prices_subtitles)
-          subtitles.concat(corporation_subtitles)
-        end
+        titles = [
+          corporation_title,
+          prices_title,
+          players_title,
+          bank_title,
+        ]
+        subtitles.concat(corporation_subtitles)
+        subtitles.concat(prices_subtitles)
+        subtitles.concat(players_subtitles)
+        subtitles.concat(bank_subtitles)
 
         [
           h(:tr, [
@@ -337,11 +326,6 @@ module View
         update
       end
 
-      def toggle_corporations_first
-        Lib::Storage['spreadsheet_corporations_first'] = !@corporations_first
-        update
-      end
-
       def render_toggle_not_floated_link
         toggle = lambda do
           Lib::Storage['spreadsheet_hide_not_floated'] = !@hide_not_floated
@@ -374,11 +358,6 @@ module View
               on: { click: -> { toggle_delta_value } },
             },
             "Show #{@delta_value ? 'Total' : 'Delta'} Values"),
-          h(:button, {
-              style: { minWidth: '9.5rem' },
-              on: { click: -> { toggle_corporations_first } },
-            },
-            "#{@corporations_first ? 'Players' : 'Corporations'} First"),
         ])
       end
 
@@ -428,6 +407,8 @@ module View
               else
                 [1, corporation.id]
               end
+            when :president
+              corporation.owner&.name || ''
             when :reserved_shares
               num_reserved_shares(corporation)
             when :ipo_shares
@@ -567,7 +548,6 @@ module View
         end
 
         bank_market_props = { style: { color: n_market_shares.zero? ? 'transparent' : 'inherit' } }
-        bank_market_props[:style][:borderRight] = border_style unless @corporations_first
         bank_row_content = [
           *reserved,
           h('td.padded_number', {
@@ -587,8 +567,8 @@ module View
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         ]
 
-        corporation_row_content = @corporations_first ? [corporation.owner&.name&.truncate] : []
-        corporation_row_content.concat([
+        corporation_row_content = [
+          h(:td, corporation.owner ? corporation.owner&.name&.truncate : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
           *treasury,
           h('td.padded_number', order_props, if operating_order[0] == UNFLOATED
@@ -600,20 +580,13 @@ module View
           h(:td, @game.token_string(corporation)),
           *extra,
           render_companies(corporation),
-        ])
+        ]
 
         row_content = []
-        if @corporations_first
-          row_content.concat(corporation_row_content)
-          row_content.concat(prices_row_content)
-          row_content.concat(players_row_content)
-          row_content.concat(bank_row_content)
-        else
-          row_content.concat(players_row_content)
-          row_content.concat(bank_row_content)
-          row_content.concat(prices_row_content)
-          row_content.concat(corporation_row_content)
-        end
+        row_content.concat(corporation_row_content)
+        row_content.concat(prices_row_content)
+        row_content.concat(players_row_content)
+        row_content.concat(bank_row_content)
 
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
@@ -634,7 +607,7 @@ module View
             },
           }
           props[:style][:minWidth] = min_width(entity)
-        elsif @corporations_first
+        elsif entity.corporation?
           props = {
             style: {
               borderRight: "1px solid #{color_for(:font2)}",
