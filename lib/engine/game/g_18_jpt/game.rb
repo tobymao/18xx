@@ -27,7 +27,7 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy_sell
-        TILE_RESERVATION_BLOCKS_OTHERS = true
+        TILE_RESERVATION_BLOCKS_OTHERS = :always
         CURRENCY_FORMAT_STR = '¥%s'
 
         BANK_CASH = 12_000

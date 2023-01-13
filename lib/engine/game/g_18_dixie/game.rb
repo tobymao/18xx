@@ -53,7 +53,7 @@ module Engine
                                               }).freeze
         SELL_BUY_ORDER = :sell_buy_sell
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 425, 6 => 375 }.freeze
-        TILE_RESERVATION_BLOCKS_OTHERS = true
+        TILE_RESERVATION_BLOCKS_OTHERS = :always
         TRACK_RESTRICTION = :permissive
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 

@@ -263,6 +263,12 @@ module Engine
 
         def stock_round
           @newly_floated = []
+          if !@rhe_market_rise_applied && rhe.floated
+            # RhE should get the market rise, as it is
+            # floated via buy of private, and not in stock market.
+            @rhe_market_rise_applied = true
+            @newly_floated << rhe
+          end
           G18Rhl::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18Rhl::Step::BuySellParShares,
@@ -376,6 +382,7 @@ module Engine
           @aachen_duren_cologne_link_bonus = 0
           @eastern_ruhr_connections = []
           @newly_floated = []
+          @rhe_market_rise_applied = false
 
           @essen_tile ||= @tiles.find { |t| t.name == 'Essen' } if optional_promotion_tiles
           @moers_tile_brown ||= @tiles.find { |t| t.name == '947' }

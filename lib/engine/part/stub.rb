@@ -18,6 +18,10 @@ module Engine
       def track
         :broad
       end
+
+      def inspect
+        "<#{self.class.name} edge=#{@edge}>"
+      end
     end
   end
 end

@@ -215,7 +215,7 @@ module Engine
         MUST_BID_INCREMENT_MULTIPLE = true
         MIN_BID_INCREMENT = 5
 
-        TILE_RESERVATION_BLOCKS_OTHERS = false
+        TILE_RESERVATION_BLOCKS_OTHERS = :never
 
         GAME_END_CHECK = {
           bankrupt: :immediate,
