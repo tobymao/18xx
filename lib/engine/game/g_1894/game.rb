@@ -235,8 +235,8 @@ module Engine
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Par',
                                               unlimited: 'Corporation shares can be held above 60% and ' \
-                                                         'President may buy two shares at a time and ' \
-                                                         'additional move up if sold out and don\`t count '\
+                                                         'President may buy two at a time and ' \
+                                                         'additional move up if sold out and don\'t count '\
                                                          'towards the cert limit.')
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :red,
