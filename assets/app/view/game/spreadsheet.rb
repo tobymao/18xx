@@ -58,11 +58,9 @@ module View
       end
 
       def render_player_table
-        first_header = render_player_names_header
-
         h('div#player_table', { style: { float: 'left', marginRight: '1rem' } }, [
           h(:table, table_props, [
-            first_header,
+            render_player_names_header,
             h('tbody#player_details', [
               render_player_cash,
               render_player_value,
@@ -223,14 +221,12 @@ module View
           reserved_header << h(:th, render_sort_link(@game.ipo_reserved_name, :reserved_shares))
         end
 
-        corporation_props_right_border = true
         corporation_props_size = 6 + extra.size + treasury.size
 
         players_title = h(:th, th_props[@game.players.size], 'Players')
         prices_title = h(:th, th_props[2], 'Prices')
         bank_title = h(:th, th_props[bank_width, false], 'Bank')
-        corporation_title = h(:th, th_props[corporation_props_size, corporation_props_right_border],
-                              ['Corporation ', render_toggle_not_floated_link])
+        corporation_title = h(:th, th_props[corporation_props_size], ['Corporation ', render_toggle_not_floated_link])
 
         subtitles = []
         players_subtitles = []
@@ -248,7 +244,6 @@ module View
           h(:th, render_sort_link(@game.ipo_name, :par_price)),
           h(:th, render_sort_link('Market', :share_price)),
         ]
-
         corporation_subtitles = [
           h(:th, render_sort_link('President', :president)),
           h(:th, render_sort_link('Cash', :cash)),
