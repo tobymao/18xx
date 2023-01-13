@@ -10,6 +10,7 @@ module Engine
           def actions(entity)
             return [] if !entity.operator? ||
             (entity.runnable_trains.empty? && !entity.minor?) ||
+            (@game.communism && entity.minor?) ||
             !@game.can_run_route?(entity)
 
             ACTIONS

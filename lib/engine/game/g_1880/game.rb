@@ -15,7 +15,7 @@ module Engine
         include Entities
 
         attr_accessor :train_marker
-        attr_reader :full_cap_event
+        attr_reader :full_cap_event, :communism
 
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
@@ -173,7 +173,7 @@ module Engine
                     rusts_on: '8',
                     num: 5,
                     events: [{ 'type' => 'float_40' },
-                             { 'type' => 'fi_stop_operating' }],
+                             { 'type' => 'communist_takeover' }],
                   },
                   {
                     name: '4+4',
@@ -189,7 +189,8 @@ module Engine
                     distance: 6,
                     price: 600,
                     num: 5,
-                    events: [{ 'type' => 'float_60' }],
+                    events: [{ 'type' => 'float_60' },
+                             { 'type' => 'stock_exchange_reopens' }],
                   },
                   {
                     name: '6E',
@@ -222,8 +223,11 @@ module Engine
           'all_shares_available' => ['All 10 shares are available', 'Players can now buy all 10 shares'],
           'receive_capital' => ['Corporations receive capital',
                                 'Corporations with 5 shares sold receive the rest of their capital'],
-          'fi_stop_operating' => ['Foreign Investors stop operating'],
           'token_cost_doubled' => ['Token Cost Doubled', 'Tokens cost twice as much to place'],
+          'communist_takeover' => ['Communist Takeover',
+                                   'No share price movement, no sales by director, no private payouts, ' \
+                                   'foreign investors do not operate'],
+          'stock_exchange_reopens' => ['Stock Exchange Reopens', 'Normal share price movement, director may sell shares'],
         ).freeze
 
         def event_float_30!
@@ -280,7 +284,7 @@ module Engine
         end
 
         def receive_capital(corporation)
-          return if corporation.ipo_shares > 5 || corporation.fully_funded
+          return if corporation.ipo_shares.size > 5 || corporation.fully_funded
 
           amount = corporation.par_price.price * 5
           @log << "Five shares of #{corporation.name} have been boought. '\
@@ -289,9 +293,16 @@ module Engine
           corporation.fully_funded = true
         end
 
-        def event_fi_stop_operating!
-          @log << "-- Event: #{EVENTS_TEXT['fi_stop_operating'][1]} --"
-          # #TO-DO stop operation logic
+        def event_communist_takeover!
+          @log << "-- Event: #{EVENTS_TEXT['communist_takeover'][1]} --"
+          @communism = true
+          @foreign_investors_operate = false
+          @companies.each { |c| c.revenue = 0 }
+        end
+
+        def event_stock_exchange_reopens!
+          @log << "-- Event: #{EVENTS_TEXT['stock_exchange_reopens'][1]} --"
+          @communism = false
         end
 
         def event_token_cost_doubled!
@@ -303,7 +314,8 @@ module Engine
 
         def setup
           @full_cap_event = false
-          @foreign_investors_can_operate = true
+          @communism = false
+          @foreign_investors_operate = true
           setup_building_permits
           setup_unsaleable_shares
         end
@@ -376,6 +388,13 @@ module Engine
           ], round_num: round_num)
         end
 
+        def init_stock_market
+          market = G1880::StockMarket.new(self.class::MARKET, [],
+                                          multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          market.game = self
+          market
+        end
+
         def init_share_pool
           G1880::SharePool.new(self)
         end
@@ -446,7 +465,7 @@ module Engine
         end
 
         def can_build_track?(corporation)
-          return @foreign_investors_can_operate if corporation.minor?
+          return @foreign_investors_operate if corporation.minor?
 
           corporation.building_permits&.include?(@active_building_permit)
         end
