@@ -372,7 +372,7 @@ module View
     end
 
     def submit
-      return unless selected_game_or_variant
+      return if !selected_game_or_variant && @mode != :json
 
       game_params = params
       game_params[:seed] = game_params[:seed].to_i

@@ -97,6 +97,44 @@ module Engine
       @reachable_hexes[corporation]
     end
 
+    # Called from #compute when @home_is_token is true.
+    # Returns a hash whose keys are the Engine::Hex objects for each hex in the
+    # entity's coordinates list. The values are hashes with keys that are the
+    # edge numbers of all adjacent hexes and values of +true+.
+    def home_hexes(corporation)
+      home_hexes = Hash.new { |h, k| h[k] = {} }
+      hexes = Array(corporation.coordinates).map { |h| @game.hex_by_id(h) }
+      hexes.each do |hex|
+        hex.neighbors.each { |edge, _| home_hexes[hex][edge] = true }
+      end
+      home_hexes
+    end
+
+    # Called from #compute when @home_is_token is true.
+    # Returns a hash whose keys are the nodes (either Engine::Part::City or
+    # Engine::Part::Town objects) for nodes in the hexes that are in the
+    # entity's coordinates list. The value for each item is +true+.
+    #
+    # Where there are multiple cities in a hex:
+    # 1. If the entity does not have a +city+ attribute defined then all cities
+    # are included.
+    # 2. If there is a single value in the +city+ attribute then the city with
+    # the matching index is included.
+    # 3. If +city+ is an array then all cities with matching indexes are
+    # included.
+    def home_hex_nodes(corporation)
+      nodes = {}
+      hexes = Array(corporation.coordinates).map { |h| @game.hex_by_id(h) }
+      hexes.each do |hex|
+        if corporation.city
+          Array(corporation.city).map { |c_idx| hex.tile.cities[c_idx] }.compact.each { |c| nodes[c] = true }
+        else
+          hex.tile.city_towns.each { |ct| nodes[ct] = true }
+        end
+      end
+      nodes
+    end
+
     def compute(corporation, routes_only: false)
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
@@ -112,16 +150,9 @@ module Engine
         end
       end
 
-      if @home_as_token
-        home_hexes = Array(corporation.coordinates).map { |h| @game.hex_by_id(h) }
-        home_hexes.each do |hex|
-          hex.neighbors.each { |e, _| hexes[hex][e] = true }
-          if corporation.city
-            Array(corporation.city).map { |c_idx| hex.tile.cities[c_idx] }.compact.each { |c| nodes[c] = true }
-          else
-            hex.tile.city_towns.each { |ct| nodes[ct] = true }
-          end
-        end
+      if @home_as_token && corporation.coordinates
+        hexes.merge!(home_hexes(corporation))
+        nodes.merge!(home_hex_nodes(corporation))
       end
 
       tokens = nodes.dup

@@ -16,8 +16,27 @@ module Engine
             'Stock Round Action'
           end
 
+          def help
+            return '' unless @exchanged
+
+            case @game.share_pool.percent_of(@game.union_pacific)
+            when 0
+              'You may sell both of the Ames Brothers shares'
+            when (10..40)
+              'You may sell one or both of the Ames Brothers shares'
+            else
+              ''
+            end
+          end
+
+          def setup
+            super
+            @exchanged = false
+            @exchanger = @game.ames_bros
+          end
+
           def actions(entity)
-            return [] if tokened?
+            return %w[buy_shares] if can_exchange?(entity)
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
 
@@ -34,22 +53,84 @@ module Engine
             @game.par_prices.select { |p| p.price * 2 <= entity.cash }
           end
 
+          def map_action_optional?
+            true
+          end
+
+          def initial_double_share_bundle?(bundle)
+            bundle.shares == [@game.up_double_share] &&
+              !bundle.buyable
+          end
+
+          def can_buy?(entity, bundle)
+            return false if @exchanged
+
+            if initial_double_share_bundle?(bundle)
+              entity == @exchanger.owner &&
+                can_gain?(entity, bundle, exchange: true)
+            elsif bundle.shares.include?(@game.up_double_share) &&
+                  bundle.owner == @game.share_pool &&
+                  @game.share_pool.shares_of(@game.union_pacific).size > 1
+              false
+            else
+              super
+            end
+          end
+
+          def can_exchange?(entity, bundle = nil)
+            return false if bought? || sold?
+            return false unless entity == @exchanger
+            return false unless @game.abilities(entity, :exchange)
+
+            bundle ||= @game.up_double_share.to_bundle
+            can_gain?(entity.owner, bundle, exchange: true)
+          end
+
           def process_buy_shares(action)
             entity = action.entity
             player = entity.player
             bundle = action.bundle
+            exchange = nil
 
-            buy_shares(player, bundle)
+            if entity == @exchanger
+              unless can_exchange?(@exchanger, bundle)
+                raise GameError, "Cannot exchange #{@exchanger.id} for #{bundle.corporation.id}"
+              end
 
+              exchange = @exchanger
+            end
+
+            buy_shares(player, bundle, swap: action.swap, exchange: exchange)
+
+            if exchange
+              @round.players_history[@exchanger.owner][bundle.corporation] << action
+              @exchanger.close!
+              @exchanged = true
+              cash = 2 * bundle.corporation.share_price.price
+              @game.bank.spend(cash, bundle.corporation)
+              @log << "#{bundle.corporation.name} receives #{@game.format_currency(cash)}"
+              @game.up_double_share.buyable = true
+            end
             track_action(action, bundle.corporation)
+          end
+
+          def can_sell?(entity, bundle)
+            @exchanged ? bundle.shares == [@game.up_double_share] : super
           end
 
           def process_sell_shares(action)
             player = action.entity
             bundle = action.bundle
             corporation = bundle.corporation
+            swap = nil
+
+            if bundle.partial?
+              @log << "#{player.name} swaps the 20% UP certificate with a 10% UP certifcate from the Market to sell 10%"
+              swap = @game.share_pool.shares_by_corporation[corporation].first
+            end
 
             sell_shares(player, bundle)
+            @game.share_pool.transfer_shares(swap.to_bundle, player) if swap
             track_action(action, corporation)
           end
         end

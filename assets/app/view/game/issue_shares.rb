@@ -70,7 +70,9 @@ module View
                  ''
                end
 
-        str = "#{bundle.num_shares} #{name}(#{@game.format_currency(bundle.price)})"
+        flags = ('d' * bundle.shares.count(&:double_cert))
+
+        str = "#{flags.empty? ? '' : flags + ' '}#{bundle.num_shares} #{name}(#{@game.format_currency(bundle.price)})"
         str += " from #{bundle.owner.name}" if bundle.owner.player?
         h('button.small', { on: { click: block } }, str)
       end

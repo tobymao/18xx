@@ -50,6 +50,7 @@ module Engine
 
       def lay_tile_action(action, entity: nil, spender: nil)
         tile = action.tile
+
         old_tile = action.hex.tile
         tile_lay = get_tile_lay(action.entity)
         raise GameError, 'Cannot lay an upgrade now' if track_upgrade?(old_tile, tile,
@@ -345,13 +346,17 @@ module Engine
         end.compact
 
         if (!hex.tile.cities.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:cities)) ||
-          (hex.tile.cities.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:track))
-          tiles.group_by(&:color).flat_map do |_, group|
-            max_edges = group.map { |t| t.edges.size }.max
-            group.select { |t| t.edges.size == max_edges }
-          end
+          (hex.tile.cities.empty? && hex.tile.towns.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:track))
+          max_exits(tiles)
         else
           tiles
+        end
+      end
+
+      def max_exits(tiles)
+        tiles.group_by(&:color).flat_map do |_, group|
+          max_edges = group.map { |t| t.edges.size }.max
+          group.select { |t| t.edges.size == max_edges }
         end
       end
 
