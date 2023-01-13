@@ -629,24 +629,22 @@ module Engine
         CASH_SUBSIDIES = %w[S12 S13 S14 S15].freeze
 
         SUBSIDIES = [
-          # Temporarily commenting out the first two subsidies to guarantee all "interesting" subsidies
-          # come out during randomization during pre-alpha development
-          # {
-          # icon: 'subsidy_none',
-          # abilities: [],
-          # id: 'S1',
-          # name: 'No Subsidy',
-          # desc: 'No effect',
-          # value: 0,
-          # },
-          # {
-          # icon: 'subsidy_none',
-          # abilities: [],
-          # id: 'S2',
-          # name: 'No Subsidy'
-          # desc: 'No effect',
-          # value: 0,
-          # },
+          {
+            icon: 'subsidy_none',
+            abilities: [],
+            id: 'S1',
+            name: 'No Subsidy',
+            desc: 'No effect',
+            value: 0,
+          },
+          {
+            icon: 'subsidy_none',
+            abilities: [],
+            id: 'S2',
+            name: 'No Subsidy',
+            desc: 'No effect',
+            value: 0,
+          },
           {
             icon: 'subsidy_none',
             abilities: [],

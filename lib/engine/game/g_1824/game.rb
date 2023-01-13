@@ -7,6 +7,7 @@ require_relative 'depot'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'minor'
+require_relative 'trains'
 
 module Engine
   module Game
@@ -15,6 +16,7 @@ module Engine
         include_meta(G1824::Meta)
         include G1824::Entities
         include G1824::Map
+        include G1824::Trains
 
         attr_accessor :two_train_bought, :forced_mountain_railway_exchange
 
@@ -144,91 +146,6 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [{ name: '2', distance: 2, num: 9, price: 80, rusts_on: '4' },
-                  {
-                    name: '1g',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                    num: 6,
-                    price: 120,
-                    available_on: '2',
-                    rusts_on: '3g',
-                  },
-                  {
-                    name: '3',
-                    distance: 3,
-                    num: 7,
-                    price: 180,
-                    rusts_on: '6',
-                    discount: { '2' => 40 },
-                  },
-                  {
-                    name: '2g',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                    num: 5,
-                    price: 240,
-                    available_on: '3',
-                    rusts_on: '4g',
-                    discount: { '1g' => 60 },
-                  },
-                  {
-                    name: '4',
-                    distance: 4,
-                    num: 4,
-                    price: 300,
-                    rusts_on: '8',
-                    events: [{ 'type' => 'close_mountain_railways' }, { 'type' => 'sd_formation' }],
-                    discount: { '3' => 90 },
-                  },
-                  {
-                    name: '3g',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                    num: 4,
-                    price: 360,
-                    available_on: '4',
-                    rusts_on: '5g',
-                    discount: { '2g' => 120 },
-                  },
-                  {
-                    name: '5',
-                    distance: 5,
-                    num: 3,
-                    price: 450,
-                    rusts_on: '10',
-                    events: [{ 'type' => 'close_coal_railways' }, { 'type' => 'ug_formation' }],
-                    discount: { '4' => 140 },
-                  },
-                  {
-                    name: '6',
-                    distance: 6,
-                    num: 3,
-                    price: 630,
-                    events: [{ 'type' => 'kk_formation' }],
-                    discount: { '5' => 200 },
-                  },
-                  {
-                    name: '4g',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                    num: 3,
-                    price: 600,
-                    available_on: '6',
-                    discount: { '3g' => 180 },
-                  },
-                  { name: '8', distance: 8, num: 3, price: 800, discount: { '6' => 300 } },
-                  {
-                    name: '5g',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
-                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                    num: 2,
-                    price: 800,
-                    available_on: '8',
-                    discount: { '4g' => 300 },
-                  },
-                  { name: '10', distance: 10, num: 20, price: 950, discount: { '8' => 400 } }].freeze
-
         GAME_END_CHECK = { bank: :full_or }.freeze
 
         # Move down one step for a whole block, not per share
@@ -258,7 +175,7 @@ module Engine
 
         BANK_CASH_CISLEITHANIA = { 2 => 4000, 3 => 9000 }.freeze
 
-        CASH_CISLEITHANIA = { 2 => 830, 3 => 680 }.freeze
+        CASH_CISLEITHANIA = { 2 => 830, 3 => 700 }.freeze
 
         MOUNTAIN_RAILWAY_NAMES = {
           1 => 'Semmeringbahn',
@@ -298,8 +215,21 @@ module Engine
           end
         end
 
+        def game_cert_limit
+          return CERT_LIMIT_CISLEITHANIA if option_cisleithania
+
+          CERT_LIMIT
+        end
+
         def init_train_handler
-          trains = self.class::TRAINS.flat_map do |train|
+          trains = if two_player?
+                     self.class::TRAINS_2_PLAYER
+                   elsif @players.size == 3 && option_cisleithania
+                     self.class::TRAINS_3_PLAYER_CISLETHANIA
+                   else
+                     self.class::TRAINS_STANDARD
+                   end
+          trains = trains.flat_map do |train|
             Array.new((train[:num] || num_trains(train))) do |index|
               Train.new(**train, index: index)
             end
@@ -405,7 +335,7 @@ module Engine
         end
 
         def option_cisleithania
-          @optional_rules&.include?(:cisleithania)
+          two_player? || @optional_rules&.include?(:cisleithania)
         end
 
         def option_goods_time
@@ -661,6 +591,14 @@ module Engine
 
           raise GameError, 'Exactly one mine need to be visited' if g_train?(route.train) && mine_visits != 1
           raise GameError, 'Only g-trains may visit mines' if !g_train?(route.train) && mine_visits.positive?
+
+          # TODO: Implement Bekowina bonus if Cislethania map used
+
+          super
+        end
+
+        def revenue_str(route)
+          # TODO: Implement Bukowina bonus if Cislethania map used
 
           super
         end

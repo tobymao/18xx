@@ -826,6 +826,14 @@ module Engine
 
         LAYOUT = :flat
 
+        GAME_END_REASONS_TIMING_TEXT = Base::GAME_END_REASONS_TIMING_TEXT.merge(
+          one_more_full_or_set:
+            'If the first 8-train is purchased in the first OR of a set the ' \
+            'game finishes at the end of the current OR set, otherwise the ' \
+            'game ends at the end of the next OR set. In both cases the ' \
+            'last OR set is extended to three ORs.',
+        ).freeze
+
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'national_operates' => ['National railway operates',
                                   'After the minors and majors operates the national runs trains, '\
@@ -910,6 +918,10 @@ module Engine
         def operating_order
           minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
           minors + majors + [@national]
+        end
+
+        def operated_operators
+          (@corporations + [@national]).select(&:operated?)
         end
 
         def add_neutral_tokens(_hexes)

@@ -73,7 +73,7 @@ module Engine
           end
         end
         context '2 city tile with 1830/1836Jr30 rules' do
-          subject { Tile.for('128', index: 0, reservation_blocks: true).cities[0] } # 2 city tile
+          subject { Tile.for('128', index: 0, reservation_blocks: :always).cities[0] } # 2 city tile
           it 'disallows with different corp reservation on tile' do
             subject.tile.add_reservation!(corporation2, nil)
             expect(subject.tokenable?(corporation)).to be false

@@ -102,8 +102,8 @@ module Engine
       owner.is_a?(Depot)
     end
 
-    def buyable
-      @buyable && !@obsolete
+    def buyable(allow_obsolete_buys: false)
+      @buyable && (!@obsolete || allow_obsolete_buys)
     end
 
     def local?
