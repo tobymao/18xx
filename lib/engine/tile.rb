@@ -231,7 +231,7 @@ module Engine
       @preprinted = preprinted
       @index = index
       @blocks_lay = nil
-      @reservation_blocks = opts[:reservation_blocks] || false
+      @reservation_blocks = opts[:reservation_blocks] || :never
       @unlimited = opts[:unlimited] || false
       @labels = []
       @future_label = nil
@@ -374,7 +374,7 @@ module Engine
     def token_blocked_by_reservation?(corporation)
       return false if @reservations.empty?
 
-      if @reservation_blocks
+      if @reservation_blocks == :always || (@reservation_blocks == :yellow_only && @color == :yellow)
         !@reservations.include?(corporation)
       else
         @reservations.count { |x| corporation != x } >= @cities.sum(&:available_slots)

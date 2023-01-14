@@ -8,6 +8,7 @@ require 'view/game/bank'
 require 'view/game/stock_market'
 require 'view/game/tranches'
 require 'view/game/actionable'
+require 'lib/truncate'
 
 FLOATED = 2
 UNFLOATED = 1
@@ -59,7 +60,7 @@ module View
       def render_player_table
         h('div#player_table', { style: { float: 'left', marginRight: '1rem' } }, [
           h(:table, table_props, [
-            h(:thead),
+            render_player_names_header,
             h('tbody#player_details', [
               render_player_cash,
               render_player_value,
@@ -68,15 +69,19 @@ module View
               render_player_companies,
               render_player_certs,
             ]),
-            h(:thead, [
-              h(:th, { style: { minWidth: '5rem' } }, ''),
-              *@game.players.map do |p|
-                h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', p.name)
-              end,
-            ]),
+            render_player_names_header,
             h('tbody#player_or_history', [*render_player_or_history]),
           ]),
           render_spreadsheet_controls,
+        ])
+      end
+
+      def render_player_names_header
+        h(:thead, [
+          h(:th, { style: { minWidth: '5rem' } }, ''),
+          *@game.players.map do |p|
+            h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', p.name)
+          end,
         ])
       end
 
@@ -216,36 +221,62 @@ module View
           reserved_header << h(:th, render_sort_link(@game.ipo_reserved_name, :reserved_shares))
         end
 
+        corporation_props_size = 6 + extra.size + treasury.size
+
+        players_title = h(:th, th_props[@game.players.size], 'Players')
+        prices_title = h(:th, th_props[2], 'Prices')
+        bank_title = h(:th, th_props[bank_width, false], 'Bank')
+        corporation_title = h(:th, th_props[corporation_props_size], ['Corporation ', render_toggle_not_floated_link])
+
+        subtitles = []
+        players_subtitles = []
+        @game.players.map do |p|
+          props = p == @game.priority_deal_player ? pd_props : { style: {} }
+          props[:style][:minWidth] = min_width(p)
+          players_subtitles << h('th.name.nowrap', props, render_sort_link(p.name, p.id))
+        end
+        bank_subtitles = [
+          *reserved_header,
+          h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
+          h(:th, render_sort_link('Market', :market_shares)),
+        ]
+        prices_subtitles = [
+          h(:th, render_sort_link(@game.ipo_name, :par_price)),
+          h(:th, render_sort_link('Market', :share_price)),
+        ]
+        corporation_subtitles = [
+          h(:th, render_sort_link('President', :president)),
+          h(:th, render_sort_link('Cash', :cash)),
+          *treasury,
+          h(:th, render_sort_link('Order', :order)),
+          h(:th, render_sort_link('Trains', :trains)),
+          h(:th, render_sort_link('Tokens', :tokens)),
+          *extra,
+          h(:th, render_sort_link('Companies', :companies)),
+        ]
+
+        titles = [
+          corporation_title,
+          prices_title,
+          players_title,
+          bank_title,
+        ]
+        subtitles.concat(corporation_subtitles)
+        subtitles.concat(prices_subtitles)
+        subtitles.concat(players_subtitles)
+        subtitles.concat(bank_subtitles)
+
         [
           h(:tr, [
             h(:th, { style: { minWidth: '5rem' } }, ''),
-            h(:th, th_props[@game.players.size], 'Players'),
-            h(:th, th_props[bank_width], 'Bank'),
-            h(:th, th_props[2], 'Prices'),
-            h(:th, th_props[5 + extra.size + treasury.size, false], ['Corporation ', render_toggle_not_floated_link]),
+            *titles,
             h(:th, ''),
             *connection_run_header,
             h(:th, th_props[or_history_titles.size, false], 'OR History'),
           ]),
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
-            *@game.players.map do |p|
-              props = p == @game.priority_deal_player ? pd_props : { style: {} }
-              props[:style][:minWidth] = min_width(p)
-              h('th.name.nowrap', props, render_sort_link(p.name, p.id))
-            end,
-            *reserved_header,
-            h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
-            h(:th, render_sort_link('Market', :market_shares)),
-            h(:th, render_sort_link(@game.ipo_name, :par_price)),
-            h(:th, render_sort_link('Market', :share_price)),
-            h(:th, render_sort_link('Cash', :cash)),
-            *treasury,
-            h(:th, render_sort_link('Order', :order)),
-            h(:th, render_sort_link('Trains', :trains)),
-            h(:th, render_sort_link('Tokens', :tokens)),
-            *extra,
-            h(:th, render_sort_link('Companies', :companies)),
+            *subtitles,
             h(:th, ''),
             *connection_run_subheader,
             *or_history_titles,
@@ -371,6 +402,8 @@ module View
               else
                 [1, corporation.id]
               end
+            when :president
+              corporation.owner&.name || ''
             when :reserved_shares
               num_reserved_shares(corporation)
             when :ipo_shares
@@ -494,20 +527,23 @@ module View
 
         n_ipo_shares = num_ipo_shares(corporation)
         n_market_shares = num_shares_of(@game.share_pool, corporation)
-        h(:tr, tr_props, [
-          h(:th, name_props, corporation.name),
-          *@game.players.map do |p|
-            props = { style: {} }
-            if @game.round.active_step&.did_sell?(corporation, p)
-              props[:style][:backgroundColor] = '#9e0000'
-              props[:style][:color] = 'white'
-            end
-            n_shares = num_shares_of(p, corporation)
-            props[:style][:color] = 'transparent' if n_shares.zero?
-            share_holding = corporation.president?(p) ? '*' : ''
-            share_holding += n_shares.to_s unless corporation.minor?
-            h('td.padded_number', props, share_holding)
-          end,
+
+        players_row_content = []
+        @game.players.map do |p|
+          props = { style: {} }
+          if @game.round.active_step&.did_sell?(corporation, p)
+            props[:style][:backgroundColor] = '#9e0000'
+            props[:style][:color] = 'white'
+          end
+          n_shares = num_shares_of(p, corporation)
+          props[:style][:color] = 'transparent' if n_shares.zero?
+          share_holding = corporation.president?(p) ? '*' : ''
+          share_holding += n_shares.to_s unless corporation.minor?
+          players_row_content << h('td.padded_number', props, share_holding)
+        end
+
+        bank_market_props = { style: { color: n_market_shares.zero? ? 'transparent' : 'inherit' } }
+        bank_row_content = [
           *reserved,
           h('td.padded_number', {
               style: {
@@ -516,16 +552,18 @@ module View
               },
             },
             n_ipo_shares),
-          h('td.padded_number', {
-              style: {
-                borderRight: border_style,
-                color: n_market_shares.zero? ? 'transparent' : 'inherit',
-              },
-            },
+          h('td.padded_number', bank_market_props,
             "#{corporation.receivership? ? '*' : ''}#{n_market_shares}"),
+        ]
+
+        prices_row_content = [
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+        ]
+
+        corporation_row_content = [
+          h(:td, corporation.owner ? corporation.owner&.name&.truncate : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
           *treasury,
           h('td.padded_number', order_props, if operating_order[0] == UNFLOATED
@@ -537,6 +575,17 @@ module View
           h(:td, @game.token_string(corporation)),
           *extra,
           render_companies(corporation),
+        ]
+
+        row_content = []
+        row_content.concat(corporation_row_content)
+        row_content.concat(prices_row_content)
+        row_content.concat(players_row_content)
+        row_content.concat(bank_row_content)
+
+        h(:tr, tr_props, [
+          h(:th, name_props, corporation.name),
+          *row_content,
           h(:th, name_props, corporation.name),
           *render_connection_run(corporation),
           *render_history(corporation),
@@ -553,6 +602,12 @@ module View
             },
           }
           props[:style][:minWidth] = min_width(entity)
+        elsif entity.corporation?
+          props = {
+            style: {
+              borderRight: "1px solid #{color_for(:font2)}",
+            },
+          }
         end
         h(:td, props, entity.companies.map(&:sym).join(', '))
       end

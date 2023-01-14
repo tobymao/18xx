@@ -10,7 +10,7 @@ module Engine
             sym: 'P0',
             value: 5,
             revenue: 0,
-            desc: 'Owner recieves one-off payment of 40/70/100 when last 2+2/3/3+3 train is purchased',
+            desc: 'Owner receives one-off payment of 40/70/100 when last 2+2/3/3+3 train is purchased',
             color: nil,
           },
           {
@@ -83,6 +83,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'F8',
             color: '#BA6128',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -93,6 +95,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'F8',
             color: 'black',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -103,6 +107,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'F8',
             color: '#534074',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -113,6 +119,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'F8',
             color: '#008A8B',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -122,6 +130,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'B8',
             color: '#9D8359',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -131,6 +141,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'J2',
             color: '#004294',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -140,6 +152,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'N12',
             color: '#282F1A',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -149,6 +163,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'O5',
             color: '#507EAE',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -158,6 +174,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'M3',
             color: '#94121D',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -167,6 +185,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'J6',
             color: '#A83B5B',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -176,6 +196,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'K15',
             color: '#40743A',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -185,6 +207,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'K13',
             color: '#452518',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -194,6 +218,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'D12',
             color: '#B3932C',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -203,6 +229,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'L10',
             color: '#A4391F',
+            max_ownership_percent: 100,
+            always_market_price: true,
           },
         ].freeze
 
