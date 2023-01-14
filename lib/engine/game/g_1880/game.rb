@@ -15,7 +15,7 @@ module Engine
         include Entities
 
         attr_accessor :train_marker
-        attr_reader :full_cap_event, :communism, :end_game_triggered, :par_order
+        attr_reader :full_cap_event, :communism, :end_game_triggered, :par_order, :saved_or_round
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
@@ -678,8 +678,14 @@ module Engine
           return if train.name == @depot.upcoming.first.name
 
           @turn += 1
-          @saved_or_round = @round.dup
+          @saved_or_round = @round
           @round = new_stock_round
+        end
+
+        def finalize_round_setup
+          return super unless @round == @saved_or_round
+
+          @round_history << current_action_id
         end
       end
     end

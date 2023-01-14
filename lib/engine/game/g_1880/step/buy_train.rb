@@ -31,7 +31,9 @@ module Engine
           end
 
           def round_state
+            super.merge(
             { bought_trains: false }
+          )
           end
 
           def pass!
@@ -41,7 +43,7 @@ module Engine
           end
 
           def discard_trains?
-            @game.train_marker && !@round.bought_trains
+            @game.train_marker == current_entity && !@round.bought_trains && @game.saved_or_round&.round_num != @round.round_num
           end
 
           def discard_all_trains
