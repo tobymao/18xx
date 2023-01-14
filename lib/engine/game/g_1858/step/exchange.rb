@@ -24,6 +24,11 @@ module Engine
             minor = action.entity
             player = minor.owner
 
+            if !corporation.floated? && !bundle.shares.first.president
+              raise GameError, 'Cannot exchange a private railway ' \
+                               'for a single share of a public company.'
+            end
+
             acquire_private(corporation, minor)
             if bundle.percent == 40
               exchange_for_presidency(bundle, corporation, minor, player)

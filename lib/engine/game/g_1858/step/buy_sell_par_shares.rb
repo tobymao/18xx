@@ -76,6 +76,18 @@ module Engine
             @game.corporations.any? { |corporation| can_convert?(corporation) }
           end
 
+          def can_gain?(entity, share, exchange: false)
+            return super unless exchange
+            return false unless super
+
+            # The default behaviour of an exchange ability for an unfloated
+            # corporation is to be able to exchange for either a single share
+            # or for the presidency if @game.exchange_for_partial_presidency
+            # is set. We don't want to be able to exchange for a normal share,
+            # so block this here.
+            share.corporation.floated? || share.president
+          end
+
           def can_exchange_for_share?(entity)
             @game.corporations.any? do |corporation|
               corporation.num_treasury_shares.positive? &&
