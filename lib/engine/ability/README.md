@@ -138,8 +138,8 @@ that allows exchange.
 - `corporations`: An array with corporation names, whose share may be exchanged.
   Use a simple `"any"` (no array) to allow for any corporation. Use a simple
   `"ipoed"` (no array) to allow from any company that has been ipoed.
-- `from`: Where the share may be take from, `"ipo"`, `"market"`, `"presidency"`
-  or an array containing multiple values.
+- `from`: Where the share may be take from, either `"ipo"`,
+  `"market"`, or an array containing both.
 
 ## hex_bonus
 

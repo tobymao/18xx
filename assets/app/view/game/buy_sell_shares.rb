@@ -222,13 +222,11 @@ module View
             next unless @game.exchange_corporations(ability).include?(@corporation)
             next unless entity.owner == @current_entity
 
-            president_share, other_ipo_shares = @ipo_shares.partition(&:president)
             if ability.from.include?(:ipo)
+              president_share, other_ipo_shares = @ipo_shares.partition(&:president)
               children.concat(render_share_exchange(other_ipo_shares,
                                                     entity,
                                                     source: @game.ipo_name(@corporation)))
-            end
-            if ability.from.include?(:ipo) || ability.from.include?(:presidency)
               children.concat(render_share_exchange(president_share,
                                                     entity,
                                                     source: 'Presidency'))
