@@ -414,7 +414,8 @@ module Engine
         end
 
         def tile_cost_with_discount(_tile, _hex, entity, _spender, cost)
-          return cost if cost.zero? || !@round.gauges_added.include?([:narrow])
+          return cost if @round.gauges_added.one? # First tile lay.
+          return cost unless @round.gauges_added.include?([:narrow])
 
           discount = 10
           log_cost_discount(entity, nil, discount, :tile_lay)
