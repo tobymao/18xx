@@ -11,6 +11,10 @@ module Engine
             super
             @game.depot.forget_train(action.train) if action.train.obsolete
           end
+
+          def crowded_corps
+            super.sort
+          end
         end
       end
     end
