@@ -490,11 +490,11 @@ module Engine
           rust_trains!(purchased_train, purchased_train.owner)
         end
 
-        def convert!(corporation)
+        def convert!(corporation, quiet: false)
           return unless corporation.corporation?
           return unless corporation.type == :medium
 
-          @log << "#{corporation.name} converts to a 10-share company"
+          @log << "#{corporation.name} converts to a 10-share company" unless quiet
           corporation.type = :large
           corporation.float_percent = 20
 
@@ -611,6 +611,23 @@ module Engine
           # Private railways owned by public companies don't pay out.
           exchanged_companies = @companies.select { |company| company.owner&.corporation? }
           super(ignore: exchanged_companies.map(&:id))
+        end
+
+        def close_corporation(corporation, quiet: false)
+          super
+
+          # Closed corporations can be restarted.
+          @corporations << reset_corporation(corporation)
+        end
+
+        def reset_corporation(corporation)
+          corporation = super(corporation)
+
+          # The corporation will be restarted as a five-share corporation. It
+          # might need to be converted to a ten-share corporation.
+          convert!(corporation, quiet: true) if @phase.tiles.include?(:brown)
+
+          corporation
         end
 
         def close_company(company)
