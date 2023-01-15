@@ -11,6 +11,7 @@ module Engine
             value: 5,
             revenue: 0,
             desc: 'Owner receives one-off payment of 40/70/100 when last 2+2/3/3+3 train is purchased',
+            abilities: [{ type: 'sell_company', owner_type: 'player' }],
             color: nil,
           },
           {
@@ -39,6 +40,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'player',
+                when: 'owning_player_or_turn',
                 hexes: ['N16'],
                 amount: 20,
               },
@@ -54,7 +56,7 @@ module Engine
             abilities: [{
               type: 'tile_discount',
               discount: 20,
-              terrain: 'water',
+              terrain: 'river',
               owner_type: 'player',
               when: 'owning_player_track',
             }],
@@ -66,6 +68,13 @@ module Engine
             value: 100,
             revenue: 25,
             desc: 'Building permit for Phase D (for one of his companies)',
+            abilities: [{
+              type: 'assign_corporation',
+              owner_type: 'player',
+              count: 1,
+              when: 'owning_player_or_turn',
+              closed_when_used_up: false,
+            }],
             color: nil,
           },
           {
@@ -147,9 +156,9 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'BCU',
+            sym: 'BZU',
             name: 'Binzhou Railway',
-            logo: '1880/BCU',
+            logo: '1880/BZU',
             tokens: [0, 40, 100],
             coordinates: 'B8',
             color: '#9D8359',
