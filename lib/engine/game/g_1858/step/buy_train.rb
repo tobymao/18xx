@@ -85,12 +85,18 @@ module Engine
           end
 
           def pass!
-            if @last_share_issued_price && current_entity.trains.empty?
+            # A public company may be in the process of closing if emergency
+            # money raising has pushed its share price to the bottom of the
+            # market.
+            closing = current_entity.share_price&.price&.zero?
+
+            if @last_share_issued_price && current_entity.trains.empty? && !closing
               raise GameError, 'Must buy a train from the train depot after issuing shares'
             end
 
             super
             return if current_entity.minor?
+            return if closing
             return unless current_entity.trains.empty?
 
             @log << "#{current_entity.name} does not own a train"
