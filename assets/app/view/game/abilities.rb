@@ -104,10 +104,12 @@ module View
             @selected_company
           ))
         end
-
+        ability = @game.abilities(@selected_company, :purchase_train)
         # Show the train that will be bought on the button
         train = @game.depot.depot_trains.first
-        h(:button, { on: { click: purchase } }, "Purchase #{train.name} for #{@game.format_currency(train.price)}")
+        button_text = "Purchase #{train.name} for #{@game.format_currency(train.price)}"
+        button_text = "Get #{train.name} train from depot" if ability.free
+        h(:button, { on: { click: purchase } }, button_text)
       end
 
       def render_sell_company_button
