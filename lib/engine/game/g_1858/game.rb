@@ -387,6 +387,10 @@ module Engine
           end
         end
 
+        def routes_revenue(routes)
+          super + @round.current_operator.companies.sum(&:revenue)
+        end
+
         def revenue_for(route, stops)
           revenue = super
           revenue /= 2 if route.train.obsolete

@@ -20,10 +20,6 @@ module Engine
             @game.routes_revenue(routes) + entity.companies.sum(&:revenue)
           end
 
-          def dividend_adjustment(entity)
-            entity.companies.sum(&:revenue)
-          end
-
           def process_dividend(action)
             return if action.entity.minor?
 
