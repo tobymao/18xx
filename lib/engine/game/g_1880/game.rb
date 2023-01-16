@@ -389,11 +389,11 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Exchange,
+            Engine::Step::DiscardTrain,
             G1880::Step::Track,
             Engine::Step::Token,
             G1880::Step::Route,
             G1880::Step::Dividend,
-            Engine::Step::DiscardTrain,
             G1880::Step::BuyTrain,
             G1880::Step::CheckFIConnection,
           ], round_num: round_num)
