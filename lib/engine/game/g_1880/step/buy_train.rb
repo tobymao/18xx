@@ -9,7 +9,7 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           def process_buy_train(action)
             train = action.train
-            @game.train_marker = action.entity if train.owner == @game.depot
+            @game.train_marker = action.entity if train.owner == @game.depot && !@game.end_game_triggered
             super
             @round.bought_trains = true
           end

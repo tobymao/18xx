@@ -15,7 +15,7 @@ module Engine
         include Entities
 
         attr_accessor :train_marker
-        attr_reader :full_cap_event, :communism
+        attr_reader :full_cap_event, :communism, :end_game_triggered
 
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
@@ -30,6 +30,8 @@ module Engine
         CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 14, 6 => 12, 7 => 11 }.freeze
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340, 7 => 300 }.freeze
+
+        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
 
         CORPORATION_CLASS = G1880::Corporation
 
@@ -203,7 +205,8 @@ module Engine
                     distance: 8,
                     price: 800,
                     num: 2,
-                    events: [{ 'type' => 'permit_d' }, { 'type' => 'token_cost_doubled' }],
+                    events: [{ 'type' => 'permit_d' }, { 'type' => 'token_cost_doubled' },
+                             { 'type' => 'signal_end_game', 'when' => 2 }],
                   },
                   {
                     name: '8E',
@@ -228,6 +231,7 @@ module Engine
                                    'No share price movement, no sales by director, no private payouts, ' \
                                    'foreign investors do not operate'],
           'stock_exchange_reopens' => ['Stock Exchange Reopens', 'Normal share price movement, director may sell shares'],
+          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase of last 8 train']
         ).freeze
 
         def event_float_30!
@@ -310,6 +314,13 @@ module Engine
           @corporations.each do |c|
             c.tokens.select(&:unused).each { |t| t.cost = t.cost * 2 }
           end
+        end
+
+        def event_signal_end_game!
+          @log << "-- Event: #{EVENTS_TEXT['signal_end_game'][1]} --"
+          @end_game_triggered = true
+          @final_operating_rounds = @round.round_num + 3
+          game_end_check
         end
 
         def setup
@@ -401,6 +412,10 @@ module Engine
 
         def init_minors
           game_minors.map { |minor| G1880::Minor.new(**minor) }
+        end
+
+        def custom_end_game_reached?
+          @end_game_triggered
         end
 
         def end_game!(player_initiated: false)
