@@ -403,6 +403,21 @@ module Engine
           game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
+        def end_game!(player_initiated: false)
+          return if @finished
+
+          @minors.each do |m|
+            next unless m.owner
+
+            cash_to_owner = m.cash * 0.2
+            @log << "#{m.name} transfers #{format_currency(cash_to_owner)} to #{m.owner.name}"
+            m.spend(cash_to_owner, m.owner)
+            m.close!
+          end
+
+          super
+        end
+
         def p1
           @p1 ||= company_by_id('P1')
         end
