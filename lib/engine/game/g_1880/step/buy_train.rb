@@ -14,6 +14,12 @@ module Engine
             @round.bought_trains = true
           end
 
+          def log_skip(entity)
+            return if entity.minor?
+
+            super
+          end
+
           def round_state
             { bought_trains: false }
           end

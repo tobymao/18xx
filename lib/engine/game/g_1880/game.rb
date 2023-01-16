@@ -396,7 +396,7 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
             G1880::Step::Track,
-            Engine::Step::Token,
+            G1880::Step::Token,
             G1880::Step::Route,
             G1880::Step::Dividend,
             G1880::Step::BuyTrain,
