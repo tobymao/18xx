@@ -474,6 +474,72 @@ module Engine
           @minors.select { |m| m.owner == player }
         end
 
+        def routes_revenue(routes)
+          revenue = super
+          revenue += stock_market_bonus(@round.current_operator)
+          revenue
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          puts 'revenue_for'
+          puts revenue
+          revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company.owner
+
+          stop_hexes = stops.map(&:hex)
+          revenue += 20 if route.corporation.owner == taiwan_company.owner && stop_hexes.include?(taiwan_hex)
+          revenue += 50 if trans_siberian_bonus?(stops)
+          puts stop_hexes.map(&:id)
+          puts revenue
+
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += ' + Trans-Siberian' if trans_siberian_bonus?(route.stops)
+          str
+        end
+
+        def ferry_hexes
+          @ferry_hexes ||= %w[F12 F14 J16].map { |id| hex_by_id(id) }
+        end
+
+        def ferry_company
+          @ferry_company ||= company_by_id('P2')
+        end
+
+        def taiwan_hex
+          @taiwan_hex ||= hex_by_id('N16')
+        end
+
+        def taiwan_company
+          @taiwan_company ||= company_by_id('P3')
+        end
+
+        def trans_siberian_bonus?(stops)
+          @trans_siberian_hexes ||= %w[A3 A15].map { |id| hex_by_id(id) }
+          stop_hexes = stops.map(&:hex)
+          @trans_siberian_hexes.all? { |hex| stop_hexes.include?(hex) }
+        end
+
+        def stock_market_bonus(corporation)
+          case corporation.share_price&.type
+          when :pays_bonus
+            5
+          when :pays_bonus_1
+            10
+          when :pays_bonus_2
+            15
+          when :pays_bonus_3
+            20
+          when :pays_bonus_4
+            40
+          else
+            0
+          end
+        end
+
         def route_trains(entity)
           entity.minor? ? [@depot.min_depot_train] : super
         end
