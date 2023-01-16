@@ -327,8 +327,13 @@ module Engine
           @full_cap_event = false
           @communism = false
           @foreign_investors_operate = true
+          setup_foreign_investors
           setup_building_permits
           setup_unsaleable_shares
+        end
+
+        def setup_foreign_investors
+          @minors.each { |m| place_home_token(m) }
         end
 
         def setup_building_permits

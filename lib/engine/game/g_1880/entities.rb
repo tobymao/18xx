@@ -236,7 +236,7 @@ module Engine
 
         MINORS = [
           {
-            sym: 'A1',
+            sym: '1',
             name: 'Russian Investor',
             logo: '1880/Russia',
             tokens: [0],
@@ -245,7 +245,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A2',
+            sym: '2',
             name: 'Japanese Investor',
             logo: '1880/Japan',
             tokens: [0],
@@ -254,7 +254,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A3',
+            sym: '3',
             name: 'Belgian Investor',
             logo: '1880/Belgium',
             tokens: [0],
@@ -263,7 +263,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A4',
+            sym: '4',
             name: 'German Investor',
             logo: '1880/Germany',
             tokens: [0],
@@ -272,7 +272,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A5',
+            sym: '5',
             name: 'British Investor',
             logo: '1880/UK',
             tokens: [0],
@@ -281,7 +281,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A6',
+            sym: '6',
             name: 'Portuguese Investor',
             logo: '1880/Portugal',
             tokens: [0],
@@ -290,7 +290,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A7',
+            sym: '7',
             name: 'French Investor',
             logo: '1880/France',
             tokens: [0],
