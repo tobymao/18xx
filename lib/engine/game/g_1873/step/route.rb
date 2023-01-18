@@ -89,6 +89,10 @@ module Engine
               maintenance: 0,
             }
           end
+
+          def available_hex(entity, hex)
+            @game.concession_tile_hexes(entity).include?(hex) || super
+          end
         end
       end
     end
