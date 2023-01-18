@@ -16,7 +16,7 @@ module Engine
             color: 'yellow',
           },
           {
-            name: 'Stokton and Darlington',
+            name: 'Stockton and Darlington',
             sym: 'P2',
             type: 'railway',
             value: 45,
@@ -471,7 +471,7 @@ module Engine
           },
           {
             sym: 'GA',
-            name: 'Greenock and Ayshire Railway',
+            name: 'Greenock and Ayrshire Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
@@ -661,7 +661,7 @@ module Engine
           },
           {
             sym: 'SAM',
-            name: 'Sheffield, Ashton-under-Lyme and Manchester Railway',
+            name: 'Sheffield, Ashton-under-Lyne and Manchester Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
