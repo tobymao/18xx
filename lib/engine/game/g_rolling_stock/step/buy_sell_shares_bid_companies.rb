@@ -75,6 +75,8 @@ module Engine
             company = action.company
             price = action.price
 
+            entity.unpass! unless @auctioning
+
             @log << if @auctioning
                       "#{entity.name} bids #{@game.format_currency(price)} for #{company.sym}"
                     else
