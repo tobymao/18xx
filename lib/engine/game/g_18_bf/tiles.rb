@@ -118,7 +118,7 @@ module Engine
           'BF10' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'offboard=revenue:60;' \
+            'code' => 'offboard=revenue:70;' \
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;' \
                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
@@ -134,7 +134,7 @@ module Engine
           'BF11' => {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'offboard=revenue:70;' \
+            'code' => 'offboard=revenue:100;' \
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;' \
                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
