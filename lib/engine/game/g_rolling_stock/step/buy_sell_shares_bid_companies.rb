@@ -14,6 +14,11 @@ module Engine
             return [] unless entity == current_entity
             return %w[bid pass] if @auctioning
 
+            puts "entity: #{entity.name}"
+            puts "   #{entity.name} can_buy_any? #{can_buy_any?(entity)}"
+            puts "   #{entity.name} can_sell_any? #{can_sell_any?(entity)}"
+            puts "   #{entity.name} can_bid? #{can_bid?(entity)}"
+
             actions = []
             actions << 'buy_shares' if can_buy_any?(entity)
             actions << 'sell_shares' if can_sell_any?(entity)
@@ -74,6 +79,8 @@ module Engine
             entity = action.entity
             company = action.company
             price = action.price
+
+            entity.unpass! unless @auctioning
 
             @log << if @auctioning
                       "#{entity.name} bids #{@game.format_currency(price)} for #{company.sym}"
