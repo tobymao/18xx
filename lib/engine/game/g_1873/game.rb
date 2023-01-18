@@ -1847,10 +1847,6 @@ module Engine
           concession_tile_hexes(entity).include?(node.hex) || diesel_graph.connected_nodes(entity)[node]
         end
 
-        def node_on_concession_route?(entity, node)
-          concession_tile_hexes(entity).include?(node.hex)
-        end
-
         def concession_route_run?(entity, routes)
           return true if entity == @qlb
           return false unless routes
