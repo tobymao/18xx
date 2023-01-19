@@ -569,15 +569,11 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          puts 'revenue_for'
-          puts revenue
           revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company.owner
 
           stop_hexes = stops.map(&:hex)
           revenue += 20 if route.corporation.owner == taiwan_company.owner && stop_hexes.include?(taiwan_hex)
           revenue += 50 if trans_siberian_bonus?(stops)
-          puts stop_hexes.map(&:id)
-          puts revenue
 
           revenue
         end
@@ -613,15 +609,15 @@ module Engine
         def stock_market_bonus(corporation)
           case corporation.share_price&.type
           when :pays_bonus
-            5
+            50
           when :pays_bonus_1
-            10
+            100
           when :pays_bonus_2
-            15
+            150
           when :pays_bonus_3
-            20
+            200
           when :pays_bonus_4
-            40
+            400
           else
             0
           end
