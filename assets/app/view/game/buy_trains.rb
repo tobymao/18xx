@@ -55,7 +55,7 @@ module View
                                 'in sellable shares.')
           end
 
-          if share_funds_required.positive?
+          if share_funds_required.positive? && share_funds_possible.positive?
             if owner
               if share_funds_possible >= share_funds_required
                 children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
@@ -83,7 +83,7 @@ module View
           end
         end
 
-        must_take_loan = @step.must_take_loan?(@corporation) if @step.respond_to?(:must_take_loan?)
+        must_take_loan = @step.must_take_player_loan?(@corporation) if @step.respond_to?(:must_take_player_loan?)
         if must_take_loan
           text = "#{player.name} does not have enough liquidity to "\
                  "contribute towards #{@corporation.name} buying a train "\

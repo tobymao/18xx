@@ -48,6 +48,7 @@ module Engine
 
             @minors.each do |m|
               @log << "#{m.full_name} (#{m.name}) is removed from the game"
+              m.tokens.first.remove!
               m.close!
             end
             @round.reset_entity_index!
