@@ -141,8 +141,8 @@ module Engine
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 10 },
                   {
                     name: '2+2',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 2, 'visit' => 2 }],
+                    distance: [{ 'nodes' => ['town'], 'pay' => 2, 'visit' => 2 },
+                               { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 }],
                     price: 180,
                     rusts_on: '4+4',
                     num: 5,
@@ -160,8 +160,8 @@ module Engine
                   },
                   {
                     name: '3+3',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 3, 'visit' => 3 }],
+                    distance: [{ 'nodes' => ['town'], 'pay' => 3, 'visit' => 3 },
+                               { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
                     price: 300,
                     rusts_on: '6E',
                     num: 5,
@@ -177,8 +177,8 @@ module Engine
                   },
                   {
                     name: '4+4',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                               { 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 }],
+                    distance: [{ 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 },
+                               { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 }],
                     price: 450,
                     rusts_on: '8E',
                     num: 5,
