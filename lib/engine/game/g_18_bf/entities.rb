@@ -385,7 +385,7 @@ module Engine
           {
             sym: 'BE',
             name: 'Bristol and Exeter Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/BE',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -399,7 +399,7 @@ module Engine
           {
             sym: 'BG',
             name: 'Birmingham and Gloucester Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/BG',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -414,7 +414,7 @@ module Engine
           {
             sym: 'EC',
             name: 'Eastern Counties Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/EC',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -429,7 +429,7 @@ module Engine
           {
             sym: 'EG',
             name: 'Edinburgh and Glasgow Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/EG',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -443,7 +443,7 @@ module Engine
           {
             sym: 'EK',
             name: 'East Kent Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/EK',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -458,7 +458,7 @@ module Engine
           {
             sym: 'EPD',
             name: 'Edinburgh, Perth and Dundee Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/EPD',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -472,7 +472,7 @@ module Engine
           {
             sym: 'GA',
             name: 'Glasgow and Ayr Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/GA',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -487,7 +487,7 @@ module Engine
           {
             sym: 'GC',
             name: 'Glasgow and Carlisle Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/GC',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -502,7 +502,7 @@ module Engine
           {
             sym: 'GJ',
             name: 'Grand Junction Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/GJ',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -516,7 +516,7 @@ module Engine
           {
             sym: 'LB',
             name: 'London and Brighton Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/LB',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -531,7 +531,7 @@ module Engine
           {
             sym: 'LH',
             name: 'London and Birmingham Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/LH',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -546,7 +546,7 @@ module Engine
           {
             sym: 'LR',
             name: 'London and Bristol Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/LR',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -561,7 +561,7 @@ module Engine
           {
             sym: 'LS',
             name: 'London and Southampton Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/LS',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -576,7 +576,7 @@ module Engine
           {
             sym: 'LY',
             name: 'London and York Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/LY',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -591,7 +591,7 @@ module Engine
           {
             sym: 'MC',
             name: 'Midland Counties Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/MC',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -605,7 +605,7 @@ module Engine
           {
             sym: 'ML',
             name: 'Manchester and Leeds Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/ML',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -620,7 +620,7 @@ module Engine
           {
             sym: 'ND',
             name: 'Newcastle and Darlington Junction Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/ND',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -634,7 +634,7 @@ module Engine
           {
             sym: 'NM',
             name: 'North Midland Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/NM',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -648,7 +648,7 @@ module Engine
           {
             sym: 'NU',
             name: 'North Union Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/NU',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -662,7 +662,7 @@ module Engine
           {
             sym: 'SAM',
             name: 'Sheffield, Ashton-under-Lyne and Manchester Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/SAM',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -676,7 +676,7 @@ module Engine
           {
             sym: 'SE',
             name: 'South Eastern Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/SE',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -691,7 +691,7 @@ module Engine
           {
             sym: 'TV',
             name: 'Taff Vale Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/TV',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -705,7 +705,7 @@ module Engine
           {
             sym: 'VN',
             name: 'Vale of Neath Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/VN',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -719,7 +719,7 @@ module Engine
           {
             sym: 'YNM',
             name: 'York and North Midland Railway',
-            logo: '1867/BBG',
+            logo: '18_bf/YNM',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -733,8 +733,7 @@ module Engine
           {
             sym: 'CR',
             name: 'Caledonian Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/CR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -746,8 +745,7 @@ module Engine
           {
             sym: 'GER',
             name: 'Great Eastern Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/GER',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -759,8 +757,7 @@ module Engine
           {
             sym: 'GNR',
             name: 'Great Northern Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/GNR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -772,8 +769,7 @@ module Engine
           {
             sym: 'LBSC',
             name: 'London, Brighton and South Coast Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/LBSC',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -785,8 +781,7 @@ module Engine
           {
             sym: 'LNW',
             name: 'London and North Western Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/LNW',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -798,8 +793,7 @@ module Engine
           {
             sym: 'LSW',
             name: 'London and South Western Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/LSW',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -811,8 +805,7 @@ module Engine
           {
             sym: 'LYR',
             name: 'Lancashire and Yorkshire Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/LYR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -824,8 +817,7 @@ module Engine
           {
             sym: 'MR',
             name: 'Midland Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/MR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -837,8 +829,7 @@ module Engine
           {
             sym: 'NBR',
             name: 'North British Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/NBR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -850,8 +841,7 @@ module Engine
           {
             sym: 'NER',
             name: 'North Eastern Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/NER',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -863,8 +853,7 @@ module Engine
           {
             sym: 'SEC',
             name: 'South Eastern Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/SEC',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
@@ -876,8 +865,7 @@ module Engine
           {
             sym: 'GCR',
             name: 'Great Central Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/GCR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
@@ -889,8 +877,7 @@ module Engine
           {
             sym: 'GWR',
             name: 'Great Western Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/GWR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
@@ -902,8 +889,7 @@ module Engine
           {
             sym: 'LMS',
             name: 'London, Midlands and Scottish Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/LMS',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
@@ -915,8 +901,7 @@ module Engine
           {
             sym: 'LNE',
             name: 'London and North Eastern Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/LNE',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
@@ -928,8 +913,7 @@ module Engine
           {
             sym: 'SR',
             name: 'Southern Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
+            logo: '18_bf/SR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
