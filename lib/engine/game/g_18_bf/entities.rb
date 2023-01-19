@@ -471,7 +471,7 @@ module Engine
           },
           {
             sym: 'GA',
-            name: 'Greenock and Ayrshire Railway',
+            name: 'Glasgow and Ayr Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
@@ -486,7 +486,7 @@ module Engine
           },
           {
             sym: 'GC',
-            name: 'Glasgow Central Railway',
+            name: 'Glasgow and Carlisle Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
@@ -530,7 +530,7 @@ module Engine
           },
           {
             sym: 'LH',
-            name: 'LH',
+            name: 'London and Birmingham Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
@@ -545,7 +545,7 @@ module Engine
           },
           {
             sym: 'LR',
-            name: 'LR',
+            name: 'London and Bristol Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
@@ -575,7 +575,7 @@ module Engine
           },
           {
             sym: 'LY',
-            name: 'LY',
+            name: 'London and York Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
@@ -675,7 +675,7 @@ module Engine
           },
           {
             sym: 'SE',
-            name: 'SE',
+            name: 'South Eastern Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
@@ -690,7 +690,7 @@ module Engine
           },
           {
             sym: 'TV',
-            name: 'Taff Valley Railway',
+            name: 'Taff Vale Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
@@ -704,7 +704,7 @@ module Engine
           },
           {
             sym: 'VN',
-            name: 'VN',
+            name: 'Vale of Neath Railway',
             logo: '1867/BBG',
             float_percent: 100,
             always_market_price: true,
