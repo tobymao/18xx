@@ -31,7 +31,26 @@ module Engine
           end
 
           def round_state
+            super.merge(
             { bought_trains: false }
+          )
+          end
+
+          def pass!
+            return super unless discard_trains?
+
+            discard_all_trains
+          end
+
+          def discard_trains?
+            @game.train_marker == current_entity && !@round.bought_trains && @game.saved_or_round&.round_num != @round.round_num
+          end
+
+          def discard_all_trains
+            train_name = @game.depot.upcoming.first.name
+            @game.log << "#{train_name} has not been bought for a full operating order, "\
+                         "removing all remaining #{train_name} trains"
+            @game.depot.export_all!(train_name, silent: true)
           end
 
           def setup
