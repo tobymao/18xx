@@ -24,7 +24,6 @@ module Engine
             return [] if !current_entity.corporation? || current_entity.owner != @rocket.owner
             return [] unless can_purchase?(current_entity)
 
-            @buying_corp = current_entity
             ACTIONS
           end
 
@@ -52,13 +51,11 @@ module Engine
             rocket = action.entity
             train = current_train
 
-            raise GameError, "#{@buying_corp.name} can't purchase a #{train.name} train" unless can_purchase?(@buying_corp)
-
-            @log << "#{@buying_corp.name} exchanges the #{rocket.name} for a #{train.name} train"
+            @log << "#{@round.current_operator.name} exchanges the #{rocket.name} for a #{train.name} train"
 
             rocket.close!
-            @game.buy_train(@buying_corp, train, :free)
-            @game.phase.buying_train!(@buying_corp, train)
+            @game.buy_train(@round.current_operator, train, :free)
+            @game.phase.buying_train!(@round.current_operator, train)
           end
         end
       end

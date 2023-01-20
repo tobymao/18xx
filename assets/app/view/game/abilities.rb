@@ -107,8 +107,11 @@ module View
         ability = @game.abilities(@selected_company, :purchase_train)
         # Show the train that will be bought on the button
         train = @game.depot.depot_trains.first
-        button_text = "Purchase #{train.name} for #{@game.format_currency(train.price)}"
-        button_text = "Get #{train.name} train from depot" if ability.free
+        button_text = if ability&.free
+                        "Acquire #{train.name} train from depot"
+                      else
+                        "Purchase #{train.name} for #{@game.format_currency(train.price)}"
+                      end
         h(:button, { on: { click: purchase } }, button_text)
       end
 
