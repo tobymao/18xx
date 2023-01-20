@@ -456,7 +456,7 @@ module Engine
         end
 
         def status_array(corporation)
-          return if corporation.minor? || !corporation.original_par_price
+          return if corporation.minor? || !corporation.ipoed
 
           status = ["Building Permits: #{corporation.building_permits}"]
           par_location = @par_order[corporation.original_par_price.price].find_index(corporation) + 1
