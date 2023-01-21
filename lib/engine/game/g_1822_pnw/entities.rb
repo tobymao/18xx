@@ -453,7 +453,7 @@ module Engine
             sym: 'M1',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. '\
+            desc: 'A 50% director’s certificate in this company. '\
                   'Associated with the Canadian Pacific Railway (CPR). Starting location is A8 (Vancouver, BC).',
             abilities: [],
             color: '#EF1D24',
@@ -464,7 +464,7 @@ module Engine
             sym: 'M2',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is B19 (Republic).',
+            desc: 'A 50% director’s certificate in this company. Starting location is B19 (Republic).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -474,7 +474,7 @@ module Engine
             sym: 'M3',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D11 (Bellingham).',
+            desc: 'A 50% director’s certificate in this company. Starting location is D11 (Bellingham).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -484,7 +484,7 @@ module Engine
             sym: 'M4',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is D19 (Brewster).',
+            desc: 'A 50% director’s certificate in this company. Starting location is D19 (Brewster).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -494,7 +494,7 @@ module Engine
             sym: 'M5',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. '\
+            desc: 'A 50% director’s certificate in this company. '\
                   'Associated with the Great Northern Railway (GNR). Starting location is D23 (Newport).',
             abilities: [],
             color: '#6BCFF7',
@@ -505,7 +505,7 @@ module Engine
             sym: 'M6',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is F9 (Port Townsend).',
+            desc: 'A 50% director’s certificate in this company. Starting location is F9 (Port Townsend).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -515,7 +515,7 @@ module Engine
             sym: 'M7',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. '\
+            desc: 'A 50% director’s certificate in this company. '\
                   'Associated with the Chicago, Milwaukee, & Puget Sound Railway (CMPS). Starting location is F23 (Spokane).',
             abilities: [],
             color: '#F69B1D',
@@ -526,7 +526,7 @@ module Engine
             sym: 'M8',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. '\
+            desc: 'A 50% director’s certificate in this company. '\
                   'Associated with the Seattle & Walla Walla Railroad (SWW). Starting location is H11 (Seattle).',
             abilities: [],
             color: '#238541',
@@ -537,7 +537,7 @@ module Engine
             sym: 'M9',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is H19 (Leavenworth).',
+            desc: 'A 50% director’s certificate in this company. Starting location is H19 (Leavenworth).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -547,7 +547,7 @@ module Engine
             sym: 'M10',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is I12 (Tacoma).',
+            desc: 'A 50% director’s certificate in this company. Starting location is I12 (Tacoma).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -557,7 +557,7 @@ module Engine
             sym: 'M11',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J5 (Aberdeen).',
+            desc: 'A 50% director’s certificate in this company. Starting location is J5 (Aberdeen).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -567,7 +567,7 @@ module Engine
             sym: 'M12',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is J23 (Sprague).',
+            desc: 'A 50% director’s certificate in this company. Starting location is J23 (Sprague).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -577,7 +577,7 @@ module Engine
             sym: 'M13',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L19 (Yakima).',
+            desc: 'A 50% director’s certificate in this company. Starting location is L19 (Yakima).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -587,7 +587,7 @@ module Engine
             sym: 'M14',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is L23 (Lewiston Junction).',
+            desc: 'A 50% director’s certificate in this company. Starting location is L23 (Lewiston Junction).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -597,7 +597,7 @@ module Engine
             sym: 'M15',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M4 (Ilwaco).',
+            desc: 'A 50% director’s certificate in this company. Starting location is M4 (Ilwaco).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -607,7 +607,7 @@ module Engine
             sym: 'M16',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is N5 (Astoria).',
+            desc: 'A 50% director’s certificate in this company. Starting location is N5 (Astoria).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -617,7 +617,7 @@ module Engine
             sym: 'M17',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. '\
+            desc: 'A 50% director’s certificate in this company. '\
                   'Associated with the Spokane, Portland, & Seattle Railroad (SPS). Starting location is O8 (Portland).',
             abilities: [],
             color: '#8D061B',
@@ -628,7 +628,7 @@ module Engine
             sym: 'M18',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. '\
+            desc: 'A 50% director’s certificate in this company. '\
                   'Associated with the Oregon Railroad & Navigation Co. (ORNC). Starting location is O8 (Portland).',
             abilities: [],
             color: '#3078C1',
@@ -639,7 +639,7 @@ module Engine
             sym: 'M19',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. '\
+            desc: 'A 50% director’s certificate in this company. '\
                   'Starting location is O14 (Stevenson Cascade Locks).',
             abilities: [],
             color: '#ffffff',
@@ -650,7 +650,7 @@ module Engine
             sym: 'M20',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. '\
+            desc: 'A 50% director’s certificate in this company. '\
                   'Associated with the Northern Pacific Railroad (NP). Starting location is O20 (Wallula).',
             abilities: [],
             color: '#221E20',
@@ -661,7 +661,7 @@ module Engine
             sym: 'M21',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is P17 (The Dalles).',
+            desc: 'A 50% director’s certificate in this company. Starting location is P17 (The Dalles).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
