@@ -11,8 +11,12 @@ module Engine
             "Choose tokens to remove"
           end
 
+          def token_hex_count(corporation)
+            corporation.placed_tokens.map(&:hex).uniq.size
+          end
+
           def survivor_tokens_in_same_hex(corporation)
-            corporation.placed_tokens.size - corporation.placed_tokens.map(&:hex).uniq.size
+            corporation.placed_tokens.size - token_hex_count(corporation)
           end
 
           def survivor_tokens_over_limit?(corporation)
@@ -53,6 +57,20 @@ module Engine
               [hex]
             else
               super
+            end
+          end
+
+          def process_remove_token(action)
+            corporation = action.entity
+            hexes_with_tokens = token_hex_count(corporation)
+
+            super
+
+            if (token_hex_count(corporation) == 1) && (hexes_with_tokens > 1)
+              # This can only happen in a merger of more than two minors where
+              # there's a hex with multiple tokens. The player has attempted to
+              # remove all but one of the tokens from the map.
+              raise GameError, "#{corporation.id} must have two tokens in different hexes"
             end
           end
         end
