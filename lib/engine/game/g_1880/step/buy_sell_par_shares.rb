@@ -10,7 +10,13 @@ module Engine
           def actions(entity)
             return ['choose'] if @parring && entity == current_entity
 
-            super
+            actions = super.dup
+            if @game.player_debt(entity).positive?
+              actions.delete('buy_shares')
+              actions << 'payoff_player_debt' if entity.cash.positive?
+            end
+
+            actions
           end
 
           def can_sell?(entity, bundle)
@@ -123,6 +129,17 @@ module Engine
           def process_buy_shares(action)
             super
             @game.receive_capital(action.corporation) if @game.full_cap_event
+          end
+
+          def process_payoff_player_debt(action)
+            player = action.entity
+            @game.payoff_player_loan(player)
+            @round.last_to_act = player
+            @round.current_actions << action
+          end
+
+          def get_par_prices(entity, _corp)
+            super.reject { |p| @game.par_order[p.price].length == 4 }
           end
         end
       end

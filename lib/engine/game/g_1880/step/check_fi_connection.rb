@@ -72,7 +72,7 @@ module Engine
           def process_percent(action)
             fi = @merging[:fi]
             if fi.cash.positive?
-              amount = action.choice.include?('treasury') ? fi.cash : fi.cash * 0.2
+              amount = action.choice.include?('treasury') ? fi.cash : (fi.cash * 0.2).floor
               destination = action.choice.include?('treasury') ? @merging[:corporation] : current_entity.owner
               fi.spend(amount, destination, check_positive: false)
               log_msg = "#{fi.full_name} transfers #{@game.format_currency(amount)} to #{destination.name}"
@@ -123,7 +123,7 @@ module Engine
             case @merging[:state]
             when :choose_percent
               ["#{@game.format_currency(@merging[:fi].cash)} to #{@merging[:corporation].name} treasury",
-               "#{@game.format_currency(@merging[:fi].cash * 0.2)} to #{current_entity.owner.name}"]
+               "#{@game.format_currency((@merging[:fi].cash * 0.2).floor)} to #{current_entity.owner.name}"]
             when :choose_token
               %w[Replace Discard]
             end

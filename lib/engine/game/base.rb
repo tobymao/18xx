@@ -761,10 +761,7 @@ module Engine
             next_round!
             check_programmed_actions
 
-            # Finalize round setup (for things that need round correctly set like place_home_token)
-            @round.at_start = true
-            @round.setup
-            @round_history << current_action_id
+            finalize_round_setup
           end
         end
       rescue Engine::GameError => e
@@ -772,6 +769,13 @@ module Engine
         @actions.pop
         @exception = e
         @broken_action = action
+      end
+
+      def finalize_round_setup
+        # Finalize round setup (for things that need round correctly set like place_home_token)
+        @round.at_start = true
+        @round.setup
+        @round_history << current_action_id
       end
 
       def maybe_raise!
@@ -2088,6 +2092,8 @@ module Engine
       def corporation_show_interest?
         true
       end
+
+      def after_buying_train(train); end
 
       private
 
