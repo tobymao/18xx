@@ -7,6 +7,19 @@ module Engine
     module G1867
       module Step
         class ReduceTokens < Engine::Step::ReduceTokens
+          def description
+            "Choose tokens to remove"
+          end
+
+          def survivor_tokens_in_same_hex(corporation)
+            corporation.placed_tokens.size - corporation.placed_tokens.map(&:hex).uniq.size
+          end
+
+          def survivor_tokens_over_limit?(corporation)
+            corporation.placed_tokens.size - survivor_tokens_in_same_hex(corporation) >
+              @game.class::LIMIT_TOKENS_AFTER_MERGER
+          end
+
           def move_tokens_to_surviving(surviving, others)
             super
 
@@ -18,9 +31,16 @@ module Engine
           end
 
           def help
-            'When merging more than 2 minor corporations the new corporation can only keep 2 tokens.'\
-              ' Choose which tokens to remove.'\
-              ' After merging an additional token will be available on the charter.'
+            corporation = current_entity
+            issues = []
+            if survivor_tokens_over_limit?(corporation)
+              issues << 'can only keep two tokens'
+            end
+            if survivor_tokens_in_same_hex(corporation).positive?
+              issues << 'cannot have two tokens in the same hex'
+            end
+
+            "The new public company #{issues.join(' and ')}. Choose which tokens to remove."
           end
 
           def available_hex(entity, hex)
