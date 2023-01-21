@@ -183,7 +183,15 @@ module Engine
 
       def delete_token!(token, remove_slot: false)
         if remove_slot
-          @tokens.delete(token)
+          # This can make the reservations out of sync.  Delete the reservation in the same
+          # position, but add a nil to the end so it still has the correct number
+          position = @tokens.index(token)
+          if position
+            @tokens.delete_at(position)
+            @reservations.delete_at(position)
+            @reservations << nil
+          end
+
         else
           @tokens.map! { |t| t == token ? nil : t }
         end
