@@ -19,7 +19,7 @@ module Engine
         TILE_RESERVATION_BLOCKS_OTHERS = :always
         CURRENCY_FORMAT_STR = '%sM'
 
-        BANK_CASH = 9_000
+        BANK_CASH = 8_000
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 9 }.freeze
         STARTING_CASH = { 3 => 500, 4 => 390, 5 => 320 }.freeze
 
@@ -158,7 +158,6 @@ module Engine
                     available_on: '6',
                     discount: { '4' => 300, '5' => 300, '6' => 300 },
                   }].freeze
-
 
         LAYOUT = :pointy
 
