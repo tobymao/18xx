@@ -8,7 +8,7 @@ module Engine
       module Step
         class ReduceTokens < Engine::Step::ReduceTokens
           def description
-            "Choose tokens to remove"
+            'Choose tokens to remove'
           end
 
           def token_hex_count(corporation)
@@ -37,12 +37,8 @@ module Engine
           def help
             corporation = current_entity
             issues = []
-            if survivor_tokens_over_limit?(corporation)
-              issues << 'can only keep two tokens'
-            end
-            if survivor_tokens_in_same_hex(corporation).positive?
-              issues << 'cannot have two tokens in the same hex'
-            end
+            issues << 'can only keep two tokens' if survivor_tokens_over_limit?(corporation)
+            issues << 'cannot have two tokens in the same hex' if survivor_tokens_in_same_hex(corporation).positive?
 
             "The new public company #{issues.join(' and ')}. Choose which tokens to remove."
           end
@@ -66,12 +62,13 @@ module Engine
 
             super
 
-            if (token_hex_count(corporation) == 1) && (hexes_with_tokens > 1)
-              # This can only happen in a merger of more than two minors where
-              # there's a hex with multiple tokens. The player has attempted to
-              # remove all but one of the tokens from the map.
-              raise GameError, "#{corporation.id} must have two tokens in different hexes"
-            end
+            return if hexes_with_tokens == 1
+            return if token_hex_count(corporation) > 1
+
+            # This can only happen in a merger of more than two minors where
+            # there's a hex with multiple tokens. The player has attempted to
+            # remove all but one of the tokens from the map.
+            raise GameError, "#{corporation.id} must have two tokens in different hexes"
           end
         end
       end
