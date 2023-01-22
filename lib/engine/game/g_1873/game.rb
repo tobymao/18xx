@@ -1838,9 +1838,13 @@ module Engine
 
         def check_diesel_nodes(route)
           entity = train_owner(route.train)
-          return unless route.visited_stops.any? { |n| !diesel_graph.connected_nodes(entity)[n] }
+          return unless route.visited_stops.any? { |n| !node_connected_to_concession_route?(entity, n) }
 
           raise GameError, 'Diesel route has to directly or indirectly connect to concession route'
+        end
+
+        def node_connected_to_concession_route?(entity, node)
+          concession_tile_hexes(entity).include?(node.hex) || diesel_graph.connected_nodes(entity)[node]
         end
 
         def concession_route_run?(entity, routes)

@@ -19,7 +19,7 @@ module Engine
               owner_type: 'player',
               when: 'owning_player_sr_turn',
               from: %w[reserved],
-            }],
+            }, { type: 'no_buy' }],
           },
           {
             name: 'Vernon River Bridge Company',
@@ -38,7 +38,7 @@ module Engine
                           owner_type: 'player',
                           when: 'owning_player_sr_turn',
                           from: %w[reserved],
-                        }],
+                        }, { type: 'no_buy' }],
           },
           {
             name: 'Ice Boat Shipping',
@@ -49,6 +49,7 @@ module Engine
                   'Player may still sell and buy stock on this turn.',
             sym: 'IB',
             color: nil,
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Royal Agricultural Society',
@@ -57,7 +58,7 @@ module Engine
             desc: 'Comes with a Mainline share.',
             sym: 'RA',
             color: nil,
-            abilities: [{ type: 'shares', shares: 'mainline_1' }],
+            abilities: [{ type: 'shares', shares: 'mainline_1' }, { type: 'no_buy' }],
           },
           {
             name: 'Railcar Ferry: the Prince Edward Island',
@@ -66,7 +67,7 @@ module Engine
             desc: 'Comes with a Mainline Share.',
             sym: 'RF',
             color: nil,
-            abilities: [{ type: 'shares', shares: 'mainline_2' }],
+            abilities: [{ type: 'shares', shares: 'mainline_2' }, { type: 'no_buy' }],
           },
           {
             name: 'Shipbuilding',
@@ -82,7 +83,7 @@ module Engine
               owner_type: 'player',
               when: 'owning_player_sr_turn',
               from: %w[reserved],
-            }],
+            }, { type: 'no_buy' }],
           },
           {
             name: 'Hunslet Steam Engine',
@@ -111,7 +112,7 @@ module Engine
             sym: 'ML',
             color: nil,
             abilities: [{ type: 'shares', shares: 'mainline_0' },
-                        { type: 'close', when: 'operated', corporation: 'mainline' }],
+                        { type: 'close', when: 'operated', corporation: 'mainline' }, { type: 'no_buy' }],
           },
           {
             name: 'Schreiber and Burpee Construction',
@@ -122,6 +123,7 @@ module Engine
                   'Must follow all normal track laying rules.',
             sym: 'SBC',
             color: nil,
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Short Line Concession',
@@ -131,7 +133,7 @@ module Engine
             sym: 'SL',
             color: nil,
             abilities: [{ type: 'shares', shares: 'shortline_0' },
-                        { type: 'close', when: 'operated', corporation: 'shortline' }],
+                        { type: 'close', when: 'operated', corporation: 'shortline' }, { type: 'no_buy' }],
 
           },
           {
@@ -143,7 +145,7 @@ module Engine
                   'Owning player may buy 1 share per stock round for the Bank combining the bank\'s treasury with their own.',
             sym: 'UB',
             color: nil,
-            abilities: [{ type: 'close', on_phase: 'never' }],
+            abilities: [{ type: 'close', on_phase: 'never' }, { type: 'no_buy' }],
           },
           {
             name: 'The King\'s Mail',
@@ -153,6 +155,7 @@ module Engine
                   'Closes with other privates on the 4+.',
             sym: 'KM',
             color: nil,
+            abilities: [{ type: 'no_buy' }],
           },
         ].freeze
       end

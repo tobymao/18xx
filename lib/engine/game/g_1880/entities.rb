@@ -10,7 +10,7 @@ module Engine
             sym: 'P0',
             value: 5,
             revenue: 0,
-            desc: 'Owner recieves one-off payment of 40/70/100 when last 2+2/3/3+3 train is purchased',
+            desc: 'Owner receives one-off payment of 40/70/100 when last 2+2/3/3+3 train is purchased',
             color: nil,
           },
           {
@@ -35,6 +35,14 @@ module Engine
             value: 45,
             revenue: 15,
             desc: 'For the owner, the value of Taiwan is +20 (with all his companies)',
+            abilities: [
+              {
+                type: 'hex_bonus',
+                owner_type: 'player',
+                hexes: ['N16'],
+                amount: 20,
+              },
+            ],
             color: nil,
           },
           {
@@ -43,6 +51,13 @@ module Engine
             value: 70,
             revenue: 20,
             desc: 'Reduce the cost of laying a tile in a river hex by ¥20 (for all his companies)',
+            abilities: [{
+              type: 'tile_discount',
+              discount: 20,
+              terrain: 'water',
+              owner_type: 'player',
+              when: 'owning_player_track',
+            }],
             color: nil,
           },
           {
@@ -59,6 +74,8 @@ module Engine
             value: 160,
             revenue: 0,
             desc: 'The owner receives the 20% Director’s Certificates of the BCR, BCR may always lay 2 yellow tiles',
+            abilities: [{ type: 'shares', shares: 'BCR_0' },
+                        { type: 'close', when: 'par', corporation: 'BCR' }],
             color: nil,
           },
           {
@@ -69,6 +86,12 @@ module Engine
             desc: 'The owner may exchange the Rocket of China for a currently available train, '\
                   'for one of his companies, during that company’s turn in an Operating Round. '\
                   'Forced exchange into second 4-train.',
+            abilities: [{
+              type: 'purchase_train',
+              owner_type: 'player',
+              when: 'owning_player_or_turn',
+              free: true,
+            }],
             color: nil,
           },
         ].freeze
@@ -236,7 +259,7 @@ module Engine
 
         MINORS = [
           {
-            sym: 'A1',
+            sym: '1',
             name: 'Russian Investor',
             logo: '1880/Russia',
             tokens: [0],
@@ -245,7 +268,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A2',
+            sym: '2',
             name: 'Japanese Investor',
             logo: '1880/Japan',
             tokens: [0],
@@ -254,7 +277,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A3',
+            sym: '3',
             name: 'Belgian Investor',
             logo: '1880/Belgium',
             tokens: [0],
@@ -263,7 +286,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A4',
+            sym: '4',
             name: 'German Investor',
             logo: '1880/Germany',
             tokens: [0],
@@ -272,7 +295,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A5',
+            sym: '5',
             name: 'British Investor',
             logo: '1880/UK',
             tokens: [0],
@@ -281,7 +304,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A6',
+            sym: '6',
             name: 'Portuguese Investor',
             logo: '1880/Portugal',
             tokens: [0],
@@ -290,7 +313,7 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'A7',
+            sym: '7',
             name: 'French Investor',
             logo: '1880/France',
             tokens: [0],

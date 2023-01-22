@@ -1,2 +1,2 @@
 Fixture descriptions:
-91954: Real game, provided as a sanity test
+hunslet_buy: cut-off after the 4H when Hunslet is bought into Gt

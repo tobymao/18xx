@@ -196,7 +196,10 @@ module Engine
       NEXT_SR_PLAYER_ORDER = :after_last_to_act
 
       # do tile reservations completely block other companies?
-      TILE_RESERVATION_BLOCKS_OTHERS = false
+      # :never -- token can be placed as long as there is a city space for existing tile reservations
+      # :always -- token cannot be placed until tile reservation resolved
+      # :yellow_only -- token cannot be placed while tile is yellow or until the tile reservation is resolved
+      TILE_RESERVATION_BLOCKS_OTHERS = :never
 
       COMPANIES = [].freeze
 
@@ -257,6 +260,9 @@ module Engine
       # :normal Tile type like 1830, 1846.
       # :lawson Tile type like 1817, 1822
       TILE_TYPE = :normal
+
+      # games where minors can own shares
+      MINORS_CAN_OWN_SHARES = false
 
       # Must an upgrade use the maximum number of exits
       # for track and/or cities?
@@ -755,10 +761,7 @@ module Engine
             next_round!
             check_programmed_actions
 
-            # Finalize round setup (for things that need round correctly set like place_home_token)
-            @round.at_start = true
-            @round.setup
-            @round_history << current_action_id
+            finalize_round_setup
           end
         end
       rescue Engine::GameError => e
@@ -766,6 +769,13 @@ module Engine
         @actions.pop
         @exception = e
         @broken_action = action
+      end
+
+      def finalize_round_setup
+        # Finalize round setup (for things that need round correctly set like place_home_token)
+        @round.at_start = true
+        @round.setup
+        @round_history << current_action_id
       end
 
       def maybe_raise!
@@ -1483,6 +1493,18 @@ module Engine
         @graph
       end
 
+      def clear_graph
+        @graph.clear
+      end
+
+      def clear_graph_for_entity(entity)
+        graph_for_entity(entity).clear
+      end
+
+      def clear_token_graph_for_entity(entity)
+        token_graph_for_entity(entity).clear
+      end
+
       def graph_skip_paths(_entity)
         nil
       end
@@ -1559,19 +1581,8 @@ module Engine
         # correct label?
         return false unless upgrades_to_correct_label?(from, to)
 
-        # honors existing town/city counts and connections?
-        # - allow labelled cities to upgrade regardless of count; they're probably
-        #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
-        # - TODO: account for games that allow double dits to upgrade to one town
-        return false if from.towns.size != to.towns.size
-        return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
-        return false if from.cities.size > 1 && to.cities.size > 1 && !from.city_town_edges_are_subset_of?(to.city_town_edges)
-
-        # but don't permit a labelled city to be downgraded to 0 cities.
-        return false if from.label && !from.cities.empty? && to.cities.empty?
-
-        # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
-        return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
+        # correct number of cities and towns
+        return false unless upgrades_to_correct_city_town?(from, to)
 
         true
       end
@@ -1589,6 +1600,24 @@ module Engine
         return from.future_label.label == to.label&.to_s if from.future_label && to.color.to_s == from.future_label.color
 
         from.label == to.label
+      end
+
+      def upgrades_to_correct_city_town?(from, to)
+        # honors existing town/city counts and connections?
+        # - allow labelled cities to upgrade regardless of count; they're probably
+        #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+        # - TODO: account for games that allow double dits to upgrade to one town
+        return false if from.towns.size != to.towns.size
+        return false if !from.label && from.cities.size != to.cities.size && !upgrade_ignore_num_cities(from)
+        return false if from.cities.size > 1 && to.cities.size > 1 && !from.city_town_edges_are_subset_of?(to.city_town_edges)
+
+        # but don't permit a labelled city to be downgraded to 0 cities.
+        return false if from.label && !from.cities.empty? && to.cities.empty?
+
+        # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
+        return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
+
+        true
       end
 
       def legal_tile_rotation?(_entity, _hex, _tile)
@@ -2063,6 +2092,8 @@ module Engine
       def corporation_show_interest?
         true
       end
+
+      def after_buying_train(train); end
 
       private
 

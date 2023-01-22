@@ -10,6 +10,11 @@ module Engine
           def sold_out?(corporation)
             (corporation.num_ipo_shares - corporation.num_ipo_reserved_shares).zero?
           end
+
+          def finish_round
+            @game.add_interest_player_loans!
+            super
+          end
         end
       end
     end
