@@ -358,9 +358,9 @@ module Engine
           end
 
           @corporations.select(&:receivership?).each do |corp|
-            corp.companies.sort_by(&:value).reverse_each do |company|
+            corp.companies.sort_by(&:value).each do |company|
               if company_income(company).negative? && receivership_close?(company) && corp.companies.size > 1
-                @log << "#{company.sym} (#{company.owner.name} - Receivership) has negative income"
+                @log << "#{company.sym} (#{company.owner.name} - Receivership) exceeds maximum cost of ownership"
                 close_company(company)
               end
             end

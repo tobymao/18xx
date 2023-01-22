@@ -61,7 +61,7 @@ module Engine
             raise GameError, "#{corporation.id} can only own one E-train"
           end
 
-          def must_take_loan?(entity)
+          def must_take_player_loan?(entity)
             # Must sell all shares before a loan can be granted
             return false if sellable_shares?(entity.owner)
 
