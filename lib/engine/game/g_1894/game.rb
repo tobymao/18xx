@@ -162,7 +162,7 @@ module Engine
                   {
                     name: '3',
                     distance: 3,
-                    price: 140,
+                    price: 120,
                     rusts_on: '5',
                     num: 5,
                     discount: { '2' => 40 },
@@ -170,10 +170,10 @@ module Engine
                   {
                     name: '4',
                     distance: 4,
-                    price: 280,
+                    price: 300,
                     rusts_on: '7',
-                    num: 4,
-                    discount: { '3' => 70 },
+                    num: 3,
+                    discount: { '3' => 60 },
                   },
                   {
                     name: '5',
@@ -182,7 +182,7 @@ module Engine
                     rusts_on: 'D',
                     num: 4,
                     events: [{ 'type' => 'late_corporations_available' }],
-                    discount: { '4' => 140 },
+                    discount: { '4' => 150 },
                   },
                   {
                     name: '6',
@@ -196,7 +196,7 @@ module Engine
                     name: '7',
                     distance: 7,
                     price: 700,
-                    num: 4,
+                    num: 3,
                     discount: { '6' => 300 },
                   },
                   {
