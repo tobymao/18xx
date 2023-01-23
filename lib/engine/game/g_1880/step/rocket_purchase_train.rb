@@ -32,7 +32,7 @@ module Engine
           end
 
           def can_purchase?(corp)
-            train and room?(corp)
+            current_train and room?(corp)
           end
 
           def room?(corp)
