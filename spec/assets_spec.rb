@@ -79,7 +79,6 @@ TEST_CASES = [
       'Player 3 must contribute $160 for B&amp;O to afford a train from the Depot.',
       'Player 3 has $15',
       'Player 3 has $0 in sellable shares',
-      'Player 3 must sell shares to raise at least $145.',
       'Player 3 does not have enough liquidity to contribute towards B&amp;O buying a '\
       'train from the Depot. B&amp;O must buy a train from another corporation, or Player 3 '\
       'must declare bankruptcy.',

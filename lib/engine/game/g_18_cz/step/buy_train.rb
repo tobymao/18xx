@@ -96,7 +96,7 @@ module Engine
             cheapest_train[:price]
           end
 
-          def must_take_loan?(corporation)
+          def must_take_player_loan?(corporation)
             price = cheapest_train_price(corporation)
             (@game.buying_power(corporation) + corporation.owner.cash) < price
           end

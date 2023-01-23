@@ -9,6 +9,12 @@ module Engine
       module Step
         class Dividend < Engine::Step::Dividend
           include Engine::Step::MinorWithold
+
+          def share_price_change(entity, revenue = 0)
+            return {} if @game.communism
+
+            super
+          end
         end
       end
     end

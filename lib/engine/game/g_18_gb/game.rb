@@ -312,6 +312,8 @@ module Engine
 
         def init_optional_rules(optional_rules)
           optional_rules = super(optional_rules)
+          optional_rules.delete(:two_player_ew) if @players.size != 2
+          optional_rules.delete(:four_player_alt) if @players.size != 4
           @scenario = init_scenario(optional_rules)
           optional_rules
         end
