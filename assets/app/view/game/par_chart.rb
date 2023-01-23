@@ -14,20 +14,12 @@ module View
       def render
         @step = @game.round.active_step
         @current_entity = @step.current_entity
+        @current_operator = @game.respond_to?(:current_operator) ? @game.current_operator : nil
 
-        children = []
-        if @corporation_to_par
-          children = [h(:div, [h(:button, { on: { click: -> { store(:corporation_to_par, nil) } } }, 'Cancel (Par)')])]
-          children << h(Corporation, corporation: @corporation_to_par)
-        end
-        children << render_chart
-
-        h(:div, children)
+        render_chart
       end
 
       def render_chart
-        @current_operator = @game.respond_to?(:current_operator) ? @game.current_operator : nil
-
         attrs = {
           style: {
             'display' => 'flex',
@@ -168,7 +160,7 @@ module View
           },
         }
 
-        if @corporation_to_par
+        if @corporation_to_par && @step.get_par_prices(@current_entity, @corporation_to_par).include?(share_price)
           par = lambda do
             process_action(Engine::Action::Par.new(
               @current_entity,

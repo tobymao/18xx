@@ -15,7 +15,7 @@ module Engine
         include Entities
 
         attr_accessor :train_marker
-        attr_reader :full_cap_event, :communism, :end_game_triggered, :par_order, :saved_or_round
+        attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
@@ -330,7 +330,6 @@ module Engine
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           setup_foreign_investors
-          @par_order = { 100 => [], 90 => [], 80 => [], 70 => [] }
           setup_building_permits
           setup_unsaleable_shares
         end
@@ -452,14 +451,14 @@ module Engine
         end
 
         def bcr
-          @bcr ||= company_by_id('BCR')
+          @bcr ||= corporation_by_id('BCR')
         end
 
         def status_array(corporation)
           return if corporation.minor? || !corporation.ipoed
 
           status = ["Building Permits: #{corporation.building_permits}"]
-          par_location = @par_order[corporation.original_par_price.price].find_index(corporation) + 1
+          par_location = par_chart[corporation.original_par_price].find_index(corporation) + 1
           status << ["Par Price: #{corporation.original_par_price.price}-#{par_location}"]
           status
         end
@@ -665,13 +664,8 @@ module Engine
           graph.reachable_hexes(corporation).include?(fi_home_token)
         end
 
-        def after_par(corporation)
-          super
-          @par_order[corporation.par_price.price] << corporation
-        end
-
         def operating_order
-          @minors.select(&:floated?) + @par_order.values.flatten
+          @minors.select(&:floated?) + @par_chart.values.flatten.compact
         end
 
         def after_buying_train(train)
@@ -698,8 +692,8 @@ module Engine
         end
 
         def current_operator
-          # TODO: use saved round to get current_operator if not an operating round (needs code merge I think)
-          @round.is_a?(Engine::Round::Operating) ? @round.current_operator : nil
+          op_round = @round.is_a?(Engine::Round::Operating) ? @round : @saved_or_round
+          op_round&.current_operator
         end
       end
     end

@@ -47,7 +47,7 @@ module View
             store(:last_player, @current_entity, skip: true)
           end
 
-          return h(ParChart, corporation_to_par: @corporation_to_par) if @corporation_to_par && @current_actions.include?('par')
+          return render_select_par_slot if @corporation_to_par && @current_actions.include?('par')
 
           children = []
 
@@ -393,6 +393,14 @@ module View
           children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
           children << h(TrainSchedule, game: @game) unless @game.depot.trains.empty?
           h(:div, props, children)
+        end
+
+        def render_select_par_slot
+          children = [h(:div, [h(:button, { on: { click: -> { store(:corporation_to_par, nil) } } }, 'Cancel (Par)')])]
+          children << h(Corporation, corporation: @corporation_to_par)
+          children << h(ParChart, corporation_to_par: @corporation_to_par)
+
+          h(:div, children)
         end
       end
     end
