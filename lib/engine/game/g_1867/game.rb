@@ -1500,12 +1500,6 @@ module Engine
           @loan_value
         end
 
-        def round_end
-          return Engine::Round::Operating if phase.name.to_i >= 8
-
-          G1867::Round::Merger
-        end
-
         def final_operating_rounds
           @final_operating_rounds || super
         end
