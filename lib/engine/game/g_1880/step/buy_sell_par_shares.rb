@@ -114,6 +114,8 @@ module Engine
               return super
             end
 
+            @game.set_par(action.corporation, action.share_price, action.slot)
+
             @parring = {
               state: :choose_percent,
               corporation: action.corporation,

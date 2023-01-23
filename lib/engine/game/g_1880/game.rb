@@ -687,6 +687,20 @@ module Engine
 
           @round_history << current_action_id
         end
+
+        def set_par(corporation, share_price, slot)
+          par_chart[share_price][slot] = corporation
+        end
+
+        def par_chart
+          @par_chart ||=
+            share_prices.sort_by { |sp| -sp.price }.to_h { |sp| [sp, [nil, nil, nil, nil]] }
+        end
+
+        def current_operator
+          # TODO: use saved round to get current_operator if not an operating round (needs code merge I think)
+          @round.is_a?(Engine::Round::Operating) ? @round.current_operator : nil
+        end
       end
     end
   end
