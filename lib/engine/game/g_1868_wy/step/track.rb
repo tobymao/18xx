@@ -20,14 +20,16 @@ module Engine
             # block in the track step
             (corporation = entity).corporation? &&
               @game.phase.status.include?('can_buy_companies') &&
-              @game.dodge.owned_by_player? &&
+              (@game.dodge.owned_by_player? || @game.casement.owned_by_player?) &&
               @game.buying_power(entity).positive? &&
               @game.track_points_available(corporation) == (@game.class::YELLOW_POINT_COST - 1)
           end
 
           def legal_tile_rotation?(entity, hex, tile)
             if (upgrades = @game.class::TILE_UPGRADES[hex.tile.name]) && upgrades.include?(tile.name)
-              hex.tile.exits & tile.exits == hex.tile.exits
+              (hex.tile.exits & tile.exits == hex.tile.exits) &&
+                tile.exits.all? { |edge| hex.neighbors[edge] } &&
+                !(tile.exits & hex_neighbors(entity, hex)).empty?
             else
               super
             end
