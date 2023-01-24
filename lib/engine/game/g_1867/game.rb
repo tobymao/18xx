@@ -1627,7 +1627,7 @@ module Engine
             corporation.type != :minor
           end
           @log << 'Minors nationalized' if removed.any?
-          removed.each { |c| nationalize!(c) }
+          removed.sort.each { |c| nationalize!(c) }
           @corporations = corporations
         end
 
@@ -1645,7 +1645,7 @@ module Engine
         end
 
         def postevent_trainless_nationalization!
-          trainless = @corporations.select { |c| c.operated? && c.trains.none? }
+          trainless = @corporations.select { |c| c.operated? && c.trains.none? }.sort
 
           @trainless_major = []
           trainless.each do |c|
@@ -1657,7 +1657,7 @@ module Engine
             end
           end
 
-          @trainless_major = @trainless_major.sort.reverse
+          @trainless_major = @trainless_major.sort
           @trainless_nationalization = false
         end
 
