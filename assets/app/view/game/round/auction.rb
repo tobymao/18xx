@@ -3,6 +3,7 @@
 require 'view/game/actionable'
 require 'view/game/company'
 require 'view/game/par'
+require 'view/game/par_chart'
 require 'view/game/players'
 require 'view/game/stock_market'
 
@@ -14,6 +15,7 @@ module View
 
         needs :selected_company, default: nil, store: true
         needs :selected_corporation, default: nil, store: true
+        needs :corporation_to_par, default: nil, store: true
         needs :hidden, default: true, store: true
         needs :flash_opts, default: {}, store: true
         needs :user
@@ -34,6 +36,8 @@ module View
 
           if @current_actions.include?('par') && @step.respond_to?(:companies_pending_par) && @step.companies_pending_par
             h(:div, render_company_pending_par)
+          elsif @current_actions.include?('choose')
+            h(Choose)
           else
             h(:div, [
               render_turn_bid,
@@ -69,7 +73,11 @@ module View
             next unless share.president
 
             children << h(Corporation, corporation: share.corporation)
-            children << h(Par, corporation: share.corporation)
+            children << if @game.respond_to?(:par_chart)
+                          h(ParChart, corporation_to_par: share.corporation)
+                        else
+                          h(Par, corporation: share.corporation)
+                        end
           end
 
           children

@@ -214,8 +214,6 @@ module Engine
               @game.log << "#{target.name} will be above token limit and must decide which tokens to remove"
               @round.corporations_removing_tokens = [target] + @merging
             else
-              move_tokens_to_surviving(target, @merging)
-
               # Add the $40 token back
               if target.tokens.size < 3
                 new_token = Engine::Token.new(target, price: 40)
