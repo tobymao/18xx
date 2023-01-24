@@ -6,6 +6,7 @@ require 'view/game/buy_sell_shares'
 require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/par'
+require 'view/game/par_chart'
 require 'view/game/players'
 require 'view/game/sell_shares'
 require 'view/game/stock_market'
@@ -20,6 +21,7 @@ module View
         needs :selected_corporation, default: nil, store: true
         needs :selected_company, default: nil, store: true
         needs :last_player, default: nil, store: true
+        needs :corporation_to_par, default: nil, store: true
         needs :show_other_players, default: nil, store: true
 
         def render
@@ -44,6 +46,8 @@ module View
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
           end
+
+          return render_select_par_slot if @corporation_to_par && @current_actions.include?('par')
 
           children = []
 
@@ -389,6 +393,14 @@ module View
           children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
           children << h(TrainSchedule, game: @game) unless @game.depot.trains.empty?
           h(:div, props, children)
+        end
+
+        def render_select_par_slot
+          children = [h(:div, [h(:button, { on: { click: -> { store(:corporation_to_par, nil) } } }, 'Cancel (Par)')])]
+          children << h(Corporation, corporation: @corporation_to_par)
+          children << h(ParChart, corporation_to_par: @corporation_to_par)
+
+          h(:div, children)
         end
       end
     end
