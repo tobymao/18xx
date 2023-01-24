@@ -313,8 +313,6 @@ module Engine
         one_more_full_or_set: 'End of the next complete OR set after the current one',
       }.freeze
 
-      ASSIGNMENT_TOKENS = {}.freeze
-
       OPERATING_ROUND_NAME = 'Operating'
       OPERATION_ROUND_SHORT_NAME = 'ORs'
 
