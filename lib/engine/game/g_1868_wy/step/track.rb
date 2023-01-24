@@ -16,6 +16,7 @@ module Engine
           end
 
           def can_lay_tile?(entity)
+            return false if @game.skip_homeless_dpr?(entity)
             return true if super
 
             # if 1 track point remains and P7 can be bought, block in the track step

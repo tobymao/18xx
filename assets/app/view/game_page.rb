@@ -401,7 +401,12 @@ module View
 
       case @round
       when Engine::Round::Stock
-        if !(%w[place_token lay_tile remove_token] & current_entity_actions).empty?
+        if current_entity_actions.include?('place_token') && step.respond_to?(:map_action_optional?) && step.map_action_optional?
+          h(:div, [
+              h(Game::Round::Stock, game: @game),
+              h(Game::Map, game: @game),
+            ])
+        elsif !(%w[place_token lay_tile remove_token] & current_entity_actions).empty?
           h(Game::Map, game: @game)
         else
           h(Game::Round::Stock, game: @game)
