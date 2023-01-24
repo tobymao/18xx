@@ -113,12 +113,13 @@ module Engine
             track_action(action, entity, false)
             train = action.train
             price = action.price
+            source = train.owner
 
             raise GameError, 'Not a buyable train' unless buyable_train_variants(train,
                                                                                  entity).include?(train.variant)
             raise GameError, 'Must pay face value' if price != train.price
 
-            @game.queue_log! { @game.phase.buying_train!(entity, train) }
+            @game.queue_log! { @game.phase.buying_train!(entity, train, source) }
 
             source = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
 

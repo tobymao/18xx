@@ -674,14 +674,28 @@ module Engine
           @minors.select(&:floated?) + @par_order.values.flatten
         end
 
+<<<<<<< HEAD
         def after_buying_train(train)
           return if train.name == @depot.upcoming.first.name
+=======
+        def after_buying_train(train, source)
+          return unless trigger_sr?(train, source)
+>>>>>>> d05764b75 (add source param to  buying_train)
 
           @turn += 1
           @saved_or_round = @round
           @round = new_stock_round
         end
 
+<<<<<<< HEAD
+=======
+        def trigger_sr?(train, source)
+          train.name != @depot.upcoming.first.name &&
+          !trains_not_triggering_sr?(train.name) &&
+          source == @depot
+        end
+
+>>>>>>> d05764b75 (add source param to  buying_train)
         def finalize_round_setup
           return super unless @round == @saved_or_round
 

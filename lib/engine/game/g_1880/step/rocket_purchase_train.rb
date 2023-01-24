@@ -53,8 +53,9 @@ module Engine
             @log << "#{@round.current_operator.name} exchanges the #{rocket.name} for a #{train.name} train"
 
             rocket.close!
+            source = train.owner
             @game.buy_train(@round.current_operator, train, :free)
-            @game.phase.buying_train!(@round.current_operator, train)
+            @game.phase.buying_train!(@round.current_operator, train, source)
           end
         end
       end

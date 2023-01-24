@@ -22,14 +22,14 @@ module Engine
       train = @upcoming.first
       @game.log << "-- Event: A #{train.name} train exports --"
       @game.remove_train(train)
-      @game.phase.buying_train!(nil, train)
+      @game.phase.buying_train!(nil, train, self)
     end
 
     def export_all!(name, silent: false)
       @game.log << "-- Event: All #{name} trains are exported --" unless silent
       while (train = @upcoming.first).name == name
         @game.remove_train(train)
-        @game.phase.buying_train!(nil, train)
+        @game.phase.buying_train!(nil, train, self)
       end
     end
 
@@ -37,7 +37,7 @@ module Engine
       @game.log << "-- Event: All #{name} trains are discarded to the Bank Pool --"
       while (train = @upcoming.first).name == name
         reclaim_train(train)
-        @game.phase.buying_train!(nil, train)
+        @game.phase.buying_train!(nil, train, self)
       end
     end
 
