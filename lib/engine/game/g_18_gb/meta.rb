@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
 
         GAME_DISPLAY_TITLE = '18GB'
 
@@ -25,15 +25,24 @@ module Engine
             short_name: '2P EW',
             title: '2P East-West Scenario',
             desc: 'Play the East-West (rather than North-South) 2-player setup',
-            players: [2],
           },
           {
             sym: :four_player_alt,
             short_name: '4P Alt',
+            title: '4P Alternate Setup',
             desc: 'Alternate company and corporation mix for 4 players',
-            players: [4],
           },
         ].freeze
+
+        def self.check_options(options, _min_players, _max_players)
+          optional_rules = (options || []).map(&:to_sym)
+
+          two_player_map = optional_rules.include?(:two_player_ew) ? 'East-West' : 'North-South'
+          four_player_setup = optional_rules.include?(:four_player_alt) ? 'Alternative' : 'Standard'
+
+          "The 2P #{two_player_map} map will be used if the game is started with 2 players. The 4P #{four_player_setup} setup " \
+            'will be used if the game is started with 4 players.'
+        end
       end
     end
   end

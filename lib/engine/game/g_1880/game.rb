@@ -15,15 +15,20 @@ module Engine
         include Entities
 
         attr_accessor :train_marker
-        attr_reader :full_cap_event
+        attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round
 
         TRACK_RESTRICTION = :permissive
+        TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
+        HOME_TOKEN_TIMING = :operating_round
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_per_10
         EBUY_PRES_SWAP = false
+        EBUY_OTHER_VALUE = false
         CURRENCY_FORMAT_STR = '¥%s'
         SOLD_SHARES_DESTINATION = :corporation
         MINORS_CAN_OWN_SHARES = true
+        CORPORATION_CLASS = G1880::Corporation
 
         BANK_CASH = 37_860
 
@@ -31,12 +36,7 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340, 7 => 300 }.freeze
 
-        CORPORATION_CLASS = G1880::Corporation
-
-        HOME_TOKEN_TIMING = :operating_round
-        TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
-
-        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
+        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           pays_bonus: :yellow,
@@ -141,8 +141,8 @@ module Engine
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 10 },
                   {
                     name: '2+2',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 2, 'visit' => 2 }],
+                    distance: [{ 'nodes' => ['town'], 'pay' => 2, 'visit' => 2 },
+                               { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 }],
                     price: 180,
                     rusts_on: '4+4',
                     num: 5,
@@ -160,8 +160,8 @@ module Engine
                   },
                   {
                     name: '3+3',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 3, 'visit' => 3 }],
+                    distance: [{ 'nodes' => ['town'], 'pay' => 3, 'visit' => 3 },
+                               { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
                     price: 300,
                     rusts_on: '6E',
                     num: 5,
@@ -173,12 +173,12 @@ module Engine
                     rusts_on: '8',
                     num: 5,
                     events: [{ 'type' => 'float_40' },
-                             { 'type' => 'fi_stop_operating' }],
+                             { 'type' => 'communist_takeover' }],
                   },
                   {
                     name: '4+4',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
-                               { 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 }],
+                    distance: [{ 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 },
+                               { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 }],
                     price: 450,
                     rusts_on: '8E',
                     num: 5,
@@ -189,7 +189,8 @@ module Engine
                     distance: 6,
                     price: 600,
                     num: 5,
-                    events: [{ 'type' => 'float_60' }],
+                    events: [{ 'type' => 'float_60' },
+                             { 'type' => 'stock_exchange_reopens' }],
                   },
                   {
                     name: '6E',
@@ -202,7 +203,8 @@ module Engine
                     distance: 8,
                     price: 800,
                     num: 2,
-                    events: [{ 'type' => 'permit_d' }, { 'type' => 'token_cost_doubled' }],
+                    events: [{ 'type' => 'permit_d' }, { 'type' => 'token_cost_doubled' },
+                             { 'type' => 'signal_end_game', 'when' => 2 }],
                   },
                   {
                     name: '8E',
@@ -222,8 +224,12 @@ module Engine
           'all_shares_available' => ['All 10 shares are available', 'Players can now buy all 10 shares'],
           'receive_capital' => ['Corporations receive capital',
                                 'Corporations with 5 shares sold receive the rest of their capital'],
-          'fi_stop_operating' => ['Foreign Investors stop operating'],
           'token_cost_doubled' => ['Token Cost Doubled', 'Tokens cost twice as much to place'],
+          'communist_takeover' => ['Communist Takeover',
+                                   'No share price movement, no sales by director, no private payouts, ' \
+                                   'foreign investors do not operate'],
+          'stock_exchange_reopens' => ['Stock Exchange Reopens', 'Normal share price movement, director may sell shares'],
+          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase of last 8 train']
         ).freeze
 
         def event_float_30!
@@ -280,7 +286,7 @@ module Engine
         end
 
         def receive_capital(corporation)
-          return if corporation.ipo_shares > 5 || corporation.fully_funded
+          return if corporation.ipo_shares.size > 5 || corporation.fully_funded
 
           amount = corporation.par_price.price * 5
           @log << "Five shares of #{corporation.name} have been boought. '\
@@ -289,9 +295,16 @@ module Engine
           corporation.fully_funded = true
         end
 
-        def event_fi_stop_operating!
-          @log << "-- Event: #{EVENTS_TEXT['fi_stop_operating'][1]} --"
-          # #TO-DO stop operation logic
+        def event_communist_takeover!
+          @log << "-- Event: #{EVENTS_TEXT['communist_takeover'][1]} --"
+          @communism = true
+          @foreign_investors_operate = false
+          @companies.each { |c| c.revenue = 0 }
+        end
+
+        def event_stock_exchange_reopens!
+          @log << "-- Event: #{EVENTS_TEXT['stock_exchange_reopens'][1]} --"
+          @communism = false
         end
 
         def event_token_cost_doubled!
@@ -301,11 +314,28 @@ module Engine
           end
         end
 
+        def event_signal_end_game!
+          @log << "-- Event: #{EVENTS_TEXT['signal_end_game'][1]} --"
+          @end_game_triggered = true
+          @final_operating_rounds = @round.round_num + 3
+          game_end_check
+        end
+
         def setup
           @full_cap_event = false
-          @foreign_investors_can_operate = true
+          @communism = false
+          @foreign_investors_operate = true
+
+          # Initialize the player depts, if player have to take an emergency loan
+          @player_debts = Hash.new { |h, k| h[k] = 0 }
+
+          setup_foreign_investors
           setup_building_permits
           setup_unsaleable_shares
+        end
+
+        def setup_foreign_investors
+          @minors.each { |m| place_home_token(m) }
         end
 
         def setup_building_permits
@@ -326,6 +356,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
+            G1880::Step::CompanyPendingPar,
             G1880::Step::SelectionAuction,
           ])
         end
@@ -338,9 +369,14 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
-              @operating_rounds = @phase.operating_rounds
-              reorder_players
-              new_operating_round
+              if @saved_or_round
+                @log << '--Return to Operating Round--'
+                @saved_or_round
+              else
+                @operating_rounds = @phase.operating_rounds
+                reorder_players
+                new_operating_round
+              end
             when Engine::Round::Operating
               if @round.round_num
                 or_round_finished
@@ -357,7 +393,6 @@ module Engine
 
         def stock_round
           G1880::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             G1880::Step::BuySellParShares,
           ])
@@ -365,15 +400,23 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1880::Step::RocketPurchaseTrain,
             Engine::Step::Exchange,
+            Engine::Step::DiscardTrain,
             G1880::Step::Track,
-            Engine::Step::Token,
+            G1880::Step::Token,
             G1880::Step::Route,
             G1880::Step::Dividend,
-            Engine::Step::DiscardTrain,
             G1880::Step::BuyTrain,
             G1880::Step::CheckFIConnection,
           ], round_num: round_num)
+        end
+
+        def init_stock_market
+          market = G1880::StockMarket.new(self.class::MARKET, [],
+                                          multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          market.game = self
+          market
         end
 
         def init_share_pool
@@ -384,18 +427,40 @@ module Engine
           game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
+        def custom_end_game_reached?
+          @end_game_triggered
+        end
+
+        def end_game!(player_initiated: false)
+          return if @finished
+
+          @minors.each do |m|
+            next unless m.owner
+
+            cash_to_owner = (m.cash * 0.2).floor
+            @log << "#{m.name} transfers #{format_currency(cash_to_owner)} to #{m.owner.name}"
+            m.spend(cash_to_owner, m.owner)
+            m.close!
+          end
+
+          super
+        end
+
         def p1
           @p1 ||= company_by_id('P1')
         end
 
         def bcr
-          @bcr ||= company_by_id('BCR')
+          @bcr ||= corporation_by_id('BCR')
         end
 
         def status_array(corporation)
-          return if corporation.minor? || !corporation.floated?
+          return if corporation.minor? || !corporation.ipoed
 
-          ["Building Permits: #{corporation.building_permits}"]
+          status = ["Building Permits: #{corporation.building_permits}"]
+          par_location = par_chart[corporation.original_par_price].find_index(corporation) + 1
+          status << ["Par Price: #{corporation.original_par_price.price}-#{par_location}"]
+          status
         end
 
         def corporation_show_individual_reserved_shares?(_corporation)
@@ -410,10 +475,64 @@ module Engine
 
           # reserve share for foreign investor
           foreign_investor = @minors.find { |m| m.owner == corporation.owner }
-          return unless foreign_investor.shares.empty?
+          return unless foreign_investor&.shares&.empty?
 
+          assign_share_to_fi(corporation, foreign_investor)
+        end
+
+        def assign_share_to_fi(corporation, foreign_investor)
           @share_pool.transfer_shares(corporation.ipo_shares.first.to_bundle, foreign_investor)
           @log << "#{foreign_investor.full_name} receives a share of #{corporation.name}"
+        end
+
+        def player_value(player)
+          super - player_debt(player)
+        end
+
+        def player_debt(player)
+          @player_debts[player] || 0
+        end
+
+        def take_player_loan(player, loan)
+          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
+          player.cash += loan
+
+          # Add interest to the loan, must atleast pay 150% of the loaned value
+          interest = player_loan_interest(loan)
+          @player_debts[player] += loan + interest
+          @log << "#{player.name} takes a loan of #{format_currency(loan)} with "\
+                  "#{format_currency(interest)} in interest"
+        end
+
+        def add_interest_player_loans!
+          @player_debts.each do |player, loan|
+            next unless loan.positive?
+
+            interest = player_loan_interest(loan)
+            new_loan = loan + interest
+            @player_debts[player] = new_loan
+            @log << "#{player.name} increases their loan by 50% (#{format_currency(interest)}) to "\
+                    "#{format_currency(new_loan)}"
+          end
+        end
+
+        def payoff_player_loan(player)
+          # Pay full or partial of the player loan. The money from loans is outside money, doesnt count towards
+          # the normal bank money.
+          if player.cash >= @player_debts[player]
+            player.cash -= @player_debts[player]
+            @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
+            @player_debts[player] = 0
+          else
+            @player_debts[player] -= player.cash
+            @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
+                    "(#{format_currency(@player_debts[player])})"
+            player.cash = 0
+          end
+        end
+
+        def player_loan_interest(loan)
+          (loan * 0.5).ceil
         end
 
         def tile_lays(entity)
@@ -446,13 +565,75 @@ module Engine
         end
 
         def can_build_track?(corporation)
-          return @foreign_investors_can_operate if corporation.minor?
+          return @foreign_investors_operate if corporation.minor?
 
           corporation.building_permits&.include?(@active_building_permit)
         end
 
         def player_card_minors(player)
           @minors.select { |m| m.owner == player }
+        end
+
+        def routes_revenue(routes)
+          revenue = super
+          revenue += stock_market_bonus(@round.current_operator)
+          revenue
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company.owner
+
+          stop_hexes = stops.map(&:hex)
+          revenue += 20 if route.corporation.owner == taiwan_company.owner && stop_hexes.include?(taiwan_hex)
+          revenue += 50 if trans_siberian_bonus?(stops)
+
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += ' + Trans-Siberian' if trans_siberian_bonus?(route.stops)
+          str
+        end
+
+        def ferry_hexes
+          @ferry_hexes ||= %w[F12 F14 J16].map { |id| hex_by_id(id) }
+        end
+
+        def ferry_company
+          @ferry_company ||= company_by_id('P2')
+        end
+
+        def taiwan_hex
+          @taiwan_hex ||= hex_by_id('N16')
+        end
+
+        def taiwan_company
+          @taiwan_company ||= company_by_id('P3')
+        end
+
+        def trans_siberian_bonus?(stops)
+          @trans_siberian_hexes ||= %w[A3 A15].map { |id| hex_by_id(id) }
+          stop_hexes = stops.map(&:hex)
+          @trans_siberian_hexes.all? { |hex| stop_hexes.include?(hex) }
+        end
+
+        def stock_market_bonus(corporation)
+          case corporation.share_price&.type
+          when :pays_bonus
+            50
+          when :pays_bonus_1
+            100
+          when :pays_bonus_2
+            150
+          when :pays_bonus_3
+            200
+          when :pays_bonus_4
+            400
+          else
+            0
+          end
         end
 
         def route_trains(entity)
@@ -481,6 +662,38 @@ module Engine
 
           graph = Graph.new(self, no_blocking: true)
           graph.reachable_hexes(corporation).include?(fi_home_token)
+        end
+
+        def operating_order
+          @minors.select(&:floated?) + @par_chart.values.flatten.compact
+        end
+
+        def after_buying_train(train)
+          return if train.name == @depot.upcoming.first.name
+
+          @turn += 1
+          @saved_or_round = @round
+          @round = new_stock_round
+        end
+
+        def finalize_round_setup
+          return super unless @round == @saved_or_round
+
+          @round_history << current_action_id
+        end
+
+        def set_par(corporation, share_price, slot)
+          par_chart[share_price][slot] = corporation
+        end
+
+        def par_chart
+          @par_chart ||=
+            share_prices.sort_by { |sp| -sp.price }.to_h { |sp| [sp, [nil, nil, nil, nil]] }
+        end
+
+        def current_operator
+          op_round = @round.is_a?(Engine::Round::Operating) ? @round : @saved_or_round
+          op_round&.current_operator
         end
       end
     end

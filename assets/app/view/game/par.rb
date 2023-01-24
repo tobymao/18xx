@@ -8,10 +8,9 @@ module View
       include Actionable
 
       needs :corporation
+      needs :corporation_to_par, default: nil, store: true
 
-      def render_common(target)
-        return [h(:div, 'Cannot Par')] unless @game.can_par?(@corporation, @current_entity)
-
+      def render_inline_selection(target)
         target_cash = target ? target.cash : 0
         if target
           return [] unless @step.respond_to?(:get_par_prices_with_help)
@@ -72,8 +71,27 @@ module View
         ])]
       end
 
-      def render_par
-        render_common(nil)
+      def render_par_from_par_chart
+        props = {
+          style: {
+            width: 'calc(17.5rem/6)',
+            padding: '0.2rem',
+          },
+          on: { click: -> { store(:corporation_to_par, @corporation) } },
+        }
+        button = h('button.small.par_price', props, 'Par')
+
+        [h('div.inline', { style: { marginTop: '0.5rem' } }, [button])]
+      end
+
+      def render_par(target = nil)
+        return [h(:div, 'Cannot Par')] unless @game.can_par?(@corporation, @current_entity)
+
+        if @game.respond_to?(:par_chart)
+          render_par_from_par_chart
+        else
+          render_inline_selection(target)
+        end
       end
 
       def render_par_for_others
@@ -82,7 +100,7 @@ module View
         targets = @step.can_buy_for(@current_entity)
 
         targets.flat_map do |target|
-          render_common(target)
+          render_par(target)
         end
       end
 

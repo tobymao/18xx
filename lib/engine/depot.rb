@@ -25,8 +25,8 @@ module Engine
       @game.phase.buying_train!(nil, train)
     end
 
-    def export_all!(name)
-      @game.log << "-- Event: All #{name} trains are exported --"
+    def export_all!(name, silent: false)
+      @game.log << "-- Event: All #{name} trains are exported --" unless silent
       while (train = @upcoming.first).name == name
         @game.remove_train(train)
         @game.phase.buying_train!(nil, train)

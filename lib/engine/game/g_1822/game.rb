@@ -1713,6 +1713,7 @@ module Engine
 
           mail_bonuses = routes.map do |r|
             stops = r.visited_stops
+            next if stops.size.zero?
             next if stops.size < 2 && !self.class::LOCAL_TRAIN_CAN_CARRY_MAIL
 
             first = stops.first.route_base_revenue(r.phase, r.train) / 2
