@@ -248,10 +248,10 @@ module View
           h(:th, render_sort_link('President', :president)),
           h(:th, render_sort_link('Cash', :cash)),
           *treasury,
-          h(:th, render_sort_link('Order', :order)),
           h(:th, render_sort_link('Trains', :trains)),
           h(:th, render_sort_link('Tokens', :tokens)),
           *extra,
+          h(:th, render_sort_link('Order', :order)),
           h(:th, render_sort_link('Companies', :companies)),
         ]
 
@@ -563,17 +563,17 @@ module View
         ]
 
         corporation_row_content = [
-          h(:td, corporation.owner ? corporation.owner&.name&.truncate : ''),
+          h(:td, corporation.owner ? corporation.owner&.name&.truncate(10) : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
           *treasury,
+          h(:td, corporation.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(', ')),
+          h(:td, @game.token_string(corporation)),
+          *extra,
           h('td.padded_number', order_props, if operating_order[0] == UNFLOATED
                                                "[#{operating_order[1]}]"
                                              else
                                                operating_order[1]
                                              end),
-          h(:td, corporation.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(', ')),
-          h(:td, @game.token_string(corporation)),
-          *extra,
           render_companies(corporation),
         ]
 
