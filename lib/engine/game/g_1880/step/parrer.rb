@@ -100,15 +100,28 @@ module Engine
               return super
             end
 
-            raise GameError, 'BCR must par at 100' if action.corporation == @game.bcr && action.share_price.price != 100
+            share_price = action.share_price
+            slot = action.slot
+            entity = action.entity
+            corp = action.corporation
 
-            @game.set_par(action.corporation, action.share_price, action.slot)
+            unless @game.loading
+              raise GameError, 'BCR must par at 100' if action.corporation == @game.bcr && action.share_price.price != 100
+              raise GameError, 'Par slot already taken' if @game.par_chart[share_price][slot]
+
+              unless get_par_prices(entity, corp).include?(share_price)
+                raise GameError, "#{entity.name} does not have enough cash (#{@game.format_currency(entity.cash)} to par at" \
+                                 "#{format_currency(share_price.price)}"
+              end
+            end
+
+            @game.set_par(corp, share_price, slot)
 
             @parring = {
               state: :choose_percent,
-              corporation: action.corporation,
-              share_price: action.share_price,
-              entity: action.entity,
+              corporation: corp,
+              share_price: share_price,
+              entity: entity,
             }
             percent_choices = president_percent_choices
             return if percent_choices.size > 1
@@ -128,8 +141,11 @@ module Engine
             @round.current_actions << action
           end
 
-          def get_par_prices(entity, _corp)
-            super.select { |p| @game.par_chart[p].include?(nil) }
+          def get_par_prices(entity, corp)
+            par_prices = super
+            return par_prices.select { |sp| sp.price == 100 } if corp == @game.bcr
+
+            par_prices.select { |p| @game.par_chart[p].include?(nil) }
           end
         end
       end
