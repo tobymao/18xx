@@ -37,7 +37,7 @@ module Engine
 
           def round_state
             super.merge(
-            { already_passed: false }
+            { passed_on_p0: false }
           )
           end
 
@@ -70,7 +70,7 @@ module Engine
           end
 
           def award_company
-            return nil if @game.p0.closed? || @round.already_passed || !can_receive_payment?
+            return nil if @game.p0.closed? || @round.passed_on_p0 || !can_receive_payment?
 
             @game.p0
           end
@@ -81,7 +81,7 @@ module Engine
 
           def process_pass(action)
             super
-            @round.already_passed = true
+            @round.passed_on_p0 = true
           end
         end
       end
