@@ -46,7 +46,7 @@ module Engine
         TRAINS_NOT_TRIGGERING_SR = %w[2P 8E 10].freeze
 
         GAME_END_REASONS_TEXT = {
-          custom: 'last 8 train sold',
+          custom: 'Last 8 train sold',
         }.freeze
 
         GAME_END_REASONS_TIMING_TEXT = {
