@@ -2094,7 +2094,7 @@ module Engine
         true
       end
 
-      def after_buying_train(train); end
+      def after_buying_train(train, source); end
 
       private
 

@@ -63,9 +63,10 @@ module Engine
 
     def fake_buy_train(train, corp)
       corp.trains.slice!(2)
+      source = train.owner
       game.depot.remove_train(train)
       corp.cash += train.price
-      game.phase.buying_train!(corp, train)
+      game.phase.buying_train!(corp, train, source)
       game.buy_train(corp, train, train.price)
     end
 

@@ -118,7 +118,7 @@ module Engine
                                                                                  entity).include?(train.variant)
             raise GameError, 'Must pay face value' if price != train.price
 
-            @game.queue_log! { @game.phase.buying_train!(entity, train) }
+            @game.queue_log! { @game.phase.buying_train!(entity, train, train.owner) }
 
             source = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
 

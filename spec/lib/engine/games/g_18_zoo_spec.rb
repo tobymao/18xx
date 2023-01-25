@@ -304,7 +304,10 @@ module Engine
 
           it "should have only #{data[:expected_par_prices]} as valid par value" do
             next_or!
-            data[:trains].each { |train| phase.buying_train!(corporation, game.trains.find { |t| t.name == train }) }
+            data[:trains].each do |train|
+              train_found = game.trains.find { |t| t.name == train }
+              phase.buying_train!(corporation, train_found, train_found.owner)
+            end
             next_sr!
 
             expect(par_prices).to eq(data[:expected_par_prices])
@@ -367,7 +370,10 @@ module Engine
             let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == item[:share] } }
 
             before do
-              item[:trains].each { |train| phase.buying_train!(corporation, game.trains.find { |t| t.name == train }) }
+              item[:trains].each do |train|
+                train_found = game.trains.find { |t| t.name == train }
+                phase.buying_train!(corporation, train_found, train_found.owner)
+              end
             end
 
             item[:track_for_valid].each do |track_for_valid|
