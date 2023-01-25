@@ -99,10 +99,10 @@ module Engine
         end
 
         source = train.owner
-        source_text = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
+        source_name = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
 
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
-                "#{@game.format_currency(price)} from #{source_text}"
+                "#{@game.format_currency(price)} from #{source_name}"
 
         @game.buy_train(entity, train, price)
         @game.phase.buying_train!(entity, train, source)

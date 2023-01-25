@@ -32,9 +32,8 @@ module Engine
             # base train's sym and not the variant's sym. Cant change in buying_train! since other games relay on
             # the base sym to change phase or rust trains
             train = action.train
-            source = train.owner
             train_check = Engine::Train.new(name: train.name, distance: train.distance, price: train.price)
-            @game.phase.buying_train!(action.entity, train_check, source)
+            @game.phase.buying_train!(action.entity, train_check, train.owner)
           end
 
           def room?(entity, _shell = nil)
