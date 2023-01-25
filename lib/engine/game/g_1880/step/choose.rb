@@ -10,13 +10,11 @@ module Engine
           ACTIONS = %w[choose pass].freeze
 
           def actions(_entity)
-            return [] unless award_company
-
             ACTIONS
           end
 
           def auto_actions(entity)
-            return [Engine::Action::Choose.new(entity, choice: '')] if @game.phase.name == 'B2'
+            return [Engine::Action::Choose.new(entity, choice: '')] if @game.phase.name == 'B2' && award_company
 
             []
           end
@@ -30,15 +28,11 @@ module Engine
           end
 
           def choice_name
-            return "Receive #{@game.p0.name} payment?" if @company
-
-            'Choose'
+            "Receive #{@game.p0.name} payment?"
           end
 
           def choices
-            return ["Receive #{@game.p0.name} payment of #{@game.format_currency(sell_price)}"] if @company
-
-            {}
+            ["Receive #{@game.p0.name} payment of #{@game.format_currency(sell_price)}"]
           end
 
           def round_state
@@ -52,11 +46,10 @@ module Engine
           end
 
           def process_choose(action)
-            action.entity.owner.companies.delete(@company)
-            @game.bank.spend(sell_price, @company.owner) if sell_price.positive?
-            @company.close!
-            @log << "#{action.entity.name} receives #{@game.format_currency(sell_price)} one-time payment from #{@company.name}"
-            @company = nil
+            action.entity.owner.companies.delete(@game.p0)
+            @game.bank.spend(sell_price, @game.p0.owner) if sell_price.positive?
+            @game.p0.close!
+            @log << "#{action.entity.name} receives #{@game.format_currency(sell_price)} one-time payment from #{@game.p0.name}"
             pass!
           end
 
@@ -77,10 +70,9 @@ module Engine
           end
 
           def award_company
-            @company = @game.p0
-            return nil if !@company || !can_receive_payment? || @round.already_passed
+            return nil if @game.p0.closed? || @round.already_passed || !can_receive_payment?
 
-            @company
+            @game.p0
           end
 
           def sell_price
