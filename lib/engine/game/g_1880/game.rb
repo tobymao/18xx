@@ -45,6 +45,18 @@ module Engine
         P0_AWARD = { 'A2' => 40, 'B1' => 70, 'B2' => 100 }.freeze
         TRAINS_NOT_TRIGGERING_SR = %w[2P 8E 10].freeze
 
+        GAME_END_REASONS_TEXT = {
+          custom: 'Last 8 train sold',
+        }.freeze
+
+        GAME_END_REASONS_TIMING_TEXT = {
+          one_more_full_or_set: '3 ORs ending with the Corporation that triggered game end',
+        }.freeze
+
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
+          custom: 'Last 8 train was purchased',
+        }.freeze
+
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           pays_bonus: :yellow,
           pays_bonus_1: :orange,
