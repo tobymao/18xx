@@ -720,18 +720,18 @@ module Engine
           @minors.select(&:floated?) + @par_chart.values.flatten.compact
         end
 
-        def after_buying_train(train)
-          return unless trigger_sr?(train)
+        def after_buying_train(train, source)
+          return unless trigger_sr?(train, source)
 
           @turn += 1
           @saved_or_round = @round
           @round = new_stock_round
         end
 
-        def trigger_sr?(train)
+        def trigger_sr?(train, source)
           train.name != @depot.upcoming.first.name &&
           !trains_not_triggering_sr?(train.name) &&
-          (train.owner == @depot || @train_marker == train.owner)
+          source == @depot
         end
 
         def finalize_round_setup

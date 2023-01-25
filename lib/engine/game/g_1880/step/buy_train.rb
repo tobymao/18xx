@@ -14,7 +14,7 @@ module Engine
           end
 
           def bought_trains?(action)
-            action.train.owner == @game.depot && action.train.name != '2P'
+            @round.bought_trains || (action.train.owner == @game.depot && action.train.name != '2P')
           end
 
           def must_take_player_loan?(entity)
