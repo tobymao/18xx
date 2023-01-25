@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# attrs frozen_string_literal: true
+
 require 'view/game/actionable'
 require 'lib/settings'
 
@@ -16,22 +18,38 @@ module View
         @current_entity = @step.current_entity
         @current_operator = @game.respond_to?(:current_operator) ? @game.current_operator : nil
 
-        render_chart
+        h(:div, [par_choices, render_chart])
+      end
+
+      def par_choices
+        return unless @corporation_to_par
+
+        props = {
+          style: {
+            'margin' => '1rem 0rem',
+          },
+        }
+
+        cash = @current_entity.cash
+        prices = @step.get_par_prices(@current_entity, @corporation_to_par)
+        prices.map! { |sp| "#{@game.format_currency(sp.price)} (#{(cash / sp.price.to_f).floor} shares)" }
+        text = "#{@current_entity.name} can par #{@corporation_to_par.name} at #{prices.join(', ')}"
+        h(:div, props, text)
       end
 
       def render_chart
-        attrs = {
+        props = {
           style: {
             'display' => 'flex',
             'margin' => '1rem 0rem',
             'width' => 'auto',
           },
         }
-        h(:div, attrs, @game.par_chart.map { |sp, slots| render_par_box(sp, slots) })
+        h(:div, props, @game.par_chart.map { |sp, slots| render_par_box(sp, slots) })
       end
 
       def render_par_box(share_price, slots)
-        attrs = {
+        props = {
           style: {
             'display' => 'grid',
             'grid-template-columns' => "repeat(#{slots.size}, 3rem",
@@ -48,32 +66,32 @@ module View
 
         children = [render_par_value(share_price, slots)]
         children.concat(slots.map.with_index { |slot, index| render_par_slot(slot, index, share_price) })
-        h(:div, attrs, children)
+        h(:div, props, children)
       end
 
       def render_par_value(share_price, slots)
-        attrs = {
+        props = {
           style: {
             'fontSize' => '1.2rem',
             'grid-column' => "1 / span #{slots.size}",
           },
         }
 
-        h(:div, attrs, share_price.price)
+        h(:div, props, @game.format_currency(share_price.price))
       end
 
       def render_par_slot(slot, index, share_price)
-        attrs = {
+        props = {
           style: {
             'grid-row' => '2 / span 2',
           },
         }
-        attrs[:style][:border] = '0.3rem solid maroon' if @current_operator && @current_operator == slot
+        props[:style][:border] = '0.3rem solid maroon' if @current_operator && @current_operator == slot
 
         children = [slot ? render_corp_icon(slot) : render_open_slot(share_price, index)]
         children << render_train_marker(slot) if @game.respond_to?(:train_marker)
 
-        h(:div, attrs, children)
+        h(:div, props, children)
       end
 
       def render_corp_icon(corp)
@@ -160,19 +178,23 @@ module View
           },
         }
 
-        if @corporation_to_par && @step.get_par_prices(@current_entity, @corporation_to_par).include?(share_price)
-          par = lambda do
-            process_action(Engine::Action::Par.new(
-              @current_entity,
-              corporation: @corporation_to_par,
-              share_price: share_price,
-              slot: index,
-            ))
-            store(:corporation_to_par, nil)
-          end
+        if @corporation_to_par
+          if @step.get_par_prices(@current_entity, @corporation_to_par).include?(share_price)
+            par = lambda do
+              process_action(Engine::Action::Par.new(
+                @current_entity,
+                corporation: @corporation_to_par,
+                share_price: share_price,
+                slot: index,
+              ))
+              store(:corporation_to_par, nil)
+            end
 
-          circle_props[:on] = { click: par }
-          circle_props[:style][:cursor] = 'pointer'
+            circle_props[:on] = { click: par }
+            circle_props[:style][:cursor] = 'pointer'
+          else
+            circle_props[:attrs][:fill] = 'black'
+          end
         end
 
         h(:svg, props, [h(:circle, circle_props)])
