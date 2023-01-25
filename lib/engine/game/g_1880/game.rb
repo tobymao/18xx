@@ -54,7 +54,7 @@ module Engine
         }.freeze
 
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
-          custom: 'Final train was purchased',
+          custom: 'Last 8 train was purchased',
         }.freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
