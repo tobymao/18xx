@@ -41,6 +41,8 @@ module View
 
           @bank_first = @step.respond_to?(:bank_first?) && @step.bank_first?
 
+          @hide_corporations = @step.respond_to?(:hide_corporations?) && @step.hide_corporations?
+
           @current_entity = @step.current_entity
           if @last_player != @current_entity && !@auctioning_corporation
             store(:selected_corporation, nil, skip: true)
@@ -72,7 +74,7 @@ module View
           children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children.concat(render_bank_companies) if @bank_first
-          children.concat(render_corporations)
+          children.concat(render_corporations) unless @hide_corporations
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
           children.concat(render_bank_companies) unless @bank_first
@@ -302,7 +304,6 @@ module View
             ))
             store(:selected_company, nil, skip: true)
           end
-
           [h(:button,
              { on: { click: buy } },
              "Sell #{@selected_company.sym} to Bank for #{@game.format_currency(price)}")]

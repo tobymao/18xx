@@ -15,7 +15,7 @@ module Engine
         include Entities
 
         attr_accessor :train_marker
-        attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round
+        attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
@@ -29,6 +29,11 @@ module Engine
         SOLD_SHARES_DESTINATION = :corporation
         MINORS_CAN_OWN_SHARES = true
         CORPORATION_CLASS = G1880::Corporation
+        DEPOT_CLASS = G1880::Depot
+        ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
+        MUST_BUY_TRAIN = :always
+        DISCARDED_TRAINS = :remove
+        CERT_LIMIT_INCLUDES_PRIVATES = false
 
         BANK_CASH = 37_860
 
@@ -37,6 +42,8 @@ module Engine
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340, 7 => 300 }.freeze
 
         GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
+        P0_AWARD = { 'A2' => 40, 'B1' => 70, 'B2' => 100 }.freeze
+        TRAINS_NOT_TRIGGERING_SR = %w[2P 8E 10].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           pays_bonus: :yellow,
@@ -66,76 +73,66 @@ module Engine
           %w[40 50 60 65 70],
         ].freeze
 
-        PHASES = [{ name: 'A1', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
+        PHASES = [{ name: 'A1', train_limit: 4, tiles: [:yellow] },
                   {
                     name: 'A2',
                     on: '2+2',
                     train_limit: 4,
                     tiles: %i[yellow],
-                    operating_rounds: 2,
                   },
                   {
                     name: 'B1',
                     on: '3',
                     train_limit: 4,
                     tiles: %i[yellow green],
-                    operating_rounds: 2,
                   },
                   {
                     name: 'B2',
                     on: '3+3',
                     train_limit: 3,
                     tiles: %i[yellow green],
-                    operating_rounds: 2,
                   },
                   {
                     name: 'B3',
                     on: '4',
                     train_limit: 3,
                     tiles: %i[yellow green],
-                    operating_rounds: 2,
                   },
                   {
                     name: 'C1',
                     on: '4+4',
                     train_limit: 3,
                     tiles: %i[yellow green brown],
-                    operating_rounds: 2,
                   },
                   {
                     name: 'C2',
                     on: '6',
                     train_limit: 3,
                     tiles: %i[yellow green brown],
-                    operating_rounds: 2,
                   },
                   {
                     name: 'C3',
                     on: '6E',
                     train_limit: 2,
                     tiles: %i[yellow green brown],
-                    operating_rounds: 2,
                   },
                   {
                     name: 'D1',
                     on: '8',
                     train_limit: 2,
                     tiles: %i[yellow green brown gray],
-                    operating_rounds: 2,
                   },
                   {
                     name: 'D2',
                     on: '8E',
                     train_limit: 2,
                     tiles: %i[yellow green brown gray],
-                    operating_rounds: 2,
                   },
                   {
                     name: 'D3',
                     on: '10',
                     train_limit: 2,
                     tiles: %i[yellow green brown gray],
-                    operating_rounds: 2,
                   }].freeze
 
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 10 },
@@ -156,7 +153,8 @@ module Engine
                     events: [{ 'type' => 'float_30' },
                              { 'type' => 'permit_b' },
                              { 'type' => 'all_shares_available' },
-                             { 'type' => 'receive_capital' }],
+                             { 'type' => 'receive_capital' },
+                             { 'type' => 'can_buy_trains' }],
                   },
                   {
                     name: '3+3',
@@ -212,7 +210,8 @@ module Engine
                     price: 900,
                     num: 2,
                   },
-                  { name: '10', distance: 10, price: 1000, num: 10 }].freeze
+                  { name: '10', distance: 10, price: 1000, num: 10 },
+                  { name: '2P', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'float_30' => ['30% to Float', "Corporation's President must own 30% or corporation sold out to float"],
@@ -224,6 +223,7 @@ module Engine
           'all_shares_available' => ['All 10 shares are available', 'Players can now buy all 10 shares'],
           'receive_capital' => ['Corporations receive capital',
                                 'Corporations with 5 shares sold receive the rest of their capital'],
+          'can_buy_trains' => ['Can buy trains', 'Corporations can buy trains from other corporations owned by the same player'],
           'token_cost_doubled' => ['Token Cost Doubled', 'Tokens cost twice as much to place'],
           'communist_takeover' => ['Communist Takeover',
                                    'No share price movement, no sales by director, no private payouts, ' \
@@ -288,9 +288,9 @@ module Engine
         def receive_capital(corporation)
           return if corporation.ipo_shares.size > 5 || corporation.fully_funded
 
-          amount = corporation.par_price.price * 5
-          @log << "Five shares of #{corporation.name} have been boought. '\
-                  '#{corporation.name} receives #{@game.format_currency(amount)}"
+          amount = corporation.original_par_price.price * 5
+          @log << "Five shares of #{corporation.name} have been boought. "\
+                  "#{corporation.name} receives #{format_currency(amount)}"
           @bank.spend(amount, corporation)
           corporation.fully_funded = true
         end
@@ -300,6 +300,7 @@ module Engine
           @communism = true
           @foreign_investors_operate = false
           @companies.each { |c| c.revenue = 0 }
+          force_exchange_rocket
         end
 
         def event_stock_exchange_reopens!
@@ -310,7 +311,7 @@ module Engine
         def event_token_cost_doubled!
           @log << "-- Event: #{EVENTS_TEXT['token_cost_doubled'][1]} --"
           @corporations.each do |c|
-            c.tokens.select(&:unused).each { |t| t.cost = t.cost * 2 }
+            c.tokens.reject(&:used).each { |t| t.price = t.price * 2 }
           end
         end
 
@@ -319,6 +320,39 @@ module Engine
           @end_game_triggered = true
           @final_operating_rounds = @round.round_num + 3
           game_end_check
+        end
+
+        def event_can_buy_trains!
+          @log << "-- Event: #{EVENTS_TEXT['can_buy_trains'][1]} --"
+          @can_cross_buy = true
+        end
+
+        def force_exchange_rocket
+          return if rocket.closed?
+
+          player_corps = @corporations.select { |c| c.owner == rocket.owner }
+
+          if player_corps.empty?
+            @log << "Rocket of China's owner, #{rocket.owner} owns no corporations. '\
+                    'The rocket is exchanged for a 4 train, train is discarded."
+            rocket.close!
+            @depot.export!
+          else
+            # change rocket ability into assign
+            fix_rocket_ability
+          end
+        end
+
+        def fix_rocket_ability
+          rocket.all_abilities.dup.each { |a| rocket.remove_ability(a) }
+
+          assign_ability = Engine::Ability::AssignCorporation.new(
+            type: :assign_corporation,
+            closed_when_used_up: true,
+            owner_type: 'player',
+            count: 1,
+          )
+          rocket.add_ability(assign_ability)
         end
 
         def setup
@@ -369,12 +403,13 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
+              reorder_players
               if @saved_or_round
                 @log << '--Return to Operating Round--'
+                update_operators_in_saved_or!
+                @saved_or_round.entities.each { |c| place_home_token(c) }
                 @saved_or_round
               else
-                @operating_rounds = @phase.operating_rounds
-                reorder_players
                 new_operating_round
               end
             when Engine::Round::Operating
@@ -393,16 +428,19 @@ module Engine
 
         def stock_round
           G1880::Round::Stock.new(self, [
+            G1880::Step::Choose,
             Engine::Step::Exchange,
             G1880::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1880::Round::Operating.new(self, [
+            Engine::Step::HomeToken,
             G1880::Step::RocketPurchaseTrain,
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
+            G1880::Step::Assign,
             G1880::Step::Track,
             G1880::Step::Token,
             G1880::Step::Route,
@@ -448,6 +486,18 @@ module Engine
 
         def p1
           @p1 ||= company_by_id('P1')
+        end
+
+        def p0
+          @p0 ||= company_by_id('P0')
+        end
+
+        def p5
+          @p5 ||= company_by_id('P5')
+        end
+
+        def rocket
+          @rocket ||= company_by_id('P7')
         end
 
         def bcr
@@ -576,7 +626,7 @@ module Engine
 
         def routes_revenue(routes)
           revenue = super
-          revenue += stock_market_bonus(@round.current_operator)
+          revenue += stock_market_bonus(@round.current_operator) unless revenue.zero?
           revenue
         end
 
@@ -649,8 +699,10 @@ module Engine
         end
 
         def round_description(name, round_number = nil)
+          round_number ||= @round.round_num
           description = super
-          description += " - Train Marker at #{@train_marker.name}" if @train_marker
+          description += ".#{round_number}" if @round.is_a?(Engine::Round::Operating)
+          description += " - Train Marker at #{@train_marker.name}" if @train_marker && !@end_game_triggered
           description
         end
 
@@ -668,12 +720,18 @@ module Engine
           @minors.select(&:floated?) + @par_chart.values.flatten.compact
         end
 
-        def after_buying_train(train)
-          return if train.name == @depot.upcoming.first.name
+        def after_buying_train(train, source)
+          return unless trigger_sr?(train, source)
 
           @turn += 1
           @saved_or_round = @round
           @round = new_stock_round
+        end
+
+        def trigger_sr?(train, source)
+          train.name != @depot.upcoming.first.name &&
+          !trains_not_triggering_sr?(train.name) &&
+          source == @depot
         end
 
         def finalize_round_setup
@@ -694,6 +752,33 @@ module Engine
         def current_operator
           op_round = @round.is_a?(Engine::Round::Operating) ? @round : @saved_or_round
           op_round&.current_operator
+        end
+
+        def update_operators_in_saved_or!
+          current_or_corporation = @saved_or_round.entities[@saved_or_round.entity_index]
+
+          @saved_or_round.entities = @saved_or_round.select_entities
+          @saved_or_round.entity_index = @saved_or_round.select_entities.find_index(current_or_corporation)
+        end
+
+        def must_buy_train?(entity)
+          entity.trains.reject { |t| t.name == '2P' }.empty?
+        end
+
+        def custom_ending_after_text
+          " #{@train_marker.name}'s turn"
+        end
+
+        def trains_not_triggering_sr?(train_name)
+          TRAINS_NOT_TRIGGERING_SR.include?(train_name)
+        end
+
+        def forced_exchange_rocket?
+          phase.name == 'B3' && !rocket.closed?
+        end
+
+        def can_cross_buy?
+          @can_cross_buy
         end
       end
     end

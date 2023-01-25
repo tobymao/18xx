@@ -255,7 +255,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                when: %w[stock_round owning_player_or_turn or_between_turns],
+                when: %w[stock_round owning_player_track or_between_turns],
                 hexes: %w[B11 G10 I12 J9],
                 tiles: ['437'],
                 owner_type: 'player',

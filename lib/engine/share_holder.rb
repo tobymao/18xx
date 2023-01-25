@@ -22,6 +22,10 @@ module Engine
       shares_by_corporation[corporation]
     end
 
+    def delete_share!(share)
+      @shares_by_corporation[share.corporation].reject! { |s| s == share }
+    end
+
     def certs_of(corporation)
       shares_of(corporation)
     end

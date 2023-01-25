@@ -15,6 +15,10 @@ module Engine
             @game.add_interest_player_loans!
             super
           end
+
+          def show_auto?
+            !active_step.is_a?(G1880::Step::Choose)
+          end
         end
       end
     end

@@ -67,7 +67,7 @@ module Engine
             if percent != corporation.presidents_percent
               num_to_remove = (percent - corporation.presidents_percent) / corporation.share_percent
               shares_to_remove = corporation.shares.select { |s| s.buyable && !s.president }.pop(num_to_remove)
-              shares_to_remove.each { |s| corporation.shares.delete(s) }
+              shares_to_remove.each { |s| corporation.delete_share!(s) }
               corporation.presidents_share.percent = percent
             end
 
@@ -131,7 +131,7 @@ module Engine
 
           def process_buy_shares(action)
             super
-            @game.receive_capital(action.corporation) if @game.full_cap_event
+            @game.receive_capital(action.bundle.corporation) if @game.full_cap_event
           end
 
           def process_payoff_player_debt(action)

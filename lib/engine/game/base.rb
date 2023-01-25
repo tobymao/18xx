@@ -206,6 +206,9 @@ module Engine
       CORPORATION_CLASS = Corporation
       CORPORATIONS = [].freeze
 
+      TRAIN_CLASS = Train
+      DEPOT_CLASS = Depot
+
       MINORS = [].freeze
 
       PHASES = [].freeze
@@ -312,6 +315,8 @@ module Engine
         full_or: 'Next end of a complete OR set',
         one_more_full_or_set: 'End of the next complete OR set after the current one',
       }.freeze
+
+      ASSIGNMENT_TOKENS = {}.freeze
 
       OPERATING_ROUND_NAME = 'Operating'
       OPERATION_ROUND_SHORT_NAME = 'ORs'
@@ -1518,7 +1523,7 @@ module Engine
         end
 
         tile.upgrades.sum do |upgrade|
-          discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
+          discount = ability && upgrade.terrains.include?(ability.terrain) ? ability.discount : 0
 
           log_cost_discount(spender, ability, discount)
 
@@ -2162,11 +2167,11 @@ module Engine
       def init_train_handler
         trains = game_trains.flat_map do |train|
           Array.new((train[:num] || num_trains(train))) do |index|
-            Train.new(**train, index: index)
+            self.class::TRAIN_CLASS.new(**train, index: index)
           end
         end
 
-        Depot.new(trains, self)
+        self.class::DEPOT_CLASS.new(trains, self)
       end
 
       def game_trains
@@ -2534,6 +2539,7 @@ module Engine
                          " : Game Ends at conclusion of #{round_end.short_name}"\
                          " #{@final_turn}.#{final_operating_rounds}"
                        end
+          after_text += custom_ending_after_text
         end
 
         reason_map = {
@@ -2545,6 +2551,8 @@ module Engine
         }
         "#{reason_map[reason]}#{after_text}"
       end
+
+      def custom_ending_after_text; end
 
       def action_processed(_action)
         return unless stock_market.has_close_cell
