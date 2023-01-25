@@ -9,9 +9,8 @@ module Engine
         class Choose < Engine::Step::Base
           ACTIONS = %w[choose pass].freeze
 
-          def actions(entity)
-            return [] unless entity == current_entity
-            return [] if !find_company(entity) || @round.already_passed
+          def actions(_entity)
+            return [] unless award_company
 
             ACTIONS
           end
@@ -20,6 +19,14 @@ module Engine
             return [Engine::Action::Choose.new(entity, choice: '')] if @game.phase.name == 'B2'
 
             []
+          end
+
+          def active_entities
+            [award_company]
+          end
+
+          def active?
+            award_company
           end
 
           def choice_name
@@ -45,9 +52,9 @@ module Engine
           end
 
           def process_choose(action)
-            action.entity.companies.delete(@company)
+            action.entity.owner.companies.delete(@company)
+            @game.bank.spend(sell_price, @company.owner) if sell_price.positive?
             @company.close!
-            @game.bank.spend(sell_price, current_entity) if sell_price.positive?
             @log << "#{action.entity.name} receives #{@game.format_currency(sell_price)} one-time payment from #{@company.name}"
             @company = nil
             pass!
@@ -69,9 +76,9 @@ module Engine
             @game.class::P0_AWARD.key?(@game.phase.name) && !@game.p0.closed?
           end
 
-          def find_company(entity)
+          def award_company
             @company = @game.p0
-            return nil if !@company || @company&.owner != entity || !can_receive_payment?
+            return nil if !@company || !can_receive_payment? || @round.already_passed
 
             @company
           end
