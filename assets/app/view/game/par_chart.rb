@@ -18,7 +18,14 @@ module View
         @current_entity = @step.current_entity
         @current_operator = @game.respond_to?(:current_operator) ? @game.current_operator : nil
 
-        h(:div, [par_choices, render_chart])
+        props = {
+          style: {
+            width: '100%',
+            overflow: 'auto',
+          },
+        }
+
+        h(:div, props, [par_choices, render_chart].compact)
       end
 
       def par_choices
