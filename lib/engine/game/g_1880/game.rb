@@ -777,7 +777,7 @@ module Engine
           entity.trains.reject { |t| t.name == '2P' }.empty?
         end
 
-        def custom_ending_after_text
+        def additional_ending_after_text
           " #{@train_marker.name}'s turn"
         end
 
