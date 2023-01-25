@@ -2547,13 +2547,15 @@ module Engine
                          " : Game Ends at conclusion of #{round_end.short_name}"\
                          " #{@final_turn}.#{final_operating_rounds}"
                        end
-          after_text += custom_ending_after_text
+          after_text += additional_ending_after_text
         end
 
         "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
       end
 
-      def custom_ending_after_text; end
+      def additional_ending_after_text
+        ''
+      end
 
       def action_processed(_action)
         return unless stock_market.has_close_cell
