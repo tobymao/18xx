@@ -50,7 +50,7 @@ module Engine
 
           def process_merger
             fi = @merging[:fi]
-            share = @merging[:corporation].shares.first
+            share = fi.shares.first
             @game.share_pool.transfer_shares(share.to_bundle, fi.owner)
             @game.bank.spend(50, fi.owner)
             @game.log << "#{fi.owner.name} receives #{@game.format_currency(50)} and a share of #{share.corporation.name}"
@@ -66,7 +66,7 @@ module Engine
           end
 
           def setup
-            @merging
+            @merging = nil
           end
 
           def process_percent(action)

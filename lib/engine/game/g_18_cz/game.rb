@@ -202,11 +202,12 @@ module Engine
           train = @depot.upcoming.first
           variant = train.variants.values.find { |item| train_of_size?(item, corporation.type) }
           train.variant = variant[:name]
+          source = train.owner
           remove_train(train)
           train.owner = corporation
           corporation.trains << train
 
-          @phase.buying_train!(corporation, train)
+          @phase.buying_train!(corporation, train, source)
 
           @log << "#{corporation.name} receives a new #{train.name} train"
         end
