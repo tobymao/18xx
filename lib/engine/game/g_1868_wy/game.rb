@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'entities'
+require_relative 'golden_spike'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'share_pool'
@@ -11,6 +12,7 @@ require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
 require_relative 'step/dividend'
 require_relative 'step/double_share_protection'
+require_relative 'step/home_token'
 require_relative 'step/manual_close_company'
 require_relative 'step/route'
 require_relative 'step/stock_round_action'
@@ -31,13 +33,14 @@ module Engine
         include Entities
         include Map
         include Trains
+        include GoldenSpike
 
         # Engine::Game includes
         include CompanyPriceUpToFace
         include StubsAreRestricted
         include SwapColorAndStripes
 
-        attr_accessor :double_headed_trains, :up_double_share_protection
+        attr_accessor :double_headed_trains, :dpr_first_home_status, :up_double_share_protection
 
         # overrides
         BANK_CASH = 99_999
@@ -172,10 +175,16 @@ module Engine
           union_pacific.shares.last.buyable = false
           up_double_share.double_cert = true
           @up_double_share_protection = {}
+
+          setup_spikes
         end
 
         def init_share_pool
           G1868WY::SharePool.new(self)
+        end
+
+        def dpr
+          @dpr ||= corporation_by_id('DPR')
         end
 
         def union_pacific
@@ -195,6 +204,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialTrack,
             G1868WY::Step::ManualCloseCompany,
+            G1868WY::Step::HomeToken,
             G1868WY::Step::DoubleShareProtection,
             G1868WY::Step::StockRoundAction,
           ])
@@ -247,6 +257,8 @@ module Engine
         def event_full_capitalization!
           @log << '-- Event: Railroad Companies now float at 60% and receive full capitalization --'
           @corporations.each do |corporation|
+            next if corporation.floated?
+
             corporation.capitalization = :full
             corporation.float_percent = 60
           end
@@ -675,7 +687,9 @@ module Engine
           if corporations.empty?
             ''
           else
-            " Tokens are returned: #{corporations.join(' and ')}" unless corporations.empty?
+            @graph.clear
+            dpr.coordinates = '' if corporations.include?(dpr) && dpr.tokens.count(&:used).zero?
+            " Tokens are returned: #{corporations.map(&:name).join(' and ')}" unless corporations.empty?
           end
         end
 
@@ -771,6 +785,34 @@ module Engine
           update_tile_lists(green_tile, old_tile)
           hex.lay(green_tile)
           @log << "#{corporation.name} lays tile #{green_tile.name} on #{hex.id} (#{old_tile.location_name})"
+        end
+
+        def can_par?(corporation, _parrer)
+          return false unless super
+
+          corporation == dpr ? !home_token_locations(corporation).empty? : true
+        end
+
+        def home_token_locations(corporation)
+          if corporation == dpr
+            hexes.select do |hex|
+              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+            end
+          else
+            [hex_by_id(corporation.coordinates)]
+          end
+        end
+
+        def skip_homeless_dpr?(entity)
+          entity == dpr && entity.tokens.count(&:used).zero?
+        end
+
+        def token_owner(entity)
+          if entity == dpr.player && dpr.floated? && dpr.tokens.count(&:used).zero? && !home_token_locations(dpr).empty?
+            dpr
+          else
+            super
+          end
         end
 
         def double_head_candidates(corporation)

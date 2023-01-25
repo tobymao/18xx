@@ -17,6 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p><a href='https://github.com/tobymao/18xx/wiki/1880'>1880</a> is now in Alpha.</p>
         <p>18GB, 18NY and 18USA are now in production.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on

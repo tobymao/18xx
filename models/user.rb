@@ -23,10 +23,10 @@ class User < Base
   ]).freeze
 
   def update_settings(params)
-    self.name = params['name'] if params['name']
-    self.email = params['email'] if params['email']
+    self.name = params['name'].strip if params['name']
+    self.email = params['email'].strip if params['email']
     params.each do |key, value|
-      settings[key] = value if SETTINGS.include?(key)
+      settings[key] = value&.strip if SETTINGS.include?(key)
     end
 
     settings.delete('webhook_url') if settings['webhook'] != 'custom'

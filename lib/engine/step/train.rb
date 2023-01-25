@@ -98,13 +98,14 @@ module Engine
           verb = 'buys'
         end
 
-        source = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
+        source = train.owner
+        source_name = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
 
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
-                "#{@game.format_currency(price)} from #{source}"
+                "#{@game.format_currency(price)} from #{source_name}"
 
         @game.buy_train(entity, train, price)
-        @game.phase.buying_train!(entity, train)
+        @game.phase.buying_train!(entity, train, source)
         pass! if !can_buy_train?(entity) && pass_if_cannot_buy_train?(entity)
       end
 

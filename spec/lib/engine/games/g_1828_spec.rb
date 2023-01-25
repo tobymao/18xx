@@ -28,20 +28,24 @@ module Engine
       next_round! { game.round.is_a?(Round::Stock) }
     end
 
+    def find_train(train_name)
+      game.trains.find { |t| t.name == train_name }
+    end
+
     describe 'events' do
       it 'should be unlocked by game phase' do
         expect(game.par_prices.size).to eq(3)
         expect(game.par_prices.map(&:price)).to include(67, 71, 79)
 
-        phase.buying_train!(corporation, game.trains.find { |t| t.name == '3' })
+        phase.buying_train!(corporation, find_train('3'), find_train('3').owner)
         expect(game.par_prices.size).to eq(5)
         expect(game.par_prices.map(&:price)).to include(67, 71, 79, 86, 94)
 
-        phase.buying_train!(corporation, game.trains.find { |t| t.name == '5' })
+        phase.buying_train!(corporation, find_train('5'), find_train('5').owner)
         expect(game.par_prices.size).to eq(6)
         expect(game.par_prices.map(&:price)).to include(67, 71, 79, 86, 94, 105)
 
-        phase.buying_train!(corporation, game.trains.find { |t| t.name == '3+D' })
+        phase.buying_train!(corporation, find_train('3+D'), find_train('3+D').owner)
         expect(game.par_prices.size).to eq(7)
         expect(game.par_prices.map(&:price)).to include(67, 71, 79, 86, 94, 105, 120)
       end
@@ -57,7 +61,7 @@ module Engine
         next_or!
         loop do
           train = game.trains.shift
-          phase.buying_train!(corporation, train)
+          phase.buying_train!(corporation, train, train.owner)
           break if train.name == 'D'
         end
         next_sr!

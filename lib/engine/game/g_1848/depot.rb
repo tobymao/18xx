@@ -12,7 +12,7 @@ module Engine
 
           @game.log << "-- Event: A #{train.name} train exports --"
           remove_train(train)
-          @game.phase.buying_train!(nil, train)
+          @game.phase.buying_train!(nil, train, self)
         end
 
         def min_depot_train

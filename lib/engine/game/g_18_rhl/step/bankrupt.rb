@@ -73,13 +73,13 @@ module Engine
             remaining = corp.cash
             cheapest = @game.depot.min_depot_train
             price = cheapest.price - remaining - president_contribution
-            source = cheapest.owner.name
-            @log << "#{corp.name} buys a #{cheapest.name} train for #{cheapest.price} from #{source}, "\
+            source = cheapest.owner
+            @log << "#{corp.name} buys a #{cheapest.name} train for #{cheapest.price} from #{source.name}, "\
                     "using previous president's cash of #{format(president_contribution)}, the treasury "\
                     "of #{format(remaining)} and the Bank paying the remaining #{format(price)}"
             corp.spend(remaining, @game.bank) if remaining.positive?
             @game.buy_train(corp, cheapest, :free)
-            @game.phase.buying_train!(corp, cheapest)
+            @game.phase.buying_train!(corp, cheapest, source)
             fee = 100
             bank_loan = price + fee
             corp.spend(bank_loan, @game.bank, check_cash: false)
