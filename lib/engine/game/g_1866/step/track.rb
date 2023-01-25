@@ -78,20 +78,12 @@ module Engine
               raise GameError, 'Cannot lay or upgrade tiles without operating rights in the selected region'
             end
 
-            # Special case for the B tiles
-            b_tile = nil
-            if hex.tile.label.to_s == 'B'
-              action.tile.label = 'B'
-              b_tile = hex.tile if hex.tile.color == :yellow && action.tile.color == :green
-            end
-
             # Special case for London
             if hex.name == @game.class::LONDON_HEX && hex.tile.color == :brown && action.tile.color == :gray
               hex.tile.cities[1].remove_all_reservations!
             end
 
             super
-            b_tile.label = nil if b_tile
             @game.after_lay_tile(entity)
           end
 

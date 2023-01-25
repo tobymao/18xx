@@ -1508,12 +1508,6 @@ module Engine
           super
         end
 
-        def upgrades_to_correct_label?(from, to)
-          return true if from.label.to_s == 'B' && from.color == :white && (to.name == '5' || to.name == '6')
-
-          super
-        end
-
         def all_corporation_token_rights(player)
           player.shares_by_corporation.each { |c, _| corporation_token_rights!(c) if corporation?(c) && c.president?(player) }
         end
@@ -1787,7 +1781,6 @@ module Engine
             stops = route.visited_stops
             phase = route.phase
             train = route.train
-            e_train = self.class::E_TRAINS.include?(train.name)
             train_multiplier = train.obsolete ? 0.5 : 1
 
             # Transit hub & palace_car
