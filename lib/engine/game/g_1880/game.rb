@@ -301,7 +301,7 @@ module Engine
           return if corporation.ipo_shares.size > 5 || corporation.fully_funded
 
           amount = corporation.original_par_price.price * 5
-          @log << "Five shares of #{corporation.name} have been boought. "\
+          @log << "Five shares of #{corporation.name} have been bought. "\
                   "#{corporation.name} receives #{format_currency(amount)}"
           @bank.spend(amount, corporation)
           corporation.fully_funded = true
@@ -713,7 +713,7 @@ module Engine
         def round_description(name, round_number = nil)
           round_number ||= @round.round_num
           description = super
-          description += ".#{round_number}" if @round.is_a?(Engine::Round::Operating)
+          description += ".#{round_number}" if name == self.class::OPERATING_ROUND_NAME
           description += " - Train Marker at #{@train_marker.name}" if @train_marker && !@end_game_triggered
           description
         end

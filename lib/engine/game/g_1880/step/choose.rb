@@ -48,8 +48,9 @@ module Engine
           def process_choose(action)
             action.entity.owner.companies.delete(@game.p0)
             @game.bank.spend(sell_price, @game.p0.owner) if sell_price.positive?
+            @log << "#{action.entity.owner.name} receives "\
+                    "#{@game.format_currency(sell_price)} one-time payment from #{@game.p0.name}"
             @game.p0.close!
-            @log << "#{action.entity.name} receives #{@game.format_currency(sell_price)} one-time payment from #{@game.p0.name}"
             pass!
           end
 

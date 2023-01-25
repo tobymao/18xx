@@ -96,7 +96,7 @@ module Engine
           end
 
           def discard_token(fi)
-            fi.tokens.first.city.remove_tokens!
+            fi.tokens.first.remove!
             @game.log << "#{fi.name} token is discarded"
           end
 
