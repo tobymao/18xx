@@ -11,6 +11,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
         SELL_MOVEMENT = :left_block_pres
+        SOLD_OUT_INCREASE = false
         MARKET_SHARE_LIMIT = 50
         CERT_LIMIT = { 2 => 21, 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
         STARTING_CASH = { 2 => 500, 3 => 500, 4 => 375, 5 => 300, 6 => 250 }.freeze
