@@ -419,7 +419,6 @@ module Engine
               if @saved_or_round
                 @log << '--Return to Operating Round--'
                 update_operators_in_saved_or!
-                @saved_or_round.entities.each { |c| place_home_token(c) }
                 @saved_or_round
               else
                 new_operating_round
@@ -749,6 +748,7 @@ module Engine
         def finalize_round_setup
           return super unless @round == @saved_or_round
 
+          @saved_or_round&.entities&.each { |c| place_home_token(c) }
           @round_history << current_action_id
         end
 
