@@ -419,7 +419,6 @@ module Engine
               if @saved_or_round
                 @log << '--Return to Operating Round--'
                 update_operators_in_saved_or!
-                @saved_or_round.entities.each { |c| place_home_token(c) }
                 @saved_or_round
               else
                 new_operating_round
@@ -436,6 +435,7 @@ module Engine
               reorder_players(:least_cash, log_player_order: true)
               new_draft_round
             end
+          @saved_or_round&.entities&.each { |c| place_home_token(c) }
         end
 
         def stock_round
