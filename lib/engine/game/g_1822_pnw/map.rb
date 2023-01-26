@@ -195,7 +195,7 @@ module Engine
           '455' =>
             {
               'count' => 2,
-              'color' => 'grey',
+              'color' => 'gray',
               'code' => 'city=revenue:50,slots:2;'\
                         'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             },
