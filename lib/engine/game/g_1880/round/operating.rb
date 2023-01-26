@@ -11,6 +11,7 @@ module Engine
             return super unless self == @game.saved_or_round
 
             @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
+            @game.round_history << @game.current_action_id
           end
 
           def finished?
