@@ -158,6 +158,20 @@ module Engine
         }.freeze
 
         TILES = {
+          #yellow
+          'X20' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:40,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;upgrade=cost:20;label=Sea',
+          },
+          'X24' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:40,slots:4;'\
+            'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:20;label=Por',
+          },
           '1' => 1,
           '2' => 1,
           '3' => 6,
@@ -172,6 +186,20 @@ module Engine
           '57' => 6,
           '58' => 6,
           '69' => 1,
+          #green
+          'X21' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;upgrade=cost:20;label=Sea',
+          },
+          'X25' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:60,slots:4;'\
+                      'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:20;label=Por',
+          },
           '14' => 4,
           '15' => 6,
           '80' => 4,
@@ -184,171 +212,136 @@ module Engine
           '144' => 3,
           '207' => 3,
           '208' => 2,
+          '405' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
+          },
           '619' => 5,
           '622' => 2,
+          #brown
+          'X5' =>
+          {
+            'count' => 3,
+            'color' => 'brown',
+            'code' =>
+              'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+              'path=a:4,b:_0;label=Y',
+          },
+          'X10' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' =>
+              'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
+          },
+          'X22' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:80,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;upgrade=cost:20;label=Sea',
+          },
+          'X26' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:80,slots:4;'\
+                      'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:20;label=Por',
+          },
           '63' => 3,
           '544' => 4,
           '545' => 4,
           '546' => 4,
           '611' => 7,
-          '60' => 2,
-          '455' =>
-            {
-              'count' => 2,
-              'color' => 'grey',
-              'code' => 'city=revenue:50,slots:2;'\
-                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            },
-          'X20' =>
-            {
-              'count' => 1,
-              'color' => 'yellow',
-              'code' => 'city=revenue:40,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;upgrade=cost:20;label=Sea',
-            },
-          'X24' =>
-            {
-              'count' => 1,
-              'color' => 'yellow',
-              'code' => 'city=revenue:40,slots:4;'\
-                        'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:20;label=Por',
-            },
-          '405' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
-            },
-          'X21' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' => 'city=revenue:60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;upgrade=cost:20;label=Sea',
-            },
-          'X25' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' => 'city=revenue:60,slots:4;'\
-                        'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:20;label=Por',
-            },
-          '768' =>
-            {
-              'count' => 4,
-              'color' => 'brown',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-            },
           '767' =>
-            {
-              'count' => 4,
-              'color' => 'brown',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
-            },
+          {
+            'count' => 4,
+            'color' => 'brown',
+            'code' =>
+              'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+          },
+          '768' =>
+          {
+            'count' => 4,
+            'color' => 'brown',
+            'code' =>
+              'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
+          },
           '769' =>
-            {
-              'count' => 4,
-              'color' => 'brown',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            },
-          'X5' =>
-            {
-              'count' => 3,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                'path=a:4,b:_0;label=Y',
-            },
-          'X22' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' => 'city=revenue:80,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;upgrade=cost:20;label=Sea',
-            },
-          'X26' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' => 'city=revenue:80,slots:4;'\
-                        'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;upgrade=cost:20;label=Por',
-            },
-          '169' =>
-            {
-              'count' => 2,
-              'color' => 'gray',
-              'code' =>
-                'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            },
-          'X10' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
-            },
+          {
+            'count' => 4,
+            'color' => 'brown',
+            'code' =>
+              'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
+          #gray
           'X11' =>
-            {
-              'count' => 3,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
-            },
+          {
+            'count' => 3,
+            'color' => 'gray',
+            'code' =>
+              'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
+          },
           'X16' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
-            },
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' =>
+              'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T',
+          },
           'X17' =>
-            {
-              'count' => 2,
-              'color' => 'gray',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            },
-          'X18' =>
-            {
-              'count' => 2,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            },
+          {
+            'count' => 2,
+            'color' => 'gray',
+            'code' =>
+              'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          },
           'X23' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' => 'city=revenue:100,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Sea',
-            },
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:100,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Sea',
+          },
           'X27' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' => 'city=revenue:100,slots:4;'\
-                        'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;label=Por',
-            },
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:100,slots:4;'\
+                      'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;label=Por',
+          },
           'PNW3' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            },
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' =>
+              'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          },
           'PNW4' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;upgrade=cost:75,terrain:mountain',
-            },
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' =>
+              'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;upgrade=cost:75,terrain:mountain',
+          },
           'PNW5' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:50,loc:2.5;path=a:1,b:_0;path=a:4,b:_0;path=a:1,b:4',
-            },
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' =>
+              'city=revenue:50,loc:2.5;path=a:1,b:_0;path=a:4,b:_0;path=a:1,b:4',
+          },
+          '51' => 2,
+          '60' => 2,
+          '169' =>
+          {
+            'count' => 2,
+            'color' => 'gray',
+            'code' =>
+              'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
+          '895' => 2,
+          #blue
           'P1' =>
             {
               'count' => 1,
@@ -375,7 +368,6 @@ module Engine
               'color' => 'blue',
               'code' => 'path=a:0,b:2;icon=image:1822_pnw/minus_10,large:1',
             },
-
           'BC' =>
             {
               'count' => 1,
@@ -383,7 +375,6 @@ module Engine
               'code' => 'icon=image:1822_mx/red_cube,large:1',
               'hidden' => true,
             },
-
         }.freeze
       end
     end
