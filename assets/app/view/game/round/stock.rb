@@ -6,6 +6,7 @@ require 'view/game/buy_sell_shares'
 require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/par'
+require 'view/game/par_chart'
 require 'view/game/players'
 require 'view/game/sell_shares'
 require 'view/game/stock_market'
@@ -20,6 +21,7 @@ module View
         needs :selected_corporation, default: nil, store: true
         needs :selected_company, default: nil, store: true
         needs :last_player, default: nil, store: true
+        needs :corporation_to_par, default: nil, store: true
         needs :show_other_players, default: nil, store: true
 
         def render
@@ -39,11 +41,15 @@ module View
 
           @bank_first = @step.respond_to?(:bank_first?) && @step.bank_first?
 
+          @hide_corporations = @step.respond_to?(:hide_corporations?) && @step.hide_corporations?
+
           @current_entity = @step.current_entity
           if @last_player != @current_entity && !@auctioning_corporation
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
           end
+
+          return render_select_par_slot if @corporation_to_par && @current_actions.include?('par')
 
           children = []
 
@@ -68,7 +74,7 @@ module View
           children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children.concat(render_bank_companies) if @bank_first
-          children.concat(render_corporations)
+          children.concat(render_corporations) unless @hide_corporations
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
           children.concat(render_bank_companies) unless @bank_first
@@ -298,7 +304,6 @@ module View
             ))
             store(:selected_company, nil, skip: true)
           end
-
           [h(:button,
              { on: { click: buy } },
              "Sell #{@selected_company.sym} to Bank for #{@game.format_currency(price)}")]
@@ -389,6 +394,14 @@ module View
           children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
           children << h(TrainSchedule, game: @game) unless @game.depot.trains.empty?
           h(:div, props, children)
+        end
+
+        def render_select_par_slot
+          children = [h(:div, [h(:button, { on: { click: -> { store(:corporation_to_par, nil) } } }, 'Cancel (Par)')])]
+          children << h(Corporation, corporation: @corporation_to_par)
+          children << h(ParChart, corporation_to_par: @corporation_to_par)
+
+          h(:div, children)
         end
       end
     end

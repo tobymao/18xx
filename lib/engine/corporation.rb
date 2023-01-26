@@ -247,7 +247,15 @@ module Engine
     end
 
     def all_abilities
-      @companies.flat_map(&:all_abilities) + @abilities
+      all_abilities = @companies.flat_map(&:all_abilities) + @abilities
+      if owner.respond_to?(:companies)
+        all_abilities += owner.companies&.flat_map do |c|
+          c.all_abilities.select do |a|
+            a.when.to_s.include? 'owning_player'
+          end
+        end
+      end
+      all_abilities
     end
 
     def remove_ability(ability)

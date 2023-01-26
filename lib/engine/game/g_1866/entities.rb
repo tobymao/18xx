@@ -711,9 +711,9 @@ module Engine
             reservation_color: nil,
           },
           {
-            sym: 'FNR',
-            name: 'Emperor Ferdinand Northern Railway',
-            logo: '1866/FNR',
+            sym: 'KFN',
+            name: 'Kaiser Ferdinands-Nordbahn',
+            logo: '1866/KFN',
             tokens: [0, 20, 40, 60, 80, 100],
             type: 'share_5',
             float_percent: 40,

@@ -48,14 +48,15 @@ module Engine
             end
 
             train = @game.depot.min_depot_train
-            source = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
+            source = train.owner
+            source_name = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
             price = train.price
 
             @log << "#{entity.name} (in receivership) buys a #{train.name} train for "\
-                    "#{@game.format_currency(price)} from #{source}"
+                    "#{@game.format_currency(price)} from #{source_name}"
 
             @game.buy_train(entity, train, price)
-            @game.phase.buying_train!(entity, train)
+            @game.phase.buying_train!(entity, train, source)
             @game.assign_base(train, :lb)
             pass!
           end

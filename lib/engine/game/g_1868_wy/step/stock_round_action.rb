@@ -12,6 +12,8 @@ module Engine
         # - choose new home for DPR after all its tokens BUST
         # - exchange Ames Bros private for UP double share, then may sell 1-2 of those shares
         class StockRoundAction < Engine::Step::BuySellParShares
+          include Engine::Step::Tokener
+
           def description
             'Stock Round Action'
           end
@@ -44,6 +46,7 @@ module Engine
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'buy_shares' if can_buy_any?(entity)
             actions << 'par' if can_ipo_any?(entity)
+            actions << 'place_token' if can_token?(entity)
             actions << 'pass' unless actions.empty?
 
             actions

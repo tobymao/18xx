@@ -201,8 +201,9 @@ module Engine
           def remove_train
             # Remove the next train
             train = @game.depot.upcoming.first
+            source = train.owner
             @game.remove_train(train)
-            @game.phase.buying_train!(nil, train)
+            @game.phase.buying_train!(nil, train, source)
             train
           end
 

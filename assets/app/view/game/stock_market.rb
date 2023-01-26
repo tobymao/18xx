@@ -2,6 +2,7 @@
 
 require 'lib/settings'
 require 'view/game/token'
+require 'view/game/par_chart'
 
 module View
   module Game
@@ -387,6 +388,8 @@ module View
             h(:tbody, rows),
           ])
         end
+
+        children << h(ParChart) if @game.respond_to?(:par_chart)
 
         h(:div, children)
       end

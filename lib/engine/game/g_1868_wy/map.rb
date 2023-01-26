@@ -105,9 +105,9 @@ module Engine
           },
           red: {
             ['A9'] => 'offboard=groups:Billings,revenue:yellow_10|green_20|brown_30|gray_30,groups:W;'\
-                      'border=edge:4;path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:5;icon=image:1868_wy/120',
+                      'path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:5;icon=image:1868_wy/120',
             ['A11'] => 'offboard=groups:Billings,revenue:yellow_10|green_20|brown_30|gray_30,hide:1,groups:W;'\
-                       'border=edge:1;path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:5;icon=image:1868_wy/120',
+                       'path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:5;icon=image:1868_wy/120',
             ['A15'] => 'offboard=groups:Billings,revenue:yellow_10|green_20|brown_30|gray_30,groups:W;'\
                        'path=a:_0,b:1;path=a:_0,b:5;icon=image:1868_wy/60',
             ['A23'] => 'offboard=revenue:yellow_40|green_30|brown_20|gray_20;path=a:_0,b:5;icon=image:1868_wy/fort,sticky:1',
