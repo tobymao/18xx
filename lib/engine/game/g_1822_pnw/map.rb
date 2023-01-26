@@ -158,7 +158,7 @@ module Engine
         }.freeze
 
         TILES = {
-          #yellow
+          # yellow tiles
           'X20' =>
           {
             'count' => 1,
@@ -186,7 +186,7 @@ module Engine
           '57' => 6,
           '58' => 6,
           '69' => 1,
-          #green
+          # green tiles
           'X21' =>
           {
             'count' => 1,
@@ -220,7 +220,7 @@ module Engine
           },
           '619' => 5,
           '622' => 2,
-          #brown
+          # brown tiles
           'X5' =>
           {
             'count' => 3,
@@ -275,7 +275,7 @@ module Engine
             'code' =>
               'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
-          #gray
+          # gray tiles
           'X11' =>
           {
             'count' => 3,
@@ -341,7 +341,7 @@ module Engine
               'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           '895' => 2,
-          #blue
+          # blue tiles
           'P1' =>
             {
               'count' => 1,
@@ -368,6 +368,7 @@ module Engine
               'color' => 'blue',
               'code' => 'path=a:0,b:2;icon=image:1822_pnw/minus_10,large:1',
             },
+          # hidden tile
           'BC' =>
             {
               'count' => 1,
