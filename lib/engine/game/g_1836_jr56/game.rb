@@ -460,7 +460,7 @@ module Engine
         LAYOUT = :pointy
 
         SELL_BUY_ORDER = :sell_buy_sell
-        TRACK_RESTRICTION = :permissive
+        TRACK_RESTRICTION = :semi_restrictive
         TILE_RESERVATION_BLOCKS_OTHERS = :always
         def national
           @national ||= corporation_by_id('MESS')
