@@ -7,6 +7,12 @@ module Engine
     module G1880
       module Round
         class Operating < Engine::Round::Operating
+          def setup
+            return super unless self == @game.saved_or_round
+
+            @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
+          end
+
           def finished?
             finished = !active_step || !any_to_act?
             @game.end_game! if finished && trigger_game_end?
