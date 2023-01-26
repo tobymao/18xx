@@ -518,7 +518,7 @@ module Engine
             abilities: [{ type: 'no_buy' }],
           },
           {
-            sym: 'C&MP',
+            sym: 'CM&P',
             name: 'Cáceres, Madrid and Portugal Railway',
             desc: 'P20. Revenue 40. Home hexes are D13, E12, F13, G12 and H11. ' \
                   'Can be used to start a public company in Madrid.',
@@ -931,7 +931,7 @@ module Engine
             ],
           },
           {
-            sym: 'C&MP',
+            sym: 'CM&P',
             name: 'Cáceres, Madrid and Portugal Railway',
             tokens: [],
             color: :green,
@@ -1010,7 +1010,7 @@ module Engine
           'B&CR' => 17,
           'S&C' => 18,
           'M&S' => 19,
-          'C&MP' => 20,
+          'CM&P' => 20,
           'O&V' => 21,
           'L&G' => 22,
         }.freeze
