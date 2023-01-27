@@ -44,7 +44,8 @@ module Engine
           @active_bidders.delete(entity)
           entity.pass!
           all_passed! if entities.all?(&:passed?)
-          next_entity!
+          next_entity! unless @all_passed_win
+          @all_passed_win = false
         end
       end
 
