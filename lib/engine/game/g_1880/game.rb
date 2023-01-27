@@ -746,12 +746,6 @@ module Engine
           source == @depot
         end
 
-        def finalize_round_setup
-          return super unless @round == @saved_or_round
-
-          @round_history << current_action_id
-        end
-
         def set_par(corporation, share_price, slot)
           par_chart[share_price][slot] = corporation
         end
