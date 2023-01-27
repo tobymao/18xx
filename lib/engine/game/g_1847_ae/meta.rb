@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :prealpha
 
         GAME_TITLE = '1847 AE'
         GAME_SUBTITLE = 'Pfalz - Anniversary Edition'
