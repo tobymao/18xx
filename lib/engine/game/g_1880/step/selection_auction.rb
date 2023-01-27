@@ -37,6 +37,8 @@ module Engine
                 # It's now free so the next player is forced to take it.
                 @round.next_entity_index!
                 forced_win(current_entity, first)
+                @all_passed_win = true
+                post_win_bid(current_entity, first)
               end
             else
               @game.payout_companies

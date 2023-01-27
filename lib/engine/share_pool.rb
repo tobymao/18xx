@@ -279,13 +279,14 @@ module Engine
       # previous president if they haven't sold the president's share
       # give the president the president's share
       # if the owner only sold half of their president's share, take one away
-      swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : self
+      transfer_to = @game.class::SOLD_SHARES_DESTINATION == :corporation ? corporation : self
+      swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : transfer_to
 
       change_president(presidents_share, swap_to, president, previous_president)
 
       return unless bundle.partial?
 
-      handle_partial(bundle, self, owner)
+      handle_partial(bundle, transfer_to, owner)
     end
 
     def handle_partial(bundle, from, to)

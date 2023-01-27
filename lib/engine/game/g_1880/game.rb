@@ -419,7 +419,6 @@ module Engine
               if @saved_or_round
                 @log << '--Return to Operating Round--'
                 update_operators_in_saved_or!
-                @saved_or_round.entities.each { |c| place_home_token(c) }
                 @saved_or_round
               else
                 new_operating_round
@@ -436,6 +435,7 @@ module Engine
               reorder_players(:least_cash, log_player_order: true)
               new_draft_round
             end
+          @saved_or_round&.entities&.each { |c| place_home_token(c) }
         end
 
         def stock_round
@@ -744,12 +744,6 @@ module Engine
           train.name != @depot.upcoming.first.name &&
           !trains_not_triggering_sr?(train.name) &&
           source == @depot
-        end
-
-        def finalize_round_setup
-          return super unless @round == @saved_or_round
-
-          @round_history << current_action_id
         end
 
         def set_par(corporation, share_price, slot)

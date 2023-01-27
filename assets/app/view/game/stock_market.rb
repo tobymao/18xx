@@ -336,12 +336,19 @@ module View
 
         if @explain_colors
           type_text = @game.class::MARKET_TEXT
-          colors = @game.class::STOCKMARKET_COLORS
 
-          types_in_market = @game.stock_market.market.flatten.compact.flat_map(&:types)
-          .uniq.to_h { |p| [p, colors[p]] }
+          # Sort types starting at bottom row, left column
+          type_to_first_col = {}
+          @game.stock_market.market.reverse.flatten.compact.each do |sp|
+            this_col = sp.coordinates[1]
+            sp.types&.each do |t|
+              min_col = type_to_first_col[t]
+              type_to_first_col[t] = this_col if !min_col || this_col < min_col
+            end
+          end
+          types_in_market = type_to_first_col.sort_by { |_t, col| col }.map(&:first)
 
-          legend_items = types_in_market.map do |type, _color|
+          legend_items = types_in_market.map do |type|
             line_props = {
               style: {
                 display: 'inline-grid',
@@ -357,7 +364,6 @@ module View
               h(:div, { style: { maxWidth: '24rem' } }, type_text[type]),
             ])
           end
-          legend_items.reverse! unless @game.stock_market.one_d?
 
           children << h('div#legend', legend_items)
         end
