@@ -1530,14 +1530,10 @@ module Engine
             (!a.hexes || a.hexes.include?(hex.name))
         end
 
-        tile.upgrades.sum do |upgrade|
-          discount = ability && upgrade.terrains.include?(ability.terrain) ? ability.discount : 0
+        discount = ability&.discounts_tile?(tile) ? ability.discount : 0
+        log_cost_discount(spender, ability, discount)
 
-          log_cost_discount(spender, ability, discount)
-
-          total_cost = upgrade.cost - discount
-          total_cost
-        end
+        tile.upgrades.sum(&:cost) - discount
       end
 
       def tile_cost_with_discount(_tile, hex, entity, spender, cost)
