@@ -729,7 +729,7 @@ module Engine
         end
 
         def operating_order
-          @minors.select(&:floated?) + @par_chart.values.flatten.compact
+          @minors.select(&:floated?) + par_chart.values.flatten.compact
         end
 
         def after_buying_train(train, source)
