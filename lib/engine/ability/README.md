@@ -212,6 +212,7 @@ Discount the cost for laying tiles in the specified terrain type
 - `terrain`: If set, type of terrain for which discount is provided, otherwise the discount is off the total cost
 - `hexes`: If not specified, all applicable hexes qualifies for
   the discount. If specified, only specified hexes qualify
+- `exact_match`: Tile may only contain specified terrain type. Default true.
 
 ## tile_income
 
