@@ -116,6 +116,7 @@ module Engine
             end
 
             @game.set_par(corp, share_price, slot)
+            @log << "#{entity.name} selects par #{@game.format_currency(share_price.price)} (slot #{slot}) for #{corp.name}"
 
             @parring = {
               state: :choose_percent,
