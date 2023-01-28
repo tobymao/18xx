@@ -108,14 +108,22 @@ module Engine
 
         CORPORATIONS = [
           {
-            sym: 'Ouest',
-            name: 'Chemins de fer de l\'Ouest',
-            logo: '1894/Ouest',
-            simple_logo: '1894/Ouest.alt',
-            tokens: [0, 0, 100, 100, 140],
-            max_ownership_percent: 60,
-            coordinates: %w[B3 E6],
-            color: '#4682b4',
+            sym: 'Saar',
+            name: 'Saarbrücker Eisenbahn',
+            logo: '1847_ae/Saar',
+            simple_logo: '1847_ae/Saar',
+            tokens: [0, 60, 80, 100],
+            max_ownership_percent: 100,
+            coordinates: 'H6',
+            # the shares order creates a 10 share company, but the first 3 sold papers are 20%
+            shares: [20, 10, 20, 10, 10, 10, 20],
+            color: '#ff4040',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Builds in pink hexes in yellow phase',
+              },
+            ],
           },
           {
             sym: 'Nord',
@@ -163,18 +171,18 @@ module Engine
             color: '#9c661f',
           },
           {
-            sym: 'Belge',
-            name: 'Chemins de fer de l\'État belge',
-            logo: '1894/Belge',
-            simple_logo: '1894/Belge.alt',
-            tokens: [0, 40, 100],
-            max_ownership_percent: 60,
+            sym: 'NDB',
+            name: 'Neustadt-Dürkheimer Bahn',
+            logo: '1847_ae/NDB',
+            simple_logo: '1847_ae/NDB',
+            tokens: [0, 60],
+            max_ownership_percent: 10,
             coordinates: 'E16',
             color: '#61b229',
             abilities: [
               {
-                type: 'description',
-                description: 'May not redeem shares',
+                type: 'base',
+                description: 'Builds in pink hexes in yellow phase',
               },
             ],
           },
