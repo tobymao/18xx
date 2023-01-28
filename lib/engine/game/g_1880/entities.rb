@@ -57,6 +57,7 @@ module Engine
               type: 'tile_discount',
               discount: 20,
               terrain: 'river',
+              exact_match: false,
               owner_type: 'player',
               when: 'owning_player_track',
             }],
