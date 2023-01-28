@@ -205,7 +205,7 @@ module Engine
                   {
                     name: '6E',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 99 }],
-                    price: 600,
+                    price: 700,
                     num: 5,
                   },
                   {
