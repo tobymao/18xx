@@ -1531,7 +1531,7 @@ module Engine
         end
 
         tile.upgrades.sum do |upgrade|
-          discount = ability && upgrade.terrains.include?(ability.terrain) ? ability.discount : 0
+          discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
 
           log_cost_discount(spender, ability, discount)
 
