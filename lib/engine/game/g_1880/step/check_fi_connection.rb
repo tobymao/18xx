@@ -88,9 +88,7 @@ module Engine
           def process_token(action)
             fi = @merging[:fi]
             replace_token(fi, fi.tokens.first, cheapest_unused_token(@merging[:corporation])) if action.choice == 'Replace'
-            discard_token(fi) if action.choice == 'Discard'
-            @game.log << "#{fi.full_name} closes"
-            fi.close!
+            @game.close_corporation(fi)
 
             pass!
           end

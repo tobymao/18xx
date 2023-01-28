@@ -435,7 +435,6 @@ module Engine
               reorder_players(:least_cash, log_player_order: true)
               new_draft_round
             end
-          @saved_or_round&.entities&.each { |c| place_home_token(c) }
         end
 
         def stock_round
@@ -490,7 +489,7 @@ module Engine
             cash_to_owner = (m.cash * 0.2).floor
             @log << "#{m.name} transfers #{format_currency(cash_to_owner)} to #{m.owner.name}"
             m.spend(cash_to_owner, m.owner)
-            m.close!
+            close_corporation(m)
           end
 
           super
@@ -521,7 +520,7 @@ module Engine
 
           status = ["Building Permits: #{corporation.building_permits}"]
           par_location = par_chart[corporation.original_par_price].find_index(corporation) + 1
-          status << ["Par Price: #{corporation.original_par_price.price}-#{par_location}"]
+          status << ["Par Price: #{format_currency(corporation.original_par_price.price)}-#{par_location}"]
           status
         end
 
