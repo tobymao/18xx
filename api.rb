@@ -20,7 +20,7 @@ class Api < Roda
          'Content-Type' => 'text/html',
          'X-Frame-Options' => 'deny',
          'X-Content-Type-Options' => 'nosniff',
-         'Cache-Control' => 'no-cache, max-age=0, must-revalidate, no-store',
+         'cache-control' => 'no-cache, max-age=0, must-revalidate, no-store',
          'X-XSS-Protection' => '1; mode=block'
 
   plugin :content_security_policy do |csp|
