@@ -65,11 +65,26 @@ module Engine
 
           def buyable_trains(entity)
             trains_to_buy = super
-            trains_to_buy.reject! { |t| t.name == '2P' } if entity.trains.find { |t| t.name == '2P' }
+            trains_to_buy.reject! { |t| t.name == '2P' } if owns_restored2?(entity)
+            trains_to_buy << restored2_train if can_buy_restored2?(entity)
             # Can't buy trains from other corporations until train 3
             return trains_to_buy if @game.can_cross_buy?
 
             trains_to_buy.select(&:from_depot?)
+          end
+
+          def owns_restored2?(entity)
+            entity.trains.find { |t| t.name == '2P' }
+          end
+
+          def can_buy_restored2?(entity)
+            return false if !@game.phase.available?(restored2_train&.available_on) || owns_restored2?(entity)
+
+            restored2_train.price <= entity.cash
+          end
+
+          def restored2_train
+            @depot.depot_trains.find { |t| t.name == '2P' }
           end
         end
       end
