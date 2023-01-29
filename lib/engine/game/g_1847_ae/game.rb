@@ -4,6 +4,8 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'corporation'
+require_relative 'share_pool'
 
 module Engine
   module Game
@@ -94,6 +96,13 @@ module Engine
 
         LAYOUT = :pointy
 
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1847AE::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -110,6 +119,28 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def ndb
+          @ndb_corporation ||= corporation_by_id('NDB')
+        end
+
+        def init_share_pool
+          G1847AE::SharePool.new(self)
+        end
+
+        def init_corporations(stock_market)
+          corporations = self.class::CORPORATIONS.map do |corporation|
+            par_price = stock_market.par_prices.find { |p| p.price == corporation[:required_par_price] }
+            corporation[:par_price] = par_price
+            G1847AE::Corporation.new(
+              min_price: par_price.price,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
+
+          corporations
         end
       end
     end
