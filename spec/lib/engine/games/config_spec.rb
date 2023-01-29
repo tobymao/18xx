@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
+require './lib/engine/config/tile'
 
 require 'json'
 
 module Engine
+  include Engine::Config::Tile
+  tile_colors = COLORS
   players = ('a'..'z')
 
   Engine::GAME_METAS.each do |game_meta|
@@ -57,6 +60,13 @@ module Engine
         end
         dups = counts.select { |_, count| count > 1 }.keys
         expect(dups).to eq([])
+      end
+
+      it 'tile colors are in COLORS' do
+        game = Engine.game_by_title(game_meta.title).new(max_players, id: 1)
+        game.tiles.each do |tile|
+          expect(tile_colors).to include(tile.color), "Tile #{tile.id}"
+        end
       end
     end
   end
