@@ -9,13 +9,13 @@ module Engine
           incoming_pres_shares = president.shares_of(corporation)
 
           single_shares = incoming_pres_shares.filter { |s| s.double_cert == false }
-          if single_shares.count >= 2
-            shares_to_transfer = single_shares.take(2) 
-          else
-            shares_to_transfer = [incoming_pres_shares.find(&:double_cert)]
-          end
+          shares_to_transfer = if single_shares.count >= 2
+                                 single_shares.take(2)
+                               else
+                                 [incoming_pres_shares.find(&:double_cert)]
+                               end
           shares_to_transfer.each { |s| move_share(s, swap_to) }
-          
+
           move_share(presidents_share, president)
         end
       end
