@@ -70,7 +70,7 @@ module Engine
           end
 
           def available_hex_portage_company(entity, hex)
-            abilities(entity).hexes.include?(hex.id) ? hex.all_neighbors.keys : nil
+            abilities(entity).hexes.include?(hex.id) && !@game.port_tile?(hex) ? hex.all_neighbors.keys : nil
           end
 
           def potential_tiles_portage_company(entity, _hex)
