@@ -5,6 +5,7 @@ require_relative 'map'
 require_relative 'entities'
 
 require_relative '../base'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
