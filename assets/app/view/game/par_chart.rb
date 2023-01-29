@@ -15,7 +15,7 @@ module View
 
       def render
         @step = @game.round.active_step
-        @current_entity = @step.current_entity
+        @current_entity = @step&.current_entity
         @current_operator = @game.respond_to?(:current_operator) ? @game.current_operator : nil
 
         props = {
