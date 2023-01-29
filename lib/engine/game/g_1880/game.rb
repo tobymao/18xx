@@ -13,6 +13,7 @@ module Engine
         include_meta(G1880::Meta)
         include Map
         include Entities
+        include StubsAreRestricted
 
         attr_accessor :train_marker
         attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds
