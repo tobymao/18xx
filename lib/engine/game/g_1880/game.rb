@@ -17,7 +17,8 @@ module Engine
         include StubsAreRestricted
 
         attr_accessor :train_marker
-        attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds
+        attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds,
+                    :foreign_investors_operate
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
