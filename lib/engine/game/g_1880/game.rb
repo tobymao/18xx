@@ -5,6 +5,7 @@ require_relative 'map'
 require_relative 'entities'
 
 require_relative '../base'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -13,6 +14,7 @@ module Engine
         include_meta(G1880::Meta)
         include Map
         include Entities
+        include StubsAreRestricted
 
         attr_accessor :train_marker
         attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds
@@ -301,7 +303,7 @@ module Engine
           return if corporation.ipo_shares.size > 5 || corporation.fully_funded
 
           amount = corporation.original_par_price.price * 5
-          @log << "Five shares of #{corporation.name} have been boought. "\
+          @log << "Five shares of #{corporation.name} have been bought. "\
                   "#{corporation.name} receives #{format_currency(amount)}"
           @bank.spend(amount, corporation)
           corporation.fully_funded = true
@@ -712,7 +714,7 @@ module Engine
         def round_description(name, round_number = nil)
           round_number ||= @round.round_num
           description = super
-          description += ".#{round_number}" if @round.is_a?(Engine::Round::Operating)
+          description += ".#{round_number}" if name == self.class::OPERATING_ROUND_NAME
           description += " - Train Marker at #{@train_marker.name}" if @train_marker && !@end_game_triggered
           description
         end

@@ -231,14 +231,16 @@ module Engine
             %w[Q7] =>
                      'city=revenue:yellow_30|green_40|brown_50|gray_60;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
             %w[A15] =>
-                     'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0;path=a:1,b:_0',
+                     'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1',
             %w[A3] =>
                      'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
             %w[I1] =>
-                     'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+                     'offboard=revenue:yellow_10|green_20|brown_30|gray_40;'\
+                     'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
 
             %w[K1] =>
-                     'offboard=revenue:yellow_0|green_0|brown_0|gray_80;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+                     'offboard=revenue:yellow_0|green_0|brown_0|gray_80;'\
+                     'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
 
             %w[Q15] =>
                      'city=revenue:yellow_20|green_30|brown_10|gray_70;path=a:2,b:_0,terminal:1',
