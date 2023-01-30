@@ -51,6 +51,22 @@ module Engine
               hexes: cities.map(&:hex),
               token: corporation.next_token,
             }
+            return unless @game.private_closure_round == :in_progress
+
+            # We are in the private closure round and the private company will
+            # close before the player gets asked whether they want to take the
+            # token. When the private closes it loses its reserved token slot,
+            # and this means that there might no longer be an available slot in
+            # Sevilla, Córdoba or Zaragoza if the tile is still yellow and the
+            # other private company with a reservation has not yet closed. To
+            # avoid this, change the reservation to belong to the corporation.
+            reservations = Array(@game.abilities(company, :reservation))
+            reservations.each do |reservation|
+              city = reservation.tile.cities[reservation.city]
+              city.reservations[city.find_reservation(company)] = corporation
+              company.remove_ability(reservation)
+              corporation.add_ability(reservation)
+            end
           end
         end
       end
