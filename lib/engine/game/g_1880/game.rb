@@ -426,7 +426,12 @@ module Engine
                 new_operating_round
               end
             when Engine::Round::Operating
-              if @round.round_num
+              if @sr_triggered
+                @sr_triggered = false
+                @saved_or_round = @round
+                @turn += 1
+                new_stock_round
+              else
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
               end
@@ -736,9 +741,8 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          @turn += 1
-          @saved_or_round = @round
-          @round = new_stock_round
+          @sr_triggered = true
+          transition_to_next_round!
         end
 
         def trigger_sr?(train, source)
