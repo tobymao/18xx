@@ -452,11 +452,13 @@ module Engine
 
         def submit_revenue_str(routes, _show_subsidy)
           corporation = current_entity
-          train_revenue = super
-          return train_revenue if corporation.companies.none?
+          return super if corporation.companies.none?
 
-          private_revenue = format_revenue_currency(corporation.companies.sum(&:revenue))
-          "#{train_revenue} train + #{private_revenue} private revenue"
+          total_revenue = routes_revenue(routes)
+          private_revenue = corporation.companies.sum(&:revenue)
+          train_revenue = total_revenue - private_revenue
+          "#{format_revenue_currency(train_revenue)} train + " \
+            "#{format_revenue_currency(private_revenue)} private revenue"
         end
 
         def event_green_privates_available!
