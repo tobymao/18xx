@@ -14,11 +14,8 @@ module Engine
             @game.round_history << @game.current_action_id
           end
 
-          def finished?
-            finished = !active_step || !any_to_act?
-            @game.end_game! if finished && trigger_game_end?
-            @current_operator = nil if finished
-            finished
+          def after_end_of_turn(_action)
+            @game.end_game! if trigger_game_end?
           end
 
           def trigger_game_end?
