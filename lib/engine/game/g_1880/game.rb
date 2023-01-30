@@ -420,13 +420,17 @@ module Engine
               reorder_players
               if @saved_or_round
                 @log << '--Return to Operating Round--'
-                update_operators_in_saved_or!
                 @saved_or_round
               else
                 new_operating_round
               end
             when Engine::Round::Operating
-              if @round.round_num
+              if @sr_triggered
+                @sr_triggered = false
+                @saved_or_round = @round
+                @turn += 1
+                new_stock_round
+              else
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
               end
@@ -736,9 +740,8 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          @turn += 1
-          @saved_or_round = @round
-          @round = new_stock_round
+          @sr_triggered = true
+          transition_to_next_round!
         end
 
         def trigger_sr?(train, source)
@@ -759,13 +762,6 @@ module Engine
         def current_operator
           op_round = @round.is_a?(Engine::Round::Operating) ? @round : @saved_or_round
           op_round&.current_operator
-        end
-
-        def update_operators_in_saved_or!
-          current_or_corporation = @saved_or_round.entities[@saved_or_round.entity_index]
-
-          @saved_or_round.entities = @saved_or_round.select_entities
-          @saved_or_round.entity_index = @saved_or_round.select_entities.find_index(current_or_corporation)
         end
 
         def must_buy_train?(entity)
