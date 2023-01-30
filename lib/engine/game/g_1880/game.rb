@@ -420,7 +420,6 @@ module Engine
               reorder_players
               if @saved_or_round
                 @log << '--Return to Operating Round--'
-                update_operators_in_saved_or!
                 @saved_or_round
               else
                 new_operating_round
@@ -763,13 +762,6 @@ module Engine
         def current_operator
           op_round = @round.is_a?(Engine::Round::Operating) ? @round : @saved_or_round
           op_round&.current_operator
-        end
-
-        def update_operators_in_saved_or!
-          current_or_corporation = @saved_or_round.entities[@saved_or_round.entity_index]
-
-          @saved_or_round.entities = @saved_or_round.select_entities
-          @saved_or_round.entity_index = @saved_or_round.select_entities.find_index(current_or_corporation)
         end
 
         def must_buy_train?(entity)
