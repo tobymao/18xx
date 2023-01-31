@@ -11,7 +11,7 @@ module View
       include Actionable
       include Lib::Settings
 
-      needs :corporation_to_par, default: nil, store: true
+      needs :corporation_to_par, default: nil
 
       def render
         @step = @game.round.active_step
@@ -194,7 +194,6 @@ module View
                 share_price: share_price,
                 slot: index,
               ))
-              store(:corporation_to_par, nil)
             end
 
             circle_props[:on] = { click: par }
