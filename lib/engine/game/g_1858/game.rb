@@ -636,6 +636,14 @@ module Engine
           corporation
         end
 
+        # Removes all of the icons on the map for a private railway company.
+        def delete_icons(company)
+          icon_name = company.sym.gsub('&', '')
+          @hexes.each do |hex|
+            hex.tile.icons.delete_if { |icon| icon.name == icon_name }
+          end
+        end
+
         def close_company(company)
           owner = company.owner
           message = "#{company.id} closes."
@@ -645,6 +653,7 @@ module Engine
           end
           company.close!
           @log << message
+          delete_icons(company)
         end
 
         # Closes the private railway companies owned by a public company,
