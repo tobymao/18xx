@@ -6,8 +6,6 @@ require './lib/engine/config/tile'
 require 'json'
 
 module Engine
-  include Engine::Config::Tile
-  tile_colors = COLORS
   players = ('a'..'z')
 
   Engine::GAME_METAS.each do |game_meta|
@@ -65,7 +63,7 @@ module Engine
       it 'tile colors are in COLORS' do
         game = Engine.game_by_title(game_meta.title).new(max_players, id: 1)
         game.tiles.each do |tile|
-          expect(tile_colors).to include(tile.color), "Tile #{tile.id}"
+          expect(Engine::Config::Tile::COLORS).to include(tile.color), "Tile #{tile.id}"
         end
       end
     end
