@@ -37,6 +37,7 @@ module Engine
         MUST_BUY_TRAIN = :always
         DISCARDED_TRAINS = :remove
         CERT_LIMIT_INCLUDES_PRIVATES = false
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         BANK_CASH = 37_860
 

@@ -9,6 +9,7 @@ module Engine
         class Assign < Engine::Step::Assign
           ACTIONS_WITH_PASS = %w[assign pass].freeze
           def actions(entity)
+            return [] if entity.player?
             return [] unless @game.abilities(entity, :assign_corporation)
             return [] if current_entity.minor? || (entity == @game.p5 && current_entity.building_permits&.include?('D'))
 
