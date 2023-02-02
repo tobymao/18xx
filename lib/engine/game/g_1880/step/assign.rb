@@ -11,7 +11,8 @@ module Engine
           def actions(entity)
             return [] if entity.player?
             return [] unless @game.abilities(entity, :assign_corporation)
-            return [] if current_entity.minor? || (entity == @game.p5 && current_entity.building_permits&.include?('D'))
+            return [] if current_entity.minor? ||
+                        (entity == @game.p5 && current_entity.corporation? && current_entity.building_permits&.include?('D'))
 
             return ACTIONS if @game.forced_exchange_rocket? && entity == @game.rocket
             return ACTIONS_WITH_PASS if p5_block? && current_entity.owner == @game.p5.owner
@@ -74,6 +75,8 @@ module Engine
             @game.rocket.close!
             @game.buy_train(buying_corp, train, :free)
             @game.phase.buying_train!(buying_corp, train)
+            @game.depot.export_all!(train.name, silent: true) if @round.special_edge_case_4t_rocket
+            @round.special_edge_case_4t_rocket = false
           end
         end
       end

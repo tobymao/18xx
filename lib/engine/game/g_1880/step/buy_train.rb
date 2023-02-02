@@ -35,7 +35,10 @@ module Engine
 
           def round_state
             super.merge(
-            { bought_trains: false }
+            {
+              bought_trains: false,
+              special_edge_case_4t_rocket: false,
+            }
           )
           end
 
@@ -55,7 +58,14 @@ module Engine
           def discard_all_trains(train_name)
             @game.log << "#{train_name} has not been bought for a full operating order, "\
                          "removing all remaining #{train_name} trains"
-            @game.depot.export_all!(train_name, silent: true)
+            return @game.depot.export_all!(train_name, silent: true) unless special_edge_case_4t_rocket?(train_name)
+
+            @game.depot.export!(train_name, silent: true)
+            @round.special_edge_case_4t_rocket = true
+          end
+
+          def special_edge_case_4t_rocket?(train_name)
+            train_name == '4' && !@game.rocket.closed?
           end
 
           def setup
