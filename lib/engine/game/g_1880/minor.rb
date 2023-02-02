@@ -18,7 +18,7 @@ module Engine
           if owner.respond_to?(:companies)
             all_abilities += owner.companies&.flat_map do |c|
               c.all_abilities.select do |a|
-                a.when.to_s.include? 'owning_player'
+                a.when.to_s.include?('owning_player')
               end
             end
           end
