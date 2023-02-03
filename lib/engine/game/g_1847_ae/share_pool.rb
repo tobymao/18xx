@@ -8,8 +8,8 @@ module Engine
           corporation = presidents_share.corporation
           incoming_pres_shares = president.shares_of(corporation)
 
-          single_shares = incoming_pres_shares.filter { |s| s.double_cert == false }
-          shares_to_transfer = if single_shares.count >= 2
+          single_shares = incoming_pres_shares.reject(&:double_cert)
+          shares_to_transfer = if single_shares.size >= 2
                                  single_shares.take(2)
                                else
                                  [incoming_pres_shares.find(&:double_cert)]

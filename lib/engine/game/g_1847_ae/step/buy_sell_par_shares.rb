@@ -14,7 +14,7 @@ module Engine
             double_cert = bundle.shares.find(&:double_cert)
             corporation = bundle.corporation
             # Filter out investor shares
-            ipo_shares = corporation.ipo_shares.filter(&:buyable)
+            ipo_shares = corporation.ipo_shares.select(&:buyable)
 
             if double_cert && corporation.second_share_double && corporation.last_share_double
               return ipo_shares.size == 6 || ipo_shares.size == 1
