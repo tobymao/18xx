@@ -13,6 +13,18 @@ module Engine
           ceil ? num.ceil : num
         end
 
+        def all_abilities
+          all_abilities = @abilities
+          if owner.respond_to?(:companies)
+            all_abilities += owner.companies&.flat_map do |c|
+              c.all_abilities.select do |a|
+                a.when.to_s.include?('owning_player')
+              end
+            end
+          end
+          all_abilities
+        end
+
         def hide_shares?
           false
         end

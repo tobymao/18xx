@@ -15,7 +15,6 @@ module View
 
         needs :selected_company, default: nil, store: true
         needs :selected_corporation, default: nil, store: true
-        needs :corporation_to_par, default: nil, store: true
         needs :hidden, default: true, store: true
         needs :flash_opts, default: {}, store: true
         needs :user

@@ -77,7 +77,7 @@ module Engine
               @game.share_pool.sell_shares(shares[num_to_buy + i].to_bundle, silent: true)
             end
             @log << "#{corporation.name} issues #{num_to_buy} share#{num_to_buy > 1 ? 's' : ''} and receives "\
-                    "#{@game.format_currency(share_price.price * 3)}"
+                    "#{@game.format_currency(share_price.price * num_to_buy)}"
           end
 
           def get_par_prices(company, _corporation)

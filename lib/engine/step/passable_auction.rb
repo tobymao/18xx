@@ -38,7 +38,7 @@ module Engine
       def active_auction
         company = @auctioning
         bids = @bids[company]
-        yield company, bids if bids.any?
+        yield company, bids unless bids.empty?
       end
 
       def initial_auction_entities
@@ -53,7 +53,7 @@ module Engine
         end
         cannot_bid.each do |player|
           @game.log << "#{player.name} cannot bid #{@game.format_currency(min)}"\
-                       " and is out of the auction for #{auctioning.name}"
+                       " and is out of the auction for #{@auctioning.name}"
         end
         resolve_bids
       end

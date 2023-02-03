@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
 
         GAME_TITLE = 'Rolling Stock'
         GAME_DESIGNER = 'Björn Rabenstein'
