@@ -868,7 +868,7 @@ module Engine
               "#{entity.name} moves the [+1+1] token from a #{detached.name} "\
                 "train to a #{@big_boy_train_original.name} train, forming a #{train.name} train"
             else
-              "#{entity.name} ataches the [+1+1] token to a #{@big_boy_train_original.name} "\
+              "#{entity.name} attaches the [+1+1] token to a #{@big_boy_train_original.name} "\
                 "train, forming a #{train.name} train"
             end
 
