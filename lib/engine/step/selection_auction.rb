@@ -52,6 +52,7 @@ module Engine
       def next_entity!
         @round.next_entity_index!
         entity = entities[entity_index]
+        entity.pass! if @auctioning && max_bid(entity, @auctioning) < min_bid(@auctioning)
         next_entity! if entity&.passed?
       end
 

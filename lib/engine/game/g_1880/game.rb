@@ -5,6 +5,7 @@ require_relative 'map'
 require_relative 'entities'
 
 require_relative '../base'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -13,9 +14,11 @@ module Engine
         include_meta(G1880::Meta)
         include Map
         include Entities
+        include StubsAreRestricted
 
         attr_accessor :train_marker
-        attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds
+        attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds,
+                    :foreign_investors_operate
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
@@ -34,6 +37,7 @@ module Engine
         MUST_BUY_TRAIN = :always
         DISCARDED_TRAINS = :remove
         CERT_LIMIT_INCLUDES_PRIVATES = false
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         BANK_CASH = 37_860
 
@@ -301,7 +305,7 @@ module Engine
           return if corporation.ipo_shares.size > 5 || corporation.fully_funded
 
           amount = corporation.original_par_price.price * 5
-          @log << "Five shares of #{corporation.name} have been boought. "\
+          @log << "Five shares of #{corporation.name} have been bought. "\
                   "#{corporation.name} receives #{format_currency(amount)}"
           @bank.spend(amount, corporation)
           corporation.fully_funded = true
@@ -418,13 +422,17 @@ module Engine
               reorder_players
               if @saved_or_round
                 @log << '--Return to Operating Round--'
-                update_operators_in_saved_or!
                 @saved_or_round
               else
                 new_operating_round
               end
             when Engine::Round::Operating
-              if @round.round_num
+              if @sr_triggered
+                @sr_triggered = false
+                @saved_or_round = @round
+                @turn += 1
+                new_stock_round
+              else
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
               end
@@ -712,7 +720,7 @@ module Engine
         def round_description(name, round_number = nil)
           round_number ||= @round.round_num
           description = super
-          description += ".#{round_number}" if @round.is_a?(Engine::Round::Operating)
+          description += ".#{round_number}" if name == self.class::OPERATING_ROUND_NAME
           description += " - Train Marker at #{@train_marker.name}" if @train_marker && !@end_game_triggered
           description
         end
@@ -734,9 +742,8 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          @turn += 1
-          @saved_or_round = @round
-          @round = new_stock_round
+          @sr_triggered = true
+          transition_to_next_round!
         end
 
         def trigger_sr?(train, source)
@@ -757,13 +764,6 @@ module Engine
         def current_operator
           op_round = @round.is_a?(Engine::Round::Operating) ? @round : @saved_or_round
           op_round&.current_operator
-        end
-
-        def update_operators_in_saved_or!
-          current_or_corporation = @saved_or_round.entities[@saved_or_round.entity_index]
-
-          @saved_or_round.entities = @saved_or_round.select_entities
-          @saved_or_round.entity_index = @saved_or_round.select_entities.find_index(current_or_corporation)
         end
 
         def must_buy_train?(entity)

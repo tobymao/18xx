@@ -47,6 +47,7 @@ module View
           if @last_player != @current_entity && !@auctioning_corporation
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
+            store(:corporation_to_par, nil, skip: true)
           end
 
           return render_select_par_slot if @corporation_to_par && @current_actions.include?('par')
