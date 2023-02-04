@@ -26,7 +26,7 @@ module Engine
     shared_examples 'power not implemented' do
       it 'cannot be purchased yet' do
         expect do
-          first_player_buy_power_on_isr(power)
+          first_player_buy_power_on_isr(power).maybe_raise!
         end.to raise_error(Engine::GameError, 'Power logic not yet implemented')
       end
     end
@@ -546,7 +546,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError, 'Only one train can use "A tip of sugar"')
           end
         end
@@ -582,7 +582,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError, 'Only one train can bypass a tokened-out city')
           end
         end
@@ -608,7 +608,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError,
                                'City with only \'Work in progress\' slot cannot be bypassed')
           end
@@ -641,7 +641,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError, 'Route can only bypass one tokened-out city')
           end
         end
@@ -677,7 +677,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError, 'Only one train can bypass a tokened-out city')
           end
         end
@@ -703,7 +703,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError,
                                'City with only \'Work in progress\' slot cannot be bypassed')
           end
@@ -724,7 +724,7 @@ module Engine
               'tile' => '9-0',
               'rotation' => 1,
             }
-            expect { game.process_action(action) }.to raise_error(TypeError)
+            expect { game.process_action(action).maybe_raise! }.to raise_error(TypeError)
           end
         end
       end
