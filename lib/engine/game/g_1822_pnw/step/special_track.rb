@@ -33,6 +33,7 @@ module Engine
             return available_hex_portage_company(entity, hex) if @game.portage_company?(entity)
             return available_hex_boomtown_company(entity, hex) if @game.boomtown_company?(entity)
             return available_hex_coal_company(entity, hex) if @game.coal_company?(entity)
+            return nil if hex.tile.icons.any? { |i| i.name.start_with?('mountain') }
 
             super
           end
