@@ -30,6 +30,7 @@ module Engine
           end
 
           def auto_actions(entity)
+            return nil if @acquire_state == :choose_pay || @acquire_state == :choose_token
             return [Engine::Action::Pass.new(entity)] if mergeable(entity).empty?
           end
 
