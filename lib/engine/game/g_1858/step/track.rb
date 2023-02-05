@@ -110,8 +110,8 @@ module Engine
           def hex_neighbors(entity, hex)
             hexes_broad = @game.graph_broad.connected_hexes(entity)[hex]
             hexes_metre = @game.graph_metre.connected_hexes(entity)[hex]
-            hexes = [hexes_broad, hexes_metre].compact.inject([], :|)
-            hexes if hexes.any?
+            hexes = [*hexes_broad, *hexes_metre].uniq
+            hexes unless hexes.empty?
           end
 
           def check_track_restrictions!(entity, old_tile, new_tile)
