@@ -126,12 +126,8 @@ module Engine
             # broad/dual gauge track, and once allow metre/dual gauge.
             if !valid_tile_lay?(entity, old_tile, new_tile, @game.graph_broad) &&
                 !valid_tile_lay?(entity, old_tile, new_tile, @game.graph_metre)
-              # # The check for private railways home hexes is needed in case a private
-              # # builds plain track that's not connected to a revenue centre, it will
-              # # not be classed as a connected path.
-              # XXX Is this still needed after the graphing changes? XXX
-              # && !(entity.minor? && entity.home_hex?(new_tile.hex))
-              raise GameError, 'Must use new track or change city value'
+              raise GameError, 'Must have a broad gauge or metre gauge route ' \
+                               'to new track, or upgrade a city'
             end
           end
 
