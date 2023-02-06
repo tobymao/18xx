@@ -159,7 +159,7 @@ module Engine
           def can_place_token?(entity)
             current_entity == entity &&
               !@round.tokened &&
-              available_tokens(entity).any? &&
+              !available_tokens(entity).empty? &&
               (@game.graph_broad.can_token?(entity) || @game.graph_metre.can_token?(entity)) &&
               (min_token_price(entity) <= buying_power(entity))
           end
@@ -184,14 +184,14 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            @game.graph_broad.reachable_hexes(entity)[hex] \
-              || @game.graph_metre.reachable_hexes(entity)[hex]
+            @game.graph_broad.reachable_hexes(entity)[hex] ||
+              @game.graph_metre.reachable_hexes(entity)[hex]
           end
 
           def check_connected(entity, city, hex)
-            return if @game.loading \
-              || @game.graph_broad.connected_nodes(entity)[city] \
-              || @game.graph_metre.connected_nodes(entity)[city]
+            return if @game.loading
+            return if @game.graph_broad.connected_nodes(entity)[city]
+            return if @game.graph_metre.connected_nodes(entity)[city]
 
             city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
             raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
