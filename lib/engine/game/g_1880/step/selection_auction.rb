@@ -54,7 +54,7 @@ module Engine
             entities.each(&:unpass!)
             next_entity!
             @auction_triggerer = current_entity
-            auction_entity(@companies.first) unless companies.empty?
+            auction_entity(@companies.first) unless @companies.empty?
           end
 
           def assign_company(company, player)

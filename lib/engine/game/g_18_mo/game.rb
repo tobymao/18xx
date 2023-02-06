@@ -259,13 +259,13 @@ module Engine
           when '2Y'
             two_player? ? 7 : num_players + 4
           when '3G'
-            two_player? ? 5 : num_players
+            two_player? ? 4 : num_players
           when '3E', '5E'
             1
           when '5'
-            two_player? ? 4 : num_players
+            two_player? ? 3 : num_players
           when '7'
-            two_player? ? 4 : 9
+            two_player? ? 3 : 8
           end
         end
 

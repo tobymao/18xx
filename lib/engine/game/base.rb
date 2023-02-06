@@ -748,6 +748,9 @@ module Engine
         @last_processed_action = action.id
 
         self
+      rescue StandardError => e
+        rescue_exception(e, action)
+        self
       end
 
       def process_single_action(action)
@@ -768,21 +771,28 @@ module Engine
           @round.entities.each(&:unpass!)
 
           if end_now?(end_timing)
-
             end_game!
           else
-            store_player_info
-            next_round!
-            check_programmed_actions
-
-            finalize_round_setup
+            transition_to_next_round!
           end
         end
       rescue Engine::GameError => e
+        rescue_exception(e, action)
+      end
+
+      def rescue_exception(e, action)
         @raw_actions.pop
         @actions.pop
         @exception = e
         @broken_action = action
+      end
+
+      def transition_to_next_round!
+        store_player_info
+        next_round!
+        check_programmed_actions
+
+        finalize_round_setup
       end
 
       def finalize_round_setup

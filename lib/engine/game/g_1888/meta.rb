@@ -15,7 +15,7 @@ module Engine
         GAME_DESIGNER = 'Leonhard "Lonny" Orgler'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1888'
         GAME_PUBLISHER = :lonny_games
-        GAME_RULES_URL = 'https://www.lonny.at/app/download/10279316184/1888_rules_March22.pdf'
+        GAME_RULES_URL = 'https://www.lonnygames.com/app/download/13341543331/Rules_ENG.pdf'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [

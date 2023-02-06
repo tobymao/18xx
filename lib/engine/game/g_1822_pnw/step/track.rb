@@ -10,6 +10,7 @@ module Engine
           def available_hex(entity, hex)
             return nil if @game.tokencity?(hex) && (!get_tile_lay(entity) & [:upgrade])
             return true if @game.can_hold_builder_cubes?(hex.tile) && @game.graph.connected_hexes(entity)[hex]
+            return nil if hex.tile.icons.any? { |i| i.name.start_with?('mountain') }
 
             super
           end

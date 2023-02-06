@@ -46,8 +46,12 @@ module Engine
           return if entity.owner&.player? || entity.receivership?
         end
 
-        next_entity!
+        after_end_of_turn(action)
+
+        next_entity! unless @game.finished
       end
+
+      def after_end_of_turn(action); end
 
       def force_next_entity!
         @steps.each(&:pass!)

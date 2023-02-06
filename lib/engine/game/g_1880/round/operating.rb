@@ -10,15 +10,28 @@ module Engine
           def setup
             return super unless self == @game.saved_or_round
 
+            current = @entities[@entity_index]
+            @entities = select_entities
+            @entity_index = @entities.find_index(current)
+
             @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
-            @game.round_history << @game.current_action_id
+            start_operating
           end
 
-          def finished?
-            finished = !active_step || !any_to_act?
-            @game.end_game! if finished && trigger_game_end?
-            @current_operator = nil if finished
-            finished
+          def skip_steps
+            return if @game.round.stock?
+
+            super
+          end
+
+          def after_process(action)
+            return if @game.round.stock?
+
+            super
+          end
+
+          def after_end_of_turn(_action)
+            @game.end_game! if trigger_game_end?
           end
 
           def trigger_game_end?
