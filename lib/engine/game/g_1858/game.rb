@@ -109,7 +109,7 @@ module Engine
           @round_num = round_num
           Engine::Round::Operating.new(self, [
             G1858::Step::Track,
-            Engine::Step::Token,
+            G1858::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
