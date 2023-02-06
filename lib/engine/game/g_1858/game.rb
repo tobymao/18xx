@@ -49,6 +49,11 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
 
+        def setup_preround
+          # Companies need to be owned by the bank to be available for auction
+          @companies.each { |company| company.owner = @bank }
+        end
+
         def setup
           # We need three different graphs for tracing routes for entities:
           #  - @graph_broad traces routes along broad and dual gauge track.
@@ -103,6 +108,17 @@ module Engine
 
         def clear_token_graph_for_entity(entity)
           clear_graph_for_entity(entity)
+        end
+
+        def init_round
+          stock_round
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::HomeToken,
+            G1858::Step::BuySellParShares,
+          ])
         end
 
         def operating_round(round_num = 1)
@@ -180,12 +196,44 @@ module Engine
                   'discount for metre gauge track'
         end
 
+        def buyable_bank_owned_companies
+          available_colors = [:yellow]
+          available_colors << :green if @phase.status.include?('green_privates')
+          @companies.select do |company|
+            !company.closed? && (company.owner == @bank) &&
+              available_colors.include?(company.color)
+          end
+        end
+
+        def unstarted_corporation_summary
+          # Don't show minors in the list of bank-owned entities, their
+          # associated private company will be listed.
+          unstarted = @corporations.reject(&:ipoed)
+          [unstarted.size, unstarted]
+        end
+
+        def unowned_purchasable_companies(_entity)
+          @companies.filter { |company| !company.closed? && company.owner == @bank }
+        end
+
+        def bank_sort(entities)
+          minors, corporations = entities.partition(&:minor?)
+          minors.sort_by { |m| PRIVATE_ORDER[m.id] } + corporations.sort_by(&:name)
+        end
+
+
         def payout_companies
           return if private_closure_round == :in_progress
 
           # Private railways owned by public companies don't pay out.
           exchanged_companies = @companies.select { |company| company.owner&.corporation? }
           super(ignore: exchanged_companies.map(&:id))
+        end
+
+        def entity_can_use_company?(_entity, _company)
+          # Don't show abilities buttons in a stock round for the companies
+          # owned by the player.
+          false
         end
       end
     end
