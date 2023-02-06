@@ -221,7 +221,6 @@ module Engine
           minors.sort_by { |m| PRIVATE_ORDER[m.id] } + corporations.sort_by(&:name)
         end
 
-
         def payout_companies
           return if private_closure_round == :in_progress
 
