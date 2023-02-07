@@ -75,7 +75,6 @@ module Engine
             @game.rocket.close!
             @game.buy_train(buying_corp, train, :free)
             @game.phase.buying_train!(buying_corp, train, @game.depot)
-            @game.depot.export_all!(train.name, silent: true)
           end
         end
       end

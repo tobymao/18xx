@@ -35,9 +35,7 @@ module Engine
 
           def round_state
             super.merge(
-            {
-              bought_trains: false,
-            }
+            { bought_trains: false }
           )
           end
 

@@ -742,7 +742,7 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          if special_edge_case_4t_rocket?(train.name) && @depot.upcoming.first.name != train.name
+          if train_name == '4' && !rocket.closed? && @depot.upcoming.first.name != train.name
             @rocket_train = train
             return
           end
@@ -789,10 +789,6 @@ module Engine
 
         def can_cross_buy?
           @can_cross_buy
-        end
-
-        def special_edge_case_4t_rocket?(train_name)
-          train_name == '4' && !rocket.closed?
         end
       end
     end
