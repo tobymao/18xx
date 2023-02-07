@@ -638,7 +638,7 @@ module Engine
 
         # Removes all of the icons on the map for a private railway company.
         def delete_icons(company)
-          icon_name = company.sym.gsub('&', '')
+          icon_name = company.sym.delete('&')
           @hexes.each do |hex|
             hex.tile.icons.delete_if { |icon| icon.name == icon_name }
           end
