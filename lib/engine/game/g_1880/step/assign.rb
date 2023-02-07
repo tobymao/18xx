@@ -69,14 +69,13 @@ module Engine
 
           def process_assign_rocket(action)
             buying_corp = action.target
-            train = @game.depot.upcoming.first
+            train = @game.rocket_train || @game.depot.upcoming.first
             @log << "#{buying_corp.name} exchanges the #{@game.rocket.name} for a #{train.name} train"
 
             @game.rocket.close!
             @game.buy_train(buying_corp, train, :free)
-            @game.phase.buying_train!(buying_corp, train)
-            @game.depot.export_all!(train.name, silent: true) if @round.special_edge_case_4t_rocket
-            @round.special_edge_case_4t_rocket = false
+            @game.phase.buying_train!(buying_corp, train, @game.depot)
+            @game.depot.export_all!(train.name, silent: true)
           end
         end
       end
