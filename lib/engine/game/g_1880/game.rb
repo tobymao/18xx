@@ -742,7 +742,7 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          if train_name == '4' && !rocket.closed? && @depot.upcoming.first.name != train.name
+          if train.name == '4' && !rocket.closed? && @depot.upcoming.first.name != train.name
             @rocket_train = train
             return
           end
