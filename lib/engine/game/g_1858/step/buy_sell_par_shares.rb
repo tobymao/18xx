@@ -28,7 +28,7 @@ module Engine
             # Starting a public company by exchanging a private company for the
             # president's certificate is also a buy action, but this is handled
             # through the companies' abilities rather than these actions.
-            actions << 'buy_shares' if can_buy_any?(entity) || can_exchange_any?(entity)
+            actions << 'buy_shares' if can_buy_any?(entity)
             actions << 'par' if can_ipo_any?(entity)
             actions << 'bid' if can_bid_any?(entity)
 
