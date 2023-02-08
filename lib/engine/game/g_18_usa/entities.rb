@@ -319,8 +319,8 @@ module Engine
             value: 60,
             revenue: 0,
             desc: 'One extra yellow lay per turn on the hexes marked with railroad track icons on the map '\
-                  '(near the northern US border), ignoring terrain fees. +$30 revenue bonus per train that runs Fargo - Helena. '\
-                  '+$60 revenue bonus per train that runs Seattle-Fargo-Helena-Chicago',
+                  '(near the northern US border), ignoring terrain fees. One train can receive a +$30 revenue '\
+                  'bonus for running Fargo-Helena or a +$60 revenue bonus for running Seattle-Fargo-Helena-Chicago.',
             sym: 'P17',
             abilities: [
               {

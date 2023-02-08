@@ -22,7 +22,7 @@ module Engine
         BIDDING_TOKENS = {
           '3': 5,
           '4': 4,
-          '5': 3,
+          '5': 4,
         }.freeze
 
         EXCHANGE_TOKENS = {

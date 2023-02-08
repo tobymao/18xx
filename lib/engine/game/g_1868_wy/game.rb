@@ -8,6 +8,7 @@ require_relative 'share_pool'
 require_relative 'trains'
 require_relative 'step/buy_company'
 require_relative 'step/buy_train'
+require_relative 'step/choose'
 require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
 require_relative 'step/dividend'
@@ -40,7 +41,9 @@ module Engine
         include StubsAreRestricted
         include SwapColorAndStripes
 
-        attr_accessor :double_headed_trains, :dpr_first_home_status, :up_double_share_protection
+        attr_accessor :big_boy_first_chance, :double_headed_trains, :dpr_first_home_status,
+                      :up_double_share_protection
+        attr_reader :big_boy_train, :big_boy_train_original
 
         # overrides
         BANK_CASH = 99_999
@@ -177,6 +180,8 @@ module Engine
           @up_double_share_protection = {}
 
           setup_spikes
+
+          @big_boy_first_chance = false
         end
 
         def init_share_pool
@@ -222,6 +227,7 @@ module Engine
             Engine::Step::SpecialTrack,
             G1868WY::Step::BuyCompany,
             G1868WY::Step::ManualCloseCompany,
+            G1868WY::Step::Choose,
             G1868WY::Step::Track,
             G1868WY::Step::Token,
             G1868WY::Step::DoubleHeadTrains,
@@ -293,6 +299,10 @@ module Engine
           end
 
           handle_bust_preprinted_and_revenue!
+        end
+
+        def event_close_big_boy!
+          detach_big_boy(log: true)
         end
 
         def float_corporation(corporation)
@@ -833,6 +843,68 @@ module Engine
           update_cache(:trains)
         end
 
+        def attach_big_boy(train, entity)
+          detached = detach_big_boy(log: false)
+
+          @big_boy_train_original = train.dup
+          cities, towns = distance(train).map(&:succ)
+          train.name = "[#{cities}+#{towns}]"
+          train.distance = [
+            {
+              'nodes' => ['town'],
+              'pay' => towns,
+              'visit' => towns,
+            },
+            {
+              'nodes' => %w[city offboard town],
+              'pay' => cities,
+              'visit' => cities,
+            },
+          ]
+          @big_boy_train = train
+
+          @log <<
+            if detached
+              "#{entity.name} moves the [+1+1] token from a #{detached.name} "\
+                "train to a #{@big_boy_train_original.name} train, forming a #{train.name} train"
+            else
+              "#{entity.name} attaches the [+1+1] token to a #{@big_boy_train_original.name} "\
+                "train, forming a #{train.name} train"
+            end
+
+          @big_boy_train
+        end
+
+        def detach_big_boy(log: false)
+          return unless @big_boy_train
+
+          train = @big_boy_train_original
+
+          @log << "The [+1+1] token is detached from the #{train.name} train" if log
+
+          @big_boy_train.name = train.name
+          @big_boy_train.distance = train.distance
+
+          cleanup_big_boy
+
+          train
+        end
+
+        def rust_trains!(train, _entity)
+          detach_big_boy if train.sym == @big_boy_train&.rusts_on
+          super
+        end
+
+        def cleanup_big_boy
+          @big_boy_train_original = nil
+          @big_boy_train = nil
+        end
+
+        def buy_train(operator, train, price = nil)
+          detach_big_boy(log: true) if train == big_boy_train
+          super
+        end
+
         def abilities(entity, type = nil, **kwargs)
           if type == :exchange
             return unless entity == ames_bros
@@ -983,6 +1055,8 @@ module Engine
           case @phase.name
           when '5'
             event_close_ames_brothers!
+          when '8'
+            event_close_big_boy!
           end
         end
       end

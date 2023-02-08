@@ -4,6 +4,8 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'corporation'
+require_relative 'share_pool'
 
 module Engine
   module Game
@@ -13,13 +15,16 @@ module Engine
         include Map
         include Entities
 
+        HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
         SELL_BUY_ORDER = :sell_buy
+        SELL_AFTER = :operate
         SELL_MOVEMENT = :down_block
         TILE_RESERVATION_BLOCKS_OTHERS = :always
-        CURRENCY_FORMAT_STR = '%sM'
+        CAPITALIZATION = :incremental
 
         BANK_CASH = 8_000
+        CURRENCY_FORMAT_STR = '%sM'
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 9 }.freeze
         STARTING_CASH = { 3 => 500, 4 => 390, 5 => 320 }.freeze
 
@@ -94,6 +99,13 @@ module Engine
 
         LAYOUT = :pointy
 
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1847AE::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -110,6 +122,57 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def saar
+          corporation_by_id('Saar')
+        end
+
+        def hlb
+          corporation_by_id('HLB')
+        end
+
+        def init_share_pool
+          G1847AE::SharePool.new(self)
+        end
+
+        # Reserved share type used to represent investor shares
+        def ipo_reserved_name(_entity = nil)
+          'Investor'
+        end
+
+        def init_corporations(stock_market)
+          self.class::CORPORATIONS.map do |corporation|
+            par_price = stock_market.par_prices.find { |p| p.price == corporation[:required_par_price] }
+            corporation[:par_price] = par_price
+            G1847AE::Corporation.new(
+              min_price: par_price.price,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
+        end
+
+        def setup
+          # Reserve investor shares and add money for them to treasury
+          [saar.shares[1], saar.shares[2], hlb.shares[1]].each { |s| s.buyable = false }
+          saar.cash += saar.par_price.price * 2
+          hlb.cash += hlb.par_price.price
+        end
+
+        def place_home_token(corporation)
+          return if corporation.tokens.first&.used == true
+
+          return super unless corporation == hlb
+
+          hlb.coordinates.each do |coordinate|
+            hex = hex_by_id(coordinate)
+            tile = hex&.tile
+            tile.cities.first.place_token(hlb, hlb.next_token)
+          end
+          hlb.coordinates = [hlb.coordinates.first]
+          ability = hlb.all_abilities.find { |a| a.description.include?('Two home stations') }
+          hlb.remove_ability(ability)
         end
       end
     end

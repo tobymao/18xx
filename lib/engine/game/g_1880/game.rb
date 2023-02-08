@@ -18,7 +18,7 @@ module Engine
 
         attr_accessor :train_marker
         attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds,
-                    :foreign_investors_operate
+                    :foreign_investors_operate, :rocket_train
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
@@ -79,7 +79,7 @@ module Engine
 
         MARKET = [
           ['', '', '100', '105', '110', '115B', '120B', '125B', '130W', '140W', '150X', '160X', '180Y', '200Z'],
-          ['', '85', '95', '100p', '105', '110B', '115B', '120B', '125W', '135W', '145X', '156X', '170Y', '190Y'],
+          ['', '85', '95', '100p', '105', '110B', '115B', '120B', '125W', '135W', '145X', '155X', '170Y', '190Y'],
           %w[70 80 90 95 100 105B 110B 115B 120W 130W 140X 150X 165Y 180Y],
           %w[65 75 85 90p 95 100B 105B 110B 115W 125W 135X 145X],
           %w[60 70 80 85 90 95B 100B 105B 110W 120W],
@@ -536,17 +536,23 @@ module Engine
           false
         end
 
+        def float_str(entity)
+          return super if entity.percent_to_float.positive?
+
+          'Ready to float'
+        end
+
+        def float_corporations
+          @corporations.select { |c| !c.floated? && !c.percent_to_float.positive? }.each { |c| float_corporation(c) }
+        end
+
         def float_corporation(corporation)
+          corporation.float!
           @log << "#{corporation.name} floats"
 
-          @bank.spend(corporation.par_price.price * 5, corporation)
-          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
-
-          # reserve share for foreign investor
-          foreign_investor = @minors.find { |m| m.owner == corporation.owner }
-          return unless foreign_investor&.shares&.empty?
-
-          assign_share_to_fi(corporation, foreign_investor)
+          cash = corporation.original_par_price.price * 5
+          @bank.spend(cash, corporation)
+          @log << "#{corporation.name} receives #{format_currency(cash)}"
         end
 
         def assign_share_to_fi(corporation, foreign_investor)
@@ -736,11 +742,16 @@ module Engine
         end
 
         def operating_order
-          @minors.select(&:floated?) + par_chart.values.flatten.compact
+          @minors.select(&:floated?) + par_chart.values.flatten.compact.select(&:floated?)
         end
 
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
+
+          if train.name == '4' && !rocket.closed? && @depot.upcoming.first.name != train.name
+            @rocket_train = train
+            return
+          end
 
           @sr_triggered = true
           transition_to_next_round!
