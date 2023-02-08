@@ -419,6 +419,7 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
+              float_corporations
               reorder_players
               if @saved_or_round
                 @log << '--Return to Operating Round--'
@@ -536,11 +537,23 @@ module Engine
           false
         end
 
+        def float_str(entity)
+          return super if entity.percent_to_float.positive?
+
+          'Ready to float'
+        end
+
+        def float_corporations
+          @corporations.select { |c| !c.floated? && !c.percent_to_float.positive? }.each { |c| float_corporation(c) }
+        end
+
         def float_corporation(corporation)
+          corporation.float!
           @log << "#{corporation.name} floats"
 
-          @bank.spend(corporation.par_price.price * 5, corporation)
-          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+          cash = corporation.original_par_price.price * 5
+          @bank.spend(cash, corporation)
+          @log << "#{corporation.name} receives #{format_currency(cash)}"
 
           # reserve share for foreign investor
           foreign_investor = @minors.find { |m| m.owner == corporation.owner }

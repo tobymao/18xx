@@ -9,7 +9,11 @@ module Engine
         attr_accessor :building_permits, :fully_funded
 
         def floated?
-          @floated ||= percent_to_float.zero?
+          @floated
+        end
+
+        def float!
+          @floated = true
         end
 
         def percent_to_float
