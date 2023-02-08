@@ -419,7 +419,6 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
-              float_corporations
               reorder_players
               if @saved_or_round
                 @log << '--Return to Operating Round--'
