@@ -12,6 +12,7 @@ module Engine
           end
 
           def finish_round
+            @game.float_corporations
             @game.add_interest_player_loans!
             super
           end

@@ -456,6 +456,7 @@ module View
             if @terminal == '2'
               props[:attrs][:d] = "M #{terminal_start_x} 85 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
                                   "L #{terminal_end_x} 85 L #{point_x} 65 Z"
+              props[:attrs][:fill] = '#707070'
             end
           end
           props

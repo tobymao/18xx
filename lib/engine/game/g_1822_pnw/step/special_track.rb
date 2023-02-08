@@ -33,7 +33,7 @@ module Engine
             return available_hex_portage_company(entity, hex) if @game.portage_company?(entity)
             return available_hex_boomtown_company(entity, hex) if @game.boomtown_company?(entity)
             return available_hex_coal_company(entity, hex) if @game.coal_company?(entity)
-            return nil if @game.tokencity?(hex) && !get_tile_lay(entity)&.[](:upgrade)
+            return nil if hex.tile.icons.any? { |i| i.name.start_with?('mountain') }
 
             super
           end
@@ -70,7 +70,7 @@ module Engine
           end
 
           def available_hex_portage_company(entity, hex)
-            abilities(entity).hexes.include?(hex.id) ? hex.all_neighbors.keys : nil
+            abilities(entity).hexes.include?(hex.id) && !@game.port_tile?(hex) ? hex.all_neighbors.keys : nil
           end
 
           def potential_tiles_portage_company(entity, _hex)

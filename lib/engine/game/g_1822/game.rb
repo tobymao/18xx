@@ -2036,6 +2036,10 @@ module Engine
             ['Corporation sold out at end of SR (including Tax Haven shares) ', '1 ↑'],
           ]
         end
+
+        def port_tile?(hex)
+          hex.tile.color == :blue && !hex.tile.cities.empty?
+        end
       end
     end
   end

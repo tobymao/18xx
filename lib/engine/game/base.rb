@@ -748,6 +748,9 @@ module Engine
         @last_processed_action = action.id
 
         self
+      rescue StandardError => e
+        rescue_exception(e, action)
+        self
       end
 
       def process_single_action(action)
@@ -774,6 +777,10 @@ module Engine
           end
         end
       rescue Engine::GameError => e
+        rescue_exception(e, action)
+      end
+
+      def rescue_exception(e, action)
         @raw_actions.pop
         @actions.pop
         @exception = e

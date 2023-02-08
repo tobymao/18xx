@@ -76,7 +76,7 @@ module Engine
                                                 'The transit hub, gives one tokened city value to the treasury '\
                                                 '(when included on a route).'],
           'infrastructure_p' => ['Palace Car', 'The P, palace car infrastructure, will be available for purchase. '\
-                                               'The palace car counts 10 for each city for one train, paid to the treasury.'],
+                                               'The palace car counts 10 for each town for one train, paid to the treasury.'],
           'infrastructure_m' => ['Mail', 'The M, mail infrastructure, will be available for purchase. The mail, counts '\
                                          'the sum value of the start and end locations of a route to the treasury.'],
         }.freeze
@@ -271,25 +271,6 @@ module Engine
                 'type' => 'formation',
               },
             ],
-            variants: [
-              {
-                name: '3E',
-                distance: [
-                  {
-                    'nodes' => ['city'],
-                    'pay' => 3,
-                    'visit' => 3,
-                  },
-                  {
-                    'nodes' => ['town'],
-                    'pay' => 0,
-                    'visit' => 99,
-                  },
-                ],
-                multiplier: 2,
-                price: 500,
-              },
-            ],
           },
           {
             name: '6',
@@ -438,7 +419,7 @@ module Engine
               'L' => 20,
               '3' => 6,
               '4' => 5,
-              '5' => 4,
+              '5' => 5,
               '6' => 3,
               '8' => 2,
               '10' => 20,
@@ -449,13 +430,13 @@ module Engine
             },
             'infrastructure_count' => 5,
             'companies' => %w[C1 C2 C3 C4 C5 C6 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS ZPB MZA L P],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SB BH KFN SSFL IFT SFAI SBB GL NRS ZPB MZA L],
             'national_corporations' => %w[GB FR AHE BNL ESP CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
             'corporation_count' => 13,
             'region_corporations' => {
               'GB' => %w[LNWR GWR NBR],
               'FR' => %w[PLM MIDI OU CPS],
-              'AHE' => %w[SB BH FNR],
+              'AHE' => %w[SB BH KFN],
               'DE' => %w[KPS BY KHS],
               'IT' => %w[SSFL IFT SFAI],
             },
@@ -495,7 +476,7 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[C1 C2 C4 C6 M1 M2 M3 M4 M5 ST1 ST2 ST3 ST4 ST5 ST6],
-            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SBB GL NRS L P],
+            'corporations' => %w[LNWR GWR NBR PLM MIDI OU CPS KPS BY KHS SBB GL NRS L],
             'national_corporations' => %w[GB FR BNL CH DE PRU HAN BAV WTB SAX],
             'corporation_count' => 9,
             'region_corporations' => {
@@ -505,9 +486,9 @@ module Engine
               'BNL' => %w[GL NRS],
             },
             'region_corporations_maxcount' => {
-              'GB' => 2,
+              'GB' => 3,
               'FR' => 3,
-              'DE' => 2,
+              'DE' => 3,
             },
           },
           'ces' => {
@@ -538,18 +519,18 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[C3 C4 C6 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6],
-            'corporations' => %w[KPS BY KHS SB BH FNR SSFL IFT SFAI SBB GL NRS],
+            'corporations' => %w[KPS BY KHS SB BH KFN SSFL IFT SFAI SBB GL NRS],
             'national_corporations' => %w[AHE BNL CH DE PRU HAN BAV WTB SAX IT K2S SAR LV PAP TUS],
             'corporation_count' => 9,
             'region_corporations' => {
               'DE' => %w[KPS BY KHS],
-              'AHE' => %w[SB BH FNR],
+              'AHE' => %w[SB BH KFN],
               'IT' => %w[SSFL IFT SFAI],
             },
             'region_corporations_maxcount' => {
-              'AHE' => 2,
-              'DE' => 2,
-              'IT' => 2,
+              'AHE' => 3,
+              'DE' => 3,
+              'IT' => 3,
             },
           },
           'ses' => {
@@ -580,19 +561,19 @@ module Engine
             },
             'infrastructure_count' => 3,
             'companies' => %w[C2 C3 C5 C6 M6 M7 M8 M9 M10 ST1 ST2 ST3 ST4 ST5 ST6],
-            'corporations' => %w[PLM MIDI OU CPS SB BH FNR SSFL IFT SFAI SBB ZPB MZA P],
+            'corporations' => %w[PLM MIDI OU CPS SB BH KFN SSFL IFT SFAI SBB ZPB MZA],
             'national_corporations' => %w[FR AHE ESP CH IT K2S SAR LV PAP TUS],
             'corporation_count' => 9,
             'region_corporations' => {
               'FR' => %w[PLM MIDI OU CPS],
               'ESP' => %w[ZPB MZA],
-              'AHE' => %w[SB BH FNR],
+              'AHE' => %w[SB BH KFN],
               'IT' => %w[SSFL IFT SFAI],
             },
             'region_corporations_maxcount' => {
               'FR' => 3,
-              'AHE' => 2,
-              'IT' => 2,
+              'AHE' => 3,
+              'IT' => 3,
             },
           },
         }.freeze
@@ -669,7 +650,7 @@ module Engine
           'KHS' => %w[DE HAN],
           'SB' => 'AHE',
           'BH' => 'AHE',
-          'FNR' => 'AHE',
+          'KFN' => 'AHE',
           'SSFL' => %w[IT TUS],
           'IFT' => %w[IT K2S],
           'SFAI' => %w[IT LV],
@@ -1527,12 +1508,6 @@ module Engine
           super
         end
 
-        def upgrades_to_correct_label?(from, to)
-          return true if from.label.to_s == 'B' && from.color == :white && (to.name == '5' || to.name == '6')
-
-          super
-        end
-
         def all_corporation_token_rights(player)
           player.shares_by_corporation.each { |c, _| corporation_token_rights!(c) if corporation?(c) && c.president?(player) }
         end
@@ -1806,16 +1781,15 @@ module Engine
             stops = route.visited_stops
             phase = route.phase
             train = route.train
-            e_train = self.class::E_TRAINS.include?(train.name)
             train_multiplier = train.obsolete ? 0.5 : 1
 
             # Transit hub & palace_car
             transist_hub_revenue = 0
             palace_car_revenue = 0
             stops.each do |stop|
-              next if !stop || (!stop.city? && !stop.offboard?)
+              next unless stop
 
-              palace_car_revenue += 10 if !e_train || (e_train && stop.tokened_by?(entity))
+              palace_car_revenue += 10 if stop.town?
               next if !stop.city? || !stop.tokened_by?(entity)
 
               stop_base_revenue = stop.route_base_revenue(phase, train)
