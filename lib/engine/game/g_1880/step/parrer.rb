@@ -95,11 +95,20 @@ module Engine
           end
 
           def process_par(action)
-            if @parring
-              @parring = nil
-              return super
-            end
+            return setup_par_choices(action) unless @parring
 
+            @parring = nil
+            super
+
+            # reserve share for foreign investor
+            corporation = action.corporation
+            foreign_investor = @game.minors.find { |m| m.owner == corporation.owner }
+            return unless foreign_investor&.shares&.empty?
+
+            @game.assign_share_to_fi(corporation, foreign_investor)
+          end
+
+          def setup_par_choices(action)
             share_price = action.share_price
             slot = action.slot
             entity = action.entity

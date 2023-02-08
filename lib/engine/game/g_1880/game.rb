@@ -553,12 +553,6 @@ module Engine
           cash = corporation.original_par_price.price * 5
           @bank.spend(cash, corporation)
           @log << "#{corporation.name} receives #{format_currency(cash)}"
-
-          # reserve share for foreign investor
-          foreign_investor = @minors.find { |m| m.owner == corporation.owner }
-          return unless foreign_investor&.shares&.empty?
-
-          assign_share_to_fi(corporation, foreign_investor)
         end
 
         def assign_share_to_fi(corporation, foreign_investor)
