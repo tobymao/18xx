@@ -18,7 +18,7 @@ module Engine
 
         attr_accessor :train_marker
         attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds,
-                    :foreign_investors_operate
+                    :foreign_investors_operate, :rocket_train
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
@@ -741,6 +741,11 @@ module Engine
 
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
+
+          if train.name == '4' && !rocket.closed? && @depot.upcoming.first.name != train.name
+            @rocket_train = train
+            return
+          end
 
           @sr_triggered = true
           transition_to_next_round!
