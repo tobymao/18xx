@@ -92,6 +92,7 @@ module Engine
               claim_token(corporation, minor)
             else
               company.owner = @game.bank
+              player.companies.delete(company)
             end
             @game.close_private(company)
           end
