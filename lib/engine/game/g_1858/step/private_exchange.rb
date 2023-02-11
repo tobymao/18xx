@@ -44,7 +44,7 @@ module Engine
 
             company = @game.private_company(minor)
             cities = @game.reserved_cities(corporation, company)
-            return if cities.empty?
+            return unless cities.any? { |city| city.tokens.compact.size < city.slots }
 
             @round.pending_tokens << {
               entity: corporation,
