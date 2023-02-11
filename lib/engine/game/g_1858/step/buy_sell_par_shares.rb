@@ -96,6 +96,8 @@ module Engine
           end
 
           def can_exchange_for_presidency?(entity, player)
+            return false if @game.turn == 1 # Can't exchange in first stock round.
+
             (@game.par_price(entity).price <= player.cash) &&
               @game.corporations.reject(&:ipoed).any?
           end
