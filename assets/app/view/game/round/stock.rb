@@ -318,7 +318,8 @@ module View
             },
           }
 
-          @game.buyable_bank_owned_companies.map do |company|
+          companies = @step.respond_to?(:bank_owned_companies) ? @step.bank_owned_companies : @game.buyable_bank_owned_companies
+          companies.map do |company|
             children = []
             children << h(Company, company: company,
                                    bids: (@current_actions.include?('bid') ? @step.bids[company] : nil))

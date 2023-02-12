@@ -12,7 +12,7 @@ module Engine
           PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Par]
 
           def actions(entity)
-            @converting_major ? ['choose'] : super
+            @converting_major && entity == current_entity ? ['choose'] : super
           end
 
           def ipo_type(corporation)
@@ -52,13 +52,20 @@ module Engine
             @par_price = action.share_price
             @converting_major = action.corporation
             minor = @game.associated_minor(@converting_major)
-            @game.log << "#{current_entity.name} converts associate minor #{minor.name} to #{@converting_major.name}"
-            @game.log << "#{current_entity.name} chooses #{@game.format_currency(@par_price.price)} as the " \
-                         "par price for #{@converting_major.name}"
+            @game.log << "#{current_entity.name} converts associate minor #{minor.name} to #{@converting_major.name} at  " \
+                         "a par price of #{@game.format_currency(@par_price.price)}"
           end
 
           def choice_available?(entity)
             @converting_major == entity && convertable_by?(entity, current_entity)
+          end
+
+          def visible_corporations
+            @converting_major ? [@converting_major] : @game.sorted_corporations.reject(&:closed?)
+          end
+
+          def bank_owned_companies
+            @converting_major ? [] : @game.buyable_bank_owned_companies
           end
 
           def choices
@@ -121,6 +128,7 @@ module Engine
 
             @game.close_minor(minor)
             track_action(action, @converting_major)
+            @converting_major = nil
             pass!
           end
 
