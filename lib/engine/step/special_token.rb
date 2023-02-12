@@ -84,7 +84,8 @@ module Engine
       end
 
       def available_hex(entity, hex)
-        return if !ability(entity).hexes.empty? && !ability(entity).hexes.include?(hex.id)
+        a = ability(entity)
+        return if a.hexes && !a.hexes.empty? && !a.hexes.include?(hex.id)
 
         @game.hex_by_id(hex.id).neighbors.keys
       end
