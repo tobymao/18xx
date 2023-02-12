@@ -128,6 +128,10 @@ module Engine
 
         GHOST_TOWN_NAME = 'ghost town'
 
+        BILLINGS_HEXES = %w[A9 A11].freeze
+        FEMV_HEX = 'G27'
+        RCL_HEX = 'C27'
+        WALDEN_HEX = 'N18'
         WIND_RIVER_CANYON_HEX = 'F12'
 
         # special shares
@@ -175,6 +179,18 @@ module Engine
 
           @double_headed_trains = []
 
+          # place neutral token in Walden
+          neutral = Corporation.new(
+            sym: 'N',
+            name: 'Neutral',
+            logo: 'open_city',
+            simple_logo: 'open_city',
+            tokens: [0],
+          )
+          neutral.owner = @bank
+          neutral.tokens.first.type = :neutral
+          city_by_id("#{self.class::WALDEN_HEX}-0-0").place_token(neutral, neutral.next_token)
+
           # reserve the double share for Ames Bros exchange
           union_pacific.shares.last.buyable = false
           up_double_share.double_cert = true
@@ -194,6 +210,22 @@ module Engine
 
         def dpr
           @dpr ||= corporation_by_id('DPR')
+        end
+
+        def femv
+          @femv ||= corporation_by_id('FE&MV')
+        end
+
+        def rcl
+          @rcl ||= corporation_by_id('RCL')
+        end
+
+        def femv_hex?(hex)
+          hex.id == self.class::FEMV_HEX
+        end
+
+        def rcl_hex?(hex)
+          hex.id == self.class::RCL_HEX
         end
 
         def union_pacific
@@ -1096,6 +1128,16 @@ module Engine
           player = @up_double_share_protection[:player]
           shares = player.shares_of(union_pacific).reject(&:double_cert)
           Engine::ShareBundle.new(shares)
+        end
+
+        def billings_hex?(hex)
+          self.class::BILLINGS_HEXES.include?(hex.id)
+        end
+
+        def other_billings(hex)
+          return unless (index = self.class::BILLINGS_HEXES.index(hex.id))
+
+          hex_by_id(self.class::BILLINGS_HEXES[(index + 1) % 2])
         end
 
         def event_close_privates!
