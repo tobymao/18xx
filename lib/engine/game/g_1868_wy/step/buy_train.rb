@@ -24,6 +24,10 @@ module Engine
             super
             action.train.remove_variants!
           end
+
+          def room?(entity, _shell = nil)
+            entity.trains.count { |t| !@game.extra_train?(t) } < @game.train_limit(entity)
+          end
         end
       end
     end
