@@ -9,7 +9,7 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :production
-        PROTOTYPE = true
+        PROTOTYPE = false
 
         GAME_LOCATION = 'Texas, United States'
         GAME_DESIGNER = 'Scott Petersen'

@@ -187,7 +187,7 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             G18Texas::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G18Texas::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             G18Texas::Step::IssueShares,
           ], round_num: round_num)
