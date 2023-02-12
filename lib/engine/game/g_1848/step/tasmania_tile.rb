@@ -58,7 +58,7 @@ module Engine
           end
 
           def process_lay_tile(action)
-            add_tile_lay_ability(action.entity)
+            add_tile_lay_ability(action.entity) unless @game.abilities(action.entity, :tile_lay)
             super
             @active_entity = nil
           end
