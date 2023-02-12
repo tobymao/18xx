@@ -580,7 +580,7 @@ module Engine
           minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == major.id }
           minor_corp = corporation_by_id(minor_id)
 
-          if minor_corp.owner && player
+          if minor_corp&.owner && player
             return minor_corp.owner == player ? :convertable : :none
           end
 
