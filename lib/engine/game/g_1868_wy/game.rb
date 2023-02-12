@@ -16,6 +16,7 @@ require_relative 'step/development_token'
 require_relative 'step/dividend'
 require_relative 'step/double_share_protection'
 require_relative 'step/home_token'
+require_relative 'step/issue_shares'
 require_relative 'step/manual_close_company'
 require_relative 'step/route'
 require_relative 'step/stock_round_action'
@@ -269,6 +270,7 @@ module Engine
             G1868WY::Step::BuyCompany,
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::Choose,
+            G1868WY::Step::IssueShares,
             G1868WY::Step::Track,
             G1868WY::Step::Token,
             G1868WY::Step::DoubleHeadTrains,
@@ -851,6 +853,47 @@ module Engine
 
         def player_value(player)
           player.value - player.companies.sum(&:value)
+        end
+
+        def issuable_shares(entity, previously_issued = 0)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G1868WY::Step::IssueShares) }.active?
+
+          max_size = @phase.name.to_i - (previously_issued || @round.issued)
+
+          bundles_for_corporation(entity, entity).select do |bundle|
+            @share_pool&.fit_in_bank?(bundle) && bundle.num_shares <= max_size && bundle.shares.all?(&:buyable)
+          end
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G1868WY::Step::IssueShares) }.active?
+
+          bundles = bundles_for_corporation(share_pool, entity)
+
+          if entity == union_pacific
+            bundles.reject! { |bundle| (entity.cash < bundle.price) || bundle.shares.find { |s| s.id == UP_DOUBLE_SHARE } }
+          else
+            bundles.reject! { |bundle| entity.cash < bundle.price }
+          end
+
+          bundles
+        end
+
+        def total_emr_buying_power(player, corporation)
+          emergency = (issuable = emergency_issuable_cash(corporation)).zero?
+          corporation.cash + issuable + liquidity(player, emergency: emergency)
+        end
+
+        def emergency_issuable_bundles(corp)
+          return [] if corp.trains.any?
+
+          train = @depot.min_depot_train
+          _min_train_price, max_train_price = train.variants.map { |_, v| v[:price] }.minmax
+          return [] if corp.cash >= max_train_price
+
+          issuable_shares(corp)
         end
 
         def sellable_bundles(player, corporation)
