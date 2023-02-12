@@ -143,9 +143,6 @@ module Engine
                 or_set_finished
                 new_stock_round
               end
-            when init_round.class
-              reorder_players
-              new_stock_round
             end
         end
 
@@ -162,6 +159,10 @@ module Engine
           else
             @depot.export! unless turn == '2.1'
           end
+        end
+
+        def init_round
+          stock_round
         end
 
         def stock_round
@@ -192,7 +193,7 @@ module Engine
         # Subsidies
         #
         def randomize_subsidies(hex_ids)
-          randomized_subsidies = self.class.SUBSIDIES.sort_by { rand }.take(hex_ids.size)
+          randomized_subsidies = self.class::SUBSIDIES.sort_by { rand }.take(hex_ids.size)
           hex_ids.zip(randomized_subsidies).each do |hex_id, subsidy|
             hex_by_id(hex_id).tile.icons << Engine::Part::Icon.new("18_usa/#{subsidy['icon']}")
           end
