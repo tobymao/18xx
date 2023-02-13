@@ -52,7 +52,7 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,'\
-                      'b:_1;label=NY',
+                      'b:_1;label=NY;label=E',
           },
           'X17' => {
             'count' => 'unlimited',
@@ -62,13 +62,13 @@ module Engine
           'NYB' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY',
+            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY;label=E',
           },
           'NYG' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:100,slots:3;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY',
+            'code' => 'city=revenue:100,slots:3;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY;label=E',
           },
           'CHI1' =>
           {
@@ -196,14 +196,14 @@ module Engine
 
         HEXES = {
           red: {
-            %w[A15] => 'offboard=revenue:0;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            %w[A15] => 'offboard=revenue:0;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NE',
             %w[C3] => 'offboard=revenue:0;path=a:0,b:_0,lanes:2',
-            %w[C9] => 'city=revenue:0;path=a:0,b:_0;path=a:4,b:_0',
-            %w[D0] => 'offboard=revenue:0;path=a:4,b:_0;path=a:5,b:_0',
+            %w[C9] => 'city=revenue:0;path=a:0,b:_0;path=a:4,b:_0;label=N',
+            %w[D0] => 'offboard=revenue:0;path=a:4,b:_0;path=a:5,b:_0;label=W',
             %w[G11] => 'city=revenue:0;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-            %w[H2] => 'city=revenue:0;path=a:3,b:_0;path=a:4,b:_0',
-            %w[J4] => 'offboard=revenue:0;path=a:3,b:_0;path=a:4,b:_0',
-            %w[L10] => 'city=revenue:0;path=a:2,b:_0;path=a:3,b:_0',
+            %w[H2] => 'city=revenue:0;path=a:3,b:_0;path=a:4,b:_0;label=W',
+            %w[J4] => 'offboard=revenue:0;path=a:3,b:_0;path=a:4,b:_0;label=S',
+            %w[L10] => 'city=revenue:0;path=a:2,b:_0;path=a:3,b:_0;label=S',
           },
           gray: {
             %w[C11] => 'junction;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0',
@@ -220,7 +220,7 @@ module Engine
             %w[D2] => 'future_label=label:CHI,color:yellow;city=revenue:0',
           },
           yellow: {
-            %w[D16] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_0;label=NY',
+            %w[D16] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_0;label=NY;label=E',
           },
         }.freeze
       end
