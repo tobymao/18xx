@@ -160,13 +160,13 @@ module Engine
           end
 
           def can_bid_company?(player, company)
-            (@auctioning.nil? || @auctioning == company) &&
-            auctionable_companies.include?(company) &&
+            (!@auctioning || @auctioning == company) &&
+              auctionable_companies.include?(company) &&
               (min_bid(company) <= player.cash)
           end
 
           def log_skip(entity)
-            super unless @round.current_actions.any?
+            super if @round.current_actions.empty?
           end
         end
       end
