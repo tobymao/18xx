@@ -1014,6 +1014,59 @@ module Engine
           'O&V' => 21,
           'L&G' => 22,
         }.freeze
+
+        QUICK_START_PACKETS_A = {
+          3 => [
+            { companies: ['M&A', 'V&J', 'M&C', 'B&M', 'R&T', 'H&G'], cost: 500 },
+            { companies: ['M&V', 'A&S', 'C&B', 'P&L', 'L&C'], cost: 475 },
+            { companies: ['C&S', 'C&M', 'SJ&C', 'B&CR', 'M&Z', 'Z&P'], cost: 500 },
+          ],
+          4 => [
+            { companies: ['M&A', 'V&J', 'M&C', 'B&CR'], cost: 360 },
+            { companies: ['B&M', 'R&T', 'M&Z', 'Z&P'], cost: 350 },
+            { companies: ['M&V', 'A&S', 'C&B', 'L&C'], cost: 365 },
+            { companies: ['C&S', 'C&M', 'SJ&C', 'P&L'], cost: 370 },
+          ],
+          5 => [
+            { companies: ['M&A', 'V&J', 'M&C'], cost: 295 },
+            { companies: ['B&M', 'R&T', 'M&Z'], cost: 270 },
+            { companies: ['M&V', 'A&S', 'C&B'], cost: 275 },
+            { companies: ['C&S', 'C&M', 'SJ&C'], cost: 260 },
+            { companies: ['P&L', 'L&C', 'B&CR', 'H&G'], cost: 295 },
+          ],
+          6 => [
+            { companies: ['M&A', 'M&Z'], cost: 220 },
+            { companies: ['B&M', 'R&T', 'C&B'], cost: 250 },
+            { companies: ['M&V', 'A&S'], cost: 200 },
+            { companies: ['C&S', 'B&CR', 'SJ&C'], cost: 240 },
+            { companies: ['P&L', 'L&C', 'H&G'], cost: 230 },
+            { companies: ['V&J', 'M&C', 'Z&P'], cost: 250 },
+          ],
+        }.freeze
+
+        QUICK_START_PACKETS_B = QUICK_START_PACKETS_A.merge({
+          4 => [
+            { companies: ['M&A', 'V&J', 'M&C', 'B&CR'], cost: 360 },
+            { companies: ['B&M', 'R&T', 'P&L', 'L&C'], cost: 375 },
+            { companies: ['M&V', 'A&S', 'C&B', 'Z&P'], cost: 355 },
+            { companies: ['C&S', 'C&M', 'SJ&C', 'M&Z'], cost: 355 },
+          ],
+        }.freeze)
+
+        def quick_start
+          packets = option_quick_start_packets[@players.size].sort_by { rand }
+          @players.zip(packets).each do |player, packet|
+            cost = packet[:cost]
+            player.spend(cost, @bank)
+            companies = packet[:companies]
+            companies.each do |sym|
+              company = @companies.find { |c| c.sym == sym }
+              purchase_company(player, company, 0)
+            end
+            @log << "#{player.name} spends #{format_currency(cost)} and " \
+                    "buys private companies #{companies.join(', ')}"
+          end
+        end
       end
     end
   end
