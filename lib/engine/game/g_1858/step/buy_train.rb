@@ -49,7 +49,7 @@ module Engine
           def ebuy_can_issue?(entity)
             return false unless entity.corporation?
             return false unless can_buy_train?(entity)
-            return false unless issuable_shares(entity).any?
+            return false if issuable_shares(entity).empty?
 
             @depot.min_depot_price <= entity.cash + entity.owner.cash +
                                       issuable_shares(entity).map(&:price).max

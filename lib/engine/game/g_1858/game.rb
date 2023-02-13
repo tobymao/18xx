@@ -311,7 +311,13 @@ module Engine
         end
 
         def home_token_locations(corporation)
-          if corporation.companies.any?
+          if corporation.companies.empty?
+            # When starting a public company after the start of phase 5 it can
+            # choose any unoccupied city space for its first token.
+            hexes.select do |hex|
+              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+            end
+          else
             # This corporation is being formed from a private company. Its first
             # token is in one of the city spaces reserved for the private.
             company = corporation.companies.first
@@ -319,12 +325,6 @@ module Engine
             raise GameError, "No available token slots for #{company.id}" if home_cities.empty?
 
             home_cities.map(&:hex)
-          else
-            # When starting a public company after the start of phase 5 it can
-            # choose any unoccupied city space for its first token.
-            hexes.select do |hex|
-              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
-            end
           end
         end
 
@@ -452,7 +452,7 @@ module Engine
 
         def submit_revenue_str(routes, _show_subsidy)
           corporation = current_entity
-          return super if corporation.companies.none?
+          return super if corporation.companies.empty?
 
           total_revenue = routes_revenue(routes)
           private_revenue = corporation.companies.sum(&:revenue)

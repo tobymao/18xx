@@ -10,10 +10,10 @@ module Engine
           def actions(entity)
             return [] unless entity == pending_entity
 
-            if entity.placed_tokens.any?
-              %w[place_token pass]
-            else
+            if entity.placed_tokens.empty?
               %w[place_token]
+            else
+              %w[place_token pass]
             end
           end
 

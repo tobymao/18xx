@@ -99,7 +99,7 @@ module Engine
             return false if @game.turn == 1 # Can't exchange in first stock round.
 
             (@game.par_price(entity).price <= player.cash) &&
-              @game.corporations.reject(&:ipoed).any?
+              !@game.corporations.all?(&:ipoed)
           end
 
           def can_exchange?(entity, player)

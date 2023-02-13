@@ -165,7 +165,7 @@ module Engine
 
               ability if @game.hex_blocked_by_ability?(operator, ability, hex)
             end.compact
-            return false unless blocking_abilities.any?
+            return false if blocking_abilities.empty?
 
             # This hex is blocked by something. Check if this can be ignored.
             blocking_abilities.none? do |ability|
