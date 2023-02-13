@@ -99,6 +99,7 @@ module Engine
           'M1' =>
           {
             'count' => 1,
+            'hidden' => true,
             'color' => 'yellow',
             'code' => 'city=revenue:30,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=M',
           },
@@ -127,24 +128,24 @@ module Engine
             'count' => 2,
             'hidden' => true,
             'color' => 'red',
-            'code' => 'city=revenue:yellow_0|green_0|brown_0|gray_0,slots:1;path=a:1,b:_0;path=a:2,b:_0;' \
-                      'path=a:4,b:_0;path=a:5,b:_0;label=A',
+            'code' => 'city=revenue:0,slots:1;path=a:0,b:_0;path=a:2,b:_0;' \
+                      'path=a:3,b:_0;path=a:5,b:_0',
           },
           'RB' =>
           {
             'count' => 2,
             'hidden' => true,
             'color' => 'red',
-            'code' => 'city=revenue:yellow_0|green_0|brown_0|gray_0,slots:1;path=a:1,b:_0;path=a:2,b:_0;' \
-                      'path=a:3,b:_0;path=a:4,b:_0;label=B',
+            'code' => 'city=revenue:0,slots:1;path=a:2,b:_0;path=a:3,b:_0;' \
+                      'path=a:4,b:_0;path=a:5,b:_0',
           },
           'RC' =>
           {
             'count' => 2,
             'hidden' => true,
             'color' => 'red',
-            'code' => 'city=revenue:yellow_0|green_0|brown_0|gray_0,slots:1;path=a:0,b:_0;path=a:1,b:_0;' \
-                      'path=a:2,b:_0;path=a:4,b:_0;label=C',
+            'code' => 'city=revenue:0,slots:1;path=a:0,b:_0;path=a:2,b:_0;' \
+                      'path=a:3,b:_0;path=a:4,b:_0',
           },
           'GK50' =>
           {
@@ -155,7 +156,9 @@ module Engine
           },
         }.freeze
 
-        RURAL_JUNCTION_TILES = %w[X07 X08 X09].freeze
+        RURAL_JUNCTION_TILE_NAMES = %w[X07 X08 X09].freeze
+        RED_CITY_TILE_NAMES = %w[RA RB RC].freeze
+        METROPOLIS_TILE_NAME = 'M1'
 
         LOCATION_NAMES = {
           'A15' => 'Montreal',

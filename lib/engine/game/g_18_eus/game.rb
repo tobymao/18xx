@@ -118,9 +118,96 @@ module Engine
           },
         ].freeze
 
+        POTENTIAL_RED_CITY_HEXES = [
+          { hex_id: 'E7', RA: 3, RB: 0, RC: 1 },
+          { hex_id: 'E11', RA: 3, RB: 5, RC: 2 },
+          { hex_id: 'F4', RA: 3, RB: 1, RC: 2 },
+          { hex_id: 'G7', RA: 3, RB: 4, RC: 3 },
+          { hex_id: 'H6', RA: 3, RB: 1, RC: 3 },
+          { hex_id: 'H12', RA: 3, RB: 4, RC: 0 },
+          { hex_id: 'I9', RA: 3, RB: 4, RC: 3 },
+        ].freeze
+
+        POTENTIAL_METROPOLIS_HEXES = %w[D8 F8 F14 J8].freeze
+
+        REVENUE_MARKERS = %w[
+          yellow_10|green_20|brown_30|gray_40
+          yellow_10|green_40|brown_70|gray_100
+          yellow_20|green_30|brown_40|gray_50
+          yellow_20|green_30|brown_40|gray_40
+          yellow_20|green_40|brown_50|gray_60
+          yellow_20|green_40|brown_50|gray_70
+          yellow_20|green_40|brown_70|gray_100
+          yellow_30|green_40|brown_50|gray_60
+          yellow_30|green_40|brown_60|gray_80
+          yellow_30|green_50|brown_60|gray_80
+          yellow_30|green_50|brown_70|gray_90
+          yellow_30|green_40|brown_50|gray_60
+          yellow_40|green_50|brown_40|gray_30
+          yellow_40|green_50|brown_60|gray_70
+          yellow_10|green_20|brown_30|gray_40
+          yellow_20|green_30|brown_40|gray_40
+        ].freeze
+
         def setup
+          setup_tiles
+          randomize_setup
+        end
+
+        def setup_tiles
+          @neutral_corp = Corporation.new(
+            sym: 'N',
+            name: 'Neutral',
+            logo: '18_eus/black',
+            simple_logo: '18_eus/black',
+            tokens: [],
+          )
+          @neutral_corp.owner = @bank
+
+          tiles = %w[G11 L10].map { |hex_id| hex_by_id(hex_id).tile }
+          # Put a neutral token on the first of each pair of red cities
+          tiles += RED_CITY_TILE_NAMES.map { |tile_name| @tiles.find { |tile| tile.name == tile_name } }
+          tiles.each do |tile|
+            token = Token.new(@neutral_corp, price: 0, type: :neutral)
+            @neutral_corp.tokens << token
+            tile.cities.first.place_token(@neutral_corp, token, check_tokenable: false)
+          end
+        end
+
+        def randomize_setup
+          randomize_map
+        end
+
+        def randomize_map
+          randomize_cities
+          randomize_offboard_revenues
           subsidy_hexes = []
           randomize_subsidies(subsidy_hexes)
+        end
+
+        def randomize_cities
+          red_city_tiles = @tiles.select { |tile| self.class::RED_CITY_TILE_NAMES.include?(tile.name) }
+          red_city_tiles = red_city_tiles.sort_by { rand }.take(3)
+
+          selected_cities = self.class::POTENTIAL_RED_CITY_HEXES.sort_by { rand }.take(3)
+          selected_cities.each do |selected_city|
+            hex = hex_by_id(selected_city[:hex_id])
+            tile = red_city_tiles.shift
+            rotation = selected_city[tile.name.to_sym]
+            tile.rotate!(rotation)
+            hex.lay(tile)
+          end
+
+          metropolis_hex = hex_by_id(self.class::POTENTIAL_METROPOLIS_HEXES.min_by { rand })
+          metropolis_tile = @tiles.find { |tile| tile.name == self.class::METROPOLIS_TILE_NAME }
+          metropolis_hex.lay(metropolis_tile)
+        end
+
+        def randomize_offboard_revenues
+          markers = self.class::REVENUE_MARKERS.sort_by { rand }.dup
+          @hexes.each do |hex|
+            hex.tile.nodes.first.parse_revenue(markers.shift) if hex.tile.color == :red
+          end
         end
 
         def init_stock_market
@@ -187,6 +274,10 @@ module Engine
             Step::BuyTrain,
             [Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def a8_revenue_marker
+          @a8_revenue_marker ||= 'yellow_40|green_60|brown_80|gray_100'
         end
 
         #
