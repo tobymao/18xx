@@ -160,6 +160,8 @@ module Engine
         RED_CITY_TILE_NAMES = %w[RA RB RC].freeze
         METROPOLIS_TILE_NAME = 'M1'
 
+        CHICAGO_HEX_ID = 'D2'
+
         LOCATION_NAMES = {
           'A15' => 'Montreal',
           'C3' => 'Milwaukee',
@@ -168,7 +170,7 @@ module Engine
           'C13' => 'Rochester',
           'C17' => 'Boston',
           'D0' => 'The West',
-          'D2' => 'Chicago',
+          CHICAGO_HEX_ID => 'Chicago',
           'D8' => 'Detroit',
           'D10' => 'Cleveland',
           'D16' => 'New York',
@@ -214,7 +216,7 @@ module Engine
           white: {
             %w[A17 B6 B14 B16 B18 C7 C15 D4 D6 D12 D14 E1 E3 E5 E9 E13 F2 F6 F10 F12 G3 G5 G9 G13 H4 H8 H10 H14 I5 I7 I11 I13 J6
                J10 K9] => '',
-            %w[C5 C13 C17 D2 D8 D10 D16 E7 E11 E15 F4 F8 F14 G7 G15 H6 H12 I9 J8 J12 K11] => 'city=revenue:0',
+            %w[C5 C13 C17 D2 D8 D10 E7 E11 E15 F4 F8 F14 G7 G15 H6 H12 I9 J8 J12 K11] => 'city=revenue:0',
           },
           yellow: {
             %w[D16] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_0;label=NY',

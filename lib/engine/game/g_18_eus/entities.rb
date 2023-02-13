@@ -297,10 +297,10 @@ module Engine
         SUBSIDIES = [
           {
             id: 'S0',
-            name: '+$10',
+            name: '+10',
             desc: 'Increase value of starting city by 10 (for all companies)',
             value: 0,
-            icon: 'subsidy_plus_ten',
+            icon: '18_eus/subsidy_plus_ten',
             abilities: [],
           },
           {
@@ -308,7 +308,7 @@ module Engine
             name: '$40',
             desc: 'Company receives extra $40 into its treasury',
             value: 40,
-            icon: 'subsidy_forty',
+            icon: '18_eus/subsidy_forty',
             abilities: [],
           },
           {
@@ -316,7 +316,7 @@ module Engine
             name: '$50 Subsidy',
             desc: 'Company receives extra $50 into its treasury',
             value: 50,
-            icon: 'subsidy_fifty',
+            icon: '18_eus/subsidy_fifty',
             abilities: [],
           },
           {
@@ -325,7 +325,7 @@ module Engine
             desc: 'Company receives income at the beginning of each OR (when private' \
                   ' companies pay) equal to the current interest.',
             value: 0,
-            icon: '', # TODO: either +Loan Interest or +Interest
+            icon: '18_eus/subsidy_plus_loan_interest',
             abilities: [],
           },
           {
@@ -334,7 +334,7 @@ module Engine
             desc: 'Company increases its stock price one horizontal at the end of its' \
                   ' first operating turn.',
             value: 0,
-            icon: '', # TODO: +Stock Price
+            icon: '18_eus/subsidy_plus_stock_price',
             abilities: [],
           },
           {
@@ -344,7 +344,7 @@ module Engine
                   ' then company may use this subsidy to add $40 to revenue. This is a' \
                   ' one-time use.',
             value: 0,
-            icon: '', # TODO: +$40 One Run or +$40 Run
+            icon: '18_eus/subsidy_plus_forty_run',
             abilities: [],
           },
           {
@@ -352,7 +352,7 @@ module Engine
             name: 'Free Token',
             desc: 'Company receives extra token that may be placed for free.',
             value: 0,
-            icon: 'subsidy_free_station', # TODO: make token
+            icon: '18_eus/subsidy_free_token',
             abilities: [
               {
                 type: 'token',
@@ -372,26 +372,26 @@ module Engine
             desc: 'Company receives "K" rural junction tile.' \
                   ' See private company A4 for more details.',
             value: 0,
-            icon: '', # TODO: Rural Junction
+            icon: '18_eus/subsidy_rural_junction',
             abilities: [],
           },
           {
             id: 'S8',
-            name: 'Two Free Tile Lays',
+            name: 'Two Tile Lays',
             desc: 'Company may lay 2 extra free yellow tiles' \
                   ' (these can be taken on first operating turn or later).',
             value: 0,
-            icon: '', # TODO: 2 Tiles
+            icon: '18_eus/subsidy_two_tiles',
             abilities: [],
           },
           {
             id: 'S9',
-            name: 'Green Starting City',
+            name: 'Green City',
             desc: 'On first operating turn, company may place green city' \
                   ' tile on home location instead of yellow.  This may be' \
                   ' any of the three regular green cities.',
             value: 0,
-            icon: 'subsidy_boomtown', # TODO: Green City
+            icon: '18_eus/subsidy_green_city',
             abilities: [
               {
                 type: 'tile_lay',

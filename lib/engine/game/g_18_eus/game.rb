@@ -181,8 +181,7 @@ module Engine
         def randomize_map
           randomize_cities
           randomize_offboard_revenues
-          subsidy_hexes = []
-          randomize_subsidies(subsidy_hexes)
+          randomize_subsidies
         end
 
         def randomize_cities
@@ -283,10 +282,17 @@ module Engine
         #
         # Subsidies
         #
-        def randomize_subsidies(hex_ids)
-          randomized_subsidies = self.class::SUBSIDIES.sort_by { rand }.take(hex_ids.size)
-          hex_ids.zip(randomized_subsidies).each do |hex_id, subsidy|
-            hex_by_id(hex_id).tile.icons << Engine::Part::Icon.new("18_usa/#{subsidy['icon']}")
+        def randomize_subsidies
+          subsidy_hexes = @hexes.select do |hex|
+            hex.tile.color == :white &&
+            !hex.tile.cities.empty? &&
+            hex.id != self.class::CHICAGO_HEX_ID
+          end
+          subsidy_tiles = subsidy_hexes.map(&:tile).sort_by { rand }.take(5)
+
+          subsidies = self.class::SUBSIDIES.sort_by { rand }.take(subsidy_tiles.size)
+          subsidy_tiles.zip(subsidies).each do |tile, subsidy|
+            tile.icons << Engine::Part::Icon.new(subsidy['icon'])
           end
         end
 
