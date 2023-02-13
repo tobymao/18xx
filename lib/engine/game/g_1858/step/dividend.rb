@@ -11,13 +11,9 @@ module Engine
 
           def actions(entity)
             return [] unless entity.corporation?
-            return [] if total_revenue(entity).zero?
+            return [] if @game.routes_revenue.zero?
 
             ACTIONS
-          end
-
-          def total_revenue(entity)
-            @game.routes_revenue(routes) + entity.companies.sum(&:revenue)
           end
 
           def process_dividend(action)
