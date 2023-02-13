@@ -13,7 +13,7 @@ module Engine
             companies = @game.purchasable_companies(entity)
 
             entity == current_entity &&
-            companies.any? &&
+            !companies.empty? &&
             companies.map(&:min_price).min <= entity.cash
           end
         end
