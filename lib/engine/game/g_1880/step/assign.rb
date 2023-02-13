@@ -11,7 +11,8 @@ module Engine
           def actions(entity)
             return [] if entity.player?
             return [] unless @game.abilities(entity, :assign_corporation)
-            return [] if current_entity.minor? || (entity == @game.p5 && current_entity.building_permits&.include?('D'))
+            return [] if current_entity.minor? ||
+                        (entity == @game.p5 && current_entity.corporation? && current_entity.building_permits&.include?('D'))
 
             return ACTIONS if @game.forced_exchange_rocket? && entity == @game.rocket
             return ACTIONS_WITH_PASS if p5_block? && current_entity.owner == @game.p5.owner
@@ -68,12 +69,12 @@ module Engine
 
           def process_assign_rocket(action)
             buying_corp = action.target
-            train = @game.depot.upcoming.first
+            train = @game.rocket_train || @game.depot.upcoming.first
             @log << "#{buying_corp.name} exchanges the #{@game.rocket.name} for a #{train.name} train"
 
             @game.rocket.close!
             @game.buy_train(buying_corp, train, :free)
-            @game.phase.buying_train!(buying_corp, train)
+            @game.phase.buying_train!(buying_corp, train, @game.depot)
           end
         end
       end

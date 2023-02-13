@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require_relative 'credit_mobilier'
 require_relative 'entities'
 require_relative 'golden_spike'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'share_pool'
 require_relative 'trains'
+require_relative 'step/assign'
 require_relative 'step/buy_company'
 require_relative 'step/buy_train'
 require_relative 'step/choose'
@@ -14,6 +16,7 @@ require_relative 'step/development_token'
 require_relative 'step/dividend'
 require_relative 'step/double_share_protection'
 require_relative 'step/home_token'
+require_relative 'step/issue_shares'
 require_relative 'step/manual_close_company'
 require_relative 'step/route'
 require_relative 'step/stock_round_action'
@@ -34,6 +37,7 @@ module Engine
         include Entities
         include Map
         include Trains
+        include CreditMobilier
         include GoldenSpike
 
         # Engine::Game includes
@@ -127,6 +131,10 @@ module Engine
 
         GHOST_TOWN_NAME = 'ghost town'
 
+        BILLINGS_HEXES = %w[A9 A11].freeze
+        FEMV_HEX = 'G27'
+        RCL_HEX = 'C27'
+        WALDEN_HEX = 'N18'
         WIND_RIVER_CANYON_HEX = 'F12'
 
         # special shares
@@ -165,6 +173,7 @@ module Engine
 
           @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
           @late_corps.each { |corp| corp.reservation_color = nil }
+          setup_credit_mobilier
 
           @coal_companies = init_coal_companies
           @minors.concat(@coal_companies)
@@ -174,10 +183,25 @@ module Engine
 
           @double_headed_trains = []
 
+          # place neutral token in Walden
+          neutral = Corporation.new(
+            sym: 'N',
+            name: 'Neutral',
+            logo: 'open_city',
+            simple_logo: 'open_city',
+            tokens: [0],
+          )
+          neutral.owner = @bank
+          neutral.tokens.first.type = :neutral
+          city_by_id("#{self.class::WALDEN_HEX}-0-0").place_token(neutral, neutral.next_token)
+
           # reserve the double share for Ames Bros exchange
           union_pacific.shares.last.buyable = false
           up_double_share.double_cert = true
           @up_double_share_protection = {}
+
+          @lhp_train = find_and_remove_train_by_id('2+1-0', buyable: false)
+          @lhp_train_pending = false
 
           setup_spikes
 
@@ -190,6 +214,22 @@ module Engine
 
         def dpr
           @dpr ||= corporation_by_id('DPR')
+        end
+
+        def femv
+          @femv ||= corporation_by_id('FE&MV')
+        end
+
+        def rcl
+          @rcl ||= corporation_by_id('RCL')
+        end
+
+        def femv_hex?(hex)
+          hex.id == self.class::FEMV_HEX
+        end
+
+        def rcl_hex?(hex)
+          hex.id == self.class::RCL_HEX
         end
 
         def union_pacific
@@ -208,6 +248,7 @@ module Engine
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialTrack,
+            G1868WY::Step::Assign,
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::HomeToken,
             G1868WY::Step::DoubleShareProtection,
@@ -225,9 +266,11 @@ module Engine
             G1868WY::Step::DevelopmentToken,
             Engine::Step::Bankrupt,
             Engine::Step::SpecialTrack,
+            G1868WY::Step::Assign,
             G1868WY::Step::BuyCompany,
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::Choose,
+            G1868WY::Step::IssueShares,
             G1868WY::Step::Track,
             G1868WY::Step::Token,
             G1868WY::Step::DoubleHeadTrains,
@@ -315,6 +358,47 @@ module Engine
           super
 
           corporation.capitalization = :incremental
+        end
+
+        def event_convert_lhp!
+          if (corporation = lhp_private.corporation)
+            convert_lhp_train!(corporation)
+          else
+            @lhp_train_pending = true unless lhp_private.closed?
+          end
+        end
+
+        def convert_lhp_train!(corporation)
+          train = @lhp_train
+          buy_train(corporation, train, :free)
+          @log << "#{lhp_private.name} converts to a #{train.name} train for #{corporation.id}"
+          lhp_private.close!
+          @lhp_train_pending = false
+        end
+
+        def pass_converting_lhp_train!
+          train = @lhp_train
+          @log << "#{lhp_private.name} closes without converting to a #{train.name} train"
+          lhp_private.close!
+          @lhp_train_pending = false
+        end
+
+        def extra_train?(train)
+          train == @lhp_train
+        end
+
+        def crowded_corps
+          @crowded_corps ||= corporations.select do |c|
+            c.trains.count { |t| !extra_train?(t) } > train_limit(c)
+          end
+        end
+
+        def must_buy_train?(entity)
+          entity.trains.none? { |t| !extra_train?(t) }
+        end
+
+        def lhp_train_pending?
+          @lhp_train_pending
         end
 
         def init_track_points
@@ -771,6 +855,47 @@ module Engine
           player.value - player.companies.sum(&:value)
         end
 
+        def issuable_shares(entity, previously_issued = 0)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G1868WY::Step::IssueShares) }.active?
+
+          max_size = @phase.name.to_i - (previously_issued || @round.issued)
+
+          bundles_for_corporation(entity, entity).select do |bundle|
+            @share_pool&.fit_in_bank?(bundle) && bundle.num_shares <= max_size && bundle.shares.all?(&:buyable)
+          end
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G1868WY::Step::IssueShares) }.active?
+
+          bundles = bundles_for_corporation(share_pool, entity)
+
+          if entity == union_pacific
+            bundles.reject! { |bundle| (entity.cash < bundle.price) || bundle.shares.find { |s| s.id == UP_DOUBLE_SHARE } }
+          else
+            bundles.reject! { |bundle| entity.cash < bundle.price }
+          end
+
+          bundles
+        end
+
+        def total_emr_buying_power(player, corporation)
+          emergency = (issuable = emergency_issuable_cash(corporation)).zero?
+          corporation.cash + issuable + liquidity(player, emergency: emergency)
+        end
+
+        def emergency_issuable_bundles(corp)
+          return [] if corp.trains.any?
+
+          train = @depot.min_depot_train
+          _min_train_price, max_train_price = train.variants.map { |_, v| v[:price] }.minmax
+          return [] if corp.cash >= max_train_price
+
+          issuable_shares(corp)
+        end
+
         def sellable_bundles(player, corporation)
           bundles = super
 
@@ -1049,6 +1174,16 @@ module Engine
           player = @up_double_share_protection[:player]
           shares = player.shares_of(union_pacific).reject(&:double_cert)
           Engine::ShareBundle.new(shares)
+        end
+
+        def billings_hex?(hex)
+          self.class::BILLINGS_HEXES.include?(hex.id)
+        end
+
+        def other_billings(hex)
+          return unless (index = self.class::BILLINGS_HEXES.index(hex.id))
+
+          hex_by_id(self.class::BILLINGS_HEXES[(index + 1) % 2])
         end
 
         def event_close_privates!

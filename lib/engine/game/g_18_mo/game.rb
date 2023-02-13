@@ -15,7 +15,7 @@ module Engine
         include G18MO::Entities
         include G18MO::Map
 
-        STARTING_CASH = { 2 => 600, 3 => 425, 4 => 400, 5 => 385 }.freeze
+        STARTING_CASH = { 2 => 600, 3 => 400, 4 => 400, 5 => 385 }.freeze
         TILE_COST = 0
 
         PHASES = [
@@ -29,7 +29,7 @@ module Engine
                 {
                   name: '3',
                   train_limit: 4,
-                  on: '3G',
+                  on: 'G3',
                   tiles: %i[yellow green],
                   operating_rounds: 2,
                   status: ['can_buy_companies'],
@@ -67,29 +67,32 @@ module Engine
 
         TRAINS = [
           {
-            name: '2Y',
-            distance: 2,
+            name: 'Y2',
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 100,
             obsolete_on: '3E',
-            rusts_on: '7',
             variants: [
               {
-                name: '3Y',
-                distance: 3,
+                name: 'Y3',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
                 price: 150,
               },
               ],
           },
           {
-            name: '3G',
-            distance: 3,
+            name: 'G3',
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 180,
             obsolete_on: '5E',
             variants: [
               {
-                name: '4G',
-                distance: 4,
-                price: 240,
+                name: 'G4',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                price: 220,
               },
             ],
           },
@@ -101,12 +104,14 @@ module Engine
           },
           {
             name: '5',
-            distance: 5,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 450,
             variants: [
               {
                 name: '6',
-                distance: 6,
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
                 price: 540,
               },
             ],
@@ -119,12 +124,14 @@ module Engine
           },
           {
             name: '7',
-            distance: 7,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 7 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 700,
             variants: [
               {
                 name: '8',
-                distance: 8,
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
                 price: 800,
               },
             ],
@@ -256,9 +263,9 @@ module Engine
           num_players = @players.size
 
           case train[:name]
-          when '2Y'
+          when 'Y2'
             two_player? ? 7 : num_players + 4
-          when '3G'
+          when 'G3'
             two_player? ? 4 : num_players
           when '3E', '5E'
             1
@@ -270,14 +277,25 @@ module Engine
         end
 
         def num_removals(group)
-          return 0 if @players.size == 5
-          return 1 if @players.size == 4
-
           case group
           when ORANGE_GROUP, BLUE_GROUP
-            @players.size == 2 ? 1 : 2
+            case @players.size
+            when 2, 4
+              2
+            when 3
+              3
+            else
+              1
+            end
           when GREEN_GROUP
-            2
+            case @players.size
+            when 2, 3
+              2
+            when 4
+              1
+            else
+              0
+            end
           end
         end
 
@@ -338,6 +356,31 @@ module Engine
 
         def place_second_token(corporation, two_player_only: true, deferred: true)
           super(corporation, two_player_only: two_player_only, deferred: false)
+        end
+
+        # override compute_stops to allow visiting dit in East St. Louis and replacing city/offboard
+        # with its value
+        #
+        def compute_stops(route)
+          visits = route.visited_stops
+          distance = route.train.distance
+          return [] if visits.empty?
+
+          paying_distance = distance.find { |d| d['pay'].positive? }
+
+          # Separate between city/offboard and dits (exception: E-trains)
+          # There should only be one dit_stop at most
+          normal_stops, dit_stops = visits.partition { |node| paying_distance['nodes'].include?(node.type) }
+
+          # if no dit stops (or E-train)
+          return super if dit_stops.empty?
+
+          # return if not enough normal stops
+          return visits if normal_stops.size < paying_distance['pay']
+
+          # remove smallest normal stop that has less revenue than dit
+          worst_stop = normal_stops.min_by { |stop| stop.route_revenue(route.phase, route.train) }
+          visits.reject { |stop| stop == worst_stop }
         end
 
         def setup_turn

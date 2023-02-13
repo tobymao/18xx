@@ -18,7 +18,7 @@ module Engine
 
         attr_accessor :train_marker
         attr_reader :full_cap_event, :communism, :end_game_triggered, :saved_or_round, :final_operating_rounds,
-                    :foreign_investors_operate
+                    :foreign_investors_operate, :rocket_train
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :yellow_only
@@ -536,17 +536,23 @@ module Engine
           false
         end
 
+        def float_str(entity)
+          return super if entity.percent_to_float.positive?
+
+          'Ready to float'
+        end
+
+        def float_corporations
+          @corporations.select { |c| !c.floated? && !c.percent_to_float.positive? }.each { |c| float_corporation(c) }
+        end
+
         def float_corporation(corporation)
+          corporation.float!
           @log << "#{corporation.name} floats"
 
-          @bank.spend(corporation.par_price.price * 5, corporation)
-          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
-
-          # reserve share for foreign investor
-          foreign_investor = @minors.find { |m| m.owner == corporation.owner }
-          return unless foreign_investor&.shares&.empty?
-
-          assign_share_to_fi(corporation, foreign_investor)
+          cash = corporation.original_par_price.price * 5
+          @bank.spend(cash, corporation)
+          @log << "#{corporation.name} receives #{format_currency(cash)}"
         end
 
         def assign_share_to_fi(corporation, foreign_investor)
@@ -741,6 +747,11 @@ module Engine
 
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
+
+          if train.name == '4' && !rocket.closed? && @depot.upcoming.first.name != train.name
+            @rocket_train = train
+            return
+          end
 
           @sr_triggered = true
           transition_to_next_round!
