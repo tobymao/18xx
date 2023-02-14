@@ -1050,7 +1050,10 @@ module Engine
         end
 
         def reset_company_values
-          companies.each { |comp| comp.value = 0 }
+          companies.each do |comp|
+            comp.value = 0
+            comp.discount = 0
+          end
         end
       end
     end
