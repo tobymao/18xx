@@ -80,7 +80,12 @@ module Engine
             'color' => 'yellow',
             'code' => 'town=revenue:20;town=revenue:20;path=a:1,b:_0;path=a:4,b:_0;path=a:3,b:_1;path=a:5,b:_1',
           },
-          '8858' => 2,
+          '8858' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'town=revenue:20;town=revenue:20;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:5,b:_1',
+          },
           '8860' => 1,
 
           '8861' =>
@@ -199,24 +204,24 @@ module Engine
           'H6' => 'Taiyuan',
           'H10' => 'Jinan',
           'H14' => 'Qingdao',
-          'I1' => 'Urümqi',
+          'I1' => 'Ürümqi',
           'J2' => 'Lanzhou',
           'J6' => "Xi'an",
           'I9' => 'Kaifeng & Zhengzhou',
           'J12' => 'Hefei',
           'K1' => 'Lhasa',
-          'K13' => 'Manjing',
+          'K13' => 'Nanjing',
           'K15' => 'Shanghai',
           'L10' => 'Wuhan',
           'M3' => 'Chengdu',
           'M7' => 'Chongqing',
-          'N12' => 'Changsha & Manchang',
+          'N12' => 'Changsha & Nanchang',
           'N16' => 'Taiwan',
           'O5' => 'Kunming',
           'P8' => 'Nanning',
           'P12' => 'Macau',
           'P14' => 'Guangzhou',
-          'Q7' => 'French Indonesia',
+          'Q7' => 'French Indochina',
           'Q13' => 'Haikou',
           'Q15' => 'Hong Kong',
         }.freeze
@@ -226,14 +231,16 @@ module Engine
             %w[Q7] =>
                      'city=revenue:yellow_30|green_40|brown_50|gray_60;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
             %w[A15] =>
-                     'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0;path=a:1,b:_0',
+                     'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1',
             %w[A3] =>
                      'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
             %w[I1] =>
-                     'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+                     'offboard=revenue:yellow_10|green_20|brown_30|gray_40;'\
+                     'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
 
             %w[K1] =>
-                     'offboard=revenue:yellow_0|green_0|brown_0|gray_80;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+                     'offboard=revenue:yellow_0|green_0|brown_0|gray_80;'\
+                     'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
 
             %w[Q15] =>
                      'city=revenue:yellow_20|green_30|brown_10|gray_70;path=a:2,b:_0,terminal:1',
@@ -251,7 +258,7 @@ module Engine
                       'path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_2;path=a:4,b:_3;label=B',
           },
           white: {
-            %w[A9 A11 A13 B6 B10 C13 D10 F2 G13 I11 I13 J10 K11 M9 M11 M13 N14 O13] => '',
+            %w[A9 A11 A13 B6 B10 C13 D10 E15 F2 G13 I11 I13 J10 K11 M9 M11 M13 N14 O13] => '',
             ['G7'] => 'stub=edge:3',
             %w[B4 C3 C5 C15 D6 D8 E3 E5 E7 H2 I3 J4 K3 K9 L4 L6 N8 O9] => 'upgrade=cost:30,terrain:mountain',
             %w[L2 M1 N2 P2] => 'upgrade=cost:40,terrain:mountain',
@@ -269,7 +276,7 @@ module Engine
             %w[A7 C7 D14 G9 G15 L16 M15 P6] => 'town=revenue:0',
             %w[B12 H12 O11] => 'town=revenue:0;town=revenue:0',
             %w[B14 L14 N10] => 'town=revenue:0;city=revenue:0',
-            ['F6'] => 'town=revenue:0;city=revenue:0;stub=edge:4',
+            ['F6'] => 'town=revenue:0;city=revenue:0;stub=edge:4;upgrade=cost:30,terrain:mountain',
             ['E9'] => 'town=revenue:0;city=revenue:0;stub=edge:0',
             %w[H8] => 'town=revenue:0;city=revenue:0;town=revenue:0;city=revenue:0',
             %w[N4] => 'town=revenue:0;city=revenue:0;town=revenue:0;city=revenue:0;upgrade=cost:20,terrain:river',

@@ -57,8 +57,9 @@ module Engine
             @log << "#{corporation.name} closes the #{hunslet.name} to purchase a "\
                     "#{train.name} train for #{@game.format_currency(train.price)}"
             hunslet.close!
+            source = train.owner
             @game.buy_train(corporation, train, train.price)
-            @game.phase.buying_train!(corporation, train)
+            @game.phase.buying_train!(corporation, train, source)
           end
         end
       end

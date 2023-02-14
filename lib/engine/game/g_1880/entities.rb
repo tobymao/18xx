@@ -11,6 +11,7 @@ module Engine
             value: 5,
             revenue: 0,
             desc: 'Owner receives one-off payment of 40/70/100 when last 2+2/3/3+3 train is purchased',
+            abilities: [{ type: 'sell_company', owner_type: 'player' }],
             color: nil,
           },
           {
@@ -26,7 +27,7 @@ module Engine
             sym: 'P2',
             value: 25,
             revenue: 10,
-            desc: 'The owner may use all ferries for free with all his companies',
+            desc: 'The owner may use all ferries for free with all their companies',
             color: nil,
           },
           {
@@ -34,11 +35,12 @@ module Engine
             sym: 'P3',
             value: 45,
             revenue: 15,
-            desc: 'For the owner, the value of Taiwan is +20 (with all his companies)',
+            desc: 'For the owner, the value of Taiwan is +20 (with all their companies)',
             abilities: [
               {
                 type: 'hex_bonus',
                 owner_type: 'player',
+                when: 'owning_player_or_turn',
                 hexes: ['N16'],
                 amount: 20,
               },
@@ -50,11 +52,12 @@ module Engine
             sym: 'P4',
             value: 70,
             revenue: 20,
-            desc: 'Reduce the cost of laying a tile in a river hex by ¥20 (for all his companies)',
+            desc: 'Reduce the cost of laying a tile in a river hex by ¥20 (for all their companies)',
             abilities: [{
               type: 'tile_discount',
               discount: 20,
-              terrain: 'water',
+              terrain: 'river',
+              exact_match: false,
               owner_type: 'player',
               when: 'owning_player_track',
             }],
@@ -65,7 +68,14 @@ module Engine
             sym: 'P5',
             value: 100,
             revenue: 25,
-            desc: 'Building permit for Phase D (for one of his companies)',
+            desc: 'Building permit for Phase D (for one of their companies)',
+            abilities: [{
+              type: 'assign_corporation',
+              owner_type: 'player',
+              count: 1,
+              when: 'owning_player_or_turn',
+              closed_when_used_up: false,
+            }],
             color: nil,
           },
           {
@@ -84,7 +94,7 @@ module Engine
             value: 50,
             revenue: 0,
             desc: 'The owner may exchange the Rocket of China for a currently available train, '\
-                  'for one of his companies, during that company’s turn in an Operating Round. '\
+                  'for one of their companies, during that company’s turn in an Operating Round. '\
                   'Forced exchange into second 4-train.',
             abilities: [{
               type: 'purchase_train',
@@ -147,9 +157,9 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'BCU',
+            sym: 'BZU',
             name: 'Binzhou Railway',
-            logo: '1880/BCU',
+            logo: '1880/BZU',
             tokens: [0, 40, 100],
             coordinates: 'B8',
             color: '#9D8359',
@@ -262,6 +272,7 @@ module Engine
             sym: '1',
             name: 'Russian Investor',
             logo: '1880/Russia',
+            simple_logo: '1880/1',
             tokens: [0],
             coordinates: 'A3',
             color: :gray,
@@ -271,6 +282,7 @@ module Engine
             sym: '2',
             name: 'Japanese Investor',
             logo: '1880/Japan',
+            simple_logo: '1880/2',
             tokens: [0],
             coordinates: 'E13',
             color: :gray,
@@ -280,6 +292,7 @@ module Engine
             sym: '3',
             name: 'Belgian Investor',
             logo: '1880/Belgium',
+            simple_logo: '1880/3',
             tokens: [0],
             coordinates: 'H6',
             color: :gray,
@@ -289,6 +302,7 @@ module Engine
             sym: '4',
             name: 'German Investor',
             logo: '1880/Germany',
+            simple_logo: '1880/4',
             tokens: [0],
             coordinates: 'H14',
             color: :gray,
@@ -297,6 +311,7 @@ module Engine
           {
             sym: '5',
             name: 'British Investor',
+            simple_logo: '1880/5',
             logo: '1880/UK',
             tokens: [0],
             coordinates: 'Q15',
@@ -307,6 +322,7 @@ module Engine
             sym: '6',
             name: 'Portuguese Investor',
             logo: '1880/Portugal',
+            simple_logo: '1880/6',
             tokens: [0],
             coordinates: 'P12',
             color: :gray,
@@ -316,6 +332,7 @@ module Engine
             sym: '7',
             name: 'French Investor',
             logo: '1880/France',
+            simple_logo: '1880/7',
             tokens: [0],
             coordinates: 'Q7',
             color: :gray,

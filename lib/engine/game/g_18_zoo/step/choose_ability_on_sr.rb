@@ -127,8 +127,9 @@ module Engine
         def process_whatsup(action)
           corporation = @game.corporation_by_id(action.choice['corporation_id'])
           train = @game.train_by_id(action.choice['train_id'])
+          source = train.owner
           @game.buy_train(corporation, train, train.price)
-          @game.phase.buying_train!(corporation, train)
+          @game.phase.buying_train!(corporation, train, source)
 
           ability = Engine::G18ZOO::Ability::DisableTrain.new(
             type: 'disable_train', train: train,

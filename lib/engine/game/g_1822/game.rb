@@ -1713,6 +1713,7 @@ module Engine
 
           mail_bonuses = routes.map do |r|
             stops = r.visited_stops
+            next if stops.size.zero?
             next if stops.size < 2 && !self.class::LOCAL_TRAIN_CAN_CARRY_MAIL
 
             first = stops.first.route_base_revenue(r.phase, r.train) / 2
@@ -2034,6 +2035,10 @@ module Engine
             ['Each share sold', '1 ↓'],
             ['Corporation sold out at end of SR (including Tax Haven shares) ', '1 ↑'],
           ]
+        end
+
+        def port_tile?(hex)
+          hex.tile.color == :blue && !hex.tile.cities.empty?
         end
       end
     end

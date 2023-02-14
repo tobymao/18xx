@@ -93,7 +93,6 @@ module Engine
               },
               {
                 type: 'token',
-                when: 'owning_player_track',
                 hexes: ['I14'],
                 teleport_price: 50,
                 price: 0,
@@ -126,7 +125,6 @@ module Engine
               },
               {
                 type: 'hex_bonus',
-                when: 'owning_player_or_turn',
                 owner_type: 'player',
                 amount: 10,
                 hexes: ['J13'],
@@ -155,7 +153,6 @@ module Engine
               },
               {
                 type: 'hex_bonus',
-                when: 'owning_playing_or_turn',
                 owner_type: 'player',
                 amount: 30,
                 hexes: ['E14'],
@@ -185,7 +182,6 @@ module Engine
               },
               {
                 type: 'tile_lay',
-                when: 'owning_player_track',
                 owner_type: 'player',
                 hexes: ['H21'],
                 tiles: %w[G18 G19 G21 G22 G24 G26 G27 G28 G30],
@@ -265,7 +261,6 @@ module Engine
               },
               {
                 type: 'token',
-                when: 'owning_player_track',
                 hexes: ['H9'],
                 teleport_price: 50,
                 price: 0,
@@ -298,7 +293,6 @@ module Engine
               },
               {
                 type: 'hex_bonus',
-                when: 'owning_playing_or_turn',
                 owner_type: 'player',
                 amount: 20,
                 hexes: ['C14'],

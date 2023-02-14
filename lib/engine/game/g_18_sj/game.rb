@@ -717,8 +717,9 @@ module Engine
 
           # Require first train
           @log << "#{entity.name} requisition a #{train.name} train from #{train.owner.name}"
+          source = train.owner
           buy_train(entity, train, :free)
-          @phase.buying_train!(entity, train)
+          @phase.buying_train!(entity, train, source)
           perform_nationalization if pending_nationalization?
 
           require_automa_trains(entity)

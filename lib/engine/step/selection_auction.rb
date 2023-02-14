@@ -44,13 +44,15 @@ module Engine
           @active_bidders.delete(entity)
           entity.pass!
           all_passed! if entities.all?(&:passed?)
-          next_entity!
+          next_entity! unless @all_passed_win
+          @all_passed_win = false
         end
       end
 
       def next_entity!
         @round.next_entity_index!
         entity = entities[entity_index]
+        entity.pass! if @auctioning && max_bid(entity, @auctioning) < min_bid(@auctioning)
         next_entity! if entity&.passed?
       end
 

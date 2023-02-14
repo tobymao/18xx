@@ -206,6 +206,9 @@ module Engine
       CORPORATION_CLASS = Corporation
       CORPORATIONS = [].freeze
 
+      TRAIN_CLASS = Train
+      DEPOT_CLASS = Depot
+
       MINORS = [].freeze
 
       PHASES = [].freeze
@@ -312,6 +315,16 @@ module Engine
         full_or: 'Next end of a complete OR set',
         one_more_full_or_set: 'End of the next complete OR set after the current one',
       }.freeze
+
+      GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
+        bank: 'Bank Broken',
+        bankrupt: 'Bankruptcy',
+        stock_market: 'Company hit max stock value',
+        final_train: 'Final train was purchased',
+        final_phase: 'Final phase was reached',
+      }.freeze
+
+      ASSIGNMENT_TOKENS = {}.freeze
 
       OPERATING_ROUND_NAME = 'Operating'
       OPERATION_ROUND_SHORT_NAME = 'ORs'
@@ -563,7 +576,8 @@ module Engine
 
         @log << '----'
         @log << 'Your game was unable to be upgraded to the latest version of 18xx.games.'
-        @log << "It is pinned to version #{pin}, if any bugs are raised please include this version number."
+        @log << "It is pinned to version #{pin}."
+        @log << 'Please do not submit bug reports for pinned games. Pinned games cannot be debugged.'
         @log << 'Please note, pinned games may be deleted after 7 days.' if self.class::DEV_STAGE == :beta
         @log << '----'
       end
@@ -734,6 +748,9 @@ module Engine
         @last_processed_action = action.id
 
         self
+      rescue StandardError => e
+        rescue_exception(e, action)
+        self
       end
 
       def process_single_action(action)
@@ -754,21 +771,28 @@ module Engine
           @round.entities.each(&:unpass!)
 
           if end_now?(end_timing)
-
             end_game!
           else
-            store_player_info
-            next_round!
-            check_programmed_actions
-
-            finalize_round_setup
+            transition_to_next_round!
           end
         end
       rescue Engine::GameError => e
+        rescue_exception(e, action)
+      end
+
+      def rescue_exception(e, action)
         @raw_actions.pop
         @actions.pop
         @exception = e
         @broken_action = action
+      end
+
+      def transition_to_next_round!
+        store_player_info
+        next_round!
+        check_programmed_actions
+
+        finalize_round_setup
       end
 
       def finalize_round_setup
@@ -1516,14 +1540,10 @@ module Engine
             (!a.hexes || a.hexes.include?(hex.name))
         end
 
-        tile.upgrades.sum do |upgrade|
-          discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
+        discount = ability&.discounts_tile?(tile) ? ability.discount : 0
+        log_cost_discount(spender, ability, discount)
 
-          log_cost_discount(spender, ability, discount)
-
-          total_cost = upgrade.cost - discount
-          total_cost
-        end
+        tile.upgrades.sum(&:cost) - discount
       end
 
       def tile_cost_with_discount(_tile, hex, entity, spender, cost)
@@ -2093,7 +2113,7 @@ module Engine
         true
       end
 
-      def after_buying_train(train); end
+      def after_buying_train(train, source); end
 
       private
 
@@ -2161,11 +2181,11 @@ module Engine
       def init_train_handler
         trains = game_trains.flat_map do |train|
           Array.new((train[:num] || num_trains(train))) do |index|
-            Train.new(**train, index: index)
+            self.class::TRAIN_CLASS.new(**train, index: index)
           end
         end
 
-        Depot.new(trains, self)
+        self.class::DEPOT_CLASS.new(trains, self)
       end
 
       def game_trains
@@ -2533,16 +2553,14 @@ module Engine
                          " : Game Ends at conclusion of #{round_end.short_name}"\
                          " #{@final_turn}.#{final_operating_rounds}"
                        end
+          after_text += additional_ending_after_text
         end
 
-        reason_map = {
-          bank: 'Bank Broken',
-          bankrupt: 'Bankruptcy',
-          stock_market: 'Company hit max stock value',
-          final_train: 'Final train was purchased',
-          final_phase: 'Final phase was reached',
-        }
-        "#{reason_map[reason]}#{after_text}"
+        "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
+      end
+
+      def additional_ending_after_text
+        ''
       end
 
       def action_processed(_action)

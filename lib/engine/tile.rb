@@ -419,6 +419,14 @@ module Engine
       # for each track/ct on neighboring edges
       edge_count = Hash.new(0)
 
+      if @paths.empty? && @cities.size == 2 && @towns.size == 2
+        # Multiple city/town option tiles
+        div = 3
+        @cities.each_with_index { |x, index| edge_count[x] = (index * div) }
+        @towns.each_with_index { |x, index| edge_count[x] = (index * div) }
+        return edge_count
+      end
+
       if @paths.empty? && @cities.size >= 2
         # If a tile has no paths but multiple cities, avoid them rendering on top of each other
         div = 6 / @cities.size

@@ -9,6 +9,10 @@ module Engine
       module Step
         class BuyCompany < Engine::Step::BuyCompany
           include G1868WY::SkipCoalAndOil
+
+          def can_buy_company?(entity)
+            @game.skip_homeless_dpr?(entity) ? false : super
+          end
         end
       end
     end

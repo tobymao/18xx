@@ -576,8 +576,9 @@ module Engine
           scrap_train(@mhe.trains.first)
           train = @depot.upcoming.first
           @log << "MHE buys a #{train.name} from bank"
+          source = train.owner
           buy_train(@mhe, train, :free)
-          phase.buying_train!(@mhe, train)
+          phase.buying_train!(@mhe, train, source)
         end
 
         def scrap_train(train)
@@ -849,8 +850,9 @@ module Engine
           price = variant[:price]
           train.variant = variant[:name]
           @log << "#{entity.name} buys a #{train.name} train for #{format_currency(price)} from depot"
+          source = train.owner
           buy_train(entity, train, price)
-          phase.buying_train!(entity, train)
+          phase.buying_train!(entity, train, source)
           train
         end
 

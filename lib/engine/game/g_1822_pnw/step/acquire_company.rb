@@ -56,6 +56,7 @@ module Engine
 
             @game.remove_home_icon(major, major.coordinates)
             @game.add_home_icon(major, @new_associated_minor.coordinates)
+            major.coordinates = @new_associated_minor.coordinates
 
             @game.companies.delete(old_company)
 

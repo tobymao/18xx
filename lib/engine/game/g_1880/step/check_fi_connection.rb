@@ -50,7 +50,7 @@ module Engine
 
           def process_merger
             fi = @merging[:fi]
-            share = @merging[:corporation].shares.first
+            share = fi.shares.first
             @game.share_pool.transfer_shares(share.to_bundle, fi.owner)
             @game.bank.spend(50, fi.owner)
             @game.log << "#{fi.owner.name} receives #{@game.format_currency(50)} and a share of #{share.corporation.name}"
@@ -66,7 +66,7 @@ module Engine
           end
 
           def setup
-            @merging
+            @merging = nil
           end
 
           def process_percent(action)
@@ -87,17 +87,12 @@ module Engine
 
           def process_token(action)
             fi = @merging[:fi]
-            replace_token(fi, fi.tokens.first, cheapest_unused_token(@merging[:corporation])) if action.choice == 'Replace'
-            discard_token(fi) if action.choice == 'Discard'
-            @game.log << "#{fi.full_name} closes"
-            fi.close!
-
-            pass!
-          end
-
-          def discard_token(fi)
-            fi.tokens.first.city.remove_tokens!
-            @game.log << "#{fi.name} token is discarded"
+            if action.choice == 'Replace'
+              replace_token(fi, fi.tokens.first, cheapest_unused_token(@merging[:corporation]))
+            else
+              @game.log << "#{fi.name} token is discarded"
+            end
+            @game.close_corporation(fi)
           end
 
           def cheapest_unused_token(corp)

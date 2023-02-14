@@ -37,6 +37,8 @@ module Engine
                 # It's now free so the next player is forced to take it.
                 @round.next_entity_index!
                 forced_win(current_entity, first)
+                @all_passed_win = true
+                post_win_bid(current_entity, first)
               end
             else
               @game.payout_companies
@@ -52,7 +54,7 @@ module Engine
             entities.each(&:unpass!)
             next_entity!
             @auction_triggerer = current_entity
-            auction_entity(@companies.first) unless companies.empty?
+            auction_entity(@companies.first) unless @companies.empty?
           end
 
           def assign_company(company, player)

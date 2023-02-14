@@ -7,74 +7,67 @@ module Engine
         TILES = {
           '1' => 1,
           '2' => 1,
-          '3' => 'unlimited',
-          '4' => 'unlimited',
-          '5' => 'unlimited',
-          '6' => 'unlimited',
+          '3' => 8,
+          '4' => 8,
+          '5' => 10,
+          '6' => 11,
           '7' => 'unlimited',
           '8' => 'unlimited',
           '9' => 'unlimited',
           '55' => 1,
           '56' => 1,
-          '57' => 'unlimited',
-          '58' => 'unlimited',
+          '57' => 10,
+          '58' => 11,
           '69' => 1,
-          '201' => 'unlimited',
-          '202' => 'unlimited',
-          '621' => 'unlimited',
-          '14' => 'unlimited',
-          '15' => 'unlimited',
-          '80' => 'unlimited',
-          '81' => 'unlimited',
-          '82' => 'unlimited',
-          '83' => 'unlimited',
-          '141' => 'unlimited',
-          '142' => 'unlimited',
-          '143' => 'unlimited',
-          '144' => 'unlimited',
-          '207' => 'unlimited',
-          '208' => 'unlimited',
-          '619' => 'unlimited',
-          '622' => 'unlimited',
-          '63' => 'unlimited',
-          '216' => 'unlimited',
-          '448' => 'unlimited',
-          '544' => 'unlimited',
-          '545' => 'unlimited',
-          '546' => 'unlimited',
-          '611' => 'unlimited',
-          '767' => 'unlimited',
-          '768' => 'unlimited',
-          '769' => 'unlimited',
-          '51' => 'unlimited',
-          '60' => 'unlimited',
-          '895' => 'unlimited',
-          '912' => 'unlimited',
+          '201' => 5,
+          '202' => 4,
+          '621' => 2,
+          '14' => 6,
+          '15' => 14,
+          '80' => 3,
+          '81' => 3,
+          '82' => 6,
+          '83' => 6,
+          '141' => 6,
+          '142' => 6,
+          '143' => 3,
+          '144' => 3,
+          '207' => 6,
+          '208' => 3,
+          '619' => 10,
+          '622' => 3,
+          '63' => 8,
+          '216' => 2,
+          '448' => 6,
+          '544' => 2,
+          '545' => 2,
+          '546' => 2,
+          '611' => 4,
+          '767' => 2,
+          '768' => 2,
+          '769' => 2,
+          '51' => 6,
+          '60' => 1,
+          '895' => 11,
+          '912' => 1,
           'X1' =>
             {
-              'count' => 'unlimited',
+              'count' => 3,
               'color' => 'brown',
               'code' =>
                 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y',
             },
           'X2' =>
             {
-              'count' => 'unlimited',
+              'count' => 3,
               'color' => 'brown',
               'code' =>
                 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
                 'path=a:5,b:_0;label=Y',
             },
-          '169' =>
-            {
-              'count' => 'unlimited',
-              'color' => 'gray',
-              'code' =>
-                'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            },
           '512' =>
             {
-              'count' => 'unlimited',
+              'count' => 4,
               'color' => 'gray',
               'code' =>
                 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
@@ -82,21 +75,21 @@ module Engine
             },
           'X3' =>
             {
-              'count' => 'unlimited',
+              'count' => 7,
               'color' => 'gray',
               'code' =>
                 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             },
           'X4' =>
             {
-              'count' => 'unlimited',
+              'count' => 4,
               'color' => 'gray',
               'code' =>
                 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y',
             },
           'X5' =>
             {
-              'count' => 'unlimited',
+              'count' => 2,
               'color' => 'gray',
               'code' =>
                 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
@@ -104,31 +97,10 @@ module Engine
             },
           'X6' =>
             {
-              'count' => 'unlimited',
+              'count' => 1,
               'color' => 'gray',
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            },
-          'B1' =>
-            {
-              'count' => 1,
-              'color' => 'green',
-              'code' =>
-                'city=revenue:30,slots:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B',
-            },
-          'B2' =>
-            {
-              'count' => 1,
-              'color' => 'brown',
-              'code' =>
-                'city=revenue:40,slots:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B',
-            },
-          'B3' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-                'city=revenue:50,slots:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B',
             },
           'C1' =>
             {
@@ -630,8 +602,8 @@ module Engine
             %w[K1 K3] =>
               'city=revenue:0;upgrade=cost:20,terrain:swamp;frame=color:#fffbcc',
             ['N2'] =>
-              'city=revenue:0;upgrade=cost:20,terrain:swamp;border=edge:0,type:impassable;label=Y;'\
-              'icon=image:1866/port,sticky:1;frame=color:#fffbcc',
+              'city=revenue:0;upgrade=cost:20,terrain:swamp;label=Y;icon=image:1866/port,sticky:1;'\
+              'frame=color:#fffbcc',
             %w[O7 P12] =>
               'city=revenue:0;upgrade=cost:60,terrain:hill;frame=color:#fffbcc',
             ['P10'] =>
@@ -680,17 +652,14 @@ module Engine
             %w[B2 C5] =>
               'upgrade=cost:60,terrain:hill;frame=color:#fde2c5',
 
-            # Spain - O1 P2 P4 Q1 Q3 Q5 R2 R4 S1 S3 T2 U1
-            ['O1'] =>
-              'city=revenue:0;border=edge:3,type:impassable;label=B;icon=image:1866/port,sticky:1;'\
-              'frame=color:#bea481',
+            # Spain - P0 P2 P4 Q1 Q3 Q5 R2 R4 S1 S3 T2 U1
             ['T2'] =>
               'city=revenue:0;icon=image:1866/port,sticky:1;frame=color:#bea481',
             ['R4'] =>
               'city=revenue:0;label=Y;frame=color:#bea481',
             ['U1'] =>
               'city=revenue:0;frame=color:#bea481',
-            %w[Q1 Q3 S1 S3] =>
+            %w[P0 Q1 Q3 S1 S3] =>
               'frame=color:#bea481',
             ['R2'] =>
               'town=revenue:0;frame=color:#bea481',
@@ -764,10 +733,13 @@ module Engine
               'path=a:5,b:_0,terminal:1;icon=image:1866/port,sticky:1;frame=color:#fde2c5',
 
             # Spain
+            ['O1'] =>
+              'city=revenue:yellow_20|green_30|brown_40|gray_50,slots:1;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
+              'icon=image:1866/port,sticky:1;frame=color:#bea481',
             ['R0'] =>
               'city=revenue:yellow_30|green_50|brown_70|gray_90,slots:1;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
               'frame=color:#bea481',
-            %w[P0 T0] =>
+            ['T0'] =>
               'junction;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:#bea481',
           },
           blue: {

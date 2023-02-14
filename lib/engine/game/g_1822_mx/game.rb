@@ -431,9 +431,9 @@ module Engine
             train.variant = '2'
             @log << 'L Train given to NDEM is flipped to a 2 Train'
           end
-
+          source = train.owner
           buy_train(ndem, train, :free)
-          phase.buying_train!(ndem, train)
+          phase.buying_train!(ndem, train, source)
           while ndem.trains.length > phase.train_limit(ndem)
             t = ndem.trains.shift
             rust(t)
