@@ -11,7 +11,7 @@ module Engine
 
           def actions(entity)
             return [] unless entity.corporation?
-            return [] if @game.routes_revenue.zero?
+            return [] if @game.routes_revenue(routes).zero?
 
             ACTIONS
           end
