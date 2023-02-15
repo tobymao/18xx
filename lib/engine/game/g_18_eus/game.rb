@@ -338,18 +338,12 @@ module Engine
         def setup_privates
           @companies.sort_by! { rand }
           privates = @companies.group_by { |p| p.id[0] }
-          privates.each do | group, comps |
-            first = comps.find { |c| c.id == group + "0" }
-            comps.delete(first)
-            comps.unshift(first)
+          privates.each do |group, comps|
+            comps.rotate!(comps.index { |c| c.id == "#{group}0" })
           end
 
-          @companies.clear
-          @companies.concat privates["A"].first(4)
-          @companies.concat privates["B"].first(4)
-          @companies.concat privates["C"].first(4)
+          @companies = privates.values.sort.map { |v| v.first(4) }.flatten
         end
-
       end
     end
   end
