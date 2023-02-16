@@ -5,7 +5,7 @@ module Engine
     module G1880
       module Step
         class RocketPurchaseTrain < Engine::Step::Base
-          ACTIONS = %w[purchase_train].freeze
+          ACTIONS = %w[purchase_train pass].freeze
 
           def setup
             @rocket = @game.company_by_id('P7')
