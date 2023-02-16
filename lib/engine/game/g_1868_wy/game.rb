@@ -206,6 +206,26 @@ module Engine
           setup_spikes
 
           @big_boy_first_chance = false
+
+          return if @optional_rules.include?(:p2_p6_choice)
+
+          removals = COMPANY_CHOICES.keys
+          COMPANY_CHOICES.each do |_, companies|
+            removals.concat(companies.sort_by { rand }.take(2))
+          end
+
+          @companies.reject! do |c|
+            next unless removals.include?(c.id)
+
+            @round.active_step.companies.delete(c)
+            c.close!
+            true
+          end
+          @log << 'Available P2-P6 companies:'
+
+          @companies.slice(1, 5).map(&:name).each do |company|
+            @log << "- #{company}"
+          end
         end
 
         def init_share_pool
