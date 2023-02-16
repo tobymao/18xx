@@ -17,6 +17,9 @@ module Engine
 
         STARTING_CASH = { 3 => 400, 4 => 300, 5 => 250 }.freeze
 
+        BIDDING_BOX_PRIVATE_COUNT = 4
+        BIDDING_TOKENS_PER_ACTION = 3
+
         MARKET = [
           %w[40 44 47 50p 53p 57p 61p 65p 70p 75p 80p 86p 92p 98p 105x 112x 120x 128x 137x 147x 157x 168z 180z 193z
              206z 221 236 253 270 289 310 331 354 379 406k 434k 465k 497k 532k 569k 609k 652k 700k 750e 800e],
@@ -253,26 +256,26 @@ module Engine
         end
 
         def stock_round
-          Round::Stock.new(self, [
-            Step::DiscardTrain,
-            Step::HomeToken,
-            Step::BuySellParShares,
+          G18EUS::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
+            G18EUS::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
-            Step::Bankrupt,
-            Step::Exchange,
-            Step::SpecialTrack,
-            Step::BuyCompany,
-            Step::Track,
-            Step::Token,
-            Step::Route,
-            Step::Dividend,
-            Step::DiscardTrain,
-            Step::BuyTrain,
-            [Step::BuyCompany, { blocks: true }],
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuyCompany,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -335,6 +338,10 @@ module Engine
           hex_by_id(hex_id).tile.icons.reject! { |icon| icon.name.include?('subsidy') }
         end
 
+        def remove_subsidies
+          # TODO
+        end
+
         def setup_privates
           @companies.sort_by! { rand }
           privates = @companies.group_by { |p| p.id[0] }
@@ -343,6 +350,23 @@ module Engine
           end
 
           @companies = privates.values.sort.map { |v| v.first(4) }.flatten
+        end
+
+        def bidbox_privates
+          @companies.select { |c| (!c.owner || c.owner == @bank) && !c.closed? }.first(self.class::BIDDING_BOX_PRIVATE_COUNT)
+        end
+
+        def setup_bidboxes
+          bidbox_privates.each { |c| c.owner = @bank }
+        end
+
+        def company_status_str(company)
+          index = bidbox_privates.index(company)
+          return "Bid box #{index + 1}" if index && index < self.class::BIDDING_BOX_PRIVATE_COUNT
+        end
+
+        def bidding_token_per_player
+          self.class::BIDDING_BOX_PRIVATE_COUNT
         end
       end
     end
