@@ -19,7 +19,7 @@ module Engine
           end
 
           def help
-            return '' unless @exchanged
+            return @game.corp_stacks_str_arr unless @exchanged
 
             case @game.share_pool.percent_of(@game.union_pacific)
             when 0
@@ -54,6 +54,10 @@ module Engine
 
           def get_par_prices(entity, _corp)
             @game.par_prices.select { |p| p.price * 2 <= entity.cash }
+          end
+
+          def visible_corporations
+            @game.sr_visible_corporations
           end
 
           def map_action_optional?
