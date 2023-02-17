@@ -492,11 +492,13 @@ module Engine
           return if @finished
 
           @minors.each do |m|
-            next unless m.owner
+            next unless m&.owner
 
             cash_to_owner = (m.cash * 0.2).floor
-            @log << "#{m.name} transfers #{format_currency(cash_to_owner)} to #{m.owner.name}"
-            m.spend(cash_to_owner, m.owner)
+            if cash_to_owner.positive?
+              @log << "#{m.name} transfers #{format_currency(cash_to_owner)} to #{m.owner.name}"
+              m.spend(cash_to_owner, m.owner)
+            end
             close_corporation(m)
           end
 
