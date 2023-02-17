@@ -549,6 +549,7 @@ module Engine
         RIC_HEX = 'F11'
         WAS_HEX = 'G4'
         HOME_TOKEN_TIMING = :par
+        MUST_BUY_TRAIN = :always
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
         EBUY_OTHER_VALUE = true
