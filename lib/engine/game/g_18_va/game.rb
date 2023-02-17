@@ -396,7 +396,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'C&O',
             name: 'Chesapeake & Ohio Railway',
             logo: '18_va/CO',
@@ -411,7 +411,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'SR',
             name: 'Southern Railway',
             logo: '18_va/SR',
@@ -426,7 +426,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'N&W',
             name: 'Norfolk & Western Railway',
             logo: '18_va/NW',
@@ -441,7 +441,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'WMR',
             name: 'Western Maryland Railway',
             logo: '18_va/WMR',
@@ -455,7 +455,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'RFPR',
             name: 'Richmond, Fredericksburg & Potomac Railroad',
             logo: '18_va/RFPR',
@@ -469,7 +469,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'VR',
             name: 'Virginian Railway',
             logo: '18_va/VR',
@@ -813,6 +813,7 @@ module Engine
           when :five_share
             shares.each { |share| share.percent = 10 }
             shares[0].percent = 20
+            corporation.float_percent = 20
             new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
             corporation.type = :ten_share
             2.times { corporation.tokens << Engine::Token.new(corporation, price: 100) }
