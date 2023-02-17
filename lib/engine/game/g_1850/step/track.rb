@@ -31,9 +31,9 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            return super if hex.id != 'I18' || tile.color != :yellow
+            return false if hex.id == 'I18' && tile.color == :yellow && tile.rotation == 2
 
-            super && tile.rotation != 2
+            super
           end
 
           def update_token!(action, entity, tile, old_tile)
