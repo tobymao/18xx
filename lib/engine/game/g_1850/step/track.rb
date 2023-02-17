@@ -31,7 +31,7 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            return super unless hex.id == 'I18'
+            return super if hex.id != 'I18' || tile.color != :yellow
 
             super && tile.rotation != 2
           end
