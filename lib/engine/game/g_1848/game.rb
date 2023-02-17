@@ -301,7 +301,7 @@ module Engine
                 distance: 999,
                 price: 1100,
                 num: 20,
-                discount: { '4' => 300, '4+' => 300, '5' => 300, '5+' => 300, '6+' => 300, '6' => 300 },
+                discount: { '4' => 300, '4+' => 300 },
               },
             ],
           },
@@ -1050,7 +1050,10 @@ module Engine
         end
 
         def reset_company_values
-          companies.each { |comp| comp.value = 0 }
+          companies.each do |comp|
+            comp.value = 0
+            comp.discount = 0
+          end
         end
       end
     end

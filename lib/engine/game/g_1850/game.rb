@@ -14,6 +14,10 @@ module Engine
         include G1850::Entities
         include G1850::Map
 
+        attr_accessor :sell_queue, :connection_run, :reissued, :mesabi_token_counter, :mesabi_compnay_sold_or_closed
+
+        CORPORATION_CLASS = G1850::Corporation
+
         CERT_LIMIT = {
           2 => { 9 => 24, 8 => 21 },
           3 => { 9 => 17, 8 => 15 },
@@ -114,7 +118,14 @@ module Engine
           { name: '12', distance: 12, price: 1100, num: 12 },
         ].freeze
 
+        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+
         def setup
+          @sell_queue = []
+          @connection_run = {}
+          @reissued = {}
+          @recently_floated = []
+          @mesabi_token_counter = 4
           # Place neutral token in Sault St. Marie
           neutral = Corporation.new(
             sym: 'N',
@@ -128,6 +139,12 @@ module Engine
           neutral.tokens.each { |token| token.type = :neutral }
 
           city_by_id('C20-0-0').place_token(neutral, neutral.next_token)
+
+          phase_2_companies.each { |c| c.max_price = c.value }
+        end
+
+        def event_companies_buyable!
+          phase_2_companies.each { |c| c.max_price = 2 * c.value }
         end
 
         # Everything below this line is also included in 1870's game.rb file
@@ -155,6 +172,85 @@ module Engine
           %w[0c 0c 10b 20b 30b 40o 50y],
           %w[0c 0c 0c 10b 20b 30b 40o],
         ].freeze
+
+        def operating_round(round_num)
+          G1870::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Exchange,
+            G1850::Step::BuyCompany,
+            Engine::Step::HomeToken,
+            Engine::Step::Assign,
+            G1870::Step::SpecialTrack,
+            G1850::Step::Track,
+            G1850::Step::Token,
+            Engine::Step::Route,
+            G1870::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G1870::Step::BuyTrain,
+            [G1870::Step::BuyCompany, { blocks: true }],
+            G1870::Step::PriceProtection,
+          ], round_num: round_num)
+        end
+
+        def float_corporation(corporation)
+          @recently_floated << corporation
+          super
+        end
+
+        def tile_lays(entity)
+          return super unless @recently_floated.include?(entity)
+
+          [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+        end
+
+        def track_action_processed(entity)
+          @recently_floated.delete(entity)
+        end
+
+        def phase_2_companies
+          @phase_2_companies ||= [mesabi_company, river_company]
+        end
+
+        def mesabi_company
+          @mesabi_company ||= company_by_id('MRC')
+        end
+
+        def mesabi_hex
+          hex_by_id('A10')
+        end
+
+        def river_company
+          @river_company ||= company_by_id('MRB')
+        end
+
+        def purchasable_companies(entity = nil)
+          entity ||= current_entity
+          return super unless @phase.name == '2'
+
+          phase_2_companies.select { |c| c.owner.player? }
+        end
+
+        def check_distance(route, visits, _train = nil)
+          return super if visits.empty? { |v| v.hex == mesabi_hex } || route.train.owner.mesabi_token
+
+          raise GameError, 'Corporation must own mesabi token to enter Mesabi Range'
+        end
+
+        def after_sell_company(buyer, company, _price, _seller)
+          return unless company == mesabi_company
+
+          buyer.mesabi_token = true
+          @mesabi_token_counter -= 1
+          @mesabi_compnay_sold_or_closed = true
+          log << "#{buyer.name} receives Mesabi token. #{@mesabi_token_counter} Mesabi tokens left in the game."
+          log << '-- Corporations can now buy Mesabi tokens --'
+        end
+
+        def status_array(corporation)
+          return unless corporation.mesabi_token
+
+          ['Mesabi Token']
+        end
       end
     end
   end

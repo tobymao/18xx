@@ -55,7 +55,7 @@ module Engine
            name: 'Extra Yellow Tile',
            value: 40,
            revenue: 15,
-           desc: 'Lay an extra yellow tile for free one time.',
+           desc: 'Owning corporation my lay an extra yellow tile for free (including free terrain) one time.',
            sym: 'EXY',
            abilities: [{
              type: 'tile_lay',
@@ -74,7 +74,8 @@ module Engine
            name: 'Extra Green Tile',
            value: 40,
            revenue: 15,
-           desc: 'May lay an extra green tile on a connected (non-StL) city for free (including terrain) one time.',
+           desc: 'Owning corporation may upgrade an extra green tile on a connected (non-StL) city for free '\
+                 '(including free terrain) one time.',
            sym: 'EXG',
            color: nil,
            abilities: [{
@@ -116,15 +117,16 @@ module Engine
            }],
          },
          {
-           name: 'Tunnel Blasting Company',
+           name: 'Missouri River Bridge Company',
            value: 40,
            revenue: 10,
-           desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles by $20.',
+           desc: 'Reduces, for the owning corporation, the cost of laying or upgrading a tile that incurs river terrain '\
+                 'cost by $20 (hexside or printed hex cost).',
            sym: 'TBC',
            abilities: [{
              type: 'tile_discount',
              discount: 20,
-             terrain: 'mountain',
+             terrain: 'water',
              owner_type: 'corporation',
            }],
            color: nil,
@@ -158,7 +160,7 @@ module Engine
             type: 'train_discount',
             discount: 60,
             owner_type: 'corporation',
-            trains: %w[2Y 3Y 3G 4G 3E 5 6],
+            trains: %w[Y2 Y2 G3 G4 3E 5 6],
             count: 1,
             closed_when_used_up: true,
             when: 'buying_train',
@@ -170,10 +172,10 @@ module Engine
            name: 'Mountain Construction Company',
            value: 60,
            revenue: 0,
-           desc: 'Owner receives $20 whenever a tile is laid on a mountain hex. Never closes.',
+           desc: 'Owner receives $40 whenever a tile is laid on a mountain hex. Never closes.',
            sym: 'MCC',
            abilities: [
-                      { type: 'tile_income', income: 20, terrain: 'mountain' },
+                      { type: 'tile_income', income: 40, terrain: 'mountain' },
                       { type: 'close', on_phase: 'never', owner_type: 'corporation' },
         ],
            color: nil,
@@ -192,12 +194,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Token Quincy (H4) for $40/$60.',
-                desc_detail: 'May place token in Quincy (H4) for $40 if connected, $60 otherwise.',
+                description: 'Token Quincy (H4) for $40/$80.',
+                desc_detail: 'May place token in Quincy (H4) for $40 if connected, $80 otherwise.',
                 hexes: ['H4'],
                 price: 40,
                 count: 1,
-                teleport_price: 60,
+                teleport_price: 80,
               },
             ],
             coordinates: 'A7',
@@ -238,12 +240,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Token Sedalia (E9) for $40/$60.',
-                desc_detail: 'May place token in Sedalia (E9) for $40 if connected, $60 otherwise.',
+                description: 'Token Sedalia (E9) for $40/$80.',
+                desc_detail: 'May place token in Sedalia (E9) for $40 if connected, $80 otherwise.',
                 hexes: ['E9'],
                 price: 40,
                 count: 1,
-                teleport_price: 60,
+                teleport_price: 80,
               },
             ],
             coordinates: 'C13',
@@ -261,12 +263,12 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Token Pleasant Hill (D8) for $40/$60.',
-                desc_detail: 'May place token in Pleasant Hill (D8) for $40 if connected, $60 otherwise.',
+                description: 'Token Pleasant Hill (D8) for $40/$80.',
+                desc_detail: 'May place token in Pleasant Hill (D8) for $40 if connected, $80 otherwise.',
                 hexes: ['D8'],
                 price: 40,
                 count: 1,
-                teleport_price: 60,
+                teleport_price: 80,
               },
             ],
             coordinates: 'J8',

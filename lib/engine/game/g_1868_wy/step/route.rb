@@ -13,6 +13,12 @@ module Engine
           def available_hex(entity, hex, check_billings: true)
             if (spike = @game.spike_hex?(hex))
               @game.spike_hex_available?(spike) { |h| super(entity, h) }
+            elsif @game.femv_hex?(hex)
+              entity == @game.femv
+            elsif @game.rcl_hex?(hex)
+              entity == @game.rcl
+            elsif @game.billings_hex?(hex)
+              super(entity, hex) || (check_billings && available_hex(entity, @game.other_billings(hex), check_billings: false))
             else
               super(entity, hex)
             end

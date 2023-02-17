@@ -13,6 +13,14 @@ module Engine
 
             super
           end
+
+          def tile_lay_abilities_should_block?(entity)
+            super ||
+            (entity.operator? && entity.trains.empty? &&
+            !@game.rocket.closed? &&
+            entity.owner == @game.rocket.owner &&
+            !entity.minor?)
+          end
         end
       end
     end

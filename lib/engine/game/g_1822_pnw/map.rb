@@ -84,7 +84,7 @@ module Engine
             %w[O8] => 'city=revenue:20,slots:4;upgrade=cost:20;'\
                       'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;label=Por;'\
                       'icon=image:1822_pnw/SPS,name:SPS_home;icon=image:1822_pnw/ORNC,name:ORNC_home',
-            %w[O20] => 'city=revenue:0;upgrade=cost:20,terrain:water;icon=image:1822_pnw/NP,name:NP_home',
+            %w[O20] => 'city=revenue:0;icon=image:1822_pnw/NP,name:NP_home',
           },
           yellow: {
             %w[A8] => 'city=revenue:30;path=a:4,b:_0;path=a:5,b:_0;label=T;icon=image:1822_pnw/CPR,name:CPR_home',
@@ -135,23 +135,23 @@ module Engine
                        'path=a:2,b:_0,terminal:2;path=a:4,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
           },
           blue: {
-            %w[B7] => 'junction;path=a:3,b:_0,terminal:1',
-            %w[D9] => 'junction;path=a:4,b:_0,terminal:1;path=a:0,b:4,track:thin',
-            %w[E8] => 'junction;path=a:5,b:_0,terminal:1;path=a:3,b:5,track:thin',
+            %w[B7] => 'junction;path=a:3,b:_0,terminal:1;icon=image:anchor',
+            %w[D9] => 'junction;path=a:4,b:_0,terminal:1;path=a:0,b:4,track:thin;icon=image:anchor',
+            %w[E8] => 'junction;path=a:5,b:_0,terminal:1;path=a:3,b:5,track:thin;icon=image:anchor',
             %w[E10] => 'junction;path=a:0,b:_0,terminal:2;path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2',
             %w[F11] => 'junction;path=a:1,b:_0,terminal:2;path=a:3,b:_0,terminal:2;path=a:4,b:_0,terminal:2;'\
                        'path=a:5,b:_0,terminal:2',
             %w[G10] => 'junction;path=a:1,b:_0,terminal:2;path=a:2,b:_0,terminal:2;path=a:4,b:_0,terminal:2',
             %w[H9] => 'junction;path=a:0,b:_0,terminal:2;path=a:1,b:_0,terminal:2;path=a:2,b:_0,terminal:2',
             %w[I10] => 'junction;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:2;path=a:4,b:_0,terminal:1;'\
-                       'path=a:5,b:_0,terminal:2',
-            %w[M2] => 'junction;path=a:4,b:_0,terminal:1',
+                       'path=a:5,b:_0,terminal:2;icon=image:anchor',
+            %w[M2] => 'junction;path=a:4,b:_0,terminal:2',
             %w[M6 O16] => 'junction;path=a:0,b:_0,terminal:2;path=a:1,b:_0,terminal:2;path=a:2,b:_0,terminal:2;'\
                           'path=a:3,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
             %w[M8] => 'junction;path=a:0,b:_0,terminal:2;path=a:2,b:_0,terminal:2;path=a:3,b:_0,terminal:2;'\
                       'path=a:4,b:_0,terminal:2',
             %w[N9] => 'junction;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:2;path=a:3,b:_0,terminal:2;'\
-                      'path=a:4,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
+                      'path=a:4,b:_0,terminal:2;path=a:5,b:_0,terminal:2;icon=image:anchor',
             %w[O18] => 'junction;path=a:0,b:_0,terminal:2;path=a:2,b:_0,terminal:2;path=a:3,b:_0,terminal:2;'\
                        'path=a:4,b:_0,terminal:2;path=a:5,b:_0,terminal:2',
           },

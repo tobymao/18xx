@@ -107,7 +107,6 @@ module Engine
                 ' into a corporation or closed by the sale of the first 5T. There are four Mesabi Range tokens. Max one'\
                 ' per corporation.',
           sym: 'MRC',
-          abilities: [],
           color: nil,
         },
         {
