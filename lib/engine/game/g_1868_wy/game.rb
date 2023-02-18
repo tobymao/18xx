@@ -132,6 +132,7 @@ module Engine
         GHOST_TOWN_NAME = 'ghost town'
 
         BILLINGS_HEXES = %w[A9 A11].freeze
+        CASPER_HEX = 'H18'
         FEMV_HEX = 'G27'
         RCL_HEX = 'C27'
         WALDEN_HEX = 'N18'
@@ -1184,6 +1185,27 @@ module Engine
           return unless (index = self.class::BILLINGS_HEXES.index(hex.id))
 
           hex_by_id(self.class::BILLINGS_HEXES[(index + 1) % 2])
+        end
+
+        def private_earns(amount, company, reason)
+          @bank.spend(amount, company.owner)
+          @log << "#{company.owner.name} collects #{format_currency(amount)} from #{company.name}; #{reason}"
+        end
+
+        def check_midwest_oil!(routes)
+          return if !midwest_oil || midwest_oil.closed?
+          return if !midwest_oil.owned_by_player? && !midwest_oil.owned_by_corporation?
+
+          casper_trains = routes.count do |route|
+            route.visited_stops.any? { |stop| stop.hex.id == CASPER_HEX }
+          end
+          return if casper_trains.zero?
+
+          private_earns(
+            10 * casper_trains,
+            midwest_oil,
+            "#{casper_trains} train#{casper_trains == 1 ? '' : 's'} visited Casper (#{CASPER_HEX})"
+          )
         end
 
         def event_close_privates!
