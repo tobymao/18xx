@@ -78,7 +78,6 @@ module Engine
           par_1: :green,
           par_2: :brown,
         }.freeze
-        LATE_CORPORATIONS = %w[C&N DPR LNP OSL].freeze
         MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Railroad Company par values',
                                               par_1: 'additional par values in Phase 3+',
                                               par_2: 'additional par values in Phase 5+').freeze
@@ -171,14 +170,13 @@ module Engine
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
           @busters = {}
 
-          @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
-          @late_corps.each { |corp| corp.reservation_color = nil }
           setup_credit_mobilier
 
           @coal_companies = init_coal_companies
           @minors.concat(@coal_companies)
           update_cache(:minors)
 
+          @all_corps_available = false
           @available_par_groups = %i[par]
 
           @double_headed_trains = []
@@ -318,9 +316,8 @@ module Engine
         end
 
         def event_all_corps_available!
-          @late_corps.each { |corp| corp.reservation_color = CORPORATION_RESERVATION_COLOR }
-          @corporations.concat(@late_corps)
-          @log << '-- All corporations now available --'
+          @log << '-- All Railroad Companies now available --'
+          @all_corps_available = true
         end
 
         def event_full_capitalization!
@@ -376,6 +373,8 @@ module Engine
           end
 
           super
+
+          upgrade_home(corporation)
 
           corporation.capitalization = :incremental
         end
@@ -567,6 +566,73 @@ module Engine
           @isr_company_choices ||= COMPANY_CHOICES.transform_values do |company_ids|
             company_ids.map { |id| company_by_id(id) }
           end
+        end
+
+        def init_corporations(stock_market)
+          corporations = game_corporations.map do |corporation|
+            Corporation.new(
+              min_price: stock_market.par_prices.map(&:price).min,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
+
+          @corp_stacks = init_stacks(corporations.slice(1, 9))
+
+          @log << 'The Railroad Companies (other than UP) have been split it into two stacks. '\
+                  'Before phase 5, only the first Railroad Company in a stack may be started. DPR is '\
+                  'guaranteed to be at the bottom of a stack.'
+          corp_stacks_str_arr(@log)
+
+          corporations.sort
+        end
+
+        # setup process:
+        #
+        # 1) set aside DPR
+        # 2) shuffle the other 8 corporations, place them on top of DPR
+        # 3) take the top 4 or 5 corporations into a second stack
+        #
+        # during play only the top (end of array) corporation from either stack
+        # may be started
+        def init_stacks(corporations)
+          dpr, *shuffled = corporations
+          shuffled.sort_by! { rand }
+          corps = [dpr, *shuffled]
+
+          stacks = [4, 5]
+          stacks.sort_by! { rand }
+          size1, size2 = stacks
+
+          [
+            corps.slice(0, size1),
+            corps.slice(size1, size2),
+          ]
+        end
+
+        # extends the given array with the string representation of the
+        # corporation stacks
+        def corp_stacks_str_arr(arr = [])
+          @corp_stacks.each.with_index do |stack, index|
+            arr << "- Railroad Company stack #{index + 1}: #{stack.map(&:name).reverse.join(', ')}" unless stack.empty?
+          end
+          arr
+        end
+
+        def sr_visible_corporations
+          return sorted_corporations if @all_corps_available
+
+          [*corporations.select(&:ipoed).sort, *@corp_stacks.flat_map(&:last).compact]
+        end
+
+        def timeline
+          timeline = []
+          unless @all_corps_available
+            timeline << 'Before phase 5, only the first Railroad Company in a stack may be started:'
+            corp_stacks_str_arr(timeline)
+          end
+
+          timeline
         end
 
         def init_coal_companies
@@ -930,20 +996,30 @@ module Engine
         end
 
         def after_par(corporation)
+          super
+
+          return if @all_corps_available
+
+          @corp_stacks.each { |s| s.pop if s.last == corporation }
+        end
+
+        def upgrade_home(corporation)
           return if corporation.id != 'LNP' && corporation.id != 'OSL'
 
           hex = hex_by_id(corporation.coordinates)
           old_tile = hex.tile
-          return if old_tile.color == :green || old_tile.color == :brown
+          return if old_tile.color == :green || old_tile.color == :brown || old_tile.color == :gray
 
           green_tile = tile_by_id("G#{old_tile.label}-0")
           update_tile_lists(green_tile, old_tile)
           hex.lay(green_tile)
-          @log << "#{corporation.name} lays tile #{green_tile.name} on #{hex.id} (#{old_tile.location_name})"
+          @log << "#{corporation.name} lays tile #{green_tile.name} on #{hex.id} (#{green_tile.location_name})"
         end
 
         def can_par?(corporation, _parrer)
           return false unless super
+          return true if corporation.id == 'UP'
+          return false if !@all_corps_available && @corp_stacks.none? { |s| s.last == corporation }
 
           corporation == dpr ? !home_token_locations(corporation).empty? : true
         end

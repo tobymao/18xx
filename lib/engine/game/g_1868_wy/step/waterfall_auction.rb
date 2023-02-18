@@ -8,9 +8,11 @@ module Engine
       module Step
         class WaterfallAuction < Engine::Step::WaterfallAuction
           def help
-            return '' unless @choosing
-
-            "#{@choosing_player.name} won the auction for #{@auctioned_company.name}, now chooses one of:"
+            if @choosing
+              "#{@choosing_player.name} won the auction for #{@auctioned_company.name}, now chooses one of:"
+            else
+              @game.corp_stacks_str_arr
+            end
           end
 
           def setup
