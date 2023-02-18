@@ -62,6 +62,7 @@ module Engine
               discount: 40,
               tiles: %w[5 6 57],
             },
+            { type: 'blocks_hexes', owner_type: 'player', hexes: %w[L13] },
           ],
           color: nil,
         },
@@ -139,7 +140,8 @@ module Engine
           abilities: [{
             type: 'shares',
             shares: 'RI_1',
-          }],
+          },
+                      { type: 'blocks_hexes', owner_type: 'player', hexes: %w[I12] }],
           color: nil,
         },
         ].freeze
