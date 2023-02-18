@@ -19,6 +19,7 @@ require_relative 'step/home_token'
 require_relative 'step/issue_shares'
 require_relative 'step/manual_close_company'
 require_relative 'step/route'
+require_relative 'step/special_track'
 require_relative 'step/stock_round_action'
 require_relative 'step/token'
 require_relative 'step/track'
@@ -133,6 +134,7 @@ module Engine
         BILLINGS_HEXES = %w[A9 A11].freeze
         CASPER_HEX = 'H18'
         FEMV_HEX = 'G27'
+        CM_BORDER_HEXES = %w[L2 M3 M7 M9 J16 J18].freeze
         RCL_HEX = 'C27'
         WALDEN_HEX = 'N18'
         WIND_RIVER_CANYON_HEX = 'F12'
@@ -266,7 +268,6 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::SpecialTrack,
             G1868WY::Step::Assign,
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::HomeToken,
@@ -284,7 +285,7 @@ module Engine
           G1868WY::Round::Operating.new(self, [
             G1868WY::Step::DevelopmentToken,
             Engine::Step::Bankrupt,
-            Engine::Step::SpecialTrack,
+            G1868WY::Step::SpecialTrack,
             G1868WY::Step::Assign,
             G1868WY::Step::BuyCompany,
             G1868WY::Step::ManualCloseCompany,
@@ -535,8 +536,7 @@ module Engine
         def track_points_available(entity)
           return 0 unless (corporation = entity).corporation?
 
-          p5_point = p5_company.owner == corporation ? 1 : 0
-          TRACK_POINTS + p5_point - @track_points_used[corporation]
+          TRACK_POINTS - @track_points_used[corporation]
         end
 
         def tile_lays(entity)
@@ -550,16 +550,29 @@ module Engine
         end
 
         def spend_tile_lay_points(action)
-          return unless (corporation = action.entity).corporation?
+          return if !action.entity.corporation? && action.entity != lander
 
+          corporation = action.entity.corporation
           points_used = action.tile.color == :yellow ? YELLOW_POINT_COST : UPGRADE_POINT_COST
           @track_points_used[corporation] += points_used
+        end
+
+        def preprocess_action(action)
+          case action
+          when Action::LayTile
+            @border_before = action.hex.tile.borders.first if CM_BORDER_HEXES.include?(action.hex.name)
+          end
         end
 
         def action_processed(action)
           case action
           when Action::LayTile
-            swap_color_and_stripes(action.hex.tile) if action.hex.name == WIND_RIVER_CANYON_HEX
+            if action.hex.name == WIND_RIVER_CANYON_HEX
+              swap_color_and_stripes(action.hex.tile)
+            else
+              @border_after = action.hex.tile.borders.first if @border_before
+              credit_mobilier_check_tile_lay_action(action)
+            end
           end
         end
 
@@ -788,6 +801,16 @@ module Engine
           end
         end
 
+        def upgrade_cost(tile, hex, entity, spender)
+          super + (%w[16 19 20].include?(tile.name) ? 20 : 0)
+        end
+
+        def tile_cost_with_discount(_tile, _hex, _entity, spender, _cost)
+          cost = super
+          cost /= 2 if spender.corporation == pac_rr_a.owner
+          cost
+        end
+
         def revenue_for(route, stops)
           stops.sum do |stop|
             if stop.city? && stop.boom
@@ -942,6 +965,25 @@ module Engine
           player.value - player.companies.sum(&:value)
         end
 
+        def distance(train)
+          if train.distance.is_a?(Numeric)
+            [train.distance, 0]
+          else
+            cities = train.distance[1]['pay']
+            towns = train.distance[0]['pay']
+            [cities, towns]
+          end
+        end
+
+        def trains_str(corporation)
+          return '' if corporation.minor?
+          return 'None' if corporation.trains.empty?
+
+          corporation.trains.each_with_object([]) do |train, named_trains|
+            (named_trains << train.name) unless @double_headed_trains.include?(train)
+          end.join(' ')
+        end
+
         def issuable_shares(entity, previously_issued = 0)
           return [] unless entity.corporation?
           return [] unless round.steps.find { |step| step.instance_of?(G1868WY::Step::IssueShares) }.active?
@@ -994,6 +1036,19 @@ module Engine
           end
 
           bundles
+        end
+
+        def route_distance_str(route)
+          return route.stops.size.to_s if route.train.distance.is_a?(Integer)
+
+          towns = route.stops.count(&:town?)
+          cities = route_distance(route) - towns
+          towns_as_cities = [0, towns - route.train.distance[0]['pay']].max
+
+          c = cities + towns_as_cities
+          t = towns - towns_as_cities
+
+          towns.positive? ? "#{c}+#{t}" : cities.to_s
         end
 
         def after_par(corporation)
