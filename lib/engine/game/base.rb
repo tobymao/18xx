@@ -202,6 +202,7 @@ module Engine
       TILE_RESERVATION_BLOCKS_OTHERS = :never
 
       COMPANIES = [].freeze
+      COMPANY_CLASS = Company
 
       CORPORATION_CLASS = Corporation
       CORPORATIONS = [].freeze
@@ -2170,7 +2171,7 @@ module Engine
         game_companies.map do |company|
           next if players.size < (company[:min_players] || 0)
 
-          Company.new(**company)
+          self.class::COMPANY_CLASS.new(**company)
         end.compact
       end
 

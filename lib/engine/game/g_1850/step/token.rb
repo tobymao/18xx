@@ -9,51 +9,44 @@ module Engine
         class Token < Engine::Step::Token
           def actions(entity)
             actions = super.dup
-            actions += %w[choose pass] if can_buy_mesabi_token?(entity)
+            actions += %w[choose pass] if can_place_edge_token?(entity)
 
             actions.uniq
           end
 
           def choice_name
-            'Buy Mesabi token?'
+            'Additional Token Actions'
           end
 
           def choices
-            ['Buy Token']
-          end
-
-          def description
-            'Mesabi Token'
+            choices = []
+            choices << ['Place Edge Token'] if can_place_edge_token?(current_entity)
+            choices
           end
 
           def process_choose(action)
-            corp = action.entity
-            total_cost = 80
-            amount_to_owner = @game.mesabi_company.closed? ? 0 : 40
-            amount_to_bank = amount_to_owner.positive? ? 40 : 80
-
-            corp.spend(amount_to_bank, @game.bank)
-            corp.spend(amount_to_owner, @game.mesabi_company.owner) if amount_to_owner.positive?
-
-            log_message = "#{corp.name} buys a Mesabi token for #{@game.format_currency(total_cost)}. "
-            if amount_to_owner.positive?
-              log_message += "#{@game.mesabi_company.owner.name} receives #{@game.format_currency(amount_to_owner)}"
-            end
-            @log << log_message
-            corp.mesabi_token = true
+            place_edge_token(action.entity) if action.choice == 'Place Edge Token'
             pass!
+          end
+
+          def place_edge_token(corporation)
+            ability = @game.abilities(corporation, :assign_hexes)
+            hex = @game.hex_by_id(ability.hexes.first)
+
+            hex.assign!(corporation)
+            ability.use!
+            corporation.spend(ability.cost, @game.bank)
+            @log << "#{corporation.name} places an edge token on #{hex.name} for #{@game.format_currency(ability.cost)}"
           end
 
           def skip!
             pass!
           end
 
-          def can_buy_mesabi_token?(entity)
-            entity.corporation? &&
-            !entity.mesabi_token &&
-            @game.mesabi_compnay_sold_or_closed &&
-            @game.mesabi_token_counter.positive? &&
-            entity.cash >= 80
+          def can_place_edge_token?(entity)
+            (ability = @game.abilities(entity, :assign_hexes)) &&
+            entity.cash >= ability.cost &&
+            available_hex(entity, @game.hex_by_id(ability.hexes.first))
           end
         end
       end
