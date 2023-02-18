@@ -17,7 +17,6 @@ module Engine
         GAME_LOCATION = 'The Midwestern USA'
         GAME_RULES_URL = 'https://www.tckroleplaying.com/bg/1850/1850-Rules.pdf'
 
-
         PLAYER_RANGE = [2, 6].freeze
       end
     end
