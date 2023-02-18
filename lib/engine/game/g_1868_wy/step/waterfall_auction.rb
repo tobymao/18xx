@@ -16,8 +16,11 @@ module Engine
           def setup
             super
 
-            choice_companies = @game.class::COMPANY_CHOICES.values.flatten
-            @companies.reject! { |c| choice_companies.include?(c.id) }
+            if @game.optional_rules.include?(:p2_p6_choice)
+              choice_companies = @game.class::COMPANY_CHOICES.values.flatten
+              @companies.reject! { |c| choice_companies.include?(c.id) }
+            end
+
             @passed_on_cheapest = {}
           end
 
@@ -119,7 +122,14 @@ module Engine
             elsif !(@auctioning || @choosing)
               @passed_on_cheapest[action.entity] = 'bid'
             end
-            super
+
+            if @choosing
+              action.entity.unpass!
+              placement_bid(action)
+            else
+              super
+            end
+
             maybe_all_passed!
           end
 
