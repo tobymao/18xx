@@ -18,6 +18,7 @@ module Engine
         GAME_LOCATION = 'Wyoming, USA'
         GAME_TITLE = '1868 Wyoming'
         GAME_FULL_TITLE = '1868: Boom and Bust in the Coal Mines and Oil Fields of Wyoming'
+        GAME_ISSUE_LABEL = '1868WY'
 
         PLAYER_RANGE = [3, 5].freeze
 
