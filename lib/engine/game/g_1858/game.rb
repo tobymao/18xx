@@ -93,6 +93,9 @@ module Engine
           @graph_broad = Graph.new(self, skip_track: :narrow, home_as_token: true)
           @graph_metre = Graph.new(self, skip_track: :broad, home_as_token: true)
 
+          @unbuyable_companies = []
+          setup_unbuyable_privates
+
           @stubs = setup_stubs
         end
 
@@ -341,7 +344,8 @@ module Engine
           available_colors << :green if @phase.status.include?('green_privates')
           @companies.select do |company|
             !company.closed? && (company.owner == @bank) &&
-              available_colors.include?(company.color)
+              available_colors.include?(company.color) &&
+              !@unbuyable_companies.include?(company)
           end
         end
 
