@@ -171,7 +171,8 @@ module Engine
             value: 90,
             revenue: 30,
             discount: 30,
-            desc: 'P10. Gives a £10 revenue bonus for Liverpool (M11) when owned by a public company or a system.',
+            desc: 'P10. Gives a £10 revenue bonus for Liverpool (M11) ' \
+                  'when owned by a public company or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -188,7 +189,8 @@ module Engine
             type: 'ferry',
             value: 50,
             revenue: 10,
-            desc: 'F1. Gives a £10 revenue bonus for one of the Ireland off-board areas when owned by a public company or a system.',
+            desc: 'F1. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
+                  'when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
@@ -208,7 +210,8 @@ module Engine
             type: 'ferry',
             value: 50,
             revenue: 10,
-            desc: 'F2. Gives a £10 revenue bonus for one of the Ireland off-board areas when owned by a public company or a system.',
+            desc: 'F2. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
+                  'when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
@@ -228,7 +231,8 @@ module Engine
             type: 'ferry',
             value: 50,
             revenue: 10,
-            desc: 'F3. Gives a £10 revenue bonus for one of the Ireland off-board areas when owned by a public company or a system.',
+            desc: 'F3. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
+                  'when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
@@ -248,7 +252,8 @@ module Engine
             type: 'ferry',
             value: 100,
             revenue: 20,
-            desc: 'F4. Gives a £10 revenue bonus for the Hull off-board area (L22) when owned by a public company or a system.',
+            desc: 'F4. Gives a £10 revenue bonus for the Hull off-board area (L22) ' \
+                  'when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -268,7 +273,8 @@ module Engine
             type: 'ferry',
             value: 100,
             revenue: 20,
-            desc: 'F5. Gives a £10 revenue bonus for the Harwich off-board area (S29) when owned by a public company or a system.',
+            desc: 'F5. Gives a £10 revenue bonus for the Harwich off-board area (S29) ' \
+                  'when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -288,7 +294,8 @@ module Engine
             type: 'ferry',
             value: 100,
             revenue: 20,
-            desc: 'F6. Gives a £10 revenue bonus for the Plymouth off-board area (X8) when owned by a public company or a system.',
+            desc: 'F6. Gives a £10 revenue bonus for the Plymouth off-board area (X8) ' \
+                  'when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -308,7 +315,8 @@ module Engine
             type: 'ferry',
             value: 150,
             revenue: 30,
-            desc: 'F7. Gives a £10 revenue bonus for the Dover off-board area (V30) when owned by a public company or a system.',
+            desc: 'F7. Gives a £10 revenue bonus for the Dover off-board area (V30) ' \
+                  'when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
@@ -328,7 +336,8 @@ module Engine
             type: 'ferry',
             value: 150,
             revenue: 30,
-            desc: 'F8. Gives a £10 revenue bonus for the Aberdeen off-board area (A13) when owned by a public company or a system.',
+            desc: 'F8. Gives a £10 revenue bonus for the Aberdeen off-board area (A13) ' \
+                  'when owned by a public company or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
