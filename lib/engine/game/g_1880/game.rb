@@ -21,7 +21,7 @@ module Engine
                     :foreign_investors_operate, :rocket_train
 
         TRACK_RESTRICTION = :permissive
-        TILE_RESERVATION_BLOCKS_OTHERS = :oo_only
+        TILE_RESERVATION_BLOCKS_OTHERS = :single_slot_cities
         TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
         HOME_TOKEN_TIMING = :operating_round
         SELL_BUY_ORDER = :sell_buy
