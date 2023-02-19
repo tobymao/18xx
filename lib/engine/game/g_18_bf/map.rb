@@ -281,7 +281,8 @@ module Engine
           mine: 'G28',
           scotland: 'J6',
           wales: 'L6',
-        }
+        }.freeze
+
         # For calculating whether routes cross borders, these are the hexes
         # with cities, towns or off-board areas in Scotland and Wales. All
         # revenue centres in other hexes are in England.
@@ -301,7 +302,7 @@ module Engine
         end
 
         def bonus_london_offboard(train, stops)
-          return 0 if stops.none? { |stop| stop.offboard? } ||
+          return 0 if stops.none?(&:offboard?) ||
                       stops.none? { |stop| stop.groups.include?('London') }
 
           revenue_bonus(:london, train)
