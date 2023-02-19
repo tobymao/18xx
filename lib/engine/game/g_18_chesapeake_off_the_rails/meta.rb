@@ -19,6 +19,7 @@ module Engine
         GAME_TITLE = '18Chesapeake: Off the Rails'
         GAME_ALIASES = %w[OTR 18ChesapeakeOTR].freeze
         GAME_IS_VARIANT_OF = G18Chesapeake::Meta
+        GAME_ISSUE_LABEL = '18Chesapeake'
 
         PLAYER_RANGE = [2, 6].freeze
       end

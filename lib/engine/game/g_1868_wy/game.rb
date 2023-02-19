@@ -7,18 +7,23 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'share_pool'
 require_relative 'trains'
+require_relative 'round/bust'
+require_relative 'round/development'
+require_relative 'round/operating'
 require_relative 'step/assign'
 require_relative 'step/buy_company'
 require_relative 'step/buy_train'
 require_relative 'step/choose'
 require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
+require_relative 'step/discard_train'
 require_relative 'step/dividend'
 require_relative 'step/double_share_protection'
 require_relative 'step/home_token'
 require_relative 'step/issue_shares'
 require_relative 'step/manual_close_company'
 require_relative 'step/route'
+require_relative 'step/special_track'
 require_relative 'step/stock_round_action'
 require_relative 'step/token'
 require_relative 'step/track'
@@ -63,6 +68,15 @@ module Engine
         MUST_BUY_TRAIN = :always
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         EBUY_OTHER_VALUE = true
+        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+        GAME_END_REASONS_TEXT = {
+          bankrupt: 'player is bankrupt',
+          custom: '7-train is bought/exported',
+        }.freeze
+        GAME_END_REASONS_TIMING_TEXT = {
+          immediate: "Immediately, bankrupt player's score is $0",
+          one_more_full_or_set: 'see the "Endgame Sequence" timeline',
+        }.freeze
         MARKET = [
           [''] + %w[82 90 100 110z 120z 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525 560],
           %w[72 76 82 90x 100x 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490],
@@ -78,7 +92,6 @@ module Engine
           par_1: :green,
           par_2: :brown,
         }.freeze
-        LATE_CORPORATIONS = %w[C&N DPR LNP OSL].freeze
         MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Railroad Company par values',
                                               par_1: 'additional par values in Phase 3+',
                                               par_2: 'additional par values in Phase 5+').freeze
@@ -112,6 +125,10 @@ module Engine
             ['Full Capitalization', 'Railroad Companies float at 60% and receive full capitalization'],
         }.freeze
 
+        # rounds
+        DEVELOPMENT_ROUND_NAME = 'Development'
+        PRIVATES_ROUND_NAME = 'Privates Pay'
+
         # track points
         TRACK_POINTS = 6
         YELLOW_POINT_COST = 2
@@ -132,7 +149,9 @@ module Engine
         GHOST_TOWN_NAME = 'ghost town'
 
         BILLINGS_HEXES = %w[A9 A11].freeze
+        CASPER_HEX = 'H18'
         FEMV_HEX = 'G27'
+        CM_BORDER_HEXES = %w[L2 M3 M7 M9 J16 J18].freeze
         RCL_HEX = 'C27'
         WALDEN_HEX = 'N18'
         WIND_RIVER_CANYON_HEX = 'F12'
@@ -140,6 +159,10 @@ module Engine
         # special shares
         UP_PRESIDENTS_SHARE = 'UP_0'
         UP_DOUBLE_SHARE = 'UP_7'
+
+        ASSIGNMENT_TOKENS = {
+          'P6c' => '/icons/1868_wy/no_bust.svg',
+        }.freeze
 
         def dotify(tile)
           tile.towns.each { |town| town.style = :dot }
@@ -171,14 +194,13 @@ module Engine
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
           @busters = {}
 
-          @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
-          @late_corps.each { |corp| corp.reservation_color = nil }
           setup_credit_mobilier
 
           @coal_companies = init_coal_companies
           @minors.concat(@coal_companies)
           update_cache(:minors)
 
+          @all_corps_available = false
           @available_par_groups = %i[par]
 
           @double_headed_trains = []
@@ -205,7 +227,30 @@ module Engine
 
           setup_spikes
 
+          @endgame_triggered = false
+          @final_stock_round_started = false
+
           @big_boy_first_chance = false
+
+          return if @optional_rules.include?(:p2_p6_choice)
+
+          removals = COMPANY_CHOICES.keys
+          COMPANY_CHOICES.each do |_, companies|
+            removals.concat(companies.sort_by { rand }.take(2))
+          end
+
+          @companies.reject! do |c|
+            next unless removals.include?(c.id)
+
+            @round.active_step.companies.delete(c)
+            c.close!
+            true
+          end
+          @log << 'Available P2-P6 companies:'
+
+          @companies.slice(1, 5).map(&:name).each do |company|
+            @log << "- #{company}"
+          end
         end
 
         def init_share_pool
@@ -246,8 +291,7 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
-            Engine::Step::SpecialTrack,
+            G1868WY::Step::DiscardTrain,
             G1868WY::Step::Assign,
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::HomeToken,
@@ -261,11 +305,41 @@ module Engine
                                    multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
+        def payout_companies(payout = false, ignore: [])
+          super(ignore: ignore) if payout
+        end
+
+        def new_privates_round(round_num)
+          return if @phase.name == '8'
+
+          @log << "-- #{round_description('Privates Pay', round_num)} --"
+          payout_companies(true)
+        end
+
+        def new_development_round(round_num = 1)
+          new_privates_round(round_num)
+
+          @log << "-- #{round_description(self.class::DEVELOPMENT_ROUND_NAME, round_num)} --"
+          @round_counter += 1
+          development_round(round_num)
+        end
+
+        def development_round(round_num)
+          G1868WY::Round::Development.new(self, [
+            G1868WY::Step::Assign,
+            G1868WY::Step::DevelopmentToken,
+          ], round_num: round_num)
+        end
+
+        def new_operating_round(round_num = 1)
+          @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
+          operating_round(round_num)
+        end
+
         def operating_round(round_num)
           G1868WY::Round::Operating.new(self, [
-            G1868WY::Step::DevelopmentToken,
             Engine::Step::Bankrupt,
-            Engine::Step::SpecialTrack,
+            G1868WY::Step::SpecialTrack,
             G1868WY::Step::Assign,
             G1868WY::Step::BuyCompany,
             G1868WY::Step::ManualCloseCompany,
@@ -277,10 +351,27 @@ module Engine
             G1868WY::Step::Route,
             G1868WY::Step::Dividend,
             G1868WY::Step::DoubleShareProtection,
-            Engine::Step::DiscardTrain,
+            G1868WY::Step::DiscardTrain,
             G1868WY::Step::BuyTrain,
             [G1868WY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def new_bust_round(round_num)
+          @log << "-- #{round_description('BUST', round_num)} --"
+          bust_round(round_num)
+        end
+
+        def bust_round(round_num)
+          G1868WY::Round::Bust.new(self, [
+            G1868WY::Step::Assign,
+          ], round_num: round_num)
+        end
+
+        def resolve_busters!
+          @busters.dup.each do |hex, _original_dtc|
+            handle_bust_hex!(hex) unless hex.tile.preprinted
+          end
         end
 
         def new_auction_round
@@ -298,9 +389,8 @@ module Engine
         end
 
         def event_all_corps_available!
-          @late_corps.each { |corp| corp.reservation_color = CORPORATION_RESERVATION_COLOR }
-          @corporations.concat(@late_corps)
-          @log << '-- All corporations now available --'
+          @log << '-- All Railroad Companies now available --'
+          @all_corps_available = true
         end
 
         def event_full_capitalization!
@@ -344,6 +434,14 @@ module Engine
           handle_bust_preprinted_and_revenue!
         end
 
+        def event_trigger_endgame!
+          @log << '-- Event: Endgame triggered --'
+          @log << 'Finish this OR; the endgame round sequence is described in the Timeline section of the Info tab'
+          @endgame_triggered = true
+          @operating_rounds = @round.round_num
+          @final_turn = @turn + 1
+        end
+
         def event_close_big_boy!
           detach_big_boy(log: true)
         end
@@ -356,6 +454,8 @@ module Engine
           end
 
           super
+
+          upgrade_home(corporation)
 
           corporation.capitalization = :incremental
         end
@@ -399,6 +499,10 @@ module Engine
 
         def lhp_train_pending?
           @lhp_train_pending
+        end
+
+        def custom_end_game_reached?
+          @endgame_triggered
         end
 
         def init_track_points
@@ -515,8 +619,7 @@ module Engine
         def track_points_available(entity)
           return 0 unless (corporation = entity).corporation?
 
-          p5_point = p5_company.owner == corporation ? 1 : 0
-          TRACK_POINTS + p5_point - @track_points_used[corporation]
+          TRACK_POINTS - @track_points_used[corporation]
         end
 
         def tile_lays(entity)
@@ -530,16 +633,29 @@ module Engine
         end
 
         def spend_tile_lay_points(action)
-          return unless (corporation = action.entity).corporation?
+          return if !action.entity.corporation? && action.entity != lander
 
+          corporation = action.entity.corporation
           points_used = action.tile.color == :yellow ? YELLOW_POINT_COST : UPGRADE_POINT_COST
           @track_points_used[corporation] += points_used
+        end
+
+        def preprocess_action(action)
+          case action
+          when Action::LayTile
+            @border_before = action.hex.tile.borders.first if CM_BORDER_HEXES.include?(action.hex.name)
+          end
         end
 
         def action_processed(action)
           case action
           when Action::LayTile
-            swap_color_and_stripes(action.hex.tile) if action.hex.name == WIND_RIVER_CANYON_HEX
+            if action.hex.name == WIND_RIVER_CANYON_HEX
+              swap_color_and_stripes(action.hex.tile)
+            else
+              @border_after = action.hex.tile.borders.first if @border_before
+              credit_mobilier_check_tile_lay_action(action)
+            end
           end
         end
 
@@ -547,6 +663,76 @@ module Engine
           @isr_company_choices ||= COMPANY_CHOICES.transform_values do |company_ids|
             company_ids.map { |id| company_by_id(id) }
           end
+        end
+
+        def init_corporations(stock_market)
+          corporations = game_corporations.map do |corporation|
+            Corporation.new(
+              min_price: stock_market.par_prices.map(&:price).min,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
+
+          @corp_stacks = init_stacks(corporations.slice(1, 9))
+
+          @log << 'The Railroad Companies (other than UP) have been split it into two stacks. '\
+                  'Before phase 5, only the first Railroad Company in a stack may be started. DPR is '\
+                  'guaranteed to be at the bottom of a stack.'
+          corp_stacks_str_arr(@log)
+
+          corporations.sort
+        end
+
+        # setup process:
+        #
+        # 1) set aside DPR
+        # 2) shuffle the other 8 corporations, place them on top of DPR
+        # 3) take the top 4 or 5 corporations into a second stack
+        #
+        # during play only the top (end of array) corporation from either stack
+        # may be started
+        def init_stacks(corporations)
+          dpr, *shuffled = corporations
+          shuffled.sort_by! { rand }
+          corps = [dpr, *shuffled]
+
+          stacks = [4, 5]
+          stacks.sort_by! { rand }
+          size1, size2 = stacks
+
+          [
+            corps.slice(0, size1),
+            corps.slice(size1, size2),
+          ]
+        end
+
+        # extends the given array with the string representation of the
+        # corporation stacks
+        def corp_stacks_str_arr(arr = [])
+          @corp_stacks.each.with_index do |stack, index|
+            arr << "- Railroad Company stack #{index + 1}: #{stack.map(&:name).reverse.join(', ')}" unless stack.empty?
+          end
+          arr
+        end
+
+        def sr_visible_corporations
+          return sorted_corporations if @all_corps_available
+
+          [*corporations.select(&:ipoed).sort, *@corp_stacks.flat_map(&:last).compact]
+        end
+
+        def timeline
+          timeline = []
+          unless @all_corps_available
+            timeline << 'Before phase 5, only the first Railroad Company in a stack may be started:'
+            corp_stacks_str_arr(timeline)
+          end
+
+          timeline << round_timeline unless @endgame_triggered
+          timeline << endgame_timeline
+
+          timeline
         end
 
         def init_coal_companies
@@ -566,16 +752,66 @@ module Engine
           end
         end
 
+        def round_timeline
+          @round_timeline ||=
+            begin
+              rounds = %w[
+                SR
+                Privates
+                DEV
+                OR
+                Privates
+                DEV
+                OR
+                Export
+                BUST
+              ]
+              "Round Sequence: #{rounds.join(' - ')}"
+            end
+        end
+
+        def endgame_timeline
+          @endgame_timeline ||=
+            begin
+              endgame = [
+                '7-train purchase*/export',
+                'BUST',
+                'SR',
+                'Privates',
+                'DEV',
+                'OR',
+                'Export',
+                'BUST',
+                'Privates',
+                'DEV',
+                'OR',
+                'Export',
+                'BUST',
+                'DEV',
+                'OR',
+                'Game End',
+              ]
+
+              "Endgame Sequence: #{endgame.join(' - ')} (*if 7-train is purchased in OR 1 of 2, skip OR 2)"
+            end
+        end
+
         def init_development_hexes
           @hexes.select do |hex|
             hex.tile.city_towns.empty? && hex.tile.offboards.empty?
           end
         end
 
+        def developing_order
+          minors = @coal_companies.select { |c| c.floated? && !c.closed? }.sort_by { |m| @players.index(m.owner) }
+          oil = @oil_companies.select { |c| c.floated? && !c.closed? }.sort_by { |m| @players.index(m.owner) }
+          minors.concat(oil)
+          minors.sort_by! { |m| @players.index(m.owner) } if @optional_rules.include?(:async)
+          minors
+        end
+
         def operating_order
-          coal = @coal_companies.sort_by { |m| @players.index(m.owner) }
-          railroads = @corporations.select(&:floated?).sort
-          coal + railroads
+          @corporations.select(&:floated?).sort
         end
 
         def setup_development_tokens
@@ -699,6 +935,16 @@ module Engine
           else
             super
           end
+        end
+
+        def upgrade_cost(tile, hex, entity, spender)
+          super + (%w[16 19 20].include?(tile.name) ? 20 : 0)
+        end
+
+        def tile_cost_with_discount(_tile, _hex, _entity, spender, _cost)
+          cost = super
+          cost /= 2 if spender.corporation == pac_rr_a.owner
+          cost
         end
 
         def revenue_for(route, stops)
@@ -825,34 +1071,72 @@ module Engine
           end
         end
 
+        def final_or_in_set?(round)
+          round.is_a?(G1868WY::Round::Operating) && round.round_num == @operating_rounds
+        end
+
         def next_round!
           @round =
             case @round
-            when Engine::Round::Stock
-              @operating_rounds = @phase.operating_rounds
-              reorder_players(:first_to_pass, log_player_order: true)
-              new_operating_round
-            when G1868WY::Round::Operating
-              if @round.round_num < @operating_rounds
-                init_track_points
-                bust_round!
-                new_operating_round(@round.round_num + 1)
-              else
-                @turn += 1
-                init_track_points
-                depot.export!
-                bust_round!
-                new_stock_round
-              end
-            when init_round.class
+            when Engine::Round::Auction
               init_round_finished
               reorder_players(:most_cash, log_player_order: true)
               new_stock_round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players(:first_to_pass, log_player_order: true)
+              @phase.name == '8' ? new_operating_round(@round.round_num) : new_development_round
+            when G1868WY::Round::Development
+              new_operating_round(@round.round_num)
+            when G1868WY::Round::Operating
+              init_track_points
+
+              last_or_in_set = @round.round_num == @operating_rounds
+              in_endgame = @endgame_triggered && @final_stock_round_started
+
+              depot.export! if (last_or_in_set && !@endgame_triggered) ||
+                               (in_endgame && @phase.name != '8')
+
+              if last_or_in_set || @endgame_triggered
+                new_bust_round(@round.round_num)
+              else
+                round_num = @round.round_num + 1
+                @phase.name == '8' ? new_operating_round(round_num) : new_development_round(round_num)
+              end
+            when G1868WY::Round::Bust
+              resolve_busters!
+              if @endgame_triggered && @final_stock_round_started
+                round_num = @round.round_num + 1
+                @phase.name == '8' ? new_operating_round(round_num) : new_development_round(round_num)
+              else
+                @final_stock_round_started = @endgame_triggered
+                @turn += 1
+                new_stock_round
+              end
             end
         end
 
         def player_value(player)
-          player.value - player.companies.sum(&:value)
+          player.bankrupt ? 0 : player.value
+        end
+
+        def distance(train)
+          if train.distance.is_a?(Numeric)
+            [train.distance, 0]
+          else
+            cities = train.distance[1]['pay']
+            towns = train.distance[0]['pay']
+            [cities, towns]
+          end
+        end
+
+        def trains_str(corporation)
+          return '' if corporation.minor?
+          return 'None' if corporation.trains.empty?
+
+          corporation.trains.each_with_object([]) do |train, named_trains|
+            (named_trains << train.name) unless @double_headed_trains.include?(train)
+          end.join(' ')
         end
 
         def issuable_shares(entity, previously_issued = 0)
@@ -909,21 +1193,44 @@ module Engine
           bundles
         end
 
+        def route_distance_str(route)
+          return route.stops.size.to_s if route.train.distance.is_a?(Integer)
+
+          towns = route.stops.count(&:town?)
+          cities = route_distance(route) - towns
+          towns_as_cities = [0, towns - route.train.distance[0]['pay']].max
+
+          c = cities + towns_as_cities
+          t = towns - towns_as_cities
+
+          towns.positive? ? "#{c}+#{t}" : cities.to_s
+        end
+
         def after_par(corporation)
+          super
+
+          return if @all_corps_available
+
+          @corp_stacks.each { |s| s.pop if s.last == corporation }
+        end
+
+        def upgrade_home(corporation)
           return if corporation.id != 'LNP' && corporation.id != 'OSL'
 
           hex = hex_by_id(corporation.coordinates)
           old_tile = hex.tile
-          return if old_tile.color == :green || old_tile.color == :brown
+          return if old_tile.color == :green || old_tile.color == :brown || old_tile.color == :gray
 
           green_tile = tile_by_id("G#{old_tile.label}-0")
           update_tile_lists(green_tile, old_tile)
           hex.lay(green_tile)
-          @log << "#{corporation.name} lays tile #{green_tile.name} on #{hex.id} (#{old_tile.location_name})"
+          @log << "#{corporation.name} lays tile #{green_tile.name} on #{hex.id} (#{green_tile.location_name})"
         end
 
         def can_par?(corporation, _parrer)
           return false unless super
+          return true if corporation.id == 'UP'
+          return false if !@all_corps_available && @corp_stacks.none? { |s| s.last == corporation }
 
           corporation == dpr ? !home_token_locations(corporation).empty? : true
         end
@@ -1186,12 +1493,62 @@ module Engine
           hex_by_id(self.class::BILLINGS_HEXES[(index + 1) % 2])
         end
 
+        def total_rounds(name)
+          case name
+          when self.class::PRIVATES_ROUND_NAME, self.class::DEVELOPMENT_ROUND_NAME
+            2
+          when self.class::OPERATING_ROUND_NAME
+            @operating_rounds
+          when 'BUST'
+            @endgame_triggered && @final_stock_round_started ? 2 : nil
+          end
+        end
+
+        def place_no_bust(hex)
+          @no_bust_hex = hex
+        end
+
+        def event_close_no_bust!
+          return if !no_bust || no_bust.closed?
+
+          @log << "-- Event: #{no_bust.name} closes, removing the NO BUST token --"
+          hex = @no_bust_hex
+          hex.remove_assignment!(no_bust.id)
+
+          return unless (dtc = @development_token_count[hex]) < DTC_BOOMCITY
+
+          @busters[hex] = dtc
+          handle_bust!
+        end
+
+        def private_earns(amount, company, reason)
+          @bank.spend(amount, company.owner)
+          @log << "#{company.owner.name} collects #{format_currency(amount)} from #{company.name}; #{reason}"
+        end
+
+        def check_midwest_oil!(routes)
+          return if !midwest_oil || midwest_oil.closed?
+          return if !midwest_oil.owned_by_player? && !midwest_oil.owned_by_corporation?
+
+          casper_trains = routes.count do |route|
+            route.visited_stops.any? { |stop| stop.hex.id == CASPER_HEX }
+          end
+          return if casper_trains.zero?
+
+          private_earns(
+            10 * casper_trains,
+            midwest_oil,
+            "#{casper_trains} train#{casper_trains == 1 ? '' : 's'} visited Casper (#{CASPER_HEX})"
+          )
+        end
+
         def event_close_privates!
           case @phase.name
           when '5'
             event_close_ames_brothers!
           when '8'
             event_close_big_boy!
+            event_close_no_bust!
           end
         end
       end

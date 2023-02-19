@@ -143,6 +143,20 @@ class Api < Roda
       render(titles: [game.title], pin: pin,
              game_data: pin ? game.to_h(include_actions: true, logged_in_user_id: user&.id) : game.to_h)
     end
+
+    r.on 'issues', String do |str|
+      label =
+        case str
+        when 'alpha', 'beta', 'production'
+          Engine.issues_labels(str.to_sym)
+        when 'prealpha'
+          '"new games"'
+        else
+          str
+        end
+
+      r.redirect "https://github.com/tobymao/18xx/issues?q=is%3Aissue+is%3Aopen+label%3A#{label}"
+    end
   end
 
   def render_with_games

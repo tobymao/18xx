@@ -54,7 +54,7 @@ module Engine
         SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
-        STARTING_CASH = { 3 => 580, 4 => 460 }.freeze
+        STARTING_CASH = { 3 => 580, 4 => 480 }.freeze
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, cost: 20, upgrade: false }].freeze
 
         # This allows us to add in privates to the cert count ourselves, without

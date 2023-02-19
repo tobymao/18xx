@@ -199,9 +199,12 @@ module Engine
       # :never -- token can be placed as long as there is a city space for existing tile reservations
       # :always -- token cannot be placed until tile reservation resolved
       # :yellow_only -- token cannot be placed while tile is yellow or until the tile reservation is resolved
+      # :oo_only -- token cannot be places while the tile has two or more seperate cities (OO tile),
+      #             if and when the cities merge into one, regular reservation rules apply.
       TILE_RESERVATION_BLOCKS_OTHERS = :never
 
       COMPANIES = [].freeze
+      COMPANY_CLASS = Company
 
       CORPORATION_CLASS = Corporation
       CORPORATIONS = [].freeze
@@ -2170,7 +2173,7 @@ module Engine
         game_companies.map do |company|
           next if players.size < (company[:min_players] || 0)
 
-          Company.new(**company)
+          self.class::COMPANY_CLASS.new(**company)
         end.compact
       end
 
@@ -2503,6 +2506,10 @@ module Engine
         nil
       end
 
+      def final_or_in_set?(round)
+        round.round_num == @operating_rounds
+      end
+
       def end_now?(after)
         return false unless after
         return true if after == :immediate
@@ -2510,7 +2517,7 @@ module Engine
         return false unless @round.is_a?(round_end)
         return true if after == :current_or
 
-        final_or_in_set = @round.round_num == @operating_rounds
+        final_or_in_set = final_or_in_set?(@round)
 
         return (@turn == @final_turn) if final_or_in_set && (after == :one_more_full_or_set)
 
