@@ -72,7 +72,6 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 100,
             obsolete_on: '3E',
-            rusts_on: '7',
             variants: [
               {
                 name: 'Y3',
@@ -93,7 +92,7 @@ module Engine
                 name: 'G4',
                 distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
                            { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                price: 240,
+                price: 220,
               },
             ],
           },
@@ -373,8 +372,8 @@ module Engine
           # There should only be one dit_stop at most
           normal_stops, dit_stops = visits.partition { |node| paying_distance['nodes'].include?(node.type) }
 
-          # if no dit stops
-          return visits if dit_stops.empty?
+          # if no dit stops (or E-train)
+          return super if dit_stops.empty?
 
           # return if not enough normal stops
           return visits if normal_stops.size < paying_distance['pay']

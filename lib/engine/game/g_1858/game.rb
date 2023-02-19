@@ -49,6 +49,11 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
 
+        def setup_preround
+          # Companies need to be owned by the bank to be available for auction
+          @companies.each { |company| company.owner = @bank }
+        end
+
         def setup
           # We need three different graphs for tracing routes for entities:
           #  - @graph_broad traces routes along broad and dual gauge track.
@@ -105,13 +110,24 @@ module Engine
           clear_graph_for_entity(entity)
         end
 
+        def init_round
+          stock_round
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::HomeToken,
+            G1858::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num = 1)
           @round_num = round_num
           Engine::Round::Operating.new(self, [
             G1858::Step::Track,
-            Engine::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1858::Step::Token,
+            G1858::Step::Route,
+            G1858::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             Engine::Step::IssueShares,
@@ -141,6 +157,66 @@ module Engine
 
         def tile_lays(entity)
           entity.corporation? ? TILE_LAYS : MINOR_TILE_LAYS
+        end
+
+        def express_train?(train)
+          %w[E D].include?(train.name[-1])
+        end
+
+        def hex_train?(train)
+          train.name[-1] == 'H'
+        end
+
+        def metre_gauge_train?(train)
+          train.name[-1] == 'M'
+        end
+
+        def hex_edge_cost(conn)
+          conn[:paths].each_cons(2).sum do |a, b|
+            a.hex == b.hex ? 0 : 1
+          end
+        end
+
+        def check_distance(route, _visits)
+          if hex_train?(route.train)
+            limit = route.train.distance
+            distance = route_distance(route)
+            raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
+          else
+            super
+          end
+        end
+
+        def route_distance(route)
+          if hex_train?(route.train)
+            route.chains.sum { |conn| hex_edge_cost(conn) }
+          else
+            route.visited_stops.sum(&:visit_cost)
+          end
+        end
+
+        def check_other(route)
+          check_track_type(route)
+        end
+
+        def check_track_type(route)
+          track_types = route.chains.flat_map { |item| item[:paths] }.flat_map(&:track).uniq
+
+          if metre_gauge_train?(route.train)
+            raise GameError, 'Route cannot contain broad gauge track' if track_types.include?(:broad)
+          elsif track_types.include?(:narrow)
+            raise GameError, 'Route cannot contain metre gauge track'
+          end
+        end
+
+        def routes_revenue(routes)
+          super + @round.current_operator.companies.sum(&:revenue)
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue /= 2 if route.train.obsolete
+          revenue
         end
 
         def metre_gauge_upgrade(old_tile, new_tile)
@@ -180,12 +256,76 @@ module Engine
                   'discount for metre gauge track'
         end
 
+        def route_distance_str(route)
+          train = route.train
+
+          if hex_train?(train)
+            "#{route_distance(route)}H"
+          else
+            towns = route.visited_stops.count(&:town?)
+            cities = route_distance(route) - towns
+            if express_train?(train)
+              cities.to_s
+            else
+              "#{cities}+#{towns}"
+            end
+          end
+        end
+
+        def submit_revenue_str(routes, _show_subsidy)
+          corporation = current_entity
+          return super if corporation.companies.empty?
+
+          total_revenue = routes_revenue(routes)
+          private_revenue = corporation.companies.sum(&:revenue)
+          train_revenue = total_revenue - private_revenue
+          "#{format_revenue_currency(train_revenue)} train + " \
+            "#{format_revenue_currency(private_revenue)} private revenue"
+        end
+
+        def buyable_bank_owned_companies
+          available_colors = [:yellow]
+          available_colors << :green if @phase.status.include?('green_privates')
+          @companies.select do |company|
+            !company.closed? && (company.owner == @bank) &&
+              available_colors.include?(company.color)
+          end
+        end
+
+        def unstarted_corporation_summary
+          # Don't show minors in the list of bank-owned entities, their
+          # associated private company will be listed.
+          unstarted = @corporations.reject(&:ipoed)
+          [unstarted.size, unstarted]
+        end
+
+        def unowned_purchasable_companies(_entity)
+          @companies.filter { |company| !company.closed? && company.owner == @bank }
+        end
+
+        def bank_sort(entities)
+          minors, corporations = entities.partition(&:minor?)
+          minors.sort_by { |m| PRIVATE_ORDER[m.id] } + corporations.sort_by(&:name)
+        end
+
         def payout_companies
           return if private_closure_round == :in_progress
 
           # Private railways owned by public companies don't pay out.
           exchanged_companies = @companies.select { |company| company.owner&.corporation? }
           super(ignore: exchanged_companies.map(&:id))
+        end
+
+        def entity_can_use_company?(_entity, _company)
+          # Don't show abilities buttons in a stock round for the companies
+          # owned by the player.
+          false
+        end
+
+        def operated_operators
+          # Don't include minors in the route history selector as they do not
+          # have any routes to show.
+          @corporations.select(&:operated?)
         end
       end
     end

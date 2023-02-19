@@ -86,7 +86,7 @@ module View
       end
 
       def max_purchase_price(corporation, company)
-        [company.max_price, corporation.cash].min
+        [company.max_price(corporation), corporation.cash].min
       end
     end
   end
