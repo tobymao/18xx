@@ -12,6 +12,13 @@ module Engine
           include G1868WY::SkipCoalAndOil
           include G1868WY::Step::Tracker
 
+          def setup
+            super
+
+            @game.cm_connected = {}
+            @game.cm_pending = {}
+          end
+
           def can_lay_tile?(entity)
             return false if @game.skip_homeless_dpr?(entity)
             return true if super
@@ -37,6 +44,19 @@ module Engine
 
           def process_lay_tile(action)
             lay_tile_action(action)
+          end
+
+          def actions(entity)
+            return [] unless entity == current_entity
+            return [] unless entity.corporation?
+            return self.class::ACTIONS_WITH_PASS if can_lay_tile?(entity)
+
+            %w[credit_mobilier pass]
+          end
+
+          def process_pass(action)
+            log_pass(action.entity) if can_lay_tile?(action.entity)
+            pass!
           end
         end
       end
