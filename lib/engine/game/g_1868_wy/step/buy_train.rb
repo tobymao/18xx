@@ -41,11 +41,6 @@ module Engine
             process_choose_big_boy(action)
           end
 
-          def process_buy_train(action)
-            super
-            action.train.remove_variants!
-          end
-
           def room?(entity, _shell = nil)
             entity.trains.count { |t| !@game.extra_train?(t) } < @game.train_limit(entity)
           end

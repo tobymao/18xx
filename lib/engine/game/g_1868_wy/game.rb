@@ -16,6 +16,7 @@ require_relative 'step/buy_train'
 require_relative 'step/choose'
 require_relative 'step/company_pending_par'
 require_relative 'step/development_token'
+require_relative 'step/discard_train'
 require_relative 'step/dividend'
 require_relative 'step/double_share_protection'
 require_relative 'step/home_token'
@@ -290,7 +291,7 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1868WY::Step::DiscardTrain,
             G1868WY::Step::Assign,
             G1868WY::Step::ManualCloseCompany,
             G1868WY::Step::HomeToken,
@@ -350,7 +351,7 @@ module Engine
             G1868WY::Step::Route,
             G1868WY::Step::Dividend,
             G1868WY::Step::DoubleShareProtection,
-            Engine::Step::DiscardTrain,
+            G1868WY::Step::DiscardTrain,
             G1868WY::Step::BuyTrain,
             [G1868WY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
