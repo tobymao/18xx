@@ -85,7 +85,7 @@ module Engine
         HEXES = {
           white: {
             # Plain hexes.
-            %w[B8 B10 E7 E9 F8 F16 G3 G15 H4 H6 I13 I21 J10 J12 J16 J18 J20 J22 K11 K17
+            %w[B8 E7 E9 F8 F16 G3 G15 H4 H6 I13 I21 J10 J12 J16 J18 J20 J22 K11 K17
                K21 K23 L10 L18 M23 N8 N14 N18 N20 N22 N24 O5 O21 O23 O27 O29
                P4 P6 P16 P20 P22 P24 P26 P30 Q7 Q13 Q19 Q21 Q25 Q27 Q29 R6 R16
                R18 R22 R26 R30 S5 S13 S15 S17 S19 S21 S23 S25 T6 T16 T18 T20
@@ -93,6 +93,7 @@ module Engine
                X10 X12 X14 X22 X26] => '',
             %w[A5 A7 B4 B6 E11 F6 F10 G5 G7 H14 I15 J14 K13 K15 N16 P8 R8 S7 T8] => 'upgrade=cost:40,terrain:mountain',
             %w[I11 O7] => 'upgrade=cost:80,terrain:mountain',
+            %w[B10] => 'border=edge:3,type:water,cost:80',
             %w[C9] => 'border=edge:0,type:water,cost:80;border=edge:5,type:water,cost:80',
             %w[D12] => 'border=edge:2,type:impassable',
             %w[D14] => 'border=edge:5,type:province',
@@ -100,14 +101,14 @@ module Engine
             %w[E5] => 'stub=edge:3',
             %w[E13 F12] => 'upgrade=cost:40,terrain:mountain;' \
                            'border=edge:4,type:province;border=edge:5,type:province',
-            %w[G9] => 'border=edge:5,type:province;border=edge:5,type:water,cost:80',
+            %w[G9] => 'border=edge:5,type:water,cost:80',
             %w[F14 G13] => 'border=edge:1,type:province;border=edge:2,type:province',
-            %w[G11] => 'border=edge:0,type:province;border=edge:0,type:water,cost:80;' \
+            %w[G11] => 'border=edge:0,type:water,cost:80;' \
                        'border=edge:4,type:province;border=edge:5,type:province',
             %w[H8] => 'border=edge:4,type:impassable;border=edge:5,type:impassable',
             %w[H10] => 'border=edge:1,type:impassable;' \
-                       'border=edge:2,type:province;border=edge:2,type:water,cost:80;' \
-                       'border=edge:3,type:province;border=edge:3,type:water,cost:80',
+                       'border=edge:2,type:water,cost:80;' \
+                       'border=edge:3,type:water,cost:80',
             %w[I9 V12] => 'border=edge:2,type:impassable',
             %w[L20 M21] => 'upgrade=cost:20,terrain:water',
             %w[N6] => 'upgrade=cost:40,terrain:water',
@@ -156,7 +157,7 @@ module Engine
             %w[H18] => 'city=revenue:0;border=edge:5,type:water,cost:80',
             %w[I19] => 'city=revenue:0;border=edge:2,type:water,cost:80',
             %w[U11] => 'city=revenue:0;border=edge:3,type:province;' \
-                       'border=edge:4,type:province;border=edge:4,type:water,cost:80;' \
+                       'border=edge:4,type:water,cost:80;' \
                        'border=edge:5,type:impassable',
             %w[V26] => 'city=revenue:0;border=edge:2,type:water,cost:80;border=edge:3,type:impassable',
 
@@ -165,7 +166,7 @@ module Engine
             %w[D10] => 'city=revenue:0;label=Y;border=edge:2,type:water,cost:80;border=edge:3,type:impassable',
             %w[C11] => 'city=revenue:0;label=Y;border=edge:0,type:impassable;border=edge:5,type:impassable',
             %w[M17] => 'city=revenue:0;label=Y;border=edge:1,type:mountain,cost:40',
-            %w[U13] => 'city=revenue:0;label=Y;border=edge:1,type:province;' \
+            %w[U13] => 'city=revenue:0;label=Y;' \
                        'border=edge:1,type:water,cost:80;border=edge:2,type:water,cost:80',
           },
           yellow: {
