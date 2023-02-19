@@ -28,7 +28,7 @@ module Engine
           end
 
           def can_par_at?(par, minors_cash, minors_value, player_cash)
-            return true unless possible_exchanged_shares(par, minors_cash, minors_value, player_cash).empty?
+            !possible_exchanged_shares(par, minors_cash, minors_value, player_cash).empty?
           end
         end
       end
