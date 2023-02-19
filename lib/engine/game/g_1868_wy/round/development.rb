@@ -6,15 +6,17 @@ module Engine
   module Game
     module G1868WY
       module Round
-        class Operating < Engine::Round::Operating
-          def setup
-            @game.setup_credit_mobilier_for_round
+        class Development < Engine::Round::Operating
+          def self.short_name
+            'DEV'
+          end
 
-            super
+          def name
+            'Development Round'
           end
 
           def select_entities
-            @game.operating_order
+            @game.developing_order
           end
         end
       end

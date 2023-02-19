@@ -7,6 +7,9 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'share_pool'
 require_relative 'trains'
+require_relative 'round/bust'
+require_relative 'round/development'
+require_relative 'round/operating'
 require_relative 'step/assign'
 require_relative 'step/buy_company'
 require_relative 'step/buy_train'
@@ -64,6 +67,15 @@ module Engine
         MUST_BUY_TRAIN = :always
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         EBUY_OTHER_VALUE = true
+        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+        GAME_END_REASONS_TEXT = {
+          bankrupt: 'player is bankrupt',
+          custom: '7-train is bought/exported',
+        }.freeze
+        GAME_END_REASONS_TIMING_TEXT = {
+          immediate: "Immediately, bankrupt player's score is $0",
+          one_more_full_or_set: 'see the "Endgame Sequence" timeline',
+        }.freeze
         MARKET = [
           [''] + %w[82 90 100 110z 120z 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490 525 560],
           %w[72 76 82 90x 100x 110 120 140 160 180 200 225 250 275 300 325 350 375 400 430 460 490],
@@ -112,6 +124,10 @@ module Engine
             ['Full Capitalization', 'Railroad Companies float at 60% and receive full capitalization'],
         }.freeze
 
+        # rounds
+        DEVELOPMENT_ROUND_NAME = 'Development'
+        PRIVATES_ROUND_NAME = 'Privates Pay'
+
         # track points
         TRACK_POINTS = 6
         YELLOW_POINT_COST = 2
@@ -142,6 +158,10 @@ module Engine
         # special shares
         UP_PRESIDENTS_SHARE = 'UP_0'
         UP_DOUBLE_SHARE = 'UP_7'
+
+        ASSIGNMENT_TOKENS = {
+          'P6c' => '/icons/1868_wy/no_bust.svg',
+        }.freeze
 
         def dotify(tile)
           tile.towns.each { |town| town.style = :dot }
@@ -205,6 +225,9 @@ module Engine
           @lhp_train_pending = false
 
           setup_spikes
+
+          @endgame_triggered = false
+          @final_stock_round_started = false
 
           @big_boy_first_chance = false
 
@@ -281,9 +304,39 @@ module Engine
                                    multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
+        def payout_companies(payout = false, ignore: [])
+          super(ignore: ignore) if payout
+        end
+
+        def new_privates_round(round_num)
+          return if @phase.name == '8'
+
+          @log << "-- #{round_description('Privates Pay', round_num)} --"
+          payout_companies(true)
+        end
+
+        def new_development_round(round_num = 1)
+          new_privates_round(round_num)
+
+          @log << "-- #{round_description(self.class::DEVELOPMENT_ROUND_NAME, round_num)} --"
+          @round_counter += 1
+          development_round(round_num)
+        end
+
+        def development_round(round_num)
+          G1868WY::Round::Development.new(self, [
+            G1868WY::Step::Assign,
+            G1868WY::Step::DevelopmentToken,
+          ], round_num: round_num)
+        end
+
+        def new_operating_round(round_num = 1)
+          @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
+          operating_round(round_num)
+        end
+
         def operating_round(round_num)
           G1868WY::Round::Operating.new(self, [
-            G1868WY::Step::DevelopmentToken,
             Engine::Step::Bankrupt,
             G1868WY::Step::SpecialTrack,
             G1868WY::Step::Assign,
@@ -301,6 +354,23 @@ module Engine
             G1868WY::Step::BuyTrain,
             [G1868WY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def new_bust_round(round_num)
+          @log << "-- #{round_description('BUST', round_num)} --"
+          bust_round(round_num)
+        end
+
+        def bust_round(round_num)
+          G1868WY::Round::Bust.new(self, [
+            G1868WY::Step::Assign,
+          ], round_num: round_num)
+        end
+
+        def resolve_busters!
+          @busters.dup.each do |hex, _original_dtc|
+            handle_bust_hex!(hex) unless hex.tile.preprinted
+          end
         end
 
         def new_auction_round
@@ -363,6 +433,14 @@ module Engine
           handle_bust_preprinted_and_revenue!
         end
 
+        def event_trigger_endgame!
+          @log << '-- Event: Endgame triggered --'
+          @log << 'Finish this OR; the endgame round sequence is described in the Timeline section of the Info tab'
+          @endgame_triggered = true
+          @operating_rounds = @round.round_num
+          @final_turn = @turn + 1
+        end
+
         def event_close_big_boy!
           detach_big_boy(log: true)
         end
@@ -420,6 +498,10 @@ module Engine
 
         def lhp_train_pending?
           @lhp_train_pending
+        end
+
+        def custom_end_game_reached?
+          @endgame_triggered
         end
 
         def init_track_points
@@ -646,6 +728,9 @@ module Engine
             corp_stacks_str_arr(timeline)
           end
 
+          timeline << round_timeline unless @endgame_triggered
+          timeline << endgame_timeline
+
           timeline
         end
 
@@ -666,16 +751,66 @@ module Engine
           end
         end
 
+        def round_timeline
+          @round_timeline ||=
+            begin
+              rounds = %w[
+                SR
+                Privates
+                DEV
+                OR
+                Privates
+                DEV
+                OR
+                Export
+                BUST
+              ]
+              "Round Sequence: #{rounds.join(' - ')}"
+            end
+        end
+
+        def endgame_timeline
+          @endgame_timeline ||=
+            begin
+              endgame = [
+                '7-train purchase*/export',
+                'BUST',
+                'SR',
+                'Privates',
+                'DEV',
+                'OR',
+                'Export',
+                'BUST',
+                'Privates',
+                'DEV',
+                'OR',
+                'Export',
+                'BUST',
+                'DEV',
+                'OR',
+                'Game End',
+              ]
+
+              "Endgame Sequence: #{endgame.join(' - ')} (*if 7-train is purchased in OR 1 of 2, skip OR 2)"
+            end
+        end
+
         def init_development_hexes
           @hexes.select do |hex|
             hex.tile.city_towns.empty? && hex.tile.offboards.empty?
           end
         end
 
+        def developing_order
+          minors = @coal_companies.select { |c| c.floated? && !c.closed? }.sort_by { |m| @players.index(m.owner) }
+          oil = @oil_companies.select { |c| c.floated? && !c.closed? }.sort_by { |m| @players.index(m.owner) }
+          minors.concat(oil)
+          minors.sort_by! { |m| @players.index(m.owner) } if @optional_rules.include?(:async)
+          minors
+        end
+
         def operating_order
-          coal = @coal_companies.sort_by { |m| @players.index(m.owner) }
-          railroads = @corporations.select(&:floated?).sort
-          coal + railroads
+          @corporations.select(&:floated?).sort
         end
 
         def setup_development_tokens
@@ -935,34 +1070,53 @@ module Engine
           end
         end
 
+        def final_or_in_set?(round)
+          round.is_a?(G1868WY::Round::Operating) && round.round_num == @operating_rounds
+        end
+
         def next_round!
           @round =
             case @round
-            when Engine::Round::Stock
-              @operating_rounds = @phase.operating_rounds
-              reorder_players(:first_to_pass, log_player_order: true)
-              new_operating_round
-            when G1868WY::Round::Operating
-              if @round.round_num < @operating_rounds
-                init_track_points
-                bust_round!
-                new_operating_round(@round.round_num + 1)
-              else
-                @turn += 1
-                init_track_points
-                depot.export!
-                bust_round!
-                new_stock_round
-              end
-            when init_round.class
+            when Engine::Round::Auction
               init_round_finished
               reorder_players(:most_cash, log_player_order: true)
               new_stock_round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players(:first_to_pass, log_player_order: true)
+              @phase.name == '8' ? new_operating_round(@round.round_num) : new_development_round
+            when G1868WY::Round::Development
+              new_operating_round(@round.round_num)
+            when G1868WY::Round::Operating
+              init_track_points
+
+              last_or_in_set = @round.round_num == @operating_rounds
+              in_endgame = @endgame_triggered && @final_stock_round_started
+
+              depot.export! if (last_or_in_set && !@endgame_triggered) ||
+                               (in_endgame && @phase.name != '8')
+
+              if last_or_in_set || @endgame_triggered
+                new_bust_round(@round.round_num)
+              else
+                round_num = @round.round_num + 1
+                @phase.name == '8' ? new_operating_round(round_num) : new_development_round(round_num)
+              end
+            when G1868WY::Round::Bust
+              resolve_busters!
+              if @endgame_triggered && @final_stock_round_started
+                round_num = @round.round_num + 1
+                @phase.name == '8' ? new_operating_round(round_num) : new_development_round(round_num)
+              else
+                @final_stock_round_started = @endgame_triggered
+                @turn += 1
+                new_stock_round
+              end
             end
         end
 
         def player_value(player)
-          player.value - player.companies.sum(&:value)
+          player.bankrupt ? 0 : player.value
         end
 
         def distance(train)
@@ -1338,6 +1492,34 @@ module Engine
           hex_by_id(self.class::BILLINGS_HEXES[(index + 1) % 2])
         end
 
+        def total_rounds(name)
+          case name
+          when self.class::PRIVATES_ROUND_NAME, self.class::DEVELOPMENT_ROUND_NAME
+            2
+          when self.class::OPERATING_ROUND_NAME
+            @operating_rounds
+          when 'BUST'
+            @endgame_triggered && @final_stock_round_started ? 2 : nil
+          end
+        end
+
+        def place_no_bust(hex)
+          @no_bust_hex = hex
+        end
+
+        def event_close_no_bust!
+          return if !no_bust || no_bust.closed?
+
+          @log << "-- Event: #{no_bust.name} closes, removing the NO BUST token --"
+          hex = @no_bust_hex
+          hex.remove_assignment!(no_bust.id)
+
+          return unless (dtc = @development_token_count[hex]) < DTC_BOOMCITY
+
+          @busters[hex] = dtc
+          handle_bust!
+        end
+
         def private_earns(amount, company, reason)
           @bank.spend(amount, company.owner)
           @log << "#{company.owner.name} collects #{format_currency(amount)} from #{company.name}; #{reason}"
@@ -1365,6 +1547,7 @@ module Engine
             event_close_ames_brothers!
           when '8'
             event_close_big_boy!
+            event_close_no_bust!
           end
         end
       end

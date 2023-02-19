@@ -2506,6 +2506,10 @@ module Engine
         nil
       end
 
+      def final_or_in_set?(round)
+        round.round_num == @operating_rounds
+      end
+
       def end_now?(after)
         return false unless after
         return true if after == :immediate
@@ -2513,7 +2517,7 @@ module Engine
         return false unless @round.is_a?(round_end)
         return true if after == :current_or
 
-        final_or_in_set = @round.round_num == @operating_rounds
+        final_or_in_set = final_or_in_set?(@round)
 
         return (@turn == @final_turn) if final_or_in_set && (after == :one_more_full_or_set)
 

@@ -11,6 +11,8 @@ module Engine
             case current_entity
             when @game.lhp_private
               'Assign the LHP 2+1 train to a Railroad Company'
+            when @game.no_bust
+              'Place NO BUST token'
             end
           end
 
@@ -24,6 +26,14 @@ module Engine
           def actions(entity)
             actions =
               case entity
+              when @game.no_bust
+                if @game.no_bust.player.nil? || !@game.abilities(entity, :assign_hexes)
+                  []
+                elsif bust_round?
+                  @game.busters.empty? ? [] : %w[assign pass]
+                else
+                  %w[assign]
+                end
               when @game.lhp_private
                 %w[assign pass] if @game.lhp_train_pending?
               end
@@ -31,7 +41,10 @@ module Engine
           end
 
           def process_assign(action)
-            case entity
+            case action.entity
+            when @game.no_bust
+              super
+              @game.place_no_bust(action.target)
             when @game.lhp_private
               @game.convert_lhp_train!(action.target)
             end
@@ -46,13 +59,15 @@ module Engine
           def active_entities
             if @game.lhp_train_pending?
               [@game.lhp_private]
+            elsif bust_round? && !@game.no_bust.closed?
+              [@game.no_bust]
             else
               super
             end
           end
 
           def blocks?
-            @game.lhp_train_pending?
+            @game.lhp_train_pending? || bust_round?
           end
 
           def assignable_corporations(company)
@@ -60,6 +75,10 @@ module Engine
             return [] unless @game.lhp_train_pending?
 
             super
+          end
+
+          def bust_round?
+            @round.is_a?(G1868WY::Round::Bust)
           end
 
           def log_skip(_entity); end
