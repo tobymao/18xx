@@ -198,7 +198,7 @@ module Engine
       # do tile reservations completely block other companies?
       # :never -- token can be placed as long as there is a city space for existing tile reservations
       # :always -- token cannot be placed until tile reservation resolved
-      # :single_slot_cities -- token cannot be placed if tile contains single slot cities.
+      # :single_slot_cities -- token cannot be placed if tile contains any single slot cities
       TILE_RESERVATION_BLOCKS_OTHERS = :never
 
       COMPANIES = [].freeze
