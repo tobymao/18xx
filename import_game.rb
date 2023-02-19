@@ -50,7 +50,7 @@ def import_game(game_id)
   User.unrestrict_primary_key
 
   players_json.each do |player_json|
-    create_user(player_json['id]'], player_json['name'])
+    create_user(player_json['id'], player_json['name'])
   end
   create_user(user_json['id'], user_json['name'])
 

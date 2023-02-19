@@ -17,6 +17,7 @@ module Engine
         GAME_RULES_URL = 'https://drive.google.com/file/d/0B1SWz2pNe2eAWG9NRVYzS3FUc28/view?resourcekey=0-4MvZ7w-dGc_esikxhR8rvw'.freeze
         GAME_TITLE = '18NY 1st Edition'.freeze
         GAME_VARIANTS = [].freeze
+        GAME_ISSUE_LABEL = '18NY'
 
         def self.fs_name
           @fs_name ||= 'g_18_ny_1e'
