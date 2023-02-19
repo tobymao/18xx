@@ -351,7 +351,7 @@ module Engine
             G1868WY::Step::Route,
             G1868WY::Step::Dividend,
             G1868WY::Step::DoubleShareProtection,
-            G1868WY::Step::DiscardTrain ,
+            G1868WY::Step::DiscardTrain,
             G1868WY::Step::BuyTrain,
             [G1868WY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
