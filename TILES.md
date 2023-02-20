@@ -107,6 +107,14 @@ Towns, cities, and offboards have a few "sub parts" in common:
   revenue center from a group, e.g., "East" is a group in 1846 as routes cannot run E-E
 - **hide** - `1` indicates that the revenue for this revenue center should not be rendered
 
+##### Towns
+
+- **style**
+    - `rect` (rectangle) - default when 1 or 2 paths connect to the town
+    - `dot` - default when 0 or 3+ paths connect to the town
+    - `hidden` - don't show at all, useful for special offboards that count as
+      towns instead of cities; construct with a hidden town and `terminal` paths
+
 #### Lanes
 
 Lanes are used to specify paths for tiles that have double-track, treble-track and quad-track. Every

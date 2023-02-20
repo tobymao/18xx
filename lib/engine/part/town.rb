@@ -34,6 +34,10 @@ module Engine
       def rect?
         @style ? (@style == :rect) : (!paths.empty? && paths.size < 3)
       end
+
+      def hidden?
+        @style == :hidden
+      end
     end
   end
 end
