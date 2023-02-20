@@ -223,7 +223,7 @@ module Engine
         end
 
         def mesabi_hex
-          hex_by_id('A10')
+          @mesabi_hex ||= hex_by_id('A10')
         end
 
         def river_company
