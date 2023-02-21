@@ -1229,7 +1229,7 @@ module Engine
             },
             {
               sym: '16',
-              name: 'Vágvölgyi vasút',
+              name: 'Püspökladány–Nagyvárad vasútvonal',
               logo: '18_mag/16',
               tokens: [
                 0,
