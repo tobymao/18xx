@@ -24,6 +24,16 @@ module Engine
            short_name: 'Standard Dividends',
            desc: 'Use standard rules for dividends (all or nothing)',
          },
+         {
+           sym: :new_minors_challenge,
+           short_name: 'New minors - challenging',
+           desc: 'Minors 14, 15, 16 are added to the game (3-6 players)',
+         },
+         {
+           sym: :new_minors_simple,
+           short_name: 'New minors - simple',
+           desc: 'Minors 14, 15, 16 are added and three random minors are removed at setup (3-6 players)',
+         },
         ].freeze
       end
     end
