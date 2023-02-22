@@ -47,9 +47,6 @@ module Engine
               end
             end
 
-            # Increase player loans with 50% interest
-            # @game.add_interest_player_loans!
-
             super
           end
 
@@ -74,9 +71,6 @@ module Engine
             @bids[company]&.max_by(&:price)
           end
 
-          def sold_out?(corporation)
-            corporation.type == :major && super
-          end
         end
       end
     end
