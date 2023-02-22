@@ -17,8 +17,12 @@ module Engine
 
         STARTING_CASH = { 3 => 400, 4 => 300, 5 => 250 }.freeze
 
+<<<<<<< HEAD
         BIDDING_BOX_PRIVATE_COUNT = 4
         BIDDING_TOKENS_PER_ACTION = 3
+=======
+        HOME_TOKEN_TIMING = :par
+>>>>>>> c62857a46ca4d0f13af2c98aed2f8bf28e845391
 
         MARKET = [
           %w[40 44 47 50p 53p 57p 61p 65p 70p 75p 80p 86p 92p 98p 105x 112x 120x 128x 137x 147x 157x 168z 180z 193z
@@ -158,6 +162,10 @@ module Engine
           setup_privates
         end
 
+        def par_types_for_round
+          %i[par par_1 par_2 par_3][0...@turn]
+        end
+
         def setup_tiles
           @neutral_corp = Corporation.new(
             sym: 'N',
@@ -256,7 +264,11 @@ module Engine
         end
 
         def stock_round
+<<<<<<< HEAD
           G18EUS::Round::Stock.new(self, [
+=======
+          Round::Stock.new(self, [
+>>>>>>> c62857a46ca4d0f13af2c98aed2f8bf28e845391
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18EUS::Step::BuySellParShares,
@@ -264,7 +276,11 @@ module Engine
         end
 
         def operating_round(round_num)
+<<<<<<< HEAD
           Engine::Round::Operating.new(self, [
+=======
+          Round::Operating.new(self, [
+>>>>>>> c62857a46ca4d0f13af2c98aed2f8bf28e845391
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -296,7 +312,7 @@ module Engine
 
           subsidies = self.class::SUBSIDIES.sort_by { rand }.take(subsidy_tiles.size)
           subsidy_tiles.zip(subsidies).each do |tile, subsidy|
-            tile.icons << Engine::Part::Icon.new(subsidy['icon'])
+            tile.icons << Engine::Part::Icon.new(subsidy[:icon])
           end
         end
 
@@ -338,8 +354,33 @@ module Engine
           hex_by_id(hex_id).tile.icons.reject! { |icon| icon.name.include?('subsidy') }
         end
 
+<<<<<<< HEAD
         def remove_subsidies
           # TODO
+=======
+        def float_str(_entity)
+          '2 shares to start'
+        end
+
+        def grow_corporation(corporation)
+          raise GameError, "#{corporation.name} is already a 10 share corporation" if corporation.shares.size == 10
+
+          shares_for_corporation(corporation).each { |share| share.percent = share.president ? 20 : 10 }
+          5.times do |index|
+            share = Share.new(corporation, owner: corporation.ipo_owner, percent: 10, index: 5 + index)
+            corporation.ipo_owner.shares_by_corporation[corporation] << share
+          end
+          corporation.share_holders.keys do |sh|
+            corporation.share_holders[sh] = sh.shares_by_corporation[corporation].sum(&:percent)
+          end
+          update_cache(:shares)
+        end
+
+        def home_token_locations(corporation)
+          hexes.select do |hex|
+            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+          end
+>>>>>>> c62857a46ca4d0f13af2c98aed2f8bf28e845391
         end
 
         def setup_privates
