@@ -71,7 +71,7 @@ module Engine
 
           def hex_neighbors(entity, hex)
             connected = super
-            @game.clear_token_graph_for_entity(entity) if entity.tokens.none? {|t| t.city}
+            @game.clear_token_graph_for_entity(entity) if entity.tokens.none?(&:city)
             connected
           end
 
