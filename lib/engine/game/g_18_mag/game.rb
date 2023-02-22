@@ -9,7 +9,7 @@ module Engine
       class Game < Game::Base
         include_meta(G18Mag::Meta)
 
-        attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :terrain_tokens
+        attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :ciwl, :terrain_tokens
 
         CURRENCY_FORMAT_STR = '%s Ft'
         BANK_CASH = 100_000
@@ -90,6 +90,7 @@ module Engine
           'RABA' => 'Sells off board bonus',
           'SNW' => 'Sells mine access',
           'G&C' => 'Sells plus-train conversion',
+          'CIWL' => 'Earns when a train runs red to red',
         }.freeze
 
         CORPORATE_POWERS_2P = {
@@ -133,6 +134,10 @@ module Engine
           @optional_rules&.include?(:new_minors_simple)
         end
 
+        def new_major?
+          @optional_rules&.include?(:new_major)
+        end
+
         def location_name(coord)
           @location_names ||= game_location_names
 
@@ -148,6 +153,7 @@ module Engine
             @mavag = @corporations.find { |c| c.name == 'MAVAG' }
             @snw = @corporations.find { |c| c.name == 'SNW' }
             @gc = @corporations.find { |c| c.name == 'G&C' }
+            @ciwl = @corporations.find { |c| c.name == 'CIWL' }
           end
 
           @terrain_tokens = TERRAIN_TOKENS.dup
@@ -657,10 +663,17 @@ module Engine
         end
 
         def subsidy_for(route, _stops)
-          snw_train?(route) ? snw_delta : 0
+          subsidy = 0
+          subsidy += snw_delta if snw_train?(route)
+          subsidy += ciwl_delta if new_major? && red_to_red_route?(route)
+          subsidy
         end
 
         def snw_delta
+          SNW_BONUS[phase.current[:tiles].size - 1]
+        end
+
+        def ciwl_delta
           SNW_BONUS[phase.current[:tiles].size - 1]
         end
 
@@ -689,6 +702,14 @@ module Engine
             end
           end
           true
+        end
+
+        def red_to_red(routes)
+          routes.count { |route| red_to_red_route?(route) }
+        end
+
+        def red_to_red_route?(route)
+          route.stops.count { |stop| stop.tile.color == :red } > 1
         end
 
         def price_movement_chart
@@ -1342,7 +1363,23 @@ module Engine
               color: 'purple',
             },
           ]
+          new_corp = [
+            {
+              sym: 'CIWL',
+              name: 'Compagnie Internationale des Wagons-Lits',
+              logo: '18_mag/CIWL',
+              float_percent: 0,
+              max_ownership_percent: 60,
+              tokens: [
+                40,
+                80,
+              ],
+              shares: [40, 20, 20, 20],
+              color: 'brown',
+            },
+          ]
           corps.select! { |c| CORPORATIONS_2P.include?(c[:sym]) } unless multiplayer?
+          corps.concat(new_corp) if new_major?
           corps
         end
 
