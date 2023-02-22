@@ -138,10 +138,18 @@ module Engine
           @optional_rules&.include?(:new_major)
         end
 
+        def supporters?
+          @optional_rules&.include?(:supporters)
+        end
+
         def location_name(coord)
           @location_names ||= game_location_names
 
           @location_names[coord]
+        end
+
+        def company_header(_company)
+          'SUPPORTER'
         end
 
         def setup
@@ -1223,46 +1231,7 @@ module Engine
               ],
             },
           ]
-          optional_minor_list = [
-            {
-              sym: '14',
-              name: 'Nagyvárad–Kolozsvár-vasútvona',
-              logo: '18_mag/14',
-              tokens: [
-                0,
-                40,
-                80,
-              ],
-              coordinates: 'F23',
-              color: 'black',
-            },
-            {
-              sym: '15',
-              name: 'Vágvölgyi vasút',
-              logo: '18_mag/15',
-              tokens: [
-                0,
-                40,
-                80,
-              ],
-              coordinates: 'C8',
-              color: 'black',
-            },
-            {
-              sym: '16',
-              name: 'Püspökladány–Nagyvárad vasútvonal',
-              logo: '18_mag/16',
-              tokens: [
-                0,
-                40,
-                80,
-              ],
-              coordinates: 'F19',
-              color: 'black',
-            },
-          ]
           minor_list.select! { |m| MINORS_2P.include?(m[:sym]) } unless multiplayer?
-          minor_list.concat(optional_minor_list) if new_minors_challenge? || new_minors_simple?
           minor_list
         end
 
@@ -1381,6 +1350,69 @@ module Engine
           corps.select! { |c| CORPORATIONS_2P.include?(c[:sym]) } unless multiplayer?
           corps.concat(new_corp) if new_major?
           corps
+        end
+
+        def game_companies
+          companies = [
+            {
+              name: 'Kálman Kandó (Mérnök = Engineer)',
+              value: 0,
+              revenue: 0,
+              desc: 'Gives a discount on a train purchase. 10/15/20/30 on 2/3/4/6 train',
+              sym: 'KK',
+              color: nil,
+            },
+            {
+              name: 'Feketeházy János (Mérnök = Engineer)',
+              value: 0,
+              revenue: 0,
+              desc: 'Comes with a virtual permanent terrain token: Once per OR the terrain costs for one' \
+                    'hex are paid by the bank into the green company.',
+              sym: 'FJ',
+              color: nil,
+            },
+            {
+              name: 'Salomon Mayer Freiherr von Rothschild (Pénzember = financier)',
+              value: 0,
+              revenue: 0,
+              desc: 'Gives an income of Ft 10 per OR (for one company) at any time during the turn of one'\
+                    'of the players companies.',
+              sym: 'SMFvR',
+              color: nil,
+            },
+            {
+              name: 'Georg Simon von Sina (Pénzember = financier)',
+              value: 0,
+              revenue: 0,
+              desc: 'Gives a free additional upgrade to green and brown. All upgrading rules apply (the tiles' \
+                    'must be available).',
+              sym: 'GSvS',
+              color: nil,
+            },
+            {
+              name: 'Donaudampfschifffahrtsgesellschaft (Vállalat = company)',
+              value: 0,
+              revenue: 0,
+              desc: 'Gives a discount of 50% on token laying. That means the first token of a minor'\
+                    'company cost Ft 20 (and only Ft 10 of it will go to the yellow company), the second'\
+                    'token cost Ft 40 (and only Ft 20 of it will go to the yellow company).',
+              sym: 'DDSG',
+              color: nil,
+            },
+            {
+              name: 'Magyar Államvastutak',
+              value: 0,
+              revenue: 0,
+              desc: 'One train of a minor company becomes an X+1 train. It may run to one additional'\
+                    'town. If this minor company uses the benefits of the blue company (a train becomes a'\
+                    'plus train) the Magyar Àllamvasutak may be used for the same train (for example'\
+                    'turning a 2+2 into a 2+3 train or a 4+4 into a 4+5 train) or a different train (for'\
+                    'example turning a 3-train into a 3+1 train).',
+              sym: 'MA',
+              color: nil,
+            },
+          ]
+          supporters? ? companies : []
         end
 
         def game_trains
