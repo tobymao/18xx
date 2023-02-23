@@ -83,7 +83,7 @@ module Engine
           def setup
             @game.remove_minors! if @game.new_minors_simple?
             @minors = @game.minors.reject { |m| m.name == 'mine' }.sort_by { |m| m.name.to_i }
-            @supporters = @game.companies
+            @supporters = @game.companies.dup
             @minor_count = Hash.new(0)
             @share_count = Hash.new(0)
             @supporter_count = Hash.new(0)
@@ -152,9 +152,10 @@ module Engine
           end
 
           def finished?
-            @minors.size == @leftover_minors &&
-            (@shares_a + @shares_b).size == @leftover_shares &&
-            @supporters.size == @leftover_suporters
+            finished = @minors.size == @leftover_minors &&
+            (@shares_a + @shares_b).size == @leftover_shares
+            finished &&= @supporters.size == @leftover_suporters if @game.supporters?
+            finished
           end
 
           def actions(entity)

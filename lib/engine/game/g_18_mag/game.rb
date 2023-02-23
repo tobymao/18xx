@@ -152,6 +152,10 @@ module Engine
           'SUPPORTER'
         end
 
+        def company_table_header
+          'Supporter'
+        end
+
         def setup
           @sik = @corporations.find { |c| c.name == 'SIK' }
           @skev = @corporations.find { |c| c.name == 'SKEV' }
@@ -227,6 +231,10 @@ module Engine
 
         def partition_companies
           init_minors.select { |m| m.name == 'mine' }
+        end
+
+        def init_minors
+          game_minors.map { |minor| G18Mag::Minor.new(**minor) }
         end
 
         def reservation_corporations
@@ -345,6 +353,7 @@ module Engine
             G18Mag::Step::DiscardTrain,
             G18Mag::Step::Route,
             G18Mag::Step::Dividend,
+            Engine::Step::SpecialBuyTrain,
             G18Mag::Step::BuyTrain,
           ], round_num: round_num)
         end
@@ -1360,6 +1369,15 @@ module Engine
               revenue: 0,
               desc: 'Gives a discount on a train purchase. 10/15/20/30 on 2/3/4/6 train',
               sym: 'KK',
+              abilities: [
+                {
+                  type: 'train_discount',
+                  when: 'owning_player_or_turn',
+                  discount: { '2' => 10, '3' => 15, '4' => 20, '6' => 30 },
+                  trains: %w[2 3 4 6],
+                  count_per_or: 1,
+                },
+              ],
               color: nil,
             },
             {
