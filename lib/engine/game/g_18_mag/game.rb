@@ -348,6 +348,7 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
+            G18Mag::Step::SpecialChoose,
             G18Mag::Step::Track,
             G18Mag::Step::Token,
             G18Mag::Step::DiscardTrain,
@@ -1396,6 +1397,13 @@ module Engine
               desc: 'Gives an income of Ft 10 per OR (for one company) at any time during the turn of one'\
                     'of the players companies.',
               sym: 'SMFvR',
+              abilities: [{
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                choices: { claim: 'Claim 10 Ft income' },
+                count_per_or: 1,
+              }],
               color: nil,
             },
             {
