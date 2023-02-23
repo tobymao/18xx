@@ -17,12 +17,9 @@ module Engine
 
         STARTING_CASH = { 3 => 400, 4 => 300, 5 => 250 }.freeze
 
-<<<<<<< HEAD
         BIDDING_BOX_PRIVATE_COUNT = 4
-        BIDDING_TOKENS_PER_ACTION = 3
-=======
+        BIDDING_TOKENS_PER_ACTION = 4
         HOME_TOKEN_TIMING = :par
->>>>>>> c62857a46ca4d0f13af2c98aed2f8bf28e845391
 
         MARKET = [
           %w[40 44 47 50p 53p 57p 61p 65p 70p 75p 80p 86p 92p 98p 105x 112x 120x 128x 137x 147x 157x 168z 180z 193z
