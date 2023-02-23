@@ -349,6 +349,7 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             G18Mag::Step::SpecialChoose,
+            Engine::Step::SpecialTrack,
             G18Mag::Step::Track,
             G18Mag::Step::Token,
             G18Mag::Step::DiscardTrain,
@@ -1410,9 +1411,20 @@ module Engine
               name: 'Georg Simon von Sina (Pénzember = financier)',
               value: 0,
               revenue: 0,
-              desc: 'Gives a free additional upgrade to green and brown. All upgrading rules apply (the tiles' \
+              desc: 'Gives a free additional upgrade to green and brown. All upgrading rules apply (the tiles ' \
                     'must be available).',
               sym: 'GSvS',
+              abilities: [
+                {
+                  type: 'tile_lay',
+                  tiles: %w[39 40 41 42 43 70 44 47 45 46 G17 611 L17 L34 L35 L38 455 X9 L36 L37],
+                  hexes: [],
+                  reachable: true,
+                  when: 'owning_player_track',
+                  owner_type: 'player',
+                  count: 1,
+                },
+],
               color: nil,
             },
             {
