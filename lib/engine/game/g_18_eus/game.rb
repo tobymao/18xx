@@ -17,6 +17,8 @@ module Engine
 
         STARTING_CASH = { 3 => 400, 4 => 300, 5 => 250 }.freeze
 
+        BIDDING_BOX_PRIVATE_COUNT = 4
+        BIDDING_TOKENS_PER_ACTION = 4
         HOME_TOKEN_TIMING = :par
 
         MARKET = [
@@ -259,7 +261,7 @@ module Engine
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          G18EUS::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18EUS::Step::BuySellParShares,
@@ -267,7 +269,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -373,6 +375,23 @@ module Engine
           end
 
           @companies = privates.values.sort.map { |v| v.first(4) }.flatten
+        end
+
+        def bidbox_privates
+          @companies.select { |c| (!c.owner || c.owner == @bank) && !c.closed? }.first(self.class::BIDDING_BOX_PRIVATE_COUNT)
+        end
+
+        def setup_bidboxes
+          bidbox_privates.each { |c| c.owner = @bank }
+        end
+
+        def company_status_str(company)
+          index = bidbox_privates.index(company)
+          return "Bid box #{index + 1}" if index && index < self.class::BIDDING_BOX_PRIVATE_COUNT
+        end
+
+        def bidding_token_per_player
+          self.class::BIDDING_BOX_PRIVATE_COUNT
         end
       end
     end
