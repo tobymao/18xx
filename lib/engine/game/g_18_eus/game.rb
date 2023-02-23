@@ -264,11 +264,7 @@ module Engine
         end
 
         def stock_round
-<<<<<<< HEAD
           G18EUS::Round::Stock.new(self, [
-=======
-          Round::Stock.new(self, [
->>>>>>> c62857a46ca4d0f13af2c98aed2f8bf28e845391
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18EUS::Step::BuySellParShares,
@@ -276,11 +272,7 @@ module Engine
         end
 
         def operating_round(round_num)
-<<<<<<< HEAD
           Engine::Round::Operating.new(self, [
-=======
-          Round::Operating.new(self, [
->>>>>>> c62857a46ca4d0f13af2c98aed2f8bf28e845391
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -354,10 +346,6 @@ module Engine
           hex_by_id(hex_id).tile.icons.reject! { |icon| icon.name.include?('subsidy') }
         end
 
-<<<<<<< HEAD
-        def remove_subsidies
-          # TODO
-=======
         def float_str(_entity)
           '2 shares to start'
         end
@@ -380,7 +368,6 @@ module Engine
           hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
->>>>>>> c62857a46ca4d0f13af2c98aed2f8bf28e845391
         end
 
         def setup_privates
