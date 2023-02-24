@@ -121,7 +121,6 @@ module Engine
             on: '8',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: ['no_new_shorts'],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
