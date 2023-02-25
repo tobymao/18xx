@@ -64,8 +64,8 @@ module Engine
             @converting_major ? [@converting_major] : @game.sorted_corporations.reject(&:closed?)
           end
 
-          def bank_owned_companies
-            @converting_major ? [] : @game.buyable_bank_owned_companies
+          def hide_bank_companies?
+            @converting_major
           end
 
           def choices

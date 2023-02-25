@@ -1096,6 +1096,10 @@ module Engine
         def home_token_can_be_cheater
           true
         end
+
+        def buyable_bank_owned_companies
+          @round.active_step.respond_to?(:hide_bank_companies?) && @round.active_step.hide_bank_companies? ? [] : super
+        end
       end
     end
   end
