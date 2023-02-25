@@ -5,6 +5,7 @@ require_relative 'entities'
 require_relative 'golden_spike'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'oil_companies'
 require_relative 'share_pool'
 require_relative 'trains'
 require_relative 'round/bust'
@@ -44,6 +45,7 @@ module Engine
         include Trains
         include CreditMobilier
         include GoldenSpike
+        include OilCompanies
 
         # Engine::Game includes
         include CompanyPriceUpToFace
@@ -160,8 +162,27 @@ module Engine
         UP_PRESIDENTS_SHARE = 'UP_0'
         UP_DOUBLE_SHARE = 'UP_7'
 
+        # privates
         ASSIGNMENT_TOKENS = {
           'P6c' => '/icons/1868_wy/no_bust.svg',
+          'P8' => '/icons/1868_wy/pure_oil.svg',
+        }.freeze
+        PURE_OIL_CAMP_TILES = {
+          '7' => '5b',
+          '8' => '6b',
+          '9' => '57b',
+          '14' => '14b',
+          '17' => '14b',
+          '20' => '14b',
+          '626' => '14b',
+          '15' => '15b',
+          '16' => '15b',
+          '18' => '15b',
+          '625' => '15b',
+          '19' => '619b',
+          '21' => '619b',
+          '22' => '619b',
+          '619' => '619b',
         }.freeze
 
         def dotify(tile)
@@ -221,6 +242,8 @@ module Engine
           union_pacific.shares.last.buyable = false
           up_double_share.double_cert = true
           @up_double_share_protection = {}
+
+          @pure_oil_hex = nil
 
           @lhp_train = find_and_remove_train_by_id('2+1-0', buyable: false)
           @lhp_train_pending = false
@@ -440,6 +463,13 @@ module Engine
           @endgame_triggered = true
           @operating_rounds = @round.round_num
           @final_turn = @turn + 1
+        end
+
+        def event_close_pure_oil!
+          @log << "Company #{pure_oil.name} closes"
+          pure_oil.close!
+          @pure_oil_hex&.remove_assignment!(pure_oil.id)
+          to_ghost_town!(@pure_oil_hex)
         end
 
         def event_close_big_boy!
@@ -898,6 +928,12 @@ module Engine
             new_tile = boomcity_tile(tile.name)
             boom_bust_autoreplace_tile!(new_tile, tile)
           end
+
+          return unless hex.assigned?(pure_oil.id)
+
+          token = hex.tokens.first
+          hex.remove_token(token)
+          hex.tile.add_reservation!(pure_oil.owner, 0, 0)
         end
 
         def boomcity_increase_revenue!(hex)
@@ -1042,11 +1078,16 @@ module Engine
           hex.tile.location_name = GHOST_TOWN_NAME
 
           gt_tile_name = GHOST_TOWN_TILE[hex.tile.name]
+          if hex.tile.preprinted
+            hex.remove_assignment!(pure_oil.id) if hex.assigned?(pure_oil.id)
+            return
+          end
           gt_tile = @tiles.find { |t| t.name == gt_tile_name.to_s && !t.hex }
 
           boom_bust_autoreplace_tile!(gt_tile, hex.tile)
 
           @development_hexes << hex
+          hex.remove_assignment!(pure_oil.id) if hex.assigned?(pure_oil.id)
         end
 
         def boomcity_to_boomtown!(hex)
@@ -1069,6 +1110,18 @@ module Engine
             tile = boomtown_tile(hex.tile.name)
             boom_bust_autoreplace_tile!(tile, hex.tile)
           end
+
+          return unless hex.assigned?(pure_oil.id)
+
+          corp = pure_oil.corporation
+          token = Token.new(
+            corp,
+            price: 0,
+            logo: corp.logo,
+            simple_logo: corp.simple_logo,
+            type: :boomcity_reservation,
+          )
+          hex.place_token(token, logo: token.simple_logo, preprinted: false)
         end
 
         def final_or_in_set?(round)
@@ -1254,6 +1307,55 @@ module Engine
             dpr
           else
             super
+          end
+        end
+
+        def place_pure_oil(hex)
+          type = @development_token_count[hex] < DTC_BOOMCITY ? :boomtown : :boomcity
+
+          @pure_oil_hex = hex
+
+          if hex.tile.color == :white
+            revenue = '0'
+            opts = { boom: true }
+
+            if type == :boomtown
+              town = Part::Town.new(revenue, **opts)
+              town.tile = hex.tile
+              hex.tile.towns << town
+            else
+              city = Part::City.new(revenue, **opts)
+              city.tile = hex.tile
+              hex.tile.cities << city
+            end
+          else
+            tile_name = PURE_OIL_CAMP_TILES[hex.tile.name]
+            tile_name = tile_name.upcase if type == :boomcity
+            tile = tiles.find { |t| t.name == tile_name }
+
+            rotation = -1
+            tile.rotate!(rotation += 1) until (hex.tile.exits - tile.exits).empty? || rotation > 5
+
+            update_tile_lists(tile, hex.tile)
+            hex.lay(tile)
+            update_boomcity_revenues!(tile, hex.tile)
+
+            case type
+            when :boomtown
+              corp = pure_oil.corporation
+              token = Token.new(
+                corp,
+                price: 0,
+                logo: corp.logo,
+                simple_logo: corp.simple_logo,
+                type: :boomcity_reservation,
+              )
+              hex.place_token(token, logo: token.simple_logo, preprinted: false)
+
+            when :boomcity
+              tile.add_reservation!(pure_oil.owner, 0, 0)
+              @log << "#{hex.name} reserved for #{pure_oil.owner.name}"
+            end
           end
         end
 
@@ -1546,6 +1648,8 @@ module Engine
           case @phase.name
           when '5'
             event_close_ames_brothers!
+          when '7'
+            event_close_pure_oil!
           when '8'
             event_close_big_boy!
             event_close_no_bust!
