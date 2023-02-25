@@ -49,6 +49,35 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
 
+        def init_optional_rules(optional_rules)
+          rules = super
+
+          # Quick start variant doesn't work for two players.
+          rules -= [:quick_start] if two_player?
+
+          # The alternate set of private packets can only be used with the
+          # quick start variant.
+          rules -= [:set_b] unless rules.include?(:quick_start)
+
+          rules
+        end
+
+        def corporation_opts
+          two_player? ? { max_ownership_percent: 70 } : {}
+        end
+
+        def option_quick_start?
+          optional_rules.include?(:quick_start)
+        end
+
+        def option_quick_start_packets
+          if optional_rules.include?(:set_b)
+            QUICK_START_PACKETS_B
+          else
+            QUICK_START_PACKETS_A
+          end
+        end
+
         def setup_preround
           # Companies need to be owned by the bank to be available for auction
           @companies.each { |company| company.owner = @bank }
@@ -64,7 +93,29 @@ module Engine
           @graph_broad = Graph.new(self, skip_track: :narrow, home_as_token: true)
           @graph_metre = Graph.new(self, skip_track: :broad, home_as_token: true)
 
+          @unbuyable_companies = []
+          setup_unbuyable_privates
+
           @stubs = setup_stubs
+        end
+
+        # Some private railways cannot be bought in the two-player variant:
+        # five from P2–P17 and two from P18–P22.
+        def setup_unbuyable_privates
+          return unless two_player?
+
+          batch1, batch2 = @minors.partition { |minor| minor.color == :yellow }
+          random = Random.new(rand)
+          reserved = (batch1.sample(5, random: random) +
+                      batch2.sample(2, random: random))
+          @log << "These private companies cannot be bought in this game: #{reserved.map(&:id).join(', ')}"
+
+          rx = /(P\d+)\. .*\. (Home hex.*)\. .*/
+          reserved.each do |minor|
+            company = private_company(minor)
+            company.desc = company.desc.sub(rx, '\1. \2. Cannot be purchased in this game.')
+            @unbuyable_companies << company
+          end
         end
 
         # Create stubs along the routes of the private railways.
@@ -111,7 +162,12 @@ module Engine
         end
 
         def init_round
-          stock_round
+          if option_quick_start?
+            quick_start
+            operating_round(1)
+          else
+            stock_round
+          end
         end
 
         def stock_round
@@ -288,7 +344,8 @@ module Engine
           available_colors << :green if @phase.status.include?('green_privates')
           @companies.select do |company|
             !company.closed? && (company.owner == @bank) &&
-              available_colors.include?(company.color)
+              available_colors.include?(company.color) &&
+              !@unbuyable_companies.include?(company)
           end
         end
 
