@@ -251,7 +251,8 @@ module Engine
             ['I15'] => 'path=a:2,b:5',
             ['N16'] => 'town=style:hidden,revenue:yellow_30|green_30|brown_0|gray_0;path=a:0,b:_0,terminal:1;'\
                        'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
-            ['Q13'] => 'town=style:hidden,revenue:yellow_20|green_30|brown_40|gray_50;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
+            ['Q13'] => 'town=style:hidden,revenue:yellow_20|green_30|brown_40|gray_50;'\
+                       'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
           },
           yellow: {
             %w[F8] => 'city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;'\

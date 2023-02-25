@@ -22,10 +22,10 @@ module View
             rendered <<
               if town.rect?
                 h(TownRect, town: town, region_use: @region_use, show_revenue: @show_revenue,
-                  color: value_for(town, :color), width: value_for(town, :width))
+                            color: value_for(town, :color), width: value_for(town, :width))
               else
                 h(TownDot, town: town, tile: @tile, region_use: @region_use, show_revenue: @show_revenue,
-                  color: value_for(town, :color), width: value_for(town, :width))
+                           color: value_for(town, :color), width: value_for(town, :width))
               end
           end
         end
