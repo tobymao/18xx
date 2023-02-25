@@ -34,6 +34,8 @@ module Engine
                 else
                   %w[assign]
                 end
+              when @game.pure_oil
+                %w[assign] if @game.abilities(entity, :assign_hexes)
               when @game.lhp_private
                 %w[assign pass] if @game.lhp_train_pending?
               end
@@ -45,6 +47,9 @@ module Engine
             when @game.no_bust
               super
               @game.place_no_bust(action.target)
+            when @game.pure_oil
+              super
+              @game.place_pure_oil(action.target)
             when @game.lhp_private
               @game.convert_lhp_train!(action.target)
             end

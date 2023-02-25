@@ -19,6 +19,7 @@ module Engine
         CORPORATION_CLASS = G1850::Corporation
         COMPANY_CLASS = G1850::Company
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+        MULTIPLE_BUY_ONLY_FROM_MARKET = true
 
         CERT_LIMIT = {
           2 => { 9 => 24, 8 => 21 },
@@ -62,7 +63,7 @@ module Engine
             name: '6',
             on: '6',
             train_limit: 2,
-            tiles: %i[yellow green brown gray],
+            tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
           {
@@ -222,7 +223,7 @@ module Engine
         end
 
         def mesabi_hex
-          hex_by_id('A10')
+          @mesabi_hex ||= hex_by_id('A10')
         end
 
         def river_company
@@ -277,7 +278,7 @@ module Engine
         end
 
         def check_distance(route, visits, _train = nil)
-          return super if !visits.empty? { |v| v.hex == mesabi_hex } || route.train.owner.mesabi_token
+          return super if visits.none? { |v| v.hex == mesabi_hex } || route.train.owner.mesabi_token
 
           raise GameError, 'Corporation must own mesabi token to enter Mesabi Range'
         end

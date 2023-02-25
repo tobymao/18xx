@@ -16,6 +16,14 @@ module Engine
             6 => 2,
           }.freeze
 
+          MAX_NUM_MINORS_OPTIONAL = {
+            2 => 3,
+            3 => 5,
+            4 => 4,
+            5 => 3,
+            6 => 2,
+          }.freeze
+
           MAX_NUM_SHARES = {
             2 => 1,
             3 => 2,
@@ -32,6 +40,14 @@ module Engine
             6 => 1,
           }.freeze
 
+          LEFTOVER_NUM_MINORS_OPTIONAL = {
+            2 => 1,
+            3 => 1,
+            4 => 0,
+            5 => 1,
+            6 => 1,
+          }.freeze
+
           LEFTOVER_NUM_SHARES = {
             2 => 2,
             3 => 1,
@@ -41,12 +57,21 @@ module Engine
           }.freeze
 
           def setup
+            @game.remove_minors! if @game.new_minors_simple?
             @minors = @game.minors.reject { |m| m.name == 'mine' }.sort_by { |m| m.name.to_i }
             @minor_count = Hash.new(0)
             @share_count = Hash.new(0)
-            @max_minors = MAX_NUM_MINORS[@game.players.size]
+            @max_minors = if @game.new_minors_challenge?
+                            MAX_NUM_MINORS_OPTIONAL[@game.players.size]
+                          else
+                            MAX_NUM_MINORS[@game.players.size]
+                          end
             @max_shares = MAX_NUM_SHARES[@game.players.size]
-            @leftover_minors = LEFTOVER_NUM_MINORS[@game.players.size]
+            @leftover_minors = if @game.new_minors_challenge?
+                                 LEFTOVER_NUM_MINORS_OPTIONAL[@game.players.size]
+                               else
+                                 LEFTOVER_NUM_MINORS[@game.players.size]
+                               end
             @leftover_shares = LEFTOVER_NUM_SHARES[@game.players.size]
 
             @shares_a = @game.corporations.dup

@@ -375,8 +375,7 @@ module Engine
       return false if @reservations.empty?
 
       if @reservation_blocks == :always ||
-        (@reservation_blocks == :yellow_only && @color == :yellow) ||
-        (@reservation_blocks == :oo_only && @cities.size > 1)
+        (@reservation_blocks == :single_slot_cities && @cities.any? { |city| city.slots == 1 })
         !@reservations.include?(corporation)
       else
         @reservations.count { |x| corporation != x } >= @cities.sum(&:available_slots)

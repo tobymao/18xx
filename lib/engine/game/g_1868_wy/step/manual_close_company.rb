@@ -36,7 +36,7 @@ module Engine
             when @game.big_boy_private
               @game.event_close_big_boy!
             when @game.pure_oil
-              @game.event_close_pure_oil_camp!
+              @game.event_close_pure_oil!
             when @game.no_bust
               @game.event_close_no_bust!
             end
