@@ -19,6 +19,13 @@ module Engine
         GAME_ISSUE_LABEL = '1873'
 
         PLAYER_RANGE = [2, 5].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :aag_variant,
+            short_name: 'AAG variant map',
+            desc: 'Increases terrain cost of F7 to 100 ℳ',
+          },
+        ].freeze
       end
     end
   end

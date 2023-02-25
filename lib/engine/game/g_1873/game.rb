@@ -234,6 +234,13 @@ module Engine
           5 => 200,
         }.freeze
 
+        OPTION_REMOVE_HEXES = ['F7'].freeze
+        OPTION_ADD_HEXES = {
+          ['F7'] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
+                    'path=a:3,b:_1,track:narrow;upgrade=cost:50,terrain:mountain;'\
+                    'icon=image:1873/11_open,sticky:1,large:1',
+        }.freeze
+
         def location_name(coord)
           @location_names ||= game_location_names
 
@@ -3103,6 +3110,26 @@ module Engine
             Action::ProgramHarzbahnDraftPass,
             Action::ProgramIndependentMines,
           ]
+        end
+
+        def aag_variant?
+          @aag_variant ||= @optional_rules&.include?(:aag_variant)
+        end
+
+        def optional_hexes
+          return self.class::HEXES unless aag_variant?
+
+          new_hexes = {}
+          HEXES.keys.each do |color|
+            new_map = self.class::HEXES[color].transform_keys do |coords|
+              coords - OPTION_REMOVE_HEXES
+            end
+            OPTION_ADD_HEXES.each { |coords, tile_str| new_map[coords] = tile_str } if color == :green
+
+            new_hexes[color] = new_map
+          end
+
+          new_hexes
         end
       end
     end
