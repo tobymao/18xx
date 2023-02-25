@@ -2626,13 +2626,6 @@
         "rotation": 1
       },
       {
-        "type": "pass",
-        "entity": "KATY",
-        "entity_type": "corporation",
-        "id": 293,
-        "created_at": 1676784988
-      },
-      {
         "type": "run_routes",
         "entity": "KATY",
         "entity_type": "corporation",
@@ -3171,13 +3164,6 @@
         "hex": "J9",
         "tile": "8-8",
         "rotation": 5
-      },
-      {
-        "type": "pass",
-        "entity": "KATY",
-        "entity_type": "corporation",
-        "id": 340,
-        "created_at": 1676785496
       },
       {
         "type": "run_routes",
