@@ -79,6 +79,7 @@ module Engine
           '7' => 1,
           '12' => 2,
           '13' => 1,
+          '14' => 2,
         }.freeze
 
         CORPORATE_POWERS = {
@@ -122,6 +123,14 @@ module Engine
 
         def standard_divs?
           @optional_rules&.include?(:standard_divs)
+        end
+
+        def new_minors_challenge?
+          @optional_rules&.include?(:new_minors_challenge)
+        end
+
+        def new_minors_simple?
+          @optional_rules&.include?(:new_minors_simple)
         end
 
         def location_name(coord)
@@ -186,6 +195,20 @@ module Engine
           @phase_change = false
           @train_bought = false
           @ors_no_train = 0
+        end
+
+        def remove_minors!
+          return if @minors_removed
+
+          minors_to_remove = @minors.reject { |m| m.name == 'mine' }.sort_by { rand }.take(3)
+          minors_to_remove.each do |minor|
+            @log << "Minor #{minor.name} is removed from the game"
+            hex = @hexes.find { |h| h.id == minor.coordinates }
+            hex.tile.cities[minor.city || 0].remove_tokens!
+            hex.tile.cities[minor.city || 0].remove_reservation!(minor)
+            @minors.delete(minor)
+          end
+          @minors_removed = true
         end
 
         def partition_companies
@@ -1179,7 +1202,46 @@ module Engine
               ],
             },
           ]
+          optional_minor_list = [
+            {
+              sym: '14',
+              name: 'Nagyvárad–Kolozsvár-vasútvona',
+              logo: '18_mag/14',
+              tokens: [
+                0,
+                40,
+                80,
+              ],
+              coordinates: 'F23',
+              color: 'black',
+            },
+            {
+              sym: '15',
+              name: 'Vágvölgyi vasút',
+              logo: '18_mag/15',
+              tokens: [
+                0,
+                40,
+                80,
+              ],
+              coordinates: 'C8',
+              color: 'black',
+            },
+            {
+              sym: '16',
+              name: 'Püspökladány–Nagyvárad vasútvonal',
+              logo: '18_mag/16',
+              tokens: [
+                0,
+                40,
+                80,
+              ],
+              coordinates: 'F19',
+              color: 'black',
+            },
+          ]
           minor_list.select! { |m| MINORS_2P.include?(m[:sym]) } unless multiplayer?
+          minor_list.concat(optional_minor_list) if new_minors_challenge? || new_minors_simple?
           minor_list
         end
 

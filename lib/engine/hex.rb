@@ -261,16 +261,16 @@ module Engine
       end
     end
 
-    def place_token(token, logo: nil, preprinted: true)
+    def place_token(token, logo: nil, blocks_lay: nil, preprinted: true)
       token.place(self)
       @tokens << token
-      icon = Part::Icon.new('', token.corporation.id, true, false, preprinted)
+      icon = Part::Icon.new('', token.corporation.id, true, blocks_lay, preprinted)
       icon.image = logo || token.corporation.logo
       @tile.icons << icon
     end
 
     def remove_token(token)
-      @tile.icons.delete(@tile.icons.find { |_name| token.corporation.id })
+      @tile.icons.delete(@tile.icons.find { |icon| icon.name == token.corporation.id })
       @tokens.delete(token)
     end
 

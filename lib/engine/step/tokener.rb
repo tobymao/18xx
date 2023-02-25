@@ -91,7 +91,8 @@ module Engine
           token.corporation.tokens << token
           @log << "#{tokener} places a neutral token on #{hex.name}#{price_log}"
         else
-          @log << "#{tokener} places a token on #{hex.name} (#{hex.location_name})#{price_log}"
+          hex_description = hex.location_name ? "#{hex.name} (#{hex.location_name}) " : "#{hex.name} "
+          @log << "#{tokener} places a token on #{hex_description}#{price_log}"
         end
 
         @round.tokened = true unless extra_action

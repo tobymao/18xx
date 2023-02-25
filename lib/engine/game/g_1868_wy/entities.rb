@@ -451,8 +451,8 @@ module Engine
                 ],
               },
             ],
-            desc: 'Comes with a Boomtown token that may be placed during any OR '\
-                  'anywhere track may be placed. Once it\'s a Boom City, it may '\
+            desc: 'Comes with a Boomtown token that may be placed (when owned by a Railroad) '\
+                  'during any OR anywhere track may be placed. Once it\'s a Boom City, it may '\
                   'only be tokened by the owning Railroad Company. Closes at '\
                   'phase 7, removing Boomtown/City and station token, and tile '\
                   'becomes a Ghost Town.',

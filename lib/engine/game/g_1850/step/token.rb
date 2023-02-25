@@ -33,6 +33,7 @@ module Engine
             ability = @game.abilities(corporation, :assign_hexes)
             hex = @game.hex_by_id(ability.hexes.first)
 
+            hex.tile.icons.reject! { |icon| icon.name == "#{corporation.name}_edge" }
             hex.assign!(corporation)
             ability.use!
             corporation.spend(ability.cost, @game.bank)
