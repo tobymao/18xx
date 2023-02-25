@@ -1196,7 +1196,7 @@ module Engine
 
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           num_shares = bundle.num_shares
-          unless corporation.owner == bundle.president
+          unless corporation.owner == bundle.owner
             num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
             num_shares -= 2 if corporation.share_price.type == :ignore_two_sales
           end
