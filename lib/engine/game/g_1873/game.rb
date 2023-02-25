@@ -237,7 +237,7 @@ module Engine
         OPTION_REMOVE_HEXES = ['F7'].freeze
         OPTION_ADD_HEXES = {
           ['F7'] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
-                    'path=a:3,b:_1,track:narrow;upgrade=cost:50,terrain:mountain;'\
+                    'path=a:3,b:_1,track:narrow;upgrade=cost:100,terrain:mountain;'\
                     'icon=image:1873/11_open,sticky:1,large:1',
         }.freeze
 
