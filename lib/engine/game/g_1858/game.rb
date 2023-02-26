@@ -93,6 +93,11 @@ module Engine
           @graph_broad = Graph.new(self, skip_track: :narrow, home_as_token: true)
           @graph_metre = Graph.new(self, skip_track: :broad, home_as_token: true)
 
+          # The rusting event for 6H/4M trains is triggered by the number of
+          # phase 7 trains purchased, so track the number of these sold.
+          @phase7_trains_bought = 0
+          @phase7_train_trigger = two_player? ? 3 : 5
+
           @unbuyable_companies = []
           setup_unbuyable_privates
 
@@ -184,9 +189,9 @@ module Engine
             G1858::Step::Token,
             G1858::Step::Route,
             G1858::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
-            Engine::Step::IssueShares,
+            G1858::Step::DiscardTrain,
+            G1858::Step::BuyTrain,
+            G1858::Step::IssueShares,
           ], round_num: round_num)
         end
 
@@ -337,6 +342,25 @@ module Engine
           train_revenue = total_revenue - private_revenue
           "#{format_revenue_currency(train_revenue)} train + " \
             "#{format_revenue_currency(private_revenue)} private revenue"
+        end
+
+        def buy_train(operator, train, price = nil)
+          bought_from_depot = (train.owner == @depot)
+          super
+          return if @phase7_trains_bought >= @phase7_train_trigger
+          return unless bought_from_depot
+          return unless %w[7E 6M 5D].include?(train.name)
+
+          @phase7_trains_bought += 1
+          ordinal = %w[First Second Third Fourth Fifth][@phase7_trains_bought - 1]
+          @log << "#{ordinal} phase 7 train has been bought"
+          rust_phase4_trains!(train) if @phase7_trains_bought == @phase7_train_trigger
+        end
+
+        def rust_phase4_trains!(purchased_train)
+          trains.select { |train| %w[6H 3M].include?(train.name) }
+                .each { |train| train.rusts_on = purchased_train.sym }
+          rust_trains!(purchased_train, purchased_train.owner)
         end
 
         def buyable_bank_owned_companies
