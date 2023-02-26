@@ -752,10 +752,10 @@ module Engine
 
         # extra cash available if the corporation sells a company to the bank
         def potential_company_cash(entity)
-          if @phase.status.include?('can_buy_companies') && entity.corporation? && entity.cash.positive?
+          if @phase.status.include?('can_buy_companies') && entity.corporation?
             @companies.reduce(0) do |memo, company|
               memo +
-                if company.owned_by_player?
+                if company.owned_by_player? && entity.cash.positive?
                   company.value - 1
                 elsif company.owner == entity
                   company.value

@@ -19,6 +19,7 @@ module Engine
         GAME_RULES_URL = 'https://cdn.shopify.com/s/files/1/0252/9371/7588/files/RSS.pdf'
         GAME_SUBTITLE = nil
         GAME_TITLE = 'Rolling Stock Stars'
+        GAME_ISSUE_LABEL = 'RollingStock'
 
         PLAYER_RANGE = [2, 6].freeze
 

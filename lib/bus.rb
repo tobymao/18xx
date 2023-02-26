@@ -19,9 +19,9 @@ module Bus
 
   def self.configure
     MessageBus.configure(backend: :redis, url: URL)
-    MessageBus.reliable_pub_sub.max_backlog_size = 1
-    MessageBus.reliable_pub_sub.max_global_backlog_size = 100_000
-    MessageBus.reliable_pub_sub.max_backlog_age = 172_800 # 2 days
+    MessageBus.backend_instance.max_backlog_size = 1
+    MessageBus.backend_instance.max_global_backlog_size = 100_000
+    MessageBus.backend_instance.max_backlog_age = 172_800 # 2 days
   end
 
   def self.redis

@@ -21,19 +21,9 @@ module Engine
         PLAYER_RANGE = [3, 6].freeze
         OPTIONAL_RULES = [
           {
-            sym: :nes,
-            short_name: 'NES',
-            desc: 'North Europe Scenario (GB FR BNL CH DE)',
-          },
-          {
             sym: :ces,
             short_name: 'CES',
             desc: 'Central Europe Scenario (BNL CH AHE DE IT)',
-          },
-          {
-            sym: :ses,
-            short_name: 'SES',
-            desc: 'South Europe Scenario (FR ESP CH AHE IT)',
           },
         ].freeze
 
