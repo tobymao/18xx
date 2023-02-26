@@ -19,6 +19,13 @@ module Engine
         GAME_ISSUE_LABEL = '1873'
 
         PLAYER_RANGE = [2, 5].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :aag_variant,
+            short_name: 'All-Aboard Games map',
+            desc: 'Hex F7 has a 100 ℳ terrain cost instead of 50 ℳ',
+          },
+        ].freeze
       end
     end
   end
