@@ -37,7 +37,7 @@ module Engine
          {
            sym: :new_major,
            short_name: 'New major',
-           desc: 'Major CIWL is added. The now major grants a bonus for running red to red routes (3-6 players)',
+           desc: 'Major CIWL is added. The new major grants a bonus for running red to red routes (3-6 players)',
          },
         ].freeze
       end
