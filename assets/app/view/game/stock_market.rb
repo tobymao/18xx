@@ -398,6 +398,7 @@ module View
         end
 
         children << h(ParChart) if @game.respond_to?(:par_chart)
+        children << h(CubeChart) if @game.respond_to?(:cube_chart)
 
         h(:div, children)
       end
