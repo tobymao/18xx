@@ -70,7 +70,6 @@ module Engine
           def highest_bid(company)
             @bids[company]&.max_by(&:price)
           end
-
         end
       end
     end

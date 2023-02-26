@@ -10,7 +10,7 @@ module Engine
 
         def actions(entity)
           actions = []
-          actions << 'bid' << 'pass' if !@game.buyable_bank_owned_companies.empty?
+          actions << 'bid' << 'pass' unless @game.buyable_bank_owned_companies.empty?
           actions.concat(super).uniq
         end
 
@@ -28,7 +28,7 @@ module Engine
         def can_buy_company?(_player, _company)
           false # Only companies are privates
         end
-    
+
         def min_bid(company)
           return unless company
 

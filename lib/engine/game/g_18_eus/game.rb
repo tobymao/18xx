@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../base'
+require_relative '../../cube_chart'
 require_relative 'meta'
 require_relative 'map'
 # require_relative 'entities'
@@ -12,6 +13,8 @@ module Engine
         include_meta(G18EUS::Meta)
         include G18EUS::Entities
         include G18EUS::Map
+
+        attr_reader :cube_chart
 
         CERT_LIMIT = { 3 => 25, 4 => 20, 5 => 16 }.freeze
 
@@ -157,6 +160,7 @@ module Engine
           setup_tiles
           randomize_setup
           setup_privates
+          setup_cube_chart
         end
 
         def par_types_for_round
@@ -392,6 +396,50 @@ module Engine
 
         def bidding_token_per_player
           self.class::BIDDING_BOX_PRIVATE_COUNT
+        end
+
+        def setup_cube_chart
+          @cube_chart = CubeChart.new('Bank of New York',
+                                      'If bank stock owned, stock price increases one additional diagonal',
+                                      cube_chart_layout,
+                                      cube_chart_row_labels)
+        end
+
+        def cube_chart_layout
+          case @players.size
+          when 3
+            [
+              ['0.5', '1', '1', '1.5', '1.5', '2'],
+              ['2', '2', '2', '2.5', '2.5', '2.5', '3', '3'],
+              ['3', '3', '3.5', '3.5', '3.5', '3.5', '4', '4'],
+              %w[4 4 5 5 5 5 5 5],
+            ]
+          when 4
+            [
+              ['0.5', '0.5', '1', '1', '1.5', '1.5', '2'],
+              ['2', '2', '2.5', '2.5', '2.5', '3', '3'],
+              ['3', '3', '3', '3.5', '3.5', '3.5', '3.5', '3.5'],
+              ['3.5', '3.5', '4', '4', '4', '4', '4', '4', '4'],
+              %w[5 5 5 5 5 5 5 5 5],
+            ]
+          when 5
+            [
+              ['0.5', '0.5', '1', '1', '1.5', '1.5', '1.5', '2'],
+              ['2', '2', '2', '2.5', '2.5', '2.5', '3', '3'],
+              ['3', '3', '3', '3', '3.5', '3.5', '3.5', '3.5', '3.5', '4'],
+              %w[4 4 4 4 4 4 4 5 5 5],
+              %w[5 5 5 5 5 5 5 5 5 5],
+            ]
+          end
+        end
+
+        def cube_chart_row_labels
+          case @players.size
+          when 3
+            ['↗', '→', '→↗', '→↗']
+          when 4..5
+            ['↗', '→', '→↗', '→↗', '→↗']
+          end
         end
       end
     end
