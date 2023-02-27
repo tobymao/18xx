@@ -969,9 +969,9 @@ module Engine
           end
         end
 
-        def setup_companies(random)
+        def setup_companies
           msg = 'The three private railway companies removed from play are: '
-          rejected = @companies.select { |c| c.type == :railway  }.sample(3, random: random)
+          rejected = @companies.select { |c| c.type == :railway  }.sort_by { rand }.take(3)
           rejected.sort_by { |c| @companies.find_index(c) }.each do |company|
             msg += "#{company.sym} (#{company.name}), "
             @companies.delete(company)
@@ -979,11 +979,11 @@ module Engine
           @log << msg.sub(/, $/, '.')
         end
 
-        def setup_minors(random)
-          group_a = MINORS_GROUP_A.shuffle(random: random).map do |sym|
+        def setup_minors
+          group_a = MINORS_GROUP_A.sort_by { rand }.map do |sym|
             @corporations.find { |c| c.id == sym }
           end
-          group_b = MINORS_GROUP_B.shuffle(random: random).map do |sym|
+          group_b = MINORS_GROUP_B.sort_by { rand }.map do |sym|
             @corporations.find { |c| c.id == sym }
           end
 

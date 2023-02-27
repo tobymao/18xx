@@ -37,9 +37,8 @@ module Engine
 
         def setup_preround
           # Randomise the privates available and the minor company order.
-          random = Random.new(rand)
-          setup_companies(random)
-          setup_minors(random)
+          setup_companies
+          setup_minors
 
           # Remove companies and corporations that cannot yet be started.
           @companies, @future_companies = @companies.partition do |company|
