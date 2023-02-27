@@ -166,7 +166,8 @@ module Engine
         # Special case for 1858 where two private companies can have reservations
         # in the same city, which only has a single slot on its yellow tile.
         if (slot == 1) && (normal_slots == 1) && (@reservations.size == 2)
-          # The first of the companies to token the city takes the slot.
+          # The company with the reservation for the (not yet created) second
+          # token slot is tokening this city. Put its token in the first slot.
           slot = 0
           # Switch the reservations so that the other company gets a reserved
           # slot when the tile is upgraded to green.
