@@ -2877,12 +2877,8 @@ module Engine
           ]
         end
 
-        def aag_variant?
-          @aag_variant ||= @optional_rules&.include?(:aag_variant)
-        end
-
         def game_hexes
-          hexes_original = {
+          {
             white: {
               # HBE concession route
               %w[
@@ -3055,7 +3051,7 @@ module Engine
               %w[
                 F7
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
-                   'path=a:3,b:_1,track:narrow;upgrade=cost:50,terrain:mountain;'\
+                   "path=a:3,b:_1,track:narrow;upgrade=cost:#{aag_variant? ? 100 : 50},terrain:mountain;"\
                    'icon=image:1873/11_open,sticky:1,large:1',
               %w[
                 G6
@@ -3151,276 +3147,6 @@ module Engine
               ] => 'path=a:2,b:4',
             },
           }
-          hexes_aag = {
-            white: {
-              # HBE concession route
-              %w[
-                B17
-              ] => 'icon=image:1873/HBE,sticky:1',
-              # GHE concession route
-              %w[
-                H19
-              ] => 'upgrade=cost:150,terrain:mountain;icon=image:1873/GHE,sticky:1',
-              # NWE concession route
-              %w[
-                I8
-              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
-                   'border=edge:2,type:impassable;'\
-                   'icon=image:1873/8_open,sticky:1,large:1',
-              %w[
-                H7
-              ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
-                   'border=edge:5,type:impassable',
-              %w[
-                E6
-                D7
-              ] => 'town=revenue:0;upgrade=cost:50,terrain:mountain;icon=image:1873/NWE,sticky:1',
-              %w[
-                C8
-              ] => 'upgrade=cost:150,terrain:mountain;icon=image:1873/NWE,sticky:1;',
-              # SHE concession route
-              %w[
-                G2
-              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1;'\
-                   'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
-                   'icon=image:1873/9_open,sticky:1,large:1',
-              %w[
-                F3
-              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1',
-              # KEZ concession route
-              %w[
-                H3
-              ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/KEZ,sticky:1;'\
-                   'border=edge:2,type:impassable',
-              # WBE concession route
-              %w[
-                C10
-              ] => 'border=edge:5,type:impassable;'\
-                   'icon=image:1873/lock;'\
-                   'icon=image:1873/WBE,sticky:1',
-              %w[
-                C12
-              ] => 'town=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;'\
-                   'icon=image:1873/lock;'\
-                   'icon=image:1873/WBE,sticky:1',
-              %w[
-                C14
-              ] => 'town=revenue:0;border=edge:0,type:impassable;'\
-                   'icon=image:1873/lock;'\
-                   'icon=image:1873/WBE,sticky:1',
-              # empty tiles
-              %w[
-                C18
-                D19
-              ] => '',
-              # no towns
-              %w[
-                B15
-              ] => 'upgrade=cost:50,terrain:mountain',
-              %w[
-                G8
-                H11
-              ] => 'upgrade=cost:100,terrain:mountain',
-              %w[
-                E12
-              ] => 'upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable',
-              %w[
-                E14
-                G10
-                G18
-                H5
-                H15
-                I12
-              ] => 'upgrade=cost:150,terrain:mountain',
-              # towns
-              %w[
-                D5
-              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;border=edge:0,type:impassable',
-              %w[
-                D11
-              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
-                   'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-                   'icon=image:1873/4_open,sticky:1,large:1',
-              %w[
-                D13
-              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;'\
-                   'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-                   'icon=image:1873/5_open,sticky:1,large:1',
-              %w[
-                D17
-              ] => 'town=revenue:0;',
-              %w[
-                E8
-              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:4,type:impassable;'\
-                   'icon=image:1873/1_open,sticky:1,large:1',
-              %w[
-                E10
-              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
-                   'border=edge:4,type:impassable;'\
-                   'icon=image:1873/6_open,sticky:1,large:1',
-              %w[
-                E16
-                G12
-                G14
-              ] => 'town=revenue:0;upgrade=cost:50,terrain:mountain',
-              %w[
-                F9
-                G16
-              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain',
-              %w[
-                I14
-              ] => 'town=revenue:0;upgrade=cost:50,terrain:mountain;'\
-                   'icon=image:1873/7_open,sticky:1,large:1',
-              %w[
-                I16
-              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;'\
-                   'icon=image:1873/3_open,sticky:1,large:1',
-            },
-            yellow: {
-              %w[
-                D9
-              ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                   'border=edge:4,type:impassable;frame=color:#800080;'\
-                   'icon=image:1873/10_open,sticky:1,large:1',
-              %w[
-                D15
-              ] => 'city=revenue:40,slots:2;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
-                   'path=a:5,b:_0,track:narrow;label=B;frame=color:#800080;'\
-                   'icon=image:1873/12_open,sticky:1,large:1',
-              %w[
-                E4
-              ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                   'border=edge:3,type:impassable;frame=color:#800080;'\
-                   'icon=image:1873/2_open,sticky:1,large:1',
-              %w[
-                F11
-              ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                   'frame=color:#800080;'\
-                   'icon=image:1873/SM_open,sticky:1,large:1',
-              %w[
-                G4
-              ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                   'border=edge:1,type:impassable;border=edge:3,type:impassable;frame=color:#800080;'\
-                   'icon=image:1873/14_open,sticky:1,large:1',
-            },
-            green: {
-              %w[
-                B19
-              ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                   'frame=color:#800080;label=HQG',
-              %w[
-                C16
-              ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;'\
-                   'path=a:3,b:_0,track:narrow',
-              %w[
-                E20
-              ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:0,b:_0;path=a:3,b:_0;'\
-                   'frame=color:#800080;label=HQG',
-              %w[
-                F5
-              ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                   'path=a:3,b:_1,track:narrow;path=a:5,b:_1,track:narrow;'\
-                   'upgrade=cost:50,terrain:mountain;border=edge:0,type:impassable',
-              %w[
-                F7
-              ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
-                   'path=a:3,b:_1,track:narrow;upgrade=cost:100,terrain:mountain;'\
-                   'icon=image:1873/11_open,sticky:1,large:1',
-              %w[
-                G6
-              ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;upgrade=cost:100,terrain:mountain;'\
-                   'path=a:5,b:_0,track:narrow;frame=color:#800080',
-              %w[
-                G20
-              ] => 'city=revenue:60;path=a:0,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                   'frame=color:#800080;label=HQG',
-              %w[
-                H13
-              ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                   'upgrade=cost:50,terrain:mountain;frame=color:#800080',
-              %w[
-                H17
-              ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                   'path=a:5,b:_0,track:narrow;upgrade=cost:100,terrain:mountain',
-            },
-            gray: {
-              %w[
-                A18
-              ] => 'path=a:5,b:2,terminal:1',
-              %w[
-                B9
-              ] => 'city=slots:2,revenue:yellow_60|green_80|brown_120|gray_150;'\
-                   'path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                   'frame=color:#800080',
-              %w[
-                B13
-              ] => 'city=slots:2,revenue:yellow_30|green_70|brown_60|gray_60;'\
-                   'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                   'frame=color:#800080;icon=image:1873/ZW_open,sticky:1,large:1',
-              %w[
-                C4
-              ] => 'city=revenue:yellow_50|green_80|brown_120|gray_150;path=a:5,b:_0,track:narrow',
-              %w[
-                C6
-              ] => 'town=revenue:0;path=a:0,b:_0,track:narrow;'\
-                   'icon=image:1873/SBC6_open,sticky:1,large:1',
-              %w[
-                E18
-              ] => 'city=revenue:30,slots:2;path=a:1,b:_0,track:narrow;'\
-                   'path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                   'icon=image:1873/PM_open,sticky:1,large:1',
-              %w[
-                F15
-              ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-                   'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080;'\
-                   'icon=image:1873/15_open,sticky:1,large:1',
-              %w[
-                H9
-              ] => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;'\
-                   'path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                   'icon=image:1873/SBH9_open,sticky:1,large:1',
-              %w[
-                H21
-              ] => 'path=a:2,b:5,terminal:1',
-              %w[
-                I2
-              ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                   'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
-              %w[
-                I4
-              ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                   'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:#800080',
-              %w[
-                I18
-              ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-                   'path=a:2,b:_0,track:narrow;frame=color:#800080;'\
-                   'icon=image:1873/13_open,sticky:1,large:1',
-              %w[
-                J7
-              ] => 'city=revenue:yellow_60|green_80|brown_120|gray_180;path=a:1,b:_0;'\
-                   'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
-              # implicit tiles
-              %w[
-                C20
-              ] => 'path=a:2,b:5',
-              %w[
-                D21
-              ] => 'path=a:2,b:0',
-              %w[
-                F17
-              ] => 'path=a:1,b:4',
-              %w[
-                F19
-              ] => 'path=a:1,b:3;path=a:5,b:3',
-              %w[
-                H1
-              ] => 'path=a:5,b:3,track:narrow',
-              %w[
-                J5
-              ] => 'path=a:2,b:4',
-            },
-          }
-          aag_variant? ? hexes_aag : hexes_original
         end
 
         def game_phases
@@ -3510,6 +3236,10 @@ module Engine
             Action::ProgramHarzbahnDraftPass,
             Action::ProgramIndependentMines,
           ]
+        end
+
+        def aag_variant?
+          @aag_variant ||= @optional_rules&.include?(:aag_variant)
         end
       end
     end
