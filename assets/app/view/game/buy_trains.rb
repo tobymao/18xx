@@ -310,7 +310,6 @@ module View
 
             if @selected_company && [@corporation, @corporation.owner].include?(@selected_company.owner) \
               && @step.respond_to?(:ability_timing)
-              puts("here in render #{@step.ability_timing}} ")
               @game.abilities(@selected_company, :train_discount, time: @step.ability_timing) do |ability|
                 if ability.trains.include?(train.name)
                   price = ability.discounted_price(train, price)

@@ -535,9 +535,9 @@ module Engine
 
         def gc_train?(route)
           if multiplayer?
-            @round.rail_cars.include?('G&C') && route.visited_stops.sum(&:visit_cost) > route.train.distance
+            @round.rail_cars.include?('G&C') && route.visited_stops.sum(&:visit_cost) > train_city_distance(route.train)
           else
-            @round.rail_cars.include?('RABA') && route.visited_stops.sum(&:visit_cost) > route.train.distance
+            @round.rail_cars.include?('RABA') && route.visited_stops.sum(&:visit_cost) > train_city_distance(route.train)
           end
         end
 
@@ -579,20 +579,16 @@ module Engine
           false
         end
 
+        def train_city_distance(train)
+          return train.distance if train.distance.is_a?(Numeric)
+
+          distance_city = train.distance.find { |n| n['nodes'].include?('city') }
+          distance_city ? distance_city['visit'] : 0
+        end
+
         def check_distance(route, visits)
           distance = if gc_train?(route) && !other_gc_train?(route)
-                       [
-                         {
-                           nodes: %w[city offboard town],
-                           pay: route.train.distance,
-                           visit: route.train.distance,
-                         },
-                         {
-                           nodes: %w[town],
-                           pay: route.train.distance,
-                           visit: route.train.distance,
-                         },
-                       ]
+                       gc_train_distnce(route.train.distance)
                      else
                        route.train.distance
                      end
@@ -635,6 +631,28 @@ module Engine
             raise GameError, 'Route has too many stops' if num.positive?
           end
           raise GameError, 'Must visit minimum of two non-mine stops' if visits.sum(&:visit_cost) < 2
+        end
+
+        def gc_train_distnce(route_distance)
+          if route_distance.is_a?(Numeric)
+            town_distance_value = route_distance
+          else
+            # route has a 1 town value from the supporter
+            town_distance = route_distance.find { |n| n['nodes'] == ['town'] }
+            town_distance_value = town_distance['pay'] + route_distance
+          end
+          [
+              {
+                nodes: %w[city offboard town],
+                pay: route_distance,
+                visit: route_distance,
+              },
+              {
+                nodes: %w[town],
+                pay: town_distance_value,
+                visit: town_distance_value,
+              },
+            ]
         end
 
         # Change "Stop" displayed if G&C power is used
@@ -709,7 +727,7 @@ module Engine
             when 'RABA'
               next if routes.any? { |r| r.visited_stops.any?(&:offboard?) }
 
-              next if !multiplayer? && routes.any? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
+              next if !multiplayer? && routes.any? { |r| r.visited_stops.sum(&:visit_cost) > train_city_distance(r.train) }
 
               return false
             when 'SNW'
@@ -717,7 +735,7 @@ module Engine
                 return false
               end
             when 'G&C'
-              return false if routes.none? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
+              return false if routes.none? { |r| r.visited_stops.sum(&:visit_cost) > train_city_distance(r.train) }
             end
           end
           true
@@ -767,6 +785,14 @@ module Engine
 
         def player_card_minors(player)
           minors.select { |m| m.owner == player }
+        end
+
+        def convert_train_plus_one(_train)
+          @orginal_train = @luxury_train.dup
+          distance = @luxury_train.distance
+          @luxury_train.name += '+1'
+          @luxury_train.distance = [{ 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                                    { 'nodes' => %w[city offboard town], 'pay' => distance, 'visit' => distance }]
         end
 
         def game_location_names
@@ -1386,16 +1412,23 @@ module Engine
               name: 'Feketeházy János (Mérnök = Engineer)',
               value: 0,
               revenue: 0,
-              desc: 'Comes with a virtual permanent terrain token: Once per OR the terrain costs for one' \
+              desc: 'Comes with a virtual permanent terrain token: Once per OR the terrain costs for one ' \
                     'hex are paid by the bank into the green company.',
               sym: 'FJ',
+              abilities: [{
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                choices: { virtual_token: 'Use virtual token' },
+                count_per_or: 1,
+              }],
               color: nil,
             },
             {
               name: 'Salomon Mayer Freiherr von Rothschild (Pénzember = financier)',
               value: 0,
               revenue: 0,
-              desc: 'Gives an income of Ft 10 per OR (for one company) at any time during the turn of one'\
+              desc: 'Gives an income of Ft 10 per OR (for one company) at any time during the turn of one '\
                     'of the players companies.',
               sym: 'SMFvR',
               abilities: [{
@@ -1422,9 +1455,9 @@ module Engine
                   reachable: true,
                   when: 'owning_player_track',
                   owner_type: 'player',
-                  count: 1,
+                  count_per_or: 1,
                 },
-],
+              ],
               color: nil,
             },
             {
@@ -1447,6 +1480,13 @@ module Engine
                     'turning a 2+2 into a 2+3 train or a 4+4 into a 4+5 train) or a different train (for'\
                     'example turning a 3-train into a 3+1 train).',
               sym: 'MA',
+              abilities: [{
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                choices: {},
+                count_per_or: 1,
+              }],
               color: nil,
             },
           ]

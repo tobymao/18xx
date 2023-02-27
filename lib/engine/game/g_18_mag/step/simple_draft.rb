@@ -200,9 +200,9 @@ module Engine
             end
 
             @log << "#{player.name} chooses share of #{corp.name} (#{corp.full_name})"
-            precent = corp == @game.ciwl ? 20 : 10
+            percent = corp == @game.ciwl ? 20 : 10
             @game.share_pool.transfer_shares(
-              @game.share_pool.shares_of(corp).find { |s| s.percent == precent }.to_bundle,
+              @game.share_pool.shares_of(corp).find { |s| s.percent == percent }.to_bundle,
               player,
               spender: player,
               receiver: @game.bank,
