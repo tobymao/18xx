@@ -56,6 +56,14 @@ module Engine
             6 => 2,
           }.freeze
 
+          LEFTOVER_NUM_SHARES_NEW_MAJOR = {
+            2 => 2,
+            3 => 2,
+            4 => 4,
+            5 => 6,
+            6 => 4,
+          }.freeze
+
           def setup
             @game.remove_minors! if @game.new_minors_simple?
             @minors = @game.minors.reject { |m| m.name == 'mine' }.sort_by { |m| m.name.to_i }
@@ -72,7 +80,11 @@ module Engine
                                else
                                  LEFTOVER_NUM_MINORS[@game.players.size]
                                end
-            @leftover_shares = LEFTOVER_NUM_SHARES[@game.players.size]
+            @leftover_shares = if @game.new_major?
+                                 LEFTOVER_NUM_SHARES_NEW_MAJOR[@game.players.size]
+                               else
+                                 LEFTOVER_NUM_SHARES[@game.players.size]
+                               end
 
             @shares_a = @game.corporations.dup
             @shares_b = @game.players.size > 4 ? @game.corporations.dup : []
@@ -159,9 +171,9 @@ module Engine
             end
 
             @log << "#{player.name} chooses share of #{corp.name} (#{corp.full_name})"
-
+            precent = corp == @game.ciwl ? 20 : 10
             @game.share_pool.transfer_shares(
-              @game.share_pool.shares_of(corp).find { |s| s.percent == 10 }.to_bundle,
+              @game.share_pool.shares_of(corp).find { |s| s.percent == precent }.to_bundle,
               player,
               spender: player,
               receiver: @game.bank,

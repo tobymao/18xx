@@ -34,6 +34,11 @@ module Engine
            short_name: 'New minors - simple',
            desc: 'Minors 14, 15, 16 are added and three random minors are removed at setup (3-6 players)',
          },
+         {
+           sym: :new_major,
+           short_name: 'New major',
+           desc: 'Major CIWL is added. The new major grants a bonus for running red to red routes (3-6 players)',
+         },
         ].freeze
       end
     end
