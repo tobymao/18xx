@@ -7,11 +7,11 @@ module Engine
     class HexToken < Base
       attr_reader :hex, :token, :cost
 
-      def initialize(entity, hex:, cost: nil, token_type: nil)
+      def initialize(entity, hex:, cost: nil, token_type: nil, token: nil)
         super(entity)
         @hex = hex
         @cost = cost
-        @token = @entity.find_token_by_type(token_type&.to_sym)
+        @token = token || @entity.find_token_by_type(token_type&.to_sym)
       end
 
       def self.h_to_args(h, game)
