@@ -339,6 +339,8 @@ module Engine
       CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = false
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = false
 
+      BUY_SHARE_FROM_OTHER_PLAYER = false
+
       VARIABLE_FLOAT_PERCENTAGES = false
 
       # whether corporation cards should show percentage ownership breakdown for players
