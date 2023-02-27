@@ -38,9 +38,17 @@ module Engine
           { lay: true, upgrade: true },
           { lay: :not_if_upgraded, upgrade: true, cost: 20, upgrade_cost: 30 },
         ].freeze
-        CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 4000
+        LARGER_BANK_CASH = 5000
+        CURRENCY_FORMAT_STR = '£%s'
+
+        # This allows the larger bank variant
+        def init_bank
+          cash = larger_bank? ? self.class::LARGER_BANK_CASH : self.class::BANK_CASH
+
+          Bank.new(cash, log: @log)
+        end
 
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 10, 6 => 8 }.freeze
 
@@ -736,6 +744,10 @@ module Engine
         end
 
         def event_train_trade_allowed!; end
+
+        def larger_bank?
+          @larger_bank ||= @optional_rules&.include?(:larger_bank)
+        end
       end
     end
   end
