@@ -40,7 +40,7 @@ module Engine
           },
           {
             sym: :baja_variant,
-            short_name: 'Baja Variant (alpha)',
+            short_name: 'Baja Variant',
             desc: 'adds a private company which provides a teleport token to a new map hex.',
           },
         ].freeze
