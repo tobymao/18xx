@@ -375,7 +375,8 @@ module Engine
     def token_blocked_by_reservation?(corporation)
       return false if @reservations.empty?
 
-      if @reservation_blocks == :always || (@reservation_blocks == :yellow_only && @color == :yellow)
+      if @reservation_blocks == :always ||
+        (@reservation_blocks == :single_slot_cities && @cities.any? { |city| city.slots == 1 })
         !@reservations.include?(corporation)
       else
         @reservations.count { |x| corporation != x } >= @cities.sum(&:available_slots)

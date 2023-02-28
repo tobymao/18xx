@@ -15,7 +15,7 @@ module Engine
         GAME_IMPLEMENTER = 'R. Ryan Driskel'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18CO:-Rock-&-Stock'
         GAME_LOCATION = 'Colorado, USA'
-        GAME_RULES_URL = 'https://drive.google.com/open?id=0B3lRHMrbLMG_eEp4elBZZ0toYnM'
+        GAME_RULES_URL = 'https://drive.google.com/file/d/16W5v3w__GW4CzXQ9QeQERYVnbkdRDqg1/view'
 
         PLAYER_RANGE = [3, 6].freeze
         OPTIONAL_RULES = [

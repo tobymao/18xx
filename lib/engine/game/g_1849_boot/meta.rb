@@ -22,6 +22,7 @@ module Engine
           'Submit Direct Feedback (AAG Contact Form)' => 'https://all-aboardgames.com/pages/order-questions',
         }.freeze
         GAME_TITLE = '1849: Kingdom of the Two Sicilies'
+        GAME_ISSUE_LABEL = '1849'
         GAME_ALIASES = ['1849K2S'].freeze
 
         PLAYER_RANGE = [4, 6].freeze

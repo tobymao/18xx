@@ -9,7 +9,7 @@ module Engine
       class Game < Game::Base
         include_meta(G18Mag::Meta)
 
-        attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :terrain_tokens
+        attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :ciwl, :terrain_tokens
 
         CURRENCY_FORMAT_STR = '%s Ft'
         BANK_CASH = 100_000
@@ -79,6 +79,7 @@ module Engine
           '7' => 1,
           '12' => 2,
           '13' => 1,
+          '14' => 2,
         }.freeze
 
         CORPORATE_POWERS = {
@@ -89,6 +90,7 @@ module Engine
           'RABA' => 'Sells off board bonus',
           'SNW' => 'Sells mine access',
           'G&C' => 'Sells plus-train conversion',
+          'CIWL' => 'Earns when a train runs red to red',
         }.freeze
 
         CORPORATE_POWERS_2P = {
@@ -124,6 +126,18 @@ module Engine
           @optional_rules&.include?(:standard_divs)
         end
 
+        def new_minors_challenge?
+          @optional_rules&.include?(:new_minors_challenge)
+        end
+
+        def new_minors_simple?
+          @optional_rules&.include?(:new_minors_simple)
+        end
+
+        def new_major?
+          @optional_rules&.include?(:new_major)
+        end
+
         def location_name(coord)
           @location_names ||= game_location_names
 
@@ -139,6 +153,7 @@ module Engine
             @mavag = @corporations.find { |c| c.name == 'MAVAG' }
             @snw = @corporations.find { |c| c.name == 'SNW' }
             @gc = @corporations.find { |c| c.name == 'G&C' }
+            @ciwl = @corporations.find { |c| c.name == 'CIWL' }
           end
 
           @terrain_tokens = TERRAIN_TOKENS.dup
@@ -186,6 +201,20 @@ module Engine
           @phase_change = false
           @train_bought = false
           @ors_no_train = 0
+        end
+
+        def remove_minors!
+          return if @minors_removed
+
+          minors_to_remove = @minors.reject { |m| m.name == 'mine' }.sort_by { rand }.take(3)
+          minors_to_remove.each do |minor|
+            @log << "Minor #{minor.name} is removed from the game"
+            hex = @hexes.find { |h| h.id == minor.coordinates }
+            hex.tile.cities[minor.city || 0].remove_tokens!
+            hex.tile.cities[minor.city || 0].remove_reservation!(minor)
+            @minors.delete(minor)
+          end
+          @minors_removed = true
         end
 
         def partition_companies
@@ -634,10 +663,17 @@ module Engine
         end
 
         def subsidy_for(route, _stops)
-          snw_train?(route) ? snw_delta : 0
+          subsidy = 0
+          subsidy += snw_delta if snw_train?(route)
+          subsidy += ciwl_delta if new_major? && red_to_red_route?(route)
+          subsidy
         end
 
         def snw_delta
+          SNW_BONUS[phase.current[:tiles].size - 1]
+        end
+
+        def ciwl_delta
           SNW_BONUS[phase.current[:tiles].size - 1]
         end
 
@@ -666,6 +702,14 @@ module Engine
             end
           end
           true
+        end
+
+        def red_to_red(routes)
+          routes.count { |route| red_to_red_route?(route) }
+        end
+
+        def red_to_red_route?(route)
+          route.stops.count { |stop| stop.tile.color == :red } > 1
         end
 
         def price_movement_chart
@@ -1179,7 +1223,46 @@ module Engine
               ],
             },
           ]
+          optional_minor_list = [
+            {
+              sym: '14',
+              name: 'Nagyvárad–Kolozsvár-vasútvona',
+              logo: '18_mag/14',
+              tokens: [
+                0,
+                40,
+                80,
+              ],
+              coordinates: 'F23',
+              color: 'black',
+            },
+            {
+              sym: '15',
+              name: 'Vágvölgyi vasút',
+              logo: '18_mag/15',
+              tokens: [
+                0,
+                40,
+                80,
+              ],
+              coordinates: 'C8',
+              color: 'black',
+            },
+            {
+              sym: '16',
+              name: 'Püspökladány–Nagyvárad vasútvonal',
+              logo: '18_mag/16',
+              tokens: [
+                0,
+                40,
+                80,
+              ],
+              coordinates: 'F19',
+              color: 'black',
+            },
+          ]
           minor_list.select! { |m| MINORS_2P.include?(m[:sym]) } unless multiplayer?
+          minor_list.concat(optional_minor_list) if new_minors_challenge? || new_minors_simple?
           minor_list
         end
 
@@ -1280,7 +1363,23 @@ module Engine
               color: 'purple',
             },
           ]
+          new_corp = [
+            {
+              sym: 'CIWL',
+              name: 'Compagnie Internationale des Wagons-Lits',
+              logo: '18_mag/CIWL',
+              float_percent: 0,
+              max_ownership_percent: 60,
+              tokens: [
+                40,
+                80,
+              ],
+              shares: [40, 20, 20, 20],
+              color: 'brown',
+            },
+          ]
           corps.select! { |c| CORPORATIONS_2P.include?(c[:sym]) } unless multiplayer?
+          corps.concat(new_corp) if new_major?
           corps
         end
 

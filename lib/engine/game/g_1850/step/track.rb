@@ -69,12 +69,20 @@ module Engine
             corporation.mesabi_token = true
           end
 
+          def hex_neighbors(entity, hex)
+            connected = super
+            @game.clear_token_graph_for_entity(entity) if entity.tokens.none?(&:city)
+            connected
+          end
+
           def can_buy_mesabi_token?(entity)
             entity.corporation? &&
             !entity.mesabi_token &&
             @game.mesabi_compnay_sold_or_closed &&
             @game.mesabi_token_counter.positive? &&
-            entity.cash >= 80
+            entity.cash >= 80 &&
+            hex_neighbors(entity, @game.mesabi_hex) &&
+            get_tile_lay(entity)
           end
         end
       end

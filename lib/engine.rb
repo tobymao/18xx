@@ -89,4 +89,10 @@ module Engine
       [m.title, candidates]
     end
   end
+
+  def self.issues_labels(dev_stage)
+    GAME_METAS.each_with_object([]) do |meta, labels|
+      labels << meta.label if dev_stage == meta::DEV_STAGE
+    end.sort.uniq.join(',')
+  end
 end
