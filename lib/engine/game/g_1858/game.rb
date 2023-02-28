@@ -515,7 +515,7 @@ module Engine
         def delete_icons(company)
           icon_name = company.sym.delete('&')
           @hexes.each do |hex|
-            hex.tile.icons.delete_if { |icon| icon.name == icon_name }
+            hex.tile.icons.reject! { |icon| icon.name == icon_name }
           end
         end
 
