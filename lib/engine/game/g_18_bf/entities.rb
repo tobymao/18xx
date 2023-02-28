@@ -971,8 +971,8 @@ module Engine
 
         def setup_companies
           msg = 'The three private railway companies removed from play are: '
-          rejected = @companies.select { |c| c.type == :railway  }.sort_by { rand }.take(3)
-          rejected.sort_by { |c| @companies.find_index(c) }.each do |company|
+          rejected = @companies.select { |c| c.type == :railway }.sort_by { rand }.take(3)
+          rejected.sort_by { |c| @companies.index(c) }.each do |company|
             msg += "#{company.sym} (#{company.name}), "
             @companies.delete(company)
           end

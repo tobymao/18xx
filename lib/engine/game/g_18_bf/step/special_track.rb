@@ -12,7 +12,7 @@ module Engine
 
             company = action.entity
             ability = @game.abilities(company, :tile_lay)
-            company.remove_ability(ability) unless ability.laid_hexes.none?
+            company.remove_ability(ability) unless ability.laid_hexes.empty?
           end
         end
       end
