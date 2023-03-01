@@ -125,7 +125,7 @@ module Engine
           def tile_lay_abilities_should_block?(entity)
             ability_time = %w[track owning_player_track]
             Array(abilities(entity, time: ability_time, passive_ok: false)).any? { |a| !a.consume_tile_lay } &&
-            @game.phase.available?('Brown')
+            @game.phase.available?('Green')
           end
         end
       end

@@ -588,7 +588,7 @@ module Engine
 
         def check_distance(route, visits)
           distance = if gc_train?(route) && !other_gc_train?(route)
-                       gc_train_distnce(route.train.distance)
+                       gc_train_distance(route.train.distance)
                      else
                        route.train.distance
                      end
@@ -633,7 +633,7 @@ module Engine
           raise GameError, 'Must visit minimum of two non-mine stops' if visits.sum(&:visit_cost) < 2
         end
 
-        def gc_train_distnce(route_distance)
+        def gc_train_distance(route_distance)
           if route_distance.is_a?(Numeric)
             town_distance_value = route_distance
           else
@@ -749,6 +749,10 @@ module Engine
           route.stops.count { |stop| stop.tile.color == :red } > 1
         end
 
+        def token_owner(entity)
+          entity.company? ? current_entity : entity
+        end
+
         def price_movement_chart
           if multiplayer?
             [
@@ -785,14 +789,6 @@ module Engine
 
         def player_card_minors(player)
           minors.select { |m| m.owner == player }
-        end
-
-        def convert_train_plus_one(_train)
-          @orginal_train = @luxury_train.dup
-          distance = @luxury_train.distance
-          @luxury_train.name += '+1'
-          @luxury_train.distance = [{ 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
-                                    { 'nodes' => %w[city offboard town], 'pay' => distance, 'visit' => distance }]
         end
 
         def game_location_names
@@ -1268,7 +1264,46 @@ module Engine
               ],
             },
           ]
+          optional_minor_list = [
+            {
+              sym: '14',
+              name: 'Nagyvárad–Kolozsvár-vasútvona',
+              logo: '18_mag/14',
+              tokens: [
+                0,
+                40,
+                80,
+              ],
+              coordinates: 'F23',
+              color: 'black',
+            },
+            {
+              sym: '15',
+              name: 'Vágvölgyi vasút',
+              logo: '18_mag/15',
+              tokens: [
+                0,
+                40,
+                80,
+              ],
+              coordinates: 'C8',
+              color: 'black',
+            },
+            {
+              sym: '16',
+              name: 'Püspökladány–Nagyvárad vasútvonal',
+              logo: '18_mag/16',
+              tokens: [
+                0,
+                40,
+                80,
+              ],
+              coordinates: 'F19',
+              color: 'black',
+            },
+          ]
           minor_list.select! { |m| MINORS_2P.include?(m[:sym]) } unless multiplayer?
+          minor_list.concat(optional_minor_list) if new_minors_challenge? || new_minors_simple?
           minor_list
         end
 
@@ -1468,6 +1503,18 @@ module Engine
                     'company cost Ft 20 (and only Ft 10 of it will go to the yellow company), the second'\
                     'token cost Ft 40 (and only Ft 20 of it will go to the yellow company).',
               sym: 'DDSG',
+              abilities: [
+                {
+                  type: 'token',
+                  when: 'owning_player_or_turn',
+                  owner_type: 'player',
+                  count_per_or: 1,
+                  special_only: true,
+                  from_owner: true,
+                  discount: 0.5,
+                  hexes: [],
+                },
+              ],
               color: nil,
             },
             {

@@ -27,10 +27,10 @@ module Engine
 
           def process_choose_ability(action)
             case action.choice
-            when :claim
+            when 'claim'
               @log << "#{current_entity.name} recieves 10 Ft income from #{action.entity.name}"
               @game.bank.spend(10, current_entity)
-            when :virtual_token
+            when 'virtual_token'
               action.entity
               @round.terrain_token = true
               @log << "#{current_entity.name} receives a Terrain Token from #{action.entity.name}"
