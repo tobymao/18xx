@@ -66,7 +66,7 @@ module Engine
 
           MAX_NUM_SUPPORTERS = {
             2 => 1,
-            3 => 1,
+            3 => 2,
             4 => 1,
             5 => 1,
             6 => 1,
@@ -74,7 +74,7 @@ module Engine
 
           LEFTOVER_NUM_SUPPORTERS = {
             2 => 4,
-            3 => 3,
+            3 => 0,
             4 => 2,
             5 => 1,
             6 => 0,
