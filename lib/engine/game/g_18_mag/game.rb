@@ -2,12 +2,15 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative '../double_sided_tiles'
 
 module Engine
   module Game
     module G18Mag
       class Game < Game::Base
         include_meta(G18Mag::Meta)
+
+        include DoubleSidedTiles
 
         attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :ciwl, :terrain_tokens
 
@@ -159,7 +162,7 @@ module Engine
           @terrain_tokens = TERRAIN_TOKENS.dup
 
           @tile_groups = init_tile_groups
-          update_opposites
+          initialize_tile_opposites!
           @unused_tiles = []
 
           # start with first minor tokens placed (as opposed to just reserved)
@@ -281,26 +284,6 @@ module Engine
           ]
           groups.concat(groups_3p) if multiplayer?
           groups
-        end
-
-        # set opposite correctly for two-sided tiles
-        def update_opposites
-          by_name = @tiles.group_by(&:name)
-          @tile_groups.each do |grp|
-            next unless grp.size == 2
-
-            name_a, name_b = grp
-            num = by_name[name_a].size
-            raise GameError, 'Sides of double-sided tiles need to have same number' if num != by_name[name_b].size
-
-            num.times.each do |idx|
-              tile_a = tile_by_id("#{name_a}-#{idx}")
-              tile_b = tile_by_id("#{name_b}-#{idx}")
-
-              tile_a.opposite = tile_b
-              tile_b.opposite = tile_a
-            end
-          end
         end
 
         def float_minor(minor)

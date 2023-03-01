@@ -31,6 +31,7 @@ require_relative 'step/track'
 require_relative 'step/waterfall_auction'
 require_relative '../base'
 require_relative '../company_price_up_to_face'
+require_relative '../double_sided_tiles'
 require_relative '../swap_color_and_stripes'
 require_relative '../stubs_are_restricted'
 
@@ -49,6 +50,7 @@ module Engine
 
         # Engine::Game includes
         include CompanyPriceUpToFace
+        include DoubleSidedTiles
         include StubsAreRestricted
         include SwapColorAndStripes
 
@@ -198,18 +200,6 @@ module Engine
           super.each { |hex| dotify(hex.tile) }
         end
 
-        def add_extra_tile(tile)
-          new_tile = dotify(super)
-
-          if (opp_name = tile.opposite&.name) && !new_tile.opposite
-            opp_tile = tile_by_id("#{opp_name}-#{new_tile.index}") || add_extra_tile(tile_by_id("#{opp_name}-0"))
-            opp_tile.opposite = new_tile
-            new_tile.opposite = opp_tile
-          end
-
-          new_tile
-        end
-
         def ipo_name(_entity = nil)
           'Treasury'
         end
@@ -264,7 +254,7 @@ module Engine
           @big_boy_first_chance = false
 
           @tile_groups = self.class::TILE_GROUPS
-          update_opposites
+          initialize_tile_opposites!
           @unused_tiles = []
 
           return if @optional_rules.include?(:p2_p6_choice)
@@ -1449,49 +1439,6 @@ module Engine
         def buy_train(operator, train, price = nil)
           detach_big_boy(log: true) if train == big_boy_train
           super
-        end
-
-        # set opposite correctly for two-sided tiles
-        def update_opposites
-          by_name = @tiles.group_by(&:name)
-          @tile_groups.each do |grp|
-            next unless grp.size == 2
-
-            name_a, name_b = grp
-            num = by_name[name_a].size
-            raise GameError, 'Sides of double-sided tiles need to have same number' if num != by_name[name_b].size
-
-            num.times.each do |idx|
-              tile_a = tile_by_id("#{name_a}-#{idx}")
-              tile_b = tile_by_id("#{name_b}-#{idx}")
-
-              tile_a.opposite = tile_b
-              tile_b.opposite = tile_a
-            end
-          end
-        end
-
-        def update_tile_lists(tile, old_tile)
-          if tile.opposite == old_tile
-            unused_tiles.delete(tile)
-            unused_tiles << old_tile
-          else
-            add_extra_tile(tile) if tile.unlimited
-
-            @tiles.delete(tile)
-            if tile.opposite
-              @tiles.delete(tile.opposite)
-              @unused_tiles << tile.opposite
-            end
-
-            return if old_tile.preprinted
-
-            @tiles << old_tile
-            return unless old_tile.opposite
-
-            @unused_tiles.delete(old_tile.opposite)
-            @tiles << old_tile.opposite
-          end
         end
 
         def abilities(entity, type = nil, **kwargs)
