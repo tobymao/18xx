@@ -20,6 +20,7 @@ module Engine
         }.freeze
         GAME_SUBTITLE = nil
         GAME_TITLE = '1846 2p Variant'
+        GAME_ISSUE_LABEL = '1846'
         GAME_VARIANTS = [].freeze
 
         PLAYER_RANGE = [2, 2].freeze

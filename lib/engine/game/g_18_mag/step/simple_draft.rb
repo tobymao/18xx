@@ -16,6 +16,14 @@ module Engine
             6 => 2,
           }.freeze
 
+          MAX_NUM_MINORS_OPTIONAL = {
+            2 => 3,
+            3 => 5,
+            4 => 4,
+            5 => 3,
+            6 => 2,
+          }.freeze
+
           MAX_NUM_SHARES = {
             2 => 1,
             3 => 2,
@@ -32,6 +40,14 @@ module Engine
             6 => 1,
           }.freeze
 
+          LEFTOVER_NUM_MINORS_OPTIONAL = {
+            2 => 1,
+            3 => 1,
+            4 => 0,
+            5 => 1,
+            6 => 1,
+          }.freeze
+
           LEFTOVER_NUM_SHARES = {
             2 => 2,
             3 => 1,
@@ -40,14 +56,35 @@ module Engine
             6 => 2,
           }.freeze
 
+          LEFTOVER_NUM_SHARES_NEW_MAJOR = {
+            2 => 2,
+            3 => 2,
+            4 => 4,
+            5 => 6,
+            6 => 4,
+          }.freeze
+
           def setup
+            @game.remove_minors! if @game.new_minors_simple?
             @minors = @game.minors.reject { |m| m.name == 'mine' }.sort_by { |m| m.name.to_i }
             @minor_count = Hash.new(0)
             @share_count = Hash.new(0)
-            @max_minors = MAX_NUM_MINORS[@game.players.size]
+            @max_minors = if @game.new_minors_challenge?
+                            MAX_NUM_MINORS_OPTIONAL[@game.players.size]
+                          else
+                            MAX_NUM_MINORS[@game.players.size]
+                          end
             @max_shares = MAX_NUM_SHARES[@game.players.size]
-            @leftover_minors = LEFTOVER_NUM_MINORS[@game.players.size]
-            @leftover_shares = LEFTOVER_NUM_SHARES[@game.players.size]
+            @leftover_minors = if @game.new_minors_challenge?
+                                 LEFTOVER_NUM_MINORS_OPTIONAL[@game.players.size]
+                               else
+                                 LEFTOVER_NUM_MINORS[@game.players.size]
+                               end
+            @leftover_shares = if @game.new_major?
+                                 LEFTOVER_NUM_SHARES_NEW_MAJOR[@game.players.size]
+                               else
+                                 LEFTOVER_NUM_SHARES[@game.players.size]
+                               end
 
             @shares_a = @game.corporations.dup
             @shares_b = @game.players.size > 4 ? @game.corporations.dup : []
@@ -134,9 +171,9 @@ module Engine
             end
 
             @log << "#{player.name} chooses share of #{corp.name} (#{corp.full_name})"
-
+            precent = corp == @game.ciwl ? 20 : 10
             @game.share_pool.transfer_shares(
-              @game.share_pool.shares_of(corp).find { |s| s.percent == 10 }.to_bundle,
+              @game.share_pool.shares_of(corp).find { |s| s.percent == precent }.to_bundle,
               player,
               spender: player,
               receiver: @game.bank,

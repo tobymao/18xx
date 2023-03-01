@@ -20,6 +20,28 @@ module Engine
         def ipo_name(_entity = nil)
           'Treasury'
         end
+
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+          return [] if entity.num_ipo_shares.zero?
+
+          bundles_for_corporation(entity, entity).select { |bundle| @share_pool.fit_in_bank?(bundle) }
+        end
+
+        def emergency_issuable_bundles(entity)
+          return [] unless entity.trains.empty?
+          return [] if entity.cash >= @depot.max_depot_price
+
+          eligible, remaining = issuable_shares(entity)
+            .partition { |bundle| bundle.price + entity.cash < @depot.max_depot_price }
+          eligible.concat(remaining.take(1))
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+
+          bundles_for_corporation(share_pool, entity).reject { |bundle| entity.cash < bundle.price }
+        end
       end
     end
   end

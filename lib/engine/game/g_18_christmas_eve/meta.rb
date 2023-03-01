@@ -18,6 +18,7 @@ module Engine
         GAME_PUBLISHER = :self_published
         GAME_RULES_URL = 'https://www.dropbox.com/s/on6r5df7vf2pjpt/Rules.pdf?dl=0'
         GAME_TITLE = 'Uncle Lachlan\'s 18 Christmas Eve'
+        GAME_ISSUE_LABEL = '18 Christmas Eve'
 
         PLAYER_RANGE = [2, 6].freeze
       end

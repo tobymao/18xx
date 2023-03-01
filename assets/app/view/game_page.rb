@@ -43,7 +43,7 @@ module View
 
       inner << h(:div, [
         'Please ',
-        h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
+        h(:a, { attrs: { href: "#{@game.meta.known_issues_url},\"needs triage\"" } }, 'raise a bug report'),
         ' and include ',
         *game_link,
       ])

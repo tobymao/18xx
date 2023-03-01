@@ -35,7 +35,7 @@ module Engine
 
           def process_pass(action)
             @passed_scrap_trains = true if @buyer
-            if @buyer && !can_take_loan?(@buyer)
+            if @buyer && !can_take_loan?(@buyer) && !can_payoff?(@buyer)
               @game.log << "#{@buyer.name} passes scrapping pullman"
               acquire_post_loan
             else

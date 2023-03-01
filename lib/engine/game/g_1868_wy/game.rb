@@ -386,7 +386,7 @@ module Engine
             G1868WY::Step::Route,
             G1868WY::Step::Dividend,
             G1868WY::Step::DoubleShareProtection,
-            G1868WY::Step::DiscardTrain ,
+            G1868WY::Step::DiscardTrain,
             G1868WY::Step::BuyTrain,
             [G1868WY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -941,11 +941,11 @@ module Engine
             boom_bust_autoreplace_tile!(new_tile, tile)
           end
 
-          if hex.assigned?(pure_oil.id)
-            token = hex.tokens.first
-            hex.remove_token(token)
-            hex.tile.add_reservation!(pure_oil.owner, 0, 0)
-          end
+          return unless hex.assigned?(pure_oil.id)
+
+          token = hex.tokens.first
+          hex.remove_token(token)
+          hex.tile.add_reservation!(pure_oil.owner, 0, 0)
         end
 
         def boomcity_increase_revenue!(hex)
@@ -1323,7 +1323,6 @@ module Engine
         end
 
         def place_pure_oil(hex)
-          pure_oil = pure_oil
           type = @development_token_count[hex] < DTC_BOOMCITY ? :boomtown : :boomcity
 
           @pure_oil_hex = hex
