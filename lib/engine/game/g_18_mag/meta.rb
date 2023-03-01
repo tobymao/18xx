@@ -42,7 +42,7 @@ module Engine
          {
            sym: :supporters,
            short_name: 'Supporter Cards',
-           desc: '6 new supporters with abilities that can be used once an OR',
+           desc: '6 new supporters with abilities that can be used once an OR (3-6 players)',
          },
         ].freeze
       end
