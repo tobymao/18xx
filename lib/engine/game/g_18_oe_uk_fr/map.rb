@@ -71,12 +71,14 @@ module Engine
           'L17' => 'Cambridge',
           'M14' => 'Southampton and Portsmouth',
           'M16' => 'London',
+          'N9' => 'English Channel',
           'N19' => 'Lille',
           'N21' => 'Gent',
           'N23' => 'Brussel',
           'O12' => 'Cherbourg',
           'O16' => 'Le Havre',
           'P1' => 'New York',
+          'P3' => 'North Atlantic',
           'P7' => 'Brest',
           'P17' => 'Rouen',
           'P21' => 'Reims',
@@ -87,6 +89,7 @@ module Engine
           'Q26' => 'Nancy',
           'R11' => 'Nantes',
           'R17' => 'Orleans',
+          'S8' => 'Bay of Biscay',
           'S22' => 'Dijon',
           'T15' => 'Limoges',
           'T25' => 'Geneve and Lausanne',
@@ -159,11 +162,41 @@ module Engine
             ['AA26'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:2,b:_0',
           },
           blue: {
-            ['G10'] => 'path=a:0,b:4',
-            # ['N13'] => 'path=a:0,b:3;city=revenue:0',
-            ['N17'] => 'path=a:2,b:4',
-            ['Y26'] => 'path=a:2,b:4',
-            ['Y28'] => 'path=a:1,b:5',
+            # north atlantic
+            ['O2'] => 'border=edge:5',
+            ['P3'] => 'border=edge:0;border=edge:2',
+            ['Q2'] => 'border=edge:3',
+
+            # english channel
+            ['N7'] => 'border=edge:0;border=edge:4;border=edge:5',
+            ['N9'] => 'border=edge:0;border=edge:1;border=edge:4;border=edge:5',
+            ['N13'] => 'path=a:0,b:3;offboard=revenue:0;border=edge:1;border=edge:4;border=edge:5', # -1 ferry
+            %w[N11 N15] => 'border=edge:0;border=edge:1;border=edge:4',
+            ['N17'] => 'path=a:2,b:4;border=edge:1',
+            ['O6'] => 'junction;path=a:5,b:_0,terminal:1;border=edge:3;border=edge:4',
+            ['O8'] => 'border=edge:1;border=edge:2;border=edge:3;border=edge:4',
+            ['O10'] => 'border=edge:1;border=edge:2;border=edge:3',
+            ['O14'] => 'junction;path=a:1,b:_0,terminal:1;border=edge:2;border=edge:3',
+
+            # bay of biscay
+            ['P5'] => 'border=edge:0;border=edge:5', # needs a port
+            ['Q4'] => 'border=edge:3;border=edge:4;border=edge:5',
+            ['Q6'] => 'border=edge:0;border=edge:1;border=edge:2;border=edge:5',
+            %w[R5 S6 T7] => 'border=edge:2;border=edge:3;border=edge:4;border=edge:5',
+            ['R7'] => 'border=edge:0;border=edge:1;border=edge:2;border=edge:4;border=edge:5',
+            ['R9'] => 'border=edge:0;border=edge:1;border=edge:5', # needs a port
+            ['S8'] => 'border=edge:0;border=edge:1;border=edge:2;border=edge:3;border=edge:4;border=edge:5',
+            ['S10'] => 'border=edge:0;border=edge:1;border=edge:2',
+            ['T9'] => 'border=edge:0;border=edge:1;border=edge:2;border=edge:3', # needs an offshore port
+            ['U8'] => 'border=edge:2;border=edge:3',
+
+            # celtic sea
+            ['G10'] => 'path=a:0,b:4;border=edge:2;border=edge:5',
+            ['O4'] => 'border=edge:2;border=edge:3',
+
+            # sea of sardinia
+            ['Y26'] => 'path=a:2,b:4;border=edge:0;border=edge:1;border=edge:3;border=edge:4;border=edge:5',
+            ['Y28'] => 'path=a:1,b:5;border=edge:0;border=edge:1;border=edge:2;border=edge:3',
           },
         }.freeze
       end
