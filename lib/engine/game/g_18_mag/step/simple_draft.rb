@@ -45,7 +45,7 @@ module Engine
             3 => 1,
             4 => 0,
             5 => 1,
-            6 => 1,
+            6 => 4,
           }.freeze
 
           LEFTOVER_NUM_SHARES = {
