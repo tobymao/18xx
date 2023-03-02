@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
+require_relative '../double_sided_tiles'
 
 module Engine
   module Game
@@ -12,6 +13,8 @@ module Engine
         include_meta(G18Carolinas::Meta)
         include Entities
         include Map
+
+        include DoubleSidedTiles
 
         attr_reader :corporation_power, :final_gauge, :north_hexes, :power_progress, :south_hexes,
                     :tile_groups
@@ -305,32 +308,11 @@ module Engine
         C8_HEXES = %w[G19 J12].freeze
         C8_ROTATION = 5
 
-        def update_opposites
-          by_name = @tiles.group_by(&:name)
-          @tile_groups.each do |grp|
-            next unless grp.size == 2
-
-            name_a, name_b = grp
-            num = by_name[name_a].size
-            if num != by_name[name_b].size
-              raise GameError, "Sides of double-sided tiles need to have same number (#{name_a}, #{name_b})"
-            end
-
-            num.times.each do |idx|
-              tile_a = tile_by_id("#{name_a}-#{idx}")
-              tile_b = tile_by_id("#{name_b}-#{idx}")
-
-              tile_a.opposite = tile_b
-              tile_b.opposite = tile_a
-            end
-          end
-        end
-
         def setup
           @saved_tiles = @tiles.dup
 
           @tile_groups = init_tile_groups
-          update_opposites
+          initialize_tile_opposites!
           @unused_tiles = []
 
           # find north and south hexes
@@ -502,22 +484,6 @@ module Engine
           return false unless (list = DIT_UPGRADES[from.name])
 
           list.include?(to.name)
-        end
-
-        def update_tile_lists!(tile, old_tile)
-          @tiles.delete(tile)
-          if tile.opposite
-            @tiles.delete(tile.opposite)
-            @unused_tiles << tile.opposite
-          end
-
-          return if old_tile.preprinted
-
-          @tiles << old_tile
-          return unless old_tile.opposite
-
-          @unused_tiles.delete(old_tile.opposite)
-          @tiles << old_tile.opposite
         end
 
         def flip_tile!(hex)

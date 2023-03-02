@@ -3051,7 +3051,7 @@ module Engine
               %w[
                 F7
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
-                   'path=a:3,b:_1,track:narrow;upgrade=cost:50,terrain:mountain;'\
+                   "path=a:3,b:_1,track:narrow;upgrade=cost:#{aag_variant? ? 100 : 50},terrain:mountain;"\
                    'icon=image:1873/11_open,sticky:1,large:1',
               %w[
                 G6
@@ -3236,6 +3236,10 @@ module Engine
             Action::ProgramHarzbahnDraftPass,
             Action::ProgramIndependentMines,
           ]
+        end
+
+        def aag_variant?
+          @aag_variant ||= @optional_rules&.include?(:aag_variant)
         end
       end
     end

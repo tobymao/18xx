@@ -9,6 +9,7 @@ module Engine
         class Route < Engine::Step::Route
           BUY_ACTION = %w[special_buy].freeze
           RAILCAR_BASE = [10, 10, 20, 20].freeze
+          CIWL_BASE = [30, 30, 50, 50].freeze
 
           def actions(entity)
             return [] if !entity.operator? || entity.runnable_trains.empty? || !@game.can_run_route?(entity)
@@ -33,7 +34,19 @@ module Engine
           def process_run_routes(action)
             raise GameError, 'Must use all purchased rail-car benefits' unless @game.all_railcars_used?(action.routes)
 
+            ciwl_income(action.routes) if @game.new_major?
+
             super
+          end
+
+          def ciwl_income(routes)
+            red_to_red_route_count = @game.red_to_red(routes)
+
+            return unless red_to_red_route_count.positive?
+
+            income = CIWL_BASE[@game.phase.current[:tiles].size - 1] * red_to_red_route_count
+            @game.bank.spend(income, @game.ciwl)
+            @log << "#{@game.ciwl.name} earns #{@game.format_currency(income)}"
           end
 
           def buyable_items(entity)

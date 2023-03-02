@@ -16,6 +16,7 @@ module Engine
       GAME_SUBTITLE = nil
       GAME_FULL_TITLE = nil # defaults to "GAME_DISPLAY_TITLE", then "GAME_TITLE: GAME_SUBTITLE"; used in "Game Info" section
       GAME_DROPDOWN_TITLE = nil # new game dropdown, defaults to GAME_DISPLAY_TITLE + location and dev stage if applicable
+      GAME_ISSUE_LABEL = nil # the GitHub label used to organize issues for this title, defaults to GAME_TITLE
 
       # real game metadata
       GAME_DESIGNER = nil
@@ -68,6 +69,19 @@ module Engine
             self::GAME_FULL_TITLE ||
             self::GAME_DISPLAY_TITLE ||
             [title, self::GAME_SUBTITLE].compact.join(': ')
+        end
+
+        def label
+          @label ||=
+            begin
+              label = self::GAME_ISSUE_LABEL || title
+              label = %("#{label}") if label.include?(' ')
+              label
+            end
+        end
+
+        def known_issues_url
+          "https://github.com/tobymao/18xx/issues?q=is%3Aissue+is%3Aopen+label%3A#{label}"
         end
 
         def fs_name

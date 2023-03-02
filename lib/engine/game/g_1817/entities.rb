@@ -117,11 +117,14 @@ module Engine
             name: 'P1 - Minor Coal Mine',
             value: 30,
             revenue: 0,
-            desc: 'Comes with one coal mine marker.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can '\
-                  'place token to avoid $15 terrain fee.  Marked yellow hexes '\
-                  'cannot be upgraded.  Hexes pay $10 extra revenue and do not '\
-                  'count as a stop.  May not start or end a route at a coal mine.',
+            desc: 'Comes with ONE coal mine marker. Owning corporation may place a marker to build a yellow "coal mine" tile '\
+                  'on a mountain hex next to any revenue center (a city or offboard hex). '\
+                  'Placing this tile ignores the $15 mountain terrain cost. '\
+                  'This yellow tile must either connect to the adjacent revenue center directly or be placed in such a way that '\
+                  'an adjacent city tile could conceivably be upgraded to connect to it. '\
+                  'Coal mines add a $10 bonus to any route passing through it. '\
+                  'Train routes may not start or end at a coal mine.',
+
             sym: 'MINC',
             abilities: [
               {
@@ -154,11 +157,13 @@ module Engine
             name: 'P5 - Coal Mine',
             value: 60,
             revenue: 0,
-            desc: 'Comes with two coal mine markers.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can '\
-                  'place token to avoid $15 terrain fee.  Marked yellow hexes '\
-                  'cannot be upgraded.  Hexes pay $10 extra revenue and do not '\
-                  'count as a stop.  May not start or end a route at a coal mine.',
+            desc: 'Comes with TWO coal mine markers. Owning corporation may place a marker to build a yellow "coal mine" tile '\
+                  'on a mountain hex next to any revenue center (a city or offboard hex). '\
+                  'Placing this tile ignores the $15 mountain terrain cost. '\
+                  'This yellow tile must either connect to the adjacent revenue center directly or be placed in such a way that '\
+                  'an adjacent city tile could conceivably be upgraded to connect to it. '\
+                  'Coal mines add a $10 bonus to any route passing through it. '\
+                  'Train routes may not start or end at a coal mine.',
             sym: 'CM',
             abilities: [
               {
@@ -191,11 +196,13 @@ module Engine
             name: 'P10 - Major Coal Mine',
             value: 90,
             revenue: 0,
-            desc: 'Comes with three coal mine markers.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot '\
-                  'be upgraded.  Hexes pay $10 extra revenue and do not count '\
-                  'as a stop.  May not start or end a route at a coal mine.',
+            desc: 'Comes with THREE coal mine markers. Owning corporation may place a marker to build a yellow "coal mine" tile '\
+                  'on a mountain hex next to any revenue center (a city or offboard hex). '\
+                  'Placing this tile ignores the $15 mountain terrain cost. '\
+                  'This yellow tile must either connect to the adjacent revenue center directly or be placed in such a way that '\
+                  'an adjacent city tile could conceivably be upgraded to connect to it. '\
+                  'Coal mines add a $10 bonus to any route passing through it. '\
+                  'Train routes may not start or end at a coal mine.',
             sym: 'MAJC',
             abilities: [
               {

@@ -23,6 +23,7 @@ module Engine
           'FAQ' =>
             'https://boardgamegeek.com/thread/2661280/faq',
         }.freeze
+        GAME_ISSUE_LABEL = '18ZOO'
 
         OPTIONAL_RULES = [
           {

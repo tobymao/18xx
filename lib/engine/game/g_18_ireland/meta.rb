@@ -17,6 +17,14 @@ module Engine
         GAME_TITLE = '18Ireland'
 
         PLAYER_RANGE = [3, 6].freeze
+
+        OPTIONAL_RULES = [
+          {
+            sym: :larger_bank,
+            short_name: 'Larger £5,000 bank',
+            desc: 'Larger bank variant, instead of £4,000',
+          },
+        ].freeze
       end
     end
   end
