@@ -259,10 +259,8 @@ module Engine
           setup_credit_mobilier
 
           @coal_companies = init_coal_companies
-          @coal_companies << init_union_pacific_coal
           @minors.concat(@coal_companies)
           @oil_companies = init_oil_companies
-          @oil_companies << init_bonanza
           @minors.concat(@oil_companies)
           update_cache(:minors)
 
