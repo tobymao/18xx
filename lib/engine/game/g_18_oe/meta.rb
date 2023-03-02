@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :production
+        DEV_STAGE = :prealpha
 
         GAME_DESIGNER = 'Edward T. Sindelar'
         # GAME_PUBLISHER = :all_aboard_games
