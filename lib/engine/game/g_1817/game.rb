@@ -752,7 +752,7 @@ module Engine
           return if corporation.owner == @share_pool
 
           @owner_when_liquidated[corporation] = corporation.owner
-          @stock_market.move(corporation, 0, 0, force: true)
+          @stock_market.move(corporation, [0, 0], force: true)
         end
 
         def train_help(_entity, _runnable_trains, routes)

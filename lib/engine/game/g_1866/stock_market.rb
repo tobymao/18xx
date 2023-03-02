@@ -14,7 +14,7 @@ module Engine
           else
             r += 1
           end
-          move(corporation, r, c) if share_price(r, c)
+          move(corporation, [r, c]) if share_price([r, c])
         end
 
         def move_up(corporation)
@@ -26,7 +26,7 @@ module Engine
             r += 1
             c += 1
           end
-          move(corporation, r, c) if share_price(r, c)
+          move(corporation, [r, c]) if share_price([r, c])
         end
       end
     end

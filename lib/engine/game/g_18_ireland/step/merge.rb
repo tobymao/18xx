@@ -100,7 +100,7 @@ module Engine
             new_column = @round.merging.map { |p| p.share_price.coordinates.last }.min
             # Find the top most price
             new_row = @round.merging.map { |p| p.share_price.coordinates.first }.min
-            @game.stock_market.share_price(new_row, new_column)
+            @game.stock_market.share_price([new_row, new_column])
           end
 
           def finish_merge(entity)

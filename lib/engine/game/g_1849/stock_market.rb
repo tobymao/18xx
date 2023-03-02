@@ -9,7 +9,7 @@ module Engine
         BLOCKED_RIGHT_PRICES = [218, 240, 276].freeze
         BLOCKED_UP_PRICES = [230].freeze
 
-        def move(corp, row, column, force: false)
+        def move(corp, coordinates, force: false)
           super
           return if corp.reached_max_value || !corp.share_price.end_game_trigger?
 
@@ -19,7 +19,8 @@ module Engine
           @game.max_value_reached = true
         end
 
-        def right_ledge?(r, c)
+        def right_ledge?(coordinates)
+          r, c = coordinates
           price = @market.dig(r, c).price
           return false if BLOCKED_UP_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')
           return true if BLOCKED_RIGHT_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')

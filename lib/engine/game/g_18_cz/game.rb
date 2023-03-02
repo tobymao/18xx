@@ -37,7 +37,7 @@ module Engine
         TRACK_RESTRICTION = :permissive
 
         SELL_BUY_ORDER = :sell_buy
-        SELL_MOVEMENT = :left_block
+        SELL_MOVEMENT = :down_block
         MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
 
         MUST_BUY_TRAIN = :always
@@ -806,7 +806,7 @@ module Engine
 
         def maximum_share_price_change(entity)
           position = entity.share_price.coordinates.last
-          return 4 if position.odd? # movement on the top row is capped only by the market's end
+          return 2 if position.odd? # movement on the top row is capped only by the market's end
 
           MARKET[0].size - 2 - position
         end
