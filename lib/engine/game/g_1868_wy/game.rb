@@ -31,6 +31,7 @@ require_relative 'step/track'
 require_relative 'step/waterfall_auction'
 require_relative '../base'
 require_relative '../company_price_up_to_face'
+require_relative '../double_sided_tiles'
 require_relative '../swap_color_and_stripes'
 require_relative '../stubs_are_restricted'
 
@@ -49,12 +50,13 @@ module Engine
 
         # Engine::Game includes
         include CompanyPriceUpToFace
+        include DoubleSidedTiles
         include StubsAreRestricted
         include SwapColorAndStripes
 
         attr_accessor :big_boy_first_chance, :double_headed_trains, :dpr_first_home_status,
                       :up_double_share_protection
-        attr_reader :big_boy_train, :big_boy_train_original
+        attr_reader :big_boy_train, :big_boy_train_original, :tile_groups, :unused_tiles
 
         # overrides
         BANK_CASH = 99_999
@@ -198,10 +200,6 @@ module Engine
           super.each { |hex| dotify(hex.tile) }
         end
 
-        def add_extra_tile(tile)
-          dotify(super)
-        end
-
         def ipo_name(_entity = nil)
           'Treasury'
         end
@@ -254,6 +252,10 @@ module Engine
           @final_stock_round_started = false
 
           @big_boy_first_chance = false
+
+          @tile_groups = self.class::TILE_GROUPS
+          initialize_tile_opposites!
+          @unused_tiles = []
 
           return if @optional_rules.include?(:p2_p6_choice)
 

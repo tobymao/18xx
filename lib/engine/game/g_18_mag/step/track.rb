@@ -65,24 +65,6 @@ module Engine
             action.tile.label = 'K' if action.tile.color == :yellow
           end
 
-          def update_tile_lists(tile, old_tile)
-            @game.add_extra_tile(tile) if tile.unlimited # probably not compatible with double-sided tiles
-
-            @game.tiles.delete(tile)
-            if tile.opposite
-              @game.tiles.delete(tile.opposite)
-              @game.unused_tiles << tile.opposite
-            end
-
-            return if old_tile.preprinted
-
-            @game.tiles << old_tile
-            return unless old_tile.opposite
-
-            @game.unused_tiles.delete(old_tile.opposite)
-            @game.tiles << old_tile.opposite
-          end
-
           def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, extra_cost)
             entity_cost = cost
             entity_cost = extra_cost if (cost - extra_cost).positive? && @round.terrain_token
