@@ -3,6 +3,7 @@
 require 'lib/settings'
 require 'view/game/token'
 require 'view/game/par_chart'
+require 'view/game/loan_chart'
 
 module View
   module Game
@@ -396,6 +397,7 @@ module View
         end
 
         children << h(ParChart) if @game.respond_to?(:par_chart)
+        children << h(LoanChart) if @game.respond_to?(:loan_chart)
 
         h(:div, children)
       end
