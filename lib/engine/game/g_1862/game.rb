@@ -1201,7 +1201,7 @@ module Engine
             num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
             num_shares -= 2 if corporation.share_price.type == :ignore_two_sales
           end
-          num_shares.times { @stock_market.move_left(corporation) } if selling_movement?(corporation)
+          num_shares.times { @stock_market.move_down(corporation) } if selling_movement?(corporation)
           log_share_price(corporation, old_price)
           check_bankruptcy!(corporation)
         end

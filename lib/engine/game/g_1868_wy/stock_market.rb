@@ -9,13 +9,13 @@ module Engine
         def move_up(corporation)
           r, c = corporation.share_price.coordinates
 
-          if r.positive? && share_price(r - 1, c)
+          if r.positive? && share_price([r - 1, c])
             r -= 1
           else
             r += 1
             c += 1
           end
-          move(corporation, r, c)
+          move(corporation, [r, c])
         end
       end
     end

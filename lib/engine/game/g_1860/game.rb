@@ -780,7 +780,7 @@ module Engine
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           num_shares = bundle.num_shares
           num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
-          num_shares.times { @stock_market.move_left(corporation) } if selling_movement?(corporation)
+          num_shares.times { @stock_market.move_down(corporation) } if selling_movement?(corporation)
           log_share_price(corporation, old_price)
           check_bankruptcy!(corporation)
         end

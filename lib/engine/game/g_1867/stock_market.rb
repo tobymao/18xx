@@ -16,7 +16,7 @@ module Engine
             r += 1
             c += 1
           end
-          move(corporation, r, c)
+          move(corporation, [r, c])
         end
 
         def move_right(corporation)

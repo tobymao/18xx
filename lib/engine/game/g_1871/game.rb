@@ -118,8 +118,8 @@ module Engine
           mainline.full_name = mainline.full_name[0..-2] + 'ML'
           mainline.float_percent = 50
           shortline.full_name = shortline.full_name[0..-2] + 'SL'
-          stock_market.set_par(mainline, stock_market.share_price(1, 1))
-          stock_market.set_par(shortline, stock_market.share_price(2, 1))
+          stock_market.set_par(mainline, stock_market.share_price([1, 1]))
+          stock_market.set_par(shortline, stock_market.share_price([2, 1]))
 
           # Mainline and Shortline tokens start on the board
           @hexes.each do |hex|
@@ -417,15 +417,15 @@ module Engine
 
         # Events to remove pars on certain trains
         def event_remove_smv_80!
-          stock_market.remove_par!(stock_market.share_price(3, 1))
+          stock_market.remove_par!(stock_market.share_price([3, 1]))
         end
 
         def event_remove_smv_74!
-          stock_market.remove_par!(stock_market.share_price(4, 1))
+          stock_market.remove_par!(stock_market.share_price([4, 1]))
         end
 
         def event_remove_smv_65!
-          stock_market.remove_par!(stock_market.share_price(5, 1))
+          stock_market.remove_par!(stock_market.share_price([5, 1]))
         end
 
         # Handle tile upgrades. Differences from base include:

@@ -145,8 +145,7 @@ module Engine
                   ''
                 end
 
-              row, col = protect[:new_price].coordinates
-              @game.stock_market.move(@game.union_pacific, row, col)
+              @game.stock_market.move(@game.union_pacific, protect[:new_price].coordinates)
               @game.log_share_price(@game.union_pacific, old_price)
 
               if protect[:cash]
