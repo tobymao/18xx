@@ -1141,12 +1141,12 @@ module Engine
         self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
-      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
         corporation = bundle.corporation
         old_price = corporation.share_price
         was_president = corporation.president?(bundle.owner)
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-        case self.class::SELL_MOVEMENT
+        case movement || self.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
