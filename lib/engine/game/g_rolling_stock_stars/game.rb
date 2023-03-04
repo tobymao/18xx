@@ -132,18 +132,18 @@ module Engine
           r, c = current.coordinates
 
           # assumes that current is not at either limit of market
-          right = @stock_market.share_price(r, c + 1)
-          left = @stock_market.share_price(r, c - 1)
+          right = @stock_market.share_price([r, c + 1])
+          left = @stock_market.share_price([r, c - 1])
 
           diff = corporation_stars(corporation, cash) - target_stars(corporation)
           diff = [[diff, 2].min, -2].max
 
           target = if diff > -2 && diff < 2
-                     @stock_market.share_price(r, c + diff)
+                     @stock_market.share_price([r, c + diff])
                    elsif diff == 2
-                     right.end_game_trigger? ? right : @stock_market.share_price(r, c + 2)
+                     right.end_game_trigger? ? right : @stock_market.share_price([r, c + 2])
                    else
-                     left.price.zero? ? left : @stock_market.share_price(r, c - 2)
+                     left.price.zero? ? left : @stock_market.share_price([r, c - 2])
                    end
 
           actual = find_new_price(current, target, diff)

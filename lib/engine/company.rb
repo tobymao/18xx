@@ -13,7 +13,7 @@ module Engine
     include Passer
 
     attr_accessor :name, :desc, :min_price, :revenue, :discount, :value
-    attr_reader :sym, :min_auction_price, :treasury, :interval, :color, :text_color
+    attr_reader :sym, :min_auction_price, :treasury, :interval, :color, :text_color, :type
     attr_writer :max_price
 
     def initialize(sym:, name:, value:, revenue: 0, desc: '', abilities: [], **opts)
@@ -31,6 +31,7 @@ module Engine
       @interval = opts[:interval] # Array of prices or nil
       @color = opts[:color] || :yellow
       @text_color = opts[:text_color] || :black
+      @type = opts[:type]&.to_sym
 
       init_abilities(abilities)
     end

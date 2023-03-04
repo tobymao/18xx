@@ -612,7 +612,7 @@ module Engine
             if @loans.empty?
               @log << "There are no more loans available to force buy a train, #{entity.name} goes into receivership"
               r, _c = entity.share_price.coordinates
-              @stock_market.move(entity, r, 0)
+              @stock_market.move(entity, [r, 0])
               break
             end
             loan = @loans.first

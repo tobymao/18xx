@@ -28,7 +28,7 @@ module Engine
             # Starting a public company by exchanging a private company for the
             # president's certificate is also a buy action, but this is handled
             # through the companies' abilities rather than these actions.
-            actions << 'buy_shares' if can_buy_any?(entity)
+            actions << 'buy_shares' if can_buy_any?(entity) || can_exchange_any?(entity)
             actions << 'par' if can_ipo_any?(entity)
             actions << 'bid' if can_bid_any?(entity)
 
@@ -60,6 +60,49 @@ module Engine
             # Can't start a public company by directly buying its president's
             # certificate until the start of phase 5.
             super && @game.phase.status.include?('public_companies')
+          end
+
+          def can_gain?(entity, share, exchange: false)
+            return super unless exchange
+            return false unless super
+
+            # The default behaviour of an exchange ability for an unfloated
+            # corporation is to be able to exchange for either a single share
+            # or for the presidency if @game.exchange_for_partial_presidency
+            # is set. We don't want to be able to exchange for a normal share,
+            # so block this here.
+            share.corporation.floated? || share.president
+          end
+
+          def can_exchange_for_share?(entity)
+            @game.corporations.any? do |corporation|
+              corporation.num_treasury_shares.positive? &&
+                @game.corporation_private_connected?(corporation, entity)
+            end
+          end
+
+          def can_exchange_for_presidency?(entity, player)
+            return false if @game.turn == 1 # Can't exchange in first stock round.
+
+            (@game.par_price(entity).price <= player.cash) &&
+              !@game.corporations.all?(&:ipoed)
+          end
+
+          def can_exchange?(entity, player)
+            entity.all_abilities.any? do |ability|
+              next unless ability.type == :exchange
+
+              if ability.corporations == 'ipoed'
+                can_exchange_for_share?(entity)
+              else
+                can_exchange_for_presidency?(entity, player)
+              end
+            end
+          end
+
+          def can_exchange_any?(player)
+            minors = @game.minors.select { |m| m.owner == player }
+            (player.companies + minors).any? { |entity| can_exchange?(entity, player) }
           end
 
           def min_bid(company)

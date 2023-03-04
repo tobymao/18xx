@@ -171,13 +171,17 @@ module Engine
             quick_start
             operating_round(1)
           else
+            # The initial stock round isn't *quite* a normal stock round,
+            # you cannot start public companies in the first stock round.
+            # This difference is handled in exchange_corporations().
             stock_round
           end
         end
 
         def stock_round
           Engine::Round::Stock.new(self, [
-            Engine::Step::HomeToken,
+            G1858::Step::Exchange,
+            G1858::Step::HomeToken,
             G1858::Step::BuySellParShares,
           ])
         end
@@ -209,6 +213,54 @@ module Engine
           return entity if entity.minor?
 
           @minors.find { |minor| minor.id == entity.sym }
+        end
+
+        def purchase_company(player, company, price)
+          player.spend(price, @bank) unless price.zero?
+
+          player.companies << company
+          company.owner = player
+
+          minor = private_minor(company)
+          return unless minor # H&G doesn't have an associated minor.
+
+          minor.owner = player
+          minor.float!
+        end
+
+        # Finds the cities that can be tokened by a public company that is
+        # being formed from a private railway company.
+        def reserved_cities(corporation, company)
+          cities.select do |city|
+            # Some cities (Zaragoza, Seville, Córdoba) have two private companies
+            # that share the space, so we need to check that there is an available
+            # space for the corporation to place a token.
+            city.reserved_by?(company) && city.tokenable?(corporation, free: true)
+          end
+        end
+
+        def place_home_token(corporation)
+          return [] if corporation.tokens.any?(&:used)
+
+          super
+        end
+
+        def home_token_locations(corporation)
+          if corporation.companies.empty?
+            # When starting a public company after the start of phase 5 it can
+            # choose any unoccupied city space for its first token.
+            hexes.select do |hex|
+              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+            end
+          else
+            # This corporation is being formed from a private company. Its first
+            # token is in one of the city spaces reserved for the private.
+            company = corporation.companies.first
+            home_cities = reserved_cities(corporation, company)
+            raise GameError, "No available token slots for #{company.id}" if home_cities.empty?
+
+            home_cities.map(&:hex)
+          end
         end
 
         # Returns true if the hex is this private railway's home hex.
@@ -389,12 +441,116 @@ module Engine
           minors.sort_by { |m| PRIVATE_ORDER[m.id] } + corporations.sort_by(&:name)
         end
 
+        def exchange_for_partial_presidency?
+          true
+        end
+
+        # Returns true if there is a city token space that is available to be
+        # used by a public company started from this private railway company.
+        # This can only be false for one of the private railway companies that
+        # share reservations on a city (Sevilla, Córdoba or Zaragoza) if the
+        # other company has been used to token that city, and the tile has not
+        # yet been upgraded to green.
+        def company_reservation_available?(company)
+          cities.any? do |city|
+            city.reserved_by?(company) && (city.tokens.compact.size < city.slots)
+          end
+        end
+
+        # Returns the par price for a public company started from a private
+        # railway. Throws an error if called on a private that cannot be used
+        # to start a public company.
+        def par_price(company)
+          unless company.abilities.any? { |ability| ability.type == :exchange }
+            raise GameError, "#{company.sym} cannot start a public company as it does not have a home city"
+          end
+
+          @stock_market.par_prices.max_by do |share_price|
+            share_price.price <= company.value ? share_price.price : 0
+          end
+        end
+
+        def exchange_corporations(exchange_ability)
+          # Can't start public companies in the first stock round.
+          return [] if @turn == 1
+
+          entity = exchange_ability.owner
+          if exchange_ability.corporations == 'ipoed'
+            # A private railway can be exchanged for a share in any public company
+            # that can trace a route to any of the private's home hexes.
+            super.select { |corporation| corporation_private_connected?(corporation, entity) }
+          elsif par_price(entity).price > current_entity.cash
+            # Can't afford to start a public company using this private.
+            []
+          elsif !company_reservation_available?(entity) # rubocop: disable Lint/DuplicateBranch
+            # There is no currently available token space for this company.
+            []
+          else
+            # Can exchange the private railway for any unstarted public company.
+            corporations.reject(&:ipoed)
+          end
+        end
+
+        # Returns true if there is a valid route from any of the corporation's
+        # tokens to any of the private railway's home hexes, or if a token is in
+        # one of the private's home hexes.
+        def corporation_private_connected?(corporation, minor)
+          return false if corporation.closed?
+          return false unless corporation.floated?
+
+          @graph_broad.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex) } ||
+            @graph_metre.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex) } ||
+            corporation.placed_tokens.any? { |token| home_hex?(minor, token.city.hex) }
+        end
+
         def payout_companies
           return if private_closure_round == :in_progress
 
           # Private railways owned by public companies don't pay out.
           exchanged_companies = @companies.select { |company| company.owner&.corporation? }
           super(ignore: exchanged_companies.map(&:id))
+        end
+
+        # Removes all of the icons on the map for a private railway company.
+        def delete_icons(company)
+          icon_name = company.sym.delete('&')
+          @hexes.each do |hex|
+            hex.tile.icons.reject! { |icon| icon.name == icon_name }
+          end
+        end
+
+        def close_company(company)
+          owner = company.owner
+          message = "#{company.id} closes."
+          unless owner == @bank
+            message += " #{owner.name} receives #{format_currency(company.value)}."
+            @bank.spend(company.value, owner)
+          end
+          company.close!
+          @log << message
+          delete_icons(company)
+        end
+
+        # Closes the private railway companies owned by a public company,
+        # paying their face value to the public company's treasury.
+        def close_companies(corporation)
+          return unless corporation.corporation?
+
+          # The corporation.companies array is modified by company.close!, so we
+          # need to take a copy rather than iterating over original array.
+          companies = corporation.companies.dup
+          companies.each { |company| close_company(company) }
+        end
+
+        # Closes both the company and minor parts of a private railway. Can be
+        # called using either one as its argument.
+        def close_private(entity)
+          company = private_company(entity)
+          minor = private_minor(entity)
+
+          release_stubs(minor)
+          minor&.close!
+          close_company(company)
         end
 
         def entity_can_use_company?(_entity, _company)
