@@ -110,9 +110,8 @@ module Engine
           return unless two_player?
 
           batch1, batch2 = @minors.partition { |minor| minor.color == :yellow }
-          random = Random.new(rand)
-          reserved = (batch1.sample(5, random: random) +
-                      batch2.sample(2, random: random))
+          reserved = (batch1.sort_by { rand }.take(5) +
+                      batch2.sort_by { rand }.take(2))
           @log << "These private companies cannot be bought in this game: #{reserved.map(&:id).join(', ')}"
 
           rx = /(P\d+)\. .*\. (Home hex.*)\. .*/
