@@ -62,7 +62,8 @@ module Engine
         TRAINS = [
           def_train('2',  80, '2+2',  120, 7, rusts_on: '4', on: nil),
           def_train('3', 180, '3+2',  220, 6, rusts_on: '6', events: [{ 'type' => 'green_par' },
-                                                                      { 'type' => 'setup_company_price_up_to_face' }]),
+                                                                      { 'type' => 'setup_company_price_up_to_face' },
+                                                                      { 'type' => 'remove_forts' }]),
           def_train('4', 300, '4+3',  360, 5, rusts_on: '7', events: []),
           def_train('5', 500, '5+4',  580, 4, events: [
                       { 'type' => 'close_privates' },
@@ -71,6 +72,7 @@ module Engine
                       { 'type' => 'full_capitalization' },
                       { 'type' => 'oil_companies_available' },
                       { 'type' => 'uranium_boom' },
+                      { 'type' => 'remove_forts' },
                     ]),
           def_train('6', 600, '6+5',  700, 3, events: [
                       { 'type' => 'close_privates' },
@@ -80,6 +82,7 @@ module Engine
                       { 'type' => 'close_privates' },
                       { 'type' => 'uranium_bust' },
                       { 'type' => 'trigger_endgame' },
+                      { 'type' => 'remove_forts' },
                     ]),
           def_train('8', 1000, '8+5', 1100, 15, events: [
                       { 'type' => 'close_privates' },

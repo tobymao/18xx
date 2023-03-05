@@ -119,6 +119,7 @@ module Engine
           close_coal_companies: ['Close Coal Companies', 'Phase 8: Coal Companies stop Developing; gray Coal DTs remain on the board'],
           remove_placed_coal_dt: ['"Rust" Coal DTs', 'Phase 4-8: Coal DTs placed 2 phases ago are removed from the board'],
           remove_unplaced_coal_dt: ['Remove Unplaced Coal DTs', 'Phase 3-7: Coal DTs still on a Coal Company\'s charter from the previous phase are discarded'],
+          remove_forts: ['Remove Forts', 'Remove forts whose color matches the previous phase'],
         ).freeze
         # rubocop:enable Layout/LineLength
         STATUS_TEXT = {
@@ -202,6 +203,19 @@ module Engine
         SHIRLEY_BASIN_HEX = 'J20'
         WALDEN_HEX = 'N18'
         WIND_RIVER_CANYON_HEX = 'F12'
+        YELLOWSTONE_HEXES = %w[C5 D4].freeze
+        FORT_HEXES = %w[
+          A23
+          C17
+          E19
+          G21
+          G5
+          H18
+          J26
+          K17
+          L4
+        ].freeze
+        FT_KEOGH_HEX = FORT_HEXES.first
 
         # special shares
         UP_PRESIDENTS_SHARE = 'UP_0'
@@ -294,25 +308,71 @@ module Engine
           initialize_tile_opposites!
           @unused_tiles = []
 
-          return if @optional_rules.include?(:p2_p6_choice)
+          unless @optional_rules.include?(:p2_p6_choice)
+            removals = COMPANY_CHOICES.keys
+            COMPANY_CHOICES.each do |_, companies|
+              removals.concat(companies.sort_by { rand }.take(2))
+            end
 
-          removals = COMPANY_CHOICES.keys
-          COMPANY_CHOICES.each do |_, companies|
-            removals.concat(companies.sort_by { rand }.take(2))
+            @companies.reject! do |c|
+              next unless removals.include?(c.id)
+
+              @round.active_step.companies.delete(c)
+              c.close!
+              true
+            end
+
+            @log << 'Available P2-P6 companies:'
+            @companies.slice(1, 5).map(&:name).each do |company|
+              @log << "- #{company}"
+            end
           end
 
-          @companies.reject! do |c|
-            next unless removals.include?(c.id)
+          @forts = setup_forts!
+        end
 
-            @round.active_step.companies.delete(c)
-            c.close!
-            true
+        def setup_forts!
+          colors = %i[yellow yellow green green green green green brown brown].sort_by { rand }
+          FORT_HEXES.zip(colors).each.with_object({}) do |(hex_id, color), forts|
+            hex_by_id(hex_id).tile.icons <<
+              Part::Icon.new("1868_wy/fort_#{color}", 'fort', true, false,
+                             large: hex_id != FT_KEOGH_HEX)
+            forts[hex_id] = color
           end
-          @log << 'Available P2-P6 companies:'
+        end
 
-          @companies.slice(1, 5).map(&:name).each do |company|
-            @log << "- #{company}"
+        def event_remove_forts!
+          color = @phase.tiles[-2]
+
+          removed = FORT_HEXES.each.with_object([]) do |hex_id, rm|
+            next unless color == @forts[hex_id]
+
+            # remove "Ft. ___" from the location name for cities with another
+            # name, and otherwise blank tiles; keep it for towns
+            hex = hex_by_id(hex_id)
+            tile = hex.tile
+            new_name =
+              if tile.city_towns.empty? && tile.offboards.empty?
+                nil
+              elsif (name = tile.location_name).include?(' / ')
+                name.split(' / ').last
+              end
+            if new_name
+              hex.location_name = new_name
+              tile.location_name = new_name
+            end
+
+            tile.icons.reject! { |icon| icon.name == 'fort' }
+            @forts.delete(hex_id)
+            rm <<
+              if new_name
+                "#{hex_id} (#{new_name})"
+              else
+                hex_id
+              end
           end
+
+          @log << "-- Event: #{color} forts are removed from #{removed.join(', ')} --"
         end
 
         def init_share_pool
@@ -770,8 +830,18 @@ module Engine
             else
               @border_after = action.hex.tile.borders.first if @border_before
               credit_mobilier_check_tile_lay_action(action)
+
+              if @forts.include?(action.hex.id) && action.tile.color == :yellow
+                icon = action.tile.icons.find { |i| i.name == 'fort' }
+                icon.large = false
+              end
             end
             update_boomcity_revenue!(action.hex.tile)
+          when Action::HexToken
+            if @forts.include?(action.hex.id) && action.hex.tile.color == :white
+              icon = action.hex.tile.icons.find { |i| i.name == 'fort' }
+              icon.large = false
+            end
           end
         end
 
@@ -1196,14 +1266,23 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
+          includes_yellowstone = stops.any? { |s| YELLOWSTONE_HEXES.include?(s.hex.id) }
+          revenue += 10 if includes_yellowstone && route.train.owner.companies.include?(wylie)
+
           revenue += east_west_bonus(stops)[:revenue]
 
           revenue += spike_route_bonuses(route, stops)[:revenue]
+
+          revenue += fort_bonuses(route)[:revenue]
+
           revenue
         end
 
         def revenue_str(route)
           str = super
+          str += '+ Wylie Yellowstone bonus' if route.train.owner.companies.include?(wylie) &&
+                                                route.stops.any? { |s| YELLOWSTONE_HEXES.include?(s.hex.id) }
+
           ew_bonus = east_west_bonus(route.stops)[:description]
           str += " + #{ew_bonus}" if ew_bonus
 
@@ -1211,6 +1290,7 @@ module Engine
           str += " + #{spike_bonus}" if spike_bonus
 
           str += ' + Uranium' if route.stops.any? { |s| uranium_bonus(@phase.name, s.hex).positive? }
+          str += fort_bonuses(route)[:description]
           str
         end
 
@@ -1875,7 +1955,7 @@ module Engine
           return if !midwest_oil.owned_by_player? && !midwest_oil.owned_by_corporation?
 
           casper_trains = routes.count do |route|
-            route.visited_stops.any? { |stop| stop.hex.id == CASPER_HEX }
+            route.visited_stops.any? { |stop| stop.hex&.id == CASPER_HEX }
           end
           return if casper_trains.zero?
 
@@ -1893,6 +1973,17 @@ module Engine
 
             company.close!
             true
+          end
+        end
+
+        def fort_bonuses(route)
+          forts = route.connection_hexes.flatten.uniq.count { |id| @forts[id] }
+
+          if forts.positive?
+            revenue = forts * (route.corporation == trabing_bros.owner ? 20 : 10)
+            { revenue: revenue, description: " + #{forts} Fort#{forts == 1 ? '' : 's'}" }
+          else
+            { revenue: 0, description: '' }
           end
         end
 
