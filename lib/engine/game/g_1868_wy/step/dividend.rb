@@ -33,6 +33,21 @@ module Engine
             super
             @game.double_headed_trains = []
           end
+
+          # Teapot Dome: force a float in both JS and Ruby
+          def payout_per_share(entity, revenue)
+            revenue % 10 == 5 ? revenue / 10.0 : super
+          end
+
+          # Teapot Dome: log the fractional amount that will be rounded after
+          # multiplying by share count, i.e., in
+          # Engine::Step::Dividend#dividends_for_entity()
+          def log_payout_shares(entity, revenue, per_share, receivers)
+            return super unless revenue % 10 == 5
+
+            @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
+                    "$#{revenue / 10.0} per share, rounded up (#{receivers})"
+          end
         end
       end
     end
