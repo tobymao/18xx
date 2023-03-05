@@ -213,6 +213,7 @@ module Engine
 
       MINORS = [].freeze
 
+      PLAYER_CLASS = Player
       PHASES = [].freeze
 
       LOCATION_NAMES = {}.freeze
@@ -509,7 +510,7 @@ module Engine
                    names.to_h { |n| [n, n] }
                  end
 
-        @players = @names.map { |player_id, name| Player.new(player_id, name) }
+        @players = @names.map { |player_id, name| self.class::PLAYER_CLASS.new(player_id, name) }
         @user = user
         @programmed_actions = Hash.new { |h, k| h[k] = [] }
         @round_counter = 0
@@ -2189,6 +2190,10 @@ module Engine
       end
 
       def after_buying_train(train, source); end
+
+      def sold_shares_destination(_entity)
+        SOLD_SHARES_DESTINATION
+      end
 
       def corporations_can_ipo?
         false

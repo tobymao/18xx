@@ -17,7 +17,7 @@ module Engine
       end
 
       def args_to_h
-        { 'loan' => @loan.id }
+        { 'loan' => @loan&.id }
       end
     end
   end

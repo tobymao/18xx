@@ -142,6 +142,13 @@ module View
           ])
         end
 
+        if @game.respond_to?(:player_loans) && @game.player_loans(@player).positive?
+          trs << h(:tr, [
+            h(:td, 'Loans'),
+            h('td.right', @game.player_loans(@player)),
+          ])
+        end
+
         if @game.respond_to?(:player_interest) && @game.player_interest(@player).positive?
           trs << h(:tr, [
             h(:td, 'Interest'),
