@@ -249,7 +249,10 @@ module Engine
 
         def setup
           init_track_points
-          setup_company_price_up_to_face
+          @companies.each do |company|
+            company.min_price = 0
+            company.max_price = 0
+          end
 
           @development_token_count = init_development_hexes
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
@@ -1867,6 +1870,10 @@ module Engine
             event_close_big_boy!
             event_close_no_bust!
           end
+        end
+
+        def event_setup_company_price_up_to_face!
+          setup_company_price_up_to_face
         end
       end
     end
