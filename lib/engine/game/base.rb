@@ -216,6 +216,7 @@ module Engine
 
       MINORS = [].freeze
 
+      PLAYER_CLASS = Player
       PHASES = [].freeze
 
       LOCATION_NAMES = {}.freeze
