@@ -16,7 +16,9 @@ module Engine
       def discounted_price(train, price)
         return price unless @trains.include?(train.name)
 
-        price - (discount > 1 ? discount : (price * discount))
+        discount_value = discount.is_a?(Hash) ? discount[train.name] : discount
+
+        price - (discount_value > 1 ? discount_value : (price * discount_value))
       end
     end
   end

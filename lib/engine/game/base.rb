@@ -2788,6 +2788,10 @@ module Engine
         entity&.player?
       end
 
+      def company_table_header
+        'Company'
+      end
+
       # minors to show on player cards
       def player_card_minors(_player)
         []
