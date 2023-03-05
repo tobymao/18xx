@@ -38,13 +38,13 @@ module Engine
           end
 
           def actions(entity)
-            return %w[buy_shares] if can_exchange?(entity)
+            return %w[buy_shares] if entity == @exchanger && can_exchange?(entity)
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
 
             actions = []
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'buy_shares' if can_buy_any?(entity)
+            actions << 'buy_shares' if can_buy_any?(entity) || can_exchange?(entity)
             actions << 'par' if can_ipo_any?(entity)
             actions << 'place_token' if can_token?(entity)
             actions << 'pass' unless actions.empty?
@@ -86,8 +86,7 @@ module Engine
 
           def can_exchange?(entity, bundle = nil)
             return false if bought? || sold?
-            return false unless entity == @exchanger
-            return false unless @game.abilities(entity, :exchange)
+            return false if entity != @exchanger.owner && !(entity == @exchanger && current_entity == @exchanger.owner)
 
             bundle ||= @game.up_double_share.to_bundle
             can_gain?(entity.owner, bundle, exchange: true)
