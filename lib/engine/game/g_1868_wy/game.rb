@@ -251,10 +251,14 @@ module Engine
           setup_credit_mobilier
 
           @coal_companies = init_coal_companies
+          @coal_companies << init_union_pacific_coal
           @minors.concat(@coal_companies)
           @oil_companies = init_oil_companies
+          @oil_companies << init_bonanza
           @minors.concat(@oil_companies)
           update_cache(:minors)
+
+          @p3_dt_hex = nil
 
           @all_corps_available = false
           @available_par_groups = %i[par]
@@ -444,6 +448,19 @@ module Engine
         end
 
         def init_round_finished
+          if (player = upc_private.player)
+            minor = union_pacific_coal
+            minor.owner = player
+            minor.float!
+          else
+            close_corporation(union_pacific_coal)
+          end
+          if (player = bonanza_private.player)
+            minor = bonanza
+            minor.owner = player
+          else
+            close_corporation(bonanza)
+          end
           up_double_share.buyable = true unless ames_bros.player
 
           durant.close!
@@ -475,6 +492,24 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT[:brown_par][1]} --"
           @available_par_groups << :par_2
           update_cache(:share_prices)
+        end
+
+        def event_close_upc!
+          if (token = union_pacific_coal.tokens.find(&:used))
+            @log << "-- Event: UP Development Token is removed from #{token.hex.name} --"
+            destroy_development_token!(token)
+          end
+          @minors.delete(union_pacific_coal)
+          union_pacific_coal.close!
+        end
+
+        def event_close_bonanza!
+          if (token = bonanza.tokens.find(&:used))
+            @log << "-- Event: BZ Oil Development Token is removed from #{token.hex.name} --"
+            destroy_development_token!(token)
+          end
+          @minors.delete(bonanza)
+          bonanza.close!
         end
 
         def par_prices
@@ -625,7 +660,10 @@ module Engine
           statuses = []
 
           if corporation.floated?
-            if @round.is_a?(G1868WY::Round::Operating) && corporation.corporation?
+            if corporation.minor? && corporation != union_pacific_coal && corporation != bonanza
+              player = corporation.owner
+              statuses << 'P3c Frémont discount: $20' if player == fremont.owner
+            elsif @round.is_a?(G1868WY::Round::Operating) && corporation.corporation?
               statuses << "Track Points: #{track_points_available(corporation)}"
             end
           elsif !@all_corps_available && (stack = @corp_stacks.find { |s| s.last == corporation }) && stack.size > 1
@@ -980,6 +1018,54 @@ module Engine
             end
         end
 
+        def init_union_pacific_coal
+          @union_pacific_coal = Engine::Minor.new(
+            type: :coal,
+            sym: 'UPC',
+            name: 'Union Pacific Coal',
+            logo: '1868_wy/coal-up',
+            tokens: [],
+            color: :black,
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          )
+
+          logo = '/icons/1868_wy/coal-up.svg'
+          token = Token.new(
+            @union_pacific_coal,
+            price: 0,
+            logo: logo,
+            simple_logo: logo,
+            type: :development,
+          )
+          @union_pacific_coal.tokens << token
+
+          @union_pacific_coal
+        end
+
+        def init_bonanza
+          @bonanza = Engine::Minor.new(
+            type: :oil,
+            sym: 'BZ',
+            name: '"Buffalo Bill" Cody\'s Bonanza Oil District',
+            logo: '1868_wy/Oil-BZ',
+            tokens: [],
+            color: :black,
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          )
+
+          logo = '/icons/1868_wy/Oil-BZ.svg'
+          token = Token.new(
+            @bonanza,
+            price: 0,
+            logo: logo,
+            simple_logo: logo,
+            type: :development,
+          )
+          @bonanza.tokens << token
+
+          @bonanza
+        end
+
         def init_development_hexes
           @hexes.each_with_object({}) do |hex, development_hexes|
             development_hexes[hex] = 0 unless %i[red gray purple].include?(hex.tile.color)
@@ -1037,12 +1123,29 @@ module Engine
           hex = action.hex
           token = action.token
           cost = action.cost
+          cost_str = cost.positive? ? " for #{format_currency(cost)}" : ''
+
+          if entity == union_pacific_coal || entity == bonanza
+            @p3_dt_hex = hex
+            dt_id = entity == union_pacific_coal ? 'UP' : 'BZ'
+            if (placed_token = entity.tokens.find(&:used))
+              from_hex = placed_token.hex.name
+              destroy_development_token!(placed_token)
+              @log << "#{player.name} (#{entity.id}) moves the #{dt_id} "\
+                      "Development Token from #{from_hex} to #{hex.name}#{cost_str}"
+            else
+              @log << "#{player.name} (#{entity.id}) places the #{dt_id} Development Token on #{hex.name}#{cost_str}"
+            end
+          elsif entity.type == :coal
+            @log << "#{player.name} places a Coal Development Token (#{@phase.name}) on #{hex.name}#{cost_str}"
+          elsif entity.type == :oil
+            @log << "#{player.name} places an Oil Development Token on #{hex.name}#{cost_str}"
+          else
+            raise GameError, "Unexpected development token placement caused by action: #{action.to_h}"
+          end
 
           player.spend(cost, @bank) if cost.positive?
-          hex.place_token(token, logo: "1868_wy/coal-#{@phase.name}")
-
-          cost_str = cost.positive? ? " for #{format_currency(cost)}" : ''
-          @log << "#{player.name} places a Development Token on #{hex.name}#{cost_str}"
+          hex.place_token(token, logo: token.logo, preprinted: false)
 
           increment_development_token_count(hex)
           @placed_development_tokens[@phase.name] << hex
@@ -1900,10 +2003,12 @@ module Engine
           case @phase.name
           when '5'
             event_close_ames_brothers! unless ames_bros.closed?
+            event_close_upc! unless union_pacific_coal.closed?
           when '7'
             event_close_pure_oil! unless pure_oil.closed?
           when '8'
             event_close_big_boy! unless big_boy_private.closed?
+            event_close_bonanza! unless bonanza.closed?
             event_close_no_bust! unless no_bust.closed?
           end
         end
