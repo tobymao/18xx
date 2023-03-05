@@ -75,7 +75,7 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 100,
             max_ownership_percent: 100,
-            coordinates: ['N24'],
+            coordinates: ['N36'],
           },
           {
             name: 'Great Southern and Western Railway',
@@ -84,7 +84,7 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 100,
             max_ownership_percent: 100,
-            coordinates: ['I8'],
+            coordinates: ['I20'],
           },
           {
             name: 'Great Western Railway',
@@ -93,7 +93,7 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 100,
             max_ownership_percent: 100,
-            coordinates: ['L13'],
+            coordinates: ['L25'],
           },
           {
             name: 'London and North Western Railway',
@@ -102,7 +102,7 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 100,
             max_ownership_percent: 100,
-            coordinates: ['J15'],
+            coordinates: ['J27'],
           },
           {
             name: 'CF du Midi',
@@ -111,7 +111,7 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 100,
             max_ownership_percent: 100,
-            coordinates: ['U12'],
+            coordinates: ['U24'],
           },
           {
             name: 'CF de l\'Ouest',
@@ -120,7 +120,7 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 100,
             max_ownership_percent: 100,
-            coordinates: ['Q14'],
+            coordinates: ['Q26'],
           },
           {
             name: 'CF Paris a Lyon et a la Mediterranee',
@@ -129,7 +129,7 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 100,
             max_ownership_percent: 100,
-            coordinates: ['U22'],
+            coordinates: ['U34'],
           },
         ].freeze
       end
