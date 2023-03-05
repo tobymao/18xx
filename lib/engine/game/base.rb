@@ -2192,7 +2192,7 @@ module Engine
       def after_buying_train(train, source); end
 
       def sold_shares_destination(_entity)
-        SOLD_SHARES_DESTINATION
+        self.class::SOLD_SHARES_DESTINATION
       end
 
       def corporations_can_ipo?
