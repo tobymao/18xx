@@ -1794,6 +1794,12 @@ module Engine
         @cities.concat(extra_cities)
         extra_cities.each { |c| @_cities[c.id] = c }
 
+        if (opp_name = tile.opposite&.name) && !new_tile.opposite
+          opp_tile = tile_by_id("#{opp_name}-#{new_tile.index}") || add_extra_tile(tile_by_id("#{opp_name}-0"))
+          opp_tile.opposite = new_tile
+          new_tile.opposite = opp_tile
+        end
+
         new_tile
       end
 
