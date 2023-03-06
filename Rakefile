@@ -106,10 +106,12 @@ task :precompile do
 
   # Copy to the pin directory
   git_rev = `git rev-parse --short HEAD`.strip
+  version_datetime = Time.now.strftime('%B %d %Y %H:%M')
   pin_dir = Assets::OUTPUT_BASE + Assets::PIN_DIR
   File.write(Assets::OUTPUT_BASE + '/assets/version.json', JSON.dump(
     hash: git_rev,
     url: "https://github.com/tobymao/18xx/commit/#{git_rev}",
+    version_datetime: version_datetime,
   ))
   FileUtils.mkdir_p(pin_dir)
   assets.pin("#{pin_dir}#{git_rev}.js.gz")
