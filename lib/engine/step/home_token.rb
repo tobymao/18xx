@@ -43,10 +43,6 @@ module Engine
         @round.pending_tokens&.first || {}
       end
 
-      def active_entities
-        @round.pending_tokens&.map { |token| token[:entity] }
-      end
-
       def description
         if current_entity != token.corporation
           "Place #{token.corporation.name} Home Token"

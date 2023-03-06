@@ -455,7 +455,7 @@ module Engine
 
         def operating_round(round_num)
           G1880::Round::Operating.new(self, [
-            Engine::Step::HomeToken,
+            G1880::Step::HomeToken,
             G1880::Step::RocketPurchaseTrain,
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
