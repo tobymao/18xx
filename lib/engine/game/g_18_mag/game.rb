@@ -141,10 +141,22 @@ module Engine
           @optional_rules&.include?(:new_major)
         end
 
+        def supporters?
+          @optional_rules&.include?(:supporters)
+        end
+
         def location_name(coord)
           @location_names ||= game_location_names
 
           @location_names[coord]
+        end
+
+        def company_header(_company)
+          'SUPPORTER'
+        end
+
+        def company_table_header
+          'Supporter'
         end
 
         def setup
@@ -222,6 +234,10 @@ module Engine
 
         def partition_companies
           init_minors.select { |m| m.name == 'mine' }
+        end
+
+        def init_minors
+          game_minors.map { |minor| G18Mag::Minor.new(**minor) }
         end
 
         def reservation_corporations
@@ -315,11 +331,14 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
+            G18Mag::Step::SpecialChoose,
+            Engine::Step::SpecialTrack,
             G18Mag::Step::Track,
             G18Mag::Step::Token,
             G18Mag::Step::DiscardTrain,
             G18Mag::Step::Route,
             G18Mag::Step::Dividend,
+            Engine::Step::SpecialBuyTrain,
             G18Mag::Step::BuyTrain,
           ], round_num: round_num)
         end
@@ -499,9 +518,9 @@ module Engine
 
         def gc_train?(route)
           if multiplayer?
-            @round.rail_cars.include?('G&C') && route.visited_stops.sum(&:visit_cost) > route.train.distance
+            @round.rail_cars.include?('G&C') && route.visited_stops.sum(&:visit_cost) > train_city_distance(route.train)
           else
-            @round.rail_cars.include?('RABA') && route.visited_stops.sum(&:visit_cost) > route.train.distance
+            @round.rail_cars.include?('RABA') && route.visited_stops.sum(&:visit_cost) > train_city_distance(route.train)
           end
         end
 
@@ -543,20 +562,16 @@ module Engine
           false
         end
 
+        def train_city_distance(train)
+          return train.distance if train.distance.is_a?(Numeric)
+
+          distance_city = train.distance.find { |n| n['nodes'].include?('city') }
+          distance_city ? distance_city['visit'] : 0
+        end
+
         def check_distance(route, visits)
           distance = if gc_train?(route) && !other_gc_train?(route)
-                       [
-                         {
-                           nodes: %w[city offboard town],
-                           pay: route.train.distance,
-                           visit: route.train.distance,
-                         },
-                         {
-                           nodes: %w[town],
-                           pay: route.train.distance,
-                           visit: route.train.distance,
-                         },
-                       ]
+                       gc_train_distance(route.train.distance)
                      else
                        route.train.distance
                      end
@@ -599,6 +614,28 @@ module Engine
             raise GameError, 'Route has too many stops' if num.positive?
           end
           raise GameError, 'Must visit minimum of two non-mine stops' if visits.sum(&:visit_cost) < 2
+        end
+
+        def gc_train_distance(route_distance)
+          if route_distance.is_a?(Numeric)
+            town_distance_value = route_distance
+          else
+            # route has a 1 town value from the supporter
+            town_distance = route_distance.find { |n| n['nodes'] == ['town'] }
+            town_distance_value = town_distance['pay'] + route_distance
+          end
+          [
+              {
+                nodes: %w[city offboard town],
+                pay: route_distance,
+                visit: route_distance,
+              },
+              {
+                nodes: %w[town],
+                pay: town_distance_value,
+                visit: town_distance_value,
+              },
+            ]
         end
 
         # Change "Stop" displayed if G&C power is used
@@ -673,7 +710,7 @@ module Engine
             when 'RABA'
               next if routes.any? { |r| r.visited_stops.any?(&:offboard?) }
 
-              next if !multiplayer? && routes.any? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
+              next if !multiplayer? && routes.any? { |r| r.visited_stops.sum(&:visit_cost) > train_city_distance(r.train) }
 
               return false
             when 'SNW'
@@ -681,7 +718,7 @@ module Engine
                 return false
               end
             when 'G&C'
-              return false if routes.none? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
+              return false if routes.none? { |r| r.visited_stops.sum(&:visit_cost) > train_city_distance(r.train) }
             end
           end
           true
@@ -693,6 +730,10 @@ module Engine
 
         def red_to_red_route?(route)
           route.stops.count { |stop| stop.tile.color == :red } > 1
+        end
+
+        def token_owner(entity)
+          entity.company? ? current_entity : entity
         end
 
         def price_movement_chart
@@ -1364,6 +1405,122 @@ module Engine
           corps.select! { |c| CORPORATIONS_2P.include?(c[:sym]) } unless multiplayer?
           corps.concat(new_corp) if new_major?
           corps
+        end
+
+        def game_companies
+          companies = [
+            {
+              name: 'Kálman Kandó (Mérnök = Engineer)',
+              value: 0,
+              revenue: 0,
+              desc: 'Gives a discount on a train purchase. 10/15/20/30 on 2/3/4/6 train',
+              sym: 'KK',
+              abilities: [
+                {
+                  type: 'train_discount',
+                  when: 'owning_player_or_turn',
+                  discount: { '2' => 10, '3' => 15, '4' => 20, '6' => 30 },
+                  trains: %w[2 3 4 6],
+                  count_per_or: 1,
+                },
+              ],
+              color: nil,
+            },
+            {
+              name: 'Feketeházy János (Mérnök = Engineer)',
+              value: 0,
+              revenue: 0,
+              desc: 'Comes with a virtual permanent terrain token: Once per OR the terrain costs for one ' \
+                    'hex are paid by the bank into the green company.',
+              sym: 'FJ',
+              abilities: [{
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                choices: { virtual_token: 'Use virtual token' },
+                count_per_or: 1,
+              }],
+              color: nil,
+            },
+            {
+              name: 'Salomon Mayer Freiherr von Rothschild (Pénzember = financier)',
+              value: 0,
+              revenue: 0,
+              desc: 'Gives an income of Ft 10 per OR (for one company) at any time during the turn of one '\
+                    'of the players companies.',
+              sym: 'SMFvR',
+              abilities: [{
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                choices: { claim: 'Claim 10 Ft income' },
+                count_per_or: 1,
+              }],
+              color: nil,
+            },
+            {
+              name: 'Georg Simon von Sina (Pénzember = financier)',
+              value: 0,
+              revenue: 0,
+              desc: 'Gives a free additional upgrade to green and brown. All upgrading rules apply (the tiles ' \
+                    'must be available).',
+              sym: 'GSvS',
+              abilities: [
+                {
+                  type: 'tile_lay',
+                  tiles: %w[39 40 41 42 43 70 44 47 45 46 G17 611 L17 L34 L35 L38 455 X9 L36 L37],
+                  hexes: [],
+                  reachable: true,
+                  when: 'owning_player_track',
+                  owner_type: 'player',
+                  count_per_or: 1,
+                },
+              ],
+              color: nil,
+            },
+            {
+              name: 'Donaudampfschifffahrtsgesellschaft (Vállalat = company)',
+              value: 0,
+              revenue: 0,
+              desc: 'Gives a discount of 50% on token laying. That means the first token of a minor'\
+                    'company cost Ft 20 (and only Ft 10 of it will go to the yellow company), the second'\
+                    'token cost Ft 40 (and only Ft 20 of it will go to the yellow company).',
+              sym: 'DDSG',
+              abilities: [
+                {
+                  type: 'token',
+                  when: 'owning_player_or_turn',
+                  owner_type: 'player',
+                  count_per_or: 1,
+                  special_only: true,
+                  from_owner: true,
+                  discount: 0.5,
+                  hexes: [],
+                },
+              ],
+              color: nil,
+            },
+            {
+              name: 'Magyar Államvastutak',
+              value: 0,
+              revenue: 0,
+              desc: 'One train of a minor company becomes an X+1 train. It may run to one additional'\
+                    'town. If this minor company uses the benefits of the blue company (a train becomes a'\
+                    'plus train) the Magyar Àllamvasutak may be used for the same train (for example'\
+                    'turning a 2+2 into a 2+3 train or a 4+4 into a 4+5 train) or a different train (for'\
+                    'example turning a 3-train into a 3+1 train).',
+              sym: 'MA',
+              abilities: [{
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                choices: {},
+                count_per_or: 1,
+              }],
+              color: nil,
+            },
+          ]
+          supporters? ? companies : []
         end
 
         def game_trains

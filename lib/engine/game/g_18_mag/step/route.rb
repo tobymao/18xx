@@ -35,8 +35,16 @@ module Engine
             raise GameError, 'Must use all purchased rail-car benefits' unless @game.all_railcars_used?(action.routes)
 
             ciwl_income(action.routes) if @game.new_major?
-
             super
+            deconvert_plus_one_train if @game.supporters? && @round.original_train
+          end
+
+          def deconvert_plus_one_train
+            @round.ma_plus_train.name = @round.original_train.name
+            @round.ma_plus_train.distance = @round.original_train.distance
+
+            @round.original_train = nil
+            @round.ma_plus_train = nil
           end
 
           def ciwl_income(routes)
@@ -80,10 +88,10 @@ module Engine
           end
 
           def round_state
-            {
-              routes: [],
-              rail_cars: [],
-            }
+            super.merge({
+                          routes: [],
+                          rail_cars: [],
+                        })
           end
 
           def process_special_buy(action)

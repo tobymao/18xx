@@ -64,17 +64,36 @@ module Engine
             6 => 4,
           }.freeze
 
+          MAX_NUM_SUPPORTERS = {
+            2 => 1,
+            3 => 2,
+            4 => 1,
+            5 => 1,
+            6 => 1,
+          }.freeze
+
+          LEFTOVER_NUM_SUPPORTERS = {
+            2 => 4,
+            3 => 0,
+            4 => 2,
+            5 => 1,
+            6 => 0,
+          }.freeze
+
           def setup
             @game.remove_minors! if @game.new_minors_simple?
             @minors = @game.minors.reject { |m| m.name == 'mine' }.sort_by { |m| m.name.to_i }
+            @supporters = @game.companies.dup
             @minor_count = Hash.new(0)
             @share_count = Hash.new(0)
+            @supporter_count = Hash.new(0)
             @max_minors = if @game.new_minors_challenge?
                             MAX_NUM_MINORS_OPTIONAL[@game.players.size]
                           else
                             MAX_NUM_MINORS[@game.players.size]
                           end
             @max_shares = MAX_NUM_SHARES[@game.players.size]
+            @max_supporters = MAX_NUM_SUPPORTERS[@game.players.size]
             @leftover_minors = if @game.new_minors_challenge?
                                  LEFTOVER_NUM_MINORS_OPTIONAL[@game.players.size]
                                else
@@ -85,7 +104,7 @@ module Engine
                                else
                                  LEFTOVER_NUM_SHARES[@game.players.size]
                                end
-
+            @leftover_suporters = LEFTOVER_NUM_SUPPORTERS[@game.players.size]
             @shares_a = @game.corporations.dup
             @shares_b = @game.players.size > 4 ? @game.corporations.dup : []
           end
@@ -94,11 +113,16 @@ module Engine
             avail = []
             avail.concat(@minors) if @minor_count[current_entity] < @max_minors
             avail.concat((@shares_a + @shares_b).uniq.sort) if @share_count[current_entity] < @max_shares
+            avail.concat(@supporters) if @game.supporters? && @supporter_count[current_entity] < @max_supporters
             avail
           end
 
           def may_choose?(_company)
             true
+          end
+
+          def may_purchase?(_company)
+            false
           end
 
           def auctioning; end
@@ -128,7 +152,10 @@ module Engine
           end
 
           def finished?
-            @minors.size == @leftover_minors && (@shares_a + @shares_b).size == @leftover_shares
+            finished = @minors.size == @leftover_minors &&
+            (@shares_a + @shares_b).size == @leftover_shares
+            finished &&= @supporters.size == @leftover_suporters if @game.supporters?
+            finished
           end
 
           def actions(entity)
@@ -144,6 +171,8 @@ module Engine
               assign_minor(player, action.minor)
             elsif action.corporation
               assign_ipo_share(player, action.corporation)
+            elsif action.company
+              assign_supporter(player, action.company)
             else
               raise GameError, 'Logic error: must specify minor or corporation on bid action'
             end
@@ -171,14 +200,23 @@ module Engine
             end
 
             @log << "#{player.name} chooses share of #{corp.name} (#{corp.full_name})"
-            precent = corp == @game.ciwl ? 20 : 10
+            percent = corp == @game.ciwl ? 20 : 10
             @game.share_pool.transfer_shares(
-              @game.share_pool.shares_of(corp).find { |s| s.percent == precent }.to_bundle,
+              @game.share_pool.shares_of(corp).find { |s| s.percent == percent }.to_bundle,
               player,
               spender: player,
               receiver: @game.bank,
               price: 0
             )
+          end
+
+          def assign_supporter(player, supporter)
+            supporter.owner = player
+            player.companies << supporter
+            @supporters.delete(supporter)
+            @supporter_count[player] += 1
+
+            @log << "#{player.name} chooses Supporter #{supporter.name}"
           end
 
           def action_finalized

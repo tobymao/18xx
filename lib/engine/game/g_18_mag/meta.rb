@@ -39,6 +39,11 @@ module Engine
            short_name: 'New major',
            desc: 'Major CIWL is added. The new major grants a bonus for running red to red routes (3-6 players)',
          },
+         {
+           sym: :supporters,
+           short_name: 'Supporter Cards',
+           desc: '6 new supporters with abilities that can be used once an OR (3-6 players)',
+         },
         ].freeze
       end
     end

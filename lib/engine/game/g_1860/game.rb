@@ -743,8 +743,8 @@ module Engine
         end
 
         def move_marker_to_bottom!(corporation)
-          @stock_market.move_left(corporation)
-          @stock_market.move_right(corporation)
+          @stock_market.move_down(corporation)
+          @stock_market.move_up(corporation)
         end
 
         def float_corporation(corporation)

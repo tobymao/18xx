@@ -676,9 +676,8 @@ module Engine
 
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_bundle(choice); end
-
-        # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
+        def num_certs_modification(_entity) = 0
 
         def finalize_end_game_values; end
 
