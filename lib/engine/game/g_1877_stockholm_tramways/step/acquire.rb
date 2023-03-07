@@ -115,7 +115,7 @@ module Engine
 
             # buy share for half its price
             share_price = corporation.share_price
-            corporation.share_price = SharePrice.new(share_price.coordinates, price: share_price.price / 2)
+            corporation.share_price = SharePrice.new(share_price.coordinates, price: share_price.price / 2, info: nil)
             buy_shares(entity, action.bundle)
             corporation.share_price = share_price
 
