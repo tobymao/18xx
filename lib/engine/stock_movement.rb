@@ -83,15 +83,33 @@ module Engine
   end
 
   class ZigZagMovement < BaseMovement
+    attr_reader :ledge_movement
+
+    def initialize(market, ledge_movement)
+      @market = market
+      @ledge_movement = ledge_movement
+      super(market)
+    end
+
     def left(coordinates)
       r, c = coordinates
-      c -= 2 if c - 2 >= 0
+      if ledge_movement
+        c -= 2
+        c = 0 if c.negative?
+      elsif c - 2 >= 0
+        c -= 2
+      end
       [r, c]
     end
 
     def right(coordinates)
       r, c = coordinates
-      c += 2 if c + 2 < @market[r].size
+      if ledge_movement
+        c += 2
+        c = @market[r].size - 1 if c >= @market[r].size
+      elsif c + 2 < @market[r].size
+        c += 2
+      end
       [r, c]
     end
 

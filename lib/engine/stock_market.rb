@@ -5,12 +5,13 @@ require_relative 'stock_movement'
 
 module Engine
   class StockMarket
-    attr_reader :market, :par_prices, :has_close_cell, :zigzag
+    attr_reader :market, :par_prices, :has_close_cell, :zigzag, :ledge_movement
 
-    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil)
+    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil, ledge_movement: nil)
       @par_prices = []
       @has_close_cell = false
       @zigzag = zigzag
+      @ledge_movement = ledge_movement
       @market = market.map.with_index do |row, r_index|
         row.map.with_index do |code, c_index|
           price = SharePrice.from_code(code,
@@ -31,7 +32,7 @@ module Engine
 
       @movement =
         if @zigzag
-          ZigZagMovement.new(@market)
+          ZigZagMovement.new(@market, @ledge_movement)
         elsif one_d?
           OneDimensionalMovement.new(@market)
         else
