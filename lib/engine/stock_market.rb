@@ -7,7 +7,7 @@ module Engine
   class StockMarket
     attr_reader :market, :par_prices, :has_close_cell, :zigzag
 
-    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil)
+    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil, ledge_movement: nil)
       @par_prices = []
       @has_close_cell = false
       @zigzag = zigzag
@@ -31,7 +31,7 @@ module Engine
 
       @movement =
         if @zigzag
-          ZigZagMovement.new(@market)
+          ZigZagMovement.new(@market, ledge_movement)
         elsif one_d?
           OneDimensionalMovement.new(@market)
         else
