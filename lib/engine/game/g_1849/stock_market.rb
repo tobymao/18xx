@@ -28,18 +28,20 @@ module Engine
           super
         end
 
-        def move_up(corporation)
+        def up(corporation, coordinates)
           price = corporation.share_price.price
           return super if !BLOCKED_UP_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
 
           @game.log << "#{corporation.name} share price blocked from moving up by phase"
+          coordinates
         end
 
-        def move_right(corporation)
+        def right(corporation, coordinates)
           price = corporation.share_price.price
           return super if !BLOCKED_RIGHT_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
 
           @game.log << "#{corporation.name} share price blocked from moving right by phase"
+          coordinates
         end
       end
     end
