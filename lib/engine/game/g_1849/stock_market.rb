@@ -29,7 +29,7 @@ module Engine
         end
 
         def up(corporation, coordinates)
-          price = corporation.share_price.price
+          price = share_price(coordinates).price
           return super if !BLOCKED_UP_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
 
           @game.log << "#{corporation.name} share price blocked from moving up by phase"
@@ -37,7 +37,7 @@ module Engine
         end
 
         def right(corporation, coordinates)
-          price = corporation.share_price.price
+          price = share_price(coordinates).price
           return super if !BLOCKED_RIGHT_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
 
           @game.log << "#{corporation.name} share price blocked from moving right by phase"

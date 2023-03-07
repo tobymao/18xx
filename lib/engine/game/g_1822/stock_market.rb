@@ -6,8 +6,8 @@ module Engine
   module Game
     module G1822
       class StockMarket < Engine::StockMarket
-        def up(corporation, _coordinates)
-          r, c = corporation.share_price.coordinates
+        def up(_corporation, coordinates)
+          r, c = coordinates
 
           if r.positive? && share_price([r - 1, c])
             r -= 1
