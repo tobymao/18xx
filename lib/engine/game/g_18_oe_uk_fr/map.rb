@@ -208,6 +208,12 @@ module Engine
             ['N17'] => 'border=edge:0;border=edge:1;border=edge:2;border=edge:3',
             ['O16'] => 'border=edge:2;border=edge:3',
 
+            # silver coast
+
+            # balearic sea
+
+            # strait of gibraltar
+
             # sea of sardinia
             ['X31'] => 'border=edge:0;border=edge:5',
             ['Y30'] => 'border=edge:0;border=edge:3;border=edge:4;border=edge:5',
