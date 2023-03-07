@@ -11,7 +11,7 @@ module Engine
           r, c = coordinates
           if r - 1 >= 0
             r -= 1
-          elsif corporation.type == :major
+          elsif corporation&.type == :major
             # 1861: If hits the ceiling moves right and down 1 (not changing the share price), but only for majors
             r += 1
             c += 1
@@ -21,7 +21,7 @@ module Engine
         end
 
         def right(corporation, coordinates)
-          if corporation.type == :minor && corporation.share_price.types.include?(:max_price)
+          if corporation&.type == :minor && corporation&.share_price&.types&.include?(:max_price)
             if one_d?
               coordinates
             else

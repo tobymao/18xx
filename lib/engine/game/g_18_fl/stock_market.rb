@@ -5,7 +5,7 @@ module Engine
     module G18FL
       class StockMarket < Engine::StockMarket
         def right(corporation, coordinates)
-          return super if corporation.type != :five_share || !corporation.share_price.types.include?(:max_price)
+          return super if corporation&.type != :five_share || !corporation&.share_price&.types&.include?(:max_price)
 
           coordinates
         end
