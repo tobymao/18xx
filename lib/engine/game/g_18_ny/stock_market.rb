@@ -6,12 +6,12 @@ module Engine
   module Game
     module G18NY
       class StockMarket < Engine::StockMarket
-        def move_up(corporation)
+        def up(corporation, coordinates)
           return super unless top_row?(corporation)
-          return if max_share_price?(corporation)
+          return coordinates if max_share_price?(corporation)
 
-          move_right(corporation)
-          move_down(corporation)
+          coordinates = right(corporation, coordinates)
+          down(corporation, coordinates)
         end
 
         def top_row?(corporation)
