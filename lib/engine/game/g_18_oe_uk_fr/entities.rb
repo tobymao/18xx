@@ -131,7 +131,9 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 50,
             max_ownership_percent: 100,
-            coordinates: ['N35'],
+            coordinates: 'N35',
+            always_market_price: true,
+            color: :green,
           },
           {
             name: 'Great Southern and Western Railway',
@@ -141,7 +143,9 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 50,
             max_ownership_percent: 100,
-            coordinates: ['I20'],
+            coordinates: 'I20',
+            always_market_price: true,
+            color: :blue,
           },
           {
             name: 'Great Western Railway',
@@ -151,7 +155,9 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 50,
             max_ownership_percent: 100,
-            coordinates: ['L25'],
+            coordinates: 'L25',
+            always_market_price: true,
+            color: :red,
           },
           {
             name: 'London and North Western Railway',
@@ -161,7 +167,9 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 50,
             max_ownership_percent: 100,
-            coordinates: ['J27'],
+            coordinates: 'J27',
+            always_market_price: true,
+            color: :black,
           },
           {
             name: 'CF du Midi',
@@ -171,7 +179,9 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 50,
             max_ownership_percent: 100,
-            coordinates: ['U24'],
+            coordinates: 'U24',
+            always_market_price: true,
+            color: :blue,
           },
           {
             name: 'CF de l\'Ouest',
@@ -181,7 +191,9 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 50,
             max_ownership_percent: 100,
-            coordinates: ['Q26'],
+            coordinates: 'Q26',
+            always_market_price: true,
+            color: :orange,
           },
           {
             name: 'CF Paris a Lyon et a la Mediterranee',
@@ -191,7 +203,9 @@ module Engine
             shares: [50, 25, 25],
             float_percent: 50,
             max_ownership_percent: 100,
-            coordinates: ['U34'],
+            coordinates: 'U34',
+            always_market_price: true,
+            color: :purple,
           },
         ].freeze
       end
