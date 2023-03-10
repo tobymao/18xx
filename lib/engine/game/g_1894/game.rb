@@ -488,7 +488,7 @@ module Engine
 
         TILE_LAYS = [
           { lay: true, upgrade: true },
-          { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
         ].freeze
 
         def can_hold_above_corp_limit?(_entity)
