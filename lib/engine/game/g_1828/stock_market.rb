@@ -6,14 +6,15 @@ module Engine
   module Game
     module G1828
       class StockMarket < Engine::StockMarket
-        def move_up(corporation)
-          return move_right(corporation) if top_row?(corporation)
+        def up(corporation, coordinates)
+          return right(corporation, coordinates) if top_row?(coordinates)
 
           super
         end
 
-        def top_row?(corporation)
-          corporation.share_price.coordinates.first.zero?
+        def top_row?(coordinates)
+          r, _c = coordinates
+          r.zero?
         end
       end
     end

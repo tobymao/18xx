@@ -9,6 +9,7 @@ module Engine
         class Route < Engine::Step::Route
           BUY_ACTION = %w[special_buy].freeze
           RAILCAR_BASE = [10, 10, 20, 20].freeze
+          CIWL_BASE = [30, 30, 50, 50].freeze
 
           def actions(entity)
             return [] if !entity.operator? || entity.runnable_trains.empty? || !@game.can_run_route?(entity)
@@ -33,7 +34,27 @@ module Engine
           def process_run_routes(action)
             raise GameError, 'Must use all purchased rail-car benefits' unless @game.all_railcars_used?(action.routes)
 
+            ciwl_income(action.routes) if @game.new_major?
             super
+            deconvert_plus_one_train if @game.supporters? && @round.original_train
+          end
+
+          def deconvert_plus_one_train
+            @round.ma_plus_train.name = @round.original_train.name
+            @round.ma_plus_train.distance = @round.original_train.distance
+
+            @round.original_train = nil
+            @round.ma_plus_train = nil
+          end
+
+          def ciwl_income(routes)
+            red_to_red_route_count = @game.red_to_red(routes)
+
+            return unless red_to_red_route_count.positive?
+
+            income = CIWL_BASE[@game.phase.current[:tiles].size - 1] * red_to_red_route_count
+            @game.bank.spend(income, @game.ciwl)
+            @log << "#{@game.ciwl.name} earns #{@game.format_currency(income)}"
           end
 
           def buyable_items(entity)
@@ -67,10 +88,10 @@ module Engine
           end
 
           def round_state
-            {
-              routes: [],
-              rail_cars: [],
-            }
+            super.merge({
+                          routes: [],
+                          rail_cars: [],
+                        })
           end
 
           def process_special_buy(action)

@@ -198,10 +198,11 @@ module Engine
       # do tile reservations completely block other companies?
       # :never -- token can be placed as long as there is a city space for existing tile reservations
       # :always -- token cannot be placed until tile reservation resolved
-      # :yellow_only -- token cannot be placed while tile is yellow or until the tile reservation is resolved
+      # :single_slot_cities -- token cannot be placed if tile contains any single slot cities
       TILE_RESERVATION_BLOCKS_OTHERS = :never
 
       COMPANIES = [].freeze
+      COMPANY_CLASS = Company
 
       CORPORATION_CLASS = Corporation
       CORPORATIONS = [].freeze
@@ -2170,7 +2171,7 @@ module Engine
         game_companies.map do |company|
           next if players.size < (company[:min_players] || 0)
 
-          Company.new(**company)
+          self.class::COMPANY_CLASS.new(**company)
         end.compact
       end
 
@@ -2503,6 +2504,10 @@ module Engine
         nil
       end
 
+      def final_or_in_set?(round)
+        round.round_num == @operating_rounds
+      end
+
       def end_now?(after)
         return false unless after
         return true if after == :immediate
@@ -2510,7 +2515,7 @@ module Engine
         return false unless @round.is_a?(round_end)
         return true if after == :current_or
 
-        final_or_in_set = @round.round_num == @operating_rounds
+        final_or_in_set = final_or_in_set?(@round)
 
         return (@turn == @final_turn) if final_or_in_set && (after == :one_more_full_or_set)
 
@@ -2781,6 +2786,10 @@ module Engine
 
       def show_value_of_companies?(entity)
         entity&.player?
+      end
+
+      def company_table_header
+        'Company'
       end
 
       # minors to show on player cards

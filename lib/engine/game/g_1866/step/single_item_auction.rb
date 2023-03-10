@@ -308,7 +308,7 @@ module Engine
                 minor = @game.corporation_by_id(minor_id)
 
                 par_rows = @game.class::MINOR_NATIONAL_PAR_ROWS[minor_id]
-                share_price = @game.stock_market.share_price(par_rows[0], par_rows[1])
+                share_price = @game.stock_market.share_price([par_rows[0], par_rows[1]])
 
                 # Find the right spot on the stock market
                 @game.stock_market.set_par(minor, share_price)

@@ -234,7 +234,7 @@ module Engine
       end
 
       it 'director can buy two shares from ipo in gray' do
-        market.move(corp_0, 12, 0, force: true)
+        market.move(corp_0, [12, 0], force: true)
         expect(corp_0.share_price.type).to eq(:unlimited)
 
         market_share = corp_0.shares.first
@@ -252,7 +252,7 @@ module Engine
       end
 
       it 'cannot buy stocks from second company after buying one gray' do
-        market.move(corp_0, 12, 0, force: true)
+        market.move(corp_0, [12, 0], force: true)
         expect(corp_0.share_price.type).to eq(:unlimited)
 
         subject.process_action(Engine::Action::BuyShares.new(player_0, shares: corp_0.shares.first))
@@ -261,7 +261,7 @@ module Engine
       end
 
       it 'corporation share price goes up if in gray at end of stock round' do
-        market.move(corp_0, 12, 0, force: true)
+        market.move(corp_0, [12, 0], force: true)
         expect(corp_0.share_price.type).to eq(:unlimited)
 
         # Sell out corp
@@ -294,7 +294,7 @@ module Engine
       end
 
       it 'corporation share price goes up 3 times if in gray, 80% owned by director, and sold out' do
-        market.move(corp_0, 12, 0, force: true)
+        market.move(corp_0, [12, 0], force: true)
         expect(corp_0.share_price.type).to eq(:unlimited)
 
         # Owner to 80%

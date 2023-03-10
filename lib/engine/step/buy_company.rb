@@ -53,7 +53,7 @@ module Engine
         raise GameError, "Cannot buy #{company.name} from #{owner.name}" unless @game.company_sellable(company)
 
         min = company.min_price
-        max = company.max_price
+        max = company.max_price(entity)
         unless price.between?(min, max)
           raise GameError, "Price must be between #{@game.format_currency(min)} and #{@game.format_currency(max)}"
         end

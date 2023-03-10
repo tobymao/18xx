@@ -580,7 +580,7 @@ module Engine
           minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == major.id }
           minor_corp = corporation_by_id(minor_id)
 
-          if minor_corp.owner && player
+          if minor_corp&.owner && player
             return minor_corp.owner == player ? :convertable : :none
           end
 
@@ -676,9 +676,8 @@ module Engine
 
         # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_bundle(choice); end
-
-        # Stubbed out because this game doesn't it, but base 22 does
         def company_tax_haven_payout(entity, per_share); end
+        def num_certs_modification(_entity) = 0
 
         def finalize_end_game_values; end
 
@@ -1095,6 +1094,10 @@ module Engine
 
         def home_token_can_be_cheater
           true
+        end
+
+        def buyable_bank_owned_companies
+          @round.active_step.respond_to?(:hide_bank_companies?) && @round.active_step.hide_bank_companies? ? [] : super
         end
       end
     end

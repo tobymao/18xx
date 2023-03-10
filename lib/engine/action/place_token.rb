@@ -26,7 +26,7 @@ module Engine
           city: game.city_by_id(h['city']),
           slot: h['slot'],
           cost: h['cost'],
-          tokener: game.corporation_by_id(h['tokener']),
+          tokener: game.corporation_by_id(h['tokener']) || game.minor_by_id(h['tokener']),
           token_type: h['token_type'],
         }
       end

@@ -12,6 +12,10 @@ module Engine
 
             super
           end
+
+          def select_entities
+            @game.operating_order
+          end
         end
       end
     end

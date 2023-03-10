@@ -278,16 +278,16 @@ module Engine
 
         def lookup_minor_price(p, row)
           @stock_market.market[row].size.times do |i|
-            next unless @stock_market.share_price(row, i)
-            return @stock_market.share_price(row, i) if @stock_market.share_price(row, i).price == p
+            next unless @stock_market.share_price([row, i])
+            return @stock_market.share_price([row, i]) if @stock_market.share_price([row, i]).price == p
           end
         end
 
         def lookup_par_price(p)
           @stock_market.market[MAJOR_ROW].size.times do |i|
-            next unless @stock_market.share_price(MAJOR_ROW, i)
-            return @stock_market.share_price(MAJOR_ROW, i) if @stock_market.share_price(MAJOR_ROW, i).price == p
-            return @stock_market.share_price(MAJOR_ROW, i - 1) if @stock_market.share_price(MAJOR_ROW, i).price > p
+            next unless @stock_market.share_price([MAJOR_ROW, i])
+            return @stock_market.share_price([MAJOR_ROW, i]) if @stock_market.share_price([MAJOR_ROW, i]).price == p
+            return @stock_market.share_price([MAJOR_ROW, i - 1]) if @stock_market.share_price([MAJOR_ROW, i]).price > p
           end
         end
 

@@ -192,6 +192,12 @@ module View
           return process_action(Engine::Action::Assign.new(@entity, target: @hex)) if @actions.include?('assign')
 
           step = @game.round.active_step
+          if @actions.include?('remove_hex_token') && @hex.tokens.find { |t| t.corporation == @entity }
+            return process_action(Engine::Action::RemoveHexToken.new(
+              @entity,
+              hex: @hex,
+            ))
+          end
           if @actions.include?('hex_token')
             return if step.available_tokens(@entity).empty?
 
