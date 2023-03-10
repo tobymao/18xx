@@ -61,8 +61,8 @@ module Engine
 
         def can_choose_whatsup?(player)
           player.presidencies.any? do |corp|
-            corp.cash >= @game.depot.depot_trains&.first&.price &&
-              corp.trains.count { |t| !t.obsolete } < @game.phase.train_limit(corp)
+            corp.trains.count { |t| !t.obsolete } < @game.phase.train_limit(corp) &&
+              corp.cash >= @game.depot.min_depot_price
           end
         end
 
@@ -85,10 +85,23 @@ module Engine
         end
 
         def choices_for_whatsup(player)
-          train = @game.depot.depot_trains&.first
-          player.presidencies
-                .select { |c| c.cash >= train&.price }
-                .to_h { |c| [{ type: :whatsup, corporation_id: c.id, train_id: train.id }, c.name] }
+          train = @game.depot.depot_trains.flat_map do |t|
+            t.variants.map { |_, v| { id: t.id, variant: v[:name], price: v[:price] } }
+          end
+
+          player.presidencies.reject { |corp| corp.trains.count { |t| !t.obsolete } >= @game.phase.train_limit(corp) }
+                .flat_map { |corp| train.select { |t| corp.cash >= t[:price] }.map { |t| [corp, t] } }
+                .to_h do |corp, t|
+            [
+              {
+                type: :whatsup,
+                corporation_id: corp.id,
+                train_id: t[:id],
+                variant: t[:variant],
+                price: t[:price],
+              }, "#{corp.name} - #{t[:variant]}"
+            ]
+          end
         end
 
         def choices_for_greek
@@ -127,19 +140,23 @@ module Engine
         def process_whatsup(action)
           corporation = @game.corporation_by_id(action.choice['corporation_id'])
           train = @game.train_by_id(action.choice['train_id'])
+          variant = action.choice['variant']
+          train.variant = variant
+          price = action.choice['price']
           source = train.owner
-          @game.buy_train(corporation, train, train.price)
+
+          @game.buy_train(corporation, train, price)
           @game.phase.buying_train!(corporation, train, source)
 
           ability = Engine::G18ZOO::Ability::DisableTrain.new(
             type: 'disable_train', train: train,
-            description: "Whatsup: #{train.id} disabled",
-            desc_detail: "Train #{train.id} got using \"Whatsup\"; disabled for the next OR"
+            description: "Whatsup: #{variant} disabled",
+            desc_detail: "Train #{variant} got using \"Whatsup\"; disabled for the next OR"
           )
           corporation.add_ability(ability)
 
           @log << "#{current_entity.name} uses \"Whatsup\" for #{corporation.name}, "\
-                  "paying #{@game.format_currency(train.price)} to buy a #{train.name}"
+                  "paying #{@game.format_currency(price)} to buy a #{variant}"
 
           old_price = corporation.share_price
           @game.stock_market.move_right(corporation)

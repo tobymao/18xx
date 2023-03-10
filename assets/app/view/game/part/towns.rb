@@ -16,14 +16,17 @@ module View
         needs :show_revenue
 
         def render
-          @tile.towns.map do |town|
-            if town.rect?
-              h(TownRect, town: town, region_use: @region_use, show_revenue: @show_revenue,
-                          color: value_for(town, :color), width: value_for(town, :width))
-            else
-              h(TownDot, town: town, tile: @tile, region_use: @region_use, show_revenue: @show_revenue,
-                         color: value_for(town, :color), width: value_for(town, :width))
-            end
+          @tile.towns.each_with_object([]) do |town, rendered|
+            next if town.hidden?
+
+            rendered <<
+              if town.rect?
+                h(TownRect, town: town, region_use: @region_use, show_revenue: @show_revenue,
+                            color: value_for(town, :color), width: value_for(town, :width))
+              else
+                h(TownDot, town: town, tile: @tile, region_use: @region_use, show_revenue: @show_revenue,
+                           color: value_for(town, :color), width: value_for(town, :width))
+              end
           end
         end
 

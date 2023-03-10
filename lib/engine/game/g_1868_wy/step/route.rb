@@ -27,6 +27,7 @@ module Engine
           def process_run_routes(action)
             super
             @game.check_spikes!(action.routes)
+            @game.check_midwest_oil!(action.routes)
           end
         end
       end

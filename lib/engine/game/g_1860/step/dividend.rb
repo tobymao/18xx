@@ -63,18 +63,18 @@ module Engine
             if revenue.positive?
               curr_price = entity.share_price.price
               if revenue >= curr_price && revenue < 2 * curr_price
-                { share_direction: :right, share_times: 2 }
+                { share_direction: :right, share_times: 1 }
               elsif revenue >= 2 * curr_price && revenue < 3 * curr_price
-                { share_direction: :right, share_times: 4 }
+                { share_direction: :right, share_times: 2 }
               elsif revenue >= 3 * curr_price && revenue < 4 * curr_price
-                { share_direction: :right, share_times: 6 }
+                { share_direction: :right, share_times: 3 }
               elsif revenue >= 4 * curr_price
-                { share_direction: :right, share_times: 8 }
+                { share_direction: :right, share_times: 4 }
               else
                 {}
               end
             else
-              { share_direction: :left, share_times: 2 }
+              { share_direction: :left, share_times: 1 }
             end
           end
 
@@ -100,10 +100,6 @@ module Engine
 
             @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
                     "#{@game.format_currency(per_share)} (#{receivers})"
-          end
-
-          def movement_str(times, dir)
-            "#{times / 2} #{dir}"
           end
         end
       end

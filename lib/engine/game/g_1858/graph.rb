@@ -21,13 +21,13 @@ module Engine
           hexes.zip(cities).each do |hex, city_idx|
             if city_idx
               nodes[hex.tile.cities[city_idx]] = true
-            elsif hex.tile.city_towns.any?
-              hex.tile.city_towns.each { |ct| nodes[ct] = true }
-            else
+            elsif hex.tile.city_towns.empty?
               # Plain track in a home hex (or no tile or track). Create a
               # node for each track path to allow routes to be traced out
               # from this hex.
               hex.tile.paths.each { |path| nodes[G1858::Part::PathNode.new(path)] = true }
+            else
+              hex.tile.city_towns.each { |ct| nodes[ct] = true }
             end
           end
           nodes

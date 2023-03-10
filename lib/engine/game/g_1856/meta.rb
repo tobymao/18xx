@@ -29,6 +29,11 @@ module Engine
             short_name: 'Unlimited +10 bonus tokens',
             desc: 'Unlimited Bridge & Tunnel Tokens (As opposed to normal limit of 3 each)',
           },
+          {
+            sym: :eight_train_variant,
+            short_name: '8-train variant',
+            desc: 'Replaces diesel trains with $1000 8-trains (and $350 trade in discount)',
+          },
         ].freeze
       end
     end

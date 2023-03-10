@@ -18,6 +18,7 @@ module Engine
                   :name, :opposite, :reservations, :upgrades, :color, :future_label
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
                 :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
+    attr_writer :revenue_to_render
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -374,7 +375,8 @@ module Engine
     def token_blocked_by_reservation?(corporation)
       return false if @reservations.empty?
 
-      if @reservation_blocks == :always || (@reservation_blocks == :yellow_only && @color == :yellow)
+      if @reservation_blocks == :always ||
+        (@reservation_blocks == :single_slot_cities && @cities.any? { |city| city.slots == 1 })
         !@reservations.include?(corporation)
       else
         @reservations.count { |x| corporation != x } >= @cities.sum(&:available_slots)

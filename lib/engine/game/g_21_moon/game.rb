@@ -814,7 +814,7 @@ module Engine
           if corporation.corporation?
             corporation.shares_by_corporation.each do |other, _|
               shares = corporation.shares_of(other)
-              shares.each do |share|
+              shares.dup.each do |share|
                 @share_pool.transfer_shares(share.to_bundle, @share_pool)
               end
             end

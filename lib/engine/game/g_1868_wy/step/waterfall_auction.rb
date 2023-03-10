@@ -8,16 +8,21 @@ module Engine
       module Step
         class WaterfallAuction < Engine::Step::WaterfallAuction
           def help
-            return '' unless @choosing
-
-            "#{@choosing_player.name} won the auction for #{@auctioned_company.name}, now chooses one of:"
+            if @choosing
+              "#{@choosing_player.name} won the auction for #{@auctioned_company.name}, now chooses one of:"
+            else
+              @game.corp_stacks_str_arr
+            end
           end
 
           def setup
             super
 
-            choice_companies = @game.class::COMPANY_CHOICES.values.flatten
-            @companies.reject! { |c| choice_companies.include?(c.id) }
+            if @game.optional_rules.include?(:p2_p6_choice)
+              choice_companies = @game.class::COMPANY_CHOICES.values.flatten
+              @companies.reject! { |c| choice_companies.include?(c.id) }
+            end
+
             @passed_on_cheapest = {}
           end
 
@@ -119,7 +124,14 @@ module Engine
             elsif !(@auctioning || @choosing)
               @passed_on_cheapest[action.entity] = 'bid'
             end
-            super
+
+            if @choosing
+              action.entity.unpass!
+              placement_bid(action)
+            else
+              super
+            end
+
             maybe_all_passed!
           end
 
