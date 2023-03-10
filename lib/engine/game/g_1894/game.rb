@@ -172,7 +172,7 @@ module Engine
                     distance: 4,
                     price: 300,
                     rusts_on: '7',
-                    num: 3,
+                    num: 4,
                     discount: { '3' => 60 },
                   },
                   {
