@@ -260,8 +260,11 @@ module Engine
         LUXEMBOURG_HEX = 'I18'
         SQ_HEX = 'G10'
         BRUXELLES_HEX = 'F15'
+        NETHERLANDS_HEX = 'C18'
+        GREAT_BRITAIN_HEX = 'A4'
 
-        AL_YELLOW_TILES = %w[X3a X3b].freeze
+        NON_NETHERLANDS_OFFBOARDS = [CENTRE_BOURGOGNE_HEX, LUXEMBOURG_HEX, GREAT_BRITAIN_HEX].freeze
+
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
         BROWN_CITY_14_UPGRADE_TILES = %w[X14 X15 36].freeze
@@ -609,7 +612,6 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          return GREEN_CITY_TILES.include?(to.name) if AL_YELLOW_TILES.include?(from.hex.tile.name)
           return BROWN_CITY_14_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
@@ -639,10 +641,19 @@ module Engine
           revenue += est_centre_bourgogne_bonus(route.corporation, stops)
           revenue += luxembourg_value(route.corporation, stops)
           revenue += london_bonus(route.corporation, stops)
+          revenue += netherlands_bonus(route.corporation, stops)
 
           raise GameError, 'Train visits Paris more than once' if route.hexes.count { |h| h.id == PARIS_HEX } > 1
 
           revenue
+        end
+
+        def netherlands_bonus(corporation, stops)
+          return 0 unless stops.any? { |s| s.hex.id == NETHERLANDS_HEX }
+
+          return 0 unless stops.any? { |s| NON_NETHERLANDS_OFFBOARDS.include?(s.hex.id) }
+
+          return 100
         end
 
         def london_bonus(corporation, stops)

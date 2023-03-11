@@ -280,7 +280,7 @@ module Engine
             name: 'Late Belgian',
             logo: '1894/LB',
             simple_logo: '1894/LB.alt',
-            tokens: [0, 40],
+            tokens: [0, 40, 100],
             max_ownership_percent: 60,
             color: '#c9c9c9',
             text_color: 'black',
