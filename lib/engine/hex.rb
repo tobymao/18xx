@@ -7,7 +7,8 @@ module Engine
     include Assignable
 
     attr_accessor :x, :y, :ignore_for_axes, :location_name
-    attr_reader :coordinates, :empty, :layout, :neighbors, :all_neighbors, :tile, :original_tile, :tokens
+    attr_reader :coordinates, :empty, :layout, :neighbors, :all_neighbors, :tile, :original_tile, :tokens,
+                :column, :row
 
     DIRECTIONS = {
       flat: {
@@ -58,7 +59,14 @@ module Engine
           number - 1
         end
 
-      [x, y]
+      column, row =
+        if axes_config[:x] == :letter
+          [letter, number]
+        else
+          [number, letter]
+        end
+
+      [x, y, column, row]
     end
 
     # Coordinates are of the form A1..Z99
@@ -68,7 +76,8 @@ module Engine
                    location_name: nil, empty: false)
       @coordinates = coordinates
       @layout = layout
-      @x, @y = self.class.init_x_y(@coordinates, axes)
+      @axes = axes
+      @x, @y, @column, @row = self.class.init_x_y(@coordinates, axes)
       @neighbors = {}
       @all_neighbors = {}
       @location_name = location_name
@@ -252,16 +261,16 @@ module Engine
       end
     end
 
-    def place_token(token, logo: nil, preprinted: true)
+    def place_token(token, logo: nil, blocks_lay: nil, preprinted: true)
       token.place(self)
       @tokens << token
-      icon = Part::Icon.new('', token.corporation.id, true, false, preprinted)
+      icon = Part::Icon.new('', token.corporation.id, true, blocks_lay, preprinted)
       icon.image = logo || token.corporation.logo
       @tile.icons << icon
     end
 
     def remove_token(token)
-      @tile.icons.delete(@tile.icons.find { |_name| token.corporation.id })
+      @tile.icons.delete(@tile.icons.find { |icon| icon.name == token.corporation.id })
       @tokens.delete(token)
     end
 

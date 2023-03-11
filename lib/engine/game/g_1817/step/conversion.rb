@@ -110,7 +110,7 @@ module Engine
             initial_size = corporation.total_shares
             share_price = new_share_price(corporation, target)
             price = share_price.price
-            @game.stock_market.move(corporation, *share_price.coordinates)
+            @game.stock_market.move(corporation, share_price.coordinates)
 
             @log << "#{corporation.name} merges with #{target.name} "\
                     "at share price #{@game.format_currency(price)} receiving #{receiving.join(', ')}"

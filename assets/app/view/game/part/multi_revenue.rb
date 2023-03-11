@@ -31,7 +31,7 @@ module View
 
           t_x = -(total_width * 0.5)
           children = computed_revenues.flat_map do |rev|
-            fill = color_for(rev[:color])
+            fill = rev[:color].start_with?('#') ? rev[:color] : color_for(rev[:color])
             font_color = contrast_on(fill)
             width = rev[:width]
 

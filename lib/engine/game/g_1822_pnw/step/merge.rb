@@ -13,6 +13,7 @@ module Engine
           include Engine::Step::TokenMerger
           include Engine::Step::ProgrammerMergerPass
           include Engine::Game::G1822PNW::Connections
+          include Conversion
 
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
@@ -62,27 +63,6 @@ module Engine
             when :selecting_token
               'What to do with the token'
             end
-          end
-
-          def min_exchange_shares(par, minors_value, minors_cash)
-            ((minors_value - minors_cash - 1) / par).floor + 1
-          end
-
-          def max_exchange_shares(par, minors_value, player_cash)
-            ((minors_value + [player_cash, (par - 1)].min) / par).floor
-          end
-
-          def possible_exchanged_shares(par, minors_cash, minors_value, player_cash)
-            return [6] if (6 * par) < minors_value && par == 100 && minors_cash >= (minors_value - 600)
-            return [] if (6 * par) < minors_value
-
-            min_shares = min_exchange_shares(par, minors_value, minors_cash)
-            max_shares = max_exchange_shares(par, minors_value, player_cash)
-            (2..10).to_a.select { |n| n >= min_shares && n <= max_shares }
-          end
-
-          def can_par_at?(par, minors_cash, minors_value, player_cash)
-            return true unless possible_exchanged_shares(par, minors_cash, minors_value, player_cash).empty?
           end
 
           def valid_par_prices(minor_one, minor_two)

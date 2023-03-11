@@ -17,6 +17,13 @@ module Engine
         GAME_RULES_URL = 'http://www.hexagonia.com/rules/MFG_1870.pdf'
 
         PLAYER_RANGE = [2, 6].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :diesels,
+            short_name: 'Diesels variant (Alpha)',
+            desc: 'Diesel trains replace 8, 10, and 12 trains. Uses all 1830 Diesel rules.',
+          },
+        ].freeze
       end
     end
   end

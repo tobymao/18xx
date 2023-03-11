@@ -37,7 +37,7 @@ module Engine
         TRACK_RESTRICTION = :permissive
 
         SELL_BUY_ORDER = :sell_buy
-        SELL_MOVEMENT = :left_block
+        SELL_MOVEMENT = :down_block
         MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
 
         MUST_BUY_TRAIN = :always
@@ -752,10 +752,10 @@ module Engine
 
         # extra cash available if the corporation sells a company to the bank
         def potential_company_cash(entity)
-          if @phase.status.include?('can_buy_companies') && entity.corporation? && entity.cash.positive?
+          if @phase.status.include?('can_buy_companies') && entity.corporation?
             @companies.reduce(0) do |memo, company|
               memo +
-                if company.owned_by_player?
+                if company.owned_by_player? && entity.cash.positive?
                   company.value - 1
                 elsif company.owner == entity
                   company.value
@@ -806,7 +806,7 @@ module Engine
 
         def maximum_share_price_change(entity)
           position = entity.share_price.coordinates.last
-          return 4 if position.odd? # movement on the top row is capped only by the market's end
+          return 2 if position.odd? # movement on the top row is capped only by the market's end
 
           MARKET[0].size - 2 - position
         end
