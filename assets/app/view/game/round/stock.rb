@@ -412,14 +412,14 @@ module View
           take_loan = lambda do
             process_action(Engine::Action::TakeLoan.new(@current_entity, loan: nil))
           end
-          [h(:button, { on: { click: take_loan } }, 'Take Loan')]
+          [h(:button, { on: { click: take_loan } }, "Take Loan (#{@game.format_currency(@game.loan_amount)})")]
         end
 
         def render_payoff_loan
           payoff_loan = lambda do
             process_action(Engine::Action::PayoffLoan.new(@current_entity, loan: nil))
           end
-          [h(:button, { on: { click: payoff_loan } }, 'Payoff Loan')]
+          [h(:button, { on: { click: payoff_loan } }, "Payoff Loan (#{@game.format_currency(@game.loan_amount)})")]
         end
       end
     end

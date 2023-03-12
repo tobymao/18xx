@@ -14,8 +14,7 @@ module View
       def render
         @loan_chart = @game.loan_chart
         @num_rows = @loan_chart.size
-        @num_columns = @loan_chart.map(&:size).max
-        @empty_cube_spaces = @game.loans_taken
+        @num_columns = @loan_chart[0][:loans].size + 1
 
         name_style = {
           padding: '1rem',
@@ -37,25 +36,23 @@ module View
 
         contents = []
         contents << h(:div, { style: name_style }, @game.loan_entity_name)
-        contents << h(:div, { style: grid_style }, chart)
+        contents << h(:div, { style: grid_style }, render_chart)
         h(:div, contents)
       end
 
-      def chart
+      def render_chart
         contents = []
         @loan_chart.each do |row|
-          contents << render_first_cell(row[0])
-          row.drop(1).each do |cell|
-            contents << render_cube_cell(cell, @empty_cube_spaces.zero?)
-            @empty_cube_spaces -= 1 if @empty_cube_spaces.positive?
+          contents << render_row_header(row[:header])
+          row[:loans].each do |loan|
+            contents << render_loan(loan)
           end
-          (@num_columns - row.size).times { contents << render_empty_cell }
         end
         contents
       end
 
-      def render_first_cell(label)
-        @stock_movement_style = {
+      def render_row_header(label)
+        stock_movement_style = {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -63,10 +60,12 @@ module View
           backgroundColor: 'gray',
         }
 
-        h(:div, { style: @stock_movement_style }, label)
+        h(:div, { style: stock_movement_style }, label)
       end
 
-      def render_cube_cell(cell, has_cube)
+      def render_loan(loan)
+        return h(:div, nil) unless loan
+
         grid_style = {
           display: 'grid',
           gridTemplateRows: '30% 70%',
@@ -95,13 +94,9 @@ module View
         }
 
         contents = []
-        contents << h(:div, { style: cell_style }, cell)
-        contents << h(:div, { style: cell_style }, [h(:img, cube_props)]) if has_cube
+        contents << h(:div, { style: cell_style }, loan[:value])
+        contents << h(:div, { style: cell_style }, [h(:img, cube_props)]) unless loan[:loan_taken]
         h(:div, { style: grid_style }, contents)
-      end
-
-      def render_empty_cell
-        h(:div, nil)
       end
     end
   end

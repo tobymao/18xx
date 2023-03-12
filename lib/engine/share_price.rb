@@ -60,7 +60,7 @@ module Engine
 
     def initialize(coordinates,
                    price:,
-                   info:,
+                   info: nil,
                    types: [],
                    unlimited_types: [],
                    multiple_buy_types: [])

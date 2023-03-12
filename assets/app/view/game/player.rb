@@ -142,10 +142,10 @@ module View
           ])
         end
 
-        if @game.respond_to?(:player_loans) && @game.player_loans(@player).positive?
+        if @game.respond_to?(:player_loans)
           trs << h(:tr, [
             h(:td, 'Loans'),
-            h('td.right', @game.player_loans(@player)),
+            h('td.right', td_cert_props, "#{@game.player_loans(@player)}/#{@game.max_player_loans}"),
           ])
         end
 
