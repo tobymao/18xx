@@ -79,8 +79,7 @@ module Engine
           def can_buy_restored2?(entity)
             @game.phase.available?(restored2_train&.available_on) &&
             !owns_restored2?(entity) &&
-            @corporations_sold.empty? &&
-            entity.cash >= restored2_train.price
+            @corporations_sold.empty?
           end
 
           def restored2_train
