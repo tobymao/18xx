@@ -112,13 +112,12 @@ module Engine
               name: 'D',
               on: 'D',
               train_limit: 2,
-              tiles: %i[yellow green brown gray],
+              tiles: %i[yellow green brown gray black],
               status: %w[fullcap facing_6 upgradable_towns no_loans],
               operating_rounds: 3,
             },
           ]
-          phase_list.reject! { |p| p[:name] == 'D' } unless diesel_variant?
-          phase_list.reject! { |p| p[:name] == '8' } if diesel_variant?
+          diesel_variant? phase_list.reject! { |p| p[:name] == '8' } : phase_list.reject! { |p| p[:name] == 'D' }
           phase_list
         end
 
@@ -181,8 +180,7 @@ module Engine
               discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
             },
           ]
-          train_list.reject! { |t| t[:name] == 'D' } unless diesel_variant?
-          train_list.reject! { |t| t[:name] == '8' } if diesel_variant?
+          diesel_variant? train_list.reject! { |t| t[:name] == '8' } : train_list.reject! { |t| t[:name] == 'D' }
           train_list
         end
 
