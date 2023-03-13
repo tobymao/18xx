@@ -117,7 +117,8 @@ module Engine
               operating_rounds: 3,
             },
           ]
-          diesel_variant? phase_list.reject! { |p| p[:name] == '8' } : phase_list.reject! { |p| p[:name] == 'D' }
+          phase_list.reject! { |p| p[:name] == 'D' } unless diesel_variant?
+          phase_list.reject! { |p| p[:name] == '8' } if diesel_variant?
           phase_list
         end
 
@@ -180,7 +181,8 @@ module Engine
               discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
             },
           ]
-          diesel_variant? train_list.reject! { |t| t[:name] == '8' } : train_list.reject! { |t| t[:name] == 'D' }
+          train_list.reject! { |t| t[:name] == 'D' } unless diesel_variant?
+          train_list.reject! { |t| t[:name] == '8' } if diesel_variant?
           train_list
         end
 
