@@ -1468,11 +1468,14 @@ module Engine
               abilities: [
                 {
                   type: 'tile_lay',
-                  tiles: %w[39 40 41 42 43 70 44 47 45 46 G17 611 L17 L34 L35 L38 455 X9 L36 L37],
+                  tiles: %w[16 19 20 23 24 25 26 27 28 29 30 31 204 87 88 619 14 15
+                            209 236 237 238 8858 8859 8860 8863 8864 8865 39
+                            40 41 42 43 70 44 47 45 46 G17 611 L17 L34 L35],
                   hexes: [],
                   reachable: true,
                   when: 'owning_player_track',
                   owner_type: 'player',
+                  special: false,
                   count_per_or: 1,
                 },
               ],
