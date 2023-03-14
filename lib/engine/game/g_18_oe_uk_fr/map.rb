@@ -144,7 +144,8 @@ module Engine
             ['O18'] => 'junction;path=a:5,b:_0,terminal:1;border=edge:3;border=edge:4',
             ['O20'] => 'border=edge:1;border=edge:2;border=edge:3;border=edge:4',
             ['O22'] => 'border=edge:1;border=edge:2;border=edge:3',
-            ['O26'] => 'junction;path=a:1,b:_0,terminal:1;border=edge:2;border=edge:3',
+            ['O26'] => 'junction;path=a:1,b:_0,terminal:1;path=a:4,b:_0,terminal:1;'\
+                       'icon=image:port,sticky:1;border=edge:2;border=edge:3',
 
             # bay of biscay
             ['P17'] => 'border=edge:0;border=edge:5', # needs a port
@@ -160,6 +161,11 @@ module Engine
 
             # celtic sea
             ['G22'] => 'path=a:0,b:4;border=edge:2;border=edge:5',
+            ['H23'] => 'border=edge:0;border=edge:2;border=edge:5', # needs port
+            ['I22'] => 'junction;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
+                       'border=edge:0;border=edge:3;border=edge:4', # needs port/ferry
+            ['I24'] => 'junction;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:1;border=edge:2', # needs port/ferry
+            ['J21'] => 'border=edge:0;border=edge:3', # needs port
             ['K14'] => 'border=edge:0;border=edge:4;border=edge:5',
             ['K16'] => 'border=edge:0;border=edge:1;border=edge:4;border=edge:5', # needs a port
             ['K18'] => 'border=edge:0;border=edge:1;border=edge:4;border=edge:5',
@@ -182,8 +188,10 @@ module Engine
             ['X31'] => 'border=edge:0;border=edge:5',
             ['Y30'] => 'border=edge:0;border=edge:3;border=edge:4;border=edge:5',
             ['Y32'] => 'border=edge:0;border=edge:1;border=edge:2;border=edge:4;border=edge:5',
-            ['Y34'] => 'border=edge:0;border=edge:1;border=edge:4;border=edge:5', # needs ports
-            ['Y36'] => 'border=edge:0;border=edge:1;border=edge:4;border=edge:5', # needs port
+            ['Y34'] => 'icon=image:port,sticky:1;junction;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;'\
+                       'border=edge:0;border=edge:1;border=edge:4;border=edge:5',
+            ['Y36'] => 'icon=image:port,sticky:1;junction;path=a:3,b:_0,terminal:1;'\
+                       'border=edge:0;border=edge:1;border=edge:4;border=edge:5',
             ['Y38'] => 'path=a:2,b:4;border=edge:0;border=edge:1;border=edge:3;border=edge:4',
             ['Y40'] => 'path=a:1,b:5;border=edge:1;border=edge:2;border=edge:3',
             ['Z29'] => 'border=edge:3;border=edge:4',
