@@ -332,7 +332,7 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             G18Mag::Step::SpecialChoose,
-            Engine::Step::SpecialTrack,
+            G18Mag::Step::SpecialTrack,
             G18Mag::Step::Track,
             G18Mag::Step::Token,
             G18Mag::Step::DiscardTrain,
