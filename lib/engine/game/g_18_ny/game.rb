@@ -18,7 +18,7 @@ module Engine
         include InterestOnLoans
 
         attr_reader :privates_closed, :first_nyc_owner
-        attr_accessor :stagecoach_token
+        attr_accessor :stagecoach_token, :capitalization_round
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
@@ -174,7 +174,7 @@ module Engine
             ['60% to Float', 'Corporations must have 60% of their shares sold to float and receive full capitalization'],
           'nyc_formation' => ['NYC Formation', 'NYC formation triggered'],
           'capitalization_round' =>
-            ['Capitalization Round', 'Special Capitalization Round before next Stock Round'],
+            ['Capitalization Round', 'Trigger Special Capitalization Round'],
         ).freeze
 
         ERIE_CANAL_ICON = 'canal'
@@ -185,6 +185,10 @@ module Engine
           'connection_bonus' => '/icons/18_ny/connection_bonus.svg',
           'coal' => '/icons/18_ny/coal.svg',
         }.freeze
+
+        def immediate_capitalization_round?
+          @optional_rules.include?(:immediate_capitalization_round)
+        end
 
         def setup
           @float_percent = 20
@@ -263,12 +267,13 @@ module Engine
         end
 
         def operating_round(round_num)
-          G18NY::Round::Operating.new(self, [
+          round = G18NY::Round::Operating.new(self, [
             G18NY::Step::CheckNYCFormation,
             G18NY::Step::BuyCompany,
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::DiscardTrain,
+            G18NY::Step::SpecialCapitalization,
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
             G18NY::Step::StagecoachExchange,
@@ -288,6 +293,11 @@ module Engine
             G18NY::Step::AcquireCorporation,
             [G18NY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+
+          unless immediate_capitalization_round?
+            round.steps.delete_if { |step| step.instance_of?(G18NY::Step::SpecialCapitalization) }
+          end
+          round
         end
 
         def new_nyc_formation_round(round_num)
