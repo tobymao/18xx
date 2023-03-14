@@ -14,7 +14,8 @@ module Engine
 
           def can_lay_tile?(entity)
             points_available = get_tile_lay(entity) - @points_used
-            return false unless points_available > 0
+            return false unless points_available.positive?
+
             entity.tokens.any?
           end
 
@@ -32,17 +33,18 @@ module Engine
           def lay_tile_action(action)
             tile = action.tile
             old_tile = action.hex.tile
-            metropolis = @game.is_metropolis_tile?(tile)
+            metropolis = @game.metropolis_tile?(tile)
             points_available = get_tile_lay(action.entity) - @points_used
-            if tile.color != :yellow && metropolis
-              points_cost = 4
-            elsif tile.color == :yellow && metropolis || tile.color != :yellow
-              points_cost = 2
-            else
-              points_cost = 1
-            end
+            points_cost = if tile.color != :yellow && metropolis
+                            4
+                          elsif (tile.color == :yellow && metropolis) || tile.color != :yellow
+                            2
+                          else
+                            1
+                          end
             raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && points_cost > points_available
             raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && points_cost > points_available
+
             lay_tile(action)
             @game.log << "Used #{points_cost} tile point(s) to lay tile"
             @game.log << "#{points_available - points_cost} point(s) remaining"
@@ -62,7 +64,7 @@ module Engine
             points_available = get_tile_lay(entity) - @points_used
             return nil unless points_available
 
-            metropolis = @game.is_metropolis_hex?(hex)
+            metropolis = @game.metropolis_hex?(hex)
             color = hex.tile.color
             return nil if color == :blue
             return nil if color == :white && metropolis && points_available < 2

@@ -25,7 +25,7 @@ module Engine
         BANK_CASH = 54_000
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
-        MUST_SELL_IN_BLOCKS = :false
+        MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [:cities].freeze
 
@@ -35,8 +35,8 @@ module Engine
         }.freeze
 
         MARKET_TEXT = {
-          par: "Regional par values",
-          convert_range: "Major par values",
+          par: 'Regional par values',
+          convert_range: 'Major par values',
         }.freeze
 
         PHASES = [
@@ -48,8 +48,9 @@ module Engine
           },
           {
             name: '3',
+            on: '3',
             train_limit: 3,
-            tiles: [:yellow, :green],
+            tiles: %i[yellow green],
             operating_rounds: 2,
           },
         ].freeze
@@ -68,11 +69,11 @@ module Engine
                        { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
             price: 200,
             variants: [{
-                         name: '3+3',
-                         distance: [{ 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 },
-                                    { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
-                         price: 225,
-                       }],
+              name: '3+3',
+              distance: [{ 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 },
+                         { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
+              price: 225,
+            }],
             num: 4,
           },
         ].freeze
@@ -181,35 +182,37 @@ module Engine
           end
         end
 
-        def is_metropolis_hex?(hex)
+        def metropolis_hex?(hex)
           %w[C74 K26 M28 M50 Q30 R55 Y14 AA82 BB51].include?(hex.name.to_s)
         end
 
-        def is_metropolis_tile?(tile)
-          %w[OE4 OE5 OE6 OE7 OE8 OE12 OE13 OE14 OE15 OE16 OE17 OE18 OE26 OE27 OE28 OE29 OE30 OE37 OE38 OE39 OE40 OE41].include?(tile.name.to_s)
+        def metropolis_tile?(tile)
+          %w[OE4 OE5 OE6 OE7 OE8 OE12 OE13 OE14 OE15 OE16 OE17
+             OE18 OE26 OE27 OE28 OE29 OE30 OE37 OE38 OE39 OE40 OE41].include?(tile.name.to_s)
         end
 
         def upgrades_to_correct_label?(from, to)
           return true if from.label == to.label
           return false if from.label && !to.label
+
           case from.hex.name
           when 'K26', 'Y14', 'R55'
-            return to.label.to_s.include?('A')
+            to.label.to_s.include?('A')
           when 'M50'
-            return to.label.to_s.include?('B')
+            to.label.to_s.include?('B')
           when 'AA82'
-            return to.label.to_s.include?('C')
+            to.label.to_s.include?('C')
           when 'Q30'
-            return to.label.to_s.include?('P')
+            to.label.to_s.include?('P')
           when 'C74'
-            return to.label.to_s.include?('S')
+            to.label.to_s.include?('S')
           end
         end
 
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,  # will need to probably write custom for track rights zone
+            Engine::Step::HomeToken, # will need to probably write custom for track rights zone
             Engine::Step::BuySellParShares, # will probably need custom BuySellPar for floating minors
           ])
         end
@@ -235,7 +238,6 @@ module Engine
             Engine::Step::IssueShares,
           ], round_num: round_num)
         end
-
       end
     end
   end

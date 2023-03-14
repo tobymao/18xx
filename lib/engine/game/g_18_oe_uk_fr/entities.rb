@@ -120,7 +120,7 @@ module Engine
             float_percent: 100,
             max_ownership_percent: 100,
           },
-        ]
+        ].freeze
 
         CORPORATIONS = [
           {
@@ -132,7 +132,6 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'N35',
-            always_market_price: true,
             color: :green,
           },
           {
@@ -144,7 +143,6 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'I20',
-            always_market_price: true,
             color: :blue,
           },
           {
@@ -156,7 +154,6 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'L25',
-            always_market_price: true,
             color: :red,
           },
           {
@@ -168,7 +165,6 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'J27',
-            always_market_price: true,
             color: :black,
           },
           {
@@ -180,7 +176,6 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'U24',
-            always_market_price: true,
             color: :blue,
           },
           {
@@ -192,7 +187,6 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'Q26',
-            always_market_price: true,
             color: :orange,
           },
           {
@@ -204,7 +198,6 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'U34',
-            always_market_price: true,
             color: :purple,
           },
         ].freeze
