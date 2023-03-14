@@ -1418,7 +1418,7 @@ module Engine
               abilities: [
                 {
                   type: 'train_discount',
-                  when: 'owning_player_or_turn',
+                  when: 'buying_train',
                   discount: { '2' => 10, '3' => 15, '4' => 20, '6' => 30 },
                   trains: %w[2 3 4 6],
                   count_per_or: 1,
