@@ -1485,8 +1485,8 @@ module Engine
               name: 'Donaudampfschifffahrtsgesellschaft (Vállalat = company)',
               value: 0,
               revenue: 0,
-              desc: 'Gives a discount of 50% on token laying. That means the first token of a minor'\
-                    'company cost Ft 20 (and only Ft 10 of it will go to the yellow company), the second'\
+              desc: 'Gives a discount of 50% on token laying. That means the first token of a minor '\
+                    'company cost Ft 20 (and only Ft 10 of it will go to the yellow company), the second '\
                     'token cost Ft 40 (and only Ft 20 of it will go to the yellow company).',
               sym: 'DDSG',
               abilities: [
@@ -1507,10 +1507,10 @@ module Engine
               name: 'Magyar Államvastutak',
               value: 0,
               revenue: 0,
-              desc: 'One train of a minor company becomes an X+1 train. It may run to one additional'\
-                    'town. If this minor company uses the benefits of the blue company (a train becomes a'\
-                    'plus train) the Magyar Àllamvasutak may be used for the same train (for example'\
-                    'turning a 2+2 into a 2+3 train or a 4+4 into a 4+5 train) or a different train (for'\
+              desc: 'One train of a minor company becomes an X+1 train. It may run to one additional '\
+                    'town. If this minor company uses the benefits of the blue company (a train becomes a '\
+                    'plus train) the Magyar Àllamvasutak may be used for the same train (for example '\
+                    'turning a 2+2 into a 2+3 train or a 4+4 into a 4+5 train) or a different train (for '\
                     'example turning a 3-train into a 3+1 train).',
               sym: 'MA',
               abilities: [{

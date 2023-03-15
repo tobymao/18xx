@@ -8,7 +8,7 @@ module Engine
     module G18Mag
       module Step
         class Track < Engine::Step::Track
-          include Engine::Game::G18Mag::Step::PayTile
+          include G18Mag::Step::PayTile
           K_HEXES = %w[I2 H23 H27].freeze
           BUY_ACTION = %w[special_buy].freeze
 
