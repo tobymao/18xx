@@ -125,7 +125,7 @@ module Engine
         CORPORATIONS = [
           {
             name: 'SNCF Belges',
-            logo: '18_oe/Belge',
+            logo: '18_oe/BEL',
             sym: 'BEL',
             tokens: [20, 20],
             shares: [50, 25, 25],
