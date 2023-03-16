@@ -18,6 +18,13 @@ module Engine
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/114573/1836jr-56-rules'
 
         PLAYER_RANGE = [2, 4].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :diesel_variant,
+            short_name: 'Diesel variant',
+            desc: 'Replaces 8-trains with $1100 Diesels (and $300 trade in discount)',
+          },
+        ].freeze
       end
     end
   end

@@ -79,7 +79,7 @@ module Engine
               {
                 type: 'assign_hexes',
                 when: 'owning_corp_or_turn',
-                hexes: %w[B1 D13 F15],
+                hexes: %w[B1 D1 D13 F15],
                 count: 1,
                 owner_type: 'corporation',
               },

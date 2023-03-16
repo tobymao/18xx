@@ -7,7 +7,7 @@ module Engine
   class StockMarket
     attr_reader :market, :par_prices, :has_close_cell, :zigzag
 
-    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil)
+    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil, ledge_movement: nil)
       @par_prices = []
       @has_close_cell = false
       @zigzag = zigzag
@@ -31,11 +31,11 @@ module Engine
 
       @movement =
         if @zigzag
-          ZigZagMovement.new(@market)
+          ZigZagMovement.new(self, ledge_movement)
         elsif one_d?
-          OneDimensionalMovement.new(@market)
+          OneDimensionalMovement.new(self)
         else
-          TwoDimensionalMovement.new(@market)
+          TwoDimensionalMovement.new(self)
         end
     end
 
@@ -56,19 +56,35 @@ module Engine
     end
 
     def move_right(corporation)
-      move(corporation, @movement.right(corporation.share_price.coordinates))
+      move(corporation, right(corporation, corporation.share_price.coordinates))
+    end
+
+    def right(corporation, coordinates)
+      @movement.right(corporation, coordinates)
     end
 
     def move_up(corporation)
-      move(corporation, @movement.up(corporation.share_price.coordinates))
+      move(corporation, up(corporation, corporation.share_price.coordinates))
+    end
+
+    def up(corporation, coordinates)
+      @movement.up(corporation, coordinates)
     end
 
     def move_down(corporation)
-      move(corporation, @movement.down(corporation.share_price.coordinates))
+      move(corporation, down(corporation, corporation.share_price.coordinates))
+    end
+
+    def down(corporation, coordinates)
+      @movement.down(corporation, coordinates)
     end
 
     def move_left(corporation)
-      move(corporation, @movement.left(corporation.share_price.coordinates))
+      move(corporation, left(corporation, corporation.share_price.coordinates))
+    end
+
+    def left(corporation, coordinates)
+      @movement.left(corporation, coordinates)
     end
 
     def find_share_price(corporation, directions)
@@ -83,13 +99,13 @@ module Engine
       Array(directions).each do |direction|
         case direction
         when :left
-          coordinates = @movement.left(coordinates)
+          coordinates = left(nil, coordinates)
         when :right
-          coordinates = @movement.right(coordinates)
+          coordinates = right(nil, coordinates)
         when :down
-          coordinates = @movement.down(coordinates)
+          coordinates = down(nil, coordinates)
         when :up
-          coordinates = @movement.up(coordinates)
+          coordinates = up(nil, coordinates)
         end
         price = share_price(coordinates) || price
       end
