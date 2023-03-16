@@ -27,13 +27,13 @@ module DoubleSidedTiles
     end
   end
 
-  def update_tile_lists!(tile, old_tile)
+  def update_tile_lists(tile, old_tile)
     if tile.opposite == old_tile
       unused_tiles.delete(tile)
       unused_tiles << old_tile
     else
       if tile.unlimited
-        add_extra_tile(tile)
+        new_tile = add_extra_tile(tile)
 
         if (opp_name = tile.opposite&.name) && !new_tile.opposite
           opp_tile = tile_by_id("#{opp_name}-#{new_tile.index}") || add_extra_tile(tile_by_id("#{opp_name}-0"))

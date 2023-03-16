@@ -26,6 +26,14 @@ module Engine
         ].freeze
 
         PLAYER_RANGE = [2, 6].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :immediate_capitalization_round,
+            short_name: 'Immediate Capitalization Round',
+            desc: 'Capitalization Round occurs immediately after last 12H',
+            default: true,
+          },
+        ].freeze
       end
     end
   end
