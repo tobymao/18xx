@@ -399,9 +399,9 @@ module Engine
         HEXES = {
 
           white: {
-            %w[D1 C2 E2 D5 D11 B13 C16 C18 E16 E18 F19 G22 H21 D21 E26 F27 F29
+            %w[D1 C2 E2 D5 D11 B13 C16 C18 E16 E18 G22 H21 D21 F29
                G28] => 'icon=image:18_cuba/sugar-cane;upgrade=cost:10',
-            %w[D3 B5 C6 C8 C10 C12 B15 D17 E20 F23 F25] => '',
+            %w[D3 B5 C6 C10 C12 B15 D17 E20 F23 F25] => '',
             %w[C4 C14 B9 B11 D13 D15 D19 E22 F21 G26] => 'city=revenue:0',
             %w[E24 G24] => 'city=revenue:0;label=Y',
             %w[D9 G20 F27] => 'icon=image:18_cuba/sugar-cane;upgrade=cost:10;border=edge:2,type:impassable',
