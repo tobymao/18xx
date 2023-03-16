@@ -529,8 +529,7 @@ module Engine
           return if corporation.minor? || !corporation.ipoed
 
           status = ["Building Permits: #{corporation.building_permits}"]
-          par_location = par_chart[corporation.original_par_price].find_index(corporation) + 1
-          status << ["Par Price: #{format_currency(corporation.original_par_price.price)}-#{par_location}"]
+          status << ["Presidency: #{corporation.presidents_percent}%"]
           status
         end
 
