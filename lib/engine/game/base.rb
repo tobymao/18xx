@@ -2083,6 +2083,9 @@ module Engine
 
       def update_tile_lists(tile, old_tile)
         add_extra_tile(tile) if tile.unlimited
+
+        raise GameError, "Cannot lay tile #{tile.id}; it is already on hex #{tile.hex.id}" if tile.hex
+
         @tiles.delete(tile)
         @tiles << old_tile unless old_tile.preprinted
       end
