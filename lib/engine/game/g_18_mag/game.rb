@@ -332,7 +332,7 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             G18Mag::Step::SpecialChoose,
-            Engine::Step::SpecialTrack,
+            G18Mag::Step::SpecialTrack,
             G18Mag::Step::Track,
             G18Mag::Step::Token,
             G18Mag::Step::DiscardTrain,
@@ -1418,7 +1418,7 @@ module Engine
               abilities: [
                 {
                   type: 'train_discount',
-                  when: 'owning_player_or_turn',
+                  when: 'buying_train',
                   discount: { '2' => 10, '3' => 15, '4' => 20, '6' => 30 },
                   trains: %w[2 3 4 6],
                   count_per_or: 1,
@@ -1468,11 +1468,14 @@ module Engine
               abilities: [
                 {
                   type: 'tile_lay',
-                  tiles: %w[39 40 41 42 43 70 44 47 45 46 G17 611 L17 L34 L35 L38 455 X9 L36 L37],
+                  tiles: %w[16 19 20 23 24 25 26 27 28 29 30 31 204 87 88 619 14 15
+                            209 236 237 238 8858 8859 8860 8863 8864 8865 39
+                            40 41 42 43 70 44 47 45 46 G17 611 L17 L34 L35],
                   hexes: [],
                   reachable: true,
                   when: 'owning_player_track',
                   owner_type: 'player',
+                  special: false,
                   count_per_or: 1,
                 },
               ],
@@ -1482,8 +1485,8 @@ module Engine
               name: 'Donaudampfschifffahrtsgesellschaft (Vállalat = company)',
               value: 0,
               revenue: 0,
-              desc: 'Gives a discount of 50% on token laying. That means the first token of a minor'\
-                    'company cost Ft 20 (and only Ft 10 of it will go to the yellow company), the second'\
+              desc: 'Gives a discount of 50% on token laying. That means the first token of a minor '\
+                    'company cost Ft 20 (and only Ft 10 of it will go to the yellow company), the second '\
                     'token cost Ft 40 (and only Ft 20 of it will go to the yellow company).',
               sym: 'DDSG',
               abilities: [
@@ -1504,10 +1507,10 @@ module Engine
               name: 'Magyar Államvastutak',
               value: 0,
               revenue: 0,
-              desc: 'One train of a minor company becomes an X+1 train. It may run to one additional'\
-                    'town. If this minor company uses the benefits of the blue company (a train becomes a'\
-                    'plus train) the Magyar Àllamvasutak may be used for the same train (for example'\
-                    'turning a 2+2 into a 2+3 train or a 4+4 into a 4+5 train) or a different train (for'\
+              desc: 'One train of a minor company becomes an X+1 train. It may run to one additional '\
+                    'town. If this minor company uses the benefits of the blue company (a train becomes a '\
+                    'plus train) the Magyar Àllamvasutak may be used for the same train (for example '\
+                    'turning a 2+2 into a 2+3 train or a 4+4 into a 4+5 train) or a different train (for '\
                     'example turning a 3-train into a 3+1 train).',
               sym: 'MA',
               abilities: [{

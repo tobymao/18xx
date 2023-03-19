@@ -529,8 +529,7 @@ module Engine
           return if corporation.minor? || !corporation.ipoed
 
           status = ["Building Permits: #{corporation.building_permits}"]
-          par_location = par_chart[corporation.original_par_price].find_index(corporation) + 1
-          status << ["Par Price: #{format_currency(corporation.original_par_price.price)}-#{par_location}"]
+          status << ["Presidency: #{corporation.presidents_percent}%"]
           status
         end
 
@@ -674,6 +673,26 @@ module Engine
           str
         end
 
+        def revenue_stops(route)
+          stops = super
+          if route.train.name.include?('E')
+            # prune to the list of stops that will possiblity be used as revenue centers
+            sorted_stops = stops.sort_by { |stop| -1 * stop.route_revenue(route.phase, route.train) }
+            stops = sorted_stops.take(route.train.distance.first['pay'])
+
+            unless stops.find { |stop| stop.tokened_by?(route.corporation) }
+              stops.pop
+              stops << sorted_stops.find { |stop| stop.tokened_by?(route.corporation) }
+            end
+
+            stops << sorted_stops.select { |stop| trans_siberian_hexes.include?(stop.hex) } if trans_siberian_bonus?(sorted_stops)
+
+            stops.uniq!
+          end
+
+          stops
+        end
+
         def ferry_hexes
           @ferry_hexes ||= %w[F12 F14 J16].map { |id| hex_by_id(id) }
         end
@@ -690,10 +709,13 @@ module Engine
           @taiwan_company ||= company_by_id('P3')
         end
 
-        def trans_siberian_bonus?(stops)
+        def trans_siberian_hexes
           @trans_siberian_hexes ||= %w[A3 A15].map { |id| hex_by_id(id) }
+        end
+
+        def trans_siberian_bonus?(stops)
           stop_hexes = stops.map(&:hex)
-          @trans_siberian_hexes.all? { |hex| stop_hexes.include?(hex) }
+          trans_siberian_hexes.all? { |hex| stop_hexes.include?(hex) }
         end
 
         def stock_market_bonus(corporation)
