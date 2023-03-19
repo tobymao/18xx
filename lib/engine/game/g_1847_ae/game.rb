@@ -66,7 +66,7 @@ module Engine
             name: '4+4',
             on: '4+4',
             train_limit: 3,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow green],
             operating_rounds: 2,
             status: %w[investor_exchange can_buy_companies],
           },
