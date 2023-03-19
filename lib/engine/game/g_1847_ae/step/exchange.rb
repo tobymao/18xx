@@ -25,17 +25,17 @@ module Engine
           def process_buy_shares(action)
             company = action.entity
             bundle = action.bundle
-            corporation = bundle.corporation
-            floated = corporation.floated?
 
             unless can_exchange?(company, bundle)
               raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}"
             end
 
-            bundle.corporation.shares.each { |share| share.buyable = true }
-
+            bundle.shares.each { |share| share.buyable = true }
             buy_shares(company.owner, bundle, exchange: company)
             company.close!
+
+            # count this as a buy action
+            @round.current_actions << action
           end
 
           def can_buy?(entity, bundle)
@@ -44,16 +44,12 @@ module Engine
 
           private
 
-          def can_exchange?(entity, bundle = nil)
-            return false unless ['3+3', '4', '4+4'].include?(@game.phase.current[:name])
+          def can_exchange?(entity, _bundle = nil)
             return false unless entity.company?
             return false unless (ability = @game.abilities(entity, :exchange))
-            
-            owner = entity.owner
-            return can_gain?(owner, bundle, exchange: true) if bundle
-            
+
             corporation = @game.exchange_corporations(ability).first
-            return corporation.floated
+            @game.can_corporation_have_investor_shares_exchanged?(corporation)
           end
         end
       end

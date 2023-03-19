@@ -213,6 +213,12 @@ module Engine
           hlb.cash += hlb.par_price.price
         end
 
+        def can_corporation_have_investor_shares_exchanged?(corporation)
+          return false unless ['3+3', '4', '4+4'].include?(@phase.current[:name])
+
+          corporation.floated
+        end
+
         def place_home_token(corporation)
           return if corporation.tokens.first&.used == true
 

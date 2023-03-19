@@ -10,7 +10,8 @@ module Engine
             name: 'Main-Neckar-Railway',
             value: 90,
             revenue: 20,
-            desc: 'May be exchanged for an Investor share of the Hessische Ludwigsbahn (HLB), instead of buying a share, during the stock round in Phase 3+3 or later. ' \
+            desc: 'May be exchanged for an Investor share of the Hessische Ludwigsbahn (HLB), '\
+                  'instead of buying a share, during a stock round in Phase 3+3 or later. ' \
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5.',
             sym: 'MNR',
             color: nil,
@@ -19,6 +20,43 @@ module Engine
                           type: 'exchange',
                           corporations: ['HLB'],
                           owner_type: 'player',
+                          when: 'owning_player_sr_turn',
+                          from: %w[reserved],
+                        }],
+          },
+          {
+            name: 'Saarland Coal Mines',
+            value: 75,
+            revenue: 15,
+            desc: 'May be exchanged for an Investor share of the Saarbrücker Eisenbahn (Saar), '\
+                  'instead of buying a share, during a stock round in Phase 3+3 or later. ' \
+                  'Automatically exchanged at the beginning of the first stock round in Phase 5+5.',
+            sym: 'SCR',
+            color: nil,
+            abilities: [{ type: 'no_buy' },
+                        {
+                          type: 'exchange',
+                          corporations: ['Saar'],
+                          owner_type: 'player',
+                          when: 'owning_player_sr_turn',
+                          from: %w[reserved],
+                        }],
+          },
+          {
+            name: 'Völklinger Iron Works',
+            value: 85,
+            revenue: 20,
+            desc: 'May be exchanged for an Investor share of the Saarbrücker Eisenbahn (Saar), '\
+                  'instead of buying a share, during a stock round in Phase 3+3 or later. ' \
+                  'Automatically exchanged at the beginning of the first stock round in Phase 5+5.',
+            sym: 'VIW',
+            color: nil,
+            abilities: [{ type: 'no_buy' },
+                        {
+                          type: 'exchange',
+                          corporations: ['Saar'],
+                          owner_type: 'player',
+                          when: 'owning_player_sr_turn',
                           from: %w[reserved],
                         }],
           },
