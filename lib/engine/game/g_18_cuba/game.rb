@@ -4,6 +4,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative '../base'
+require_relative '../double_sided_tiles'
 
 module Engine
   module Game
@@ -12,6 +13,8 @@ module Engine
         include_meta(G18Cuba::Meta)
         include Entities
         include Map
+
+        include DoubleSidedTiles
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -185,30 +188,11 @@ module Engine
         def setup
           super
           @tile_groups = init_tile_groups
-          update_opposites
+          initialize_tile_opposites!
         end
 
         def init_tile_groups
           self.class::TILE_GROUPS
-        end
-
-        def update_opposites
-          by_name = @tiles.group_by(&:name)
-          @tile_groups.each do |grp|
-            next unless grp.size == 2
-
-            name_a, name_b = grp
-            num = by_name[name_a].size
-            raise GameError, 'Sides of double-sided tiles need to have same number' if num != by_name[name_b].size
-
-            num.times.each do |idx|
-              tile_a = tile_by_id("#{name_a}-#{idx}")
-              tile_b = tile_by_id("#{name_b}-#{idx}")
-
-              tile_a.opposite = tile_b
-              tile_b.opposite = tile_a
-            end
-          end
         end
       end
     end
