@@ -48,7 +48,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     raabro (1.4.0)
-    rack (3.0.4.2)
+    rack (3.0.6.1)
     rainbow (3.1.1)
     raindrops (0.20.0)
     rake (13.0.6)
