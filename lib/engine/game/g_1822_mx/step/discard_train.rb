@@ -16,10 +16,12 @@ module Engine
           end
 
           def process_discard_train(action)
-            return super unless @game.extra_train_pullman?(action.train)
-
-            @game.remove_train(action.train)
-            @log << "#{action.entity.name} discards #{action.train.name}, #{action.train.name} is removed from the game"
+            if action.entity == @game.ndem || @game.extra_train_pullman?(action.train)
+              @game.remove_train(action.train)
+              @log << "#{action.entity.name} discards #{action.train.name}, #{action.train.name} is removed from the game"
+            else
+              super
+            end
           end
         end
       end
