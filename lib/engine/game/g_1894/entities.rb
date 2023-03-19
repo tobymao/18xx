@@ -76,7 +76,8 @@ module Engine
             name: 'Ligne de Saint-Quentin à Guise',
             sym: 'SQG',
             value: 100,
-            desc: 'Revenue is equal to 70 if Saint-Quentin (G10) is green, to 100 if Saint-Quentin is brown and to 0 otherwise.'\
+            revenue: 5,
+            desc: 'Revenue is equal to 70 if Saint-Quentin (G10) is green, to 100 if Saint-Quentin is brown and to 5 otherwise.'\
                   ' Closes in purple phase.',
             abilities: [{ type: 'close', on_phase: 'Purple' }],
             color: '#d9d9d9',
@@ -280,7 +281,7 @@ module Engine
             name: 'Late Belgian',
             logo: '1894/LB',
             simple_logo: '1894/LB.alt',
-            tokens: [0, 40, 100],
+            tokens: [0, 40],
             max_ownership_percent: 60,
             color: '#c9c9c9',
             text_color: 'black',
