@@ -20,6 +20,8 @@ module Engine
       def select_entities
         @game.players
       end
+
+      def finish_round; end
     end
   end
 end
