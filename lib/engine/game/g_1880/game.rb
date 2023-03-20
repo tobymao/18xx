@@ -196,7 +196,7 @@ module Engine
                     price: 450,
                     rusts_on: '8E',
                     num: 5,
-                    events: [{ 'type' => 'float_40' }, { 'type' => 'permit_c' }],
+                    events: [{ 'type' => 'permit_c' }],
                   },
                   {
                     name: '6',
@@ -682,10 +682,15 @@ module Engine
 
             unless stops.find { |stop| stop.tokened_by?(route.corporation) }
               stops.pop
-              stops << sorted_stops.find { |stop| stop.tokened_by?(route.corporation) }
+              tokened_stop = sorted_stops.find { |stop| stop.tokened_by?(route.corporation) }
+              stops << tokened_stop if tokened_stop
             end
 
-            stops << sorted_stops.select { |stop| trans_siberian_hexes.include?(stop.hex) } if trans_siberian_bonus?(sorted_stops)
+            if trans_siberian_bonus?(sorted_stops)
+              stops.concat(sorted_stops.select do |stop|
+                             trans_siberian_hexes.include?(stop.hex)
+                           end)
+            end
 
             stops.uniq!
           end
