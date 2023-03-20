@@ -154,7 +154,7 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1847AE::Step::Exchange,
             G1847AE::Step::BuySellParShares,
           ])
         end
@@ -211,6 +211,12 @@ module Engine
           [saar.shares[1], saar.shares[2], hlb.shares[1]].each { |s| s.buyable = false }
           saar.cash += saar.par_price.price * 2
           hlb.cash += hlb.par_price.price
+        end
+
+        def can_corporation_have_investor_shares_exchanged?(corporation)
+          return false unless ['3+3', '4', '4+4'].include?(@phase.current[:name])
+
+          corporation.floated
         end
 
         def place_home_token(corporation)

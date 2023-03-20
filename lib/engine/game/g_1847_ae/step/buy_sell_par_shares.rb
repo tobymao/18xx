@@ -30,6 +30,12 @@ module Engine
           def get_par_prices(_entity, corporation)
             [corporation.par_price]
           end
+
+          def can_gain?(entity, bundle, exchange: false)
+            return false if exchange && !@game.can_corporation_have_investor_shares_exchanged?(bundle.corporation)
+
+            super(entity, bundle, exchange: exchange)
+          end
         end
       end
     end
