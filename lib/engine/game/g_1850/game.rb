@@ -135,6 +135,14 @@ module Engine
           @mesabi_token_counter = 4
 
           phase_2_companies.each { |c| c.max_price = c.value }
+
+          @corporations.each do |corporation|
+            ability = abilities(corporation, :assign_hexes)
+            next unless ability
+
+            hex = hex_by_id(ability.hexes.first)
+            ability.description = "Edge Token (#{format_currency(ability.cost)}): #{hex.location_name} (#{hex.name})"
+          end
         end
 
         def event_companies_buyable!
@@ -312,21 +320,6 @@ module Engine
 
           @bank.spend(revenue, owner)
           @log << "#{owner.name} collects #{format_currency(revenue)} from #{cm_company.name}"
-        end
-
-        def init_hexes(companies, corporations)
-          hexes = super
-
-          @corporations.each do |corporation|
-            ability = abilities(corporation, :assign_hexes)
-            next unless ability
-
-            hex = hexes.find { |h| h.name == ability.hexes.first }
-
-            ability.description = "Edge Token (#{format_currency(ability.cost)}): #{hex.location_name} (#{hex.name})"
-          end
-
-          hexes
         end
 
         def revenue_for(route, stops)
