@@ -180,9 +180,7 @@ module View
                     })
 
           buttons = []
-          if @step.may_bid?(company) && @step.min_bid(company) <= @step.max_place_bid(@current_entity, company) &&
-            (!@step.respond_to?(:can_bid_company?) || @step.can_bid_company?(@current_entity, company))
-
+          if @step.may_bid?(company) && @step.min_bid(company) <= @step.max_place_bid(@current_entity, company) 
             bid_str = @step.respond_to?(:bid_str) ? @step.bid_str(company) : 'Place Bid'
             buttons << h(:button, { on: { click: -> { create_bid(company, input) } } }, bid_str)
           end
