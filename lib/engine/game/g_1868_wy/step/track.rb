@@ -33,10 +33,9 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            if (upgrades = @game.class::TILE_UPGRADES[hex.tile.name]) && upgrades.include?(tile.name)
-              (hex.tile.exits & tile.exits == hex.tile.exits) &&
-                tile.exits.all? { |edge| hex.neighbors[edge] } &&
-                !(tile.exits & hex_neighbors(entity, hex)).empty?
+            case tile.name
+            when 'YL', 'YG', 'GL', 'GG'
+              tile.rotation.zero?
             else
               super
             end
