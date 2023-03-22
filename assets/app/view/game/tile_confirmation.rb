@@ -71,7 +71,7 @@ module View
           next unless (ability = @game.abilities(company, :blocks_hexes_consent))
           next unless @game.hex_blocked_by_ability?(@tile_selector.entity, ability, @tile_selector.hex)
           next unless company == ability.owner
-          next if company.owner == @tile_selector.entity
+          next if company.owner == @tile_selector.entity || company.owner == @tile_selector.entity.owner
 
           players << company.owner
         end
