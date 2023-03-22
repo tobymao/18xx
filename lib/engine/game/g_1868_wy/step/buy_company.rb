@@ -13,6 +13,15 @@ module Engine
           def can_buy_company?(entity)
             @game.skip_homeless_dpr?(entity) ? false : super
           end
+
+          def pay(entity, owner, price, company)
+            entity.spend(price, owner || @game.bank, check_positive: @game.phase.name != '2')
+
+            @game.company_bought(company, entity)
+
+            @log << "#{entity.name} buys #{company.name} from "\
+                    "#{owner.name} for #{@game.format_currency(price)}"
+          end
         end
       end
     end
