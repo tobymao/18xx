@@ -230,18 +230,7 @@ module Engine
           '619' => '619b',
         }.freeze
 
-        def dotify(tile)
-          tile.towns.each { |town| town.style = :dot }
-          tile
-        end
-
-        def init_tiles
-          super.each { |tile| dotify(tile) }
-        end
-
-        def init_hexes(companies, corporations)
-          super.each { |hex| dotify(hex.tile) }
-        end
+        TOKEN_PRICES_AFTER_BUST = [80, 60, 40].freeze
 
         def ipo_name(_entity = nil)
           'Treasury'
@@ -249,7 +238,10 @@ module Engine
 
         def setup
           init_track_points
-          setup_company_price_up_to_face
+          @companies.each do |company|
+            company.min_price = 0
+            company.max_price = 0
+          end
 
           @development_token_count = init_development_hexes
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
@@ -629,15 +621,18 @@ module Engine
           @track_points_used = Hash.new(0)
         end
 
-        def status_str(corporation)
-          return unless corporation.floated?
+        def status_array(corporation)
+          statuses = []
 
-          if corporation.minor?
-            player = corporation.owner
-            "#{player.name} Cash: #{format_currency(player.cash)}"
-          else
-            "Track Points: #{track_points_available(corporation)}"
+          if corporation.floated?
+            if @round.is_a?(G1868WY::Round::Operating) && corporation.corporation?
+              statuses << "Track Points: #{track_points_available(corporation)}"
+            end
+          elsif !@all_corps_available && (stack = @corp_stacks.find { |s| s.last == corporation }) && stack.size > 1
+            statuses << "Next: #{stack.map(&:name).reverse.slice(1, 4).join(', ')}"
           end
+
+          statuses.empty? ? nil : statuses
         end
 
         def hell_on_wheels
@@ -922,15 +917,21 @@ module Engine
           @players.map.with_index do |player, index|
             coal_company = Engine::Minor.new(
               type: :coal,
-              sym: "Coal-#{index + 1}",
-              name: "#{player.name} Coal",
+              sym: "Coal-#{self.class::LETTERS[index]}",
+              name: self.class::COAL_COMPANY_NAMES[index],
               logo: '1868_wy/coal',
               tokens: [],
               color: :black,
               abilities: [{ type: 'no_buy', owner_type: 'player' }],
             )
+            add_coal_development_tokens(coal_company)
             coal_company.owner = player
             coal_company.float!
+
+            def coal_company.cash
+              player.cash
+            end
+
             coal_company
           end
         end
@@ -1154,11 +1155,19 @@ module Engine
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return false unless boomer?(from) == boomer?(to)
 
-          if (upgrades = TILE_UPGRADES[from.name])
-            upgrades.include?(to.name)
+          case from.name
+          when 'YG'
+            to.name == 'GG'
+          when 'YL'
+            to.name == 'GL'
           else
             super
           end
+        end
+
+        # green crossing track with "$20" label
+        def upgrades_to_correct_label?(from, to)
+          (%w[8 9].include?(from.name) && to.label&.to_s == '$20') || super
         end
 
         def upgrade_cost(tile, hex, entity, spender)
@@ -1185,16 +1194,43 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          stops.sum do |stop|
-            if stop.city? && stop.boom
-              dtc = @development_token_count[stop.hex]
-              next BUSTED_REVENUE[stop.hex.tile.color] if dtc < DTC_BOOMCITY
+          revenue = super
 
-              gets_bonus = dtc >= DTC_REVENUE
+          revenue += east_west_bonus(stops)[:revenue]
+
+          revenue += spike_route_bonuses(route, stops)[:revenue]
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          ew_bonus = east_west_bonus(route.stops)[:description]
+          str += " + #{ew_bonus}" if ew_bonus
+
+          spike_bonus = spike_route_bonuses(route, route.stops)[:description]
+          str += " + #{spike_bonus}" if spike_bonus
+
+          str += ' + Uranium' if route.stops.any? { |s| uranium_bonus(@phase.name, s.hex).positive? }
+          str
+        end
+
+        def east_west_bonus(stops)
+          bonus = { revenue: 0 }
+
+          east = stops.find { |stop| stop.groups.include?('E') && stop.tile.label&.to_s == 'E' }
+          west = stops.find { |stop| stop.groups.include?('W') && stop.tile.label&.to_s == 'W' }
+
+          if east && west
+            east_rev = east.tile.icons.sum { |icon| icon.name.to_i }
+            west_rev = west.tile.icons.sum { |icon| icon.name.to_i }
+
+            if !east_rev.zero? && !west_rev.zero?
+              bonus[:revenue] += east_rev + west_rev
+              bonus[:description] = 'E/W'
             end
-
-            stop.route_revenue(route.phase, route.train) + (gets_bonus ? BOOMING_REVENUE_BONUS : 0)
           end
+
+          bonus
         end
 
         def decrement_development_token_count(tokened_hex)
@@ -1255,7 +1291,7 @@ module Engine
 
           corporations = tokens.map do |token|
             token.remove!
-            token.corporation
+            reprice_tokens!(token.corporation)
           end
 
           if corporations.empty?
@@ -1265,6 +1301,13 @@ module Engine
             dpr.coordinates = '' if corporations.include?(dpr) && dpr.tokens.count(&:used).zero?
             " Tokens are returned: #{corporations.map(&:name).join(' and ')}" unless corporations.empty?
           end
+        end
+
+        def reprice_tokens!(corporation)
+          corporation.tokens.reject(&:used).reverse.each_with_index do |token, index|
+            token.price = TOKEN_PRICES_AFTER_BUST[index]
+          end
+          corporation
         end
 
         def to_ghost_town!(hex)
@@ -1683,8 +1726,6 @@ module Engine
         end
 
         def event_close_ames_brothers!
-          return if ames_bros.closed?
-
           player = ames_bros.owner
           cash = union_pacific.share_price.price * 2
           @log << "Company #{ames_bros.name} closes."
@@ -1814,8 +1855,6 @@ module Engine
         end
 
         def event_close_no_bust!
-          return if !no_bust || no_bust.closed?
-
           @log << "-- Event: #{no_bust.name} closes, removing the NO BUST token --"
           hex = @no_bust_hex
           hex.remove_assignment!(no_bust.id)
@@ -1860,13 +1899,17 @@ module Engine
         def event_close_privates!
           case @phase.name
           when '5'
-            event_close_ames_brothers!
+            event_close_ames_brothers! unless ames_bros.closed?
           when '7'
-            event_close_pure_oil!
+            event_close_pure_oil! unless pure_oil.closed?
           when '8'
-            event_close_big_boy!
-            event_close_no_bust!
+            event_close_big_boy! unless big_boy_private.closed?
+            event_close_no_bust! unless no_bust.closed?
           end
+        end
+
+        def event_setup_company_price_up_to_face!
+          setup_company_price_up_to_face
         end
       end
     end
