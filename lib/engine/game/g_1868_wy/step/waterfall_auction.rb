@@ -64,9 +64,10 @@ module Engine
             if @choosing
               company.owner = player
               player.companies << company
-              @log << "#{player.name} chooses #{company.name}, closing #{@auctioned_company.name}"
+              @log << "#{player.name} chooses #{company.name}, closing the other #{@auctioned_company.sym} companies"
               @choosing = false
               @choosing_player = nil
+              @company_choices.each { |c| c.close! unless c == company }
               @company_choices = nil
               @auctioned_company.close!
               @auctioned_company = nil
