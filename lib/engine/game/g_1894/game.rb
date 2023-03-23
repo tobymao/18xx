@@ -19,7 +19,7 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 16, 4 => 12 }.freeze
+        CERT_LIMIT = { 3 => 16, 4 => 13 }.freeze
 
         STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
 
