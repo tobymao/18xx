@@ -871,14 +871,8 @@ module Engine
         end
 
         def remove_train(train)
-          from_depot = train.from_depot?
+          inventor_payout(train)
           super
-          return unless inventor_private&.owner&.corporation?
-          return if !from_depot || @depot.trains.find { |t| t.name == train.name } != train
-          return unless (payout = inventor_payout(train)).positive?
-
-          @log << "#{inventor_private.owner.name} collects #{format_currency(payout)} from #{inventor_private.name}"
-          @bank.spend(payout, inventor_private.owner)
         end
 
         def loan_shark_private
@@ -924,8 +918,13 @@ module Engine
         end
 
         def inventor_payout(train)
-          @payouts ||= { '2' => 20, '2+' => 0, '3' => 30, '4' => 40, '5' => 50, '6' => 60, '7' => 70, '8' => 80 }
-          @payouts[train.name] || 0
+          return unless inventor_private&.owner&.corporation?
+
+          @payouts ||= { '2' => 20, '3' => 30, '4' => 40, '5' => 50, '6' => 60, '7' => 70, '8' => 80 }
+          return unless (payout = @payouts.delete(train.name))
+
+          @log << "#{inventor_private.owner.name} collects #{format_currency(payout)} from #{inventor_private.name}"
+          @bank.spend(payout, inventor_private.owner)
         end
 
         private
