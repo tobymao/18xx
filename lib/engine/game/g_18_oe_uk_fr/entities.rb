@@ -10,119 +10,100 @@ module Engine
             sym: 'PeC',
             value: 20,
             revenue: 5,
+            auction_row: 1,
           },
           {
             name: 'Star Harbor Trading Co.',
             sym: 'SHTC',
             value: 60,
             revenue: 15,
+            auction_row: 2,
           },
           {
             name: 'Central Circle Transport Co.',
             sym: 'CCTC',
             value: 60,
             revenue: 15,
+            auction_row: 3,
           },
           {
             name: 'White Cliffs Ferry',
             sym: 'WCF',
             value: 60,
             revenue: 15,
+            auction_row: 4,
           },
           {
             name: 'Golden Bell Marketplace',
             sym: 'C',
             value: 120,
             revenue: 0,
-            # abilities: [
-            #   {
-            #     type: :float_minor,
-            #     minor: 'F',
-            #     owner_type: :player,
-            #   }
-            # ]
+            auction_row: 5,
           },
           {
             name: 'Great Western Steamship Company',
             sym: 'H',
             value: 120,
             revenue: 0,
-            # abilities: [
-            #   {
-            #     type: :float_minor,
-            #     minor: 'F',
-            #     owner_type: :player,
-            #   }
-            # ]
+            auction_row: 5,
           },
           {
             name: 'Vermilion Seal Couriers',
             sym: 'K',
             value: 120,
             revenue: 0,
-            # abilities: [
-            #   {
-            #     type: :float_minor,
-            #     minor: 'K',
-            #     owner_type: :player,
-            #   }
-            # ]
+            auction_row: 6,
           },
           {
             name: 'Compagnie Internationale des Wagons-Lits',
             sym: 'M',
             value: 120,
             revenue: 0,
-            # abilities: [
-            #   {
-            #     type: :float_minor,
-            #     minor: 'M',
-            #     owner_type: :player,
-            #   }
-            # ]
-          },
-        ].freeze
-
-        MINORS = [
-          {
-            name: 'Golden Bell Marketplace',
-            sym: 'C',
-            tokens: [0, 20],
-            type: 'minor',
-            shares: [100],
-            float_percent: 100,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Great Western Steamship Company',
-            sym: 'H',
-            tokens: [0, 20],
-            type: 'minor',
-            shares: [100],
-            float_percent: 100,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Vermilion Seal Couriers',
-            sym: 'K',
-            tokens: [0, 20],
-            type: 'minor',
-            shares: [100],
-            float_percent: 100,
-            max_ownership_percent: 100,
-          },
-          {
-            name: 'Compagnie Internationale des Wagons-Lits',
-            sym: 'M',
-            tokens: [0, 20],
-            type: 'minor',
-            shares: [100],
-            float_percent: 100,
-            max_ownership_percent: 100,
+            auction_row: 6,
           },
         ].freeze
 
         CORPORATIONS = [
+          {
+            name: 'Golden Bell Marketplace',
+            logo: '18_oe/C',
+            sym: 'C',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+          },
+          {
+            name: 'Great Western Steamship Company',
+            logo: '18_oe/H',
+            sym: 'H',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+          },
+          {
+            name: 'Vermilion Seal Couriers',
+            logo: '18_oe/K',
+            sym: 'K',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+          },
+          {
+            name: 'Compagnie Internationale des Wagons-Lits',
+            logo: '18_oe/M',
+            sym: 'M',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+          },
           {
             name: 'SNCF Belges',
             logo: '18_oe/BEL',
