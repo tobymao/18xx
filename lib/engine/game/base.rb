@@ -1954,9 +1954,9 @@ module Engine
       end
 
       def rust(train)
+        train.rusted = true
         remove_train(train)
         train.owner = nil
-        train.rusted = true
       end
 
       def num_corp_trains(entity)
