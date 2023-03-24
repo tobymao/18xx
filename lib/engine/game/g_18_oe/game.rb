@@ -283,7 +283,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Round::G18OE::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
