@@ -8,9 +8,23 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def actions(entity)
-            actions = super
-            actions << 'pass' if actions.any?
+            return [] unless entity == current_entity
+            return ['sell_shares'] if must_sell?(entity)
+
+            actions = []
+            actions << 'buy_shares' if can_buy_any?(entity)
+            actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
+            actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
+            actions << 'sell_shares' if can_sell_any?(entity)
+
+            actions << 'pass' if !can_float_minor?(entity) && !bought?
             actions
+          end
+
+          def can_float_minor?(entity)
+            return unless entity.player?
+
+            !bought? && entity.companies.any? { |company| @game.company_becomes_minor?(company) }
           end
 
           def float_minor(action)
@@ -45,7 +59,6 @@ module Engine
           end
 
           def visible_corporations
-            # @game.corporations + @game.minors
             @game.sorted_corporations.reject { |c| (c.type == :minor && c.ipoed) }
           end
 
@@ -58,6 +71,17 @@ module Engine
 
             # Add regional to the minor/regional operating order
             @game.minor_regional_order << action.corporation
+          end
+
+          def get_par_prices(entity, corp)
+            return super unless corp.type == :minor
+
+            @game.stock_market.par_prices
+          end
+
+          def check_legal_buy(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
+            raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" if
+              !can_buy?(entity, shares.to_bundle) && !swap && !exchange
           end
         end
       end
