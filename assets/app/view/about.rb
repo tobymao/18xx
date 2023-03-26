@@ -11,9 +11,10 @@ module View
 
     def render
       @connection&.get('/version.json', '/assets') do |version|
+        version_localtime = Time.at(version['version_epochtime'].to_i)
         link = node_to_s(h(:a, { attrs: { href: version['url'] } }, version['hash']))
         `document.getElementById('version').innerHTML = #{link}`
-        `document.getElementById('version_datetime').innerHTML = #{version['version_datetime']}`
+        `document.getElementById('version_localtime').innerHTML = #{version_localtime}`
       end
 
       message = <<~MESSAGE
@@ -24,7 +25,7 @@ module View
         code on <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. All games are used with express written consent from their respective rights holders. You can find more information about the games on the <a href='https://github.com/tobymao/18xx/wiki'>wiki</a>.
         </p>
 
-        <p>Current version: <span id='version'>unknown</span> deployed at <span id='version_datetime'>unknown</span> (<a href="https://github.com/tobymao/18xx/commits/master">View all recent commits</a>)</p>
+        <p>Current version: <span id='version'>unknown</span> deployed at <span id='version_localtime'>unknown</span> (<a href="https://github.com/tobymao/18xx/commits/master">View all recent commits</a>)</p>
 
         <h2>Conduct Expectations</h2>
 
