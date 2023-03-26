@@ -16,6 +16,7 @@ module Engine
       @tokenable_cities = {}
       @routes = {}
       @tokens = {}
+      @cheater_tokens = {}
       @home_as_token = opts[:home_as_token] || false
       @no_blocking = opts[:no_blocking] || false
       @skip_track = opts[:skip_track]
@@ -33,6 +34,7 @@ module Engine
       @reachable_hexes.clear
       @tokenable_cities.clear
       @tokens.clear
+      @cheater_tokens.clear
       @routes.delete_if do |_, route|
         !route[:route_train_purchase]
       end
@@ -54,17 +56,18 @@ module Engine
       @routes[corporation]
     end
 
-    def can_token?(corporation)
-      return @tokens[corporation] if @tokens.key?(corporation)
+    def can_token?(corporation, cheater: false)
+      hash = cheater ? @cheater_tokens : @tokens
+      return hash[corporation] if hash.key?(corporation)
 
       compute(corporation) do |node|
-        if node.tokenable?(corporation, free: true)
-          @tokens[corporation] = true
+        if node.tokenable?(corporation, free: true, cheater: cheater)
+          hash[corporation] = true
           break
         end
       end
-      @tokens[corporation] ||= false
-      @tokens[corporation]
+      hash[corporation] ||= false
+      hash[corporation]
     end
 
     def no_blocking?
