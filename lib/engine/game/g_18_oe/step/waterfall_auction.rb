@@ -8,7 +8,11 @@ module Engine
       module Step
         class WaterfallAuction < Engine::Step::WaterfallAuction
           def tiered_auction_companies
-            @companies.group_by(&:value).values
+            @companies.group_by(&:auction_row).values
+          end
+
+          def may_purchase?(company)
+            tiered_auction_companies.first.include?(company)
           end
 
           def min_bid(company)
