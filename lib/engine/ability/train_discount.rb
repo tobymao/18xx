@@ -18,7 +18,7 @@ module Engine
 
         discount_value = discount.is_a?(Hash) ? discount[train.name] : discount
 
-        price - (discount_value > 1 ? discount_value : (price * discount_value))
+        price - (discount_value > 1 ? discount_value : (price * discount_value).floor)
       end
     end
   end
