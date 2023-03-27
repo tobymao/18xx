@@ -10,36 +10,42 @@ module Engine
             sym: 'PeC',
             value: 20,
             revenue: 5,
+            auction_row: 1,
           },
           {
             name: 'Star Harbor Trading Co.',
             sym: 'SHTC',
             value: 60,
             revenue: 15,
+            auction_row: 2,
           },
           {
             name: 'Central Circle Transport Co.',
             sym: 'CCTC',
             value: 60,
             revenue: 15,
+            auction_row: 3,
           },
           {
             name: 'White Cliffs Ferry',
             sym: 'WCF',
             value: 60,
             revenue: 15,
+            auction_row: 4,
           },
           {
             name: 'Golden Bell Marketplace',
             sym: 'C',
             value: 120,
             revenue: 0,
+            auction_row: 5,
             # abilities: [
             #   {
-            #     type: :float_minor,
-            #     minor: 'F',
-            #     owner_type: :player,
-            #   }
+            #     type: 'exchange',
+            #     corporations: ['C'],
+            #     owner_type: 'player',
+            #     from: 'par',
+            #   },
             # ]
           },
           {
@@ -47,12 +53,14 @@ module Engine
             sym: 'H',
             value: 120,
             revenue: 0,
+            auction_row: 5,
             # abilities: [
             #   {
-            #     type: :float_minor,
-            #     minor: 'F',
-            #     owner_type: :player,
-            #   }
+            #     type: 'exchange',
+            #     corporations: ['H'],
+            #     owner_type: 'player',
+            #     from: 'par',
+            #   },
             # ]
           },
           {
@@ -60,12 +68,14 @@ module Engine
             sym: 'K',
             value: 120,
             revenue: 0,
+            auction_row: 6,
             # abilities: [
             #   {
-            #     type: :float_minor,
-            #     minor: 'K',
-            #     owner_type: :player,
-            #   }
+            #     type: 'exchange',
+            #     corporations: ['K'],
+            #     owner_type: 'player',
+            #     from: 'par',
+            #   },
             # ]
           },
           {
@@ -73,12 +83,14 @@ module Engine
             sym: 'M',
             value: 120,
             revenue: 0,
+            auction_row: 6,
             # abilities: [
             #   {
-            #     type: :float_minor,
-            #     minor: 'M',
-            #     owner_type: :player,
-            #   }
+            #     type: 'exchange',
+            #     corporations: ['M'],
+            #     owner_type: 'player',
+            #     from: 'par',
+            #   },
             # ]
           },
         ].freeze
@@ -86,6 +98,7 @@ module Engine
         MINORS = [
           {
             name: 'Golden Bell Marketplace',
+            logo: '18_oe/C',
             sym: 'C',
             tokens: [0, 20],
             type: 'minor',
@@ -95,6 +108,7 @@ module Engine
           },
           {
             name: 'Great Western Steamship Company',
+            logo: '18_oe/H',
             sym: 'H',
             tokens: [0, 20],
             type: 'minor',
@@ -104,6 +118,7 @@ module Engine
           },
           {
             name: 'Vermilion Seal Couriers',
+            logo: '18_oe/K',
             sym: 'K',
             tokens: [0, 20],
             type: 'minor',
@@ -113,6 +128,7 @@ module Engine
           },
           {
             name: 'Compagnie Internationale des Wagons-Lits',
+            logo: '18_oe/M',
             sym: 'M',
             tokens: [0, 20],
             type: 'minor',
