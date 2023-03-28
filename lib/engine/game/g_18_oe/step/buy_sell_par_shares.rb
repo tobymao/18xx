@@ -85,6 +85,7 @@ module Engine
             corps = @game.corporations.dup
             corps.each do |corp|
               next if corp.ipoed || corp.type == :minor
+
               @game.close_corporation(corp)
             end
           end
