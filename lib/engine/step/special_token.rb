@@ -69,6 +69,16 @@ module Engine
           check_tokenable: check_tokenable,
         )
 
+        if special_ability.type == :token
+          special_ability.use!
+
+          if special_ability.count&.zero? && special_ability.closed_when_used_up
+            company = special_ability.owner
+            @log << "#{company.name} closes"
+            company.close!
+          end
+        end
+
         teleport_complete if @round.teleported
       end
 
