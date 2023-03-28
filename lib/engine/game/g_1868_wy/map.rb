@@ -110,7 +110,7 @@ module Engine
                        'path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:5;icon=image:1868_wy/120',
             ['A15'] => 'offboard=groups:Billings,revenue:yellow_10|green_20|brown_30|gray_30,groups:W;'\
                        'path=a:_0,b:1;path=a:_0,b:5;icon=image:1868_wy/60',
-            ['A23'] => 'offboard=revenue:yellow_40|green_30|brown_20|gray_20;path=a:_0,b:5;icon=image:1868_wy/fort,sticky:1',
+            ['A23'] => 'offboard=revenue:yellow_40|green_30|brown_20|gray_20;path=a:_0,b:0;path=a:_0,b:5;icon=image:1868_wy/fort,sticky:1',
             ['E27'] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:E;'\
                        'path=a:_0,b:1;label=E;icon=image:1868_wy/10;',
             ['E1'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50,groups:W;'\
@@ -129,9 +129,9 @@ module Engine
             ['B4'] => 'border=edge:0;border=edge:1;border=edge:5',
             ['C3'] => 'border=edge:0;border=edge:2;border=edge:3;border=edge:4;border=edge:5',
             ['C5'] => 'border=edge:0;border=edge:1;border=edge:2;border=edge:3;'\
-                      'border=edge:5;town=revenue:yellow_20|green_30|brown_30|gray_40,loc:4.5;path=a:_0,b:4',
+                      'border=edge:5;town=style:dot,revenue:yellow_20|green_30|brown_30|gray_40,loc:4.5;path=a:_0,b:4',
             ['D2'] => 'border=edge:3;border=edge:4',
-            ['D4'] => 'border=edge:1;border=edge:2;border=edge:3;town=revenue:yellow_20|green_30|brown_30|gray_40,loc:0;'\
+            ['D4'] => 'border=edge:1;border=edge:2;border=edge:3;town=style:dot,revenue:yellow_20|green_30|brown_30|gray_40,loc:0;'\
                       'path=a:_0,b:0',
           },
           purple: {
@@ -145,7 +145,7 @@ module Engine
           gray: {
             %w[B6 C15 D6 D8 E9 F4 F6 H2 H8 L18 M15] => '',
             %w[A17 G7] => 'offboard=revenue:0;path=a:_0,b:0',
-            ['A1'] => 'town=revenue:0;path=a:_0,b:4;icon=image:1868_wy/golden_spike',
+            ['A1'] => 'town=style:dot,revenue:0;path=a:_0,b:4;icon=image:1868_wy/golden_spike,large:1',
             %w[C7 E5] => 'path=a:1,b:4',
             %w[D16 K1] => 'offboard=revenue:0;path=a:_0,b:3',
             ['E3'] => 'junction;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0',
@@ -156,7 +156,7 @@ module Engine
             ['G3'] => 'path=a:2,b:4',
             ['I1'] => 'offboard=revenue:0;path=a:_0,b:4;path=a:_0,b:5;',
             ['M19'] => 'town=revenue:10;path=a:_0,b:0;path=a:_0,b:4',
-            ['L0'] => 'town=revenue:0,loc:5;junction;path=a:_0,b:5;path=a:_1,b:4,terminal:1;icon=image:1868_wy/golden_spike',
+            ['L0'] => 'town=style:dot,revenue:0,loc:5;junction;path=a:_0,b:5;path=a:_1,b:4,terminal:1;icon=image:1868_wy/golden_spike,large:1',
           },
         }.freeze
 
@@ -209,17 +209,17 @@ module Engine
           'YL' => {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:0,loc:1;town=revenue:10,loc:center;path=a:_1,b:2;path=a:_1,b:4;label=L',
+            'code' => 'city=revenue:0,loc:1;town=revenue:10,loc:center,style:dot;path=a:_1,b:2;path=a:_1,b:4;label=L',
           },
           'YG' => {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:0,loc:0;town=revenue:10,loc:center;path=a:_1,b:2;path=a:_1,b:4;label=G',
+            'code' => 'city=revenue:0,loc:0;town=revenue:10,loc:center,style:dot;path=a:_1,b:2;path=a:_1,b:4;label=G',
           },
           '5b' => {
             'count' => 'unlimited',
             'color' => 'yellow',
-            'code' => 'town=revenue:10,boom:1,loc:center;path=a:_0,b:0;path=a:_0,b:1',
+            'code' => 'town=revenue:10,boom:1,loc:center,style:dot;path=a:_0,b:0;path=a:_0,b:1',
           },
           '5B' => {
             'count' => 'unlimited',
@@ -229,7 +229,7 @@ module Engine
           '6b' => {
             'count' => 'unlimited',
             'color' => 'yellow',
-            'code' => 'town=revenue:10,boom:1,loc:center;path=a:_0,b:0;path=a:_0,b:2',
+            'code' => 'town=revenue:10,boom:1,loc:center,style:dot;path=a:_0,b:0;path=a:_0,b:2',
           },
           '6B' => {
             'count' => 'unlimited',
@@ -239,7 +239,7 @@ module Engine
           '57b' => {
             'count' => 'unlimited',
             'color' => 'yellow',
-            'code' => 'town=revenue:10,boom:1,loc:center;path=a:_0,b:0;path=a:_0,b:3',
+            'code' => 'town=revenue:10,boom:1,loc:center,style:dot;path=a:_0,b:0;path=a:_0,b:3',
           },
           '57B' => {
             'count' => 'unlimited',
@@ -503,39 +503,6 @@ module Engine
             'code' => 'offboard=groups:Billings,revenue:yellow_30|green_40|brown_50|gray_60,groups:W;'\
                       'path=a:_0,b:3;path=a:_0,b:4;label=W;icon=image:1868_wy/50;',
           },
-        }.freeze
-
-        TILE_UPGRADES = {
-          # hard-coded to work with the custom tiles with
-          # the special $20 upgrade cost and label: 16 19 20
-          '8' => %w[16 17 19 21 22],
-          '9' => %w[18 19 20],
-
-          # town + city -> city
-          'YG' => ['GG'],
-          'YL' => ['GL'],
-
-          # Green -> Brown Boomtown
-          '12b' => %w[448b 450b],
-          '13b' => %w[450b],
-          '205b' => %w[449b 448b 450b],
-          '206b' => %w[449b 448b 450b],
-
-          # Green -> Brown Boom City
-          '12B' => %w[448B 450B],
-          '13B' => %w[450B],
-          '205B' => %w[449B 448B 450B],
-          '206B' => %w[449B 448B 450B],
-
-          # Brown -> Gray Boomtown
-          '449b' => ['51b'],
-          '448b' => ['51b'],
-          '450b' => ['51b'],
-
-          # Brown -> Gray Boom City
-          '449B' => ['51B'],
-          '448B' => ['51B'],
-          '450B' => ['51B'],
         }.freeze
 
         BOOMTOWN_TO_BOOMCITY_TILES = {

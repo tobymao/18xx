@@ -8,42 +8,6 @@ module Engine
         AXES = { x: :number, y: :letter }.freeze
         TILE_TYPE = :lawson
 
-        TILES = {
-          '3' => 14,
-          '4' => 25,
-          '5' => 25,
-          '6' => 15,
-          '7' => 14,
-          '8' => 99,
-          '9' => 99,
-          '12' => 10,
-          '13' => 8,
-          '57' => 19,
-          '58' => 25,
-          '80' => 5,
-          '81' => 5,
-          '82' => 20,
-          '83' => 20,
-          '141' => 15,
-          '142' => 15,
-          '143' => 5,
-          '144' => 5,
-          '145' => 13,
-          '146' => 21,
-          '147' => 13,
-          '201' => 9,
-          '202' => 18,
-          '205' => 17,
-          '206' => 17,
-          '207' => 12,
-          '208' => 9,
-          '544' => 8,
-          '545' => 8,
-          '546' => 7,
-          '621' => 12,
-          '622' => 9,
-        }.freeze
-
         LOCATION_NAMES = {
           'C40' => 'Norwegian Coast (to Narvik)',
           'D25' => 'Scottish Highlands',
@@ -180,7 +144,8 @@ module Engine
             ['O18'] => 'junction;path=a:5,b:_0,terminal:1;border=edge:3;border=edge:4',
             ['O20'] => 'border=edge:1;border=edge:2;border=edge:3;border=edge:4',
             ['O22'] => 'border=edge:1;border=edge:2;border=edge:3',
-            ['O26'] => 'junction;path=a:1,b:_0,terminal:1;border=edge:2;border=edge:3',
+            ['O26'] => 'junction;path=a:1,b:_0,terminal:1;path=a:4,b:_0,terminal:1;'\
+                       'icon=image:port,sticky:1;border=edge:2;border=edge:3',
 
             # bay of biscay
             ['P17'] => 'border=edge:0;border=edge:5', # needs a port
@@ -196,6 +161,11 @@ module Engine
 
             # celtic sea
             ['G22'] => 'path=a:0,b:4;border=edge:2;border=edge:5',
+            ['H23'] => 'border=edge:0;border=edge:2;border=edge:5', # needs port
+            ['I22'] => 'junction;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
+                       'border=edge:0;border=edge:3;border=edge:4', # needs port/ferry
+            ['I24'] => 'junction;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:1;border=edge:2', # needs port/ferry
+            ['J21'] => 'border=edge:0;border=edge:3', # needs port
             ['K14'] => 'border=edge:0;border=edge:4;border=edge:5',
             ['K16'] => 'border=edge:0;border=edge:1;border=edge:4;border=edge:5', # needs a port
             ['K18'] => 'border=edge:0;border=edge:1;border=edge:4;border=edge:5',
@@ -208,12 +178,20 @@ module Engine
             ['N17'] => 'border=edge:0;border=edge:1;border=edge:2;border=edge:3',
             ['O16'] => 'border=edge:2;border=edge:3',
 
+            # silver coast
+
+            # balearic sea
+
+            # strait of gibraltar
+
             # sea of sardinia
             ['X31'] => 'border=edge:0;border=edge:5',
             ['Y30'] => 'border=edge:0;border=edge:3;border=edge:4;border=edge:5',
             ['Y32'] => 'border=edge:0;border=edge:1;border=edge:2;border=edge:4;border=edge:5',
-            ['Y34'] => 'border=edge:0;border=edge:1;border=edge:4;border=edge:5', # needs ports
-            ['Y36'] => 'border=edge:0;border=edge:1;border=edge:4;border=edge:5', # needs port
+            ['Y34'] => 'icon=image:port,sticky:1;junction;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;'\
+                       'border=edge:0;border=edge:1;border=edge:4;border=edge:5',
+            ['Y36'] => 'icon=image:port,sticky:1;junction;path=a:3,b:_0,terminal:1;'\
+                       'border=edge:0;border=edge:1;border=edge:4;border=edge:5',
             ['Y38'] => 'path=a:2,b:4;border=edge:0;border=edge:1;border=edge:3;border=edge:4',
             ['Y40'] => 'path=a:1,b:5;border=edge:1;border=edge:2;border=edge:3',
             ['Z29'] => 'border=edge:3;border=edge:4',

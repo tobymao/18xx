@@ -39,7 +39,7 @@ module View
 
         cash = @current_entity.cash
         prices = @step.get_par_prices(@current_entity, @corporation_to_par)
-        prices.map! { |sp| "#{@game.format_currency(sp.price)} (#{(cash / sp.price.to_f).floor} shares)" }
+        prices.map! { |sp| "#{@game.format_currency(sp.price)} (#{[(cash / sp.price.to_f).floor, 10].min} shares)" }
         text = "#{@current_entity.name} can par #{@corporation_to_par.name} at #{prices.join(', ')}"
         h(:div, props, text)
       end
