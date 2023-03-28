@@ -8,7 +8,7 @@ module Engine
     module G18OE
       class Game < Game::Base
         include_meta(G18OE::Meta)
-        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions
+        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -102,6 +102,8 @@ module Engine
           'FR' => 20,
         }.freeze
 
+        MAX_FLOATED_REGIONALS = 18
+
         # still need green+ OE specific track tiles
         TILES = {
           '3' => 14,
@@ -192,6 +194,7 @@ module Engine
           @minor_regional_order = []
           @minor_available_regions = %w[UK UK FR FR] # this should be set per variant, big game will need extra logic
           @minor_floated_regions = {}
+          @regional_corps_floated = 0
         end
 
         def ipo_name(_entity = nil)
@@ -212,10 +215,6 @@ module Engine
 
           available_regions = NATIONAL_REGION_HEXES.select { |key, _value| @minor_available_regions.include?(key) }
           region_hexes = available_regions.values.flatten
-
-          # @hexes.select do |hex|
-          #   hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } unless metropolis_hex?(hex)
-          # end
 
           @hexes
             .select { |hex| region_hexes.include?(hex.name.to_s) }
@@ -271,8 +270,8 @@ module Engine
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G18OE::Step::HomeToken, # will need to probably write custom for track rights zone
-            G18OE::Step::BuySellParShares, # will probably need custom BuySellPar for floating minors
+            G18OE::Step::HomeToken,
+            G18OE::Step::BuySellParShares,
           ])
         end
 

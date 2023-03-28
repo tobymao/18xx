@@ -17,8 +17,14 @@ module Engine
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
 
-            actions << 'pass' if !can_float_minor?(entity) && !bought?
+            actions << 'pass' if !can_float_minor?(entity) && !bought? && actions.any?
             actions
+          end
+
+          def can_buy_any_from_ipo?(entity)
+            return unless @game.corporations.all?(&:ipoed)
+
+            super
           end
 
           def can_float_minor?(entity)
@@ -67,10 +73,20 @@ module Engine
               float_minor(action)
             else
               super
+              @game.regional_corps_floated += 1
             end
 
             # Add regional to the minor/regional operating order
             @game.minor_regional_order << action.corporation
+
+            # Remove unfloated regional corporations once max number floated reached
+            return unless @game.regional_corps_floated == @game.class::MAX_FLOATED_REGIONALS
+
+            corps = @game.corporations.dup
+            corps.each do |corp|
+              next if corp.ipoed || corp.type == :minor
+              @game.close_corporation(corp)
+            end
           end
 
           def get_par_prices(entity, corp)
