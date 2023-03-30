@@ -12,9 +12,14 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
-            return [] if exchange_corporations(entity).empty?
 
             %w[choose pass]
+          end
+
+          def auto_actions(entity)
+            return unless exchange_corporations(entity).empty?
+
+            [Engine::Action::Pass.new(entity)]
           end
 
           def description
@@ -27,13 +32,6 @@ module Engine
 
           def process_pass(action)
             @game.close_private(action.entity)
-          end
-
-          def log_skip(_entity); end
-
-          def skip!
-            @game.close_private(current_entity)
-            pass!
           end
 
           def choice_available?(_entity)
