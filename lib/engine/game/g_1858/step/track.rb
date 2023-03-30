@@ -10,9 +10,15 @@ module Engine
           def actions(entity)
             return [] unless entity == current_entity
             return [] if !entity.minor? && !entity.corporation?
-            return [] unless can_lay_tile?(entity)
 
             ACTIONS
+          end
+
+          def auto_actions(entity)
+            return unless entity.minor?
+            return if can_lay_tile?(entity)
+
+            [Engine::Action::Pass.new(entity)]
           end
 
           def round_state
