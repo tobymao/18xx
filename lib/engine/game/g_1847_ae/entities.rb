@@ -7,6 +7,17 @@ module Engine
       module Entities
         COMPANIES = [
           {
+            name: 'Rammelsbach',
+            value: 150,
+            revenue: 30,
+            min_price: 100,
+            max_price: 200,
+            desc: 'May be sold to a corporation for 100 to 200 M. '\
+                  'Revenue increases to 50 when a tile is laid in D9. '\
+                  'Never closes.',
+            sym: 'R',
+          },
+          {
             name: 'Königsbach',
             value: 110,
             revenue: 5,
@@ -107,8 +118,8 @@ module Engine
             abilities: [{
               type: 'token',
               owner_type: 'corporation',
-              #when: 'token',
-              #reachable: true,
+              when: 'token',
+              reachable: false,
               hexes: [],
               discount: 0.5,
               count: 1,
