@@ -202,7 +202,7 @@ module Engine
                   {
                     name: 'D',
                     distance: 999,
-                    price: 820,
+                    price: 800,
                     num: 22,
                     events: [{ 'type' => 'last_or_set_triggered' }],
                     discount: { '5' => 200, '6' => 300, '7' => 350 },
