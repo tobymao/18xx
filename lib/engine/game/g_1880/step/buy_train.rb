@@ -41,7 +41,10 @@ module Engine
 
           def pass!
             train_name = @game.depot.upcoming.first.name
-            return super if train_name == '10' || train_name == '2P' || !discard_trains?
+            train_index = @game.depot.upcoming.first.index
+            if (train_name == '8E' && train_index == 1) || train_name == '10' || train_name == '2P' || !discard_trains?
+              return super
+            end
 
             discard_all_trains(train_name)
           end
