@@ -32,7 +32,7 @@ module Engine
           price = share_price(coordinates).price
           return super if !BLOCKED_UP_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
 
-          @game.log << "#{corporation.name} share price blocked from moving up by phase"
+          @game.log << "#{corporation.name} share price blocked from moving up by phase" if corporation
           coordinates
         end
 
@@ -40,7 +40,7 @@ module Engine
           price = share_price(coordinates).price
           return super if !BLOCKED_RIGHT_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
 
-          @game.log << "#{corporation.name} share price blocked from moving right by phase"
+          @game.log << "#{corporation.name} share price blocked from moving right by phase" if corporation
           coordinates
         end
       end
