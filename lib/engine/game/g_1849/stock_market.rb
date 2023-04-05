@@ -38,7 +38,14 @@ module Engine
 
         def right(corporation, coordinates)
           price = share_price(coordinates).price
-          return super if !BLOCKED_RIGHT_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
+
+          # Lower two blocked right prices push stock marker UP if not in blue zone
+          if !@game.phase.status.include?('blue_zone') && BLOCKED_RIGHT_PRICES.slice(0, 2).include?(price)
+            @game.log << "#{corporation.name} share price blocked from moving right by phase; moves up instead" if corporation
+            return up(corporation, coordinates)
+          elsif !BLOCKED_RIGHT_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
+            return super
+          end
 
           @game.log << "#{corporation.name} share price blocked from moving right by phase" if corporation
           coordinates
