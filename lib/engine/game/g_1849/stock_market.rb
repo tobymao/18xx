@@ -40,12 +40,10 @@ module Engine
           price = share_price(coordinates).price
 
           # Special case rule: Stock marker UP if not in blue zone
-          if !@game.phase.status.include?('blue_zone') && BLOCKED_RIGHT_PRICES.include?(price)
-            return up(corporation, coordinates)
-          elsif !BLOCKED_RIGHT_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
-            return super
-          end
-
+          return up(corporation, coordinates) if !@game.phase.status.include?('blue_zone') && BLOCKED_RIGHT_PRICES.include?(price)
+            
+          return super if !BLOCKED_RIGHT_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
+            
           @game.log << "#{corporation.name} share price blocked from moving right by phase" if corporation
           coordinates
         end
