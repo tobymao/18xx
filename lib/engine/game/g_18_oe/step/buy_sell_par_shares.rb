@@ -17,7 +17,7 @@ module Engine
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
 
-            actions << 'pass' if !can_float_minor?(entity) && !bought? && actions.any?
+            actions << 'pass' if !can_float_minor?(entity) && !bought? && !actions.empty?
             actions
           end
 
