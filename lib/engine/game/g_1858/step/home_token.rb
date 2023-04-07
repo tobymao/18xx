@@ -36,11 +36,23 @@ module Engine
             end
 
             super
+
+            delete_reservations(action.entity)
           end
 
           def process_pass(action)
             super
             @round.pending_tokens.shift
+            delete_reservations(action.entity)
+          end
+
+          def delete_reservations(corporation)
+            return unless @game.private_closure_round == :in_progress
+
+            # Delete any reservations acquired from a just closed private
+            # railway company. These are only needed for this token step.
+            reservations = Array(@game.abilities(corporation, :reservation))
+            reservations.each { |r| corporation.remove_ability(r) }
           end
         end
       end
