@@ -101,6 +101,7 @@ module Engine
       else
         receiver = if (%i[escrow incremental].include?(corporation.capitalization) && bundle.owner.corporation?) ||
                        (bundle.owner.corporation? && !corporation.ipo_is_treasury?) ||
+                       (bundle.owner.corporation? && bundle.owner != corporation) ||
                        bundle.owner.player?
                      bundle.owner
                    else
