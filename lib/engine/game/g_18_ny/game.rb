@@ -1244,7 +1244,7 @@ module Engine
               liquidation_price = minor.share_price.price * 2
               @log << "#{minor.name} is liquidated and #{owner.name} receives #{format_currency(liquidation_price)} " \
                       'in compensation from the bank'
-              @bank.spend(liquidation_price, owner)
+              @bank.spend(liquidation_price, owner) if liquidation_price.positive?
             end
             close_corporation(minor, quiet: true)
           end
