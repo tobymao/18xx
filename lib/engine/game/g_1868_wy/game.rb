@@ -723,6 +723,7 @@ module Engine
             if corporation.minor? && corporation != union_pacific_coal && corporation != bonanza
               player = corporation.owner
               statuses << 'P3c Frémont discount: $20' if player == fremont.owner
+              statuses << 'P5c RR Act discount: 50%' if player == pac_rr_a.owner
             elsif @round.is_a?(G1868WY::Round::Operating) && corporation.corporation?
               statuses << "Track Points: #{track_points_available(corporation)}"
             end
@@ -868,6 +869,7 @@ module Engine
             else
               @border_after = action.hex.tile.borders.first if @border_before
               credit_mobilier_check_tile_lay_action(action)
+              foncier_check_tile_lay_action(action)
 
               if @forts.include?(action.hex.id) && action.tile.color == :yellow
                 icon = action.tile.icons.find { |i| i.name == 'fort' }
@@ -2069,6 +2071,28 @@ module Engine
           )
         end
 
+        def foncier_check_tile_lay_action(action)
+          return if !foncier || action.entity != foncier.corporation
+
+          tile = action.tile
+          return unless tile.color == :yellow
+
+          amount, tile_type =
+            if boomer?(tile)
+              [30, (tile.cities.empty? ? 'Boomtown' : 'Boom City')]
+            elsif !tile.cities.empty? && tile.label&.to_s != 'G' && tile.label&.to_s != 'L'
+              [40, 'city']
+            elsif !tile.towns.empty?
+              [10, 'town']
+            else
+              [0, nil]
+            end
+
+          return unless amount.positive?
+
+          private_earns(amount, foncier, "laid a #{tile_type} tile")
+        end
+
         def event_close_coal_companies!
           @log << '-- Event: Coal Companies close (gray Coal DTs remain on the board) --'
           @minors.reject! do |company|
@@ -2095,6 +2119,7 @@ module Engine
           when '5'
             event_close_ames_brothers! unless ames_bros.closed?
             event_close_upc! unless union_pacific_coal.closed?
+            event_convert_lhp! unless lhp_private.closed?
           when '7'
             event_close_pure_oil! unless pure_oil.closed?
           when '8'
