@@ -23,6 +23,7 @@ module Engine
             # company treasury is also a sell action, but this is handled
             # through the companies' abilities rather than these actions.
             actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'convert' if can_convert_any?(entity)
 
             # Buy actions.
             # Starting a public company by exchanging a private company for the
@@ -56,10 +57,23 @@ module Engine
             pass!
           end
 
+          def convert_button_text
+            'Convert to 10-share company'
+          end
+
           def can_ipo_any?(entity)
             # Can't start a public company by directly buying its president's
             # certificate until the start of phase 5.
             super && @game.phase.status.include?('public_companies')
+          end
+
+          def can_convert?(corporation)
+            (corporation.owner == current_entity) && (corporation.type == :medium) &&
+              corporation.floated? && !bought?
+          end
+
+          def can_convert_any?(_entity)
+            @game.corporations.any? { |corporation| can_convert?(corporation) }
           end
 
           def can_gain?(entity, share, exchange: false)
@@ -103,6 +117,10 @@ module Engine
           def can_exchange_any?(player)
             minors = @game.minors.select { |m| m.owner == player }
             (player.companies + minors).any? { |entity| can_exchange?(entity, player) }
+          end
+
+          def process_convert(action)
+            @game.convert!(action.corporation)
           end
 
           def min_bid(company)

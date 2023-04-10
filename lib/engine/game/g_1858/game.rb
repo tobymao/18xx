@@ -437,6 +437,17 @@ module Engine
             "#{format_revenue_currency(private_revenue)} private revenue"
         end
 
+        def event_green_privates_available!
+          @log << '-- Event: Green private companies can be started --'
+          # Don't need to change anything, the check in buyable_bank_owned_companies
+          # will let these companies be auctioned in future stock rounds.
+        end
+
+        def event_corporations_convert!
+          @log << '-- Event: All 5-share public companies must convert to 10-share companies --'
+          @corporations.select { |c| c.type == :medium }.each { |c| convert!(c) }
+        end
+
         def event_privates_close!
           @log << '-- Event: Private companies will close at the end of this operating round --'
           @private_closure_round = :next
@@ -459,6 +470,33 @@ module Engine
           trains.select { |train| %w[6H 3M].include?(train.name) }
                 .each { |train| train.rusts_on = purchased_train.sym }
           rust_trains!(purchased_train, purchased_train.owner)
+        end
+
+        def convert!(corporation, quiet: false)
+          return unless corporation.corporation?
+          return unless corporation.type == :medium
+
+          @log << "#{corporation.name} converts to a 10-share company" unless quiet
+          corporation.type = :large
+          corporation.float_percent = 20
+
+          shares = @_shares.values.select { |share| share.corporation == corporation }
+          shares.each { |share| share.percent /= 2 }
+          corporation.share_holders.transform_values! { |percent| percent / 2 }
+
+          new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
+          new_shares.each do |share|
+            add_new_share(share)
+          end
+          new_shares
+        end
+
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
         end
 
         def buyable_bank_owned_companies
@@ -555,6 +593,23 @@ module Engine
           # Private railways owned by public companies don't pay out.
           exchanged_companies = @companies.select { |company| company.owner&.corporation? }
           super(ignore: exchanged_companies.map(&:id))
+        end
+
+        def close_corporation(corporation, quiet: false)
+          super
+
+          # Closed corporations can be restarted.
+          @corporations << reset_corporation(corporation)
+        end
+
+        def reset_corporation(corporation)
+          corporation = super(corporation)
+
+          # The corporation will be restarted as a five-share corporation. It
+          # might need to be converted to a ten-share corporation.
+          convert!(corporation, quiet: true) if @phase.tiles.include?(:brown)
+
+          corporation
         end
 
         # Removes all of the icons on the map for a private railway company.
