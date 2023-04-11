@@ -267,13 +267,12 @@ module Engine
         end
 
         def operating_round(round_num)
-          round = G18NY::Round::Operating.new(self, [
+          G18NY::Round::Operating.new(self, [
             G18NY::Step::CheckNYCFormation,
             G18NY::Step::BuyCompany,
             G18NY::Step::Bankrupt,
             G18NY::Step::EmergencyMoneyRaising,
             G18NY::Step::DiscardTrain,
-            G18NY::Step::SpecialCapitalization,
             Engine::Step::HomeToken,
             G18NY::Step::ReplaceTokens,
             G18NY::Step::StagecoachExchange,
@@ -293,11 +292,6 @@ module Engine
             G18NY::Step::AcquireCorporation,
             [G18NY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
-
-          unless immediate_capitalization_round?
-            round.steps.delete_if { |step| step.instance_of?(G18NY::Step::SpecialCapitalization) }
-          end
-          round
         end
 
         def new_nyc_formation_round(round_num)
@@ -333,8 +327,12 @@ module Engine
               end
             when G18NY::Round::Capitalization
               @capitalization_round = nil
-              @turn += 1
-              new_stock_round
+              if @round_after_capialization_round
+                @round_after_capialization_round
+              else
+                @turn += 1
+                new_stock_round
+              end
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
@@ -342,7 +340,13 @@ module Engine
             when Engine::Round::Operating
               or_round_finished
               if @round.round_num < @operating_rounds
-                new_operating_round(@round.round_num + 1)
+                round = new_operating_round(@round.round_num + 1)
+                if immediate_capitalization_round? && @capitalization_round
+                  @round_after_capialization_round = round
+                  new_capitalization_round
+                else
+                  round
+                end
               else
                 or_set_finished
                 if %i[round_one round_two].include?(@nyc_formation_state)
@@ -417,6 +421,16 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT['capitalization_round'][1]} --"
           @capitalization_round = true
           @full_capitalization = true
+          return unless immediate_capitalization_round?
+
+          # floated corporations, that have not operated, capitalize immediately
+          @corporations.select { |c| c.floated? && !c.operated? }.each do |c|
+            bundle = issuable_shares(c).max_by(&:percent)
+            next unless bundle
+
+            @log << "#{c.name} fully capitalizes"
+            @share_pool.sell_shares(bundle)
+          end
         end
 
         def non_floated_corporations
