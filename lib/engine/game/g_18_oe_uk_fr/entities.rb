@@ -39,14 +39,14 @@ module Engine
             value: 120,
             revenue: 0,
             auction_row: 5,
-            # abilities: [
-            #   {
-            #     type: 'exchange',
-            #     corporations: ['C'],
-            #     owner_type: 'player',
-            #     from: 'par',
-            #   },
-            # ]
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[C],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
           },
           {
             name: 'Great Western Steamship Company',
@@ -54,14 +54,14 @@ module Engine
             value: 120,
             revenue: 0,
             auction_row: 5,
-            # abilities: [
-            #   {
-            #     type: 'exchange',
-            #     corporations: ['H'],
-            #     owner_type: 'player',
-            #     from: 'par',
-            #   },
-            # ]
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[H],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
           },
           {
             name: 'Vermilion Seal Couriers',
@@ -69,14 +69,14 @@ module Engine
             value: 120,
             revenue: 0,
             auction_row: 6,
-            # abilities: [
-            #   {
-            #     type: 'exchange',
-            #     corporations: ['K'],
-            #     owner_type: 'player',
-            #     from: 'par',
-            #   },
-            # ]
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[K],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
           },
           {
             name: 'Compagnie Internationale des Wagons-Lits',
@@ -84,18 +84,18 @@ module Engine
             value: 120,
             revenue: 0,
             auction_row: 6,
-            # abilities: [
-            #   {
-            #     type: 'exchange',
-            #     corporations: ['M'],
-            #     owner_type: 'player',
-            #     from: 'par',
-            #   },
-            # ]
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[M],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
           },
         ].freeze
 
-        MINORS = [
+        CORPORATIONS = [
           {
             name: 'Golden Bell Marketplace',
             logo: '18_oe/C',
@@ -136,9 +136,6 @@ module Engine
             float_percent: 100,
             max_ownership_percent: 100,
           },
-        ].freeze
-
-        CORPORATIONS = [
           {
             name: 'SNCF Belges',
             logo: '18_oe/BEL',

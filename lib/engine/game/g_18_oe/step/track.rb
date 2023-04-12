@@ -20,13 +20,14 @@ module Engine
           end
 
           def get_tile_lay(entity)
-            return 3 if entity.minor? || entity.total_shares == 4
+            # 3 for minors and regionals, 6 for majors, 9 for nationals
+            return 3 if entity.total_shares == 2 || entity.total_shares == 4
             return 6 if entity.total_shares == 10
             # return 9 if national
           end
 
           def description
-            tile_lay = get_tile_lay(current_entity)
+            tile_lay = get_tile_lay(current_entity) - @points_used
             "#{tile_lay} track points"
           end
 
@@ -58,6 +59,8 @@ module Engine
           end
 
           def tracker_available_hex(entity, hex)
+            return nil unless @game.hex_within_national_region?(entity, hex)
+
             connected = hex_neighbors(entity, hex)
             return nil unless connected
 

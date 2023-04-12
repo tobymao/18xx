@@ -13,8 +13,7 @@ module Engine
         GAME_DESIGNER = 'Mark Derrick'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18AL'
         GAME_LOCATION = 'Alabama, USA'
-        # Does not load: GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18AL_Rules_v1_64.pdf'
-        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/37924/18al-rules-v164-booklet'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/80315/18al-rules-v17'
 
         PLAYER_RANGE = [3, 5].freeze
         OPTIONAL_RULES = [

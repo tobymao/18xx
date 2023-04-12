@@ -53,6 +53,17 @@ module Engine
             num: 3,
           },
         ].freeze
+
+        MAX_FLOATED_REGIONALS = 6
+
+        def setup
+          super
+          @minor_available_regions = %w[UK UK FR FR]
+
+          corporations.each do |corp|
+            corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
+          end
+        end
       end
     end
   end
