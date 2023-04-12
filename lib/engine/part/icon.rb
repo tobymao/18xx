@@ -8,8 +8,8 @@ module Engine
     class Icon < Base
       include Ownable
 
-      attr_accessor :preprinted, :image
-      attr_reader :name, :sticky, :large
+      attr_accessor :preprinted, :image, :large
+      attr_reader :name, :sticky
 
       def initialize(image, name = nil, sticky = true, blocks_lay = nil, preprinted = true, large: false, owner: nil)
         @image = "/icons/#{image}.svg"

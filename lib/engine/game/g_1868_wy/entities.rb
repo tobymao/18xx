@@ -303,8 +303,8 @@ module Engine
             value: 100,
             revenue: 20,
             abilities: [{ type: 'close', on_phase: '6' }],
-            desc: 'Buyer or auction winner chooses one of "General Jack" (three '\
-                  'time use, 3 free tile laying actions), Credit Foncier of America (earn money '\
+            desc: 'Buyer or auction winner chooses one of "General Jack" '\
+                  '(three free tile laying actions), Credit Foncier of America (earn money '\
                   'for each tile lay), or Pacific Railroad Acts of 1862 and 1864 (terrain costs '\
                   'are halved, including for DTs when player-owned)',
           },
@@ -340,8 +340,8 @@ module Engine
             abilities: [{ type: 'close', on_phase: '6' },
                         { type: 'revenue_change', revenue: 0o0, when: 'sold' },
                         { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
-            desc: 'Owning Railroad Company is paid per tile it places: $40/city, $30/Boomtown or '\
-                  'Boom City, $10/yellow town. $20 revenue is only paid while owned by a player. Closes at phase 6.',
+            desc: 'Owning Railroad Company is paid per yellow tile it places: $40/city, $30/Boomtown or '\
+                  'Boom City, $10/town. $20 revenue is only paid while owned by a player. Closes at phase 6.',
           },
           {
             name: 'P5c Pacific Railroad Acts of 1862 and 1864',
