@@ -25,8 +25,10 @@ module Engine
 
           def buy_company(player, company, price)
             super
+            return unless @game.company_becomes_minor?(company)
 
-            # if the company is a minor, max 180 goes into the treasury
+            price = 180 if price > 180
+            @game.bank.spend(price, @game.corporations.find { |minor| minor.name == company.sym })
           end
         end
       end

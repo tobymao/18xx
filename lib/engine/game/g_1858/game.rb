@@ -19,6 +19,7 @@ module Engine
         include G1858::Trains
         include StubsAreRestricted
 
+        attr_accessor :private_closure_round
         attr_reader :graph_broad, :graph_metre
 
         GAME_END_CHECK = { bank: :current_or }.freeze
@@ -177,6 +178,12 @@ module Engine
           end
         end
 
+        def round_description(name, round_number = nil)
+          return 'Private Closure Round' if name == 'Closure'
+
+          super
+        end
+
         def stock_round
           Engine::Round::Stock.new(self, [
             G1858::Step::Exchange,
@@ -196,6 +203,41 @@ module Engine
             G1858::Step::BuyTrain,
             G1858::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        def new_closure_round(round_num)
+          @log << '-- Private Closure Round --'
+          closure_round(round_num)
+        end
+
+        def closure_round(round_num)
+          G1858::Round::Closure.new(self, [
+            G1858::Step::HomeToken,
+            G1858::Step::PrivateClosure,
+          ], round_num: round_num)
+        end
+
+        def next_round!
+          @private_closure_round = :done if @private_closure_round == :in_progress
+
+          @round =
+            if @private_closure_round == :next
+              new_closure_round(@round.round_num)
+            else
+              case @round
+              when Engine::Round::Stock
+                @operating_rounds = @phase.operating_rounds
+                reorder_players
+                new_operating_round
+              when Engine::Round::Operating, G1858::Round::Closure
+                if @round.round_num < @operating_rounds
+                  new_operating_round(@round.round_num + 1)
+                else
+                  @turn += 1
+                  new_stock_round
+                end
+              end
+            end
         end
 
         # Returns the company object for a private railway given its associated
@@ -393,6 +435,11 @@ module Engine
           train_revenue = total_revenue - private_revenue
           "#{format_revenue_currency(train_revenue)} train + " \
             "#{format_revenue_currency(private_revenue)} private revenue"
+        end
+
+        def event_privates_close!
+          @log << '-- Event: Private companies will close at the end of this operating round --'
+          @private_closure_round = :next
         end
 
         def buy_train(operator, train, price = nil)
