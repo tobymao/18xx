@@ -261,6 +261,7 @@ module Engine
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
           @placed_oil_dt_count = Hash.new(0)
           @busters = {}
+          @teapot_dome_hex_bonus = nil
 
           setup_credit_mobilier
 
@@ -722,7 +723,9 @@ module Engine
           if corporation.floated?
             if corporation.minor? && corporation != union_pacific_coal && corporation != bonanza
               player = corporation.owner
+              statuses << strikebreakers_status if corporation.type == :coal && player == strikebreakers_private.owner
               statuses << 'P3c Frémont discount: $20' if player == fremont.owner
+              statuses << 'P5c RR Act discount: 50%' if player == pac_rr_a.owner
             elsif @round.is_a?(G1868WY::Round::Operating) && corporation.corporation?
               statuses << "Track Points: #{track_points_available(corporation)}"
             end
@@ -868,6 +871,7 @@ module Engine
             else
               @border_after = action.hex.tile.borders.first if @border_before
               credit_mobilier_check_tile_lay_action(action)
+              foncier_check_tile_lay_action(action)
 
               if @forts.include?(action.hex.id) && action.tile.color == :yellow
                 icon = action.tile.icons.find { |i| i.name == 'fort' }
@@ -1219,6 +1223,7 @@ module Engine
 
           increment_development_token_count(hex)
           @placed_development_tokens[@phase.name] << hex
+          @teapot_dome_hex_bonus = nil if entity == teapot_dome_oil
         end
 
         def destroy_development_token!(token, handle_bust: true)
@@ -1378,6 +1383,8 @@ module Engine
 
           revenue += fort_bonuses(route)[:revenue]
 
+          revenue += teapot_dome_bonuses(route, stops)[:revenue]
+
           revenue
         end
 
@@ -1394,6 +1401,7 @@ module Engine
 
           str += ' + Uranium' if route.stops.any? { |s| uranium_bonus(@phase.name, s.hex).positive? }
           str += fort_bonuses(route)[:description]
+          str += teapot_dome_bonuses(route, route.stops)[:description]
           str
         end
 
@@ -2053,6 +2061,47 @@ module Engine
           @log << "#{company.owner.name} collects #{format_currency(amount)} from #{company.name}; #{reason}"
         end
 
+        def teapot_dome_bonuses(route, stops)
+          return { revenue: 0, description: '' } unless teapot_dome_railroad?(route.corporation)
+
+          revenue = stops.sum do |stop|
+            (boomcity?(stop.tile) && teapot_dome_hex_bonus[stop.hex]) || 0
+          end
+
+          if revenue.positive?
+            { revenue: revenue, description: " + #{teapot_dome_private.sym}" }
+          else
+            { revenue: 0, description: '' }
+          end
+        end
+
+        def teapot_dome_railroad?(corporation)
+          !teapot_dome_private.closed? && corporation.player == teapot_dome_private.player
+        end
+
+        # Returns Hash:
+        #   - keys: Hex
+        #   - values: Int
+        # Int value is the total revenue bonus P6c Teapot Dome Oil Leases
+        # provides to the key Hex. The caller is responsible for ensuring the
+        # bonus only applies to Boom Cities, on routes for RRs with the same
+        # owner as the Teapot Dome private.
+        #
+        # This function is only called when running routes, and is cached so
+        # that the bonuses are not be recomputed with every click on a
+        # route. The cache is busted when the Teapot Dome's owner adds or
+        # removes a token with their oil company.
+        def teapot_dome_hex_bonus
+          @teapot_dome_hex_bonus ||=
+            begin
+              bonus = Hash.new(0)
+              teapot_dome_oil.tokens.each do |token|
+                token.hex.neighbors.each { |_, h| bonus[h] += 5 } if token.used
+              end
+              bonus
+            end
+        end
+
         def check_midwest_oil!(routes)
           return if !midwest_oil || midwest_oil.closed?
           return if !midwest_oil.owned_by_player? && !midwest_oil.owned_by_corporation?
@@ -2069,6 +2118,28 @@ module Engine
           )
         end
 
+        def foncier_check_tile_lay_action(action)
+          return if !foncier || action.entity != foncier.corporation
+
+          tile = action.tile
+          return unless tile.color == :yellow
+
+          amount, tile_type =
+            if boomer?(tile)
+              [30, (tile.cities.empty? ? 'Boomtown' : 'Boom City')]
+            elsif !tile.cities.empty? && tile.label&.to_s != 'G' && tile.label&.to_s != 'L'
+              [40, 'city']
+            elsif !tile.towns.empty?
+              [10, 'town']
+            else
+              [0, nil]
+            end
+
+          return unless amount.positive?
+
+          private_earns(amount, foncier, "laid a #{tile_type} tile")
+        end
+
         def event_close_coal_companies!
           @log << '-- Event: Coal Companies close (gray Coal DTs remain on the board) --'
           @minors.reject! do |company|
@@ -2077,6 +2148,31 @@ module Engine
             company.close!
             true
           end
+        end
+
+        def setup_strikebreakers!
+          add_coal_development_tokens(strikebreakers_coal, count: 1, sort: true)
+          @log << "#{strikebreakers_private.name} adds 1 Coal DT for each phase to #{strikebreakers_coal.name}'s DTs"
+
+          @strikebreakers_used = (2..7).to_h { |n| [n.to_s, false] }
+        end
+
+        def max_development_tokens(entity)
+          max = @phase.name == '2' ? 2 : 1
+          max += 1 if entity == strikebreakers_coal && !@strikebreakers_used[@phase.name]
+          max
+        end
+
+        def after_strikebreakers
+          @strikebreakers_used[@phase.name] = true
+        end
+
+        def strikebreakers_unused
+          @strikebreakers_used.select { |phase, used| !used && phase.to_i >= @phase.name.to_i }.keys
+        end
+
+        def strikebreakers_status
+          "P6a extra placements: #{strikebreakers_unused.join(',')}"
         end
 
         def fort_bonuses(route)
@@ -2095,6 +2191,7 @@ module Engine
           when '5'
             event_close_ames_brothers! unless ames_bros.closed?
             event_close_upc! unless union_pacific_coal.closed?
+            event_convert_lhp! unless lhp_private.closed?
           when '7'
             event_close_pure_oil! unless pure_oil.closed?
           when '8'
