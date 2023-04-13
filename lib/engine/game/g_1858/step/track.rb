@@ -9,7 +9,6 @@ module Engine
         class Track < Engine::Step::Track
           def actions(entity)
             return [] unless entity == current_entity
-            return [] if !entity.minor? && !entity.corporation?
 
             ACTIONS
           end
