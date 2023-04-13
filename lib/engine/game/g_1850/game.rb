@@ -372,6 +372,20 @@ module Engine
           revenue_str += ' + Edge Token' if route.stops.any? { |st| st.hex.assigned?(route.corporation) }
           revenue_str
         end
+
+        def graph_skip_paths(entity)
+          return nil if entity.mesabi_token
+
+          @skip_paths ||= {}
+
+          return @skip_paths unless @skip_paths.empty?
+
+          mesabi_hex.tile.paths.each do |path|
+            @skip_paths[path] = true
+          end
+
+          @skip_paths
+        end
       end
     end
   end

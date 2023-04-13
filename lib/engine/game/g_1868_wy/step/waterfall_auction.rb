@@ -71,6 +71,9 @@ module Engine
               @company_choices = nil
               @auctioned_company.close!
               @auctioned_company = nil
+
+              @game.setup_strikebreakers! if company == @game.strikebreakers_private
+
               return
             end
 
@@ -84,6 +87,7 @@ module Engine
             end
 
             company.revenue = 0 if company == @game.lhp_private
+            @game.setup_strikebreakers! if company == @game.strikebreakers_private
 
             @cheapest = @companies.first
             @passed_on_cheapest = {}

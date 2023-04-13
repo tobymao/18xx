@@ -61,12 +61,16 @@ module Engine
             corporation.spend(amount_to_bank, @game.bank)
             corporation.spend(amount_to_owner, @game.mesabi_company.owner) if amount_to_owner.positive?
 
+            @game.mesabi_token_counter -= 1
+
             log_message = "#{corporation.name} buys a Mesabi token for #{@game.format_currency(total_cost)}. "
             if amount_to_owner.positive?
-              log_message += "#{@game.mesabi_company.owner.name} receives #{@game.format_currency(amount_to_owner)}"
+              log_message += "#{@game.mesabi_company.owner.name} receives #{@game.format_currency(amount_to_owner)}. "
             end
+            log_message += "#{@game.mesabi_token_counter} Mesabi tokens left in the game"
             @log << log_message
             corporation.mesabi_token = true
+            @game.clear_token_graph_for_entity(corporation)
           end
 
           def hex_neighbors(entity, hex)

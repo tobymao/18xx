@@ -103,7 +103,9 @@ module Engine
       end
 
       def dividends_for_entity(entity, holder, per_share)
-        # 1817 2 share half pay uses floats, for 18MEX num_shares can be a float for NdM
+        # 1817: 2 share half pay uses floats
+        # 18MEX: num_shares can be a float for NdM
+        # 1868 Wyoming: Teapot Dome private can cause per_share to be a float
         (holder.num_shares_of(entity, ceil: false) * per_share).ceil
       end
 
