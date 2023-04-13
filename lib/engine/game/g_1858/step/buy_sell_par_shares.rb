@@ -11,6 +11,7 @@ module Engine
           PURCHASE_ACTIONS = [Action::Bid, Action::BuyShares, Action::Par].freeze
 
           def actions(entity)
+            return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
             return %w[bid pass] if @auctioning
             return ['sell_shares'] if must_sell?(entity)
@@ -22,8 +23,9 @@ module Engine
             # Exchanging a private company for a share certificate from the
             # company treasury is also a sell action, but this is handled
             # through the companies' abilities rather than these actions.
+            # Converting a corporation from 5 to 10 shares is also a sell
+            # action. This is handled in corporation_actions.
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'convert' if can_convert_any?(entity)
 
             # Buy actions.
             # Starting a public company by exchanging a private company for the
@@ -36,6 +38,14 @@ module Engine
             actions << 'pass' unless actions.empty?
 
             actions
+          end
+
+          def corporation_actions(corporation)
+            return [] unless corporation.owned_by?(current_entity)
+            return [] if bought?
+            return [] unless can_convert?(corporation)
+
+            %w[convert pass]
           end
 
           def pass_description
@@ -57,10 +67,6 @@ module Engine
             pass!
           end
 
-          def convert_button_text
-            'Convert to 10-share company'
-          end
-
           def can_ipo_any?(entity)
             # Can't start a public company by directly buying its president's
             # certificate until the start of phase 5.
@@ -70,10 +76,6 @@ module Engine
           def can_convert?(corporation)
             (corporation.owner == current_entity) && (corporation.type == :medium) &&
               corporation.floated? && !bought?
-          end
-
-          def can_convert_any?(_entity)
-            @game.corporations.any? { |corporation| can_convert?(corporation) }
           end
 
           def can_gain?(entity, share, exchange: false)
@@ -120,7 +122,7 @@ module Engine
           end
 
           def process_convert(action)
-            @game.convert!(action.corporation)
+            @game.convert!(action.entity)
           end
 
           def min_bid(company)
