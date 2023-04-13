@@ -74,7 +74,7 @@ module Engine
           end
 
           def can_convert?(corporation)
-            (corporation.owner == current_entity) && (corporation.type == :medium) &&
+            (corporation.owner == current_entity) && (corporation.type == :'5-share') &&
               corporation.floated? && !bought?
           end
 

@@ -445,7 +445,7 @@ module Engine
 
         def event_corporations_convert!
           @log << '-- Event: All 5-share public companies must convert to 10-share companies --'
-          @corporations.select { |c| c.type == :medium }.each { |c| convert!(c) }
+          @corporations.select { |c| c.type == :'5-share' }.each { |c| convert!(c) }
         end
 
         def event_privates_close!
@@ -474,10 +474,10 @@ module Engine
 
         def convert!(corporation, quiet: false)
           return unless corporation.corporation?
-          return unless corporation.type == :medium
+          return unless corporation.type == :'5-share'
 
           @log << "#{corporation.name} converts to a 10-share company" unless quiet
-          corporation.type = :large
+          corporation.type = :'10-share'
           corporation.float_percent = 20
 
           shares = @_shares.values.select { |share| share.corporation == corporation }
