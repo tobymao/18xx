@@ -463,8 +463,16 @@ module Engine
 
         def home_token_locations(corporation)
           # Can only place home token in cities that have no other tokens.
+          # Minors can go in a disconnected Toronto/Montreal station, but Majors
+          # cannot.
           open_locations = hexes.select do |hex|
-            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
+            case corporation.type
+            when :minor
+              hex.tile.cities.any? { |c| c.tokenable?(corporation, free: true) && c.tokens.none? }
+            when :major
+              hex.tile.cities.any? { |c| c.tokenable?(corporation, free: true) } &&
+                hex.tile.cities.all? { |c| c.tokens.none? { |t| t&.type == :normal } }
+            end
           end
 
           return open_locations if corporation.type == :minor
