@@ -11,7 +11,7 @@ module Engine
           PURCHASE_ACTIONS = (Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Engine::Action::Convert]).freeze
 
           def actions(entity)
-            return corporation_actions(entity) if entity.corporation? #&& entity.owned_by?(current_entity)
+            return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
 
@@ -38,7 +38,8 @@ module Engine
           end
 
           def can_convert?(corporation)
-            corporation.total_shares == 4 && corporation.share_holders.include?(current_entity) && corporation.share_holders[current_entity] >= 50
+            corporation.total_shares == 4 && corporation.share_holders.include?(current_entity) &&
+              corporation.share_holders[current_entity] >= 50
           end
 
           def can_float_minor?(entity)
@@ -57,11 +58,9 @@ module Engine
             end
 
             # Majors are affected by the stock market, set tokens in the correct place
-            #corporation.always_market_price = true
             @game.stock_market.move_right(corporation)
             @game.stock_market.move_right(corporation)
             @game.stock_market.move_up(corporation)
-            # corporation.tokens needs to be added in
             corporation.tokens += [40, 60, 60, 80, 80, 80].map { |price| Engine::Token.new(corporation, price: price) }
             puts(corporation.tokens.inspect)
             # Lastly, remove major from minor/regional turn order
@@ -104,6 +103,7 @@ module Engine
           end
 
           def process_convert(action)
+            # still needs to account for being able to buy a share before or after floating as part of same action
             corporation = action.entity
             float_major(corporation)
             track_action(action, corporation)
