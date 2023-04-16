@@ -52,6 +52,32 @@ module Engine
             }],
             num: 3,
           },
+          {
+            name: '5',
+            distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+                       { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
+            price: 400,
+            variants: [{
+                         name: '5+5',
+                         distance: [{ 'nodes' => ['town'], 'pay' => 5, 'visit' => 99 },
+                                    { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
+                         price: 475,
+                       }],
+            num: 3,
+          },
+          {
+            name: '6',
+            distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+                       { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
+            price: 525,
+            variants: [{
+                         name: '6+6',
+                         distance: [{ 'nodes' => ['town'], 'pay' => 6, 'visit' => 99 },
+                                    { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
+                         price: 600,
+                       }],
+            num: 2,
+          },
         ].freeze
 
         MAX_FLOATED_REGIONALS = 6
