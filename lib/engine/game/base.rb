@@ -635,8 +635,8 @@ module Engine
       end
 
       def valid_actors(action)
-        if (player = action.entity.player)
-          [acting_for_player(player)]
+        if (player = action.entity.player) && (actor = acting_for_player(player))
+          [actor]
         else
           active_players
         end
