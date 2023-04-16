@@ -38,8 +38,6 @@ module Engine
           end
 
           def can_convert?(corporation)
-            # puts(current_entity.shares.inspect)
-            # puts(corporation.share_holders[current_entity]) if corporation.share_holders.include?(current_entity)
             corporation.total_shares == 4 && corporation.share_holders.include?(current_entity) && corporation.share_holders[current_entity] >= 50
           end
 
@@ -50,31 +48,24 @@ module Engine
           end
 
           def float_major(corporation)
-            puts('float major')
-            shares = @_shares.values.select { |share| share.corporation == corporation }
+            shares = corporation.share_holders.keys.flat_map { |share| share.shares_of(corporation) }
 
-            if corporation.total_shares == 4
-              shares.each { |share| share.percent = 10 }
-              shares[0].percent = 20
-              shares = 6.times.map { |i| Share.new(corporation, percent: 10, index: i + 3) }
-
-              # Majors are affected by the stock market, set tokens in the correct place
-              #corporation.always_market_price = true
-              stock_market.move_right(corporation)
-              stock_market.move_up(corporation)
-              stock_market.move_up(corporation)
-              # corporation.tokens needs to be added in
-              corporation.tokens += [40, 60, 60, 80, 80, 80].map { |price| Token.new(corporation, price: price) }
-              # Lastly, remove major from minor/regional turn order
-              @minor_regional_order -= [corporation]
-            else
-              riase GameError, "Cannot convert a major corporation"
+            shares.each { |share| share.percent = share.president ? 20 : 10 }
+            6.times do |index|
+              share = Share.new(corporation, owner: corporation.ipo_owner, percent: 10, index: 4 + index)
+              corporation.ipo_owner.shares_by_corporation[corporation] << share
             end
 
-            shares.each do |share|
-              corporation.shares_by_corporation[corporation] << share
-              @_shares[share.id] = share
-            end
+            # Majors are affected by the stock market, set tokens in the correct place
+            #corporation.always_market_price = true
+            @game.stock_market.move_right(corporation)
+            @game.stock_market.move_right(corporation)
+            @game.stock_market.move_up(corporation)
+            # corporation.tokens needs to be added in
+            corporation.tokens += [40, 60, 60, 80, 80, 80].map { |price| Engine::Token.new(corporation, price: price) }
+            puts(corporation.tokens.inspect)
+            # Lastly, remove major from minor/regional turn order
+            @game.minor_regional_order -= [corporation]
           end
 
           def float_minor(action)
@@ -115,7 +106,7 @@ module Engine
           def process_convert(action)
             corporation = action.entity
             float_major(corporation)
-            track_action(action, action.corporation)
+            track_action(action, corporation)
             @log << "#{corporation.name} converts from regional to major"
           end
 

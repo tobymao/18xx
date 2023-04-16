@@ -146,6 +146,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'N35',
             color: :green,
+            always_market_price: true,
           },
           {
             name: 'Great Southern and Western Railway',
@@ -157,6 +158,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'I20',
             color: :blue,
+            always_market_price: true,
           },
           {
             name: 'Great Western Railway',
@@ -168,6 +170,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'L25',
             color: :red,
+            always_market_price: true,
           },
           {
             name: 'London and North Western Railway',
@@ -179,6 +182,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'J27',
             color: :black,
+            always_market_price: true,
           },
           {
             name: 'CF du Midi',
@@ -190,6 +194,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'U24',
             color: :blue,
+            always_market_price: true,
           },
           {
             name: 'CF de l\'Ouest',
@@ -201,6 +206,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'Q26',
             color: :orange,
+            always_market_price: true,
           },
           {
             name: 'CF Paris a Lyon et a la Mediterranee',
@@ -212,6 +218,7 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'U34',
             color: :purple,
+            always_market_price: true,
           },
         ].freeze
       end
