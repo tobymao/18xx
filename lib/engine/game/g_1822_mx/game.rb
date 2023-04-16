@@ -307,7 +307,7 @@ module Engine
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            G1822MX::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822MX::Step::SpecialChoose,
             G1822MX::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -319,7 +319,7 @@ module Engine
             G1822::Step::BuyTrain,
             G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822MX::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822MX::Step::IssueShares,
             G1822MX::Step::CashOutNdem,
             G1822MX::Step::AuctionNdemTokens,
@@ -723,22 +723,8 @@ module Engine
           @ndem ||= corporation_by_id('NDEM')
         end
 
-        def extra_train_pullman_count(corporation)
-          corporation.trains.count { |train| extra_train_pullman?(train) }
-        end
-
-        def extra_train_pullman?(train)
-          train.name == self.class::EXTRA_TRAIN_PULLMAN
-        end
-
-        def crowded_corps
-          @crowded_corps ||= corporations.select do |c|
-            trains = c.trains.count { |t| !extra_train?(t) }
-            crowded = trains > train_limit(c)
-            crowded |= extra_train_permanent_count(c) > 1
-            crowded |= extra_train_pullman_count(c) > 1
-            crowded
-          end
+        def remove_discarded_train?(action)
+          action.entity == ndem || super
         end
 
         def finalize_end_game_values; end
