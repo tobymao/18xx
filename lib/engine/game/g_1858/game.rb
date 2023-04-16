@@ -488,7 +488,6 @@ module Engine
           new_shares.each do |share|
             add_new_share(share)
           end
-          new_shares
         end
 
         def add_new_share(share)
