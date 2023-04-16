@@ -291,7 +291,8 @@ module Engine
             G18OE::Step::Token,
             Engine::Step::Route,
             G18OE::Step::Dividend,
-            Engine::Step::BuyTrain,
+            G18OE::Step::BuyTrain,
+            # Convert step to do national conversions at 4/6/8?
             Engine::Step::IssueShares,
           ], round_num: round_num)
         end
