@@ -8,11 +8,12 @@ module Engine
     module G18OE
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-          PURCHASE_ACTIONS = (Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Engine::Action::Convert]).freeze
+          PURCHASE_ACTIONS = (Engine::Step::BuySellParShares::PURCHASE_ACTIONS).freeze
 
           def actions(entity)
             return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
+            return [] if @round.current_actions.any? { |x| x.class == Engine::Action::Par }
             return ['sell_shares'] if must_sell?(entity)
 
             actions = []
@@ -20,26 +21,45 @@ module Engine
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'convert' if can_convert_any?(entity)
 
-            actions << 'pass' if !can_float_minor?(entity) && !bought? && !actions.empty?
+            actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
           end
 
           def corporation_actions(entity)
-            return [] if bought? || !can_convert?(entity)
+            if @round.current_actions[0].class == Engine::Action::BuyShares
+              return [] unless @round.current_actions[0].bundle.corporation == entity
+            end
+            return [] unless can_convert?(entity)
 
             %w[convert pass]
           end
 
           def can_buy_any_from_ipo?(entity)
-            return unless @game.corporations.reject { |c| c.type == :minor }.all?(&:ipoed)
+            return unless @game.corporations.all?(&:ipoed)
+
+            super
+          end
+
+          def can_buy?(entity, bundle)
+            if @round.current_actions[0].class == Engine::Action::Convert
+              return false unless @round.current_actions[0].entity == bundle.corporation
+            end
 
             super
           end
 
           def can_convert?(corporation)
+            return unless @game.corporations.all?(&:ipoed) && !@round.current_actions.any? { |x| x.class == Engine::Action::Convert }
             corporation.total_shares == 4 && corporation.share_holders.include?(current_entity) &&
               corporation.share_holders[current_entity] >= 50
+          end
+
+          def can_convert_any?(entity)
+            return if @round.current_actions.any? { |x| x.class == Engine::Action::Convert }
+
+            entity.shares_by_corporation.reject { |c| c.type == :minor }.any? { |c| can_convert?(c[0]) }
           end
 
           def can_float_minor?(entity)
@@ -62,7 +82,6 @@ module Engine
             @game.stock_market.move_right(corporation)
             @game.stock_market.move_up(corporation)
             corporation.tokens += [40, 60, 60, 80, 80, 80].map { |price| Engine::Token.new(corporation, price: price) }
-            puts(corporation.tokens.inspect)
             # Lastly, remove major from minor/regional turn order
             @game.minor_regional_order -= [corporation]
           end
@@ -103,7 +122,6 @@ module Engine
           end
 
           def process_convert(action)
-            # still needs to account for being able to buy a share before or after floating as part of same action
             corporation = action.entity
             float_major(corporation)
             track_action(action, corporation)
