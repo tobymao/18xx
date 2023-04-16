@@ -8,8 +8,6 @@ module Engine
     module G18OE
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-          PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS.freeze
-
           def actions(entity)
             return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
