@@ -119,7 +119,7 @@ module Engine
               type: 'token',
               owner_type: 'corporation',
               when: 'token',
-              reachable: true,
+              connected: true,
               hexes: [],
               discount: 0.5,
               count: 1,
