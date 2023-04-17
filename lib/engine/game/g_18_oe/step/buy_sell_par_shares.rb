@@ -84,7 +84,7 @@ module Engine
             end
 
             # Set corporation type to :major
-            corporation.type = :major
+            corporation.type = 'major'
 
             # Majors are affected by the stock market, set tokens in the correct place
             @game.stock_market.move_right(corporation)
@@ -93,6 +93,8 @@ module Engine
             corporation.tokens += [40, 60, 60, 80, 80, 80].map { |price| Engine::Token.new(corporation, price: price) }
             # Lastly, remove major from minor/regional turn order
             @game.minor_regional_order -= [corporation]
+            # Also update the cache so reload works
+            @game.update_cache(:shares)
           end
 
           def float_minor(action)
