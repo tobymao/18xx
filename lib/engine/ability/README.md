@@ -319,6 +319,9 @@ Modified station token placement
   therefore be placed in the same city as another token belonging to the owning
   corporation. Note that this property will bypass all tokenable checks, not
   just `:existing_token`. Default true.
+- `connected`: If true, when token placed, a check is done if the desired token slot
+  is connected by track with another city that has a token of the corporation; if not
+  a game error is triggered. Default false.
 
 
 ## sell_company
