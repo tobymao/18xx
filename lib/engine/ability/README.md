@@ -38,6 +38,7 @@ These attributes may be set for all ability types
       up, but there is still a `Track` ability, then the active step will not
       pass on to the next step automatically
     - `token`: token-placing step
+    - `route`: running routes step
     - `sold`: when the company is bought from a player by a corporation
     - `bought_train`: when the owning corporation has bought a train; generally
       used with `close` abilities
