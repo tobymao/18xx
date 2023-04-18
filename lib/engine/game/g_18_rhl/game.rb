@@ -698,6 +698,10 @@ module Engine
           last = visits.last
           rge = rge_train?(route)
 
+          if route.hexes.uniq.size == 1 && RHINE_METROPOLIS_HEXES.include?(first.hex.id)
+            raise GameError, 'Route cannot consist of only one Rhine metropolis'
+          end
+
           if rge
             if !rge_terminus?(first) && !rge_terminus?(last)
               raise GameError, 'Route for 8 trains must begin and/or end in an RGE hex'
