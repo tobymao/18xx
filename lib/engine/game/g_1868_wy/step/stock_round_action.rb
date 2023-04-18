@@ -33,6 +33,7 @@ module Engine
 
           def setup
             super
+            @tokened = false
             @exchanged = false
             @exchanger = @game.ames_bros
           end
@@ -60,8 +61,57 @@ module Engine
             @game.sr_visible_corporations
           end
 
+          def maybe_place_home_token(corporation)
+            if corporation == @game.dpr
+
+              if !@game.dpr_first_home_status
+                @game.place_home_token(corporation)
+                @game.dpr_first_home_status = corporation.floated? ? :placed : :reserved
+              elsif @game.dpr_first_home_status == :reserved && corporation.floated?
+                @game.place_home_token(corporation)
+                @game.dpr_first_home_status = :placed
+              end
+            else
+              super
+            end
+          end
+
+          def available_hex(_entity, hex)
+            hex.tile.cities.any? { |city| city.tokenable?(@game.dpr, free: true) }
+          end
+
+          def available_tokens(_entity)
+            super(@game.dpr)
+          end
+
           def map_action_optional?
             true
+          end
+
+          def process_place_token(action)
+            token = action.token
+
+            place_token(
+              token.corporation,
+              action.city,
+              token,
+              connected: false,
+              extra_action: false,
+            )
+            @tokened = true
+            track_action(action, token.corporation)
+          end
+
+          def tokened?
+            @tokened
+          end
+
+          def can_token?(entity)
+            !tokened? &&
+              entity == @game.dpr.player &&
+              @game.dpr.floated? &&
+              @game.dpr.tokens.count(&:used).zero? &&
+              !@game.home_token_locations(@game.dpr).empty?
           end
 
           def initial_double_share_bundle?(bundle)
