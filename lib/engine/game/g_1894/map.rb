@@ -212,7 +212,7 @@ module Engine
             ['C16'] => 'path=a:0,b:1;path=a:4,b:5;path=a:5,b:0',
             ['D1'] => 'town=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
             ['G18'] => 'city=revenue:20,loc:4;path=a:0,b:2;path=a:0,b:_0;path=a:2,b:_0',
-            ['H1'] => 'city=revenue:20;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
+            ['H1'] => 'city=revenue:yellow_20|brown_40;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
             ['I10'] => 'path=a:1,b:4',
             ['I16'] => 'path=a:1,b:4;path=a:1,b:2;',
           },
