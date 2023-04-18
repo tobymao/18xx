@@ -733,6 +733,14 @@ module Engine
             statuses << "Next: #{stack.map(&:name).reverse.slice(1, 4).join(', ')}"
           end
 
+          if corporation == dpr
+            if dpr_first_home_status == :placed && dpr.tokens.count(&:used).zero? && !home_token_locations(corporation).empty?
+              statuses << 'Choose new home as an SR action'
+            elsif !dpr_first_home_status && home_token_locations(corporation).empty?
+              statuses << 'Cannot par: no home token location available'
+            end
+          end
+
           statuses.empty? ? nil : statuses
         end
 
