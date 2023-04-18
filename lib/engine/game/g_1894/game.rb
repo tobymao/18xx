@@ -636,14 +636,22 @@ module Engine
 
         attr_reader :saved_tokens_hex
 
+        def check_distance(route, _visits)
+          if route.connection_hexes.flatten.include?(LONDON_HEX) && !ferry_marker?(current_entity)
+            raise GameError, 'Cannot run to London without a Ferry marker'
+          end
+
+          raise GameError, 'Train visits Paris more than once' if route.hexes.count { |h| h.id == PARIS_HEX } > 1
+
+          super
+        end
+
         def revenue_for(route, stops)
           revenue = super
           revenue += est_centre_bourgogne_bonus(route.corporation, stops)
           revenue += luxembourg_value(route.corporation, stops)
           revenue += london_bonus(route.corporation, stops)
           revenue += netherlands_bonus(route.corporation, stops)
-
-          raise GameError, 'Train visits Paris more than once' if route.hexes.count { |h| h.id == PARIS_HEX } > 1
 
           revenue
         end
@@ -695,14 +703,6 @@ module Engine
           phase.tiles.reverse_each { |color| return (revenue[color]) if revenue[color] }
 
           0
-        end
-
-        def check_distance(route, _visits)
-          if route.connection_hexes.flatten.include?(LONDON_HEX) && !ferry_marker?(current_entity)
-            raise GameError, 'Cannot run to London without a Ferry marker'
-          end
-
-          super
         end
 
         def ferry_marker_available?
