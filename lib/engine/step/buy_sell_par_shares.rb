@@ -404,6 +404,9 @@ module Engine
       end
 
       def should_stop_applying_program(entity, program, share_to_buy)
+        # don't let players over the cert limit autopass
+        return "#{entity.name} must sell shares" if must_sell?(entity)
+
         # check for shenanigans, returning the first failure reason it finds
         @round.players_history.each do |other_entity, corporations|
           next if other_entity == entity

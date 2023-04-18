@@ -419,12 +419,15 @@ module Engine
         def buy_train(operator, train, price = nil)
           @train_bought = true if train.owner == @depot # No idea if this is what Lonny wants
           cost = price || train.price
+          full_cost = train.price if train.owner == @depot
           if price != :free && train.owner == @depot
             if multiplayer?
               corp = %w[2 4].include?(train.name) ? @ldsteg : @mavag
-              operator.spend(cost / 2, @bank)
-              operator.spend(cost / 2, corp)
-              @log << "#{corp.name} earns #{format_currency(cost / 2)}"
+              bank_cost = full_cost ? cost - (full_cost / 2) : cost / 2
+              corp_cost = full_cost ? full_cost / 2 : cost / 2
+              operator.spend(bank_cost, @bank)
+              operator.spend(corp_cost, corp)
+              @log << "#{corp.name} earns #{format_currency(corp_cost)}"
             else
               operator.spend(3 * cost / 4, @bank)
               operator.spend(cost / 4, @ldsteg)
@@ -616,31 +619,43 @@ module Engine
           raise GameError, 'Must visit minimum of two non-mine stops' if visits.sum(&:visit_cost) < 2
         end
 
+        def compute_stops(route, train = nil)
+          return super if !gc_train?(route) || other_gc_train?(route)
+
+          train ||= route.train
+          gc_train = train.dup
+          gc_train.distance = gc_train_distance(train.distance)
+          super(route, gc_train)
+        end
+
         def gc_train_distance(route_distance)
           if route_distance.is_a?(Numeric)
             town_distance_value = route_distance
+            city_distance_value = route_distance
           else
             # route has a 1 town value from the supporter
             town_distance = route_distance.find { |n| n['nodes'] == ['town'] }
-            town_distance_value = town_distance['pay'] + route_distance
+            city_distance_value = route_distance.find { |n| n['nodes'].include?('city') }['pay']
+            town_distance_value = town_distance['pay'] + city_distance_value
           end
           [
-              {
-                nodes: %w[city offboard town],
-                pay: route_distance,
-                visit: route_distance,
-              },
-              {
-                nodes: %w[town],
-                pay: town_distance_value,
-                visit: town_distance_value,
-              },
+            {
+              'nodes' => %w[town],
+              'pay' => town_distance_value,
+              'visit' => town_distance_value,
+            },
+            {
+              'nodes' => %w[city offboard town],
+              'pay' => city_distance_value,
+              'visit' => city_distance_value,
+            },
+
             ]
         end
 
         # Change "Stop" displayed if G&C power is used
         def route_distance(route)
-          return super if !gc_train?(route) || other_gc_train?(route)
+          return super if (!gc_train?(route) || other_gc_train?(route)) && route.train.distance.is_a?(Numeric)
 
           n_cities = route.stops.select { |s| s.visit_cost.positive? }.count { |n| n.city? || n.offboard? }
           n_towns = route.stops.count(&:town?)

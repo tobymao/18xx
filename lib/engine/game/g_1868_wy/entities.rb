@@ -494,7 +494,7 @@ module Engine
                           when: 'owning_player_sr_turn',
                           from: %i[reserved],
                         }],
-            desc: 'May be exchanged for the Ames Brothers double share of the Union '\
+            desc: 'May be exchanged for the Ames Brothers 20% share of the Union '\
                   'Pacific Railroad as an action in a stock round. No RR Buy-in. Closes '\
                   'on share exchange or at phase 5.',
           },

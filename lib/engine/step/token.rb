@@ -25,7 +25,7 @@ module Engine
       end
 
       def available_hex(entity, hex)
-        @game.token_graph_for_entity(entity).reachable_hexes(entity)[hex]
+        tokener_available_hex(entity, hex)
       end
 
       def process_place_token(action)
