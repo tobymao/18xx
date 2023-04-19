@@ -898,17 +898,6 @@ module Engine
           end.compact
         end
 
-        def init_hexes(_companies, _corporations)
-          hexes = super
-          @corporations.each do |c|
-            if c.destination_coordinates
-              hexes.find { |h| h.id == c.destination_coordinates }.tile.icons <<
-                Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
-            end
-          end
-          hexes
-        end
-
         def init_round
           stock_round
         end
@@ -2009,6 +1998,7 @@ module Engine
             c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
                                              simple_logo: "../#{c.destination_icon}.svg",
                                              type: :destination)
+            hex_by_id(c.destination_coordinates).tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
           end
         end
 

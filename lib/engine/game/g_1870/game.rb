@@ -314,26 +314,20 @@ module Engine
           'Treasury'
         end
 
-        def init_hexes(companies, corporations)
-          hexes = super
-
-          @corporations.each do |corporation|
-            ability = abilities(corporation, :assign_hexes)
-            hex = hexes.find { |h| h.name == ability.hexes.first }
-
-            hex.assign!(corporation)
-            ability.description = "Destination: #{hex.location_name} (#{hex.name})"
-          end
-
-          hexes
-        end
-
         def setup
           @sell_queue = []
           @connection_run = {}
           @reissued = {}
 
           river_company.max_price = river_company.value
+
+          @corporations.each do |corporation|
+            ability = abilities(corporation, :assign_hexes)
+            hex = hex_by_id(ability.hexes.first)
+
+            hex.assign!(corporation)
+            ability.description = "Destination: #{hex.location_name} (#{hex.name})"
+          end
         end
 
         def event_companies_buyable!
