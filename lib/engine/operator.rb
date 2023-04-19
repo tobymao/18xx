@@ -6,9 +6,9 @@ module Engine
   module Operator
     include Entity
 
-    attr_accessor :coordinates, :color, :text_color, :tokens
+    attr_accessor :coordinates, :color, :text_color
     attr_reader :city, :loans, :logo, :logo_filename, :simple_logo,
-                :operating_history, :trains, :destination_icon,
+                :operating_history, :tokens, :trains, :destination_icon,
                 :destination_coordinates, :share_price
 
     def init_operator(opts)

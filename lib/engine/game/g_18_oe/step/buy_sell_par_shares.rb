@@ -90,7 +90,7 @@ module Engine
             @game.stock_market.move_right(corporation)
             @game.stock_market.move_right(corporation)
             @game.stock_market.move_up(corporation)
-            corporation.tokens += [40, 60, 60, 80, 80, 80].map { |price| Engine::Token.new(corporation, price: price) }
+            corporation.tokens.concat([40, 60, 60, 80, 80, 80].map { |price| Engine::Token.new(corporation, price: price) })
             # Lastly, remove major from minor/regional turn order
             @game.minor_regional_order -= [corporation]
             # Also update the cache so reload works
