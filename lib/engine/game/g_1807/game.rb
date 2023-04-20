@@ -170,6 +170,19 @@ module Engine
           @corporations += available
           update_cache(:corporations)
         end
+
+        def check_other(route)
+          check_london(route)
+        end
+
+        def check_london(route)
+          # Can only run to London if running to your own token.
+          london_stops = route.visited_stops & @london_cities
+          return if london_stops.all? { |city| city.tokened_by?(current_entity) }
+
+          raise GameError, 'Route may not include London unless running to a ' \
+                           "#{current_entity.id} token."
+        end
       end
     end
   end
