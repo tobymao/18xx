@@ -180,22 +180,16 @@ module Engine
             @share_pool,
             ShareBundle.new(tr.shares.dup.reverse.take(3)),
           )
-        end
-
-        def init_hexes(companies, corporations)
-          hexes = super
 
           @corporations.each do |corporation|
             next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
 
-            dest_hexes = dest_abilities.map(&:hexes).flatten
-
-            hexes
-              .select { |h| dest_hexes.include?(h.name) }
-              .each { |h| h.assign!(corporation) }
+            dest_abilities.each do |ability|
+              ability.hexes.each do |id|
+                hex_by_id(id).assign!(corporation)
+              end
+            end
           end
-
-          hexes
         end
 
         def operating_round(round_num)
