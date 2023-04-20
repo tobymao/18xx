@@ -10,7 +10,7 @@ module Engine
             sym: 'AR',
             value: 20,
             revenue: 5,
-            desc: 'When owned by a corporation, the revenue is equal to 10.',
+            desc: 'When owned by a corporation, the revenue is equal to 10 F.',
             abilities: [{ type: 'revenue_change', revenue: 10, when: 'sold' }],
             color: '#d9d9d9',
           },
@@ -19,9 +19,9 @@ module Engine
             sym: 'LVM',
             value: 25,
             revenue: 5,
-            desc: 'Owning corporation may lay a yellow tile in I14.'\
-                  ' This is in addition to the corporation\'s tile builds.'\
-                  ' No connection required. Blocks I14 while owned by a player.',
+            desc: 'Once per game the owning corporation may pay 50 F to lay a yellow track.'\
+                  ' This is in addition to the corporation\'s tile builds'\
+                  ' Blocks I14 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I14'] },
                         {
                           type: 'tile_lay',
@@ -42,8 +42,8 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'Owning corporation may lay a yellow tile or upgrade a yellow tile in Liège'\
-                  ' (H17) along with an optional token.'\
-                  ' This counts as one of the corporation\'s tile builds.'\
+                  ' (H17) and optionally place a token for free there.'\
+                  ' This counts as one of the corporation\'s tile builds and token laying.'\
                   ' Blocks H17 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H17'] },
                         {
@@ -80,8 +80,8 @@ module Engine
             sym: 'SQG',
             value: 100,
             revenue: 0,
-            desc: 'Revenue is equal to 70 if Saint-Quentin (G10) is green, to 100 if Saint-Quentin is brown and to 0 otherwise.'\
-                  ' Closes in purple phase.',
+            desc: 'Revenue is equal to 70 F if Saint-Quentin (G10) is green, to 100 F if Saint-Quentin is brown and to 0 F otherwise.'\
+                  ' Closes in purple phase. May not be sold to corporation in red and gray phase.',
             abilities: [{ type: 'close', on_phase: 'Purple' }],
             color: '#d9d9d9',
           },
