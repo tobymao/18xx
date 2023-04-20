@@ -218,24 +218,15 @@ module Engine
           companies
         end
 
-        def active_players
-          active = super
-          return active if multiplayer? || active != [@vaclav]
+        def acting_for_player(player)
+          return player unless player == @vaclav
 
           case active_step
           when G18CZ::Step::Track
-            [player_for_track(current_entity)]
+            player_for_track(current_entity)
           when G18CZ::Step::Token
-            [player_for_token(current_entity)]
-          else
-            players_without_vaclav
+            player_for_token(current_entity)
           end
-        end
-
-        def valid_actors(action)
-          return super if multiplayer?
-
-          action.entity.player == @vaclav ? active_players : super
         end
 
         def player_for_track(corporation)
@@ -434,7 +425,7 @@ module Engine
         end
 
         def status_array(corporation)
-          return if !@vaclavs_corporations.include?(corporation) || !@round.current_entity&.player?
+          return unless @vaclavs_corporations.include?(corporation)
 
           ["Track: #{player_for_track(corporation).name}", "Token: #{player_for_token(corporation).name}"]
         end

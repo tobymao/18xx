@@ -882,21 +882,21 @@ module Engine
           @final_operating_rounds || super
         end
 
-        def add_neutral_tokens(hexes)
+        def add_neutral_tokens
           @green_tokens = []
           logo = '/logos/1867/neutral.svg'
-          hexes.each do |hex|
+          @hexes.each do |hex|
             case hex.id
             when 'D2'
-              token = Token.new(national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
+              token = Token.new(@national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
               hex.tile.cities.first.exchange_token(token)
               @green_tokens << token
             when 'L12'
-              token = Token.new(national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
+              token = Token.new(@national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
               hex.tile.cities.last.exchange_token(token)
               @green_tokens << token
             when 'F16'
-              hex.tile.cities.first.exchange_token(national.tokens.first)
+              hex.tile.cities.first.exchange_token(@national.tokens.first)
             end
           end
         end
@@ -933,29 +933,20 @@ module Engine
           @hidden_company = company_by_id('3')
 
           # CN corporation only exists to hold tokens
-          @national = national
+          @national = @corporations.find { |c| c.type == :national }
           @national.ipoed = true
           @national.shares.clear
           @national.shares_by_corporation[@national].clear
 
           @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
           @corporations.delete(@national)
+          add_neutral_tokens
 
           # Move green and majors out of the normal list
           @corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
           end
           @show_majors = false
-        end
-
-        def national
-          @national ||= @corporations.find { |c| c.type == :national }
-        end
-
-        def init_hexes(_companies, corporations)
-          hexes = super
-          add_neutral_tokens(hexes)
-          hexes
         end
 
         def event_green_minors_available!

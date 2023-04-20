@@ -108,6 +108,11 @@ module Engine
 
         def setup
           super
+
+          %w[a5 a9 G14].each do |id|
+            hex_by_id(id)&.ignore_for_axes = true
+          end
+
           post_setup
         end
 
@@ -128,16 +133,6 @@ module Engine
           companies.reject! { |c| c.sym == 'DC&H' } unless @optional_rules.include?(:dch)
           companies.reject! { |c| c.sym == 'LAT' } unless @optional_rules.include?(:la_title)
           companies
-        end
-
-        def init_hexes(_companies, _corporations)
-          hexes = super
-
-          hexes.each do |hex|
-            hex.ignore_for_axes = true if %w[a5 a9 G14].include?(hex.id)
-          end
-
-          hexes
         end
 
         def num_removals(_group)

@@ -60,11 +60,12 @@ module Engine
             true
           end
 
+        connected = special_ability.type == :token ? special_ability.connected : false
         place_token(
           @game.token_owner(entity),
           action.city,
           action.token,
-          connected: false,
+          connected: connected,
           special_ability: special_ability,
           check_tokenable: check_tokenable,
         )
@@ -94,7 +95,13 @@ module Engine
       end
 
       def available_hex(entity, hex)
-        return if !ability(entity).hexes.empty? && !ability(entity).hexes.include?(hex.id)
+        ability = ability(entity)
+
+        return if !ability.hexes.empty? && !ability.hexes.include?(hex.id)
+
+        if ability.type == :token && ability.connected
+          return @game.token_graph_for_entity(entity.owner).reachable_hexes(entity.owner)[hex]
+        end
 
         @game.hex_by_id(hex.id).neighbors.keys
       end
