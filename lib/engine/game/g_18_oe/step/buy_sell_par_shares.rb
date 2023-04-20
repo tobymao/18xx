@@ -11,7 +11,6 @@ module Engine
           def actions(entity)
             return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
-            return [] if @round.current_actions.any? { |x| x.instance_of?(Engine::Action::Par) }
             return ['sell_shares'] if must_sell?(entity)
 
             actions = []
@@ -159,6 +158,8 @@ module Engine
 
               @game.close_corporation(corp)
             end
+
+            pass!
           end
 
           def get_par_prices(entity, corp)
