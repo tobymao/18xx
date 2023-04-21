@@ -7,6 +7,10 @@ module Engine
     module G18NY
       module Step
         class DiscardTrain < Engine::Step::DiscardTrain
+          def description
+            'Salvage Train'
+          end
+
           def process_discard_train(action)
             @game.salvage_train(action.train)
           end
