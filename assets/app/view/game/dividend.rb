@@ -47,7 +47,11 @@ module View
                   times.times do
                     prev_price = new_share_price
                     new_share_price = @game.stock_market.find_relative_share_price(new_share_price, dir)
-                    real_moves += 1 unless prev_price == new_share_price
+                    if prev_price == new_share_price
+                      break
+                    else
+                      real_moves += 1
+                    end
                   end
                   next if real_moves.zero?
 
