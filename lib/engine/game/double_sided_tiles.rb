@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../game_error'
+
 # This module is used by games which double sided tiles, providing methods for
 # initializing double-sided tiles and keeping tile lists updated appropriately.
 module DoubleSidedTiles
@@ -14,7 +16,7 @@ module DoubleSidedTiles
       num = by_name[name_a].size
 
       if num != by_name[name_b].size
-        raise GameError, "Sides of double-sided tiles need to have same number (#{name_a}, #{name_b})"
+        raise Engine::GameError, "Sides of double-sided tiles need to have same number (#{name_a}, #{name_b})"
       end
 
       num.times.each do |index|
@@ -40,6 +42,17 @@ module DoubleSidedTiles
           opp_tile.opposite = new_tile
           new_tile.opposite = opp_tile
         end
+      end
+
+      # TileSelector creates "fake" A1 hexes that are attached to the tiles,
+      # so here we need to check that tile.hex actually belongs to the Game
+      # object
+      if (hex = tile.hex) && (hex == hex_by_id(hex.id))
+        raise Engine::GameError,
+              "Cannot lay tile #{tile.id}; it is already on hex #{tile.hex.id}"
+      end
+      if (hex = tile.opposite&.hex) && hex == hex_by_id(hex.id)
+        raise Engine::GameError, "Cannot lay tile #{tile.id}; #{tile.opposite.id} is already on hex #{tile.opposite.hex.id}"
       end
 
       @tiles.delete(tile)
