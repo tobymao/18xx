@@ -29,7 +29,7 @@ module View
 
             h('div.margined', train_props, train.name)
           end
-          @verb = step.trains(corporation)&.any?(&:salvage) ? 'Salvage' : 'Discard'
+
           h(:div, block_props, [
             h(Corporation, corporation: corporation),
             h(:div, trains),
@@ -40,7 +40,7 @@ module View
         overflow << h(Map, game: @game) if @game.round.is_a?(Engine::Round::Operating)
 
         h(:div, [
-          h(:h3, "#{@verb} Trains"),
+          h(:h3, 'Discard Trains'),
           *overflow,
         ])
       end
