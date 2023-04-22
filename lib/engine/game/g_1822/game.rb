@@ -1387,12 +1387,6 @@ module Engine
           self.class::BIDDING_BOX_START_PRIVATE
         end
 
-        def can_gain_extra_train?(entity, train)
-          return false if pullman_train?(train) && entity.trains.any? { |t| pullman_train?(t) }
-
-          true
-        end
-
         def calculate_destination_bonus(route)
           entity = route.train.owner
           # Only majors can have a destination token
@@ -1753,10 +1747,6 @@ module Engine
 
         def on_acquired_train(company, entity)
           train = @company_trains[company.id]
-
-          unless can_gain_extra_train?(entity, train)
-            raise GameError, "Can't gain a #{train.name}, already have a #{self.class::EXTRA_TRAIN_PULLMAN}"
-          end
 
           buy_train(entity, train, :free)
           @log << "#{entity.name} gains a #{train.name} train"
