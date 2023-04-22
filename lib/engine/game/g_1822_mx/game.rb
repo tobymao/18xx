@@ -49,6 +49,7 @@ module Engine
              360 400 450 500 550 600e],
         ].freeze
 
+        MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         EXTRA_TRAINS = %w[2P P+ LP 3/2P].freeze
