@@ -44,6 +44,9 @@ module DoubleSidedTiles
         end
       end
 
+      # TileSelector creates "fake" A1 hexes that are attached to the tiles,
+      # so here we need to check that tile.hex actually belongs to the Game
+      # object
       if (hex = tile.hex) && (hex == hex_by_id(hex.id))
         raise Engine::GameError,
               "Cannot lay tile #{tile.id}; it is already on hex #{tile.hex.id}"
