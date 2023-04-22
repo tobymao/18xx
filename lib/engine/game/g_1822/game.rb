@@ -1696,8 +1696,7 @@ module Engine
           corporation.trains.count { |train| pullman_train?(train) }
         end
 
-        def remove_discarded_train?(action)
-          train = action.train
+        def remove_discarded_train?(train)
           extra_train_permanent?(train) || pullman_train?(train)
         end
 

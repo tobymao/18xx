@@ -723,8 +723,8 @@ module Engine
           @ndem ||= corporation_by_id('NDEM')
         end
 
-        def remove_discarded_train?(action)
-          action.entity == ndem || super
+        def remove_discarded_train?(train)
+          train.owner == ndem || super
         end
 
         def finalize_end_game_values; end
