@@ -215,6 +215,7 @@ module Engine
       PHASES = [].freeze
 
       LOCATION_NAMES = {}.freeze
+      HEXES_HIDE_LOCATION_NAMES = {}.freeze
 
       TRACK_RESTRICTION = :semi_restrictive
 
@@ -2337,7 +2338,8 @@ module Engine
               # name the location (city/town)
               location_name = location_name(coord)
 
-              Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name)
+              Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name,
+                             hide_location_name: self.class::HEXES_HIDE_LOCATION_NAMES[coord])
             end
           end
         end.flatten.compact

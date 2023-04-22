@@ -1772,8 +1772,9 @@ module Engine
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
 
-          ability = entity.all_abilities.find { |a| a.type == :destination }
-          entity.remove_ability(ability)
+          entity.all_abilities.each do |ability|
+            entity.remove_ability(ability) if ability.type == :destination
+          end
 
           @graph.clear
 
@@ -1981,20 +1982,31 @@ module Engine
           @corporations.each do |c|
             next unless c.destination_coordinates
 
-            description = if c.id == self.class::TWO_HOME_CORPORATION
-                            "Gets destination token at #{c.destination_coordinates} when floated"
-                          else
-                            "Connect to #{c.destination_coordinates} for your destination token"
-                          end
+            home_hex = hex_by_id(c.coordinates)
             ability = Ability::Base.new(
-              type: 'destination',
-              description: description
+              type: 'base',
+              description: "Home: #{home_hex.location_name} (#{home_hex.name})",
             )
             c.add_ability(ability)
+
+            dest_hex = hex_by_id(c.destination_coordinates)
+            ability = Ability::Base.new(
+              type: 'base',
+              description: "Destination: #{dest_hex.location_name} (#{dest_hex.name})",
+            )
+            c.add_ability(ability)
+
             c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
                                              simple_logo: "../#{c.destination_icon}.svg",
                                              type: :destination)
-            hex_by_id(c.destination_coordinates).tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
+            dest_hex.tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
+
+            next unless c.id == self.class::TWO_HOME_CORPORATION
+
+            c.add_ability(Ability::Base.new(
+              type: 'destination',
+              description: 'Places destination token in its first OR'
+            ))
           end
         end
 
