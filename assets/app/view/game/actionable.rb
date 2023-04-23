@@ -35,11 +35,20 @@ module View
         @participant = (@game.players.map(&:id) + [@game_data['user']['id']]).include?(@user&.dig('id'))
       end
 
-      def check_consent(player, click)
+      def check_consent(entity, consenters, click)
+        consenters = Array(consenters).uniq
+        names = consenters.map(&:name).sort.join(', ')
+        consenters_str = consenters.size > 1 ? "one of #{names}" : names
+
+        log_and_click = lambda do
+          process_action(Engine::Action::Log.new(entity.player, message: "• confirmed receiving consent from #{consenters_str}"))
+          click.call
+        end
+
         opts = {
           color: :yellow,
-          click: click,
-          message: "Click confirm if #{player.name} has already consented to this action.",
+          click: log_and_click,
+          message: "Click confirm if #{consenters_str} has already consented to this action.",
         }
         store(:confirm_opts, opts, skip: false)
       end

@@ -1404,7 +1404,7 @@ module Engine
           train.owner.remove_train(train) if train.owner&.system?
         end
 
-        def hex_blocked_by_ability?(entity, _ability, hex)
+        def hex_blocked_by_ability?(entity, _ability, hex, _tile = nil)
           return false if entity.name == 'C&P' && hex.id == 'C15'
 
           super
