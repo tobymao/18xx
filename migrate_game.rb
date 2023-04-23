@@ -294,7 +294,7 @@ def attempt_repair(actions, debug)
         iteration += 1
         puts "Break at #{e} #{action} #{iteration}"
         raise Exception, "Stuck in infinite loop?" if iteration > 100
-        
+
         ever_repaired = true
         inplace_actions = repair(game, actions, filtered_actions, action)
         repaired = true
@@ -314,15 +314,15 @@ def attempt_repair(actions, debug)
     end
 
     break unless repaired
-    
+
   end
   repairs = nil if rewritten
   return [actions, repairs] if ever_repaired
 end
 
-def migrate_data(data)
+def migrate_data(data, debug=true)
   begin
-    data['actions'], repairs = attempt_repair(data['actions'], true) do
+    data['actions'], repairs = attempt_repair(data['actions'], debug) do
       Engine::Game.load(data, actions: []).maybe_raise!
     end
   rescue Exception => e
@@ -411,9 +411,9 @@ def migrate_db_actions(data, pin, dry_run=false, debug=false)
   return original_actions
 end
 
-def migrate_json(filename)
+def migrate_json(filename, debug=true)
   puts "Loading #{filename} for migration"
-  data = migrate_data(JSON.parse(File.read(filename)))
+  data = migrate_data(JSON.parse(File.read(filename)), debug)
   if data
     File.write(filename, JSON.pretty_generate(data))
   else
