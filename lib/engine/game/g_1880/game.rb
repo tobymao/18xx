@@ -47,6 +47,11 @@ module Engine
 
         GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
         P0_AWARD = { 'A2' => 40, 'B1' => 70, 'B2' => 100 }.freeze
+
+        ASSIGNMENT_TOKENS = {
+          'P5' => '/icons/1880/D.svg',
+        }.freeze
+
         TRAINS_NOT_TRIGGERING_SR = %w[2P 8E 10].freeze
 
         GAME_END_REASONS_TEXT = {

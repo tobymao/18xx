@@ -64,7 +64,13 @@ Designate a specific corporation to be the beneficiary of the ability,
 for example Steamboat Company in 1846.
 
 When a company with this ability is sold to a corporation, the company is
-automatically assigned to the new owning corporation. With this configuration,
+automatically assigned to the new owning corporation.
+
+- `count`: The number of times the ability may be used
+- `closed_when_used_up`: This ability has a count that is decreased each time it is used. If this attribute is true the private is closed when count reaches zero, if false the private
+remains open but the discount can no longer be used. Default false.
+
+With this configuration,
 the automatic assignment will happen and the company cannot be further
 reassigned:
 
