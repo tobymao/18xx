@@ -16,6 +16,8 @@ module View
         }
         step = @game.active_step
         overflow = step.crowded_corps.map do |corporation|
+          salvagable = step.trains(corporation)&.any?(&:salvage)
+          @verb = salvagable ? 'Salvage' : 'Discard'
           trains = step.trains(corporation).map do |train|
             train_props = {
               style: {

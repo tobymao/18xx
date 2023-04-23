@@ -385,5 +385,22 @@ module Engine
         end
       end
     end
+    describe '18NY' do
+      describe 120_048 do
+        it 'salvage step is correct' do
+          # Salvaging trains should work as expected
+          game = game_at_action(game_file, 276)
+          action = {
+            'type' => 'scrap_train',
+            'entity' => 'D&H',
+            'entity_type' => 'corporation',
+            'train' => '2H-8',
+          }
+          game.process_action(action)
+          corp = game.corporation_by_id('D&H')
+          expect(corp.cash).to eq(200)
+        end
+      end
+    end
   end
 end

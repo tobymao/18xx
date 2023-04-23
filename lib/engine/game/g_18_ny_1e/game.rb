@@ -60,14 +60,15 @@ module Engine
         ].freeze
 
         TRAINS = [
-          { name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
-          { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', events: [{ 'type' => 'float_30' }] },
-          { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ 'type' => 'float_40' }] },
+          { name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H', salvage: 25 },
+          { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', salvage: 50, events: [{ 'type' => 'float_30' }] },
+          { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', salvage: 75, events: [{ 'type' => 'float_40' }] },
           {
             name: '12H',
             num: 3,
             distance: 12,
             price: 600,
+            salvage: 150,
             events: [{ 'type' => 'float_50' }, { 'type' => 'close_companies' }, { 'type' => 'nyc_formation' },
                      { 'type' => 'capitalization_round', 'when' => 3 }],
           },
@@ -76,9 +77,10 @@ module Engine
             num: 2,
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 99, 'multiplier' => 2 }],
             price: 800,
+            salvage: 200,
             events: [{ 'type' => 'float_60' }],
           },
-          { name: 'D', num: 20, distance: 99, price: 1000 },
+          { name: 'D', num: 20, distance: 99, price: 1000, salvage: 250 },
         ].freeze
 
         def second_edition?

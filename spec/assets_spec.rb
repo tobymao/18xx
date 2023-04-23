@@ -199,6 +199,15 @@ TEST_CASES = [
     [nil,
      'endgame',
      ['1860: Phase 9 - Operating Round 8.4 (Nationalization) - Game Over - Nationalization complete']]]],
+  ['18NY',
+   118_662,
+   [[524,
+     'discard_train',
+     ['!!<div>Salvage Trains']],
+    120_048,
+    [277,
+     'scrap_train',
+     ['!!<div>Trains to Scrap']]]],
 ].freeze
 
 AUTO_ACTIONS_TEST_CASES = [
