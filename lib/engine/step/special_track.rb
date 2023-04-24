@@ -61,7 +61,7 @@ module Engine
           @round.laid_hexes << action.hex
           check_connect(action, ability)
         end
-        ability.use!
+        ability.use!(upgrade: %i[green brown gray].include?(action.tile.color))
 
         # Record any track laid after the dividend step
         if owner&.corporation? && (operating_info = owner.operating_history[[@game.turn, @round.round_num]])

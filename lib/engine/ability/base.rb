@@ -37,7 +37,7 @@ module Engine
         @used
       end
 
-      def use!
+      def use!(**_kwargs)
         @used = true
 
         @count_this_or += 1 if @count_per_or

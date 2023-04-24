@@ -254,6 +254,11 @@ remains open but the discount can no longer be used. Default false.
 - `consume_tile_lay`: If true, using this private counts as a corporations tile lay
   and must follow lay/upgrade rules. Upgrade's also count towards the corporations 'upgrade' lays.
   Default false.
+- `lay_count` and `upgrade_count` - Use as an alternative to
+  `count`. `lay_count` is the number of yellow tile lays, and `upgrade_count` is
+  the number of green or higher tile upgrades. When these are set, the ability
+  cannot be used for both new tile lays and upgrades. With these set, you need
+  to make sure the `ability.use!` call includes an `upgrade` kwarg.
 
 ## train_buy
 

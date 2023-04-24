@@ -91,7 +91,7 @@ module Engine
               @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
               action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
               ability = abilities(action.entity)
-              ability.use!
+              ability.use!(upgrade: %i[green brown gray].include?(action.tile.color))
               # Minors can only do this once...
               if action.entity.owner.type == :minor
                 ability.use!
