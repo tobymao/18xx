@@ -28,38 +28,41 @@ module Engine
                   'a mountain hex for free, in addition to normal track action. '\
                   'Otherwise closes in Phase 6E.',
             sym: 'K',
-            abilities: [{
-              type: 'tile_lay',
-              hexes: %w[B4
-                        C5
-                        D4
-                        D8
-                        D10
-                        D12
-                        D14
-                        D20
-                        E3
-                        E5
-                        E7
-                        E9
-                        E11
-                        E15
-                        F4
-                        F10
-                        F14
-                        G11
-                        G13
-                        I15],
-              tiles: %w[1 3 4 7 8 9 55 56 58 69],
-              free: true,
-              when: 'track',
-              owner_type: 'corporation',
-              reachable: true,
-              count: 1,
-              consume_tile_lay: false,
-              closed_when_used_up: true,
-              special: false,
-            }],
+            abilities: [
+              { type: 'close', on_phase: '6E' },
+              {
+                type: 'tile_lay',
+                hexes: %w[B4
+                          C5
+                          D4
+                          D8
+                          D10
+                          D12
+                          D14
+                          D20
+                          E3
+                          E5
+                          E7
+                          E9
+                          E11
+                          E15
+                          F4
+                          F10
+                          F14
+                          G11
+                          G13
+                          I15],
+                tiles: %w[1 3 4 7 8 9 55 56 58 69],
+                free: true,
+                when: 'track',
+                owner_type: 'corporation',
+                reachable: true,
+                count: 1,
+                consume_tile_lay: false,
+                closed_when_used_up: true,
+                special: false,
+              },
+],
           },
           {
             name: 'Hochstätten',
@@ -72,38 +75,41 @@ module Engine
                   'a mountain hex for free, in addition to normal track action. '\
                   'Otherwise closes in Phase 6E.',
             sym: 'H',
-            abilities: [{
-              type: 'tile_lay',
-              hexes: %w[B4
-                        C5
-                        D4
-                        D8
-                        D10
-                        D12
-                        D14
-                        D20
-                        E3
-                        E5
-                        E7
-                        E9
-                        E11
-                        E15
-                        F4
-                        F10
-                        F14
-                        G11
-                        G13
-                        I15],
-              tiles: %w[1 3 4 7 8 9 55 56 58 69],
-              free: true,
-              when: 'track',
-              owner_type: 'corporation',
-              reachable: true,
-              count: 1,
-              consume_tile_lay: false,
-              closed_when_used_up: true,
-              special: false,
-            }],
+            abilities: [
+              { type: 'close', on_phase: '6E' },
+              {
+                type: 'tile_lay',
+                hexes: %w[B4
+                          C5
+                          D4
+                          D8
+                          D10
+                          D12
+                          D14
+                          D20
+                          E3
+                          E5
+                          E7
+                          E9
+                          E11
+                          E15
+                          F4
+                          F10
+                          F14
+                          G11
+                          G13
+                          I15],
+                tiles: %w[1 3 4 7 8 9 55 56 58 69],
+                free: true,
+                when: 'track',
+                owner_type: 'corporation',
+                reachable: true,
+                count: 1,
+                consume_tile_lay: false,
+                closed_when_used_up: true,
+                special: false,
+              },
+],
           },
           {
             name: 'Weidenthal',
@@ -115,17 +121,20 @@ module Engine
                   'Owning corporation may close this company to place a token '\
                   'for half price. Otherwise closes in Phase 6E.',
             sym: 'W',
-            abilities: [{
-              type: 'token',
-              owner_type: 'corporation',
-              when: 'token',
-              connected: true,
-              hexes: [],
-              discount: 0.5,
-              count: 1,
-              from_owner: true,
-              closed_when_used_up: true,
-            }],
+            abilities: [
+              { type: 'close', on_phase: '6E' },
+              {
+                type: 'token',
+                owner_type: 'corporation',
+                when: 'token',
+                connected: true,
+                hexes: [],
+                discount: 0.5,
+                count: 1,
+                from_owner: true,
+                closed_when_used_up: true,
+              },
+],
           },
           {
             name: 'Main-Neckar-Railway',
