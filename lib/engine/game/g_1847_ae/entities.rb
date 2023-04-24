@@ -12,8 +12,8 @@ module Engine
             revenue: 30,
             min_price: 100,
             max_price: 200,
-            desc: 'May be sold to a corporation for 100 to 200 M. '\
-                  'Revenue increases to 50 when a tile is laid in D9. '\
+            desc: 'May be sold to a corporation for 100 to 200M. '\
+                  'Revenue increases to 50M when a tile is laid in D9. '\
                   'Never closes.',
             sym: 'R',
           },
@@ -23,7 +23,7 @@ module Engine
             revenue: 5,
             min_price: 15,
             max_price: 40,
-            desc: 'May be sold to a corporation for 15 to 40 M. '\
+            desc: 'May be sold to a corporation for 15 to 40M. '\
                   'Owning corporation may close this company to place a yellow tile on '\
                   'a mountain hex for free, in addition to normal track action. '\
                   'Otherwise closes in Phase 6E.',
@@ -70,7 +70,7 @@ module Engine
             revenue: 15,
             min_price: 40,
             max_price: 120,
-            desc: 'May be sold to a corporation for 40 to 120 M. '\
+            desc: 'May be sold to a corporation for 40 to 120M. '\
                   'Owning corporation may close this company to place a yellow tile on '\
                   'a mountain hex for free, in addition to normal track action. '\
                   'Otherwise closes in Phase 6E.',
@@ -117,7 +117,7 @@ module Engine
             revenue: 10,
             min_price: 25,
             max_price: 75,
-            desc: 'May be sold to a corporation for 25 to 75 M. '\
+            desc: 'May be sold to a corporation for 25 to 75M. '\
                   'Owning corporation may close this company to place a token '\
                   'for half price. Otherwise closes in Phase 6E.',
             sym: 'W',

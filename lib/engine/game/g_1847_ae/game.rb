@@ -185,6 +185,10 @@ module Engine
           corporation_by_id('HLB')
         end
 
+        def r
+          company_by_id('R')
+        end
+
         def init_share_pool
           G1847AE::SharePool.new(self)
         end
@@ -237,6 +241,15 @@ module Engine
         # Cannot build in E9 before Phase 5
         def can_build_in_e9?
           ['5', '5+5', '6E', '6+6'].include?(@phase.current[:name])
+        end
+
+        def action_processed(action)
+          super
+
+          return if r.revenue == 50 || !action.is_a?(Action::LayTile) || action.hex.id != 'E9'
+
+          r.revenue = 50
+          @log << "Tile laid in E9 - #{r.name}'s revenue increased to 50M"
         end
       end
     end

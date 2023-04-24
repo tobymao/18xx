@@ -10,7 +10,7 @@ module Engine
           def available_hex(entity, hex)
             return nil if (hex.id == 'E9') && !@game.can_build_in_e9?
 
-            super(entity, hex)
+            super
           end
         end
       end
