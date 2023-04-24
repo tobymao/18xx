@@ -49,6 +49,7 @@ module Engine
              360 400 450 500 550 600e],
         ].freeze
 
+        MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         EXTRA_TRAINS = %w[2P P+ LP 3/2P].freeze
@@ -307,7 +308,7 @@ module Engine
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            G1822MX::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822MX::Step::SpecialChoose,
             G1822MX::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -319,7 +320,7 @@ module Engine
             G1822::Step::BuyTrain,
             G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822MX::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822MX::Step::IssueShares,
             G1822MX::Step::CashOutNdem,
             G1822MX::Step::AuctionNdemTokens,
@@ -723,22 +724,8 @@ module Engine
           @ndem ||= corporation_by_id('NDEM')
         end
 
-        def extra_train_pullman_count(corporation)
-          corporation.trains.count { |train| extra_train_pullman?(train) }
-        end
-
-        def extra_train_pullman?(train)
-          train.name == self.class::EXTRA_TRAIN_PULLMAN
-        end
-
-        def crowded_corps
-          @crowded_corps ||= corporations.select do |c|
-            trains = c.trains.count { |t| !extra_train?(t) }
-            crowded = trains > train_limit(c)
-            crowded |= extra_train_permanent_count(c) > 1
-            crowded |= extra_train_pullman_count(c) > 1
-            crowded
-          end
+        def remove_discarded_train?(train)
+          train.owner == ndem || super
         end
 
         def finalize_end_game_values; end

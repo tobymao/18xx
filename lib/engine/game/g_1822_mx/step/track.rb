@@ -24,9 +24,11 @@ module Engine
           end
 
           def active?
-            return super unless current_entity == @game.ndem
-
-            !@ndem_tile_layers.empty? || !acted
+            if current_entity == @game.ndem
+              super && (!@ndem_tile_layers.empty? || !acted)
+            else
+              super
+            end
           end
 
           def pass!

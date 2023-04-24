@@ -67,6 +67,16 @@ module Engine
           two_player? ? { max_ownership_percent: 70 } : {}
         end
 
+        def corporation_view(entity)
+          return unless entity.minor?
+
+          # Override the default rendering for private railway companies that
+          # are owned by players. These would be rendered as minor companies
+          # (with treasury, trains and revenue). Instead render them in the same
+          # way as private companies that are owned by the bank.
+          'private_railway'
+        end
+
         def option_quick_start?
           optional_rules.include?(:quick_start)
         end
@@ -254,6 +264,18 @@ module Engine
           return entity if entity.minor?
 
           @minors.find { |minor| minor.id == entity.sym }
+        end
+
+        def private_description(minor)
+          private_company(minor).desc
+        end
+
+        def private_revenue(minor)
+          format_currency(private_company(minor).revenue)
+        end
+
+        def private_value(minor)
+          format_currency(private_company(minor).value)
         end
 
         def purchase_company(player, company, price)

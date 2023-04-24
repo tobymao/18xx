@@ -251,7 +251,7 @@ module Engine
           (@corporations + [@national]).select(&:operated?)
         end
 
-        def add_neutral_tokens(_hexes)
+        def add_neutral_tokens
           # 1861 doesn't have neutral tokens
           @green_tokens = []
         end
