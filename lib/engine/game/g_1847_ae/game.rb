@@ -167,7 +167,7 @@ module Engine
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G1847AE::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
@@ -232,6 +232,11 @@ module Engine
           hlb.coordinates = [hlb.coordinates.first]
           ability = hlb.all_abilities.find { |a| a.description.include?('Two home stations') }
           hlb.remove_ability(ability)
+        end
+
+        # Cannot build in E9 before Phase 5
+        def can_build_in_e9?
+          ['5', '5+5', '6E', '6+6'].include?(@phase.current[:name])
         end
       end
     end
