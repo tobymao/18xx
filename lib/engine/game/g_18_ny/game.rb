@@ -18,7 +18,7 @@ module Engine
         include InterestOnLoans
 
         attr_reader :privates_closed, :first_nyc_owner
-        attr_accessor :stagecoach_token
+        attr_accessor :stagecoach_token, :capitalization_round
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
@@ -174,7 +174,7 @@ module Engine
             ['60% to Float', 'Corporations must have 60% of their shares sold to float and receive full capitalization'],
           'nyc_formation' => ['NYC Formation', 'NYC formation triggered'],
           'capitalization_round' =>
-            ['Capitalization Round', 'Special Capitalization Round before next Stock Round'],
+            ['Capitalization Round', 'Trigger Special Capitalization Round'],
         ).freeze
 
         ERIE_CANAL_ICON = 'canal'
@@ -185,6 +185,10 @@ module Engine
           'connection_bonus' => '/icons/18_ny/connection_bonus.svg',
           'coal' => '/icons/18_ny/coal.svg',
         }.freeze
+
+        def immediate_capitalization_round?
+          @optional_rules.include?(:immediate_capitalization_round)
+        end
 
         def setup
           @float_percent = 20
@@ -323,8 +327,12 @@ module Engine
               end
             when G18NY::Round::Capitalization
               @capitalization_round = nil
-              @turn += 1
-              new_stock_round
+              if @round_after_capialization_round
+                @round_after_capialization_round
+              else
+                @turn += 1
+                new_stock_round
+              end
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
@@ -332,7 +340,13 @@ module Engine
             when Engine::Round::Operating
               or_round_finished
               if @round.round_num < @operating_rounds
-                new_operating_round(@round.round_num + 1)
+                round = new_operating_round(@round.round_num + 1)
+                if immediate_capitalization_round? && @capitalization_round
+                  @round_after_capialization_round = round
+                  new_capitalization_round
+                else
+                  round
+                end
               else
                 or_set_finished
                 if %i[round_one round_two].include?(@nyc_formation_state)
@@ -407,6 +421,16 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT['capitalization_round'][1]} --"
           @capitalization_round = true
           @full_capitalization = true
+          return unless immediate_capitalization_round?
+
+          # floated corporations, that have not operated, capitalize immediately
+          @corporations.select { |c| c.floated? && !c.operated? }.each do |c|
+            bundle = issuable_shares(c).max_by(&:percent)
+            next unless bundle
+
+            @log << "#{c.name} fully capitalizes"
+            @share_pool.sell_shares(bundle)
+          end
         end
 
         def non_floated_corporations
@@ -1234,7 +1258,7 @@ module Engine
               liquidation_price = minor.share_price.price * 2
               @log << "#{minor.name} is liquidated and #{owner.name} receives #{format_currency(liquidation_price)} " \
                       'in compensation from the bank'
-              @bank.spend(liquidation_price, owner)
+              @bank.spend(liquidation_price, owner) if liquidation_price.positive?
             end
             close_corporation(minor, quiet: true)
           end

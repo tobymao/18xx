@@ -129,7 +129,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                when: 'owning_corp_or_turn',
+                when: %w[track_and_token route],
                 hexes: %w[B8 C5 D14 I1 G19],
                 count_per_or: 1,
                 owner_type: 'corporation',

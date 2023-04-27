@@ -995,7 +995,7 @@ module Engine
         end
 
         def init_stock_market
-          StockMarket.new(self.class::MARKET, [], zigzag: true)
+          StockMarket.new(self.class::MARKET, [], zigzag: true, ledge_movement: true)
         end
 
         def init_round

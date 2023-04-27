@@ -7,71 +7,176 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Ligne Longwy-Villerupt-Micheville',
-            sym: 'LVM',
-            value: 20,
+            name: 'Rammelsbach',
+            value: 150,
+            revenue: 30,
+            min_price: 100,
+            max_price: 200,
+            desc: 'May be sold to a corporation for 100 to 200 M. '\
+                  'Revenue increases to 50 when a tile is laid in D9. '\
+                  'Never closes.',
+            sym: 'R',
+          },
+          {
+            name: 'Königsbach',
+            value: 110,
             revenue: 5,
-            desc: 'Owning corporation may lay a yellow tile in I14.'\
-                  ' This is in addition to the corporation\'s tile builds.'\
-                  ' No connection required. Blocks I14 while owned by a player.',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I14'] },
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          hexes: ['I14'],
-                          tiles: %w[7 8 9],
-                          when: 'owning_corp_or_turn',
-                          count: 1,
-                        }],
-            color: '#d9d9d9',
+            min_price: 15,
+            max_price: 40,
+            desc: 'May be sold to a corporation for 15 to 40 M. '\
+                  'Owning corporation may close this company to place a yellow tile on '\
+                  'a mountain hex for free, in addition to normal track action. '\
+                  'Otherwise closes in Phase 6E.',
+            sym: 'K',
+            abilities: [{
+              type: 'tile_lay',
+              hexes: %w[B4
+                        C5
+                        D4
+                        D8
+                        D10
+                        D12
+                        D14
+                        D20
+                        E3
+                        E5
+                        E7
+                        E9
+                        E11
+                        E15
+                        F4
+                        F10
+                        F14
+                        G11
+                        G13
+                        I15],
+              tiles: %w[1 3 4 7 8 9 55 56 58 69],
+              free: true,
+              when: 'track',
+              owner_type: 'corporation',
+              reachable: true,
+              count: 1,
+              consume_tile_lay: false,
+              closed_when_used_up: true,
+              special: false,
+            }],
           },
           {
-            name: 'Antwerpen-Rotterdamsche Spoorwegmaatschappij',
-            sym: 'AR',
-            value: 25,
-            revenue: 5,
-            desc: 'When owned by a corporation, the revenue is equal to 10.',
-            abilities: [{ type: 'revenue_change', revenue: 10, when: 'sold' }],
-            color: '#d9d9d9',
-          },
-          {
-            name: 'Gare de Liège-Guillemins',
-            sym: 'GLG',
-            value: 50,
-            revenue: 10,
-            desc: 'Owning corporation may lay a yellow tile or upgrade a yellow tile in Liège'\
-                  ' (H17) along with an optional token.'\
-                  ' This counts as one of the corporation\'s tile builds.'\
-                  ' Blocks H17 while owned by a player.',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H17'] },
-                        {
-                          type: 'teleport',
-                          owner_type: 'corporation',
-                          hexes: ['H17'],
-                          tiles: %w[14 15 57 619],
-                        }],
-            color: '#d9d9d9',
-          },
-          {
-            name: 'London shipping',
-            sym: 'LS',
-            value: 90,
+            name: 'Hochstätten',
+            value: 160,
             revenue: 15,
-            desc: 'Owning corporation may place its cheapest available token for free in A12.'\
-                  ' The value of London (A10) is increased, for this corporation only,'\
-                  ' by the largest non-London, non-Luxembourg revenue on the route.',
+            min_price: 40,
+            max_price: 120,
+            desc: 'May be sold to a corporation for 40 to 120 M. '\
+                  'Owning corporation may close this company to place a yellow tile on '\
+                  'a mountain hex for free, in addition to normal track action. '\
+                  'Otherwise closes in Phase 6E.',
+            sym: 'H',
+            abilities: [{
+              type: 'tile_lay',
+              hexes: %w[B4
+                        C5
+                        D4
+                        D8
+                        D10
+                        D12
+                        D14
+                        D20
+                        E3
+                        E5
+                        E7
+                        E9
+                        E11
+                        E15
+                        F4
+                        F10
+                        F14
+                        G11
+                        G13
+                        I15],
+              tiles: %w[1 3 4 7 8 9 55 56 58 69],
+              free: true,
+              when: 'track',
+              owner_type: 'corporation',
+              reachable: true,
+              count: 1,
+              consume_tile_lay: false,
+              closed_when_used_up: true,
+              special: false,
+            }],
+          },
+          {
+            name: 'Weidenthal',
+            value: 135,
+            revenue: 10,
+            min_price: 25,
+            max_price: 75,
+            desc: 'May be sold to a corporation for 25 to 75 M. '\
+                  'Owning corporation may close this company to place a token '\
+                  'for half price. Otherwise closes in Phase 6E.',
+            sym: 'W',
             abilities: [{
               type: 'token',
-              when: 'owning_corp_or_turn',
-              hexes: ['A12'],
-              count: 1,
-              price: 0,
-              teleport_price: 0,
-              extra_action: true,
-              from_owner: true,
               owner_type: 'corporation',
+              when: 'token',
+              connected: true,
+              hexes: [],
+              discount: 0.5,
+              count: 1,
+              from_owner: true,
+              closed_when_used_up: true,
             }],
-            color: '#d9d9d9',
+          },
+          {
+            name: 'Main-Neckar-Railway',
+            value: 90,
+            revenue: 20,
+            desc: 'May be exchanged for an Investor share of the Hessische Ludwigsbahn (HLB), '\
+                  'instead of buying a share, during a stock round in Phase 3+3 or later. ' \
+                  'Automatically exchanged at the beginning of the first stock round in Phase 5+5.',
+            sym: 'MNR',
+            abilities: [{ type: 'no_buy' },
+                        {
+                          type: 'exchange',
+                          corporations: ['HLB'],
+                          owner_type: 'player',
+                          when: 'owning_player_sr_turn',
+                          from: %w[reserved],
+                        }],
+          },
+          {
+            name: 'Saarland Coal Mines',
+            value: 75,
+            revenue: 15,
+            desc: 'May be exchanged for an Investor share of the Saarbrücker Eisenbahn (Saar), '\
+                  'instead of buying a share, during a stock round in Phase 3+3 or later. ' \
+                  'Automatically exchanged at the beginning of the first stock round in Phase 5+5.',
+            sym: 'SCR',
+            abilities: [{ type: 'no_buy' },
+                        {
+                          type: 'exchange',
+                          corporations: ['Saar'],
+                          owner_type: 'player',
+                          when: 'owning_player_sr_turn',
+                          from: %w[reserved],
+                        }],
+          },
+          {
+            name: 'Völklinger Iron Works',
+            value: 85,
+            revenue: 20,
+            desc: 'May be exchanged for an Investor share of the Saarbrücker Eisenbahn (Saar), '\
+                  'instead of buying a share, during a stock round in Phase 3+3 or later. ' \
+                  'Automatically exchanged at the beginning of the first stock round in Phase 5+5.',
+            sym: 'VIW',
+            abilities: [{ type: 'no_buy' },
+                        {
+                          type: 'exchange',
+                          corporations: ['Saar'],
+                          owner_type: 'player',
+                          when: 'owning_player_sr_turn',
+                          from: %w[reserved],
+                        }],
           },
         ].freeze
 

@@ -135,6 +135,14 @@ module Engine
           @mesabi_token_counter = 4
 
           phase_2_companies.each { |c| c.max_price = c.value }
+
+          @corporations.each do |corporation|
+            ability = abilities(corporation, :assign_hexes)
+            next unless ability
+
+            hex = hex_by_id(ability.hexes.first)
+            ability.description = "Edge Token (#{format_currency(ability.cost)}): #{hex.location_name} (#{hex.name})"
+          end
         end
 
         def event_companies_buyable!
@@ -314,21 +322,6 @@ module Engine
           @log << "#{owner.name} collects #{format_currency(revenue)} from #{cm_company.name}"
         end
 
-        def init_hexes(companies, corporations)
-          hexes = super
-
-          @corporations.each do |corporation|
-            ability = abilities(corporation, :assign_hexes)
-            next unless ability
-
-            hex = hexes.find { |h| h.name == ability.hexes.first }
-
-            ability.description = "Edge Token (#{format_currency(ability.cost)}): #{hex.location_name} (#{hex.name})"
-          end
-
-          hexes
-        end
-
         def revenue_for(route, stops)
           revenue = super
           edge_token_stop = stops.find { |st| st.hex.assigned?(route.corporation) }
@@ -371,6 +364,20 @@ module Engine
           revenue_str = super
           revenue_str += ' + Edge Token' if route.stops.any? { |st| st.hex.assigned?(route.corporation) }
           revenue_str
+        end
+
+        def graph_skip_paths(entity)
+          return nil if entity.mesabi_token
+
+          @skip_paths ||= {}
+
+          return @skip_paths unless @skip_paths.empty?
+
+          mesabi_hex.tile.paths.each do |path|
+            @skip_paths[path] = true
+          end
+
+          @skip_paths
         end
       end
     end

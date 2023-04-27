@@ -14,7 +14,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1846'
         GAME_LOCATION = 'Midwest, USA'
         GAME_PUBLISHER = %i[gmt_games golden_spike].freeze
-        GAME_RULES_URL = 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf'
+        GAME_RULES_URL = 'https://gmtwebsiteassets.s3.us-west-2.amazonaws.com/1846/1846-RULES-2021.pdf'
         GAME_SUBTITLE = 'The Race for the Midwest'
         GAME_VARIANTS = [
           {

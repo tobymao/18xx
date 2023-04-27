@@ -14,7 +14,7 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18NY'
         GAME_LOCATION = 'New York, USA'
-        GAME_RULES_URL = 'https://docs.google.com/document/d/1Pz0f1Sr0uhlSpOuuXbu4OaDKIgteIyuGN55XOOLJrb0'
+        GAME_RULES_URL = 'https://www.dropbox.com/s/837djjcwbm1mt0x/18NY%20Rules.pdf?dl=0'
         GAME_TITLE = '18NY'
         GAME_VARIANTS = [
           {
@@ -26,6 +26,14 @@ module Engine
         ].freeze
 
         PLAYER_RANGE = [2, 6].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :immediate_capitalization_round,
+            short_name: 'Immediate Capitalization Round',
+            desc: 'Capitalization Round occurs immediately after last 12H',
+            default: true,
+          },
+        ].freeze
       end
     end
   end

@@ -80,6 +80,7 @@ module Engine
           ]
         end
 
+        MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze

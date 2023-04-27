@@ -68,7 +68,11 @@ module Engine
             phase = @game.phase.name.to_i
             if entity.type == :major
               if phase >= MAJOR_PHASE
-                :par
+                if @game.home_token_locations(entity).empty?
+                  'No home token locations are available'
+                else
+                  :par
+                end
               else
                 "Cannot start till phase #{MAJOR_PHASE}"
               end

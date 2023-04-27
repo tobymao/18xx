@@ -332,7 +332,7 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             G18Mag::Step::SpecialChoose,
-            Engine::Step::SpecialTrack,
+            G18Mag::Step::SpecialTrack,
             G18Mag::Step::Track,
             G18Mag::Step::Token,
             G18Mag::Step::DiscardTrain,
@@ -419,12 +419,15 @@ module Engine
         def buy_train(operator, train, price = nil)
           @train_bought = true if train.owner == @depot # No idea if this is what Lonny wants
           cost = price || train.price
+          full_cost = train.price if train.owner == @depot
           if price != :free && train.owner == @depot
             if multiplayer?
               corp = %w[2 4].include?(train.name) ? @ldsteg : @mavag
-              operator.spend(cost / 2, @bank)
-              operator.spend(cost / 2, corp)
-              @log << "#{corp.name} earns #{format_currency(cost / 2)}"
+              bank_cost = full_cost ? cost - (full_cost / 2) : cost / 2
+              corp_cost = full_cost ? full_cost / 2 : cost / 2
+              operator.spend(bank_cost, @bank)
+              operator.spend(corp_cost, corp)
+              @log << "#{corp.name} earns #{format_currency(corp_cost)}"
             else
               operator.spend(3 * cost / 4, @bank)
               operator.spend(cost / 4, @ldsteg)
@@ -616,31 +619,43 @@ module Engine
           raise GameError, 'Must visit minimum of two non-mine stops' if visits.sum(&:visit_cost) < 2
         end
 
+        def compute_stops(route, train = nil)
+          return super if !gc_train?(route) || other_gc_train?(route)
+
+          train ||= route.train
+          gc_train = train.dup
+          gc_train.distance = gc_train_distance(train.distance)
+          super(route, gc_train)
+        end
+
         def gc_train_distance(route_distance)
           if route_distance.is_a?(Numeric)
             town_distance_value = route_distance
+            city_distance_value = route_distance
           else
             # route has a 1 town value from the supporter
             town_distance = route_distance.find { |n| n['nodes'] == ['town'] }
-            town_distance_value = town_distance['pay'] + route_distance
+            city_distance_value = route_distance.find { |n| n['nodes'].include?('city') }['pay']
+            town_distance_value = town_distance['pay'] + city_distance_value
           end
           [
-              {
-                nodes: %w[city offboard town],
-                pay: route_distance,
-                visit: route_distance,
-              },
-              {
-                nodes: %w[town],
-                pay: town_distance_value,
-                visit: town_distance_value,
-              },
+            {
+              'nodes' => %w[town],
+              'pay' => town_distance_value,
+              'visit' => town_distance_value,
+            },
+            {
+              'nodes' => %w[city offboard town],
+              'pay' => city_distance_value,
+              'visit' => city_distance_value,
+            },
+
             ]
         end
 
         # Change "Stop" displayed if G&C power is used
         def route_distance(route)
-          return super if !gc_train?(route) || other_gc_train?(route)
+          return super if (!gc_train?(route) || other_gc_train?(route)) && route.train.distance.is_a?(Numeric)
 
           n_cities = route.stops.select { |s| s.visit_cost.positive? }.count { |n| n.city? || n.offboard? }
           n_towns = route.stops.count(&:town?)
@@ -1418,7 +1433,7 @@ module Engine
               abilities: [
                 {
                   type: 'train_discount',
-                  when: 'owning_player_or_turn',
+                  when: 'buying_train',
                   discount: { '2' => 10, '3' => 15, '4' => 20, '6' => 30 },
                   trains: %w[2 3 4 6],
                   count_per_or: 1,
@@ -1468,11 +1483,14 @@ module Engine
               abilities: [
                 {
                   type: 'tile_lay',
-                  tiles: %w[39 40 41 42 43 70 44 47 45 46 G17 611 L17 L34 L35 L38 455 X9 L36 L37],
+                  tiles: %w[16 19 20 23 24 25 26 27 28 29 30 31 204 87 88 619 14 15
+                            209 236 237 238 8858 8859 8860 8863 8864 8865 39
+                            40 41 42 43 70 44 47 45 46 G17 611 L17 L34 L35],
                   hexes: [],
                   reachable: true,
                   when: 'owning_player_track',
                   owner_type: 'player',
+                  special: false,
                   count_per_or: 1,
                 },
               ],
@@ -1482,8 +1500,8 @@ module Engine
               name: 'Donaudampfschifffahrtsgesellschaft (Vállalat = company)',
               value: 0,
               revenue: 0,
-              desc: 'Gives a discount of 50% on token laying. That means the first token of a minor'\
-                    'company cost Ft 20 (and only Ft 10 of it will go to the yellow company), the second'\
+              desc: 'Gives a discount of 50% on token laying. That means the first token of a minor '\
+                    'company cost Ft 20 (and only Ft 10 of it will go to the yellow company), the second '\
                     'token cost Ft 40 (and only Ft 20 of it will go to the yellow company).',
               sym: 'DDSG',
               abilities: [
@@ -1504,10 +1522,10 @@ module Engine
               name: 'Magyar Államvastutak',
               value: 0,
               revenue: 0,
-              desc: 'One train of a minor company becomes an X+1 train. It may run to one additional'\
-                    'town. If this minor company uses the benefits of the blue company (a train becomes a'\
-                    'plus train) the Magyar Àllamvasutak may be used for the same train (for example'\
-                    'turning a 2+2 into a 2+3 train or a 4+4 into a 4+5 train) or a different train (for'\
+              desc: 'One train of a minor company becomes an X+1 train. It may run to one additional '\
+                    'town. If this minor company uses the benefits of the blue company (a train becomes a '\
+                    'plus train) the Magyar Àllamvasutak may be used for the same train (for example '\
+                    'turning a 2+2 into a 2+3 train or a 4+4 into a 4+5 train) or a different train (for '\
                     'example turning a 3-train into a 3+1 train).',
               sym: 'MA',
               abilities: [{

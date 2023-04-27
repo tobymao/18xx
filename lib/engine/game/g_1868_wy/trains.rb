@@ -11,7 +11,7 @@ module Engine
             tiles: tiles,
             operating_rounds: operating_rounds,
             on: name,
-            status: status,
+            status: %w[can_buy_companies] + status,
           }.freeze
         end
 
@@ -50,18 +50,20 @@ module Engine
         # rubocop:disable Layout/LineLength
         PHASES = [
           def_phase('2', 4, [:yellow]),
-          def_phase('3', 4, %i[yellow green], status: %w[can_buy_companies]),
-          def_phase('4', 3, %i[yellow green], status: %w[can_buy_companies]),
-          def_phase('5', 3, %i[yellow green brown], status: %w[can_buy_companies all_corps_available full_capitalization]),
-          def_phase('6', 2, %i[yellow green brown], status: %w[can_buy_companies all_corps_available full_capitalization]),
-          def_phase('7', 2, %i[yellow green brown gray], operating_rounds: 3, status: %w[can_buy_companies all_corps_available full_capitalization]),
-          def_phase('8', 2, %i[yellow green brown gray], operating_rounds: 3, status: %w[can_buy_companies all_corps_available full_capitalization]),
+          def_phase('3', 4, %i[yellow green]),
+          def_phase('4', 3, %i[yellow green]),
+          def_phase('5', 3, %i[yellow green brown], status: %w[all_corps_available full_capitalization]),
+          def_phase('6', 2, %i[yellow green brown], status: %w[all_corps_available full_capitalization]),
+          def_phase('7', 2, %i[yellow green brown gray], operating_rounds: 3, status: %w[all_corps_available full_capitalization]),
+          def_phase('8', 2, %i[yellow green brown gray], operating_rounds: 3, status: %w[all_corps_available full_capitalization]),
         ].freeze
         # rubocop:enable Layout/LineLength
 
         TRAINS = [
           def_train('2',  80, '2+2',  120, 7, rusts_on: '4', on: nil),
-          def_train('3', 180, '3+2',  220, 6, rusts_on: '6', events: [{ 'type' => 'green_par' }]),
+          def_train('3', 180, '3+2',  220, 6, rusts_on: '6', events: [{ 'type' => 'green_par' },
+                                                                      { 'type' => 'setup_company_price_up_to_face' },
+                                                                      { 'type' => 'remove_forts' }]),
           def_train('4', 300, '4+3',  360, 5, rusts_on: '7', events: []),
           def_train('5', 500, '5+4',  580, 4, events: [
                       { 'type' => 'close_privates' },
@@ -70,6 +72,7 @@ module Engine
                       { 'type' => 'full_capitalization' },
                       { 'type' => 'oil_companies_available' },
                       { 'type' => 'uranium_boom' },
+                      { 'type' => 'remove_forts' },
                     ]),
           def_train('6', 600, '6+5',  700, 3, events: [
                       { 'type' => 'close_privates' },
@@ -79,6 +82,7 @@ module Engine
                       { 'type' => 'close_privates' },
                       { 'type' => 'uranium_bust' },
                       { 'type' => 'trigger_endgame' },
+                      { 'type' => 'remove_forts' },
                     ]),
           def_train('8', 1000, '8+5', 1100, 15, events: [
                       { 'type' => 'close_privates' },

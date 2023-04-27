@@ -7,7 +7,7 @@ module Engine
         SPIKE = {
           northern: {
             start_desc: 'an Eastern offboard',
-            start_hex_ids: %w[E27 F28 K27 M27 N26],
+            start_hex_ids: %w[C27 E27 G27 K27 M27 N26],
             end_hex_meta: {
               'A9' => {
                 exits: [1],

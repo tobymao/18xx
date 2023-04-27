@@ -119,6 +119,7 @@ module Engine
           close_coal_companies: ['Close Coal Companies', 'Phase 8: Coal Companies stop Developing; gray Coal DTs remain on the board'],
           remove_placed_coal_dt: ['"Rust" Coal DTs', 'Phase 4-8: Coal DTs placed 2 phases ago are removed from the board'],
           remove_unplaced_coal_dt: ['Remove Unplaced Coal DTs', 'Phase 3-7: Coal DTs still on a Coal Company\'s charter from the previous phase are discarded'],
+          remove_forts: ['Remove Forts', 'Remove forts whose color matches the previous phase'],
         ).freeze
         # rubocop:enable Layout/LineLength
         STATUS_TEXT = {
@@ -202,6 +203,19 @@ module Engine
         SHIRLEY_BASIN_HEX = 'J20'
         WALDEN_HEX = 'N18'
         WIND_RIVER_CANYON_HEX = 'F12'
+        YELLOWSTONE_HEXES = %w[C5 D4].freeze
+        FORT_HEXES = %w[
+          A23
+          C17
+          E19
+          G21
+          G5
+          H18
+          J26
+          K17
+          L4
+        ].freeze
+        FT_KEOGH_HEX = FORT_HEXES.first
 
         # special shares
         UP_PRESIDENTS_SHARE = 'UP_0'
@@ -230,18 +244,7 @@ module Engine
           '619' => '619b',
         }.freeze
 
-        def dotify(tile)
-          tile.towns.each { |town| town.style = :dot }
-          tile
-        end
-
-        def init_tiles
-          super.each { |tile| dotify(tile) }
-        end
-
-        def init_hexes(companies, corporations)
-          super.each { |hex| dotify(hex.tile) }
-        end
+        TOKEN_PRICES_AFTER_BUST = [80, 60, 40].freeze
 
         def ipo_name(_entity = nil)
           'Treasury'
@@ -249,20 +252,28 @@ module Engine
 
         def setup
           init_track_points
-          setup_company_price_up_to_face
+          @companies.each do |company|
+            company.min_price = 0
+            company.max_price = 0
+          end
 
           @development_token_count = init_development_hexes
           @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
           @placed_oil_dt_count = Hash.new(0)
           @busters = {}
+          @teapot_dome_hex_bonus = nil
 
           setup_credit_mobilier
 
           @coal_companies = init_coal_companies
+          @coal_companies << init_union_pacific_coal
           @minors.concat(@coal_companies)
           @oil_companies = init_oil_companies
+          @oil_companies << init_bonanza
           @minors.concat(@oil_companies)
           update_cache(:minors)
+
+          @p3_dt_hex = nil
 
           @all_corps_available = false
           @available_par_groups = %i[par]
@@ -302,25 +313,71 @@ module Engine
           initialize_tile_opposites!
           @unused_tiles = []
 
-          return if @optional_rules.include?(:p2_p6_choice)
+          unless @optional_rules.include?(:p2_p6_choice)
+            removals = COMPANY_CHOICES.keys
+            COMPANY_CHOICES.each do |_, companies|
+              removals.concat(companies.sort_by { rand }.take(2))
+            end
 
-          removals = COMPANY_CHOICES.keys
-          COMPANY_CHOICES.each do |_, companies|
-            removals.concat(companies.sort_by { rand }.take(2))
+            @companies.reject! do |c|
+              next unless removals.include?(c.id)
+
+              @round.active_step.companies.delete(c)
+              c.close!
+              true
+            end
+
+            @log << 'Available P2-P6 companies:'
+            @companies.slice(1, 5).map(&:name).each do |company|
+              @log << "- #{company}"
+            end
           end
 
-          @companies.reject! do |c|
-            next unless removals.include?(c.id)
+          @forts = setup_forts!
+        end
 
-            @round.active_step.companies.delete(c)
-            c.close!
-            true
+        def setup_forts!
+          colors = %i[yellow yellow green green green green green brown brown].sort_by { rand }
+          FORT_HEXES.zip(colors).each.with_object({}) do |(hex_id, color), forts|
+            hex_by_id(hex_id).tile.icons <<
+              Part::Icon.new("1868_wy/fort_#{color}", 'fort', true, false,
+                             large: hex_id != FT_KEOGH_HEX)
+            forts[hex_id] = color
           end
-          @log << 'Available P2-P6 companies:'
+        end
 
-          @companies.slice(1, 5).map(&:name).each do |company|
-            @log << "- #{company}"
+        def event_remove_forts!
+          color = @phase.tiles[-2]
+
+          removed = FORT_HEXES.each.with_object([]) do |hex_id, rm|
+            next unless color == @forts[hex_id]
+
+            # remove "Ft. ___" from the location name for cities with another
+            # name, and otherwise blank tiles; keep it for towns
+            hex = hex_by_id(hex_id)
+            tile = hex.tile
+            new_name =
+              if tile.city_towns.empty? && tile.offboards.empty?
+                nil
+              elsif (name = tile.location_name).include?(' / ')
+                name.split(' / ').last
+              end
+            if new_name
+              hex.location_name = new_name
+              tile.location_name = new_name
+            end
+
+            tile.icons.reject! { |icon| icon.name == 'fort' }
+            @forts.delete(hex_id)
+            rm <<
+              if new_name
+                "#{hex_id} (#{new_name})"
+              else
+                hex_id
+              end
           end
+
+          @log << "-- Event: #{color} forts are removed from #{removed.join(', ')} --"
         end
 
         def init_share_pool
@@ -452,6 +509,19 @@ module Engine
         end
 
         def init_round_finished
+          if (player = upc_private.player)
+            minor = union_pacific_coal
+            minor.owner = player
+            minor.float!
+          else
+            close_corporation(union_pacific_coal)
+          end
+          if (player = bonanza_private.player)
+            minor = bonanza
+            minor.owner = player
+          else
+            close_corporation(bonanza)
+          end
           up_double_share.buyable = true unless ames_bros.player
 
           durant.close!
@@ -483,6 +553,24 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT[:brown_par][1]} --"
           @available_par_groups << :par_2
           update_cache(:share_prices)
+        end
+
+        def event_close_upc!
+          if (token = union_pacific_coal.tokens.find(&:used))
+            @log << "-- Event: UP Development Token is removed from #{token.hex.name} --"
+            destroy_development_token!(token)
+          end
+          @minors.delete(union_pacific_coal)
+          union_pacific_coal.close!
+        end
+
+        def event_close_bonanza!
+          if (token = bonanza.tokens.find(&:used))
+            @log << "-- Event: BZ Oil Development Token is removed from #{token.hex.name} --"
+            destroy_development_token!(token)
+          end
+          @minors.delete(bonanza)
+          bonanza.close!
         end
 
         def par_prices
@@ -629,15 +717,31 @@ module Engine
           @track_points_used = Hash.new(0)
         end
 
-        def status_str(corporation)
-          return unless corporation.floated?
+        def status_array(corporation)
+          statuses = []
 
-          if corporation.minor?
-            player = corporation.owner
-            "#{player.name} Cash: #{format_currency(player.cash)}"
-          else
-            "Track Points: #{track_points_available(corporation)}"
+          if corporation.floated?
+            if corporation.minor? && corporation != union_pacific_coal && corporation != bonanza
+              player = corporation.owner
+              statuses << strikebreakers_status if corporation.type == :coal && player == strikebreakers_private.owner
+              statuses << 'P3c Frémont discount: $20' if player == fremont.owner
+              statuses << 'P5c RR Act discount: 50%' if player == pac_rr_a.owner
+            elsif @round.is_a?(G1868WY::Round::Operating) && corporation.corporation?
+              statuses << "Track Points: #{track_points_available(corporation)}"
+            end
+          elsif !@all_corps_available && (stack = @corp_stacks.find { |s| s.last == corporation }) && stack.size > 1
+            statuses << "Next: #{stack.map(&:name).reverse.slice(1, 4).join(', ')}"
           end
+
+          if corporation == dpr
+            if dpr_first_home_status == :placed && dpr.tokens.count(&:used).zero? && !home_token_locations(corporation).empty?
+              statuses << 'Choose new home as an SR action'
+            elsif !dpr_first_home_status && home_token_locations(corporation).empty?
+              statuses << 'Cannot par: no home token location available'
+            end
+          end
+
+          statuses.empty? ? nil : statuses
         end
 
         def hell_on_wheels
@@ -775,8 +879,19 @@ module Engine
             else
               @border_after = action.hex.tile.borders.first if @border_before
               credit_mobilier_check_tile_lay_action(action)
+              foncier_check_tile_lay_action(action)
+
+              if @forts.include?(action.hex.id) && action.tile.color == :yellow
+                icon = action.tile.icons.find { |i| i.name == 'fort' }
+                icon.large = false
+              end
             end
             update_boomcity_revenue!(action.hex.tile)
+          when Action::HexToken
+            if @forts.include?(action.hex.id) && action.hex.tile.color == :white
+              icon = action.hex.tile.icons.find { |i| i.name == 'fort' }
+              icon.large = false
+            end
           end
         end
 
@@ -922,15 +1037,21 @@ module Engine
           @players.map.with_index do |player, index|
             coal_company = Engine::Minor.new(
               type: :coal,
-              sym: "Coal-#{index + 1}",
-              name: "#{player.name} Coal",
+              sym: "Coal-#{self.class::LETTERS[index]}",
+              name: self.class::COAL_COMPANY_NAMES[index],
               logo: '1868_wy/coal',
               tokens: [],
               color: :black,
               abilities: [{ type: 'no_buy', owner_type: 'player' }],
             )
+            add_coal_development_tokens(coal_company)
             coal_company.owner = player
             coal_company.float!
+
+            def coal_company.cash
+              player.cash
+            end
+
             coal_company
           end
         end
@@ -977,6 +1098,54 @@ module Engine
 
               "Endgame Sequence: #{endgame.join(' - ')} (*if 7-train is purchased in OR 1 of 2, skip OR 2)"
             end
+        end
+
+        def init_union_pacific_coal
+          @union_pacific_coal = Engine::Minor.new(
+            type: :coal,
+            sym: 'UPC',
+            name: 'Union Pacific Coal',
+            logo: '1868_wy/coal-up',
+            tokens: [],
+            color: :black,
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          )
+
+          logo = '/icons/1868_wy/coal-up.svg'
+          token = Token.new(
+            @union_pacific_coal,
+            price: 0,
+            logo: logo,
+            simple_logo: logo,
+            type: :development,
+          )
+          @union_pacific_coal.tokens << token
+
+          @union_pacific_coal
+        end
+
+        def init_bonanza
+          @bonanza = Engine::Minor.new(
+            type: :oil,
+            sym: 'BZ',
+            name: '"Buffalo Bill" Cody\'s Bonanza Oil District',
+            logo: '1868_wy/Oil-BZ',
+            tokens: [],
+            color: :black,
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          )
+
+          logo = '/icons/1868_wy/Oil-BZ.svg'
+          token = Token.new(
+            @bonanza,
+            price: 0,
+            logo: logo,
+            simple_logo: logo,
+            type: :development,
+          )
+          @bonanza.tokens << token
+
+          @bonanza
         end
 
         def init_development_hexes
@@ -1036,15 +1205,33 @@ module Engine
           hex = action.hex
           token = action.token
           cost = action.cost
+          cost_str = cost.positive? ? " for #{format_currency(cost)}" : ''
+
+          if entity == union_pacific_coal || entity == bonanza
+            @p3_dt_hex = hex
+            dt_id = entity == union_pacific_coal ? 'UP' : 'BZ'
+            if (placed_token = entity.tokens.find(&:used))
+              from_hex = placed_token.hex.name
+              destroy_development_token!(placed_token)
+              @log << "#{player.name} (#{entity.id}) moves the #{dt_id} "\
+                      "Development Token from #{from_hex} to #{hex.name}#{cost_str}"
+            else
+              @log << "#{player.name} (#{entity.id}) places the #{dt_id} Development Token on #{hex.name}#{cost_str}"
+            end
+          elsif entity.type == :coal
+            @log << "#{player.name} places a Coal Development Token (#{@phase.name}) on #{hex.name}#{cost_str}"
+          elsif entity.type == :oil
+            @log << "#{player.name} places an Oil Development Token on #{hex.name}#{cost_str}"
+          else
+            raise GameError, "Unexpected development token placement caused by action: #{action.to_h}"
+          end
 
           player.spend(cost, @bank) if cost.positive?
-          hex.place_token(token, logo: "1868_wy/coal-#{@phase.name}")
-
-          cost_str = cost.positive? ? " for #{format_currency(cost)}" : ''
-          @log << "#{player.name} places a Development Token on #{hex.name}#{cost_str}"
+          hex.place_token(token, logo: token.logo, preprinted: false)
 
           increment_development_token_count(hex)
           @placed_development_tokens[@phase.name] << hex
+          @teapot_dome_hex_bonus = nil if entity == teapot_dome_oil
         end
 
         def destroy_development_token!(token, handle_bust: true)
@@ -1154,11 +1341,19 @@ module Engine
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return false unless boomer?(from) == boomer?(to)
 
-          if (upgrades = TILE_UPGRADES[from.name])
-            upgrades.include?(to.name)
+          case from.name
+          when 'YG'
+            to.name == 'GG'
+          when 'YL'
+            to.name == 'GL'
           else
             super
           end
+        end
+
+        # green crossing track with "$20" label
+        def upgrades_to_correct_label?(from, to)
+          (%w[8 9].include?(from.name) && to.label&.to_s == '$20') || super
         end
 
         def upgrade_cost(tile, hex, entity, spender)
@@ -1185,16 +1380,56 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          stops.sum do |stop|
-            if stop.city? && stop.boom
-              dtc = @development_token_count[stop.hex]
-              next BUSTED_REVENUE[stop.hex.tile.color] if dtc < DTC_BOOMCITY
+          revenue = super
 
-              gets_bonus = dtc >= DTC_REVENUE
+          includes_yellowstone = stops.any? { |s| YELLOWSTONE_HEXES.include?(s.hex.id) }
+          revenue += 10 if includes_yellowstone && route.train.owner.companies.include?(wylie)
+
+          revenue += east_west_bonus(stops)[:revenue]
+
+          revenue += spike_route_bonuses(route, stops)[:revenue]
+
+          revenue += fort_bonuses(route)[:revenue]
+
+          revenue += teapot_dome_bonuses(route, stops)[:revenue]
+
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += '+ Wylie Yellowstone bonus' if route.train.owner.companies.include?(wylie) &&
+                                                route.stops.any? { |s| YELLOWSTONE_HEXES.include?(s.hex.id) }
+
+          ew_bonus = east_west_bonus(route.stops)[:description]
+          str += " + #{ew_bonus}" if ew_bonus
+
+          spike_bonus = spike_route_bonuses(route, route.stops)[:description]
+          str += " + #{spike_bonus}" if spike_bonus
+
+          str += ' + Uranium' if route.stops.any? { |s| uranium_bonus(@phase.name, s.hex).positive? }
+          str += fort_bonuses(route)[:description]
+          str += teapot_dome_bonuses(route, route.stops)[:description]
+          str
+        end
+
+        def east_west_bonus(stops)
+          bonus = { revenue: 0 }
+
+          east = stops.find { |stop| stop.groups.include?('E') && stop.tile.label&.to_s == 'E' }
+          west = stops.find { |stop| stop.groups.include?('W') && stop.tile.label&.to_s == 'W' }
+
+          if east && west
+            east_rev = east.tile.icons.sum { |icon| icon.name.to_i }
+            west_rev = west.tile.icons.sum { |icon| icon.name.to_i }
+
+            if !east_rev.zero? && !west_rev.zero?
+              bonus[:revenue] += east_rev + west_rev
+              bonus[:description] = 'E/W'
             end
-
-            stop.route_revenue(route.phase, route.train) + (gets_bonus ? BOOMING_REVENUE_BONUS : 0)
           end
+
+          bonus
         end
 
         def decrement_development_token_count(tokened_hex)
@@ -1255,7 +1490,7 @@ module Engine
 
           corporations = tokens.map do |token|
             token.remove!
-            token.corporation
+            reprice_tokens!(token.corporation)
           end
 
           if corporations.empty?
@@ -1265,6 +1500,13 @@ module Engine
             dpr.coordinates = '' if corporations.include?(dpr) && dpr.tokens.count(&:used).zero?
             " Tokens are returned: #{corporations.map(&:name).join(' and ')}" unless corporations.empty?
           end
+        end
+
+        def reprice_tokens!(corporation)
+          corporation.tokens.reject(&:used).reverse.each_with_index do |token, index|
+            token.price = TOKEN_PRICES_AFTER_BUST[index]
+          end
+          corporation
         end
 
         def to_ghost_town!(hex)
@@ -1683,8 +1925,6 @@ module Engine
         end
 
         def event_close_ames_brothers!
-          return if ames_bros.closed?
-
           player = ames_bros.owner
           cash = union_pacific.share_price.price * 2
           @log << "Company #{ames_bros.name} closes."
@@ -1814,8 +2054,6 @@ module Engine
         end
 
         def event_close_no_bust!
-          return if !no_bust || no_bust.closed?
-
           @log << "-- Event: #{no_bust.name} closes, removing the NO BUST token --"
           hex = @no_bust_hex
           hex.remove_assignment!(no_bust.id)
@@ -1831,12 +2069,53 @@ module Engine
           @log << "#{company.owner.name} collects #{format_currency(amount)} from #{company.name}; #{reason}"
         end
 
+        def teapot_dome_bonuses(route, stops)
+          return { revenue: 0, description: '' } unless teapot_dome_railroad?(route.corporation)
+
+          revenue = stops.sum do |stop|
+            (boomcity?(stop.tile) && teapot_dome_hex_bonus[stop.hex]) || 0
+          end
+
+          if revenue.positive?
+            { revenue: revenue, description: " + #{teapot_dome_private.sym}" }
+          else
+            { revenue: 0, description: '' }
+          end
+        end
+
+        def teapot_dome_railroad?(corporation)
+          !teapot_dome_private.closed? && corporation.player == teapot_dome_private.player
+        end
+
+        # Returns Hash:
+        #   - keys: Hex
+        #   - values: Int
+        # Int value is the total revenue bonus P6c Teapot Dome Oil Leases
+        # provides to the key Hex. The caller is responsible for ensuring the
+        # bonus only applies to Boom Cities, on routes for RRs with the same
+        # owner as the Teapot Dome private.
+        #
+        # This function is only called when running routes, and is cached so
+        # that the bonuses are not be recomputed with every click on a
+        # route. The cache is busted when the Teapot Dome's owner adds or
+        # removes a token with their oil company.
+        def teapot_dome_hex_bonus
+          @teapot_dome_hex_bonus ||=
+            begin
+              bonus = Hash.new(0)
+              teapot_dome_oil.tokens.each do |token|
+                token.hex.neighbors.each { |_, h| bonus[h] += 5 } if token.used
+              end
+              bonus
+            end
+        end
+
         def check_midwest_oil!(routes)
           return if !midwest_oil || midwest_oil.closed?
           return if !midwest_oil.owned_by_player? && !midwest_oil.owned_by_corporation?
 
           casper_trains = routes.count do |route|
-            route.visited_stops.any? { |stop| stop.hex.id == CASPER_HEX }
+            route.visited_stops.any? { |stop| stop.hex&.id == CASPER_HEX }
           end
           return if casper_trains.zero?
 
@@ -1845,6 +2124,28 @@ module Engine
             midwest_oil,
             "#{casper_trains} train#{casper_trains == 1 ? '' : 's'} visited Casper (#{CASPER_HEX})"
           )
+        end
+
+        def foncier_check_tile_lay_action(action)
+          return if !foncier || action.entity != foncier.corporation
+
+          tile = action.tile
+          return unless tile.color == :yellow
+
+          amount, tile_type =
+            if boomer?(tile)
+              [30, (tile.cities.empty? ? 'Boomtown' : 'Boom City')]
+            elsif !tile.cities.empty? && tile.label&.to_s != 'G' && tile.label&.to_s != 'L'
+              [40, 'city']
+            elsif !tile.towns.empty?
+              [10, 'town']
+            else
+              [0, nil]
+            end
+
+          return unless amount.positive?
+
+          private_earns(amount, foncier, "laid a #{tile_type} tile")
         end
 
         def event_close_coal_companies!
@@ -1857,16 +2158,59 @@ module Engine
           end
         end
 
+        def setup_strikebreakers!
+          add_coal_development_tokens(strikebreakers_coal, count: 1, sort: true)
+          @log << "#{strikebreakers_private.name} adds 1 Coal DT for each phase to #{strikebreakers_coal.name}'s DTs"
+
+          @strikebreakers_used = (2..7).to_h { |n| [n.to_s, false] }
+        end
+
+        def max_development_tokens(entity)
+          max = @phase.name == '2' ? 2 : 1
+          max += 1 if entity == strikebreakers_coal && !@strikebreakers_used[@phase.name]
+          max
+        end
+
+        def after_strikebreakers
+          @strikebreakers_used[@phase.name] = true
+        end
+
+        def strikebreakers_unused
+          @strikebreakers_used.select { |phase, used| !used && phase.to_i >= @phase.name.to_i }.keys
+        end
+
+        def strikebreakers_status
+          "P6a extra placements: #{strikebreakers_unused.join(',')}"
+        end
+
+        def fort_bonuses(route)
+          forts = route.connection_hexes.flatten.uniq.count { |id| @forts[id] }
+
+          if forts.positive?
+            revenue = forts * (route.corporation == trabing_bros.owner ? 20 : 10)
+            { revenue: revenue, description: " + #{forts} Fort#{forts == 1 ? '' : 's'}" }
+          else
+            { revenue: 0, description: '' }
+          end
+        end
+
         def event_close_privates!
           case @phase.name
           when '5'
-            event_close_ames_brothers!
+            event_close_ames_brothers! unless ames_bros.closed?
+            event_close_upc! unless union_pacific_coal.closed?
+            event_convert_lhp! unless lhp_private.closed?
           when '7'
-            event_close_pure_oil!
+            event_close_pure_oil! unless pure_oil.closed?
           when '8'
-            event_close_big_boy!
-            event_close_no_bust!
+            event_close_big_boy! unless big_boy_private.closed?
+            event_close_bonanza! unless bonanza.closed?
+            event_close_no_bust! unless no_bust.closed?
           end
+        end
+
+        def event_setup_company_price_up_to_face!
+          setup_company_price_up_to_face
         end
       end
     end

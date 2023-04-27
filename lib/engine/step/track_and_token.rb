@@ -68,9 +68,10 @@ module Engine
       end
 
       def available_hex(entity, hex)
-        return super if can_lay_tile?(entity)
+        return true if can_lay_tile?(entity) && tracker_available_hex(entity, hex)
+        return true if can_place_token?(entity) && tokener_available_hex(entity, hex)
 
-        @game.graph.reachable_hexes(entity)[hex]
+        false
       end
     end
   end

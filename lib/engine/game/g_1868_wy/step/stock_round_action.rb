@@ -33,18 +33,19 @@ module Engine
 
           def setup
             super
+            @tokened = false
             @exchanged = false
             @exchanger = @game.ames_bros
           end
 
           def actions(entity)
-            return %w[buy_shares] if can_exchange?(entity)
+            return %w[buy_shares] if entity == @exchanger && can_exchange?(entity)
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
 
             actions = []
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'buy_shares' if can_buy_any?(entity)
+            actions << 'buy_shares' if can_buy_any?(entity) || can_exchange?(entity)
             actions << 'par' if can_ipo_any?(entity)
             actions << 'place_token' if can_token?(entity)
             actions << 'pass' unless actions.empty?
@@ -60,8 +61,57 @@ module Engine
             @game.sr_visible_corporations
           end
 
+          def maybe_place_home_token(corporation)
+            if corporation == @game.dpr
+
+              if !@game.dpr_first_home_status
+                @game.place_home_token(corporation)
+                @game.dpr_first_home_status = corporation.floated? ? :placed : :reserved
+              elsif @game.dpr_first_home_status == :reserved && corporation.floated?
+                @game.place_home_token(corporation)
+                @game.dpr_first_home_status = :placed
+              end
+            else
+              super
+            end
+          end
+
+          def available_hex(_entity, hex)
+            hex.tile.cities.any? { |city| city.tokenable?(@game.dpr, free: true) }
+          end
+
+          def available_tokens(_entity)
+            super(@game.dpr)
+          end
+
           def map_action_optional?
             true
+          end
+
+          def process_place_token(action)
+            token = action.token
+
+            place_token(
+              token.corporation,
+              action.city,
+              token,
+              connected: false,
+              extra_action: false,
+            )
+            @tokened = true
+            track_action(action, token.corporation)
+          end
+
+          def tokened?
+            @tokened
+          end
+
+          def can_token?(entity)
+            !tokened? &&
+              entity == @game.dpr.player &&
+              @game.dpr.floated? &&
+              @game.dpr.tokens.count(&:used).zero? &&
+              !@game.home_token_locations(@game.dpr).empty?
           end
 
           def initial_double_share_bundle?(bundle)
@@ -86,8 +136,7 @@ module Engine
 
           def can_exchange?(entity, bundle = nil)
             return false if bought? || sold?
-            return false unless entity == @exchanger
-            return false unless @game.abilities(entity, :exchange)
+            return false if entity != @exchanger.owner && !(entity == @exchanger && current_entity == @exchanger.owner)
 
             bundle ||= @game.up_double_share.to_bundle
             can_gain?(entity.owner, bundle, exchange: true)

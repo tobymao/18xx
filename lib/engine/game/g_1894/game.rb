@@ -19,7 +19,7 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 17, 4 => 13 }.freeze
+        CERT_LIMIT = { 3 => 16, 4 => 13 }.freeze
 
         STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
 
@@ -162,7 +162,7 @@ module Engine
                   {
                     name: '3',
                     distance: 3,
-                    price: 140,
+                    price: 120,
                     rusts_on: '5',
                     num: 5,
                     discount: { '2' => 40 },
@@ -170,10 +170,10 @@ module Engine
                   {
                     name: '4',
                     distance: 4,
-                    price: 280,
+                    price: 300,
                     rusts_on: '7',
                     num: 4,
-                    discount: { '3' => 70 },
+                    discount: { '3' => 60 },
                   },
                   {
                     name: '5',
@@ -182,7 +182,7 @@ module Engine
                     rusts_on: 'D',
                     num: 4,
                     events: [{ 'type' => 'late_corporations_available' }],
-                    discount: { '4' => 140 },
+                    discount: { '4' => 150 },
                   },
                   {
                     name: '6',
@@ -196,7 +196,7 @@ module Engine
                     name: '7',
                     distance: 7,
                     price: 700,
-                    num: 4,
+                    num: 3,
                     discount: { '6' => 300 },
                   },
                   {
@@ -235,8 +235,8 @@ module Engine
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Par',
                                               unlimited: 'Corporation shares can be held above 60% and ' \
-                                                         'President may buy two shares at a time and ' \
-                                                         'additional move up if sold out and don\`t count '\
+                                                         'President may buy two at a time and ' \
+                                                         'additional move up if sold out and don\'t count '\
                                                          'towards the cert limit.')
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :red,
@@ -260,8 +260,11 @@ module Engine
         LUXEMBOURG_HEX = 'I18'
         SQ_HEX = 'G10'
         BRUXELLES_HEX = 'F15'
+        NETHERLANDS_HEX = 'C18'
+        GREAT_BRITAIN_HEX = 'A4'
 
-        AL_YELLOW_TILES = %w[X3a X3b].freeze
+        NON_NETHERLANDS_OFFBOARDS = [CENTRE_BOURGOGNE_HEX, LUXEMBOURG_HEX, GREAT_BRITAIN_HEX].freeze
+
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
         BROWN_CITY_14_UPGRADE_TILES = %w[X14 X15 36].freeze
@@ -368,6 +371,16 @@ module Engine
           adjust_companies
           remove_extra_french_major_shareholding_companies
 
+          @corporations.each do |corporation|
+            next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
+
+            dest_abilities.each do |ability|
+              ability.hexes.each do |id|
+                hex_by_id(id).assign!(corporation)
+              end
+            end
+          end
+
           @players.each do |player|
             share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, player)
             share_pool.transfer_shares(belgian_starting_corporation.ipo_shares.last.to_bundle, player)
@@ -377,22 +390,6 @@ module Engine
 
           share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, share_pool)
           share_pool.transfer_shares(belgian_starting_corporation.ipo_shares.last.to_bundle, share_pool)
-        end
-
-        def init_hexes(companies, corporations)
-          hexes = super
-
-          @corporations.each do |corporation|
-            next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
-
-            dest_hexes = dest_abilities.map(&:hexes).flatten
-
-            hexes
-              .select { |h| dest_hexes.include?(h.name) }
-              .each { |h| h.assign!(corporation) }
-          end
-
-          hexes
         end
 
         def after_buy_company(player, company, price)
@@ -488,7 +485,7 @@ module Engine
 
         TILE_LAYS = [
           { lay: true, upgrade: true },
-          { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
         ].freeze
 
         def can_hold_above_corp_limit?(_entity)
@@ -609,7 +606,6 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          return GREEN_CITY_TILES.include?(to.name) if AL_YELLOW_TILES.include?(from.hex.tile.name)
           return BROWN_CITY_14_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
@@ -639,10 +635,19 @@ module Engine
           revenue += est_centre_bourgogne_bonus(route.corporation, stops)
           revenue += luxembourg_value(route.corporation, stops)
           revenue += london_bonus(route.corporation, stops)
+          revenue += netherlands_bonus(route.corporation, stops)
 
           raise GameError, 'Train visits Paris more than once' if route.hexes.count { |h| h.id == PARIS_HEX } > 1
 
           revenue
+        end
+
+        def netherlands_bonus(_corporation, stops)
+          return 0 unless stops.any? { |s| s.hex.id == NETHERLANDS_HEX }
+
+          return 0 unless stops.any? { |s| NON_NETHERLANDS_OFFBOARDS.include?(s.hex.id) }
+
+          50
         end
 
         def london_bonus(corporation, stops)
@@ -673,7 +678,7 @@ module Engine
           revenues << 60 if est_running_to_centre_bourgogne(corporation, stops)
 
           if ignore_london
-            london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.cities.first.revenue)
+            london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.towns.first.revenue)
             revenues.delete_at(revenues.index(london_revenue) || revenues.length)
           end
 

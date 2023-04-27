@@ -37,7 +37,7 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { medium: 3, large: 4 },
+            train_limit: { '5-share': 3, '10-share': 4 },
             tiles: [:yellow],
             status: %w[yellow_privates broad_gauge],
             operating_rounds: 2,
@@ -45,7 +45,7 @@ module Engine
           {
             name: '3',
             on: %w[4H 2M],
-            train_limit: { medium: 3, large: 4 },
+            train_limit: { '5-share': 3, '10-share': 4 },
             tiles: %i[yellow green],
             status: %w[green_privates narrow_gauge],
             operating_rounds: 2,
@@ -53,7 +53,7 @@ module Engine
           {
             name: '4',
             on: %w[6H 3M],
-            train_limit: { medium: 2, large: 3 },
+            train_limit: { '5-share': 2, '10-share': 3 },
             tiles: %i[yellow green],
             status: %w[green_privates narrow_gauge],
             operating_rounds: 2,
@@ -61,7 +61,7 @@ module Engine
           {
             name: '5',
             on: %w[5E 4M],
-            train_limit: { large: 2 },
+            train_limit: { '10-share': 2 },
             tiles: %i[yellow green brown],
             status: %w[public_companies dual_gauge],
             operating_rounds: 2,
@@ -69,7 +69,7 @@ module Engine
           {
             name: '6',
             on: %w[6E 5M],
-            train_limit: { large: 2 },
+            train_limit: { '10-share': 2 },
             tiles: %i[yellow green brown],
             status: %w[public_companies dual_gauge],
             operating_rounds: 2,
@@ -77,7 +77,7 @@ module Engine
           {
             name: '7',
             on: %w[7E 6M],
-            train_limit: { large: 2 },
+            train_limit: { '10-share': 2 },
             tiles: %i[yellow green brown gray],
             status: %w[public_companies dual_gauge],
             operating_rounds: 2,

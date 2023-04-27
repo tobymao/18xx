@@ -37,6 +37,8 @@ These attributes may be set for all ability types
     - `track`, `track_and_token`: track-laying step; if normal track lays are used
       up, but there is still a `Track` ability, then the active step will not
       pass on to the next step automatically
+    - `token`: token-placing step
+    - `route`: running routes step
     - `sold`: when the company is bought from a player by a corporation
     - `bought_train`: when the owning corporation has bought a train; generally
       used with `close` abilities
@@ -318,6 +320,9 @@ Modified station token placement
   therefore be placed in the same city as another token belonging to the owning
   corporation. Note that this property will bypass all tokenable checks, not
   just `:existing_token`. Default true.
+- `connected`: If true, when token placed, a check is done if the desired token slot
+  is connected by track with another city that has a token of the corporation; if not
+  a game error is triggered. Default false.
 
 
 ## sell_company
