@@ -797,7 +797,7 @@ module Engine
           # In 1861/1867 this means that :bank (end of current OR) is tested
           # before :final_phase (end of next OR set). But we need the final
           # phase test to take precedence, so if the game end has been
-          # triggered than we just look need to look for the :final_phase test
+          # triggered than we just need to look for the :final_phase test
           # as this will extend the game if the final phase is reached after
           # the bank breaks.
           super.select { |reason, _| reason == :final_phase }
