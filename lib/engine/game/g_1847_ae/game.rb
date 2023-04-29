@@ -167,7 +167,7 @@ module Engine
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G1847AE::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
@@ -183,6 +183,10 @@ module Engine
 
         def hlb
           corporation_by_id('HLB')
+        end
+
+        def r
+          company_by_id('R')
         end
 
         def init_share_pool
@@ -232,6 +236,20 @@ module Engine
           hlb.coordinates = [hlb.coordinates.first]
           ability = hlb.all_abilities.find { |a| a.description.include?('Two home stations') }
           hlb.remove_ability(ability)
+        end
+
+        # Cannot build in E9 before Phase 5
+        def can_build_in_e9?
+          ['5', '5+5', '6E', '6+6'].include?(@phase.current[:name])
+        end
+
+        def action_processed(action)
+          super
+
+          return if r.revenue == 50 || !action.is_a?(Action::LayTile) || action.hex.id != 'E9'
+
+          r.revenue = 50
+          @log << "Tile laid in E9 - #{r.name}'s revenue increased to 50M"
         end
       end
     end
