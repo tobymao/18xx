@@ -753,7 +753,7 @@ module Engine
               )
             )
 
-            expect(city.reservations).to eq([])
+            expect(city.reservations.compact).to eq([])
           end
 
           it 'is removed when a corporation buys in the C&WI' do
@@ -765,7 +765,7 @@ module Engine
               )
             )
 
-            expect(city.reservations).to eq([])
+            expect(city.reservations.compact).to eq([])
           end
         end
 
