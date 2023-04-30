@@ -47,10 +47,8 @@ module Engine
           end
 
           def can_buy?(entity, bundle)
-            if @round.current_actions[0].instance_of?(Engine::Action::Convert) &&
-              @round.current_actions[0].entity != bundle.corporation
-              return false
-            end
+            action = @round.current_actions.find { |a| a.is_a?(Engine::Action::Convert) }
+            return false if action && action&.entity != bundle.corporation
 
             super
           end
