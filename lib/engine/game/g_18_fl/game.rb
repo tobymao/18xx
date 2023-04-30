@@ -257,15 +257,9 @@ module Engine
           route.train.variant['name'] == '3E' ? revenue : revenue + (hotels * hotel_value)
         end
 
-        def init_hexes(_companies, corporations)
-          hexes = super
-          place_home_tokens(corporations, hexes)
-          hexes
-        end
-
-        def place_home_tokens(corporations, hexes)
-          corporations.each do |corporation|
-            tile = hexes.find { |hex| hex.coordinates == corporation.coordinates }.tile
+        def setup
+          @corporations.each do |corporation|
+            tile = hex_by_id(corporation.coordinates).tile
             tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true)
           end
         end

@@ -463,8 +463,16 @@ module Engine
 
         def home_token_locations(corporation)
           # Can only place home token in cities that have no other tokens.
+          # Minors can go in a disconnected Toronto/Montreal station, but Majors
+          # cannot.
           open_locations = hexes.select do |hex|
-            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
+            case corporation.type
+            when :minor
+              hex.tile.cities.any? { |c| c.tokenable?(corporation, free: true) && c.tokens.none? }
+            when :major
+              hex.tile.cities.any? { |c| c.tokenable?(corporation, free: true) } &&
+                hex.tile.cities.all? { |c| c.tokens.none? { |t| t&.type == :normal } }
+            end
           end
 
           return open_locations if corporation.type == :minor
@@ -782,8 +790,24 @@ module Engine
           super
         end
 
+        def game_end_check_values
+          return super unless @game_end_check
+
+          # Game end checks are tested in the order soonest to furthest away.
+          # In 1861/1867 this means that :bank (end of current OR) is tested
+          # before :final_phase (end of next OR set). But we need the final
+          # phase test to take precedence, so if the game end has been
+          # triggered than we just need to look for the :final_phase test
+          # as this will extend the game if the final phase is reached after
+          # the bank breaks.
+          super.select { |reason, _| reason == :final_phase }
+        end
+
         def game_end_check
-          @game_end_check ||= super
+          # The game end might have been triggered by the bank breaking, but if
+          # the final phase is entered before the end of the operating round
+          # then the game is extended.
+          @game_end_check = super || @game_end_check
         end
 
         private
@@ -882,21 +906,21 @@ module Engine
           @final_operating_rounds || super
         end
 
-        def add_neutral_tokens(hexes)
+        def add_neutral_tokens
           @green_tokens = []
           logo = '/logos/1867/neutral.svg'
-          hexes.each do |hex|
+          @hexes.each do |hex|
             case hex.id
             when 'D2'
-              token = Token.new(national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
+              token = Token.new(@national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
               hex.tile.cities.first.exchange_token(token)
               @green_tokens << token
             when 'L12'
-              token = Token.new(national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
+              token = Token.new(@national, price: 0, logo: logo, simple_logo: logo, type: :neutral)
               hex.tile.cities.last.exchange_token(token)
               @green_tokens << token
             when 'F16'
-              hex.tile.cities.first.exchange_token(national.tokens.first)
+              hex.tile.cities.first.exchange_token(@national.tokens.first)
             end
           end
         end
@@ -933,29 +957,20 @@ module Engine
           @hidden_company = company_by_id('3')
 
           # CN corporation only exists to hold tokens
-          @national = national
+          @national = @corporations.find { |c| c.type == :national }
           @national.ipoed = true
           @national.shares.clear
           @national.shares_by_corporation[@national].clear
 
           @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
           @corporations.delete(@national)
+          add_neutral_tokens
 
           # Move green and majors out of the normal list
           @corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
           end
           @show_majors = false
-        end
-
-        def national
-          @national ||= @corporations.find { |c| c.type == :national }
-        end
-
-        def init_hexes(_companies, corporations)
-          hexes = super
-          add_neutral_tokens(hexes)
-          hexes
         end
 
         def event_green_minors_available!

@@ -197,7 +197,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1882::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -356,6 +356,10 @@ module Engine
 
         def token_ability_from_owner_usable?(_ability, _corporation)
           true
+        end
+
+        def fishing_exit
+          @fishing_exit ||= hex_by_id('B6')
         end
       end
     end

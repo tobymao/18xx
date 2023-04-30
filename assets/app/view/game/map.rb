@@ -32,7 +32,7 @@ module View
       def render
         return h(:div, []) if (@layout = @game.layout) == :none
 
-        @hexes = @show_starting_map ? @game.init_hexes(@game.companies, @game.corporations) : @game.hexes.dup
+        @hexes = @show_starting_map ? @game.clone([]).hexes : @game.hexes.dup
         @cols = @hexes.reject(&:ignore_for_axes).map(&:x).uniq.sort.map(&:next)
         @rows = @hexes.reject(&:ignore_for_axes).map(&:y).uniq.sort.map(&:next)
         @start_pos = [@cols.first, @rows.first]

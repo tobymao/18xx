@@ -37,24 +37,33 @@ module View
 
           corp_income = option[:corporation] + option[:divs_to_corporation]
 
-          new_share = entity.share_price
-
           direction =
-            if new_share && option[:share_direction]
+            if (new_share_price = entity.share_price) && option[:share_direction]
               moves = Array(option[:share_times]).zip(Array(option[:share_direction]))
 
-              moves.map do |times, dir|
-                times.times { new_share = @game.stock_market.find_relative_share_price(new_share, dir) }
+              movement_str =
+                moves.map do |times, dir|
+                  real_moves = 0
+                  times.times do
+                    prev_price = new_share_price
+                    new_share_price = @game.stock_market.find_relative_share_price(new_share_price, dir)
+                    break if prev_price == new_share_price
 
-                @step.respond_to?(:movement_str) ? @step.movement_str(times, dir) : "#{times} #{dir}"
-              end.join(', ')
+                    real_moves += 1
+                  end
+                  next if real_moves.zero?
+
+                  "#{real_moves} #{dir}"
+                end.compact.join(', ')
+
+              movement_str.empty? ? 'None' : movement_str
             else
               'None'
             end
 
           if entity.loans.any? && !@game.can_pay_interest?(entity, corp_income) && @game.cannot_pay_interest_str
             text += " #{@game.cannot_pay_interest_str}"
-          elsif new_share&.acquisition?
+          elsif new_share_price&.acquisition?
             text += ' (Acquisition)'
           end
 

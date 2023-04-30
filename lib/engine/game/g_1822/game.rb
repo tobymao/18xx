@@ -631,9 +631,9 @@ module Engine
         def company_bought(company, entity)
           # On acquired abilities
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
-          on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
+          on_acquired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
           on_acquired_phase_revenue(company) if self.class::PRIVATE_PHASE_REVENUE.include?(company.id)
-          on_aqcuired_double_cash(company) if self.class::COMPANY_DOUBLE_CASH == company.id
+          on_acquired_double_cash(company) if self.class::COMPANY_DOUBLE_CASH == company.id
         end
 
         def company_status_str(company)
@@ -685,6 +685,7 @@ module Engine
             trains = c.trains.count { |t| !extra_train?(t) }
             crowded = trains > train_limit(c)
             crowded |= extra_train_permanent_count(c) > 1
+            crowded |= pullman_train_count(c) > 1
             crowded
           end
         end
@@ -896,17 +897,6 @@ module Engine
               **corporation.merge(corporation_opts),
             )
           end.compact
-        end
-
-        def init_hexes(_companies, _corporations)
-          hexes = super
-          @corporations.each do |c|
-            if c.destination_coordinates
-              hexes.find { |h| h.id == c.destination_coordinates }.tile.icons <<
-                Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
-            end
-          end
-          hexes
         end
 
         def init_round
@@ -1386,15 +1376,6 @@ module Engine
           self.class::BIDDING_BOX_START_PRIVATE
         end
 
-        def can_gain_extra_train?(entity, train)
-          if train.name == self.class::EXTRA_TRAIN_PULLMAN
-            return false if entity.trains.any? { |t| t.name == self.class::EXTRA_TRAIN_PULLMAN }
-          elsif self.class::EXTRA_TRAIN_PERMANENTS.include?(train.name)
-            return false if entity.trains.any? { |t| self.class::EXTRA_TRAIN_PERMANENTS.include?(t.name) }
-          end
-          true
-        end
-
         def calculate_destination_bonus(route)
           entity = route.train.owner
           # Only majors can have a destination token
@@ -1694,6 +1675,14 @@ module Engine
           corporation.trains.count { |train| extra_train_permanent?(train) }
         end
 
+        def pullman_train_count(corporation)
+          corporation.trains.count { |train| pullman_train?(train) }
+        end
+
+        def remove_discarded_train?(train)
+          extra_train_permanent?(train) || pullman_train?(train)
+        end
+
         def find_corporation(company)
           corporation_id = company.id[1..-1]
           corporation_by_id(corporation_id)
@@ -1737,20 +1726,16 @@ module Engine
           company.close!
         end
 
-        def on_aqcuired_double_cash(company)
+        def on_acquired_double_cash(company)
           company.revenue = self.class::COMPANY_DOUBLE_CASH_REVENUE[@phase.name.to_i]
         end
 
-        def on_aqcuired_remove_revenue(company)
+        def on_acquired_remove_revenue(company)
           company.revenue = 0
         end
 
         def on_acquired_train(company, entity)
           train = @company_trains[company.id]
-
-          unless can_gain_extra_train?(entity, train)
-            raise GameError, "Can't gain an extra #{train.name}, already have a permanent 2P, LP, or P+"
-          end
 
           buy_train(entity, train, :free)
           @log << "#{entity.name} gains a #{train.name} train"
@@ -2009,6 +1994,7 @@ module Engine
             c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
                                              simple_logo: "../#{c.destination_icon}.svg",
                                              type: :destination)
+            hex_by_id(c.destination_coordinates).tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
           end
         end
 

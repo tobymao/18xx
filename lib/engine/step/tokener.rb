@@ -154,6 +154,10 @@ module Engine
         city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
         raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
       end
+
+      def tokener_available_hex(entity, hex)
+        @game.token_graph_for_entity(entity).reachable_hexes(entity)[hex]
+      end
     end
   end
 end

@@ -52,20 +52,22 @@ module Engine
 
             if distance.is_a?(Numeric)
               town_distance_value = 1
+              city_distance_value = distance
             else
               town_distance = distance.find { |n| n['nodes'] == ['town'] }
+              city_distance_value = distance.find { |n| n['nodes'].include?('city') }['pay']
               town_distance_value = town_distance['pay'] + 1
             end
             @round.ma_plus_train.distance = [
                 {
-                  nodes: %w[city offboard town],
-                  pay: distance,
-                  visit: distance,
-                },
-                {
                   nodes: %w[town],
                   pay: town_distance_value,
                   visit: town_distance_value,
+                },
+                {
+                  nodes: %w[city offboard town],
+                  pay: city_distance_value,
+                  visit: city_distance_value,
                 },
               ]
           end

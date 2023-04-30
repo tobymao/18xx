@@ -77,7 +77,7 @@ module Engine
           def corp_can_purchase_token?(corporation, token)
             corporation.cash >= @available_ndem_tokens[token] &&
             !@game.exchange_tokens(corporation).zero? &&
-            !token.city.tokened_by?(corporation)
+            token.hex.tile.cities.none? { |c| c.tokened_by?(corporation) }
           end
 
           def player_can_purchase_token?(player, token)

@@ -87,6 +87,16 @@ module Engine
           end
 
           def log_skip(_entity); end
+
+          def available_hex(entity, hex)
+            available = super
+
+            if entity == @game.pure_oil
+              available && %i[white yellow].include?(hex.tile.color)
+            else
+              available
+            end
+          end
         end
       end
     end

@@ -38,6 +38,7 @@ module Engine
             end
             return if entity.share_price.price.zero? # company is closing, not buying train
 
+            @bought_across = !action.train.from_depot?
             super
           end
 
@@ -49,8 +50,10 @@ module Engine
 
           def buyable_trains(entity)
             # Cannot buy 2E if one is already owned, can't by non 2e if at limit. 2E can't be cross bought
+            # Buying another corp's train must be done last (i.e. cannot buy from depot after buying from corp)
             trains_to_buy = at_train_limit?(entity) ? [] : super
             trains_to_buy = trains_to_buy.select(&:from_depot?) unless @game.can_buy_trains
+            trains_to_buy = trains_to_buy.reject(&:from_depot?) if @bought_across
             trains_to_buy = trains_to_buy.reject { |t| t.name == '2E' }
             trains_to_buy << ghan_train if can_buy_2e?(entity)
             trains_to_buy.uniq
@@ -117,6 +120,7 @@ module Engine
 
           def setup
             @round.train_buy_available = true
+            @bought_across = false
             super
           end
 
