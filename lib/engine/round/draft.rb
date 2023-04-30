@@ -6,8 +6,11 @@ module Engine
   module Round
     class Draft < Base
       def initialize(game, steps, **opts)
+        # reverse_order: 4, 3, 2, 1; 4, 3, 2, 1; ...
         @reverse_order = opts[:reverse_order] || false
+        # snake_order: 1, 2, 3, 4; 4, 3, 2, 1; 1, 2, 3, 4; 4, ...
         @snake_order = opts[:snake_order] || false
+        # rotating_order: 1, 2, 3, 4; 2, 3, 4, 1; 3, 4, 1, 2; ...
         @rotating_order = opts[:rotating_order] || false
         @snaking_up = true
 

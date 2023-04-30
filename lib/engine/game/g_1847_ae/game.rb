@@ -15,6 +15,8 @@ module Engine
         include Map
         include Entities
 
+        attr_accessor :draft_finished, :draft_first_round_finished, :draft_last_acting_index
+
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
         SELL_BUY_ORDER = :sell_buy
@@ -152,6 +154,12 @@ module Engine
 
         LAYOUT = :pointy
 
+        def init_round
+          G1847AE::Round::Draft.new(self,
+                                    [G1847AE::Step::Draft],
+                                    reverse_order: true,)
+        end
+
         def stock_round
           Engine::Round::Stock.new(self, [
             G1847AE::Step::Exchange,
@@ -160,7 +168,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -175,6 +183,26 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def new_draft_round
+          @log << "-- Draft Round #{@turn} -- "
+          G1847AE::Round::Draft.new(self,
+                                    [G1847AE::Step::Draft],
+                                    first_to_act_index: @draft_last_acting_index,)
+        end
+
+        def next_round!
+          return super if @draft_finished
+
+          clear_programmed_actions
+          @round =
+            case @round
+            when G1847AE::Round::Draft
+              new_operating_round
+            when Engine::Round::Operating
+              new_draft_round
+            end
         end
 
         def saar
@@ -215,6 +243,9 @@ module Engine
           [saar.shares[1], saar.shares[2], hlb.shares[1]].each { |s| s.buyable = false }
           saar.cash += saar.par_price.price * 2
           hlb.cash += hlb.par_price.price
+
+          @draft_finished = false
+          @draft_first_round_finished = false
         end
 
         def can_corporation_have_investor_shares_exchanged?(corporation)
