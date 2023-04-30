@@ -16,7 +16,7 @@ module Engine
       end
 
       def teardown
-        tile.cities[@city].reservations.delete(owner) if tile
+        tile.cities[@city].remove_reservation!(owner) if tile
       end
     end
   end
