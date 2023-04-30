@@ -87,6 +87,17 @@ module Engine
 
             @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
+            company.abilities.each do |ability|
+                next unless ability.type == :shares
+
+                ability.shares.each do |share|
+                    @game.share_pool.buy_shares(player, share, exchange: :free)
+                end
+            end
+            
+            # PLP company is only a temporary holder for the L presidency
+            company.close! if company.id == 'PLP'
+
             entities.each(&:unpass!)
             @round.next_entity_index!
             action_finalized
