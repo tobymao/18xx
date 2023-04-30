@@ -188,8 +188,7 @@ module Engine
         def new_draft_round
           @log << "-- Draft Round #{@turn} -- "
           G1847AE::Round::Draft.new(self,
-                                    [G1847AE::Step::Draft],
-                                    first_to_act_index: @draft_last_acting_index,)
+                                    [G1847AE::Step::Draft],)
         end
 
         def next_round!
