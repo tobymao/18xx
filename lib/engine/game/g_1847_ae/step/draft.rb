@@ -88,13 +88,15 @@ module Engine
             @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
             company.abilities.each do |ability|
-                next unless ability.type == :shares
+              next unless ability.type == :shares
 
-                ability.shares.each do |share|
-                    @game.share_pool.buy_shares(player, share, exchange: :free)
-                end
+              # Give related share to the player and give money for the share to the corporation
+              ability.shares.each do |share|
+                @game.share_pool.buy_shares(player, share, exchange: :free)
+                share.corporation.cash += share.corporation.par_price.price * share.percent / 10
+              end
             end
-            
+
             # PLP company is only a temporary holder for the L presidency
             company.close! if company.id == 'PLP'
 

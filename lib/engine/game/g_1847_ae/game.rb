@@ -205,6 +205,10 @@ module Engine
             end
         end
 
+        def l
+          corporation_by_id('L')
+        end
+
         def saar
           corporation_by_id('Saar')
         end
@@ -239,6 +243,12 @@ module Engine
         end
 
         def setup
+          # Place L's home station in case there is a "short OR" during draft
+          puts l.coordinates
+          hex = hex_by_id(l.coordinates)
+          tile = hex&.tile
+          tile.cities.first.place_token(l, l.next_token)
+
           # Reserve investor shares and add money for them to treasury
           [saar.shares[1], saar.shares[2], hlb.shares[1]].each { |s| s.buyable = false }
           saar.cash += saar.par_price.price * 2
