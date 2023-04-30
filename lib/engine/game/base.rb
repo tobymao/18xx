@@ -929,7 +929,7 @@ module Engine
       end
 
       def shares
-        @corporations.flat_map(&:shares)
+        @corporations.flat_map(&:shares) + @players.flat_map(&:shares)
       end
 
       def share_prices
