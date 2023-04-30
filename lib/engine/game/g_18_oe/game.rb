@@ -42,36 +42,50 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: 4,
+            train_limit: { minor: 2, regional: 2, major: 4 },
             tiles: [:yellow],
             operating_rounds: 2,
           },
           {
             name: '3',
             on: '3',
-            train_limit: 4,
+            train_limit: { minor: 2, regional: 2, major: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '4',
             on: '4',
-            train_limit: 3,
+            train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '5',
             on: '5',
-            train_limit: 3,
+            train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
           },
           {
             name: '6',
             on: '6',
-            train_limit: 2,
+            train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown],
+            operating_rounds: 2,
+          },
+          {
+            name: '7',
+            on: '7+7',
+            train_limit: { major: 2, national: 3 },
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 2,
+          },
+          {
+            name: '8',
+            on: '8+8',
+            train_limit: { major: 2, national: 3 },
+            tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
         ].freeze
@@ -443,6 +457,14 @@ module Engine
              OE18 OE26 OE27 OE28 OE29 OE30 OE37 OE38 OE39 OE40 OE41].include?(tile.name.to_s)
         end
 
+        def must_buy_train?(entity)
+          # must buy the reserved 2+2, otherwise only majors must buy trains
+          # return unless entity.type == 'major'
+          return if depot.depot_trains[0]&.name != '2+2' && entity.type != 'major'
+
+          super
+        end
+
         def upgrades_to_correct_label?(from, to)
           return true if from.label == to.label
           return false if from.label && !to.label
@@ -477,6 +499,13 @@ module Engine
           # Spend the cost of the regionals track rights zone
           region = NATIONAL_REGION_HEXES.select { |_key, value| value.include?(corporation.coordinates) }.keys.first
           corporation.spend(TRACK_RIGHTS_COST[region], @bank)
+        end
+
+        def issuable_shares(entity)
+          return [] if !entity.corporation? || (entity.corporation? && entity.type != 'major')
+
+          bundles_for_corporation(entity, entity)
+            .select { |bundle| @share_pool.fit_in_bank?(bundle) }
         end
 
         def stock_round

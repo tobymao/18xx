@@ -8,6 +8,17 @@ module Engine
     module G18OE
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
+          def setup
+            super
+
+            @can_convert = []
+            @game.corporations.each do |corp|
+              if corp.share_holders[current_entity] >= 50 && corp.type == :regional && @game.corporations.all?(&:ipoed)
+                @can_convert << corp
+              end
+            end
+          end
+
           def actions(entity)
             return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
@@ -18,18 +29,13 @@ module Engine
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'convert' if can_convert_any?(entity)
-
+            actions << 'convert' unless @can_convert.empty?
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
           end
 
           def corporation_actions(entity)
-            if @round.current_actions[0].instance_of?(Engine::Action::BuyShares) &&
-              @round.current_actions[0].bundle.corporation != entity
-              return []
-            end
-            return [] unless can_convert?(entity)
+            return [] unless @can_convert.include?(entity)
 
             %w[convert pass]
           end
@@ -49,22 +55,11 @@ module Engine
             super
           end
 
-          def can_convert?(corporation)
-            if !@game.corporations.all?(&:ipoed) || @round.current_actions.any? { |x| x.instance_of?(Engine::Action::Convert) }
-              return
-            end
+          def can_sell?(entity, bundle)
+            return unless bundle
+            return if bundle.corporation.type == :regional
 
-            return if @round.current_actions[0].instance_of?(Engine::Action::BuyShares) &&
-              (@round.current_actions[0].bundle.corporation != corporation || corporation.share_holders[current_entity] <= 50)
-
-            corporation.total_shares == 4 && corporation.share_holders.include?(current_entity) &&
-              corporation.share_holders[current_entity] >= 50
-          end
-
-          def can_convert_any?(entity)
-            return if @round.current_actions.any? { |x| x.instance_of?(Engine::Action::Convert) }
-
-            entity.shares_by_corporation.reject { |c| c.type == :minor }.any? { |c| can_convert?(c[0]) }
+            super
           end
 
           def can_float_minor?(entity)
@@ -80,6 +75,9 @@ module Engine
             6.times do |index|
               share = Share.new(corporation, owner: corporation.ipo_owner, percent: 10, index: 4 + index)
               corporation.ipo_owner.shares_by_corporation[corporation] << share
+            end
+            corporation.share_holders.keys do |sh|
+              corporation.share_holders[sh] = sh.shares_by_corporation[corporation].sum(&:percent)
             end
 
             # Set corporation type to :major
@@ -131,10 +129,26 @@ module Engine
             @game.sorted_corporations.reject { |c| (c.type == :minor && c.ipoed) }
           end
 
+          def process_buy_shares(action)
+            super
+            corp = action.bundle.corporation
+            @can_convert = if @can_convert.find { |c| c == corp }
+                             [corp]
+                           else
+                             []
+                           end
+          end
+
+          def process_sell_shares(action)
+            super
+            @can_convert = []
+          end
+
           def process_convert(action)
             corporation = action.entity
             float_major(corporation)
             track_action(action, corporation)
+            @can_convert = []
             @log << "#{corporation.name} converts from regional to major"
           end
 
@@ -171,6 +185,12 @@ module Engine
           def check_legal_buy(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
             raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" if
               !can_buy?(entity, shares.to_bundle) && !swap && !exchange
+          end
+
+          def log_pass(entity)
+            return if bought?
+
+            @log << "#{entity.name} passes"
           end
         end
       end

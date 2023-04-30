@@ -31,11 +31,13 @@ module Engine
             distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
             price: 200,
+            rust_on: '6',
             variants: [{
               name: '3+3',
               distance: [{ 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 },
                          { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
               price: 225,
+              rusts_on: '6',
             }],
             num: 7,
           },
@@ -77,6 +79,20 @@ module Engine
               price: 600,
             }],
             num: 2,
+          },
+          {
+            name: '7+7',
+            distance: [{ 'nodes' => ['town'], 'pay' => 7, 'visit' => 99 },
+                       { 'nodes' => %w[city offboard town], 'pay' => 7, 'visit' => 7 }],
+            price: 750,
+            num: 3,
+          },
+          {
+            name: '8+8',
+            distance: [{ 'nodes' => ['town'], 'pay' => 8, 'visit' => 99 },
+                       { 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 8 }],
+            price: 900,
+            num: 6,
           },
         ].freeze
 
