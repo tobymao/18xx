@@ -243,7 +243,6 @@ module Engine
 
         def setup
           # Place L's home station in case there is a "short OR" during draft
-          puts l.coordinates
           hex = hex_by_id(l.coordinates)
           tile = hex&.tile
           tile.cities.first.place_token(l, l.next_token)
