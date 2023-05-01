@@ -460,7 +460,7 @@ module Engine
         def must_buy_train?(entity)
           # must buy the reserved 2+2, otherwise only majors must buy trains
           # return unless entity.type == 'major'
-          return if depot.depot_trains[0]&.name != '2+2' && entity.type != 'major'
+          return if depot.depot_trains.first&.name != '2+2' && entity.type != :major
 
           super
         end
@@ -502,7 +502,7 @@ module Engine
         end
 
         def issuable_shares(entity)
-          return [] if !entity.corporation? || (entity.corporation? && entity.type != 'major')
+          return [] if !entity.corporation? || (entity.corporation? && entity.type != :major)
 
           bundles_for_corporation(entity, entity)
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }

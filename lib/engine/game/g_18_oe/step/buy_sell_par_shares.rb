@@ -11,11 +11,8 @@ module Engine
           def setup
             super
 
-            @can_convert = []
-            @game.corporations.each do |corp|
-              if corp.share_holders[current_entity] >= 50 && corp.type == :regional && @game.corporations.all?(&:ipoed)
-                @can_convert << corp
-              end
+            @can_convert = @game.corporations.select do |corp|
+              corp.share_holders[current_entity] >= 50 && corp.type == :regional && @game.corporations.all?(&:ipoed)
             end
           end
 
@@ -79,7 +76,7 @@ module Engine
             end
 
             # Set corporation type to :major
-            corporation.type = 'major'
+            corporation.type = :major
 
             # Majors are affected by the stock market, set tokens in the correct place
             @game.stock_market.move_right(corporation)
