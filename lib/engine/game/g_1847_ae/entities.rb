@@ -37,7 +37,6 @@ module Engine
                   'May be sold to or purchased from the market. '\
                   'Never closes.',
             sym: 'LFKC',
-            abilities: [{ type: 'shares', shares: 'Saar_0' }],
           },
           {
             name: 'Rammelsbach',

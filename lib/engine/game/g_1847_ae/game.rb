@@ -160,6 +160,12 @@ module Engine
                                     reverse_order: true,)
         end
 
+        def new_draft_round
+          @log << "-- Draft Round #{@turn} -- "
+          G1847AE::Round::Draft.new(self,
+                                    [G1847AE::Step::Draft],)
+        end
+
         def stock_round
           Engine::Round::Stock.new(self, [
             G1847AE::Step::Exchange,
@@ -183,12 +189,6 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
-        end
-
-        def new_draft_round
-          @log << "-- Draft Round #{@turn} -- "
-          G1847AE::Round::Draft.new(self,
-                                    [G1847AE::Step::Draft],)
         end
 
         def next_round!

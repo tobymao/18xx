@@ -12,7 +12,7 @@ module Engine
           ACTIONS = %w[bid pass].freeze
 
           def setup
-            @companies = @game.companies.select { |c| c.owner.nil? }
+            @companies = @game.companies.select { |c| c.owner.nil? && !c.closed? }
             @companies = @companies.sort_by { |item| [item.revenue, item.value] }
           end
 
@@ -20,6 +20,10 @@ module Engine
             @companies
           end
 
+          def active?
+            true
+          end
+          
           def may_purchase?(_company)
             true
           end
