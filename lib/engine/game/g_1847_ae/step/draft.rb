@@ -55,30 +55,18 @@ module Engine
           end
 
           def finished?
-            finished = @companies.empty? || entities.all?(&:passed?)
+            @game.draft_finished = @companies.empty?
 
-            if finished && @game.draft_last_acting_index.nil?
-              # If not all companies are purchased, the draft will be coninuted after a "short OR".
-              # We have to store the index of the last player to have acted, so we can continue with next in order.
-              @game.draft_finished = @companies.empty?
-              @game.draft_last_acting_index = @round.entity_index
-            end
-
-            finished
+            @companies.empty? || entities.all?(&:passed?)
           end
 
           def actions(entity)
             return [] if finished?
 
-            unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
-              @log << "#{current_entity.name} has no valid actions and passes"
-              return []
-            end
-
             entity == current_entity ? ACTIONS : []
           end
-
-          def process_bid(action)
+          
+          def process_bid(action, suppress_log = false)
             company = action.company
             player = action.entity
             price = action.price
@@ -105,15 +93,28 @@ module Engine
             company.close! if company.id == 'PLP'
 
             entities.each(&:unpass!)
-            @round.next_entity_index!
             action_finalized
+            next_player unless finished?
           end
 
-          def process_pass(action)
-            @log << "#{action.entity.name} passes"
+          def process_pass(action, suppress_log = false)
+            @log << "#{action.entity.name} passes" unless suppress_log
             action.entity.pass!
-            @round.next_entity_index!
             action_finalized
+            next_player unless finished?
+          end
+
+          def pass_if_no_valid_action
+            unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
+              @log << "#{current_entity.name} has no valid actions and passes"
+              @round.process_action(Engine::Action::Pass.new(current_entity), suppress_log: true)
+            end
+          end
+
+          def next_player
+            @round.next_entity_index!
+
+            pass_if_no_valid_action
           end
 
           def action_finalized
