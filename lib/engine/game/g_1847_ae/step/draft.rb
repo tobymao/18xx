@@ -23,7 +23,7 @@ module Engine
           def active?
             true
           end
-          
+
           def may_purchase?(_company)
             true
           end
@@ -65,8 +65,8 @@ module Engine
 
             entity == current_entity ? ACTIONS : []
           end
-          
-          def process_bid(action, suppress_log = false)
+
+          def process_bid(action, _suppress_log = false)
             company = action.company
             player = action.entity
             price = action.price
@@ -94,27 +94,27 @@ module Engine
 
             entities.each(&:unpass!)
             action_finalized
-            next_player unless finished?
+            next_player! unless finished?
           end
 
           def process_pass(action, suppress_log = false)
             @log << "#{action.entity.name} passes" unless suppress_log
             action.entity.pass!
             action_finalized
-            next_player unless finished?
+            next_player! unless finished?
           end
 
-          def pass_if_no_valid_action
-            unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
-              @log << "#{current_entity.name} has no valid actions and passes"
-              @round.process_action(Engine::Action::Pass.new(current_entity), suppress_log: true)
-            end
+          def pass_if_no_valid_action!
+            return if @companies.any? { |c| current_entity.cash >= min_bid(c) }
+
+            @log << "#{current_entity.name} has no valid actions and passes"
+            @round.process_action(Engine::Action::Pass.new(current_entity), suppress_log: true)
           end
 
-          def next_player
+          def next_player!
             @round.next_entity_index!
 
-            pass_if_no_valid_action
+            pass_if_no_valid_action!
           end
 
           def action_finalized
@@ -134,6 +134,7 @@ module Engine
           end
 
           def skip!
+            puts 'skip'
             current_entity.pass!
             @round.next_entity_index!
             action_finalized
