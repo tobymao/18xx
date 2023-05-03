@@ -10,7 +10,7 @@ module Engine
           def initialize(game, steps, **opts)
             super
 
-            @game.draft_players_reordered = false
+            @players_reordered_for_next_round = false
           end
 
           def next_entity_index!
@@ -57,11 +57,11 @@ module Engine
             @game.next_turn!
             @entity_index = (@entity_index + 1) % @entities.size
 
-            return if @game.draft_players_reordered
+            return if @players_reordered_for_next_round
 
             # Reorder players for the next round of draft
             @game.reorder_players
-            @game.draft_players_reordered = true
+            @players_reordered_for_next_round = true
           end
         end
       end
