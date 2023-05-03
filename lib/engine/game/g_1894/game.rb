@@ -180,7 +180,7 @@ module Engine
                     distance: 5,
                     price: 400,
                     rusts_on: 'D',
-                    num: 4,
+                    num: 5,
                     events: [{ 'type' => 'late_corporations_available' }],
                     discount: { '4' => 150 },
                   },
