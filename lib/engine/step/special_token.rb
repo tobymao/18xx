@@ -108,7 +108,7 @@ module Engine
 
       def available_tokens(entity)
         ability = ability(entity)
-        return [Engine::Token.new(entity.owner)] if ability&.type == :token && !ability.from_owner
+        return [Engine::Token.new(entity.owner)] if %i[teleport token].include?(ability&.type) && !ability.from_owner
 
         super(@game.token_owner(entity))
       end

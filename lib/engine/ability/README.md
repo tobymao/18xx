@@ -211,6 +211,11 @@ Lay a tile and place a station token without connectivity
   teleport destination.
 - `cost`: Cost to use the teleport ability.
 - `free_tile_lay`: If true, the tile is laid with 0 cost. Default false.
+- `from_owner`: If true, this ability uses a token from the owning corporation's
+  charter; if false, an additional token is created. Default true.
+- `extra_action`: If true, this ability may be used in addition to the turn's
+  normal token placement step. Default false.
+
 
 ## tile_discount
 
