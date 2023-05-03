@@ -134,7 +134,6 @@ module Engine
           end
 
           def skip!
-            puts 'skip'
             current_entity.pass!
             @round.next_entity_index!
             action_finalized

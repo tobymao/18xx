@@ -15,7 +15,7 @@ module Engine
         include Map
         include Entities
 
-        attr_accessor :draft_finished, :draft_first_round_finished, :draft_players_reordered
+        attr_accessor :draft_finished, :draft_first_round_finished
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
