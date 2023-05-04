@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
+require_relative '../../../step/simple_draft'
 
 module Engine
   module Game
     module G1847AE
       module Step
-        class Draft < Engine::Step::Base
-          attr_reader :companies, :choices, :grouped_companies
+        class Draft < Engine::Step::SimpleDraft
+          attr_reader :grouped_companies
 
           ACTIONS = %w[bid pass].freeze
 
@@ -16,38 +16,18 @@ module Engine
             @companies = @companies.sort_by { |item| [item.revenue, item.value] }
           end
 
-          def available
-            @companies
+          def actions(entity)
+            return [] if finished?
+
+            entity == current_entity ? ACTIONS : []
           end
 
           def active?
             true
           end
 
-          def may_purchase?(_company)
-            true
-          end
-
-          def auctioning; end
-
-          def bids
-            {}
-          end
-
-          def visible?
-            true
-          end
-
-          def players_visible?
-            true
-          end
-
           def tiered_auction_companies
             @companies.group_by(&:revenue).values
-          end
-
-          def name
-            'Draft'
           end
 
           def description
@@ -58,12 +38,6 @@ module Engine
             @game.draft_finished = @companies.empty?
 
             @companies.empty? || entities.all?(&:passed?)
-          end
-
-          def actions(entity)
-            return [] if finished?
-
-            entity == current_entity ? ACTIONS : []
           end
 
           def process_bid(action, _suppress_log = false)
@@ -121,16 +95,6 @@ module Engine
             return unless finished?
 
             @round.reset_entity_index!
-          end
-
-          def committed_cash(_player, _show_hidden = false)
-            0
-          end
-
-          def min_bid(company)
-            return unless company
-
-            company.value
           end
 
           def skip!

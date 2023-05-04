@@ -15,7 +15,7 @@ module Engine
         include Map
         include Entities
 
-        attr_accessor :draft_finished, :draft_first_round_finished
+        attr_accessor :draft_finished
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
@@ -198,6 +198,7 @@ module Engine
           @round =
             case @round
             when G1847AE::Round::Draft
+              reorder_players
               new_operating_round
             when Engine::Round::Operating
               new_draft_round
@@ -253,7 +254,6 @@ module Engine
           hlb.cash += hlb.par_price.price
 
           @draft_finished = false
-          @draft_first_round_finished = false
         end
 
         def can_corporation_have_investor_shares_exchanged?(corporation)

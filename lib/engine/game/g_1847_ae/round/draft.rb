@@ -7,17 +7,11 @@ module Engine
     module G1847AE
       module Round
         class Draft < Engine::Round::Draft
-          def initialize(game, steps, **opts)
-            super
-
-            @players_reordered_for_next_round = false
-          end
-
           def next_entity_index!
             # First round of draft is perforemd in reverse player order, then it must be reversed back to normal
-            if @entity_index == @entities.size - 1 && !@game.draft_first_round_finished
+            if @entity_index == @entities.size - 1 && @reverse_order
               @entities.reverse!
-              @game.draft_first_round_finished = true
+              @reverse_order = false
             end
 
             super
@@ -56,12 +50,6 @@ module Engine
           def reset_entity_index!
             @game.next_turn!
             @entity_index = (@entity_index + 1) % @entities.size
-
-            return if @players_reordered_for_next_round
-
-            # Reorder players for the next round of draft
-            @game.reorder_players
-            @players_reordered_for_next_round = true
           end
         end
       end
