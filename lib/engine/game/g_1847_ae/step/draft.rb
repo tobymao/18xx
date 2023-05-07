@@ -17,9 +17,15 @@ module Engine
           end
 
           def actions(entity)
-            return [] if finished?
+            return [] unless entity == current_entity
+            return [] if @acted
+            return [] unless can_buy_any?(entity)
 
-            entity == current_entity ? ACTIONS : []
+            ACTIONS
+          end
+
+          def can_buy_any?(player)
+            @companies.any? { |company| player.cash >= min_bid(company) }
           end
 
           def active?
@@ -32,12 +38,6 @@ module Engine
 
           def description
             'Draft Private Companies'
-          end
-
-          def finished?
-            @game.draft_finished = @companies.empty?
-
-            @companies.empty? || entities.all?(&:passed?)
           end
 
           def process_bid(action, _suppress_log = false)
@@ -65,42 +65,16 @@ module Engine
 
             # PLP company is only a temporary holder for the L presidency
             company.close! if company.id == 'PLP'
-
-            entities.each(&:unpass!)
-            action_finalized
-            next_player! unless finished?
           end
 
-          def process_pass(action, suppress_log = false)
-            @log << "#{action.entity.name} passes" unless suppress_log
+          def process_pass(action)
+            super
             action.entity.pass!
-            action_finalized
-            next_player! unless finished?
-          end
-
-          def pass_if_no_valid_action!
-            return if @companies.any? { |c| current_entity.cash >= min_bid(c) }
-
-            @log << "#{current_entity.name} has no valid actions and passes"
-            @round.process_action(Engine::Action::Pass.new(current_entity), suppress_log: true)
-          end
-
-          def next_player!
-            @round.next_entity_index!
-
-            pass_if_no_valid_action!
-          end
-
-          def action_finalized
-            return unless finished?
-
-            @round.reset_entity_index!
           end
 
           def skip!
-            current_entity.pass!
-            @round.next_entity_index!
-            action_finalized
+            super
+            current_entity.pass! unless @acted
           end
         end
       end
