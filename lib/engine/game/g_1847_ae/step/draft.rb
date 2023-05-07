@@ -41,6 +41,7 @@ module Engine
           end
 
           def process_bid(action, _suppress_log = false)
+            action.entity.unpass!
             company = action.company
             player = action.entity
             price = action.price
@@ -70,6 +71,10 @@ module Engine
           def process_pass(action)
             super
             action.entity.pass!
+          end
+
+          def log_skip(entity)
+            @log << "#{entity.name} cannot afford any company and passes"
           end
 
           def skip!

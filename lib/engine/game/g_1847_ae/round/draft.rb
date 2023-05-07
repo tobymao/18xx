@@ -8,6 +8,7 @@ module Engine
       module Round
         class Draft < Engine::Round::Draft
           def setup
+            skip_steps
             next_entity! unless active_step
           end
 
@@ -44,7 +45,7 @@ module Engine
           end
 
           def finished?
-            all_drafted? || @entities.all?(&:passed)
+            all_drafted? || @entities.all?(&:passed?)
           end
         end
       end
