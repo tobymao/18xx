@@ -16,7 +16,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18SJ'
         GAME_LOCATION = 'Sweden'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://docs.google.com/document/d/1Iyojj3Kkl0mLR6rjRe8E6OlcTDfjVuVd-JT4R3tgm8M/view'
+        GAME_RULES_URL = 'https://www.dropbox.com/s/2iaubghicswpz3c/18SJ%20Rules.pdf?dl=0'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
