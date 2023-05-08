@@ -1195,7 +1195,7 @@ module Engine
           close_corporation(entity, quiet: true)
         end
 
-        def hex_blocked_by_ability?(_entity, abilities, hex)
+        def hex_blocked_by_ability?(_entity, abilities, hex, _tile = nil)
           Array(abilities).any? { |ability| ability.hexes.include?(hex.id) }
         end
 

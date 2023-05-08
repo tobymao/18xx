@@ -33,6 +33,22 @@ module Engine
                                                         check_tokenable: false)
             @round.pending_tokens.shift
             @game.after_place_pending_token(action.city)
+
+            setup_m14_track_rights(entity) if entity.id == @game.class::MINOR_14_ID
+          end
+
+          def setup_m14_track_rights(m14)
+            hex = @game.london_hex.neighbors[@game.minor_14_city_exit]
+
+            ability = Ability::BlocksHexesConsent.new(
+              type: :blocks_hexes_consent,
+              owner_type: 'player',
+              hexes: [hex.id],
+              hidden: true,
+            )
+            m14.add_ability(ability)
+
+            hex.tile.add_blocker!(m14, hidden: true)
           end
         end
       end

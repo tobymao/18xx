@@ -7,8 +7,13 @@ module Engine
     class BlocksHexesConsent < Base
       attr_reader :hexes
 
-      def setup(hexes:)
+      def setup(hexes:, hidden: false)
         @hexes = hexes
+        @hidden = hidden
+      end
+
+      def hidden?
+        @hidden
       end
     end
   end

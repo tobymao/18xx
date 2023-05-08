@@ -74,7 +74,7 @@ module View
         end
 
         def load_from_tile
-          @blocker = @tile.blockers.first
+          @blocker = @tile.blockers.find { |b| !@tile.hidden_blockers.include?(b) }
         end
 
         def should_render?

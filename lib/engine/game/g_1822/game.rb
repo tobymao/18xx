@@ -539,8 +539,7 @@ module Engine
 
         UPGRADE_COST_L_TO_2 = 80
 
-        include StubsAreRestricted
-
+        attr_reader :minor_14_city_exit
         attr_accessor :bidding_token_per_player, :player_debts
 
         def bank_sort(corporations)
@@ -1892,6 +1891,44 @@ module Engine
           return [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or] if @bank.broken?
 
           return %i[stock_market current_or] if @stock_market.max_reached?
+        end
+
+        def preprocess_action(action)
+          case action
+          when Action::LayTile
+            if action.tile.name != 'BC'
+              action.hex.tile.blockers.each do |entity|
+                entity.all_abilities.dup.each do |ability|
+                  entity.remove_ability(ability) if ability.type == :blocks_hexes_consent
+                end
+              end
+            end
+          end
+        end
+
+        def hex_blocked_by_ability?(entity, ability, hex, tile)
+          return false if tile.name == 'BC'
+          return false unless ability.player
+          return false if entity.player == ability.player
+          return false unless ability.hexes.include?(hex.id)
+          return false if hex.tile.blockers.map(&:player).include?(entity.player)
+
+          true
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          rights_owners = hex.tile.blockers.map(&:owner).compact.uniq
+          return true if rights_owners.delete(acting_for_entity(entity))
+
+          rights_owners.empty? ? legal_if_stubbed?(hex, tile) : super
+        end
+
+        def legal_if_stubbed?(hex, tile)
+          hex.tile.stubs.empty? || (hex.tile.stubs.map(&:edge) - tile.exits).empty?
+        end
+
+        def london_hex
+          @london_hex ||= hex_by_id(LONDON_HEX)
         end
 
         private
