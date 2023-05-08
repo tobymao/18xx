@@ -53,6 +53,7 @@ module Engine
           'M26' => 'Poza Rica Jalapa',
           'M36' => 'Campeche',
           'N17' => 'Manzanillo',
+          'N23' => 'Mexico City',
           'N25' => 'Tlaxcala Puebla',
           'N27' => 'Veracruz',
           'N33' => 'Ciudad del Carmen',
@@ -65,6 +66,7 @@ module Engine
           'P31' => 'Tuxtla Gutierrez',
           'Q34' => 'Guatemala',
         }.freeze
+        HEXES_HIDE_LOCATION_NAMES = { 'N23' => true }.freeze
 
         LAYOUT = :pointy
 
