@@ -688,6 +688,7 @@ module Engine
 
         def take_loan(entity, loan)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+          raise GameError, 'Invalid loan. Refresh and try again.' unless @loans.include?(loan)
 
           old_price = entity.share_price
           name = entity.name
@@ -706,6 +707,11 @@ module Engine
 
         def payoff_loan(entity, loan, adjust_share_price: true)
           raise GameError, "Loan doesn't belong to that entity" unless entity.loans.include?(loan)
+
+          unless entity.loans.include?(loan)
+            raise GameError,
+                  "Can only payoff loans owned by #{entity.name}. Refresh and try again."
+          end
 
           amount = loan.amount
           @log << "#{entity.name} pays off a loan for #{format_currency(amount)}"
