@@ -502,7 +502,7 @@ module Engine
         end
 
         def issuable_shares(entity)
-          return [] if !entity.corporation? || (entity.corporation? && entity.type != :major)
+          return [] if !entity.corporation? || entity.type != :major
 
           bundles_for_corporation(entity, entity)
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
