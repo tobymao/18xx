@@ -84,10 +84,10 @@ module Engine
         @log << "#{@game.acting_for_entity(entity).name} operates #{entity.name}" unless finished?
         @game.place_home_token(entity) if @home_token_timing == :operate
         skip_steps
-        if finished?
-          after_end_of_turn(entity)
-          next_entity!
-        end
+        return unless finished?
+
+        after_end_of_turn(entity)
+        next_entity!
       end
 
       def recalculate_order
