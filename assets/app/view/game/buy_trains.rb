@@ -448,7 +448,7 @@ module View
                   buy_train.call
                 end
               else
-                check_consent(other_owner(other), buy_train)
+                check_consent(@corporation, other_owner(other), buy_train)
               end
             end
 

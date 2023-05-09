@@ -98,13 +98,15 @@ module View
         end
 
         def render_merge_button
+          selected_corporation = @selected_corporation
+
           merge = lambda do
-            if @selected_corporation
+            if selected_corporation
               do_merge = lambda do
-                to_merge = if @selected_corporation.corporation?
-                             { corporation: @selected_corporation }
+                to_merge = if selected_corporation.corporation?
+                             { corporation: selected_corporation }
                            else
-                             { minor: @selected_corporation }
+                             { minor: selected_corporation }
                            end
                 process_action(Engine::Action::Merge.new(
                   @mergeable_entity,
@@ -112,10 +114,10 @@ module View
                 ))
               end
 
-              if @mergeable_entity.owner == @selected_corporation.owner
+              if @mergeable_entity.owner == selected_corporation.owner
                 do_merge.call
               else
-                check_consent(@selected_corporation.owner, do_merge)
+                check_consent(@mergeable_entity, selected_corporation.owner, do_merge)
               end
             else
               store(:flash_opts, 'Select a corporation to merge with')

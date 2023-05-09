@@ -686,33 +686,33 @@ module Engine
           remove_share(short)
         end
 
-        def take_loan(entity, loan)
+        def take_loan(entity, _loan)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
 
+          taken_loan = @loans.pop
           old_price = entity.share_price
           name = entity.name
           name += " (#{entity.owner.name})" if @round.is_a?(Engine::Round::Stock)
-          @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
-          @bank.spend(loan.amount, entity)
+          @log << "#{name} takes a loan and receives #{format_currency(taken_loan.amount)}"
+          @bank.spend(taken_loan.amount, entity)
           loan_taken_stock_market_movement(entity)
           log_share_price(entity, old_price)
-          entity.loans << loan
-          @loans.delete(loan)
+          entity.loans << taken_loan
         end
 
         def loan_taken_stock_market_movement(entity)
           @stock_market.move_left(entity)
         end
 
-        def payoff_loan(entity, loan, adjust_share_price: true)
-          raise GameError, "Loan doesn't belong to that entity" unless entity.loans.include?(loan)
+        def payoff_loan(entity, _loan, adjust_share_price: true)
+          raise GameError, "#{entity.name} does not have any loans" unless entity.loans.size.positive?
 
-          amount = loan.amount
+          paid_loan = entity.loans.pop
+          amount = paid_loan.amount
           @log << "#{entity.name} pays off a loan for #{format_currency(amount)}"
           entity.spend(amount, @bank)
 
-          entity.loans.delete(loan)
-          @loans << loan
+          @loans << paid_loan
           return unless adjust_share_price
 
           old_price = entity.share_price

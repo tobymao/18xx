@@ -29,6 +29,7 @@ module Engine
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
+        EBUY_OTHER_VALUE = false
 
         MARKET = [
           %w[60 65 70 75 80p 90p 100 110 120 130 140 150 165 180 200e],

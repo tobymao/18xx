@@ -664,7 +664,7 @@ module Engine
           ])
         end
 
-        def hex_blocked_by_ability?(_entity, ability, hex)
+        def hex_blocked_by_ability?(_entity, ability, hex, _tile = nil)
           phase.tiles.include?(:blue) ? false : super
         end
 

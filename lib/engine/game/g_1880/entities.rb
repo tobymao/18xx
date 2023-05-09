@@ -74,7 +74,6 @@ module Engine
               owner_type: 'player',
               count: 1,
               when: 'owning_player_or_turn',
-              closed_when_used_up: false,
             }],
             color: nil,
           },
