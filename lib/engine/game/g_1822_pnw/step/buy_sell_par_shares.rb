@@ -15,6 +15,10 @@ module Engine
             @converting_major && entity == current_entity ? ['choose'] : super
           end
 
+          def description
+            'Bid or buy/sell shares'
+          end
+
           def ipo_type(corporation)
             case @game.major_formation_status(corporation, player: current_entity)
             when :parable, :convertable then :par

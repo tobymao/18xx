@@ -790,8 +790,24 @@ module Engine
           super
         end
 
+        def game_end_check_values
+          return super unless @game_end_check
+
+          # Game end checks are tested in the order soonest to furthest away.
+          # In 1861/1867 this means that :bank (end of current OR) is tested
+          # before :final_phase (end of next OR set). But we need the final
+          # phase test to take precedence, so if the game end has been
+          # triggered than we just need to look for the :final_phase test
+          # as this will extend the game if the final phase is reached after
+          # the bank breaks.
+          super.select { |reason, _| reason == :final_phase }
+        end
+
         def game_end_check
-          @game_end_check ||= super
+          # The game end might have been triggered by the bank breaking, but if
+          # the final phase is entered before the end of the operating round
+          # then the game is extended.
+          @game_end_check = super || @game_end_check
         end
 
         private
