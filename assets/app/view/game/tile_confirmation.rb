@@ -58,24 +58,35 @@ module View
       end
 
       def confirm_click
-        # If there is a "blocks_hexes_consent" ability on this hex, get consent
-        (@game.companies + @game.minors + @game.corporations).each do |company|
+        entity = @tile_selector.entity
+        tile = @tile_selector.tile
+        hex = @tile_selector.hex
+
+        lay_tile_lambda = -> { lay_tile(entity, tile, hex) }
+
+        # If there are 1+ "blocks_hexes_consent" abilities on this hex, get
+        # consent from one of the players
+        blocking_players = (@game.companies + @game.minors + @game.corporations).each_with_object([]) do |company, players|
           next if company.closed?
           next unless (ability = @game.abilities(company, :blocks_hexes_consent))
-          next unless @game.hex_blocked_by_ability?(@tile_selector.entity, ability, @tile_selector.hex)
+          next unless @game.hex_blocked_by_ability?(entity, ability, hex, tile)
 
-          return -> { check_consent(company.owner, -> { lay_tile }) }
+          players << company.owner
         end
 
-        -> { lay_tile }
+        if blocking_players.empty?
+          lay_tile_lambda
+        else
+          -> { check_consent(entity, blocking_players, lay_tile_lambda) }
+        end
       end
 
-      def lay_tile
+      def lay_tile(entity, tile, hex)
         action = Engine::Action::LayTile.new(
-          @tile_selector.entity,
-          tile: @tile_selector.tile,
-          hex: @tile_selector.hex,
-          rotation: @tile_selector.tile.rotation,
+          entity,
+          tile: tile,
+          hex: hex,
+          rotation: tile.rotation,
         )
         store(:tile_selector, nil, skip: true)
         process_action(action)

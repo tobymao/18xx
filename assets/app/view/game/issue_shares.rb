@@ -46,7 +46,7 @@ module View
 
             # confirm if redeeming from a different player
             if (bundle.owner != @game.bank) && (bundle.owner != @game.current_entity) && bundle.owner.player?
-              check_consent(bundle.owner, process_redeem)
+              check_consent(@entity, bundle.owner, process_redeem)
             else
               process_redeem.call
             end

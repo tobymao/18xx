@@ -28,7 +28,7 @@ module Engine
         lay_tile(action, spender: entity.owner)
         @round.laid_hexes << action.hex
         check_connect(action, ability)
-        ability.use!
+        ability.use!(upgrade: %i[green brown gray].include?(action.tile.color))
 
         @company = nil
       end
