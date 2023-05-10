@@ -43,12 +43,17 @@ module Engine
         min, max = spend_minmax(action.entity, action.train)
         return if (min..max).cover?(action.price)
 
-        raise GameError, "#{action.entity.name} may not spend "\
-                         "#{@game.format_currency(action.price)} on "\
-                         "#{action.train.owner.name}'s #{action.train.name} "\
-                         'train; may only spend between '\
-                         "#{@game.format_currency(min)} and "\
-                         "#{@game.format_currency(max)}."
+        if max.zero? && !@game.class::EBUY_OTHER_VALUE
+          raise GameError, "#{action.entity.name} may not buy a train from "\
+                           'another corporation.'
+        else
+          raise GameError, "#{action.entity.name} may not spend "\
+                           "#{@game.format_currency(action.price)} on "\
+                           "#{action.train.owner.name}'s #{action.train.name} "\
+                           'train; may only spend between '\
+                           "#{@game.format_currency(min)} and "\
+                           "#{@game.format_currency(max)}."
+        end
       end
 
       def process_buy_train(action)

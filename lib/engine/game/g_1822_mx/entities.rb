@@ -160,7 +160,8 @@ module Engine
                 type: 'tile_lay',
                 owner_type: 'corporation',
                 when: 'track',
-                count: 2,
+                lay_count: 2,
+                upgrade_count: 1,
                 reachable: true,
                 closed_when_used_up: true,
                 hexes: [],
@@ -411,6 +412,7 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              { type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M22'], hidden: true },
             ],
             color: '#000000',
             text_color: 'white',
@@ -447,6 +449,7 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              { type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M24'], hidden: true },
             ],
             color: '#850040',
             text_color: 'white',
@@ -498,6 +501,7 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              { type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['O24'], hidden: true },
             ],
             color: '#004c6c',
             text_color: 'white',
@@ -982,6 +986,7 @@ module Engine
             color: '#ffffff',
             text_color: 'black',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['N21'], hidden: true }],
           },
           {
             sym: '15',
@@ -999,6 +1004,7 @@ module Engine
             color: '#ffffff',
             text_color: 'black',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['O22'], hidden: true }],
           },
           {
             sym: '16',
@@ -1182,6 +1188,7 @@ module Engine
             reservation_color: nil,
             destination_coordinates: 'F21',
             destination_icon: '1822_mx/MC_DEST',
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M22'], hidden: true }],
           },
           {
             sym: 'CHP',
@@ -1212,6 +1219,7 @@ module Engine
             reservation_color: nil,
             destination_coordinates: 'G22',
             destination_icon: '1822_mx/FNM_DEST',
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M24'], hidden: true }],
           },
           {
             sym: 'MIR',
@@ -1255,6 +1263,7 @@ module Engine
             reservation_color: nil,
             destination_coordinates: 'N27',
             destination_icon: '1822_mx/IRM_DEST',
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['O24'], hidden: true }],
           },
           {
             sym: 'NDEM',

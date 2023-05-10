@@ -67,19 +67,20 @@ module View
       end
 
       def render_acquire_input
+        selected_company = @selected_company
         acquire_click = lambda do
           acquire = lambda do
             process_action(Engine::Action::AcquireCompany.new(
               @corporation,
-              company: @selected_company,
+              company: selected_company,
             ))
             store(:selected_company, nil, skip: true)
           end
 
-          if @selected_company.owner == @corporation.owner || !@selected_company.owner
+          if selected_company.owner == @corporation.owner || !selected_company.owner
             acquire.call
           else
-            check_consent(@selected_company.owner, acquire)
+            check_consent(@corporation, selected_company.owner, acquire)
           end
         end
 

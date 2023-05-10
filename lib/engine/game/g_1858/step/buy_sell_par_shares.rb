@@ -31,7 +31,8 @@ module Engine
             # Starting a public company by exchanging a private company for the
             # president's certificate is also a buy action, but this is handled
             # through the companies' abilities rather than these actions.
-            actions << 'buy_shares' if can_buy_any?(entity) || can_exchange_any?(entity)
+            actions << 'buy_shares' if can_buy_any?(entity) ||
+                                       can_exchange_any?(entity, false)
             actions << 'par' if can_ipo_any?(entity)
             actions << 'bid' if can_bid_any?(entity)
 
@@ -46,6 +47,28 @@ module Engine
             return [] unless can_convert?(corporation)
 
             %w[convert pass]
+          end
+
+          def auto_actions(entity)
+            programmed_actions = super
+            return programmed_actions if programmed_actions
+
+            # The only situation that needs an auto action is when the only
+            # possible (non-pass) action is buy_shares, and this is for an
+            # exchange only (no shares can be bought), and there is no legal
+            # exchange possible as the railways companies owned by the player
+            # are not connected to any public companies.
+            #
+            # This can be needed because `can_exchange_for_share?` (called
+            # from `can_exchange_any?`) does not check whether the private and
+            # public companies are connected, to avoid calls to the graph when
+            # the game is loading.
+            return unless @round.pending_tokens.empty?
+            return unless actions(entity) == %w[buy_shares pass]
+            return if can_buy_any?(entity)
+            return if can_exchange_any?(entity, true)
+
+            [Engine::Action::Pass.new(entity)]
           end
 
           def pass_description
@@ -90,10 +113,11 @@ module Engine
             share.corporation.floated? || share.president
           end
 
-          def can_exchange_for_share?(entity)
+          def can_exchange_for_share?(entity, check_connected)
             @game.corporations.any? do |corporation|
               corporation.num_treasury_shares.positive? &&
-                @game.corporation_private_connected?(corporation, entity)
+                (!check_connected ||
+                 @game.corporation_private_connected?(corporation, entity))
             end
           end
 
@@ -104,21 +128,23 @@ module Engine
               !@game.corporations.all?(&:ipoed)
           end
 
-          def can_exchange?(entity, player)
+          def can_exchange?(entity, player, check_connected)
             entity.all_abilities.any? do |ability|
               next unless ability.type == :exchange
 
               if ability.corporations == 'ipoed'
-                can_exchange_for_share?(entity)
+                can_exchange_for_share?(entity, check_connected)
               else
                 can_exchange_for_presidency?(entity, player)
               end
             end
           end
 
-          def can_exchange_any?(player)
+          def can_exchange_any?(player, check_connected)
             minors = @game.minors.select { |m| m.owner == player }
-            (player.companies + minors).any? { |entity| can_exchange?(entity, player) }
+            (player.companies + minors).any? do |entity|
+              can_exchange?(entity, player, check_connected)
+            end
           end
 
           def process_convert(action)

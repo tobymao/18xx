@@ -677,7 +677,7 @@ module Engine
           hex.tile.stubs.map(&:edge) == tile.exits
         end
 
-        def hex_blocked_by_ability?(entity, ability, hex)
+        def hex_blocked_by_ability?(entity, ability, hex, _tile = nil)
           return false if entity.player == ability.owner.player && (hex.name == 'E14' || hex == yellow_block_hex)
 
           super

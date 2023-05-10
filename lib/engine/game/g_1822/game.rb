@@ -539,8 +539,7 @@ module Engine
 
         UPGRADE_COST_L_TO_2 = 80
 
-        include StubsAreRestricted
-
+        attr_reader :minor_14_city_exit
         attr_accessor :bidding_token_per_player, :player_debts
 
         def bank_sort(corporations)
@@ -1772,8 +1771,9 @@ module Engine
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
 
-          ability = entity.all_abilities.find { |a| a.type == :destination }
-          entity.remove_ability(ability)
+          entity.all_abilities.each do |ability|
+            entity.remove_ability(ability) if ability.type == :destination
+          end
 
           @graph.clear
 
@@ -1894,6 +1894,44 @@ module Engine
           return %i[stock_market current_or] if @stock_market.max_reached?
         end
 
+        def preprocess_action(action)
+          case action
+          when Action::LayTile
+            if action.tile.name != 'BC'
+              action.hex.tile.blockers.each do |entity|
+                entity.all_abilities.dup.each do |ability|
+                  entity.remove_ability(ability) if ability.type == :blocks_hexes_consent
+                end
+              end
+            end
+          end
+        end
+
+        def hex_blocked_by_ability?(entity, ability, hex, tile)
+          return false if tile.name == 'BC'
+          return false unless ability.player
+          return false if entity.player == ability.player
+          return false unless ability.hexes.include?(hex.id)
+          return false if hex.tile.blockers.map(&:player).include?(entity.player)
+
+          true
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          rights_owners = hex.tile.blockers.map(&:owner).compact.uniq
+          return true if rights_owners.delete(acting_for_entity(entity))
+
+          rights_owners.empty? ? legal_if_stubbed?(hex, tile) : super
+        end
+
+        def legal_if_stubbed?(hex, tile)
+          hex.tile.stubs.empty? || (hex.tile.stubs.map(&:edge) - tile.exits).empty?
+        end
+
+        def london_hex
+          @london_hex ||= hex_by_id(LONDON_HEX)
+        end
+
         private
 
         def find_and_remove_train_by_id(train_id, buyable: true)
@@ -1981,20 +2019,31 @@ module Engine
           @corporations.each do |c|
             next unless c.destination_coordinates
 
-            description = if c.id == self.class::TWO_HOME_CORPORATION
-                            "Gets destination token at #{c.destination_coordinates} when floated"
-                          else
-                            "Connect to #{c.destination_coordinates} for your destination token"
-                          end
+            home_hex = hex_by_id(c.coordinates)
             ability = Ability::Base.new(
-              type: 'destination',
-              description: description
+              type: 'base',
+              description: "Home: #{home_hex.location_name} (#{home_hex.name})",
             )
             c.add_ability(ability)
+
+            dest_hex = hex_by_id(c.destination_coordinates)
+            ability = Ability::Base.new(
+              type: 'base',
+              description: "Destination: #{dest_hex.location_name} (#{dest_hex.name})",
+            )
+            c.add_ability(ability)
+
             c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
                                              simple_logo: "../#{c.destination_icon}.svg",
                                              type: :destination)
-            hex_by_id(c.destination_coordinates).tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
+            dest_hex.tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
+
+            next unless c.id == self.class::TWO_HOME_CORPORATION
+
+            c.add_ability(Ability::Base.new(
+              type: 'destination',
+              description: 'Places destination token in its first OR'
+            ))
           end
         end
 

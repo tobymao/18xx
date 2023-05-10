@@ -32,7 +32,7 @@ module Engine
           end
 
           def exchange_for_share(bundle, corporation, minor, player)
-            unless @game.corporation_private_connected?(corporation, minor)
+            if !@game.loading && !@game.corporation_private_connected?(corporation, minor)
               raise GameError, "#{minor.name} is not connected to #{corporation.full_name}"
             end
 
