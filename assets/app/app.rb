@@ -77,7 +77,7 @@ class App < Snabberb::Component
       when /about/
         h(View::About)
       when /tiles/
-        h(View::TilesPage, route: @app_route)
+        h(View::TilesPage, route: @app_route, connection: @connection)
       when /map/
         h(View::MapPage, route: @app_route)
       when /market/
