@@ -245,13 +245,13 @@ module Engine
         def setup
           # Place L's home station in case there is a "short OR" during draft
           hex = hex_by_id(l.coordinates)
-          tile = hex&.tile
+          tile = hex.tile
           tile.cities.first.place_token(l, l.next_token)
 
           # Reserve investor shares and add money for them to treasury
           [saar.shares[1], saar.shares[2], hlb.shares[1]].each { |s| s.buyable = false }
-          saar.cash += saar.par_price.price * 2
-          hlb.cash += hlb.par_price.price
+          @bank.spend(saar.par_price.price * 2, saar)
+          @bank.spend(hlb.par_price.price * 1, hlb)
 
           @draft_finished = false
         end

@@ -60,7 +60,7 @@ module Engine
               # Give related share to the player and give money for the share to the corporation
               ability.shares.each do |share|
                 @game.share_pool.buy_shares(player, share, exchange: :free)
-                share.corporation.cash += share.corporation.par_price.price * share.percent / 10
+                @game.bank.spend(share.corporation.par_price.price * share.percent / 10, share.corporation)
               end
             end
 
