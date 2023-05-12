@@ -84,7 +84,7 @@ module Engine
             super
           end
 
-          def can_bid?(entity)
+          def can_bid_any?(entity)
             return false if max_bid(entity) < MIN_BID || bought?
 
             @game.corporations.any? { |c| c.type == :minor && @game.can_par?(c, entity) }

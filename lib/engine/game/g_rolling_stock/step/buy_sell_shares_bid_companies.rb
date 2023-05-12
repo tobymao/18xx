@@ -17,13 +17,13 @@ module Engine
             actions = []
             actions << 'buy_shares' if can_buy_any?(entity)
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'bid' if can_bid?(entity)
+            actions << 'bid' if can_bid_any?(entity)
 
             actions << 'pass' unless actions.empty?
             actions
           end
 
-          def can_bid?(entity)
+          def can_bid_any?(entity)
             return unless @round.current_actions.empty?
 
             biddable = @game.biddable_companies

@@ -71,7 +71,7 @@ module Engine
             @log << "#{action.entity.id} selects #{action.corporation.full_name} for auctioning"
           end
 
-          def can_bid?(entity)
+          def can_bid_any?(entity)
             return unless entity.corporation?
             return if @bids[@auctioning].any? { |b| b.entity == entity }
 
