@@ -150,7 +150,35 @@ module Engine
                   'receives a £20 discount off the cost of all hill and mountain terrain (i.e. NOT off the cost of '\
                   'rough terrain). The private company does not close. Closes if free token taken when acquired. '\
                   'Otherwise, flips when acquired and does not close.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                tiles: [],
+                hexes: %w[
+                  B41 C40 D39 E10 F9 G14 G30 G8 H15 H39 H7 H9 I10 I12 I14 I16 I18
+                  I20 I22 I24 I38 I40 I8 J19 J21 J23 J25 J39 J7 O40
+                ],
+                owner_type: 'corporation',
+                count: 1,
+                closed_when_used_up: true,
+                reachable: true,
+                free: true,
+                special: false,
+                when: 'track',
+              },
+              {
+                type: 'tile_discount',
+                owner_type: 'corporation',
+                discount: 20,
+                terrain: 'hill',
+              },
+              {
+                type: 'tile_discount',
+                owner_type: 'corporation',
+                discount: 20,
+                terrain: 'mountain',
+              },
+            ],
             color: nil,
           },
           {
