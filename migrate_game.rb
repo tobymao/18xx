@@ -92,12 +92,25 @@ def repair(game, original_actions, actions, broken_action, data)
   end
   # /end Issue #7863
 
-  # Keep this block if possible; insert/delete passes as necessary
+  # Keep this block if possible; insert/delete passes as necessary for generic
+  # migration fixes
+  #
+  # 1) pass is broken, maybe deleting it works
+  # 2) broken action doesn't work with current step, but does on prev step where
+  #    a pass was used, maybe deleting that pass works
+  # 3) current step rejects the broken action but likes pass, maybe inserting
+  # pass works
   step_actions = step.actions(current_entity)
   if broken_action['type'] == 'pass' && !step_actions.include?('pass')
     actions.delete(broken_action)
     return
-  elsif step_actions.include?('pass') && !step_actions.include?(broken_action['type'])
+  elsif !step_actions.include?(broken_action['type']) &&
+        prev_action['type'] == 'pass' &&
+        Engine::Game.load(data, actions: prev_actions).active_step
+          .actions(current_entity).include?(broken_action['type'])
+    actions.delete(prev_action)
+    return
+  elsif !step_actions.include?(broken_action['type']) && step_actions.include?('pass')
     pass = Engine::Action::Pass.new(current_entity)
     pass.user = pass.entity.player.id
     actions.insert(broken_action_idx, pass.to_h)

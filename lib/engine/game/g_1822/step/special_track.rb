@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
+require_relative '../../../step/special_track'
 require_relative 'tracker'
 
 module Engine
   module Game
     module G1822
       module Step
-        class SpecialTrack < Engine::Step::Base
+        class SpecialTrack < Engine::Step::SpecialTrack
           include Engine::Game::G1822::Tracker
 
-          ACTIONS = %w[lay_tile].freeze
-
           def actions(entity)
+            return ACTIONS_WITH_PASS if @company == entity
+
             action = abilities(entity) && @game.round.active_step.respond_to?(:process_lay_tile)
             return [] unless action
 
@@ -20,11 +20,7 @@ module Engine
           end
 
           def description
-            'Lay Track'
-          end
-
-          def blocks?
-            false
+            @company ? "Lay Track for #{@company.name}" : 'Lay Track'
           end
 
           def process_lay_tile(action)
@@ -64,9 +60,13 @@ module Engine
             ability.use!(upgrade: %i[green brown gray].include?(action.tile.color))
             ability.use! if minor_single_use
 
-            if ability.type == :tile_lay && ability.count <= 0 && ability.closed_when_used_up
-              @log << "#{ability.owner.name} closes"
-              ability.owner.close!
+            if ability.type == :tile_lay
+              if ability.count <= 0 && ability.closed_when_used_up
+                @log << "#{ability.owner.name} closes"
+                ability.owner.close!
+              end
+
+              handle_extra_tile_lay_company(ability, action.entity)
             end
 
             return unless ability.type == :teleport
@@ -207,6 +207,21 @@ module Engine
                 teleported: nil,
               }
             )
+          end
+
+          def hex_neighbors(entity, hex)
+            @game.graph_for_entity(entity).connected_hexes(entity)[hex]
+          end
+
+          # Extra Tile Lay abilities need to be used either entirely before
+          # or entirely after the Major's normal tile lays
+          # https://boardgamegeek.com/thread/2425653/article/34793831#34793831
+          def handle_extra_tile_lay_company(ability, entity)
+            @company =
+              if ability.must_lay_together
+                @round.num_laid_track += 1 if @round.num_laid_track == 1
+                ability.count.positive? ? entity : nil
+              end
           end
         end
       end
