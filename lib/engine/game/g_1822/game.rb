@@ -1087,6 +1087,7 @@ module Engine
         end
 
         def setup
+          @nothing_sold_in_sr = true
           @game_end_reason = nil
 
           # Setup the bidding token per player
@@ -1930,6 +1931,14 @@ module Engine
 
         def london_hex
           @london_hex ||= hex_by_id(LONDON_HEX)
+        end
+
+        def something_sold_in_sr!
+          @nothing_sold_in_sr = false
+        end
+
+        def nothing_sold_in_sr?
+          @nothing_sold_in_sr
         end
 
         private

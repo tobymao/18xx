@@ -43,6 +43,8 @@ module Engine
           end
 
           def finish_round
+            return @game.end_game! if @game.nothing_sold_in_sr?
+
             float_minors = []
             minor_count = 0
             remove_l_count = 0
