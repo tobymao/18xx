@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require 'view/game/part/base'
+require 'view/game/part/small_item'
 
 module View
   module Game
     module Part
       class Upgrade < Base
+        include SmallItem
+
         needs :cost
         needs :terrains, default: []
         needs :size, default: nil
@@ -39,6 +42,11 @@ module View
           x: -50,
           y: -45,
         }.freeze
+        PP_EDGE2 = {
+          region_weights: [0, 5, 6],
+          x: -35,
+          y: -55,
+        }.freeze
 
         P_RIGHT_CORNER = {
           region_weights: [11, 18],
@@ -57,15 +65,31 @@ module View
         TRIANGLE_PATH = '0,20 10,0 20,20'
 
         def preferred_render_locations
-          [
-            P_CENTER,
-            P_TOP_RIGHT_CORNER,
-            P_EDGE2,
-            P_BOTTOM_LEFT_CORNER,
-            P_RIGHT_CORNER,
-            P_LEFT_CORNER,
-            P_BOTTOM_RIGHT_CORNER,
-          ]
+          if layout == :flat
+            [
+              P_CENTER,
+              P_TOP_RIGHT_CORNER,
+              P_EDGE2,
+              P_BOTTOM_LEFT_CORNER,
+              P_RIGHT_CORNER,
+              P_LEFT_CORNER,
+              P_BOTTOM_RIGHT_CORNER,
+            ]
+          else
+            [
+              P_CENTER,
+              PP_TOP_RIGHT_CORNER,
+              PP_EDGE2,
+              PP_BOTTOM_LEFT_CORNER,
+              PP_RIGHT_CORNER,
+              PP_LEFT_CORNER,
+              PP_BOTTOM_RIGHT_CORNER,
+            ]
+          end
+        end
+
+        def parts_for_loc
+          @terrains
         end
 
         def render_part
@@ -91,7 +115,9 @@ module View
 
           children = [cost] + terrain
 
-          h(:g, { attrs: { transform: "#{translate} #{rotation_for_layout}" } }, children)
+          h(:g, { attrs: { transform: rotation_for_layout } }, [
+              h(:g, { attrs: { transform: translate } }, children),
+            ])
         end
 
         def mountain(delta_x: 0, delta_y: 0)
