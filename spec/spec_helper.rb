@@ -13,4 +13,4 @@ RSpec.configure do |config|
   end
 end
 
-FIXTURES_DIR = File.join(File.dirname(__FILE__), 'fixtures')
+FIXTURES_DIR = File.join(File.dirname(__FILE__), '..', 'public', 'fixtures')

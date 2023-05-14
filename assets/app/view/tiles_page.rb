@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
+require 'game_manager'
+require 'lib/connection'
+require 'engine/test_tiles'
 require 'lib/params'
 require 'view/tiles'
-require_relative '../game_class_loader'
 
 module View
   class TilesPage < Tiles
-    include GameClassLoader
+    include GameManager
 
     needs :route
+    needs :fixture_data, default: {}, store: true
 
     ROUTE_FORMAT = %r{/tiles/([^/?]*)(?:/([^?]+))?}.freeze
 
@@ -50,6 +53,10 @@ module View
               ]),
 
           ])
+
+      elsif dest == 'test'
+
+        render_test_tiles
 
       elsif dest == 'custom'
         location_name = Lib::Params['n']
@@ -112,7 +119,7 @@ module View
       end
     end
 
-    def render_individual_tile_from_game(game, hex_or_tile_id)
+    def render_individual_tile_from_game(game, hex_or_tile_id, scale: 3.0, **kwargs)
       id, rotation = hex_or_tile_id.split('-')
       rotations = rotation ? [rotation.to_i] : @rotations
 
@@ -132,9 +139,10 @@ module View
         layout: game.class::LAYOUT,
         tile: tile,
         location_name: tile.location_name || @location_name,
-        scale: 3.0,
+        scale: scale,
         rotations: rotations,
         hex_coordinates: hex_coordinates,
+        **kwargs,
       )
     end
 
@@ -245,6 +253,109 @@ module View
       h(:div, [
         h(:'button.small', { on: { click: toggle } }, "Tile Names #{setting_for(@hide_tile_names) ? '❌' : '✅'}"),
       ])
+    end
+
+    def render_test_tiles
+      # see /lib/engine/test_tiles.rb
+      test_tiles = Engine::TestTiles::TEST_TILES
+
+      scale = 2.0
+
+      return h(:div, [h(:p, 'Loading...')]) unless @connection
+
+      rendered_test_tiles = []
+
+      test_tiles.each do |title, fixtures|
+        if title
+          game_class = load_game_class(title)
+        else
+          fixtures[nil][nil].each do |hex_or_tile, opts|
+            %i[flat pointy].each do |layout_|
+              rendered_test_tiles.concat(
+                render_tile_blocks(hex_or_tile, layout: layout_, scale: scale, rotations: @rotations, **opts)
+              )
+            end
+          end
+          next
+        end
+
+        fixtures.each do |fixture, actions|
+          if fixture
+            if @fixture_data[fixture]
+              actions.each do |action, hex_or_tiles|
+                kwargs = action ? { at_action: action } : {}
+
+                game = Engine::Game.load(@fixture_data[fixture], **kwargs)
+
+                hex_or_tiles.each do |hex_or_tile, opts|
+                  hex_coordinates = hex_or_tile
+                  tile = game.hex_by_id(hex_coordinates).tile
+
+                  rendered_test_tiles.concat(
+                    render_tile_blocks(
+                      hex_coordinates,
+                      layout: game_class::LAYOUT,
+                      tile: tile,
+                      location_name: tile.location_name,
+                      location_on_plain: true,
+                      scale: scale,
+                      rotations: [tile.rotation],
+                      hex_coordinates: hex_coordinates,
+                      name_prefix: title,
+                      top_text: "#{title}: #{hex_or_tile}",
+                      fixture_id: fixture,
+                      fixture_title: title,
+                      action: action,
+                      **opts,
+                    )
+                  )
+                end
+              end
+
+            elsif @connection
+              # load the fixture game data
+              @connection.get("/fixtures/#{title}/#{fixture}.json", '') do |data|
+                @fixture_data[fixture] = data
+                store(:fixture_data, @fixture_data, skip: false)
+              end
+
+              # render placeholder tiles which will be replaced once the
+              # appropriate fixture is loaded and processed
+              actions.each do |action, hex_or_tiles|
+                hex_or_tiles.each do |hex_or_tile, opts|
+                  rendered_test_tiles.concat(
+                    render_tile_blocks(
+                      'blank',
+                      layout: game_class::LAYOUT,
+                      location_name: 'Loading Fixture...',
+                      location_on_plain: true,
+                      scale: scale,
+                      name_prefix: title,
+                      top_text: "#{title}: #{hex_or_tile}",
+                      fixture_id: fixture,
+                      fixture_title: title,
+                      action: action,
+                      **opts
+                    )
+                  )
+                end
+              end
+            end
+
+          else
+            players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
+            game = game_class.new(players)
+            actions[nil].each do |hex_or_tile, opts|
+              rendered_test_tiles.concat(
+                Array(render_individual_tile_from_game(game, hex_or_tile, scale: scale, top_text: "#{title}: #{hex_or_tile}",
+                                                                          **opts))
+              )
+            end
+          end
+        end
+      end
+
+      h('div#tiles', rendered_test_tiles)
     end
   end
 end
