@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 # rubocop:disable all
 
-require 'pry-byebug'
-
 require_relative 'models'
 
 Dir['./models/**/*.rb'].sort.each { |file| require file }
@@ -57,7 +55,8 @@ def repair(game, original_actions, actions, broken_action, data)
   # actions, delete blocks here for completed migrations and add a new commented
   # block; see the history of this file for examples of previous migrations.
 
-  # uncomment the following line for debugging
+  # uncomment the following lines for debugging
+  # require 'pry-byebug'
   # binding.pry
 
   # Issue #7863 -- implicit use of P5-LC&DR to token in English Channel needs to
