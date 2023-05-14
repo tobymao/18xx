@@ -90,14 +90,17 @@ module Engine
                   'power to place a token in the English Channel). If no token spaces are available, but a space '\
                   'could be created by upgrading the English Channel track then this power may be used to place a '\
                   'token and upgrade the track simultaneously. This counts as the acquiring company’s tile lay '\
-                  'action and incurs the usual costs for doing so. Alternatively, it can move an exchange station '\
-                  'token to the available station token section on its company charter.',
+                  'action and incurs the usual costs for doing so. It does not count as the company’s token placing '\
+                  'step. Alternatively, it can move an exchange station token to the available station token section '\
+                  'on its company charter.',
             abilities: [
               {
                 type: 'teleport',
                 owner_type: 'corporation',
                 hexes: ['P43'],
                 tiles: %w[X9 X15],
+                from_owner: false,  # uses an exchange token
+                extra_action: true,
               },
               {
                 type: 'token',
@@ -107,6 +110,8 @@ module Engine
                 teleport_price: 0,
                 count: 1,
                 extra_action: true,
+                special_only: true,
+                when: 'token',
               },
             ],
             color: nil,
