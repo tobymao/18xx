@@ -270,7 +270,7 @@ module View
           game_class = load_game_class(title)
         else
           fixtures[nil][nil].each do |hex_or_tile, opts|
-            %i[flat pointy].map do |layout_|
+            %i[flat pointy].each do |layout_|
               rendered_test_tiles.concat(
                 render_tile_blocks(hex_or_tile, layout: layout_, scale: scale, rotations: @rotations, **opts)
               )
