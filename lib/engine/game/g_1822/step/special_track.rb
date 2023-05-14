@@ -103,11 +103,11 @@ module Engine
               return nil
             end
 
-            # If player have choosen the tile lay option on the Edinburgh and Glasgow Railway company,
-            # only rough terrain, hill or mountains are valid hexes
+            # P8 Edinburgh and Glasgow Railway company can
+            # only lay track on hills and mountains
             if @game.must_be_on_terrain?(entity)
               tile_terrain = hex.tile.upgrades.any? do |upgrade|
-                %i[mountain hill swamp].any? { |t| upgrade.terrains.include?(t) }
+                %i[mountain hill].any? { |t| upgrade.terrains.include?(t) }
               end
               return nil unless tile_terrain
             end

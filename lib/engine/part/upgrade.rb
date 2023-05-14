@@ -7,10 +7,11 @@ module Engine
     class Upgrade < Base
       attr_reader :cost, :terrains, :size
 
-      def initialize(cost, terrains = nil, size = nil)
+      def initialize(cost, terrains = nil, size = nil, loc: nil)
         @cost = cost.to_i
         @terrains = terrains&.map(&:to_sym) || []
         @size = size&.to_i
+        @loc = loc
       end
 
       def upgrade?

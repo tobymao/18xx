@@ -15,6 +15,14 @@ module View
         padding: '0 0.7rem 0 0.2rem',
       },
     }.freeze
+    BOTTOM_LINE_PROPS = {
+      style: {
+        height: '0.9rem',
+        padding: '0 0.7rem 0 0.2rem',
+        bottom: '3px',
+        position: 'absolute',
+      },
+    }.freeze
     TEXT_PROPS = {
       style: {
         float: 'left',
@@ -39,29 +47,51 @@ module View
       rotations: nil,
       hex_coordinates: nil,
       clickable: false,
-      extra_children: []
+      location_on_plain: false,
+      extra_children: [],
+      top_text: nil,
+      fixture_id: nil,
+      fixture_title: nil,
+      action: nil
     )
       block_props = {
         style: {
           width: "#{WIDTH * scale}px",
           height: "#{HEIGHT * scale}px",
+          position: 'relative',
         },
       }
 
       tile ||= Engine::Tile.for(name)
 
-      loc_name = location_name || tile.location_name if (tile.cities + tile.towns + tile.offboards).any?
+      loc_name = location_name || tile.location_name if !(tile.cities + tile.towns + tile.offboards).empty? || location_on_plain
 
       rotations = [0] if tile.preprinted || !rotations
 
       rotations.map do |rotation|
         tile.rotate!(rotation)
 
-        unless setting_for(@hide_tile_names)
+        if setting_for(@hide_tile_names)
+          text = nil
+        elsif top_text
+          text = top_text
+        else
           text = tile.preprinted ? '' : '#'
           text += name
-          text += "-#{rotation}" unless rotations == [0]
         end
+
+        text += "-#{rotation}" if !setting_for(@hide_tile_names) && rotations != [0]
+
+        bottom_text = ''
+        if fixture_id
+          bottom_text = fixture_id
+          href = "/fixture/#{fixture_title}/#{fixture_id}"
+          if action
+            bottom_text += " action=#{action}"
+            href += "?action=#{action}"
+          end
+        end
+
         count = tile.unlimited ? '∞' : num.to_s
 
         hex = Engine::Hex.new(hex_coordinates || 'A1',
@@ -87,6 +117,11 @@ module View
                   clickable: clickable,
                 ),
               ]),
+            ]),
+            h(:div, BOTTOM_LINE_PROPS, [
+                h(:div, TEXT_PROPS, [
+                    h(:a, { attrs: { href: href } }, bottom_text),
+                  ]),
             ]),
           ])
       end

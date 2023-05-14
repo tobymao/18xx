@@ -60,6 +60,38 @@ def repair(game, original_actions, actions, broken_action, data)
   # uncomment the following line for debugging
   # binding.pry
 
+  # Issue #7863 -- implicit use of P5-LC&DR to token in English Channel needs to
+  # become explicit
+  if broken_action['type'] == 'place_token' &&
+     entity == game.company_by_id('P5').owner &&
+     broken_action['tokener'] == broken_action['entity'] &&
+     broken_action['entity_type'] == 'corporation' &&
+     %w[X4 X9 X15].include?(broken_action['city'].split('-').first)
+    # update current broken action
+    broken_action['entity'] = 'P5'
+    broken_action['entity_type'] = 'company'
+    return [broken_action]
+  end
+  # in most cases, the broken action comes much later than when the English
+  # Channel token was laid, so search back through the actions to find when it
+  # was laid and change that action
+  game.actions.each do |a|
+    next unless a.type  == 'place_token'
+    next unless a.to_h['entity_type']  == 'corporation'
+    next unless a.entity == a.instance_variable_get(:@tokener)
+    next unless a.token.city&.hex&.id == 'P43'
+    index = a.id - 1
+    actions_ = actions.slice(0, index)
+    g = Engine::Game.load(data, actions: actions_)
+    if g.current_entity == g.company_by_id('P5').owner
+      # update English Channel token action in the past
+      actions[index]['entity'] = 'P5'
+      actions[index]['entity_type'] = 'company'
+      return [actions[index]]
+    end
+  end
+  # /end Issue #7863
+
   # Keep this block if possible; insert/delete passes as necessary for generic
   # migration fixes
   #

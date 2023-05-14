@@ -73,11 +73,11 @@ module Engine
             ['J16'] => 'upgrade=cost:40,terrain:mountain;border=edge:2,type:mountain;border=edge:3,type:mountain;border=edge:4,type:water,cost:30',
             ['J18'] => 'upgrade=cost:40,terrain:mountain;border=edge:2,type:mountain;border=edge:3,type:mountain;border=edge:1,type:water,cost:30',
             ['J10'] => 'upgrade=cost:20,terrain:cow_skull,size:40;border=edge:2,type:mountain;border=edge:3,type:mountain',
-            ['J12'] => 'town=revenue:0,boom:1;upgrade=cost:20,terrain:cow_skull,size:40;'\
+            ['J12'] => 'town=revenue:0,boom:1;upgrade=cost:20,terrain:cow_skull,size:40,loc:2.5;'\
                        'border=edge:2,type:mountain;border=edge:3,type:mountain;'\
-                       'icon=image:1868_wy/uranium_early,sticky:1;icon=image:1868_wy/uranium_early,sticky:1',
-            ['J20'] => 'town=revenue:0,boom:1;upgrade=cost:30,terrain:mountain;'\
-                       'border=edge:2,type:mountain;border=edge:3,type:mountain;icon=image:1868_wy/uranium_early,sticky:1',
+                       'icon=image:1868_wy/uranium_early,sticky:1,loc:4.5;icon=image:1868_wy/uranium_early,sticky:1,loc:4.5',
+            ['J20'] => 'town=revenue:0,boom:1;upgrade=cost:30,terrain:mountain,loc:2.5;'\
+                       'border=edge:2,type:mountain;border=edge:3,type:mountain;icon=image:1868_wy/uranium_early,sticky:1,loc:4.5;',
             ['J22'] =>
     'upgrade=cost:60,terrain:mountain;border=edge:2,type:mountain;border=edge:3,type:mountain;border=edge:4,type:mountain',
             ['J24'] => 'border=edge:0,type:mountain;border=edge:1,type:mountain',
