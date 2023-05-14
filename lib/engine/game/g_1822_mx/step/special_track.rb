@@ -92,6 +92,8 @@ module Engine
                 @log << "#{ability.owner.name} closes"
                 ability.owner.close!
               end
+
+              handle_extra_tile_lay_company(ability, action.entity)
             else
               super
               action.hex.tile.icons.reject! { |i| i.name == 'block' }
