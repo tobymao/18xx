@@ -7,7 +7,7 @@ module Engine
     class Base
       include Helper::Type
 
-      attr_accessor :index, :tile
+      attr_accessor :index, :tile, :loc
 
       def id
         @id ||= "#{tile.id}-#{index}"

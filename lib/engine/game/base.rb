@@ -1208,6 +1208,12 @@ module Engine
         end
       end
 
+      # A hook to allow a game to request a consent check for a share exchange
+      # or purchase. If consent is needed then this method should return the
+      # player that needs to consent to this action. Returning nil or false
+      # means that consent is not required.
+      def consenter_for_buy_shares(_entity, _bundle); end
+
       def can_run_route?(entity)
         graph_for_entity(entity).route_info(entity)&.dig(:route_available)
       end
