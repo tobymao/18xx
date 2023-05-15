@@ -23,7 +23,9 @@ module Engine
                   'May not be sold to a corporation. '\
                   'Closes when Saar buys its first train.',
             sym: 'SPR',
-            abilities: [{ type: 'shares', shares: 'Saar_0' }],
+            abilities: [{ type: 'no_buy' },
+                        { type: 'shares', shares: 'Saar_0' },
+                        { type: 'close', when: 'bought_train', corporation: 'Saar' }],
           },
           {
             name: 'Locomotive Firm Krauss & Co.',
@@ -37,6 +39,7 @@ module Engine
                   'May be sold to or purchased from the market. '\
                   'Never closes.',
             sym: 'LFKC',
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Rammelsbach',
@@ -153,7 +156,7 @@ module Engine
             revenue: 10,
             min_price: 25,
             max_price: 75,
-            desc: 'Owning corporation may close this company to place a token for half the price.'\
+            desc: 'Owning corporation may close this company to place a token for half the price. '\
                   'Otherwise closes in Phase 6E. '\
                   'May be sold to a corporation for 25 to 75M. '\
                   'Comes with a share of Pfälzische Ludwigsbahn (L).',
@@ -179,7 +182,7 @@ module Engine
             value: 90,
             revenue: 20,
             desc: 'May be exchanged for an Investor share of the Hessische Ludwigsbahn (HLB), '\
-                  'instead of buying a share, during a stock round in Phase 3+3 or later. ' \
+                  'instead of buying a share, during a stock round in Phase 3+3 or later. '\
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
                   'May not be sold to a corporation. ',
             sym: 'MNR',
@@ -197,7 +200,7 @@ module Engine
             value: 75,
             revenue: 15,
             desc: 'May be exchanged for an Investor share of the Saarbrücker Eisenbahn (Saar), '\
-                  'instead of buying a share, during a stock round in Phase 3+3 or later. ' \
+                  'instead of buying a share, during a stock round in Phase 3+3 or later. '\
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
                   'May not be sold to a corporation. ',
             sym: 'SCR',
@@ -215,7 +218,7 @@ module Engine
             value: 85,
             revenue: 20,
             desc: 'May be exchanged for an Investor share of the Saarbrücker Eisenbahn (Saar), '\
-                  'instead of buying a share, during a stock round in Phase 3+3 or later. ' \
+                  'instead of buying a share, during a stock round in Phase 3+3 or later. '\
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
                   'May not be sold to a corporation. ',
             sym: 'VIW',
