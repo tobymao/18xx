@@ -218,7 +218,7 @@ module Engine
 
         def add_region(hex, edge)
           remove_region(hex, edge)
-          hex.tile.borders << Part::Border.new(edge, 'region', nil, 'black', 1)
+          hex.tile.borders << Part::Border.new(edge, 'province', nil, 'black', 1)
         end
 
         def remove_region(hex, edge)
