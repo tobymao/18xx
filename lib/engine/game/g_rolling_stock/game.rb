@@ -35,7 +35,7 @@ module Engine
                         cream: '#fffdd0',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 10_000
         STARTING_CASH = { 2 => 30, 3 => 30, 4 => 30, 5 => 30, 6 => 25 }.freeze
 
@@ -101,6 +101,8 @@ module Engine
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           custom: 'Max stock price in phase 3 or 10 or end card flipped in phase 10',
         )
+
+        ALLOW_MULTIPLE_PROGRAMS = true
 
         STAR_COLORS = {
           #     main color text     card color standard color highlight text
@@ -193,7 +195,7 @@ module Engine
         # enable conditiional auto-pass for everyone at the start
         def add_default_autopass
           @players.each do |player|
-            @programmed_actions[player] = Engine::Action::ProgramClosePass.new(
+            @programmed_actions[player] << Engine::Action::ProgramClosePass.new(
               player,
               unconditional: false,
             )
@@ -356,9 +358,9 @@ module Engine
           end
 
           @corporations.select(&:receivership?).each do |corp|
-            corp.companies.sort_by(&:value).reverse_each do |company|
+            corp.companies.sort_by(&:value).each do |company|
               if company_income(company).negative? && receivership_close?(company) && corp.companies.size > 1
-                @log << "#{company.sym} (#{company.owner.name} - Receivership) has negative income"
+                @log << "#{company.sym} (#{company.owner.name} - Receivership) exceeds maximum cost of ownership"
                 close_company(company)
               end
             end
@@ -521,7 +523,7 @@ module Engine
           income += self.class::FOREIGN_EXTRA_INCOME if entity == @foreign_investor
           return income if entity.companies.empty?
 
-          income = entity.companies.sum { |c| company_income(c) }
+          income += entity.companies.sum { |c| company_income(c) }
           return income unless entity.corporation?
 
           income += synergy_income(entity)
@@ -680,13 +682,15 @@ module Engine
         end
 
         def disable_auto_close_pass
-          @programmed_actions.reject! do |entity, action|
-            next unless action.is_a?(Engine::Action::ProgramClosePass) &&
-                !action.unconditional &&
-                any_negative_companies?(entity)
+          @programmed_actions.each do |entity, action_list|
+            action_list.reject! do |action|
+              next false if !action.is_a?(Engine::Action::ProgramClosePass) ||
+                action.unconditional ||
+                !any_negative_companies?(entity)
 
-            player_log(entity, "Programmed action '#{action}' removed due to negative company income")
-            true
+              player_log(entity, "Programmed action '#{action}' removed due to negative company income")
+              true
+            end
           end
         end
 
@@ -701,18 +705,14 @@ module Engine
         end
 
         def cost_level_str
-          case @cost_level
-          when 1, 2, 3
-            'None'
-          when 4
-            'Red = $2'
-          when 5
-            'Red, Orange = $4'
-          when 6
-            'Red, Orange, Yellow = $7'
-          else
-            'Red, Orange, Yellow, Green = $10'
-          end
+          level = @cost_table[@cost_level]
+          colors = %w[Red Orange Yellow Green Blue Purple]
+          non_zero_colors = level.each_with_index.map do |l, i|
+            l.positive? ? colors[i] : nil
+          end.compact
+          return 'None' unless level[0].positive?
+
+          "#{non_zero_colors.join(', ')} = $#{level[0]}"
         end
 
         def issuable_corporations
@@ -753,21 +753,21 @@ module Engine
           r, c = current.coordinates
 
           # assumes that current is not at either limit of market
-          right = @stock_market.share_price(r, c + 1)
-          left = @stock_market.share_price(r, c - 1)
+          right = @stock_market.share_price([r, c + 1])
+          left = @stock_market.share_price([r, c - 1])
 
           if book >= market_cap(corporation, current) && book < market_cap(corporation, right)
             diff = 1
             target = right
           elsif book >= market_cap(corporation, right)
             diff = 2
-            target = right.end_game_trigger? ? right : @stock_market.share_price(r, c + 2)
+            target = right.end_game_trigger? ? right : @stock_market.share_price([r, c + 2])
           elsif book < market_cap(corporation, current) && book >= market_cap(corporation, left)
             diff = -1
             target = left
           else
             diff = -2
-            target = left.price.zero? ? left : @stock_market.share_price(r, c - 2)
+            target = left.price.zero? ? left : @stock_market.share_price([r, c - 2])
           end
 
           actual = find_new_price(current, target, diff)
@@ -782,8 +782,7 @@ module Engine
 
         def move_to_right(corporation)
           old_price = corporation.share_price.price
-          r, c = next_price_to_right(corporation.share_price).coordinates
-          @stock_market.move(corporation, r, c)
+          @stock_market.move(corporation, next_price_to_right(corporation.share_price).coordinates)
           new_price = corporation.share_price.price
           @log << "#{corporation.name} share price increases to #{format_currency(new_price)}" unless old_price == new_price
         end
@@ -792,14 +791,13 @@ module Engine
           new_price = price
           while !new_price.end_game_trigger? && (!new_price.corporations.empty? || new_price == price)
             r, c = new_price.coordinates
-            new_price = @stock_market.share_price(r, c + 1)
+            new_price = @stock_market.share_price([r, c + 1])
           end
           new_price
         end
 
         def move_to_left(corporation)
-          r, c = next_price_to_left(corporation.share_price).coordinates
-          @stock_market.move(corporation, r, c)
+          @stock_market.move(corporation, next_price_to_left(corporation.share_price).coordinates)
           new_price = corporation.share_price.price
           @log << "#{corporation.name} share price decreases to #{format_currency(new_price)}"
           close_corporation(corporation) if new_price.zero?
@@ -809,7 +807,7 @@ module Engine
           new_price = price
           while new_price.price != 0 && (!new_price.corporations.empty? || new_price == price)
             r, c = new_price.coordinates
-            new_price = @stock_market.share_price(r, c - 1)
+            new_price = @stock_market.share_price([r, c - 1])
           end
           new_price
         end
@@ -818,36 +816,35 @@ module Engine
           r, c = price.coordinates
           return nil if (c - 1).negative?
 
-          @stock_market.share_price(r, c - 1)
+          @stock_market.share_price([r, c - 1])
         end
 
         def two_prices_to_left(price)
           r, c = price.coordinates
           return nil if (c - 2).negative?
 
-          @stock_market.share_price(r, c - 2)
+          @stock_market.share_price([r, c - 2])
         end
 
         def one_price_to_right(price)
           r, c = price.coordinates
           return nil if c + 1 >= @stock_market.market[r].size
 
-          @stock_market.share_price(r, c + 1)
+          @stock_market.share_price([r, c + 1])
         end
 
         def two_prices_to_right(price)
           r, c = price.coordinates
           return nil if c + 2 >= @stock_market.market[r].size
 
-          @stock_market.share_price(r, c + 2)
+          @stock_market.share_price([r, c + 2])
         end
 
         def move_to_price(corporation, new_price)
           current_price = corporation.share_price
           return if current_price.price == new_price.price
 
-          r, c = new_price.coordinates
-          @stock_market.move(corporation, r, c)
+          @stock_market.move(corporation, new_price.coordinates)
           dir = new_price.price > current_price.price ? 'increases' : 'decreases'
           @log << "#{corporation.name} share price #{dir} to #{format_currency(new_price.price)}"
           close_corporation(corporation) if new_price.price.zero?
@@ -997,7 +994,7 @@ module Engine
         end
 
         def available_programmed_actions
-          [Action::ProgramClosePass]
+          [Action::ProgramSharePass, Action::ProgramClosePass]
         end
 
         def ipo_name(_corp)
@@ -1024,11 +1021,19 @@ module Engine
           result_players
             .sort_by { |p| [player_value(p), -@players.index(p)] }
             .reverse
-            .to_h { |p| [p.name, player_value(p)] }
+            .to_h { |p| [p.id, player_value(p)] }
         end
 
         def companies_sort(companies)
           companies.sort_by(&:value).reverse
+        end
+
+        def stock_round_name
+          'Investment Phase'
+        end
+
+        def force_unconditional_stock_pass?
+          true
         end
 
         def movement_chart(corporation)
@@ -1046,6 +1051,24 @@ module Engine
           chart <<  ["$0 - $#{(num * one_left) - 1}", "$#{two_left}"] if two_left
           chart << ['', ''] while chart.size < 5
           chart
+        end
+
+        def liquidity(player, emergency: false)
+          total = player.cash
+          player.shares_by_corporation.reject { |_, s| s.empty? }.each do |corporation, shares|
+            total += dump_cash(corporation, shares.size)
+          end
+          total
+        end
+
+        def dump_cash(corporation, num)
+          value = 0
+          price = corporation.share_price
+          num.times do
+            price = next_price_to_left(price)
+            value += price.price
+          end
+          value
         end
       end
     end

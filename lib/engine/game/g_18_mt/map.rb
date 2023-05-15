@@ -90,7 +90,7 @@ module Engine
             %w[B6 B12 C5 D8 D10 D12] =>
               'upgrade=cost:40,terrain:mountain;',
             ['B4'] =>
-              'upgrade=cost:40,terrain:mountain;border=edge:1,type:water;'\
+              'upgrade=cost:40,terrain:mountain;border=edge:1,type:impassable;'\
               'border=edge:3,type:mountain,cost:40',
             ['F6'] =>
               'upgrade=cost:40,terrain:mountain;border=edge:1,type:mountain,cost:40',
@@ -101,7 +101,7 @@ module Engine
               'upgrade=cost:40,terrain:mountain;border=edge:2,type:mountain,cost:40;'\
               'border=edge:4,type:mountain,cost:40;border=edge:5,type:mountain,cost:40;',
             ['B2'] =>
-              'upgrade=cost:40,terrain:mountain;border=edge:4,type:water',
+              'upgrade=cost:40,terrain:mountain;border=edge:4,type:impassable',
             ['F8'] =>
               'upgrade=cost:40,terrain:mountain;border=edge:4,type:mountain,cost:40',
             ['E3'] =>

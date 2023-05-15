@@ -29,7 +29,7 @@ module Engine
 
           def share_price_change(entity, revenue)
             curr_price = entity.share_price.price
-            if revenue > curr_price / 2 && revenue < curr_price
+            if revenue >= curr_price / 2 && revenue < curr_price
               {}
             elsif revenue >= curr_price && revenue < 2 * curr_price
               { share_direction: :right, share_times: 1 }

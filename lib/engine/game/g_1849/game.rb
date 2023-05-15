@@ -24,7 +24,7 @@ module Engine
                         brown: '#7b352a',
                         goldenrod: '#f9b231')
 
-        CURRENCY_FORMAT_STR = 'L.%d'
+        CURRENCY_FORMAT_STR = 'L.%s'
 
         BANK_CASH = 7760
 
@@ -270,10 +270,13 @@ module Engine
 
         def price_movement_chart
           [
-            ['Dividend', 'Share Price Change'],
-            ['0 or withheld', '1 ←'],
-            ['< share price', 'none'],
-            ['≥ share price', '1 →'],
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price', '1 →'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+            ['≥ 1 shares on market at end of SR', '1 ↓'],
+            ['Each share sold', '1 ↓'],
           ]
         end
 
@@ -379,7 +382,7 @@ module Engine
         end
 
         def update_garibaldi
-          return unless afg && !afg.slot_open && !home_token_locations(afg).empty?
+          return if !afg || afg.slot_open || home_token_locations(afg).empty?
 
           afg.slot_open = true
           afg.closed_recently = true

@@ -138,6 +138,13 @@ module Engine
               [@game.peir]
           end
 
+          def get_par_prices_with_help(entity, _corp, extra_cash: 0)
+            @game
+              .stock_market
+              .par_prices
+              .select { |p| p.price * 2 <= entity.cash + extra_cash }
+          end
+
           # On Prince Edward Island we par from the market
           def process_par(action)
             share_price = action.share_price
@@ -147,9 +154,11 @@ module Engine
 
             @game.stock_market.set_par(corporation, share_price)
             share = @game.share_by_id("#{corporation.name}_0")
-            buy_shares(entity, share.to_bundle)
+            buy_shares(action.purchase_for || entity, share.to_bundle, borrow_from: action.borrow_from)
             @game.after_par(corporation)
             track_action(action, action.corporation)
+
+            @round.bank_bought = true if action.purchase_for == @game.union_bank
           end
 
           # Handle splits

@@ -211,8 +211,8 @@ module Engine
             end
 
             # Now we have someone that can afford
-            assign_item(highest, company, company.value)
             @log << "#{highest.name} is forced to buy #{company.name} for #{@game.format_currency(company.value)} - highest cash"
+            assign_item(highest, company, company.value)
           end
 
           def force_item(company)

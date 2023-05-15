@@ -30,20 +30,24 @@ module InterestOnLoans
 
     if owed <= entity.cash
       if owed.positive?
-        owed_fmt = format_currency(owed)
-        loans_due = loans_due_interest(entity)
-        loans =
-          if loans_due != 1
-            " #{loans_due} loans"
-          else
-            ' 1 loan'
-          end
-        @log << "#{entity.name} pays #{owed_fmt} interest for #{loans}"
+        log_interest_payment(entity, owed)
         entity.spend(owed, bank)
       end
       return
     end
     owed
+  end
+
+  def log_interest_payment(entity, amount)
+    amount_fmt = format_currency(amount)
+    loans_due = loans_due_interest(entity)
+    loans =
+      if loans_due != 1
+        " #{loans_due} loans"
+      else
+        ' 1 loan'
+      end
+    @log << "#{entity.name} pays #{amount_fmt} interest for #{loans}"
   end
 
   def can_pay_interest?(entity, extra_cash = 0)

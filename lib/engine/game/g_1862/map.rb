@@ -418,7 +418,7 @@ module Engine
           'C10' => 'Newmarket',
           'D9' => 'Bury St. Edmunds',
           'E10' => 'Stowmarket',
-          'F9' => 'Framingham',
+          'F9' => 'Framlingham',
           'G10' => 'Woodbridge',
           'B11' => 'Royston',
           'C12' => 'Great Dunmow',

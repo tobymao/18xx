@@ -87,6 +87,7 @@ module Engine
           # toss any offers that can no longer complete. This can happen:
           # - if multiple offers are made for the same company
           # - if multiple offers are made by the same corporation without enough cash to cover all
+          # - if multiple offers are made that would leave a corp with no companies
           #
           # in certain right-of-refusal cases, the responder list may have to be filtered
           #
@@ -96,7 +97,9 @@ module Engine
               corporation = prop[:corporation]
               price = company.owner == @game.foreign_investor ? foreign_price(corporation, company) : prop[:price]
               responder_list = prop[:responder_list]
-              if @round.transacted_companies[company] || (corporation.cash - @round.transacted_cash[corporation]) < price
+              if @round.transacted_companies[company] ||
+                  (corporation.cash - @round.transacted_cash[corporation]) < price ||
+                  (company.owner.corporation? && company.owner.companies.one?)
                 @round.offers.delete(prop)
               elsif responder_list
                 # while we're here, do some sanity checking

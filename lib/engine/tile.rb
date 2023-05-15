@@ -17,7 +17,9 @@ module Engine
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
                   :name, :opposite, :reservations, :upgrades, :color, :future_label
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
-                :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
+                :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden,
+                :hidden_blockers
+    attr_writer :revenue_to_render
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -143,7 +145,6 @@ module Engine
                               loc: params['loc'],
                               boom: params['boom'],
                               style: params['style'],
-                              double: params['double'],
                               to_city: params['to_city'])
         cache << town
         town
@@ -169,7 +170,7 @@ module Engine
       when 'label'
         Part::Label.new(params)
       when 'upgrade'
-        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'])
+        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'], loc: params['loc'])
       when 'border'
         Part::Border.new(params['edge'], params['type'], params['cost'], params['color'], params['dashed'])
       when 'junction'
@@ -178,7 +179,7 @@ module Engine
         junction
       when 'icon'
         Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'],
-                       large: params['large'])
+                       large: params['large'], loc: params['loc'])
       when 'stub'
         Part::Stub.new(params['edge'].to_i)
       when 'partition'
@@ -228,11 +229,12 @@ module Engine
       @location_name = location_name
       @legal_rotations = []
       @blockers = []
+      @hidden_blockers = []
       @reservations = []
       @preprinted = preprinted
       @index = index
       @blocks_lay = nil
-      @reservation_blocks = opts[:reservation_blocks] || false
+      @reservation_blocks = opts[:reservation_blocks] || :never
       @unlimited = opts[:unlimited] || false
       @labels = []
       @future_label = nil
@@ -340,8 +342,9 @@ module Engine
       end
     end
 
-    def add_blocker!(private_company)
+    def add_blocker!(private_company, hidden: false)
       @blockers << private_company
+      @hidden_blockers << private_company if hidden
     end
 
     def inspect
@@ -360,9 +363,9 @@ module Engine
       @reservations.any? { |r| [r, r.owner].include?(corporation) }
     end
 
-    def add_reservation!(entity, city, slot = nil)
-      # Single city, assume the first
-      city = 0 if @cities.one?
+    def add_reservation!(entity, city, slot = nil, reserve_city = true)
+      # Single city, assume the first unless reserve_city is false
+      city = 0 if @cities.one? && reserve_city
       slot = @cities[city].get_slot(entity) if city && slot.nil?
 
       if city && slot
@@ -375,7 +378,8 @@ module Engine
     def token_blocked_by_reservation?(corporation)
       return false if @reservations.empty?
 
-      if @reservation_blocks
+      if @reservation_blocks == :always ||
+        (@reservation_blocks == :single_slot_cities && @cities.any? { |city| city.slots == 1 })
         !@reservations.include?(corporation)
       else
         @reservations.count { |x| corporation != x } >= @cities.sum(&:available_slots)
@@ -395,8 +399,19 @@ module Engine
       ct_edges.values
     end
 
+    def city_town_edges_are_subset_of?(other_cte)
+      cte = city_town_edges
+      ALL_EDGES.any? do |rotation|
+        cte.all? do |city|
+          other_cte.any? do |other_city|
+            city.all? { |edge| other_city.include?(rotate(edge, rotation)) }
+          end
+        end
+      end
+    end
+
     def compute_loc(loc = nil)
-      return nil unless loc && loc != 'center'
+      return nil if !loc || loc == 'center'
 
       (loc.to_f + @rotation) % 6
     end
@@ -408,6 +423,14 @@ module Engine
       # edge => how many tracks/cts are on that edge, plus 0.1
       # for each track/ct on neighboring edges
       edge_count = Hash.new(0)
+
+      if @paths.empty? && @cities.size == 2 && @towns.size == 2
+        # Multiple city/town option tiles
+        div = 3
+        @cities.each_with_index { |x, index| edge_count[x] = (index * div) }
+        @towns.each_with_index { |x, index| edge_count[x] = (index * div) }
+        return edge_count
+      end
 
       if @paths.empty? && @cities.size >= 2
         # If a tile has no paths but multiple cities, avoid them rendering on top of each other

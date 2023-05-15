@@ -52,7 +52,7 @@ module View
 
           radius = @radius
           show_player_colors = setting_for(:show_player_colors, @game)
-          if show_player_colors && (owner = @token&.corporation&.owner) && @game.players.include?(owner)
+          if show_player_colors && (owner = @token&.corporation&.owner) && @game&.players&.include?(owner)
             color = player_colors(@game.players)[owner]
             radius -= 4
           end
@@ -173,10 +173,11 @@ module View
         end
 
         def render_boom
+          radius_addend = @reservation || @token ? 3.2 : 0.8
           h(:circle, attrs: {
               transform: translate.to_s,
               stroke: @color,
-              r: @boom_radius ||= 10 * (0.8 + (route_prop(0, :width).to_i / 40)),
+              r: @boom_radius ||= 10 * (radius_addend + (route_prop(0, :width).to_i / 40)),
               'stroke-width': 2,
               'stroke-dasharray': 6,
             })

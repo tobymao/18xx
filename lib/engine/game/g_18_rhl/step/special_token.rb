@@ -17,7 +17,7 @@ module Engine
           end
 
           def adjust_token_price_ability!(entity, token, _hex, _city, special_ability: nil)
-            return super unless entity == @game.trajektanstalt
+            return super if !special_ability || special_ability.owner != @game.trajektanstalt
 
             # Need to override this as base implementation otherwise change token price to 0.
             # In 18Rhl the full current price is paid for teleported token for Private 4.
@@ -36,7 +36,9 @@ module Engine
             place_token(
               @round.teleported,
               action.city,
-              action.token,
+              # Due to changing the token type, this can cause problems when doing undo.
+              # As a fall back assume first available token of type normal/neutral is OK
+              @game.get_token(entity, action.token),
               connected: false,
               special_ability: ability(entity),
               spender: @game.current_entity,

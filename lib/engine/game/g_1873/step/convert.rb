@@ -47,7 +47,7 @@ module Engine
             return false unless entity.corporation?
             return false if entity.receivership?
             return false unless entity.total_shares < 10
-            return false unless entity.num_market_shares.zero? && entity.num_ipo_shares.zero?
+            return false if !entity.num_market_shares.zero? || !entity.num_ipo_shares.zero?
 
             entity.total_shares < 5 || entity.owner.num_shares_of(entity) >= 2
           end

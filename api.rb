@@ -6,10 +6,12 @@ require 'opal'
 require 'require_all'
 require 'roda'
 require 'snabberb'
+require 'json'
 
 require_relative 'models'
 require_rel './lib'
 require_rel './models'
+require_relative 'lib/engine/test_tiles'
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -19,7 +21,7 @@ class Api < Roda
          'Content-Type' => 'text/html',
          'X-Frame-Options' => 'deny',
          'X-Content-Type-Options' => 'nosniff',
-         'Cache-Control' => 'no-cache, max-age=0, must-revalidate, no-store',
+         'cache-control' => 'no-cache, max-age=0, must-revalidate, no-store',
          'X-XSS-Protection' => '1; mode=block'
 
   plugin :content_security_policy do |csp|
@@ -66,7 +68,7 @@ class Api < Roda
   use Rack::Deflater unless PRODUCTION
 
   STANDARD_ROUTES = %w[
-    / about hotseat login new_game profile signup tutorial forgot reset
+    / about hotseat login new_game signup tutorial forgot reset
   ].freeze
 
   ROUTES_WITH_GAME_TITLES = %w[
@@ -110,9 +112,37 @@ class Api < Roda
       render(titles: request.path.split('/')[2].split('+'))
     end
 
+    r.on 'profile' do
+      r.get Integer do |id|
+        halt(404, 'User does not exist') unless (profile = User[id])
+
+        needs = { profile: profile&.to_h(for_user: false) }
+        if profile.settings['show_stats']
+          begin
+            needs[:profile]['stats'] = JSON.parse(Bus[Bus::USER_STATS % id])
+          rescue StandardError => e
+            LOGGER.error "Unable to get stats for #{id}: #{e}"
+          end
+        end
+        render(
+          games: Game.profile_games(profile).map(&:to_h),
+          **needs,
+        )
+      end
+    end
+
     r.on 'tiles' do
       parts = request.path.split('/')
-      titles = parts.size == 4 ? parts[2].split(/[+ ]/) : []
+
+      titles =
+        if parts.size == 4
+          parts[2].split(/[+ ]/)
+        elsif parts[2] == 'test'
+          Engine::TestTiles::TEST_TILES.keys.compact
+        else
+          []
+        end
+
       render(titles: titles)
     end
 
@@ -120,7 +150,22 @@ class Api < Roda
       halt(404, 'Game not found') unless (game = Game[id])
 
       pin = game.settings['pin']
-      render(titles: [game.title], pin: pin, game_data: pin ? game.to_h(include_actions: true) : game.to_h)
+      render(titles: [game.title], pin: pin,
+             game_data: pin ? game.to_h(include_actions: true, logged_in_user_id: user&.id) : game.to_h)
+    end
+
+    r.on 'issues', String do |str|
+      label =
+        case str
+        when 'alpha', 'beta', 'production'
+          Engine.issues_labels(str.to_sym)
+        when 'prealpha'
+          '"new games"'
+        else
+          str
+        end
+
+      r.redirect "https://github.com/tobymao/18xx/issues?q=is%3Aissue+is%3Aopen+label%3A#{label}"
     end
   end
 

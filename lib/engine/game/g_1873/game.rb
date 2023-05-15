@@ -24,7 +24,7 @@ module Engine
                     :reserved_tiles, :subtrains
         attr_accessor :premium, :premium_order, :premium_winner, :reimbursed_hexes
 
-        CURRENCY_FORMAT_STR = '%d ℳ'
+        CURRENCY_FORMAT_STR = '%s ℳ'
         BANK_CASH = 100_000
         CERT_LIMIT = {
           2 => 999,
@@ -422,7 +422,7 @@ module Engine
           return if @subtrains[s_train].one? # always leave one allocated per supertrain
 
           @subtrains[s_train].dup.each do |sub|
-            next unless @diesel_pool[sub][:allocated] && !@diesel_pool[sub][:used] && @subtrains[s_train].size > 1
+            next if !@diesel_pool[sub][:allocated] || @diesel_pool[sub][:used] || @subtrains[s_train].size <= 1
 
             @diesel_pool[sub][:allocated] = false
             @subtrains[s_train].delete(sub)
@@ -576,8 +576,9 @@ module Engine
           scrap_train(@mhe.trains.first)
           train = @depot.upcoming.first
           @log << "MHE buys a #{train.name} from bank"
+          source = train.owner
           buy_train(@mhe, train, :free)
-          phase.buying_train!(@mhe, train)
+          phase.buying_train!(@mhe, train, source)
         end
 
         def scrap_train(train)
@@ -769,10 +770,10 @@ module Engine
           if (diff = r_cost - entity.cash).positive?
             @bank.spend(diff, entity)
             @log << "Bank pays #{format_currency(diff)} to #{entity.name}"
-            price = entity.share_price.price
-            if diff > price
-              [(diff / price).to_i, 3].min.times { @stock_market.move_up(entity) }
-              log_share_price(entity, price)
+            old_price = entity.share_price
+            if diff > old_price.price
+              [(diff / old_price.price).to_i, 3].min.times { @stock_market.move_up(entity) }
+              log_share_price(entity, old_price)
             end
           end
 
@@ -849,8 +850,9 @@ module Engine
           price = variant[:price]
           train.variant = variant[:name]
           @log << "#{entity.name} buys a #{train.name} train for #{format_currency(price)} from depot"
+          source = train.owner
           buy_train(entity, train, price)
-          phase.buying_train!(entity, train)
+          phase.buying_train!(entity, train, source)
           train
         end
 
@@ -1110,7 +1112,7 @@ module Engine
         end
 
         def advance_concession_phase!(entity)
-          return unless concession_pending?(entity) && !(info = @corporation_info[entity])[:advanced]
+          return if !concession_pending?(entity) || (info = @corporation_info[entity])[:advanced]
 
           info[:concession_phase] = (info[:concession_phase].to_i - 1).to_s
           info[:advanced] = true
@@ -1458,7 +1460,7 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          old_price = corporation.share_price
 
           @share_pool.sell_shares(bundle, allow_president_change: pres_change_ok?(corporation), swap: swap)
           if corporation == @mhe
@@ -1474,7 +1476,7 @@ module Engine
             @stock_market.move_up(corporation)
             @stock_market.move_down(corporation)
           end
-          log_share_price(corporation, price)
+          log_share_price(corporation, old_price)
         end
 
         def pres_change_ok?(corporation)
@@ -1838,9 +1840,13 @@ module Engine
 
         def check_diesel_nodes(route)
           entity = train_owner(route.train)
-          return unless route.visited_stops.any? { |n| !diesel_graph.connected_nodes(entity)[n] }
+          return unless route.visited_stops.any? { |n| !node_connected_to_concession_route?(entity, n) }
 
           raise GameError, 'Diesel route has to directly or indirectly connect to concession route'
+        end
+
+        def node_connected_to_concession_route?(entity, node)
+          concession_tile_hexes(entity).include?(node.hex) || diesel_graph.connected_nodes(entity)[node]
         end
 
         def concession_route_run?(entity, routes)
@@ -2023,11 +2029,6 @@ module Engine
 
         def player_card_minors(player)
           @minors.select { |m| m.owner == player }
-        end
-
-        def player_sort(entities)
-          minors, majors = entities.partition(&:minor?)
-          (minors.sort_by { |m| m.name.to_i } + majors.sort_by(&:name)).group_by(&:owner)
         end
 
         def show_game_cert_limit?
@@ -3050,7 +3051,7 @@ module Engine
               %w[
                 F7
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
-                   'path=a:3,b:_1,track:narrow;upgrade=cost:50,terrain:mountain;'\
+                   "path=a:3,b:_1,track:narrow;upgrade=cost:#{aag_variant? ? 100 : 50},terrain:mountain;"\
                    'icon=image:1873/11_open,sticky:1,large:1',
               %w[
                 G6
@@ -3235,6 +3236,10 @@ module Engine
             Action::ProgramHarzbahnDraftPass,
             Action::ProgramIndependentMines,
           ]
+        end
+
+        def aag_variant?
+          @aag_variant ||= @optional_rules&.include?(:aag_variant)
         end
       end
     end

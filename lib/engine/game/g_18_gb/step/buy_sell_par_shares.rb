@@ -109,10 +109,13 @@ module Engine
               can_gain?(entity, bundle)
           end
 
+          def already_president?(corporation)
+            @round.presidencies&.include?(corporation)
+          end
+
           def can_buy_multiple?(entity, corporation, owner)
             bought = num_shares_bought(corporation)
-            owned = entity.num_shares_of(corporation)
-            super && corporation&.president?(entity) && bought < 2 && owned > 2
+            super && corporation&.president?(entity) && bought < 2 && (@round.operating? || already_president?(corporation))
           end
 
           def num_shares_bought(corporation)
@@ -136,7 +139,7 @@ module Engine
 
             corporation = bundle.corporation
 
-            timing = @game.check_sale_timing(entity, corporation)
+            timing = @game.check_sale_timing(entity, bundle)
 
             timing &&
               !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&

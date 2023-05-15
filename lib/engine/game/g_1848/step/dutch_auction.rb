@@ -51,9 +51,11 @@ module Engine
           end
 
           def process_bid(action)
+            action.entity.unpass!
             company = action.company
             price = company.min_bid
             buy_company(current_entity, company, price)
+            @game.after_buy_company(current_entity, company, price)
             @round.next_entity_index!
           end
 

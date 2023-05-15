@@ -11,8 +11,10 @@ module View
 
     def render
       @connection&.get('/version.json', '/assets') do |version|
+        version_localtime = Time.at(version['version_epochtime'].to_i)
         link = node_to_s(h(:a, { attrs: { href: version['url'] } }, version['hash']))
         `document.getElementById('version').innerHTML = #{link}`
+        `document.getElementById('version_localtime').innerHTML = #{version_localtime}`
       end
 
       message = <<~MESSAGE
@@ -23,7 +25,7 @@ module View
         code on <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. All games are used with express written consent from their respective rights holders. You can find more information about the games on the <a href='https://github.com/tobymao/18xx/wiki'>wiki</a>.
         </p>
 
-        <p>Current version <span id='version'>unknown</span> (<a href="https://github.com/tobymao/18xx/commits/master">recent commits</a>).</p>
+        <p>Current version: <span id='version'>unknown</span> deployed at <span id='version_localtime'>unknown</span> (<a href="https://github.com/tobymao/18xx/commits/master">View all recent commits</a>)</p>
 
         <h2>Conduct Expectations</h2>
 
@@ -38,7 +40,7 @@ module View
         </p>
 
         <p>
-        <b>Email Addresses</b> are collected in order to send notifications. These notifications can be disabled in the <a href='/profile'>profile</a> page. Emails are not publicly available and not shared to any 3rd party except when email notifications are enabled. Emails are sent using the <a href='https://elasticemail.com'>Elastic Email</a> service.
+        <b>Email Addresses</b> are collected in order to send notifications. These notifications can be disabled in the #{@user ? "<a href=\"/profile/#{@user['id']}\">profile</a>" : 'profile'} page. Emails are not publicly available and not shared to any 3rd party except when email notifications are enabled. Emails are sent using the <a href='https://elasticemail.com'>Elastic Email</a> service.
         </p>
 
         <p>
@@ -46,7 +48,7 @@ module View
         </p>
 
         <p>
-        <b>Game Data</b> is collected when you play a game and is needed for the game to function. Game Data includes messages sent to others as a part of the game. This is publicly available through the website interface and API.
+        <b>Game Data</b> is collected when you play a game and is needed for the game to function. Game Data is publicly available through the website interface and API. In-game messages are only visible to the players in the game (whether via the website or the API).
         </p>
 
         <p>
@@ -72,6 +74,7 @@ module View
         <a href='https://github.com/ventusignis'>ventusignis</a>
         <a href='https://github.com/tysen'>tysen</a>
         <a href='https://github.com/daniel-sousa-me'>daniel-sousa-me</a>
+        <a href='https://github.com/benjaminxscott'>benjaminxscott (dstar)</a>
 
         <p>This website will always be open-source and free to play. If you'd like support this project, you can become a patron on
         <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>

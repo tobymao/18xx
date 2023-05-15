@@ -72,14 +72,14 @@ module Engine
             name: 'Los Angeles Citrus',
             value: 60,
             revenue: 15,
-            desc: 'The owning corporation may assign Los Angeles Citrus to Oxnard (B1), Yorba Linda '\
+            desc: 'The owning corporation may assign Los Angeles Citrus to Oxnard (B1), LAX (D1), Yorba Linda '\
                   '(D13), or Irvine (F15), to add $30 to all routes it runs to this location.',
             sym: 'LAC',
             abilities: [
               {
                 type: 'assign_hexes',
                 when: 'owning_corp_or_turn',
-                hexes: %w[B1 D13 F15],
+                hexes: %w[B1 D1 D13 F15],
                 count: 1,
                 owner_type: 'corporation',
               },
@@ -97,7 +97,7 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'The owning corporation may assign the Los Angeles Steamship to Oxnard (B1), '\
-                  'Santa Monica (C2), or Westminster (F9), to add $20 per port symbol to all '\
+                  'Santa Monica (C2), LAX (D1), or Westminster (F9), to add $20 per port symbol to all '\
                   'routes it runs to this location.',
             sym: 'LAS',
             abilities: [
@@ -174,7 +174,7 @@ module Engine
                 count: 1,
                 extra_action: true,
                 from_owner: true,
-                cheater: 0,
+                cheater: true,
                 special_only: true,
                 discount: 0,
                 hexes: %w[A2 A4 A6 A8 B5 B7 B9 B11 B13 C2 C4 C6 C8 C12 D5 D7 D9
@@ -325,7 +325,7 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$60 Culver City (C4) token',
+                description: 'Reserved $40/$100 Culver City (C4) token',
                 hexes: ['C4'],
                 price: 40,
                 teleport_price: 100,

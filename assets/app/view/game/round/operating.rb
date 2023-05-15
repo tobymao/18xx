@@ -18,6 +18,7 @@ require 'view/game/map'
 require 'view/game/buy_corporation'
 require 'view/game/route_selector'
 require 'view/game/cash_crisis'
+require 'view/game/double_head_trains'
 
 module View
   module Game
@@ -43,6 +44,9 @@ module View
           left << h(Convert) if @current_actions.include?('convert')
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')
           left << h(ReassignTrains) if @current_actions.include?('reassign_trains')
+          left << h(DoubleHeadTrains) if @current_actions.include?('double_head_trains')
+          left << h(Choose) if @current_actions.include?('choose')
+
           if @current_actions.include?('buy_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares') || @current_actions.include?('buy_shares')
             left << h(BuyTrains)
@@ -65,8 +69,6 @@ module View
             left << h(CorporateBuyShares)
           elsif @current_actions.include?('corporate_sell_shares')
             left << h(CorporateSellShares)
-          elsif @current_actions.include?('choose')
-            left << h(Choose)
           elsif @current_actions.include?('swap_train')
             left << h(SwapTrain)
           elsif @current_actions.include?('buy_corporation')
@@ -74,6 +76,7 @@ module View
           end
           left << h(ScrapTrains) if @current_actions.include?('scrap_train')
           left << h(Loans, corporation: entity) if !loans_rendered && (%w[take_loan payoff_loan] & @current_actions).any?
+          left << h(ViewMergeOptions, corporation: entity) if @current_actions.include?('view_merge_options')
 
           if entity.player?
             left << h(Player, player: entity, game: @game)

@@ -59,7 +59,9 @@ module View
           color =
             case border.type
             when :mountain
-              :brown
+              :sepia
+            when :province
+              :orange
             when :water
               :blue
             when :impassable
@@ -74,7 +76,7 @@ module View
         end
 
         def border_dash(border)
-          border.dashed && '20'
+          border.type == :province ? '20 20' : 'none'
         end
 
         def render_cost(border)

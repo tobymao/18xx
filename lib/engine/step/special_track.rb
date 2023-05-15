@@ -17,7 +17,7 @@ module Engine
         action = abilities(entity)
         return [] unless action
 
-        action.type == :tile_lay && action.blocks ? ACTIONS : ACTIONS_WITH_PASS
+        action.type == :tile_lay && action.blocks ? self.class::ACTIONS : self.class::ACTIONS_WITH_PASS
       end
 
       def description
@@ -61,7 +61,7 @@ module Engine
           @round.laid_hexes << action.hex
           check_connect(action, ability)
         end
-        ability.use!
+        ability.use!(upgrade: %i[green brown gray].include?(action.tile.color))
 
         # Record any track laid after the dividend step
         if owner&.corporation? && (operating_info = owner.operating_history[[@game.turn, @round.round_num]])
@@ -94,6 +94,8 @@ module Engine
         entity = action.entity
         ability = abilities(entity)
         raise GameError, "Not #{entity.name}'s turn: #{action.to_h}" unless entity == @company
+
+        raise GameError, "#{entity.name} must use all its tile lays" if ability.must_lay_all && ability.count.positive?
 
         entity.remove_ability(ability)
         @log << "#{entity.owner.name} passes laying additional track with #{entity.name}"

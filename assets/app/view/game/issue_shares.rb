@@ -46,7 +46,7 @@ module View
 
             # confirm if redeeming from a different player
             if (bundle.owner != @game.bank) && (bundle.owner != @game.current_entity) && bundle.owner.player?
-              check_consent(bundle.owner, process_redeem)
+              check_consent(@entity, bundle.owner, process_redeem)
             else
               process_redeem.call
             end
@@ -70,7 +70,9 @@ module View
                  ''
                end
 
-        str = "#{bundle.num_shares} #{name}(#{@game.format_currency(bundle.price)})"
+        flags = ('d' * bundle.shares.count(&:double_cert))
+
+        str = "#{flags.empty? ? '' : flags + ' '}#{bundle.num_shares} #{name}(#{@game.format_currency(bundle.price)})"
         str += " from #{bundle.owner.name}" if bundle.owner.player?
         h('button.small', { on: { click: block } }, str)
       end

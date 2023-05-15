@@ -9,12 +9,12 @@ module Engine
         class Stock < G1817::Round::Stock
           def finish_round
             @game.corporations.select(&:floated?).sort.each do |corp|
-              prev = corp.share_price.price
+              old_price = corp.share_price
               sold_out_stock_movement(corp) if sold_out?(corp) && @game.sold_out_increase?(corp)
               shares_in_pool = corp.num_market_shares
               price_drops = shares_in_pool * 2
               price_drops.times { @game.stock_market.move_down(corp) }
-              @game.log_share_price(corp, prev)
+              @game.log_share_price(corp, old_price)
             end
             @game.corporations.select(&:floated?).each do |corp|
               if tokens_needed?(corp)

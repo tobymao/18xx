@@ -39,7 +39,7 @@ module Engine
             @split_corporation = corporation
             @split_branch = nil
             split_next
-            @log << "#{current_entity.name} splitting #{@split_corporation.full_name}"
+            @log << "#{current_entity.name} splits #{@split_corporation.full_name}"
           end
 
           def split_active_entities
@@ -123,7 +123,7 @@ module Engine
 
           def split_pick_branch(branch)
             @split_branch = branch
-            @log << "#{current_entity.name} picked #{@split_branch.full_name} as the new company"
+            @log << "#{current_entity.name} picks #{@split_branch.full_name} as the new company"
             split_next
 
             # Now check if there is only one token choice, and just pick it if so
@@ -145,7 +145,7 @@ module Engine
 
           def split_pick_tokens(token)
             city = token.city
-            @log << "Replaced #{@split_corporation.full_name} token in #{city.hex.id} with #{@split_branch.full_name} token"
+            @log << "#{@split_corporation.full_name} token in #{city.hex.id} is replaced with #{@split_branch.full_name} token"
             new_token = @split_branch.next_token
             token.swap!(new_token)
             token.destroy!
@@ -185,7 +185,7 @@ module Engine
 
           def split_pick_hunslet(do_transfer)
             if do_transfer
-              @log << "#{current_entity.name} is transfering the Hunslet to #{@split_branch.full_name}"
+              @log << "#{current_entity.name} is transferring the Hunslet to #{@split_branch.full_name}"
               hunslet = @game.company_by_id('HSE')
               hunslet.owner = @split_branch
               @split_corporation.companies.delete(hunslet)
@@ -212,7 +212,7 @@ module Engine
               split_pick_par(share_price)
             when SPLIT_PICK_TRAINS
               if choose.choice == 'done'
-                @log << "#{current_entity.name} is done transfering trains"
+                @log << "#{current_entity.name} is done transferring trains"
                 split_next
               else
                 train = @game.train_by_id(choose.choice)

@@ -33,7 +33,7 @@ module Engine
             # the base sym to change phase or rust trains
             train = action.train
             train_check = Engine::Train.new(name: train.name, distance: train.distance, price: train.price)
-            @game.phase.buying_train!(action.entity, train_check)
+            @game.phase.buying_train!(action.entity, train_check, train.owner)
           end
 
           def room?(entity, _shell = nil)
@@ -61,7 +61,7 @@ module Engine
             raise GameError, "#{corporation.id} can only own one E-train"
           end
 
-          def must_take_loan?(entity)
+          def must_take_player_loan?(entity)
             # Must sell all shares before a loan can be granted
             return false if sellable_shares?(entity.owner)
 

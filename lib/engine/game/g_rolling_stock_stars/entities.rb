@@ -374,7 +374,7 @@ module Engine
         CORPORATIONS = [
           {
             sym: 'PR',
-            name: 'Prussian Ralway',
+            name: 'Prussian Railway',
             logo: 'rolling_stock/PR',
             color: 'black',
             text_color: 'white',

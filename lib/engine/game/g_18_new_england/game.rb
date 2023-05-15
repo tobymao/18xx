@@ -34,7 +34,7 @@ module Engine
                         cream: '#fffdd0',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 12_000
         CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13 }.freeze
         STARTING_CASH = { 3 => 400, 4 => 280, 5 => 280 }.freeze
@@ -278,16 +278,16 @@ module Engine
 
         def lookup_minor_price(p, row)
           @stock_market.market[row].size.times do |i|
-            next unless @stock_market.share_price(row, i)
-            return @stock_market.share_price(row, i) if @stock_market.share_price(row, i).price == p
+            next unless @stock_market.share_price([row, i])
+            return @stock_market.share_price([row, i]) if @stock_market.share_price([row, i]).price == p
           end
         end
 
         def lookup_par_price(p)
           @stock_market.market[MAJOR_ROW].size.times do |i|
-            next unless @stock_market.share_price(MAJOR_ROW, i)
-            return @stock_market.share_price(MAJOR_ROW, i) if @stock_market.share_price(MAJOR_ROW, i).price == p
-            return @stock_market.share_price(MAJOR_ROW, i - 1) if @stock_market.share_price(MAJOR_ROW, i).price > p
+            next unless @stock_market.share_price([MAJOR_ROW, i])
+            return @stock_market.share_price([MAJOR_ROW, i]) if @stock_market.share_price([MAJOR_ROW, i]).price == p
+            return @stock_market.share_price([MAJOR_ROW, i - 1]) if @stock_market.share_price([MAJOR_ROW, i]).price > p
           end
         end
 
@@ -463,8 +463,7 @@ module Engine
         end
 
         def player_sort(entities)
-          majors, minors = entities.select(&:corporation?).partition { |c| c.type == :major }
-          (minors.sort_by(&:name) + majors.sort_by(&:name)).group_by(&:owner)
+          super(entities.select(&:corporation?))
         end
 
         def reserve_minor(minor, entity)
@@ -541,14 +540,14 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          return [] unless entity.corporation? && entity.type != :minor
+          return [] if !entity.corporation? || entity.type == :minor
 
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| entity.cash < bundle.price }
         end
 
         def issuable_shares(entity)
-          return [] unless entity.corporation? && entity.type != :minor
+          return [] if !entity.corporation? || entity.type == :minor
 
           treasury = bundles_for_corporation(entity, entity)
           ipo = bundles_for_corporation(@bank, entity)

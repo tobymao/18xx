@@ -77,7 +77,7 @@ module Engine
           def corp_can_purchase_token?(corporation, token)
             corporation.cash >= @available_ndem_tokens[token] &&
             !@game.exchange_tokens(corporation).zero? &&
-            !token.city.tokened_by?(corporation)
+            token.hex.tile.cities.none? { |c| c.tokened_by?(corporation) }
           end
 
           def player_can_purchase_token?(player, token)
@@ -105,10 +105,12 @@ module Engine
           end
 
           def help
-            return 'Select NDEM token to auction' unless @token_up_for_bid
-            return "Bidding for NDEM token at #{@token_up_for_bid.city.hex.id}" unless @auction_winner
+            return "#{ndem_acting_player.name} is up to select an NDEM token to auction" unless @token_up_for_bid
+            unless @auction_winner
+              return "#{ndem_acting_player.name} is up to bid for the NDEM token at #{@token_up_for_bid.city.hex.id}"
+            end
 
-            'Choose company to buy NDEM token'
+            "#{ndem_acting_player.name} is choosing a company to buy NDEM token"
           end
 
           # Remove token methods
@@ -182,6 +184,8 @@ module Engine
           end
 
           def process_bid(action)
+            raise GameError, "Minimum bid is #{min_player_bid}" if action.price < min_player_bid
+
             if action.price > max_bid_for_token(@remaining_bidders[0])
               raise GameError,
                     "#{@remaining_choosers[0].name} can bid a maximum of " \

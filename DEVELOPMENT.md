@@ -5,6 +5,25 @@ development.
 
 See [Developing on Windows](https://github.com/tobymao/18xx/wiki/Developing-For-18xx.games#developing-on-windows) to get setup on Windows
 
+## Use a Github Codespace
+
+If you would like a repeatable build environment, click the `Code` button in the repo, click `Codespace` then the `plus sign` button to create [a new Codespace](https://github.com/features/codespaces). 
+
+![Screenshot 2022-11-13 10 09 46 AM](https://user-images.githubusercontent.com/1711810/201537600-294512b8-3a99-4762-8c16-d64294706434.png)
+
+This will create a VM hosted by Github just for you with the repo already cloned and a generic Linux build environment installed.
+
+> Note that Codespaces are limited to a monthly free usage quota
+
+You are able to run `make` from the Terminal tab to build and start the 18xx server (based on the current branch checked out)
+
+After the server is running, a pop-up in the bottom right should appear informing you that the server can be opened in a browser.
+
+If that pop-up doesn't appear, open the `Ports` tab in the Codespace, hover the "local address" for port `9292` and click the globe to open the server in a browser.
+
+![image](https://user-images.githubusercontent.com/1711810/201538007-a5b4bf8a-9214-4ca3-a6a5-6304601c34c2.png)
+
+
 ### Droplet configuration
 
 If configuring the droplet from scratch, these are the requirements:
@@ -105,6 +124,25 @@ Yes.
 make CONTAINER_ENGINE=podman …
 ```
 
+#### How to troubleshoot a failing test
+
+Let's say you got an error message like this:
+
+```
+Failures:
+
+  1) Assets #html 18MEX 17849 renders endgame
+     Failure/Error:
+       MiniRacer::Context
+         .new(snapshot: @snapshot)
+         .eval(script, filename: @file)
+```
+
+1. Look for a file `17849.json` (in the spec folder)
+2. Start a new game in the UI
+3. Import a hotseat game
+4. Copy the file content in the box and click `create`
+5. Look for an error in the browser console
 
 #### Before filing a pull request
 
@@ -129,3 +167,31 @@ Once a game has been made available on the website, bugs may be found where the 
 4. Execute `migrate_json('your_json_file.json')`
 
 This will apply the migrations to the game file you specified, allowing you to verify it worked as expected.
+
+#### Loading a production game state to test locally
+
+You may want example games in your development environment to test. One way to do this is to import games directly from the production website.
+
+1. Run `docker-compose exec rack irb`
+2. Execute `load "import_game.rb"`
+3. Execute `import_game(<product_game_id>)`
+
+A copy of that game is now available locally. 
+
+#### Pinning a game in your local test enviornment
+
+You may want to pin a specific game in your local development environment. Pinning a game allows for breaking changes to be introduced while 'freezing' the existing game to a previous code commit version. Pinning is designed to work in production environments only, the following workaround can be applied to pin games in your local development environment.
+
+1. Run `docker-compose exec rack irb`
+2. Import all the dependcies that will allow you to run `Game` class. Alternativly you can run `load "import_game.rb"`
+3. Run `game = Game[id: <id of game you want to pin>]`
+4. Run `game.settings['pin'] ='<sha of commit>'` . The sha should be of length 9 of the commit you want to pin to. 
+5. Run `game.save` to save the changes.
+
+For the pin to work you need to generate the pin.js file. Doing so will break your development environment. Perform the following steps to generate the pin file and fix your development environment
+1. Run `docker-compose exec rack rake precompile`
+2. Delete the contents of build folder
+3. Restart your  development environment server
+
+Note: The precompile step creates a <pinned sha>.js.gzip in public/pinned. If you're still seeing js errors unzip the compressed file. You can run `gzip -d <pin>.js.gz>` to extract the js file
+

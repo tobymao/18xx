@@ -23,7 +23,7 @@ module Engine
 
       def process_bankrupt(action)
         corp = action.entity
-        player = corp.owner
+        player = @game.acting_for_entity(corp.owner)
 
         unless @game.can_go_bankrupt?(player, corp)
           buying_power = @game.format_currency(@game.total_emr_buying_power(player, corp))

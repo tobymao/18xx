@@ -40,10 +40,11 @@ module Engine
         BANK_CASH = 99_999
         CAPITALIZATION = :full
         CERT_LIMIT = { 3 => 20, 4 => 16 }.freeze
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
         DISCARDED_TRAINS = :remove
         EBUY_OTHER_VALUE = false
         EBUY_PRES_SWAP = true
+        EBUY_OWNER_MUST_HELP = true
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
         HOME_TOKEN_TIMING = :float
         MARKET_SHARE_LIMIT = 80
@@ -53,7 +54,7 @@ module Engine
         SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
-        STARTING_CASH = { 3 => 580, 4 => 460 }.freeze
+        STARTING_CASH = { 3 => 580, 4 => 480 }.freeze
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, cost: 20, upgrade: false }].freeze
 
         # This allows us to add in privates to the cert count ourselves, without
@@ -64,10 +65,9 @@ module Engine
         # This is a feature we added to 18xx.games controlled by this variable.
         TURN_SELL_LIMIT = 30
 
-        # Change the companies text to clearly talk about the Hunslet
         STATUS_TEXT = {
           'can_buy_companies' =>
-          ['Can Buy Hunslet', 'Corporation owned by the owner of the Hunslet maybe purchase it from the player'],
+          ['Can Buy Hunslet', 'A corporation may purchase the Hunslet from its owning player'],
         }.freeze
 
         # The numbers needed to assign proper private numbers to the PEIR
@@ -84,6 +84,10 @@ module Engine
 
         # In this game most shares start in the market, but if you split a
         # corporation shares end up in the treasury. We have no IPO.
+        def ipo_verb(_entity = nil)
+          'starts'
+        end
+
         def ipo_name(_entity = nil)
           'Treasury'
         end
@@ -114,8 +118,8 @@ module Engine
           mainline.full_name = mainline.full_name[0..-2] + 'ML'
           mainline.float_percent = 50
           shortline.full_name = shortline.full_name[0..-2] + 'SL'
-          stock_market.set_par(mainline, stock_market.share_price(1, 1))
-          stock_market.set_par(shortline, stock_market.share_price(2, 1))
+          stock_market.set_par(mainline, stock_market.share_price([1, 1]))
+          stock_market.set_par(shortline, stock_market.share_price([2, 1]))
 
           # Mainline and Shortline tokens start on the board
           @hexes.each do |hex|
@@ -136,7 +140,7 @@ module Engine
           # Setup tranches
           init_tranches([[mainline, shortline], [nil], [nil, nil], [nil, nil, nil]])
 
-          # Setup hash to map each non-ml/sl corp to it's PEIR share
+          # Setup hash to map each non-ml/sl corp to its PEIR share
           @peir_corporation_shares = {}
           @peir_company_shares = {}
           @corporations[2, 5].sort_by { |c| NUMBERS[c.id] }.each_with_index do |c, i|
@@ -153,7 +157,7 @@ module Engine
           token.type = :neutral
           neutral_city.exchange_token(token)
 
-          # For each non-ml/sl corporation, replace it's token with a PEIR token
+          # For each non-ml/sl corporation, replace its token with a PEIR token
           # and create the company that represents a PEIR share
           @peir_companies = []
           @corporations[2, 5].each_with_index do |c, i|
@@ -165,7 +169,7 @@ module Engine
             company = Company.new(sym: "P#{NUMBERS[c.name]}",
                                   name: "PEIR - #{c.full_name}",
                                   desc: "Exchanges for a #{c.name} share from the bank if and when #{c.name} floats.",
-                                  abilities: [{ type: 'close', on_phase: 'never' }],
+                                  abilities: [{ type: 'close', on_phase: 'never' }, { type: 'no_buy' }],
                                   value: 80)
 
             @peir_companies << company
@@ -191,7 +195,7 @@ module Engine
             share.buyable = false
           end
 
-          # Asssign King's Mail
+          # Assign King's Mail
           kings_mail = company_by_id('KM')
           kings_mail.owner = peir
           peir.companies << kings_mail
@@ -201,7 +205,7 @@ module Engine
           peir.cash = 200
           @peir_shares = peir.shares
 
-          # If Ice Boat shipping is in the game, set it's corporations
+          # If Ice Boat shipping is in the game, set its corporations
           if @players.size == 5 # due to Union Bank already being added
             ice_boat_shipping = company_by_id('IB')
             ice_boat_ability = Engine::Ability::Exchange.new(type: :exchange,
@@ -312,7 +316,13 @@ module Engine
         def after_buy_company(player, company, _price)
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
-              share_pool.buy_shares(player, share, exchange: :free)
+              if share.percent >= 20
+                # Don't let two 10% shares of the Mainline confer presidency;
+                # give it to the Mainline Concession winner by hand
+                share.corporation.owner = player
+                @log << "#{player.name} becomes the president of #{share.corporation.name}"
+              end
+              share_pool.buy_shares(player, share, exchange: :free, allow_president_change: false)
             end
           end
 
@@ -335,7 +345,11 @@ module Engine
 
         # Let the Union Bank owner act for the bank in an operating round
         def acting_for_entity(entity)
-          return entity&.owner unless entity&.owner == @union_bank
+          acting_for_player(entity&.owner)
+        end
+
+        def acting_for_player(player)
+          return player unless player == @union_bank
 
           bank_company = company_by_id('UB')
           bank_company.owner
@@ -402,80 +416,26 @@ module Engine
         end
 
         # Events to remove pars on certain trains
-        def event_remove_par_80!
-          stock_market.remove_par!(stock_market.share_price(3, 1))
+        def event_remove_smv_80!
+          stock_market.remove_par!(stock_market.share_price([3, 1]))
         end
 
-        def event_remove_par_74!
-          stock_market.remove_par!(stock_market.share_price(4, 1))
+        def event_remove_smv_74!
+          stock_market.remove_par!(stock_market.share_price([4, 1]))
         end
 
-        def event_remove_par_65!
-          stock_market.remove_par!(stock_market.share_price(5, 1))
-        end
-
-        # Remove the straight tile from the manifest and the standard potential
-        # upgrades. When rendering track options the view uses the step's
-        # potential_tiles method which includes 9 as normal but excludes it
-        # based on our upgrades_to? method below.
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
-          super.reject { |t| t.name == '9' }
-        end
-
-        # Returns true if this tile represents a X or T hex on the base map
-        def map_x_or_t?(tile)
-          return false unless tile.color == :white
-
-          tile.label.to_s.include?('X') || tile.label.to_s.include?('T')
-        end
-
-        # Returns true if this tile represents a yellow tile on a map X hex
-        def yellow_x?(tile)
-          return false unless tile.color == :yellow
-
-          tile.hex.original_tile.label.to_s.include?('X')
-        end
-
-        # Returns true if this tile represents a brown tile on a map C hex
-        def brown_cx?(tile)
-          return false unless tile.color == :brown
-
-          tile.hex.original_tile.label.to_s.include?('CX')
-        end
-
-        # Returns true if this tile represents a yellow tile on a map T hex
-        def yellow_t?(tile)
-          return false unless tile.color == :yellow
-
-          tile.hex.original_tile.label.to_s.include?('T')
+        def event_remove_smv_65!
+          stock_market.remove_par!(stock_market.share_price([5, 1]))
         end
 
         # Handle tile upgrades. Differences from base include:
-        # - all of the proper X rules
         # - Removing the 'special' tile lay exception since 1871 doesn't include one
         # - Removing weird OO and double dit handling
-        # - Proper C tile handling
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Normal color progression and pre-existing track copied from base
           return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
           return false unless from.paths_are_subset_of?(to.paths)
-
-          # X tile handling
-          if yellow_x?(from)
-            # if we're upgrading a yellow X, make sure we use X tiles
-            return false unless to.label.to_s.include?('X')
-          elsif yellow_t?(from)
-            # if we're upgrading a yellow T, make sure we use T tiles
-            return false unless to.label.to_s.include?('T')
-          elsif brown_cx?(from)
-            # if we're upgrading the CX hex to gray, make sure we use the CX tile
-            return false unless to.label.to_s.include?('CX')
-          elsif !map_x_or_t?(from)
-            # normal label checking from base in other cases
-            return false unless upgrades_to_correct_label?(from, to)
-          end
-          # if we're upgrading a map X or T, don't check labels, normal
-          # yellows allowed
+          return false unless upgrades_to_correct_label?(from, to)
 
           # This is simplified from the base game since we don't have OO tiles
           # and double dits work in a standard way.
@@ -537,20 +497,22 @@ module Engine
           super
         end
 
-        # The base version of purchasable_companies allows you to purchase most
-        # companies even if you aren't the owner of the private. In this game
-        # only one company is lootable and it's only lootable by a corporation
-        # owned by the privates owner. This means we can simplify this method a
-        # lot.
+        def can_go_bankrupt?(player, corporation)
+          return false if player == @union_bank
+
+          if corporation.owner == @union_bank && company_by_id('UB').owner == player
+            total_emr_buying_power(player, corporation) +
+              total_emr_buying_power(@union_bank, corporation) < @depot.min_depot_price
+          else
+            super
+          end
+        end
+
         def purchasable_companies(entity = nil)
           # PEIR isn't allowed to buy the hunslet
           return [] if entity == @peir
 
-          hunslet = company_by_id('HSE')
-
-          # Return the hunslet if we aren't given a purchaser, or if the
-          # purchaser has the same owner as the hunslet
-          !entity || (entity.owner == hunslet.owner) ? [hunslet] : []
+          super
         end
 
         # We added the ability to exchange for any ipoed company, however this
@@ -569,14 +531,12 @@ module Engine
         end
 
         # Normally this only calls value on the player, but we want to add the
-        # bank to the proper player.
+        # bank to the proper player. Update the bank's private value in place so
+        # it will display correctly on the player card.
         def player_value(player)
-          value = player.value
-
           bank = company_by_id('UB')
-          value += @union_bank&.value || 0 if bank.owner == player
-
-          value
+          bank.value = @union_bank&.value || 0 if bank.owner == player
+          player.value
         end
 
         # Need to redefine this in order to add in union bank to the mix after
@@ -652,7 +612,7 @@ module Engine
             return
           end
 
-          new_share_percent = (100.0 / @peir_shares.size).round(2)
+          new_share_percent = (100 / @peir_shares.size).to_i
           @peir.forced_share_percent = new_share_percent
           peir.share_holders.clear
           @peir_shares.each do |share|
@@ -661,11 +621,15 @@ module Engine
             peir.share_holders[share.owner] += new_share_percent
           end
           peir.share_holders.each do |owner, amount|
-            @log << "#{owner.name} now owns #{amount}% of the PEIR"
+            @log << "#{owner.name} now owns #{(100 * amount / (@peir_shares.size * new_share_percent)).round}% of the PEIR"
           end
 
-          peir.owner = peir_owner
-          @log << "PEIR is now operated by #{peir.owner.name}"
+          if (new_peir_owner = peir_owner) == peir.owner
+            @log << "PEIR is still operated by #{peir.owner.name}"
+          else
+            peir.owner = new_peir_owner
+            @log << "PEIR is now operated by #{peir.owner.name}"
+          end
         end
 
         # Once a corporation pars, add it to the tranches
@@ -682,6 +646,7 @@ module Engine
             share_pool.buy_shares(company.owner,
                                   share.to_bundle,
                                   exchange: company)
+            share.buyable = true
             company.close!
           end
 
@@ -744,8 +709,8 @@ module Engine
         end
 
         # Find all shares that need to be exchanged and do so. Also places
-        # remaining corporation shares in it's treasury and gives the branch
-        # company it's partial cap.
+        # remaining corporation shares in its treasury and gives the branch
+        # company its partial cap.
         def exchange_split_shares(corporation, branch)
           # Setup the corporation to be incremental capitalization now
           corporation.capitalization = :incremental
@@ -769,7 +734,8 @@ module Engine
 
             next unless num_of_branch_shares.positive?
 
-            @log << "#{player.name} exchanges #{num_of_branch_shares} shares of #{corporation.name} for #{branch.name}"
+            shares_str = num_of_branch_shares == 1 ? 'share' : 'shares'
+            @log << "#{player.name} exchanges #{num_of_branch_shares} #{shares_str} of #{corporation.name} for #{branch.name}"
 
             shares.take(num_of_branch_shares).each do |share|
               share.transfer(corporation)
@@ -784,7 +750,8 @@ module Engine
           num_of_branch_shares = (shares.sum(&:percent) / 10 / 2).to_i
 
           if num_of_branch_shares.positive?
-            @log << "The market exchanges #{num_of_branch_shares} shares of #{corporation.name} for #{branch.name}"
+            shares_str = num_of_branch_shares == 1 ? 'share' : 'shares'
+            @log << "The market exchanges #{num_of_branch_shares} #{shares_str} of #{corporation.name} for #{branch.name}"
 
             shares.take(num_of_branch_shares).each do |share|
               share.transfer(corporation)

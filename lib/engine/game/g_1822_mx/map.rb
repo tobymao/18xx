@@ -53,6 +53,7 @@ module Engine
           'M26' => 'Poza Rica Jalapa',
           'M36' => 'Campeche',
           'N17' => 'Manzanillo',
+          'N23' => 'Mexico City',
           'N25' => 'Tlaxcala Puebla',
           'N27' => 'Veracruz',
           'N33' => 'Ciudad del Carmen',
@@ -65,6 +66,7 @@ module Engine
           'P31' => 'Tuxtla Gutierrez',
           'Q34' => 'Guatemala',
         }.freeze
+        HEXES_HIDE_LOCATION_NAMES = { 'N23' => true }.freeze
 
         LAYOUT = :pointy
 
@@ -171,13 +173,15 @@ module Engine
             %w[M40 Q28] =>
               'junction;path=a:2,b:_0,terminal:1',
             ['F7'] =>
-              'junction;path=a:3,b:_0,terminal:1;icon=image:anchor',
+              'junction;path=a:3,b:_0,terminal:1;path=a:3,b:5,track:thin',
             ['G8'] =>
-              'junction;path=a:1,b:_0,terminal:1;icon=image:anchor',
-            %w[H9 J11] =>
-              'junction;path=a:4,b:_0,terminal:1;icon=image:anchor',
+              'junction;path=a:1,b:_0,terminal:1;path=a:1,b:2,track:thin;path=a:1,b:5,track:thin',
+            ['H9'] =>
+              'junction;path=a:4,b:_0,terminal:1;path=a:2,b:4,track:thin;path=a:4,b:5,track:thin',
             ['I10'] =>
-              'junction;path=a:0,b:_0,terminal:1;icon=image:anchor',
+              'junction;path=a:0,b:_0,terminal:1;path=a:0,b:2,track:thin;path=a:0,b:5,track:thin',
+            ['J11'] =>
+              'junction;path=a:4,b:_0,terminal:1;path=a:2,b:4,track:thin',
           },
         }.freeze
 
@@ -322,7 +326,7 @@ module Engine
             },
           'X18' =>
             {
-              'count' => 2,
+              'count' => 3,
               'color' => 'gray',
               'code' =>
                 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',

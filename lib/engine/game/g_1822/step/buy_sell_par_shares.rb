@@ -132,6 +132,7 @@ module Engine
           end
 
           def process_bid(action)
+            @game.something_sold_in_sr! if @game.nothing_sold_in_sr?
             action.entity.unpass!
             add_bid(action)
             store_bids!

@@ -43,9 +43,9 @@ module Engine
             # It is possible a regional has been sold out - handle stock movement for that
 
             @game.corporations.select { |c| @game.regional?(c) && c.floated? }.sort.each do |corp|
-              prev = corp.share_price.price
+              old_price = corp.share_price
               sold_out_stock_movement(corp) if sold_out?(corp)
-              @game.log_share_price(corp, prev)
+              @game.log_share_price(corp, old_price)
             end
 
             @game.log << 'First stock round is finished - any unsold Pre-State Railways, Coal Railways, ' \

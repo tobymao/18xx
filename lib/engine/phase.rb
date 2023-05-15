@@ -16,7 +16,7 @@ module Engine
       setup_phase!
     end
 
-    def buying_train!(entity, train)
+    def buying_train!(entity, train, source)
       next! while @next_on.include?(train.sym)
 
       @game.rust_trains!(train, entity)
@@ -26,6 +26,7 @@ module Engine
         @game.send("event_#{event['type']}!")
       end
       train.events.clear
+      @game.after_buying_train(train, source)
     end
 
     def current

@@ -185,7 +185,7 @@ module View
                 merge_corporation.owner == corporation.owner
                 do_merge.call
               else
-                check_consent(merge_corporation.owner, do_merge)
+                check_consent(corporation, merge_corporation.owner, do_merge)
               end
 
             else

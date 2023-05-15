@@ -15,7 +15,6 @@ module Engine
       gmt_games: {
         name: 'GMT Games',
         url: 'https://www.gmtgames.com/',
-        hidden: true,
       },
       golden_spike: {
         name: 'Golden Spike Games',
@@ -27,7 +26,7 @@ module Engine
       },
       lonny_games: {
         name: 'Lonny Games',
-        url: 'https://www.lonny.at/',
+        url: 'https://www.lonnygames.com/',
       },
       lookout: {
         name: 'Lookout Games',

@@ -129,7 +129,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                when: 'owning_corp_or_turn',
+                when: %w[track_and_token route],
                 hexes: %w[B8 C5 D14 I1 G19],
                 count_per_or: 1,
                 owner_type: 'corporation',
@@ -168,9 +168,9 @@ module Engine
             name: 'Michigan Central',
             value: 40,
             revenue: 15,
-            desc: "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's '\
-'reserved hexes (B10, B12). The owning corporation does not need to be connected to those hexes. '\
-'If two tiles are laid, they must connect to each other.",
+            desc: "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's "\
+                  'reserved hexes (B10, B12). The owning corporation does not need to be connected to those hexes. '\
+                  'If two tiles are laid, they must connect to each other.',
             sym: 'MC',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[B10 B12] },
                         {
@@ -189,9 +189,9 @@ module Engine
             name: 'Ohio & Indiana',
             value: 40,
             revenue: 15,
-            desc: "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I''\
-'s reserved hexes (F14, F16). The owning corporation does not need to be connected to those hexes. '\
-'If two tiles are laid, they must connect to each other.",
+            desc: "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's "\
+                  'reserved hexes (F14, F16). The owning corporation does not need to be connected to those hexes. '\
+                  'If two tiles are laid, they must connect to each other.',
             sym: 'O&I',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[F14 F16] },
                         {

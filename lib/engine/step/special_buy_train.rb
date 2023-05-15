@@ -22,7 +22,7 @@ module Engine
 
       def process_buy_train(action)
         company = action.entity
-        corporation = company.owner
+        corporation = @round.current_operator
         ability = ability(company, train: action.train)
         from_depot = action.train.from_depot?
         buy_train_action(action, corporation)
@@ -42,7 +42,7 @@ module Engine
       end
 
       def ability_timing
-        %w[%current_step% buying_train owning_corp_or_turn]
+        %w[%current_step% buying_train owning_corp_or_turn owning_player_or_turn]
       end
 
       def ability(entity, train: nil)

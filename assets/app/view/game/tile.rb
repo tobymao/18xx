@@ -26,6 +26,19 @@ module View
         h(part_class, region_use: @region_use, tile: @tile, **kwargs)
       end
 
+      def render_tile_parts_by_loc(part_class, parts: nil, **kwargs)
+        return [] if !parts || parts.empty?
+
+        loc_to_parts = Hash.new { |h, k| h[k] = [] }
+        parts.each do |part|
+          loc_to_parts[part.loc] << part
+        end
+
+        loc_to_parts.map do |loc, _parts|
+          render_tile_part(part_class, loc: loc, **kwargs)
+        end
+      end
+
       # if false, then the revenue is rendered by Part::Cities or Part::Towns
       def should_render_revenue?
         revenue = @tile.revenue_to_render
@@ -53,6 +66,11 @@ module View
         # modified before being passed on to the next one
         @region_use = Hash.new(0)
 
+        # array of parts to render
+        # - `render_tile_part` is called in the order they impact the region
+        #   usage
+        # - the order of this array determines the order the parts are added to
+        #   the DOM; parts at the end of the array render on top of ealier parts
         children = []
 
         render_revenue = should_render_revenue?
@@ -63,24 +81,34 @@ module View
 
         borders = render_tile_part(Part::Borders) if @tile.borders.any?(&:type)
         # OO tiles have different rules...
-        rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
-        children << render_tile_part(Part::Revenue) if render_revenue
-        @tile.labels.each { |x| children << render_tile_part(Part::Label, label: x) }
+        if @tile.location_name && @tile.cities.size > 1 && !@tile.hex.hide_location_name
+          rendered_loc_name = render_tile_part(Part::LocationName)
+        end
+        revenue = render_tile_part(Part::Revenue) if render_revenue
+        @tile.labels.each { |l| children << render_tile_part(Part::Label, label: l) }
 
-        children << render_tile_part(Part::Upgrades) unless @tile.upgrades.empty?
+        render_tile_parts_by_loc(Part::Upgrades, parts: @tile.upgrades).each { |p| children << p }
         children << render_tile_part(Part::Blocker)
-        rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
-        @tile.reservations.each { |x| children << render_tile_part(Part::Reservation, reservation: x) }
+
+        if @tile.location_name && (@tile.cities.size <= 1) && !@tile.hex.hide_location_name
+          rendered_loc_name = render_tile_part(Part::LocationName)
+        end
+        @tile.reservations.each { |r| children << render_tile_part(Part::Reservation, reservation: r) }
+
         large, normal = @tile.icons.partition(&:large)
-        children << render_tile_part(Part::Icons) unless normal.empty?
+        render_tile_parts_by_loc(Part::Icons, parts: normal).each { |i| children << i }
         children << render_tile_part(Part::LargeIcons) unless large.empty?
         children << render_tile_part(Part::FutureLabel) if @tile.future_label
 
         children << render_tile_part(Part::Assignments) unless @tile.hex&.assignments&.empty?
-        # borders should always be the top layer
+
+        # these parts should always be on the top layer
+        children << revenue if revenue
         children << borders if borders
         children << render_tile_part(Part::Partitions) unless @tile.partitions.empty?
 
+        # location name and coordinates on top of other "top" layer since they
+        # can be hidden
         children << rendered_loc_name if rendered_loc_name && setting_for(:show_location_names, @game)
         children << render_coords if @show_coords
 

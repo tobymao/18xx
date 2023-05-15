@@ -319,8 +319,8 @@ module Engine
             value: 60,
             revenue: 0,
             desc: 'One extra yellow lay per turn on the hexes marked with railroad track icons on the map '\
-                  '(near the northern US border), ignoring terrain fees. +$30 revenue bonus per train that runs Fargo - Helena. '\
-                  '+$60 revenue bonus per train that runs Seattle-Fargo-Helena-Chicago',
+                  '(near the northern US border), ignoring terrain fees. One train can receive a +$30 revenue '\
+                  'bonus for running Fargo-Helena or a +$60 revenue bonus for running Seattle-Fargo-Helena-Chicago.',
             sym: 'P17',
             abilities: [
               {
@@ -391,7 +391,7 @@ module Engine
               extra_action: true,
               from_owner: true,
               special_only: true,
-              cheater: 0,
+              cheater: true,
             ],
           },
           # P21
@@ -629,24 +629,22 @@ module Engine
         CASH_SUBSIDIES = %w[S12 S13 S14 S15].freeze
 
         SUBSIDIES = [
-          # Temporarily commenting out the first two subsidies to guarantee all "interesting" subsidies
-          # come out during randomization during pre-alpha development
-          # {
-          # icon: 'subsidy_none',
-          # abilities: [],
-          # id: 'S1',
-          # name: 'No Subsidy',
-          # desc: 'No effect',
-          # value: 0,
-          # },
-          # {
-          # icon: 'subsidy_none',
-          # abilities: [],
-          # id: 'S2',
-          # name: 'No Subsidy'
-          # desc: 'No effect',
-          # value: 0,
-          # },
+          {
+            icon: 'subsidy_none',
+            abilities: [],
+            id: 'S1',
+            name: 'No Subsidy',
+            desc: 'No effect',
+            value: 0,
+          },
+          {
+            icon: 'subsidy_none',
+            abilities: [],
+            id: 'S2',
+            name: 'No Subsidy',
+            desc: 'No effect',
+            value: 0,
+          },
           {
             icon: 'subsidy_none',
             abilities: [],
@@ -721,7 +719,7 @@ module Engine
                 price: 0,
                 count: 1,
                 from_owner: false,
-                cheater: 0,
+                cheater: true,
                 special_only: true,
                 hexes: [], # Determined in special_token step
               },

@@ -92,7 +92,7 @@ module Engine
             bundle, corporation_owner = @game.sell_queue.shift
 
             corporation = bundle.corporation
-            price = corporation.share_price.price
+            old_price = corporation.share_price
 
             hit_soft_ledge = false
             bundle.num_shares.times do
@@ -115,7 +115,7 @@ module Engine
             @log << "#{corporation_owner.name} #{verb} price protect #{num_presentation} of #{corporation.name}"
             @log << "#{corporation.name} hits the ledge" if hit_soft_ledge
 
-            @game.log_share_price(corporation, price)
+            @game.log_share_price(corporation, old_price)
 
             @round.recalculate_order if @round.respond_to?(:recalculate_order)
           end

@@ -127,16 +127,16 @@ module Engine
 
       price = bundle.price
       price -= swap.price if swap
+      price -= additional_price_adjustments(bundle)
       swap_text = swap ? " and a #{swap.percent}% share" : ''
       swap_to_entity = swap ? entity : nil
 
-      unless silent
-        @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
-                "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
-      end
+      log_sell_shares(entity, verb, bundle, price, swap_text) unless silent
+
+      transfer_to = @game.class::SOLD_SHARES_DESTINATION == :corporation ? bundle.corporation : self
 
       transfer_shares(bundle,
-                      self,
+                      transfer_to,
                       spender: @bank,
                       receiver: entity,
                       price: price,
@@ -145,16 +145,25 @@ module Engine
                       swap_to_entity: swap_to_entity)
     end
 
+    def log_sell_shares(entity, verb, bundle, price, swap_text)
+      @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
+              "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
+    end
+
+    def additional_price_adjustments(_bundle)
+      0
+    end
+
     def share_pool?
       true
     end
 
     def fit_in_bank?(bundle)
-      (bundle.percent + percent_of(bundle.corporation)) <= @game.class::MARKET_SHARE_LIMIT
+      (bundle.percent + percent_of(bundle.corporation)) <= @game.market_share_limit(bundle.corporation)
     end
 
     def bank_at_limit?(corporation)
-      common_percent_of(corporation) >= @game.class::MARKET_SHARE_LIMIT
+      common_percent_of(corporation) >= @game.market_share_limit(corporation)
     end
 
     def transfer_shares(bundle, to_entity,
@@ -270,13 +279,14 @@ module Engine
       # previous president if they haven't sold the president's share
       # give the president the president's share
       # if the owner only sold half of their president's share, take one away
-      swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : self
+      transfer_to = @game.class::SOLD_SHARES_DESTINATION == :corporation ? corporation : self
+      swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : transfer_to
 
       change_president(presidents_share, swap_to, president, previous_president)
 
       return unless bundle.partial?
 
-      handle_partial(bundle, self, owner)
+      handle_partial(bundle, transfer_to, owner)
     end
 
     def handle_partial(bundle, from, to)

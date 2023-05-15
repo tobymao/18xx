@@ -15,12 +15,6 @@ module Engine
 
             @river_special_tile_lay = nil
           end
-
-          def active_entities
-            return @connection_runs.keys unless @connection_runs.empty?
-
-            super
-          end
         end
       end
     end

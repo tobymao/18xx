@@ -335,7 +335,7 @@ module Engine
           trains
         end
 
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :none
@@ -1179,7 +1179,7 @@ module Engine
             ['> stock value/2', '1 →'],
             ['≥ 2× stock value', '2 →'],
             ['≥ 3× stock value', '3 →'],
-            ['≥ 4× stock value', '3 →'],
+            ['≥ 4× stock value', '4 →'],
           ]
         end
 
@@ -1195,7 +1195,7 @@ module Engine
           close_corporation(entity, quiet: true)
         end
 
-        def hex_blocked_by_ability?(_entity, abilities, hex)
+        def hex_blocked_by_ability?(_entity, abilities, hex, _tile = nil)
           Array(abilities).any? { |ability| ability.hexes.include?(hex.id) }
         end
 

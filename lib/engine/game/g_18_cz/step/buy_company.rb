@@ -13,7 +13,7 @@ module Engine
 
             case entity.type
             when :medium
-              unless company.sym.include?('M') || company.sym.include?('S')
+              if !company.sym.include?('M') && !company.sym.include?('S')
                 raise GameError, "#{entity.name} can only buy #{entity.type} companies or smaller"
               end
             when :small

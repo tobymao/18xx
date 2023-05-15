@@ -43,7 +43,7 @@ module View
 
       inner << h(:div, [
         'Please ',
-        h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
+        h(:a, { attrs: { href: "#{@game.meta.known_issues_url},\"needs triage\"" } }, 'raise a bug report'),
         ' and include ',
         *game_link,
       ])
@@ -65,13 +65,14 @@ module View
     def load_game
       game_id = @game_data['id']
       actions = @game_data['actions']
-      @num_actions = actions.size
+      @last_action_id = actions&.last&.fetch('id') || 0
+      last_processed_action_id = @game&.raw_actions&.last&.fetch('id') || 0
       return if game_id == @game&.id &&
         (@game.exception ||
-         (!cursor && @game.raw_actions.size == @num_actions) ||
-         (cursor == @game.raw_actions.size))
+         (!cursor && last_processed_action_id == @last_action_id) ||
+         (cursor == @game.last_game_action_id))
 
-      return @game.process_to_action(cursor) if game_id == @game&.id && cursor && cursor > @game.raw_actions.size
+      return @game.process_to_action(cursor) if game_id == @game&.id && cursor && cursor > @game.last_game_action_id
 
       load_game_with_class = lambda do
         @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
@@ -329,7 +330,7 @@ module View
       menu_items << item('S|preadsheet', '#spreadsheet')
       menu_items << item("To|ols#{' 📝' if note}", '#tools')
 
-      enabled = @game.programmed_actions[@game.player_by_id(@user['id'])] if @user
+      enabled = !@game.programmed_actions[@game.player_by_id(@user['id'])].empty? if @user
       menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
@@ -400,7 +401,12 @@ module View
 
       case @round
       when Engine::Round::Stock
-        if !(%w[place_token lay_tile remove_token] & current_entity_actions).empty?
+        if current_entity_actions.include?('place_token') && step.respond_to?(:map_action_optional?) && step.map_action_optional?
+          h(:div, [
+              h(Game::Round::Stock, game: @game),
+              h(Game::Map, game: @game),
+            ])
+        elsif !(%w[place_token lay_tile remove_token] & current_entity_actions).empty?
           h(Game::Map, game: @game)
         else
           h(Game::Round::Stock, game: @game)
@@ -446,7 +452,7 @@ module View
       children = []
       children << render_round
       children << h(Game::GameLog, user: @user, scroll_pos: @scroll_pos, chat_input: @chat_input)
-      children << h(Game::HistoryAndUndo, num_actions: @num_actions)
+      children << h(Game::HistoryAndUndo, last_action_id: @last_action_id)
       children << h(Game::EntityOrder, round: @round)
       unless @game.finished
         children << h(Game::Abilities, user: @user, game: @game)

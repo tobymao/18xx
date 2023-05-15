@@ -22,7 +22,7 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
+    attr_accessor :ipoed, :floated, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
                   :type, :floatable, :original_par_price, :reservation_color, :min_price, :ipo_owner,
                   :always_market_price, :full_name
     attr_reader :companies, :name, :fraction_shares, :id, :needs_token_to_par,
@@ -90,10 +90,10 @@ module Engine
     end
 
     def <=>(other)
-      return 1 unless (self_key = sort_order_key)
-      return -1 unless (other_key = other.sort_order_key)
+      return -1 unless (self_key = sort_order_key)
+      return 1 unless (other_key = other.sort_order_key)
 
-      other_key <=> self_key
+      self_key <=> other_key
     end
 
     # sort in operating order, then name: corporation with higher share price,
@@ -101,7 +101,7 @@ module Engine
     def sort_order_key
       return unless (sp = share_price)
 
-      [sp.price, sp.coordinates.last, -sp.coordinates.first, -(sp.corporations.find_index(self) || 0), name]
+      [-sp.price, -sp.coordinates.last, sp.coordinates.first, (sp.corporations.find_index(self) || 0), name]
     end
 
     def counts_for_limit
@@ -247,7 +247,15 @@ module Engine
     end
 
     def all_abilities
-      @companies.flat_map(&:all_abilities) + @abilities
+      all_abilities = @companies.flat_map(&:all_abilities) + @abilities
+      if owner.respond_to?(:companies)
+        all_abilities += owner.companies&.flat_map do |c|
+          c.all_abilities.select do |a|
+            a.when.to_s.include? 'owning_player'
+          end
+        end
+      end
+      all_abilities
     end
 
     def remove_ability(ability)

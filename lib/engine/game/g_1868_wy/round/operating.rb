@@ -8,9 +8,13 @@ module Engine
       module Round
         class Operating < Engine::Round::Operating
           def setup
-            @game.setup_development_tokens
+            @game.setup_credit_mobilier_for_round
 
             super
+          end
+
+          def select_entities
+            @game.operating_order
           end
         end
       end

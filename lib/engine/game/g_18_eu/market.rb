@@ -4,7 +4,7 @@ module Engine
   module Game
     module G18EU
       module Market
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
         BANK_CASH = 12_000
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = true

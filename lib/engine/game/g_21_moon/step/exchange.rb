@@ -26,10 +26,12 @@ module Engine
             raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}" unless can_exchange?(company,
                                                                                                                      bundle)
 
+            @log << "#{company.name} exchanged for share of #{bundle.corporation.name} and closes"
             buy_shares(company.owner, bundle, exchange: :free)
             @round.players_history[company.owner][bundle.corporation] << action if @round.respond_to?(:players_history)
 
             @game.abilities(company, :exchange).use!
+            company.close!
           end
         end
       end

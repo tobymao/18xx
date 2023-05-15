@@ -41,7 +41,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '£%d'
+        CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 15_000
 
@@ -420,7 +420,7 @@ module Engine
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :operate
-        SELL_AFTER = :any_time
+        SELL_AFTER = :round
         SELL_BUY_ORDER = :sell_buy
         PRESIDENT_SALES_TO_MARKET = true
         MARKET_SHARE_LIMIT = 100
@@ -995,7 +995,7 @@ module Engine
         end
 
         def init_stock_market
-          StockMarket.new(self.class::MARKET, [], zigzag: true)
+          StockMarket.new(self.class::MARKET, [], zigzag: true, ledge_movement: true)
         end
 
         def init_round
@@ -1192,16 +1192,17 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          old_price = corporation.share_price
+          president_selling = (bundle.owner == corporation.owner)
 
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           num_shares = bundle.num_shares
-          unless corporation.owner == bundle.owner
+          unless president_selling
             num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
             num_shares -= 2 if corporation.share_price.type == :ignore_two_sales
           end
-          num_shares.times { @stock_market.move_left(corporation) } if selling_movement?(corporation)
-          log_share_price(corporation, price)
+          num_shares.times { @stock_market.move_down(corporation) } if selling_movement?(corporation)
+          log_share_price(corporation, old_price)
           check_bankruptcy!(corporation)
         end
 
@@ -1559,7 +1560,7 @@ module Engine
         end
 
         def check_london(visits)
-          return unless london_hex?(visits.first) || london_hex?(visits.last)
+          return if !london_hex?(visits.first) && !london_hex?(visits.last)
 
           raise GameError, 'Train cannot visit London w/o link' unless london_link?(current_entity)
         end
@@ -1796,9 +1797,9 @@ module Engine
           shares = entity.shares.take(num_shares)
           bundle = ShareBundle.new(shares)
           @share_pool.sell_shares(bundle)
-          price = entity.share_price.price
-          num_shares.times { @stock_market.move_left(entity) }
-          log_share_price(entity, price)
+          old_price = entity.share_price
+          num_shares.times { @stock_market.move_down(entity) }
+          log_share_price(entity, old_price)
           check_bankruptcy!(entity)
         end
 
@@ -2215,8 +2216,8 @@ module Engine
         def remove_colocated_tokens(survivor, nonsurvivor)
           @hexes.each do |hex|
             hex.tile.cities.each do |city|
-              next unless (city.tokened_by?(survivor) && city.tokened_by?(nonsurvivor)) ||
-                  (city.tokened_by?(nonsurvivor) && london_link?(survivor) && LONDON_TOKEN_HEXES.include?(hex.id))
+              next if !(city.tokened_by?(survivor) && city.tokened_by?(nonsurvivor)) &&
+                  !(city.tokened_by?(nonsurvivor) && london_link?(survivor) && LONDON_TOKEN_HEXES.include?(hex.id))
 
               token = city.tokens.find { |t| t&.corporation == nonsurvivor }
               token.destroy!

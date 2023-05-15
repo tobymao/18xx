@@ -41,12 +41,21 @@ module Engine
         # General Constants
         BANK_CASH = 12_000
         CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12, 6 => 11 }.freeze
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
         GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :full_or }.freeze
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge({
+                                                'scl_formation_chance' => ['SCL may form',
+                                                                           'SCL may form on purchase of first 4D '\
+                                                                           'if ICG not formed'],
+                                                'icg_formation_chance' => ['ICG may form',
+                                                                           'ICG may form on purchase of first 5D '\
+                                                                           'if SCL not formed'],
+                                              }).freeze
         SELL_BUY_ORDER = :sell_buy_sell
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 425, 6 => 375 }.freeze
-        TILE_RESERVATION_BLOCKS_OTHERS = true
+        TILE_RESERVATION_BLOCKS_OTHERS = :always
         TRACK_RESTRICTION = :permissive
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         # OR Constants
         FIRST_TURN_EXTRA_TILE_LAYS = [{ lay: true, upgrade: false }].freeze
@@ -252,6 +261,12 @@ module Engine
           ])
         end
 
+        def float_str(entity)
+          return nil if entity == scl || entity == icg
+
+          super
+        end
+
         def share_flags(shares)
           return if shares.empty?
 
@@ -354,6 +369,60 @@ module Engine
           minor.float!
           company_by_id(minor_id).close!
           @recently_floated << minor
+        end
+
+        # ICG/SCL merger stuff
+        def icg
+          @icg ||= corporation_by_id('ICG')
+        end
+
+        def scl
+          @scl ||= corporation_by_id('SCL')
+        end
+
+        def event_icg_formation_chance!
+          @log << '-- Event: ICG Formation opportunity --'
+        end
+
+        def event_scl_formation_chance!
+          @log << '-- Event: SCL Formation opportunity -- '
+        end
+
+        # Train stuff
+        def info_on_trains(phase)
+          Array(phase[:on]).join(', ')
+        end
+
+        def give_spare_part_to_train(train)
+          raise GameError "Permanent train #{train.name} cannot get a spare part" unless train.rusts_on
+
+          train.name = train.name + SPARE_PART_CHAR
+        end
+
+        def obsolete?(train, purchased_train)
+          train.rusts_on == purchased_train.sym && train.name.include?(SPARE_PART_CHAR)
+        end
+
+        def rust?(train, purchased_train)
+          super && !train.name.include?(SPARE_PART_CHAR)
+        end
+
+        def remove_spare_part(train)
+          return unless train.name[-1] == SPARE_PART_CHAR
+
+          @log << "#{train.name} uses up a spare part"
+          train.name = train.name[0..-2]
+        end
+
+        def rust(train)
+          return if train.name[-1] == SPARE_PART_CHAR
+
+          if train.owner.corporation? && train.salvage
+            @bank.spend(train.salvage, train.owner)
+            @log << "#{train.owner.name} gets #{format_currency(train.salvage)} salvage for rusted #{train.name} train"
+          end
+
+          super
         end
       end
     end

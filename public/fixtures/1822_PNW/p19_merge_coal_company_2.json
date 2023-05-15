@@ -1,0 +1,818 @@
+{
+  "status": "finished",
+  "actions": [
+    {
+      "type": "bid",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1663485517,
+      "company": "P19",
+      "price": 0
+    },
+    {
+      "type": "bid",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1663485519,
+      "company": "M2",
+      "price": 100
+    },
+    {
+      "type": "bid",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 3,
+      "created_at": 1663485525,
+      "company": "MB",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 4,
+      "created_at": 1663485526
+    },
+    {
+      "type": "pass",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 5,
+      "created_at": 1663485526
+    },
+    {
+      "type": "pass",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 6,
+      "created_at": 1663485527
+    },
+    {
+      "type": "buy_train",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 7,
+      "created_at": 1663485530,
+      "train": "L-0",
+      "price": 60,
+      "variant": "L"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 8,
+      "created_at": 1663485538,
+      "hex": "B19",
+      "tile": "57-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 9,
+      "created_at": 1663485711,
+      "routes": [
+        {
+          "train": "L-3",
+          "connections": [
+            [
+              "local",
+              "B19"
+            ]
+          ],
+          "hexes": [
+            "B19"
+          ],
+          "revenue": 20,
+          "revenue_str": "B19",
+          "nodes": [
+            "B19-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 10,
+      "created_at": 1663485715
+    },
+    {
+      "type": "pass",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 11,
+      "created_at": 1663485715
+    },
+    {
+      "type": "bid",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 12,
+      "created_at": 1663485718,
+      "company": "M8",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 13,
+      "created_at": 1663485719
+    },
+    {
+      "type": "pass",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 14,
+      "created_at": 1663485720
+    },
+    {
+      "type": "pass",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 15,
+      "created_at": 1663485720
+    },
+    {
+      "type": "pass",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 16,
+      "created_at": 1663485721
+    },
+    {
+      "type": "lay_tile",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 17,
+      "created_at": 1663485729,
+      "hex": "A20",
+      "tile": "58-0",
+      "rotation": 4
+    },
+    {
+      "type": "run_routes",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1663485734,
+      "routes": [
+        {
+          "train": "L-3",
+          "connections": [
+            [
+              "B19",
+              "A20"
+            ]
+          ],
+          "hexes": [
+            "B19",
+            "A20"
+          ],
+          "revenue": 30,
+          "revenue_str": "B19-A20",
+          "nodes": [
+            "B19-0",
+            "A20-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 19,
+      "created_at": 1663485737
+    },
+    {
+      "type": "buy_train",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 20,
+      "created_at": 1663485741,
+      "train": "L-0",
+      "price": 60,
+      "variant": "L"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 21,
+      "created_at": 1663485745,
+      "hex": "G12",
+      "tile": "4-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 22,
+      "created_at": 1663485748,
+      "routes": [
+        {
+          "train": "L-8",
+          "connections": [
+            [
+              "H11",
+              "G12"
+            ]
+          ],
+          "hexes": [
+            "H11",
+            "G12"
+          ],
+          "revenue": 30,
+          "revenue_str": "H11-G12",
+          "nodes": [
+            "H11-0",
+            "G12-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 23,
+      "created_at": 1663485759
+    },
+    {
+      "type": "pass",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 24,
+      "created_at": 1663485760
+    },
+    {
+      "type": "pass",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 25,
+      "created_at": 1663485760
+    },
+    {
+      "type": "pass",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 26,
+      "created_at": 1663485760
+    },
+    {
+      "type": "lay_tile",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 27,
+      "created_at": 1663485763,
+      "hex": "C18",
+      "tile": "9-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 28,
+      "created_at": 1663485767,
+      "routes": [
+        {
+          "train": "L-3",
+          "connections": [
+            [
+              "B19",
+              "A20"
+            ]
+          ],
+          "hexes": [
+            "B19",
+            "A20"
+          ],
+          "revenue": 30,
+          "revenue_str": "B19-A20",
+          "nodes": [
+            "B19-0",
+            "A20-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "buy_train",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 29,
+      "created_at": 1663485770,
+      "train": "L-3",
+      "price": 80,
+      "variant": "2",
+      "exchange": "L-3"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 30,
+      "created_at": 1663485780,
+      "hex": "F13",
+      "tile": "6-0",
+      "rotation": 4
+    },
+    {
+      "type": "run_routes",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 31,
+      "created_at": 1663485782,
+      "routes": [
+        {
+          "train": "L-8",
+          "connections": [
+            [
+              "H11",
+              "G12"
+            ]
+          ],
+          "hexes": [
+            "H11",
+            "G12"
+          ],
+          "revenue": 30,
+          "revenue_str": "H11-G12",
+          "nodes": [
+            "H11-0",
+            "G12-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 32,
+      "created_at": 1663485784
+    },
+    {
+      "type": "pass",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 33,
+      "created_at": 1663485785
+    },
+    {
+      "type": "pass",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 34,
+      "created_at": 1663485785
+    },
+    {
+      "type": "pass",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 35,
+      "created_at": 1663485785
+    },
+    {
+      "type": "lay_tile",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 36,
+      "created_at": 1663485815,
+      "hex": "D17",
+      "tile": "BC-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 37,
+      "created_at": 1663485818,
+      "routes": [
+        {
+          "train": "L-3",
+          "connections": [
+            [
+              "B19",
+              "A20"
+            ]
+          ],
+          "hexes": [
+            "B19",
+            "A20"
+          ],
+          "revenue": 30,
+          "revenue_str": "B19-A20",
+          "nodes": [
+            "B19-0",
+            "A20-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 38,
+      "created_at": 1663485822
+    },
+    {
+      "type": "lay_tile",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 39,
+      "created_at": 1663485826,
+      "hex": "F15",
+      "tile": "BC-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 40,
+      "created_at": 1663485828,
+      "routes": [
+        {
+          "train": "L-8",
+          "connections": [
+            [
+              "H11",
+              "G12"
+            ]
+          ],
+          "hexes": [
+            "H11",
+            "G12"
+          ],
+          "revenue": 30,
+          "revenue_str": "H11-G12",
+          "nodes": [
+            "H11-0",
+            "G12-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "buy_train",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 41,
+      "created_at": 1663485830,
+      "train": "L-8",
+      "price": 80,
+      "variant": "2",
+      "exchange": "L-8"
+    },
+    {
+      "type": "pass",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 42,
+      "created_at": 1663485832
+    },
+    {
+      "type": "lay_tile",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 43,
+      "created_at": 1663485839,
+      "hex": "D17",
+      "tile": "9-1",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 44,
+      "created_at": 1663485862,
+      "routes": [
+        {
+          "train": "L-3",
+          "connections": [
+            [
+              "B19",
+              "A20"
+            ]
+          ],
+          "hexes": [
+            "B19",
+            "A20"
+          ],
+          "revenue": 30,
+          "revenue_str": "B19-A20",
+          "nodes": [
+            "B19-0",
+            "A20-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 45,
+      "created_at": 1663485865
+    },
+    {
+      "type": "lay_tile",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 46,
+      "created_at": 1663485870,
+      "hex": "F15",
+      "tile": "8-0",
+      "rotation": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 47,
+      "created_at": 1663485874,
+      "routes": [
+        {
+          "train": "L-8",
+          "connections": [
+            [
+              "H11",
+              "G12"
+            ]
+          ],
+          "hexes": [
+            "H11",
+            "G12"
+          ],
+          "revenue": 30,
+          "revenue_str": "H11-G12",
+          "nodes": [
+            "H11-0",
+            "G12-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "undo",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 48,
+      "created_at": 1663485883
+    },
+    {
+      "type": "run_routes",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 49,
+      "created_at": 1663485886,
+      "routes": [
+        {
+          "train": "L-8",
+          "connections": [
+            [
+              "H11",
+              "I12"
+            ]
+          ],
+          "hexes": [
+            "H11",
+            "I12"
+          ],
+          "revenue": 40,
+          "revenue_str": "H11-I12",
+          "nodes": [
+            "H11-0",
+            "I12-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 50,
+      "created_at": 1663485887
+    },
+    {
+      "type": "pass",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 51,
+      "created_at": 1663485888
+    },
+    {
+      "type": "pass",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 52,
+      "created_at": 1663485889
+    },
+    {
+      "type": "pass",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 53,
+      "created_at": 1663485889
+    },
+    {
+      "type": "pass",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 54,
+      "created_at": 1663488983
+    },
+    {
+      "type": "lay_tile",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 55,
+      "created_at": 1663488990,
+      "hex": "B19",
+      "tile": "14-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 56,
+      "created_at": 1663488992,
+      "routes": [
+        {
+          "train": "L-3",
+          "connections": [
+            [
+              "B19",
+              "A20"
+            ]
+          ],
+          "hexes": [
+            "B19",
+            "A20"
+          ],
+          "revenue": 40,
+          "revenue_str": "B19-A20",
+          "nodes": [
+            "B19-0",
+            "A20-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "2",
+      "entity_type": "corporation",
+      "id": 57,
+      "created_at": 1663488994
+    },
+    {
+      "type": "acquire_company",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 58,
+      "created_at": 1663488997,
+      "company": "P19"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "P19",
+      "entity_type": "company",
+      "id": 59,
+      "created_at": 1663489007,
+      "hex": "E16",
+      "tile": "PNW4-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 60,
+      "created_at": 1663802138,
+      "routes": [
+        {
+          "train": "L-8",
+          "connections": [
+            [
+              "H11",
+              "I12"
+            ]
+          ],
+          "hexes": [
+            "H11",
+            "I12"
+          ],
+          "revenue": 50,
+          "revenue_str": "H11-I12",
+          "nodes": [
+            "H11-0",
+            "I12-0"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pass",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 61,
+      "created_at": 1663802140
+    },
+    {
+      "type": "merge",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 62,
+      "created_at": 1663802141,
+      "corporation": "2"
+    },
+    {
+      "type": "choose",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 63,
+      "created_at": 1663802143,
+      "choice": "100"
+    },
+    {
+      "type": "choose",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 64,
+      "created_at": 1663802145,
+      "choice": "3"
+    },
+    {
+      "type": "choose",
+      "entity": "8",
+      "entity_type": "corporation",
+      "id": 65,
+      "created_at": 1663802146,
+      "choice": "replace"
+    },
+    {
+      "type": "end_game",
+      "entity": "SWW",
+      "entity_type": "corporation",
+      "id": 66,
+      "created_at": 1663802156
+    }
+  ],
+  "id": "hs_hnicltyy_1663485406",
+  "players": [
+    {
+      "name": "Player 1",
+      "id": 0
+    },
+    {
+      "name": "Player 2",
+      "id": 1
+    },
+    {
+      "name": "Player 3",
+      "id": 2
+    }
+  ],
+  "title": "1822PNW",
+  "description": "",
+  "min_players": "3",
+  "max_players": "3",
+  "settings": {
+    "optional_rules": []
+  },
+  "mode": "hotseat",
+  "user": {
+    "id": 0,
+    "name": "You"
+  },
+  "created_at": "2022-09-21",
+  "loaded": true,
+  "result": {
+    "0": 1020,
+    "1": 500,
+    "2": 500
+  },
+  "manually_ended": true,
+  "turn": 5,
+  "round": "Operating Round",
+  "acting": [
+    0
+  ],
+  "updated_at": 1663802156
+}

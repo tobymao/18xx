@@ -10,11 +10,12 @@ module Engine
         class Track < Engine::Step::Track
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             raise GameError, 'Cannot upgrade mines' if action.hex.assigned?('mine')
+            raise GameError, 'Cannot upgrade ranches' if action.hex.assigned?('ranch')
 
             super
 
-            psm = @game.company_by_id(@game.class::PITTSBURGH_PRIVATE_NAME)
-            return if action.hex.name != @game.class::PITTSBURGH_PRIVATE_HEX || psm.owned_by_player?
+            psm = @game.pittsburgh_private
+            return if action.hex.name != @game.abilities(psm, 'tile_lay')&.hexes&.first || psm.owned_by_player?
 
             # PSM loses it's special if something else goes on F13
             @game.log << "#{psm.name} closes as it can no longer be used"

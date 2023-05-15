@@ -32,7 +32,7 @@ module Engine
                         plum: '#DDA0DD',
                         lightGoldenrod: '#EEDD82')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 99_999
 
@@ -921,7 +921,7 @@ module Engine
 
         HOME_TOKEN_TIMING = :operate
 
-        TILE_RESERVATION_BLOCKS_OTHERS = true
+        TILE_RESERVATION_BLOCKS_OTHERS = :always
 
         GAME_END_CHECK = {
           bankrupt: :immediate,
@@ -1328,6 +1328,12 @@ module Engine
           super
         end
 
+        def check_route_token(route, token)
+          return true if route.corporation.id == 'C&P'
+
+          super
+        end
+
         def city_tokened_by?(city, entity)
           return true if entity.id == 'C&P' && @round.current_operator == entity && @round.laid_hexes.include?(city.hex)
 
@@ -1398,7 +1404,7 @@ module Engine
           train.owner.remove_train(train) if train.owner&.system?
         end
 
-        def hex_blocked_by_ability?(entity, _ability, hex)
+        def hex_blocked_by_ability?(entity, _ability, hex, _tile = nil)
           return false if entity.name == 'C&P' && hex.id == 'C15'
 
           super

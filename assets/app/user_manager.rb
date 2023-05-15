@@ -5,6 +5,7 @@ require 'lib/storage'
 module UserManager
   def self.included(base)
     base.needs :user, default: nil, store: true
+    base.needs :profile, default: nil, store: true
     base.needs :app_route, default: nil, store: true
     base.needs :flash_opts, default: {}, store: true
     base.needs :connection, default: nil, store: true

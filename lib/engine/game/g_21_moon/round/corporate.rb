@@ -54,6 +54,12 @@ module Engine
           def show_auto?
             false
           end
+
+          def force_next_entity!
+            @steps.each(&:pass!)
+            next_entity!
+            clear_cache!
+          end
         end
       end
     end

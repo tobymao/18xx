@@ -13,6 +13,7 @@ module Engine
         DEPENDS_ON = '18 Los Angeles'
 
         GAME_TITLE = '18 Tokaido'
+        GAME_ISSUE_LABEL = '18Tokaido'
         GAME_DESIGNER = 'Douglas Triggs'
         GAME_LOCATION = 'Central Japan'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Tokaido'

@@ -136,18 +136,18 @@ module Engine
             if revenue.positive?
               curr_price = entity.share_price.price
               if revenue >= curr_price && revenue < 2 * curr_price
-                { share_direction: :right, share_times: 2 }
+                { share_direction: :right, share_times: 1 }
               elsif revenue >= 2 * curr_price && revenue < 3 * curr_price
-                { share_direction: :right, share_times: 4 }
+                { share_direction: :right, share_times: 2 }
               elsif revenue >= 3 * curr_price && revenue < 4 * curr_price
-                { share_direction: :right, share_times: 6 }
+                { share_direction: :right, share_times: 3 }
               elsif revenue >= 4 * curr_price
-                { share_direction: :right, share_times: 8 }
+                { share_direction: :right, share_times: 4 }
               else
                 {}
               end
             else
-              { share_direction: :left, share_times: 2 }
+              { share_direction: :left, share_times: 1 }
             end
           end
 
@@ -164,15 +164,11 @@ module Engine
             { corporation: subsidy - diff, per_share: payout_per_share(entity, revenue + diff) }
           end
 
-          def movement_str(times, dir)
-            "#{times / 2} #{dir}"
-          end
-
           def handle_warranties!(entity)
             # remove one warranty from each train and see if it rusts
             entity.trains.dup.each do |train|
               train.name = train.name[0..-2] if train.name.include?('*')
-              next unless @game.deferred_rust.include?(train) && !train.name.include?('*')
+              next if !@game.deferred_rust.include?(train) || train.name.include?('*')
 
               @log << "#{train.name} rusts after warranty expired"
               @game.deferred_rust.delete(train)

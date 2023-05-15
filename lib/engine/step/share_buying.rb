@@ -5,7 +5,8 @@ require_relative 'base'
 module Engine
   module Step
     module ShareBuying
-      def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil)
+      def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
+                     allow_president_change: true, borrow_from: nil, silent: nil)
         check_legal_buy(entity,
                         shares,
                         exchange: exchange,
@@ -15,9 +16,11 @@ module Engine
         @game.share_pool.buy_shares(entity,
                                     shares,
                                     exchange: exchange,
+                                    exchange_price: exchange_price,
                                     swap: swap,
                                     borrow_from: borrow_from,
-                                    allow_president_change: allow_president_change)
+                                    allow_president_change: allow_president_change,
+                                    silent: silent)
 
         maybe_place_home_token(shares.corporation)
       end
@@ -40,7 +43,7 @@ module Engine
         corporation = bundle.corporation
 
         corporation.holding_ok?(entity, bundle.common_percent) &&
-          (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit)
+          (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity))
       end
 
       def swap_buy(_player, _corporation, _ipo_or_pool_share); end

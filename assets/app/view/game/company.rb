@@ -218,10 +218,11 @@ module View
           },
           on: { click: ->(event) { toggle_desc(event, company) } },
         }
+        is_possessed = @company.owner&.player? || @game.players.any? { |p| p.unsold_companies.include?(@company) }
         hidden_props = {
           style: {
             display: 'none',
-            gridColumnEnd: "span #{@company.owner&.player? ? '3' : '2'}",
+            gridColumnEnd: "span #{is_possessed ? '3' : '2'}",
             marginBottom: '0.5rem',
             padding: '0.1rem 0.2rem',
             fontSize: '80%',

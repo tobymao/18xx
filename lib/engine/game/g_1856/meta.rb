@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
 
         GAME_DESIGNER = 'Bill Dixon'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1856'
@@ -28,6 +28,11 @@ module Engine
             sym: :unlimited_bonus_tokens,
             short_name: 'Unlimited +10 bonus tokens',
             desc: 'Unlimited Bridge & Tunnel Tokens (As opposed to normal limit of 3 each)',
+          },
+          {
+            sym: :eight_train_variant,
+            short_name: '8-train variant',
+            desc: 'Replaces diesel trains with $1000 8-trains (and $350 trade in discount)',
           },
         ].freeze
       end

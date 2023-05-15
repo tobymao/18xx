@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'entities'
+require_relative 'map'
 require_relative 'meta'
 require_relative 'stock_market'
 require_relative '../../loan'
@@ -15,6 +17,8 @@ module Engine
       class Game < Game::Base
         include_meta(G1867::Meta)
         include CitiesPlusTownsRouteDistanceStr
+        include Entities
+        include Map
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -37,7 +41,7 @@ module Engine
                         cream: '#fffdd0',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 15_000
 
@@ -50,159 +54,6 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[cities].freeze
-
-        TILES = {
-          '3' => 2,
-          '4' => 4,
-          '5' => 2,
-          '6' => 2,
-          '7' => 'unlimited',
-          '8' => 'unlimited',
-          '9' => 'unlimited',
-          '14' => 2,
-          '15' => 4,
-          '16' => 2,
-          '17' => 2,
-          '18' => 2,
-          '19' => 2,
-          '20' => 2,
-          '21' => 2,
-          '22' => 2,
-          '23' => 5,
-          '24' => 5,
-          '25' => 4,
-          '26' => 2,
-          '27' => 2,
-          '28' => 2,
-          '29' => 2,
-          '30' => 2,
-          '31' => 2,
-          '39' => 2,
-          '40' => 2,
-          '41' => 2,
-          '42' => 2,
-          '43' => 2,
-          '44' => 2,
-          '45' => 2,
-          '46' => 2,
-          '47' => 2,
-          '57' => 2,
-          '58' => 4,
-          '63' => 3,
-          '70' => 2,
-          '87' => 2,
-          '88' => 2,
-          '120' => 1,
-          '122' => 1,
-          '124' => 1,
-          '201' => 3,
-          '202' => 3,
-          '204' => 2,
-          '207' => 5,
-          '208' => 2,
-          '611' => 3,
-          '619' => 2,
-          '621' => 2,
-          '622' => 2,
-          '623' => 3,
-          '624' => 1,
-          '625' => 1,
-          '626' => 1,
-          '637' => 1,
-          '639' => 1,
-          '801' => 2,
-          '911' => 3,
-          'X1' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;'\
-                      'path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4;path=a:2,b:_2;path=a:_2,b:5;label=M',
-          },
-          'X2' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;'\
-                      'path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:5;path=a:2,b:_2;'\
-                      'path=a:_2,b:4;label=M',
-          },
-          'X3' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;'\
-                      'path=a:_0,b:4;path=a:1,b:_1;path=a:_1,b:2;path=a:3,b:_2;'\
-                      'path=a:_2,b:5;label=M',
-          },
-          'X4' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:3;'\
-                      'path=a:1,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:5;label=M',
-          },
-          'X5' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_1;path=a:1,b:_0;'\
-                      'path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=M',
-          },
-          'X6' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=M',
-          },
-          'X7' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_0;path=a:1,b:_0;'\
-                      'path=a:2,b:_1;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_0;label=M',
-          },
-          'X8' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
-          },
-        }.freeze
-
-        LOCATION_NAMES = {
-          'D2' => 'Timmins ($80 if includes T/M/Q)',
-          'D8' => 'Sudbury',
-          'F8' => 'North Bay',
-          'E13' => 'Barrie',
-          'E15' => 'Guelph',
-          'E17' => 'Hamilton',
-          'D16' => 'Berlin',
-          'C17' => 'London',
-          'G15' => 'Peterborough',
-          'I15' => 'Kingston',
-          'J12' => 'Ottawa',
-          'M9' => 'Trois-Rivières',
-          'O7' => 'Quebec',
-          'N12' => 'Sherbrooke',
-          'C15' => 'Goderich',
-          'B18' => 'Sarnia',
-          'H14' => 'Belleville',
-          'H10' => 'Pembroke',
-          'K13' => 'Cornwall',
-          'L10' => 'St. Jerome',
-          'M13' => 'Granby',
-          'L12' => 'Montreal',
-          'F16' => 'Toronto',
-          'A7' => 'Sault Ste. Marie',
-          'F18' => 'Buffalo',
-          'M15' => 'New England',
-          'O13' => 'Maine',
-          'P8' => 'Maritime Provinces',
-          'A19' => 'Detroit',
-        }.freeze
 
         COLUMN_MARKET = [
           %w[35
@@ -474,480 +325,7 @@ module Engine
           },
         ].freeze
 
-        COMPANIES = [
-          {
-            name: 'rules until start of phase 3',
-            sym: '3',
-            value: 3,
-            revenue: 0,
-            desc: 'Hidden corporation',
-            abilities: [{ type: 'blocks_hexes', hexes: ['M13'] }],
-            color: nil,
-          },
-          {
-            name: 'Champlain & St. Lawrence',
-            sym: 'C&SL',
-            value: 30,
-            revenue: 10,
-            discount: 10,
-            desc: 'No special abilities.',
-            color: nil,
-          },
-          {
-            name: 'Niagara Falls Bridge',
-            sym: 'NFB',
-            value: 45,
-            revenue: 15,
-            discount: 15,
-            desc: 'When owned by a corporation, they gain $10 extra revenue for '\
-                  'each of their routes that include Buffalo',
-            abilities: [
-              {
-                type: 'hex_bonus',
-                owner_type: 'corporation',
-                hexes: ['F18'],
-                amount: 10,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Montreal Bridge',
-            sym: 'MB',
-            value: 60,
-            revenue: 20,
-            discount: 20,
-            desc: 'When owned by a corporation, they gain $10 extra revenue for '\
-                  'each of their routes that include Montreal',
-            abilities: [
-              {
-                type: 'hex_bonus',
-                owner_type: 'corporation',
-                hexes: ['L12'],
-                amount: 10,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Quebec Bridge',
-            sym: 'QB',
-            value: 75,
-            revenue: 25,
-            discount: 25,
-            desc: 'When owned by a corporation, they gain $10 extra revenue for '\
-                  'each of their routes that include Quebec',
-            abilities: [
-              {
-                type: 'hex_bonus',
-                owner_type: 'corporation',
-                hexes: ['O7'],
-                amount: 10,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'St. Clair Tunnel',
-            sym: 'SCT',
-            value: 90,
-            revenue: 30,
-            discount: 30,
-            desc: 'When owned by a corporation, they gain $10 extra revenue for '\
-                  'each of their routes that include Detroit',
-            abilities: [
-              {
-                type: 'hex_bonus',
-                owner_type: 'corporation',
-                hexes: %w[A19 A17],
-                amount: 10,
-              },
-            ],
-            color: nil,
-          },
-        ].freeze
-
-        CORPORATIONS = [
-          {
-            sym: 'CNR',
-            name: 'Canadian Northern Railway',
-            logo: '1867/CNR',
-            simple_logo: '1867/CNR.alt',
-            float_percent: 20,
-            always_market_price: true,
-            tokens: [0, 20, 40],
-            type: 'major',
-            color: '#3c7b5c',
-            reservation_color: nil,
-          },
-          {
-            sym: 'CPR',
-            name: 'Canadian Pacific Railway',
-            logo: '1867/CPR',
-            simple_logo: '1867/CPR.alt',
-            float_percent: 20,
-            always_market_price: true,
-            tokens: [0, 20, 40],
-            type: 'major',
-            color: '#ef4223',
-            reservation_color: nil,
-          },
-          {
-            sym: 'C&O',
-            name: 'Chesapeake and Ohio Railway',
-            logo: '1867/CO',
-            simple_logo: '1867/CO.alt',
-            float_percent: 20,
-            always_market_price: true,
-            tokens: [0, 20, 40],
-            type: 'major',
-            color: '#0189d1',
-            reservation_color: nil,
-          },
-          {
-            sym: 'GTR',
-            name: 'Grand Trunk Railway',
-            logo: '1867/GTR',
-            simple_logo: '1867/GTR.alt',
-            float_percent: 20,
-            always_market_price: true,
-            tokens: [0, 20, 40],
-            type: 'major',
-            color: '#d75500',
-            reservation_color: nil,
-          },
-          {
-            sym: 'GWR',
-            name: 'Great Western Railway',
-            logo: '1867/GWR',
-            simple_logo: '1867/GWR.alt',
-            float_percent: 20,
-            always_market_price: true,
-            tokens: [0, 20, 40],
-            type: 'major',
-            color: :darkBlue,
-            reservation_color: nil,
-          },
-          {
-            sym: 'ICR',
-            name: 'Intercolonial Railway',
-            logo: '1867/ICR',
-            simple_logo: '1867/ICR.alt',
-            float_percent: 20,
-            always_market_price: true,
-            tokens: [0, 20, 40],
-            type: 'major',
-            color: '#7b352a',
-            reservation_color: nil,
-          },
-          {
-            sym: 'NTR',
-            name: 'National Transcontinental Railway',
-            logo: '1867/NTR',
-            simple_logo: '1867/NTR.alt',
-            float_percent: 20,
-            always_market_price: true,
-            tokens: [0, 20, 40],
-            type: 'major',
-            color: '#3c7b5c',
-            reservation_color: nil,
-          },
-          {
-            sym: 'NYC',
-            name: 'New York Central Railroad',
-            logo: '1867/NYC',
-            simple_logo: '1867/NYC.alt',
-            float_percent: 20,
-            always_market_price: true,
-            tokens: [0, 20, 40],
-            type: 'major',
-            color: '#772282',
-            reservation_color: nil,
-          },
-          {
-            sym: 'BBG',
-            name: 'Buffalo, Brantford, and Goderich',
-            logo: '1867/BBG',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            type: 'minor',
-            shares: [100],
-            max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: nil,
-          },
-          {
-            sym: 'BO',
-            name: 'Brockville and Ottawa',
-            logo: '1867/BO',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#009595',
-            reservation_color: nil,
-          },
-          {
-            sym: 'CS',
-            name: 'Canada Southern',
-            logo: '1867/CS',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#4cb5d2',
-            reservation_color: nil,
-          },
-          {
-            sym: 'CV',
-            name: 'Credit Valley Railway',
-            logo: '1867/CV',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#0097df',
-            reservation_color: nil,
-          },
-          {
-            sym: 'KP',
-            name: 'Kingston and Pembroke',
-            logo: '1867/KP',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#0097df',
-            reservation_color: nil,
-          },
-          {
-            sym: 'LPS',
-            name: 'London and Port Stanley',
-            logo: '1867/LPS',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#7c7b8c',
-            reservation_color: nil,
-          },
-          {
-            sym: 'OP',
-            name: 'Ottawa and Prescott',
-            logo: '1867/OP',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#d30869',
-            reservation_color: nil,
-          },
-          {
-            sym: 'SLA',
-            name: 'St. Lawrence and Atlantic',
-            logo: '1867/SLA',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#7c7b8c',
-            reservation_color: nil,
-          },
-          {
-            sym: 'TGB',
-            name: 'Toronto, Grey, and Bruce',
-            logo: '1867/TGB',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: :darkBlue,
-            reservation_color: nil,
-          },
-          {
-            sym: 'TN',
-            name: 'Toronto and Nipissing',
-            logo: '1867/TN',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#7b352a',
-            reservation_color: nil,
-          },
-          {
-            sym: 'AE',
-            name: 'Algoma Eastern Railway',
-            logo: '1867/AE',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#d75500',
-            reservation_color: nil,
-          },
-          {
-            sym: 'CA',
-            name: 'Canada Atlantic Railway',
-            logo: '1867/CA',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#772282',
-            reservation_color: nil,
-          },
-          {
-            sym: 'NO',
-            name: 'New York and Ottawa',
-            logo: '1867/NO',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#d75500',
-            reservation_color: nil,
-          },
-          {
-            sym: 'PM',
-            name: 'Pere Marquette Railway',
-            logo: '1867/PM',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#4cb5d2',
-            reservation_color: nil,
-          },
-          {
-            sym: 'QLS',
-            name: 'Quebec and Lake St. John',
-            logo: '1867/QLS',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#0189d1',
-            reservation_color: nil,
-          },
-          {
-            sym: 'THB',
-            name: 'Toronto, Hamilton and Buffalo',
-            logo: '1867/THB',
-            float_percent: 100,
-            always_market_price: true,
-            tokens: [0],
-            shares: [100],
-            max_ownership_percent: 100,
-            type: 'minor',
-            color: '#d75500',
-            reservation_color: nil,
-          },
-          {
-            sym: 'CN',
-            name: 'Canadian National',
-            logo: '1867/CN',
-            tokens: [0, 0, 0, 0, 0, 0, 0, 0],
-            shares: [100],
-            hide_shares: true,
-            type: 'national',
-            color: '#ef4223',
-            reservation_color: nil,
-          },
-        ].freeze
-
-        HEXES = {
-          white: {
-            %w[B6 B8 C5 C7 C19 D4 D6 D14 E3 E5 E7 E9 F2 F4 F6 F10 F12 F14 G3 G5
-               G7 G9 G11 G13 H4 H6 H8 H12 I5 I7 I9 I11 I13 J6 J8 J10 J14 K5 K7 K9
-               L6 L8 M5 M7 N6 O11] => '',
-            ['D18'] => 'border=edge:5,type:impassable',
-            ['C9'] => 'border=edge:0,type:impassable;border=edge:5,type:impassable',
-            ['D10'] => 'border=edge:2,type:impassable;border=edge:1,type:impassable;'\
-                       'border=edge:0,type:impassable;border=edge:5,type:impassable',
-            ['E11'] => 'border=edge:2,type:impassable;border=edge:1,type:impassable',
-            ['C11'] => 'border=edge:0,type:impassable;border=edge:3,type:impassable;'\
-                       'border=edge:4,type:impassable',
-            ['D12'] => 'border=edge:3,type:impassable;border=edge:4,type:impassable',
-            ['C13'] => 'border=edge:3,type:impassable',
-            ['K11'] => 'upgrade=cost:20,terrain:water',
-            ['N8'] => 'border=edge:0,type:water,cost:80;border=edge:5,type:water,cost:80',
-            %w[N10 M11] =>
-                   'border=edge:2,type:water,cost:80;border=edge:3,type:water,cost:80',
-            ['O9'] => 'border=edge:2,type:water,cost:80',
-            ['M9'] =>
-                   'city=revenue:0;border=edge:5,type:water,cost:80;border=edge:0,type:water,cost:80',
-            %w[D8 F8 E13 E15 C17 I15 N12] => 'city=revenue:0',
-            ['G15'] => 'city=revenue:0;stub=edge:1',
-            %w[E17 D16 O7] => 'city=revenue:0;label=Y',
-            ['J12'] => 'city=revenue:0;label=Y;label=O;upgrade=cost:20,terrain:water',
-            ['L10'] => 'town=revenue:0;border=edge:5,type:water,cost:80;stub=edge:0',
-            ['H14'] => 'town=revenue:0;border=edge:0,type:impassable',
-            %w[C15 B18 H10 M13] => 'town=revenue:0',
-            ['K13'] => 'town=revenue:0;stub=edge:4',
-          },
-          gray: {
-            ['D2'] => 'city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;border=edge:1;border=edge:4',
-            ['C3'] => 'path=a:0,b:4;border=edge:4',
-            ['E1'] => 'path=a:1,b:5;border=edge:1',
-            ['B16'] => 'path=a:0,b:5',
-            ['L14'] => 'path=a:2,b:3',
-          },
-          yellow: {
-            ['L12'] => 'city=revenue:40;city=revenue:40;city=revenue:40,loc:5;path=a:1,b:_0;'\
-                       'path=a:3,b:_1;label=M;upgrade=cost:20,terrain:water',
-            ['F16'] => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=T',
-          },
-          red: {
-            ['A7'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:4,b:_0;path=a:5,b:_0',
-            ['F18'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:2,b:_0',
-            ['M15'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:3,b:_0',
-            ['O13'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:2,b:_0;path=a:3,b:_0',
-            ['P8'] => 'offboard=revenue:yellow_30|green_30|brown_40|gray_40;path=a:2,b:_0;path=a:1,b:_0',
-            ['A17'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70,hide:1,groups:Detroit;'\
-                       'path=a:5,b:_0;border=edge:0',
-            ['A19'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70,groups:Detroit;'\
-                       'path=a:4,b:_0;border=edge:3',
-          },
-          blue: {
-            ['E19'] => 'offboard=revenue:10;path=a:3,b:_0;border=edge:2,type:impassable',
-            ['H16'] => 'offboard=revenue:10;path=a:2,b:_0;path=a:4,b:_0;border=edge:3,type:impassable',
-          },
-        }.freeze
-
-        LAYOUT = :flat
-
-        HOME_TOKEN_TIMING = :float
+        HOME_TOKEN_TIMING = :par
         MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always # mostly true, needs custom code
         POOL_SHARE_DROP = :none
@@ -958,8 +336,6 @@ module Engine
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
 
-        HEX_WITH_O_LABEL = %w[J12].freeze
-        HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 621 622 623 801 X8].freeze
         BONUS_CAPITALS = %w[F16 L12 O7].freeze
         BONUS_REVENUE = 'D2'
 
@@ -1087,8 +463,16 @@ module Engine
 
         def home_token_locations(corporation)
           # Can only place home token in cities that have no other tokens.
+          # Minors can go in a disconnected Toronto/Montreal station, but Majors
+          # cannot.
           open_locations = hexes.select do |hex|
-            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
+            case corporation.type
+            when :minor
+              hex.tile.cities.any? { |c| c.tokenable?(corporation, free: true) && c.tokens.none? }
+            when :major
+              hex.tile.cities.any? { |c| c.tokenable?(corporation, free: true) } &&
+                hex.tile.cities.all? { |c| c.tokens.none? { |t| t&.type == :normal } }
+            end
           end
 
           return open_locations if corporation.type == :minor
@@ -1203,12 +587,12 @@ module Engine
           repay_loan(corporation, corporation.loans.first) while corporation.cash >= @loan_value && !corporation.loans.empty?
 
           # Move once automatically
-          price = corporation.share_price.price
+          old_price = corporation.share_price
           stock_market.move_left(corporation)
 
           nationalization_loan_movement(corporation)
           nationalization_transfer_assets(corporation)
-          log_share_price(corporation, price)
+          log_share_price(corporation, old_price)
 
           # Payout players for shares
           per_share = corporation.share_price.price
@@ -1325,15 +709,6 @@ module Engine
           entity.type == :national ? 'Nat’l' : entity.type.capitalize
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # O labelled tile upgrades to Ys until Grey
-          return super unless self.class::HEX_WITH_O_LABEL.include?(from.hex.name)
-
-          return false unless self.class::HEX_UPGRADES_FOR_O.include?(to.name)
-
-          super(from, to, true)
-        end
-
         def compute_stops(route)
           # 1867 should always have two distances, one with a pay of zero, the other with the full distance.
           visits = route.visited_stops
@@ -1371,6 +746,68 @@ module Engine
 
         def post_train_buy
           postevent_trainless_nationalization! if @trainless_nationalization
+        end
+
+        def player_value(player)
+          share_prices = {}
+
+          player.cash + player.companies.sum(&:value) + player.shares.sum do |cert|
+            corp = cert.corporation
+            next 0 unless corp.ipoed
+
+            share_prices[corp] ||=
+              if corp.loans.empty?
+                corp.share_price.price
+              else
+                # corporations with loans will move to the left once per loan when
+                # the game is over
+                stock_market.find_share_price(corp, [:left] * corp.loans.size).price
+              end
+
+            share_prices[corp] * cert.num_shares
+          end
+        end
+
+        def end_game!(player_initiated: false)
+          return if @finished
+
+          logged_drop = false
+          @corporations.each do |corporation|
+            next if corporation.loans.empty?
+
+            @log << '-- Loans are "paid off" by moving share price left one step per loan --' unless logged_drop
+            logged_drop = true
+
+            old_price = corporation.share_price
+
+            (num_loans = corporation.loans.size).times do
+              stock_market.move_left(corporation)
+              @loans << corporation.loans.pop
+            end
+            log_share_price(corporation, old_price, num_loans, log_steps: true)
+          end
+
+          super
+        end
+
+        def game_end_check_values
+          return super unless @game_end_check
+
+          # Game end checks are tested in the order soonest to furthest away.
+          # In 1861/1867 this means that :bank (end of current OR) is tested
+          # before :final_phase (end of next OR set). But we need the final
+          # phase test to take precedence, so if the game end has been
+          # triggered than we just need to look for the :final_phase test
+          # as this will extend the game if the final phase is reached after
+          # the bank breaks.
+          super.select { |reason, _| reason == :final_phase }
+        end
+
+        def game_end_check
+          # The game end might have been triggered by the bank breaking, but if
+          # the final phase is entered before the end of the operating round
+          # then the game is extended.
+          @game_end_check = super || @game_end_check
         end
 
         private
@@ -1463,12 +900,6 @@ module Engine
 
         def loan_value(_entity = nil)
           @loan_value
-        end
-
-        def round_end
-          return Engine::Round::Operating if phase.name.to_i >= 8
-
-          G1867::Round::Merger
         end
 
         def final_operating_rounds
@@ -1583,7 +1014,7 @@ module Engine
             corporation.type != :minor
           end
           @log << 'Minors nationalized' if removed.any?
-          removed.each { |c| nationalize!(c) }
+          removed.sort.each { |c| nationalize!(c) }
           @corporations = corporations
         end
 
@@ -1601,7 +1032,7 @@ module Engine
         end
 
         def postevent_trainless_nationalization!
-          trainless = @corporations.select { |c| c.operated? && c.trains.none? }
+          trainless = @corporations.select { |c| c.operated? && c.trains.none? }.sort
 
           @trainless_major = []
           trainless.each do |c|
@@ -1613,7 +1044,7 @@ module Engine
             end
           end
 
-          @trainless_major = @trainless_major.sort.reverse
+          @trainless_major = @trainless_major.sort
           @trainless_nationalization = false
         end
 

@@ -15,7 +15,7 @@ module Engine
 
         attr_accessor :sell_queue, :connection_run, :reissued
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000
 
@@ -263,12 +263,6 @@ module Engine
           true
         end
 
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
-        end
-
         def revenue_for(route, stops)
           revenue = super
 
@@ -293,7 +287,7 @@ module Engine
             # Don't count shares that have been sold and will go to yellow unless protected
             next 0 if @sell_queue.any? do |bundle, _|
               bundle.corporation == s.corporation &&
-                !stock_market.find_share_price(s.corporation, Array.new(bundle.num_shares, :up)).counts_for_limit
+                !stock_market.find_share_price(s.corporation, Array.new(bundle.num_shares, :down)).counts_for_limit
             end
 
             s.cert_size

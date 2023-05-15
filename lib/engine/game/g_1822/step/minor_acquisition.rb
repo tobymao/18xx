@@ -30,6 +30,7 @@ module Engine
           end
 
           def auto_actions(entity)
+            return nil if @acquire_state == :choose_pay || @acquire_state == :choose_token
             return [Engine::Action::Pass.new(entity)] if mergeable(entity).empty?
           end
 
@@ -88,6 +89,10 @@ module Engine
             'Skip (Minor acquisition)'
           end
 
+          def token_replace_requires_choice?(entity)
+            entity.id == @game.class::MINOR_14_ID
+          end
+
           def acquire_bank_minor(entity, token_choice)
             # Transfer money from corporation to the bank
             entity.spend(@game.class::MINOR_BIDBOX_PRICE, @game.bank)
@@ -95,7 +100,7 @@ module Engine
             receiving = []
             case token_choice
             when 'replace'
-              if @selected_minor.id == @game.class::MINOR_14_ID
+              if token_replace_requires_choice?(@selected_minor)
                 @game.remove_exchange_token(entity)
                 token = Engine::Token.new(entity)
                 entity.tokens << token
@@ -108,7 +113,7 @@ module Engine
                 }
                 receiving << "a token on hex #{@game.class::MINOR_14_HOME_HEX}"
               else
-                minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities[@selected_minor.city || 0]
+                minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities.find { |c| c.reserved_by?(@selected_minor) }
                 minor_city.reservations.delete(@selected_minor)
 
                 if minor_city.tokened_by?(entity)
@@ -140,6 +145,8 @@ module Engine
             @game.close_corporation(@selected_minor)
           end
 
+          def extra_transfers(minor, entity); end
+
           def acquire_entity_minor(entity, token_choice)
             share_difference = pay_choice_difference(entity, @selected_minor, @selected_share_num)
             log_choice = pay_choice_str(entity, @selected_minor, @selected_share_num, show_owner_name: true)
@@ -166,11 +173,15 @@ module Engine
             trains = @game.transfer(:trains, @selected_minor, entity).map(&:name)
             receiving << "trains (#{trains})" if trains.any?
 
+            extra = extra_transfers(@selected_minor, entity)
+            receiving << extra if extra
+
             case token_choice
             when 'replace'
               minor_city = @selected_minor.tokens.first.city
               if minor_city.tokened_by?(entity)
                 @game.move_exchange_token(entity)
+                remove_minor_token
                 receiving << "one token from exchange to available since #{entity.id} cant have 2 tokens "\
                              'in the same city'
               else
@@ -180,6 +191,7 @@ module Engine
               end
             when 'exchange'
               @game.move_exchange_token(entity)
+              remove_minor_token
               receiving << 'one token from exchange to available'
             end
 
@@ -188,6 +200,12 @@ module Engine
 
             # Close the minor, this also removes the minor token if the token choice of 'remove' is selected
             @game.close_corporation(@selected_minor)
+          end
+
+          def remove_minor_token
+            minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities.find { |c| c.tokened_by?(@selected_minor) }
+            minor_city.delete_token!(@selected_minor.tokens.first,
+                                     remove_slot: minor_city.slots > @game.min_city_slots(minor_city))
           end
 
           def process_choose(action)
@@ -220,7 +238,7 @@ module Engine
             else
               minor_city = if !minor.owner || minor.owner == @bank
                              # Trying to acquire a bidbox minor. Trace route to its hometokenplace
-                             @game.hex_by_id(minor.coordinates).tile.cities[minor.city || 0]
+                             @game.hex_by_id(minor.coordinates).tile.cities.find { |c| c.reserved_by?(minor) }
                            else
                              # Minors only have one token, check if its connected
                              minor.tokens.first.city

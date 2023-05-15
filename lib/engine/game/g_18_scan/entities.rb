@@ -136,7 +136,7 @@ module Engine
               {
                 type: 'token',
                 hexes: ['B11'],
-                cheater: 1,
+                cheater: true,
                 price: 0,
                 special_only: true,
               },
@@ -161,7 +161,7 @@ module Engine
               {
                 type: 'token',
                 hexes: ['F11'],
-                cheater: 1,
+                cheater: true,
                 price: 0,
                 special_only: true,
               },
@@ -186,7 +186,7 @@ module Engine
               {
                 type: 'token',
                 hexes: ['D7'],
-                cheater: 1,
+                cheater: true,
                 price: 0,
                 special_only: true,
               },

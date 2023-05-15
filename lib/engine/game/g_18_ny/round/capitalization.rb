@@ -27,6 +27,10 @@ module Engine
             skip_steps
             next_entity! if finished?
           end
+
+          def show_in_history?
+            false
+          end
         end
       end
     end

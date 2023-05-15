@@ -10,14 +10,14 @@ module View
   module Game
     class HistoryAndUndo < Snabberb::Component
       include Actionable
-      needs :num_actions, default: 0
+      needs :last_action_id, default: 0
 
       def render
         h('div#history_undo', { style: { overflow: :auto } }, [history, undo])
       end
 
       def history
-        h('div#history', { style: { marginBottom: '0.5rem' } }, [h(HistoryControls, num_actions: @num_actions)])
+        h('div#history', { style: { marginBottom: '0.5rem' } }, [h(HistoryControls, last_action_id: @last_action_id)])
       end
 
       def undo

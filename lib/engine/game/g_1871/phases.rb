@@ -5,17 +5,17 @@ module Engine
     module G1871
       module Phases
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'remove_par_80' => [
-            '$80 par removed',
-            'Parring at $80 is no longer an option.',
+          'remove_smv_80' => [
+            '$80 starting price removed',
+            'Starting at $80 is no longer an option.',
           ],
-          'remove_par_74' => [
-            '$74 par removed',
-            'Parring at $74 is no longer an option.',
+          'remove_smv_74' => [
+            '$74 starting price removed',
+            'Starting at $74 is no longer an option.',
           ],
-          'remove_par_65' => [
-            '$65 par removed',
-            'Parring at $65 is no longer an option.',
+          'remove_smv_65' => [
+            '$65 starting price removed',
+            'Starting at $65 is no longer an option.',
           ],
         ).freeze
 

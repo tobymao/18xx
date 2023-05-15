@@ -11,7 +11,7 @@ module Engine
             available_actions = []
             return available_actions if !entity.corporation? ||
               entity.minor? ||
-              entity.capitalization != :incremental ||
+              @game.oscarian_era ||
               entity != current_entity
 
             available_actions << 'buy_shares' unless redeemable_shares(entity).empty?

@@ -2,6 +2,7 @@
 
 require 'lib/settings'
 require 'lib/truncate'
+require 'lib/profile_link'
 require 'view/game_row'
 require 'view/link'
 
@@ -10,6 +11,7 @@ module View
     include GameManager
     include Lib::Settings
     include Lib::WhatsThis::AutoRoute
+    include Lib::ProfileLink
 
     needs :user
     needs :gdata # can't conflict with game_data
@@ -55,14 +57,6 @@ module View
       acting.include?(player['id'] || player['name'])
     end
 
-    def lookup_min(game)
-      min_p, _max_p = game::PLAYER_RANGE
-      return min_p unless game.respond_to?(:min_players)
-
-      optional_rules = @gdata.dig('settings', 'optional_rules') || []
-      game.min_players(optional_rules, @gdata['max_players']) || min_p
-    end
-
     def render_header
       buttons = []
 
@@ -96,9 +90,8 @@ module View
       end
 
       game = Engine.meta_by_title(@gdata['title'])
-      @min_p = lookup_min(game)
 
-      can_start = owner? && new? && players.size >= @min_p
+      can_start = owner? && new? && players.size >= @gdata['min_players']
       buttons << render_button('Start', -> { start_game(@gdata) }) if can_start
 
       div_props = {
@@ -223,9 +216,8 @@ module View
 
         else
           player_props = { attrs: { title: player['name'].to_s } }
-
           elm = h(:span, [
-            h(acting?(player) ? :em : :span, player_props, short_name),
+            h(acting?(player) ? :em : :span, player_props, [profile_link(player['id'], short_name)]),
             index == (players.size - 1) || (owner? && new?) ? '' : ', ',
           ])
         end
@@ -235,7 +227,8 @@ module View
       row_styles = { style: { display: 'flex', flexDirection: 'row', justifyContent: 'space-between' } }
       pill_styles = { style: { background: '#c62033', borderRadius: '30px', padding: '0px 5px', color: 'white' } }
       id_row = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
-      if @gdata['status'] != 'finished' && !@gdata['settings']['is_async'] && !@gdata['settings']['is_async'].nil?
+      if !%w[finished
+             archived].include?(@gdata['status']) && !@gdata['settings']['is_async'] && !@gdata['settings']['is_async'].nil?
         id_row << h(:div, pill_styles, 'Live')
       end
       children = [h(:div, row_styles, id_row)]
@@ -250,25 +243,28 @@ module View
       children << h(:div, [h(:strong, 'Players: '), *p_elm]) unless %w[finished archived].include?(@gdata['status'])
 
       if new?
-        seats = @min_p.to_s + (@min_p == @gdata['max_players'] ? '' : " - #{@gdata['max_players']}")
+        seats = @gdata['min_players'].to_s + (@gdata['min_players'] == @gdata['max_players'] ? '' : " - #{@gdata['max_players']}")
         children << h('div.inline', [h(:strong, 'Seats: '), seats])
         children << h('div.inline', { style: { float: 'right' } }, [
           h(:strong, 'Created: '),
           render_time_or_date('created_at'),
         ])
       elsif %w[finished archived].include?(@gdata['status'])
-        result = @gdata['result']
-          .sort_by { |_, v| -v }
-          .map { |k, v| "#{k.truncate} #{v}" }
-          .join(', ')
+        r_elm = @gdata['result'].sort_by { |_, v| -v }.map.with_index do |(id, score), index|
+          id = id.to_i
+          player = players.find { |p| p['id'] == id }
+          player_props = { attrs: { title: player['name'] } }
+          h(:span, player_props, [
+            profile_link(player['id'], player['name'].truncate),
+            " #{score}",
+            index == players.size - 1 ? '' : ', ',
+          ])
+        end
 
-        children << h('div.inline', [
-          h(:strong, 'Result: '),
-          result,
-        ])
+        children << h('div.inline', [h(:strong, 'Result: '), *r_elm])
         children << h('div.inline', { style: { float: 'right', paddingLeft: '1rem' } }, [
           h(:strong, 'Ended: '),
-          render_time_or_date('updated_at'),
+          render_time_or_date('finished_at'),
         ])
       elsif @gdata['round']
         children << h('div.inline', [

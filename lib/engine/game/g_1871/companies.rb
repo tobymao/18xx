@@ -19,7 +19,7 @@ module Engine
               owner_type: 'player',
               when: 'owning_player_sr_turn',
               from: %w[reserved],
-            }],
+            }, { type: 'no_buy' }],
           },
           {
             name: 'Vernon River Bridge Company',
@@ -38,7 +38,7 @@ module Engine
                           owner_type: 'player',
                           when: 'owning_player_sr_turn',
                           from: %w[reserved],
-                        }],
+                        }, { type: 'no_buy' }],
           },
           {
             name: 'Ice Boat Shipping',
@@ -49,6 +49,7 @@ module Engine
                   'Player may still sell and buy stock on this turn.',
             sym: 'IB',
             color: nil,
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Royal Agricultural Society',
@@ -57,20 +58,20 @@ module Engine
             desc: 'Comes with a Mainline share.',
             sym: 'RA',
             color: nil,
-            abilities: [{ type: 'shares', shares: 'mainline_1' }],
+            abilities: [{ type: 'shares', shares: 'mainline_1' }, { type: 'no_buy' }],
           },
           {
             name: 'Railcar Ferry: the Prince Edward Island',
-            value: 140,
+            value: 120,
             revenue: 15,
             desc: 'Comes with a Mainline Share.',
             sym: 'RF',
             color: nil,
-            abilities: [{ type: 'shares', shares: 'mainline_2' }],
+            abilities: [{ type: 'shares', shares: 'mainline_2' }, { type: 'no_buy' }],
           },
           {
             name: 'Shipbuilding',
-            value: 70,
+            value: 90,
             revenue: 15,
             desc: 'May be exchanged for an exchange share of the Shortline during the stock round. ' \
                   'Player may still sell and buy stock on this turn.',
@@ -82,11 +83,11 @@ module Engine
               owner_type: 'player',
               when: 'owning_player_sr_turn',
               from: %w[reserved],
-            }],
+            }, { type: 'no_buy' }],
           },
           {
             name: 'Hunslet Steam Engine',
-            value: 130,
+            value: 110,
             revenue: 20,
             min_price: 1,
             max_price: 200,
@@ -111,17 +112,18 @@ module Engine
             sym: 'ML',
             color: nil,
             abilities: [{ type: 'shares', shares: 'mainline_0' },
-                        { type: 'close', when: 'operated', corporation: 'mainline' }],
+                        { type: 'close', when: 'operated', corporation: 'mainline' }, { type: 'no_buy' }],
           },
           {
             name: 'Schreiber and Burpee Construction',
-            value: 120,
+            value: 100,
             revenue: 30,
             desc: 'Comes with yellow straight tile. ' \
                   'Placement counts as normal tile lay. ' \
                   'Must follow all normal track laying rules.',
             sym: 'SBC',
             color: nil,
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Short Line Concession',
@@ -131,28 +133,29 @@ module Engine
             sym: 'SL',
             color: nil,
             abilities: [{ type: 'shares', shares: 'shortline_0' },
-                        { type: 'close', when: 'operated', corporation: 'shortline' }],
+                        { type: 'close', when: 'operated', corporation: 'shortline' }, { type: 'no_buy' }],
 
           },
           {
             name: 'Union Bank',
-            value: 140,
+            value: 120,
             revenue: 0,
             desc: 'Comes with one Mainline share and one Random share. ' \
                   'Does not close. ' \
                   'Owning player may buy 1 share per stock round for the Bank combining the bank\'s treasury with their own.',
             sym: 'UB',
             color: nil,
-            abilities: [{ type: 'close', on_phase: 'never' }],
+            abilities: [{ type: 'close', on_phase: 'never' }, { type: 'no_buy' }],
           },
           {
             name: 'The King\'s Mail',
             value: 0,
-            revenue: 60,
+            revenue: 80,
             desc: 'Always assigned to the PEIR corporation. The PEIR starts with $200 in its treasury. ' \
                   'Closes with other privates on the 4+.',
             sym: 'KM',
             color: nil,
+            abilities: [{ type: 'no_buy' }],
           },
         ].freeze
       end

@@ -12,6 +12,16 @@ module Hooks
     req = Net::HTTP::Post.new(uri)
     req.content_type = 'application/json'
 
+    notify_prefix =
+      case uri.host
+      when 'chat.googleapis.com'
+        'users/'
+      else
+        '@'
+      end
+
+    message = "<#{notify_prefix}#{user.settings['webhook_user_id']}> #{message}"
+
     req.body =
       case uri.host
       when 'discord.com', 'discordapp.com'

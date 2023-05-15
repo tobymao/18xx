@@ -15,7 +15,7 @@ module Engine
 
           def description
             if @auctioning
-              'Bid on Selected Concession or Puchase Option'
+              'Bid on Selected Concession or Purchase Option'
             else
               'Bid on Concession or Purchase Option'
             end

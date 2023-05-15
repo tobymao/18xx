@@ -50,6 +50,7 @@ module Engine
 
       def lay_tile_action(action, entity: nil, spender: nil)
         tile = action.tile
+
         old_tile = action.hex.tile
         tile_lay = get_tile_lay(action.entity)
         raise GameError, 'Cannot lay an upgrade now' if track_upgrade?(old_tile, tile,
@@ -113,17 +114,19 @@ module Engine
         if @game.class::IMPASSABLE_HEX_COLORS.include?(old_tile.color)
           hex.all_neighbors.each do |direction, neighbor|
             next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
+            next unless tile.exits.include?(direction)
 
             neighbor.neighbors[neighbor.neighbor_direction(hex)] = hex
             hex.neighbors[direction] = neighbor
           end
         end
 
-        graph.clear
+        @game.clear_graph_for_entity(entity)
         free = false
         discount = 0
         teleport = false
         ability_found = false
+        discount_ability = nil
 
         abilities(entity) do |ability|
           next if ability.owner != entity
@@ -147,6 +150,7 @@ module Engine
 
             free = ability.free
             discount = ability.discount
+            discount_ability = ability if discount&.positive?
             extra_cost += ability.cost
           end
         end
@@ -167,8 +171,15 @@ module Engine
           else
             border, border_types = remove_border_calculate_cost!(tile, entity, spender)
             terrain += border_types if border.positive?
-            base_cost = @game.upgrade_cost(old_tile, hex, entity, spender) + border + extra_cost - discount
-            @game.tile_cost_with_discount(tile, hex, entity, spender, base_cost)
+
+            base_cost = @game.upgrade_cost(old_tile, hex, entity, spender) + border + extra_cost
+
+            if discount_ability
+              discount = [base_cost, discount_ability.discount].min
+              @game.log_cost_discount(spender, discount_ability, discount)
+            end
+
+            @game.tile_cost_with_discount(tile, hex, entity, spender, base_cost - discount)
           end
 
         pay_tile_cost!(entity, tile, rotation, hex, spender, cost, extra_cost)
@@ -344,13 +355,17 @@ module Engine
         end.compact
 
         if (!hex.tile.cities.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:cities)) ||
-          (hex.tile.cities.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:track))
-          tiles.group_by(&:color).flat_map do |_, group|
-            max_edges = group.map { |t| t.edges.size }.max
-            group.select { |t| t.edges.size == max_edges }
-          end
+          (hex.tile.cities.empty? && hex.tile.towns.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:track))
+          max_exits(tiles)
         else
           tiles
+        end
+      end
+
+      def max_exits(tiles)
+        tiles.group_by(&:color).flat_map do |_, group|
+          max_edges = group.map { |t| t.edges.size }.max
+          group.select { |t| t.edges.size == max_edges }
         end
       end
 

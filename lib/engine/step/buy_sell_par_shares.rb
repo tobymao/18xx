@@ -64,6 +64,8 @@ module Engine
         {
           # What the player has sold/shorted since the start of the round
           players_sold: Hash.new { |h, k| h[k] = {} },
+          # What the player has bought since the start of the round
+          players_bought: Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = 0 } },
           # Actions taken by the player on this turn
           current_actions: [],
           # If the player has already bought some share from IPO
@@ -102,7 +104,7 @@ module Engine
 
       def must_sell?(entity)
         return false unless can_sell_any?(entity)
-        return true if @game.num_certs(entity) > @game.cert_limit
+        return true if @game.num_certs(entity) > @game.cert_limit(entity)
 
         !@game.can_hold_above_corp_limit?(entity) &&
           @game.corporations.any? { |corp| !corp.holding_ok?(entity) }
@@ -114,8 +116,7 @@ module Engine
 
         corporation = bundle.corporation
 
-        timing = @game.check_sale_timing(entity, corporation)
-
+        timing = @game.check_sale_timing(entity, bundle)
         timing &&
           !(@game.class::TURN_SELL_LIMIT && (bundle.percent + sold_this_turn(corporation)) > @game.class::TURN_SELL_LIMIT) &&
           !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&
@@ -164,6 +165,7 @@ module Engine
       end
 
       def process_buy_shares(action)
+        @round.players_bought[action.entity][action.bundle.corporation] += action.bundle.percent
         @round.bought_from_ipo = true if action.bundle.owner.corporation?
         buy_shares(action.purchase_for || action.entity, action.bundle, swap: action.swap, borrow_from: action.borrow_from)
         track_action(action, action.bundle.corporation)
@@ -175,6 +177,8 @@ module Engine
       end
 
       def process_par(action)
+        raise GameError, 'Cannot par on behalf of other entities' if action.purchase_for
+
         share_price = action.share_price
         corporation = action.corporation
         entity = action.entity
@@ -182,6 +186,7 @@ module Engine
 
         @game.stock_market.set_par(corporation, share_price)
         share = corporation.ipo_shares.first
+        @round.players_bought[entity][corporation] += share.percent
         buy_shares(entity, share.to_bundle)
         @game.after_par(corporation)
         track_action(action, action.corporation)
@@ -351,7 +356,8 @@ module Engine
 
           # If the player can sell shares or they're passing
           # they may wish to manipulate share price
-          "Corporation #{corporation.name} parred" if !corp_buying || @game.check_sale_timing(entity, corporation)
+          "Corporation #{corporation.name} parred" if !corp_buying ||
+            @game.check_sale_timing(entity, Share.new(corporation).to_bundle)
         when Action::BuyShares
           # Redeeming a share from a player is definitely shenanigans (equivalent to the player selling).
           # The code doesn't have access to where the share came from, so it could potentially be market,
@@ -398,6 +404,9 @@ module Engine
       end
 
       def should_stop_applying_program(entity, program, share_to_buy)
+        # don't let players over the cert limit autopass
+        return "#{entity.name} must sell shares" if must_sell?(entity)
+
         # check for shenanigans, returning the first failure reason it finds
         @round.players_history.each do |other_entity, corporations|
           next if other_entity == entity

@@ -35,10 +35,6 @@ module Engine
             @round.convert_mode = nil
           end
 
-          def update_tile_lists(tile, old_tile)
-            @game.update_tile_lists!(tile, old_tile)
-          end
-
           def choice_name
             'Switch to'
           end

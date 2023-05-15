@@ -83,7 +83,7 @@ module Engine
 
       describe 19_962 do
         it 'removes the reservation when a token is placed' do
-          game = game_at_action(game_file, 154)
+          game = game_at_action(game_file, 114)
           city = game.hex_by_id('D20').tile.cities.first
           corp = game.corporation_by_id('ERIE')
           expect(city.reserved_by?(corp)).to be(false)
@@ -104,26 +104,26 @@ module Engine
         end
 
         it 'has a cert limit of 10 after a corporation closes' do
-          game = game_at_action(game_file, 162)
+          game = game_at_action(game_file, 122)
           expect(game.cert_limit).to be(10)
         end
 
         it 'has a cert limit of 10 after a corporation closes and then a player is bankrupt' do
-          game = game_at_action(game_file, 405)
+          game = game_at_action(game_file, 300)
           expect(game.cert_limit).to be(10)
         end
 
         it 'has a cert limit of 8 after a corporation closes, then a player is '\
            'bankrupt, and then another corporation closes' do
-          game = game_at_action(game_file, 443)
+          game = game_at_action(game_file, 328)
           expect(game.cert_limit).to be(8)
         end
 
         it 'IC to lay a tile on J4 for free' do
-          game = game_at_action(game_file, 84)
+          game = game_at_action(game_file, 64)
           expect(game.illinois_central.cash).to be(280)
 
-          game = game_at_action(game_file, 85)
+          game = game_at_action(game_file, 65)
           expect(game.illinois_central.cash).to be(280)
         end
       end
@@ -363,6 +363,25 @@ module Engine
           }
           expect(game.exception).to be_nil
           expect(game.process_action(action).exception).to be_a(GameError)
+        end
+      end
+    end
+
+    describe '1861' do
+      describe 167_259 do
+        it 'minors are nationalised in operating order' do
+          # Checking RSR token locations and order tells us if the minors
+          # have been nationalised in the correct order.
+          game = game_at_action(game_file, 673)
+          hexes = game.corporation_by_id('RSR').placed_tokens.map(&:hex).map(&:coordinates)
+          expect(hexes).to eq(%w[E1 D14 D20 K17 I19 H8 B4 E9])
+        end
+
+        it 'majors are nationalised in operating order' do
+          # MKN should be the first to be potentially nationalised.
+          game = game_at_action(game_file, 582)
+          corporation = game.corporation_by_id('MKN')
+          expect(game.current_entity).to eq(corporation)
         end
       end
     end

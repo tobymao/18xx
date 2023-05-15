@@ -77,22 +77,18 @@ module Engine
 
           def setup
             setup_auction
-            @companies = @game.companies.dup
+            @companies = @game.companies.reject(&:closed?).dup
             setup_tiered_auction
             @seed_money = @game.option_volatility_expansion? ? nil : @game.class::SEED_MONEY
           end
 
           def setup_tiered_auction
             if @game.option_volatility_expansion?
-              @companies.sort_by! { @game.rand }
-
-              # Pick "Pittsburgh" company
-              city_privates, @companies = @companies.partition { |c| @game.class::VOLATILITY_CITY_TILE_COMPANIES.include?(c.id) }
-              @companies.unshift(city_privates.shift)
-              city_privates.each(&:close!)
-
               # Create Company Pyramid
               companies = @companies.dup
+              companies.sort_by! { @game.rand }
+              companies.delete(@game.pittsburgh_private)
+              companies.unshift(@game.pittsburgh_private)
               @tiered_companies = 6.times.with_index.map { |i| companies.shift(i + 1) }
             else
               @tiered_companies = [@companies.dup]
@@ -105,6 +101,7 @@ module Engine
 
           def may_bid?(company)
             return false if company == @game.empty_auction_slot
+            return false unless @tiered_companies[-1].include?(company)
 
             super
           end

@@ -9,7 +9,7 @@ module Engine
         BLOCKED_RIGHT_PRICES = [218, 240, 276].freeze
         BLOCKED_UP_PRICES = [230].freeze
 
-        def move(corp, row, column, force: false)
+        def move(corp, coordinates, force: false)
           super
           return if corp.reached_max_value || !corp.share_price.end_game_trigger?
 
@@ -19,19 +19,35 @@ module Engine
           @game.max_value_reached = true
         end
 
-        def move_up(corporation)
-          price = corporation.share_price.price
-          return super unless BLOCKED_UP_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')
+        def right_ledge?(coordinates)
+          r, c = coordinates
+          price = @market.dig(r, c).price
+          return false if BLOCKED_UP_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')
+          return true if BLOCKED_RIGHT_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')
 
-          @game.log << "#{corporation.name} share price blocked from moving up by phase"
+          super
         end
 
-        def move_right(corporation)
-          price = corporation.share_price.price
-          return super unless BLOCKED_RIGHT_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')
+        def up(corporation, coordinates)
+          price = share_price(coordinates).price
+          return super if !BLOCKED_UP_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
 
-          @game.log << "#{corporation.name} share price blocked from moving right by phase"
-          move_up(corporation)
+          @game.log << "#{corporation.name} share price blocked from moving up by phase" if corporation
+          coordinates
+        end
+
+        def right(corporation, coordinates)
+          price = share_price(coordinates).price
+
+          # Special case rule: Stock marker UP if not in blue zone
+          return up(corporation, coordinates) if
+            !@game.phase.status.include?('blue_zone') &&
+            BLOCKED_RIGHT_PRICES.include?(price)
+
+          return super if !BLOCKED_RIGHT_PRICES.include?(price) || @game.phase.status.include?('blue_zone')
+
+          @game.log << "#{corporation.name} share price blocked from moving right by phase" if corporation
+          coordinates
         end
       end
     end

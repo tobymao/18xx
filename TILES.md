@@ -66,7 +66,7 @@ game config/code:
       be integer to indicate edge number, or an underscore followed by an
       integer to refer by index to a city/town/offboard/junction defined earlier
       on the tile
-    - **terminal** - `1` - indicates that path is part of a non-passthru path, typically for off-board cities. Tapered track will be drawn.
+    - **terminal** - `1` - indicates that path is part of a non-passthru path, typically for off-board cities. Tapered track will be drawn.  If a `2` is used instead, the tapered track will be drawn much shorter.
     - **ignore** - `1` - indicates that path should be ignored when node walk is trying to map available paths and hexes.
     - **a\_lane** - integer.integer - first integer specifies the lane width for the **a** path endpoint, the second integer specifies the lane index, or position within the lane. 0 is the most clockwise position.
     - **b\_lane** - integer.integer - first integer specifies the lane width for the **b** path endpoint, the second integer specifies the lane index, or position within the lane. 0 is the most clockwise position.
@@ -76,6 +76,9 @@ game config/code:
 - **upgrade**
     - **cost** - *required* - integer
     - **terrain** - `mountain`/`water` - multiple terrain types separated by `|`
+    - **loc** - (currently only supported for `:pointy` layouts) corner to
+      render the upgrade in, `5.5` to be where edges `5` and `0` meet, `0.5` for
+      edges `0` and `1`, and so on
 - **border**
     - **edge** - *required* - integer - which edge to modify
     - **type** - `mountain`/`water`/`impassable` - Border type. If not'
@@ -91,6 +94,9 @@ game config/code:
       upgrade is placed on this hex
     - **blocks_lay** - indicates this tile cannot be laid normally
       but can only be laid by special ability, such as a private company's ability.
+    - **loc** - (currently only supported for `:pointy` layouts) corner to
+      render the upgrade in, `5.5` to be where edges `5` and `0` meet, `0.5` for
+      edges `0` and `1`, and so on
 - **frame**
     - **color** - *required* - the color of the frame
     - **color2** - A second color to display on the frame
@@ -106,6 +112,14 @@ Towns, cities, and offboards have a few "sub parts" in common:
 - **groups** - strings separated by `|`; routes cannot contain more than one
   revenue center from a group, e.g., "East" is a group in 1846 as routes cannot run E-E
 - **hide** - `1` indicates that the revenue for this revenue center should not be rendered
+
+##### Towns
+
+- **style**
+    - `rect` (rectangle) - default when 1 or 2 paths connect to the town
+    - `dot` - default when 0 or 3+ paths connect to the town
+    - `hidden` - don't show at all, useful for special offboards that count as
+      towns instead of cities; construct with a hidden town and `terminal` paths
 
 #### Lanes
 

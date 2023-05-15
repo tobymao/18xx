@@ -16,6 +16,7 @@ module View
     needs :type
     needs :notifications, store: true, default: nil
     needs :webhook, store: true, default: nil
+    needs :test_webhook_notification, store: true, default: false
 
     TILE_COLORS = Lib::Hex::COLOR.freeze
     ROUTE_COLORS = Lib::Settings::ROUTE_COLORS.freeze
@@ -43,12 +44,50 @@ module View
     def render_profile
       return [h('h3', 'You are not logged in')] unless @user
 
+      children = []
+
+      name = "#{@profile['name']}'s"
+      if @profile['name'] == @user['name']
+        name = 'Your'
+        children << render_settings
+      end
+
+      children << render_stats("#{name} Statistics")
+
+      player_games = @games.select { |game| user_in_game?(@profile, game) }.group_by { |game| game['status'] }
+      player_games.default = []
+
+      active_games = player_games['active'].sort_by { |game| -game['updated_at'] }
+      unless active_games.empty?
+        children << h(GameRow,
+                      header: "#{name} Active Games",
+                      game_row_games: active_games,
+                      type: :personal,
+                      user: @user)
+      end
+
+      finished_games = (player_games['finished'] + player_games['archived']).sort_by { |game| -game['finished_at'] }
+      unless finished_games.empty?
+        children << h(GameRow,
+                      header: "#{name} Finished Games",
+                      game_row_games: finished_games,
+                      type: :personal,
+                      user: @user)
+      end
+
+      children
+    end
+
+    def render_settings
       title = 'Profile Settings'
       inputs = [
         render_username,
         render_email,
         h('div#settings__options', [
           render_notifications,
+          h(:h3, 'Statistics'),
+          render_checkbox('Show Individual Statistics on Profile Page', :show_stats),
+          h(:h3, 'Display'),
           render_checkbox('Red 18xx.games Logo', :red_logo),
         ]),
         h('div#settings__colors', { style: { maxWidth: '38rem' } }, [
@@ -70,16 +109,7 @@ module View
         ]),
       ]
 
-      finished_games = @games
-        .select { |game| user_in_game?(@user, game) && %w[finished archived].include?(game['status']) }
-        .sort_by { |game| -game['updated_at'] }
-
-      [render_form(title, inputs),
-       h(GameRow,
-         header: 'Your Finished Games',
-         game_row_games: finished_games,
-         type: :personal,
-         user: @user)]
+      render_form(title, inputs)
     end
 
     def render_signup
@@ -168,6 +198,7 @@ module View
       end
 
       children = [
+        h(:h3, 'Notifications'),
         h(
           :a,
           {
@@ -219,7 +250,54 @@ module View
       end
       elements << render_input('Webhook User ID', id: :webhook_user_id,
                                                   attrs: { value: setting_for(:webhook_user_id) })
+
+      test_webhook_notification_change = lambda do
+        store(:test_webhook_notification, Native(@inputs[:test_webhook_notification]).elm&.checked)
+      end
+      elements << render_input('Send test notification',
+                               id: :test_webhook_notification,
+                               type: :checkbox,
+                               on: { input: test_webhook_notification_change },
+                               attrs: { checked: @test_webhook_notification })
       elements
+    end
+
+    def render_stats(header)
+      stats = @profile['stats']
+      return h(:div) unless stats
+      return h(:div, 'No eligible games') if stats.empty?
+
+      overall = { 'Overall' => stats['overall'] }
+      stats.delete('overall')
+      stats.transform_keys! { |title| Engine.meta_by_title(title)&.display_title }
+      stats = stats.sort_by { |k, _v| k }.to_h
+
+      rows =
+        overall.merge(stats).map do |title, (elo, plays)|
+          h(:tr, {}, [
+            h(:td, title),
+            h(:td, elo),
+            h(:td, plays),
+          ])
+        end
+
+      table =
+        h(:div, { style: { overflowX: 'auto' } }, [
+          h(:table, [
+            h(:thead, [
+              h(:tr, [
+                h(:th, 'Game'),
+                h(:th, 'Elo Rating'),
+                h(:th, 'Number of Plays'),
+              ]),
+            ]),
+            h(:tbody, rows),
+          ]),
+        ])
+
+      notes = '* Updated daily. Only fully completed games are eligible.'
+
+      h('div#profile-stats', [h(:h2, header), table, notes])
     end
 
     def render_checkbox(label, id)
@@ -342,6 +420,7 @@ module View
         login(params)
       when :profile
         edit_user(params)
+        `setTimeout(function() { location.reload() }, 1000)`
       end
     end
   end

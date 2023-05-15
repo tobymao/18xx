@@ -6,6 +6,7 @@ require 'view/game/buy_sell_shares'
 require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/par'
+require 'view/game/par_chart'
 require 'view/game/players'
 require 'view/game/sell_shares'
 require 'view/game/stock_market'
@@ -20,6 +21,7 @@ module View
         needs :selected_corporation, default: nil, store: true
         needs :selected_company, default: nil, store: true
         needs :last_player, default: nil, store: true
+        needs :corporation_to_par, default: nil, store: true
         needs :show_other_players, default: nil, store: true
 
         def render
@@ -39,18 +41,23 @@ module View
 
           @bank_first = @step.respond_to?(:bank_first?) && @step.bank_first?
 
+          @hide_corporations = @step.respond_to?(:hide_corporations?) && @step.hide_corporations?
+
           @current_entity = @step.current_entity
           if @last_player != @current_entity && !@auctioning_corporation
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
+            store(:corporation_to_par, nil, skip: true)
           end
+
+          return render_select_par_slot if @corporation_to_par && @current_actions.include?('par')
 
           children = []
 
           children << h(Choose) if @current_actions.include?('choose') && @step.choice_available?(@current_entity)
 
           if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
-            children << if @game.num_certs(@current_entity) > @game.cert_limit
+            children << if @game.num_certs(@current_entity) > @game.cert_limit(@current_entity)
                           h('div.margined', 'Must sell stock: above certificate limit')
                         else
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
@@ -68,7 +75,7 @@ module View
           children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children.concat(render_bank_companies) if @bank_first
-          children.concat(render_corporations)
+          children.concat(render_corporations) unless @hide_corporations
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
           children.concat(render_bank_companies) unless @bank_first
@@ -91,13 +98,15 @@ module View
         end
 
         def render_merge_button
+          selected_corporation = @selected_corporation
+
           merge = lambda do
-            if @selected_corporation
+            if selected_corporation
               do_merge = lambda do
-                to_merge = if @selected_corporation.corporation?
-                             { corporation: @selected_corporation }
+                to_merge = if selected_corporation.corporation?
+                             { corporation: selected_corporation }
                            else
-                             { minor: @selected_corporation }
+                             { minor: selected_corporation }
                            end
                 process_action(Engine::Action::Merge.new(
                   @mergeable_entity,
@@ -105,10 +114,10 @@ module View
                 ))
               end
 
-              if @mergeable_entity.owner == @selected_corporation.owner
+              if @mergeable_entity.owner == selected_corporation.owner
                 do_merge.call
               else
-                check_consent(@selected_corporation.owner, do_merge)
+                check_consent(@mergeable_entity, selected_corporation.owner, do_merge)
               end
             else
               store(:flash_opts, 'Select a corporation to merge with')
@@ -298,7 +307,6 @@ module View
             ))
             store(:selected_company, nil, skip: true)
           end
-
           [h(:button,
              { on: { click: buy } },
              "Sell #{@selected_company.sym} to Bank for #{@game.format_currency(price)}")]
@@ -374,7 +382,7 @@ module View
         end
 
         def render_bid_input(company)
-          return [] unless @step.respond_to?(:can_bid_company?) && @step.can_bid_company?(@current_entity, company)
+          return [] if !@step.respond_to?(:can_bid_company?) || !@step.can_bid_company?(@current_entity, company)
 
           [h(Bid, entity: @current_entity, corporation: company)]
         end
@@ -389,6 +397,14 @@ module View
           children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
           children << h(TrainSchedule, game: @game) unless @game.depot.trains.empty?
           h(:div, props, children)
+        end
+
+        def render_select_par_slot
+          children = [h(:div, [h(:button, { on: { click: -> { store(:corporation_to_par, nil) } } }, 'Cancel (Par)')])]
+          children << h(Corporation, corporation: @corporation_to_par)
+          children << h(ParChart, corporation_to_par: @corporation_to_par)
+
+          h(:div, children)
         end
       end
     end

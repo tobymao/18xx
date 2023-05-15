@@ -9,7 +9,7 @@ module Engine
   module Game
     module G18ZOO
       class SharedGame < Game::Base
-        CURRENCY_FORMAT_STR = '%d$N'
+        CURRENCY_FORMAT_STR = '%s$N'
 
         BANK_CASH = 99_999
 
@@ -378,7 +378,7 @@ module Engine
           current_order = @players.dup
           @players
             .sort_by { |p| [-player_value(p), current_order.index(p)] }
-            .to_h { |p| [p.name, player_value(p)] }
+            .to_h { |p| [p.id, player_value(p)] }
         end
 
         def purchasable_companies(entity = nil)
@@ -410,7 +410,7 @@ module Engine
             player_debt(player)
         end
 
-        def end_game!
+        def end_game!(player_initiated: false)
           return if @finished
 
           update_zoo_tickets_value(4, 0)
@@ -670,11 +670,12 @@ module Engine
         end
 
         def log_share_price(entity, from, additional_info = '')
-          to = entity.share_price.price
-          return unless from != to
+          from_price = from.price
+          to_price = entity.share_price.price
+          return unless from_price != to_price
 
-          @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-                  "to #{format_currency(to)} #{additional_info}"
+          @log << "#{entity.name}'s share price changes from #{format_currency(from_price)} "\
+                  "to #{format_currency(to_price)} #{additional_info}"
         end
 
         def revenue_for(route, stops)
@@ -869,7 +870,7 @@ module Engine
         def share_price_updated(entity, revenue)
           direction = if revenue >= threshold(entity)
                         r, c = entity.share_price.coordinates
-                        c + 1 < stock_market.market[r].size ? :right : :down
+                        c + 1 < stock_market.market[r].size ? :right : :up
                       else
                         :stay
                       end

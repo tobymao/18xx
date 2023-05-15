@@ -40,6 +40,7 @@ module View
         if @corporation.ipoed
           children.concat(render_buy_shares)
           children.concat(render_merge)
+          children.concat(render_convert)
           children.concat(render_short)
         end
         children.concat(render_exchanges)
@@ -139,7 +140,7 @@ module View
 
         targets.flat_map do |target|
           ipo_shares = @ipo_shares.map do |share|
-            next unless @step.can_buy?(@current_entity, share.to_bundle, borrow_from: @current_entity)
+            next unless @step.can_buy?(target, share.to_bundle, borrow_from: @current_entity)
 
             h(Button::BuyShare,
               share: share,
@@ -271,6 +272,13 @@ module View
         end
 
         [h(:button, { on: { click: merge } }, 'Merge')]
+      end
+
+      def render_convert
+        return [] unless @game.round.actions_for(@corporation).include?('convert')
+
+        convert = -> { process_action(Engine::Action::Convert.new(@corporation)) }
+        [h(:button, { on: { click: convert } }, 'Convert')]
       end
     end
   end

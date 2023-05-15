@@ -120,30 +120,8 @@ module View
 
           children = []
 
-          if @town.double
-            x = radius
-            y = 0
-            angle = layout == :pointy ? -30 : 0
-
-            double_children = []
-            if @town.boom
-              double_children.concat(
-                [
-                  render_boom(transform: "translate(#{-x} #{y})"),
-                  render_boom(transform: "translate(#{x} #{y})"),
-                ]
-              )
-            end
-            double_children.concat([
-              h(:circle, attrs: dot_attrs.merge(transform: "translate(#{-x} #{y})")),
-              h(:circle, attrs: dot_attrs.merge(transform: "translate(#{x} #{y})")),
-            ])
-
-            children << h(:g, { attrs: { transform: "#{translate} rotate(#{angle})" } }, double_children)
-          else
-            children << h(:circle, attrs: dot_attrs)
-            children << render_boom if @town.boom
-          end
+          children << h(:circle, attrs: dot_attrs)
+          children << render_boom if @town.boom
 
           children << render_revenue if @show_revenue
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?

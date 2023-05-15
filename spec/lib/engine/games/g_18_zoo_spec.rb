@@ -26,7 +26,7 @@ module Engine
     shared_examples 'power not implemented' do
       it 'cannot be purchased yet' do
         expect do
-          first_player_buy_power_on_isr(power)
+          first_player_buy_power_on_isr(power).maybe_raise!
         end.to raise_error(Engine::GameError, 'Power logic not yet implemented')
       end
     end
@@ -304,7 +304,10 @@ module Engine
 
           it "should have only #{data[:expected_par_prices]} as valid par value" do
             next_or!
-            data[:trains].each { |train| phase.buying_train!(corporation, game.trains.find { |t| t.name == train }) }
+            data[:trains].each do |train|
+              train_found = game.trains.find { |t| t.name == train }
+              phase.buying_train!(corporation, train_found, train_found.owner)
+            end
             next_sr!
 
             expect(par_prices).to eq(data[:expected_par_prices])
@@ -367,7 +370,10 @@ module Engine
             let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == item[:share] } }
 
             before do
-              item[:trains].each { |train| phase.buying_train!(corporation, game.trains.find { |t| t.name == train }) }
+              item[:trains].each do |train|
+                train_found = game.trains.find { |t| t.name == train }
+                phase.buying_train!(corporation, train_found, train_found.owner)
+              end
             end
 
             item[:track_for_valid].each do |track_for_valid|
@@ -540,7 +546,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError, 'Only one train can use "A tip of sugar"')
           end
         end
@@ -576,7 +582,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError, 'Only one train can bypass a tokened-out city')
           end
         end
@@ -602,7 +608,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError,
                                'City with only \'Work in progress\' slot cannot be bypassed')
           end
@@ -635,7 +641,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError, 'Route can only bypass one tokened-out city')
           end
         end
@@ -671,7 +677,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError, 'Only one train can bypass a tokened-out city')
           end
         end
@@ -697,7 +703,7 @@ module Engine
               ],
             }
             expect do
-              game.process_action(action)
+              game.process_action(action).maybe_raise!
             end.to raise_error(Engine::GameError,
                                'City with only \'Work in progress\' slot cannot be bypassed')
           end
@@ -718,7 +724,7 @@ module Engine
               'tile' => '9-0',
               'rotation' => 1,
             }
-            expect { game.process_action(action) }.to raise_error(TypeError)
+            expect { game.process_action(action).maybe_raise! }.to raise_error(TypeError)
           end
         end
       end

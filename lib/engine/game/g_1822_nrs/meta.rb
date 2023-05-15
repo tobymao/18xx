@@ -19,6 +19,7 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/219065/1822-railways-great-britain-rules'
         GAME_TITLE = '1822NRS'
+        GAME_ISSUE_LABEL = '1822'
         GAME_IS_VARIANT_OF = G1822::Meta
 
         PLAYER_RANGE = [3, 7].freeze

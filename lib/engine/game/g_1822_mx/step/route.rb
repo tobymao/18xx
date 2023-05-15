@@ -14,7 +14,8 @@ module Engine
           def help
             return super unless current_entity == @game.ndem
 
-            'NDEM has no president.  The shareholder in highest priority will run the '\
+            "#{ndem_acting_player.name} is running the trains for NDEM.  NDEM has no president.  "\
+              'The shareholder in highest priority will run the trains.  '\
               'trains.  If there are no shareholders, the player with priority will do so.'
           end
         end

@@ -56,7 +56,7 @@ module Engine
           def lay_tile_action(action)
             tile = action.tile
             tile_lay = get_tile_lay(action.entity)
-            raise GameError, 'Cannot lay a city tile now' if !tile.cities.empty? && @laid_city
+            raise GameError, 'Cannot lay two city tiles in a single OR' if !tile.cities.empty? && @laid_city
 
             lay_tile(action, extra_cost: tile_lay[:cost])
             @game.close_company_in_hex(action.hex)

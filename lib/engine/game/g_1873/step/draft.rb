@@ -134,6 +134,10 @@ module Engine
               end
             end
 
+            unless actions(entity).include?('pass')
+              return [Action::ProgramDisable.new(entity, reason: 'Auction winner cannot pass')]
+            end
+
             [Action::Pass.new(entity)]
           end
 

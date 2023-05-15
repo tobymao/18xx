@@ -7,8 +7,12 @@ module Engine
     module G1822MX
       module Step
         class SpecialTrack < Engine::Game::G1822::Step::SpecialTrack
+          PORT_TILES = %w[P1-0 P2-0].freeze
+
           def potential_tiles(entity, hex)
             if @game.port_company?(entity)
+              return [] if PORT_TILES.include?(hex.tile.id)
+
               tile_ability = abilities(entity)
               tile = @game.tiles.find { |t| t.name == tile_ability.tiles[0] }
               return [tile]
@@ -27,17 +31,6 @@ module Engine
             return hex.tile.paths[0].exits == tile.exits if @game.port_company?(entity)
             return true if @game.cube_company?(entity)
             return true if tile.id == 'BC-0'
-
-            # Per rule, a tile specifically placed in M22 must connect Mexico City to existing track, unless
-            # it is the MC that is placing it.
-            if hex.id == 'M22' && entity.id != 'MC'
-              path_to_mc = tile.paths.find { |p| p.edges[0].num == 5 }
-              return false unless path_to_mc
-
-              exit_out = tile.paths.find { |p| p.town == path_to_mc.town && p != path_to_mc }.edges[0].num
-              @m22_adjacent_hexes ||= { 0 => 'N21', 1 => 'M20', 2 => 'L21', 3 => 'L23', 4 => 'M24' }
-              return @game.hex_by_id(@m22_adjacent_hexes[exit_out]).tile.exits.include?((exit_out + 3) % 6)
-            end
 
             super
           end
@@ -60,7 +53,11 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            return hex.tile.color == :blue ? [hex.tile.exits] : nil if @game.port_company?(entity)
+            if @game.port_company?(entity)
+              return [hex.tile.exits] if hex.tile.color == :blue && !PORT_TILES.include?(hex.tile.id)
+
+              return nil
+            end
             if @game.cube_company?(entity)
               return @game.can_hold_builder_cubes?(hex.tile) && @game.graph.connected_hexes(entity.owner)[hex]
             end
@@ -83,7 +80,7 @@ module Engine
               @log << "#{action.entity.name} places builder cube on #{action.hex.name}"
               action.hex.tile.icons << Part::Icon.new('../icons/1822_mx/red_cube', 'block')
               ability = abilities(action.entity)
-              ability.use!
+              ability.use!(upgrade: %i[green brown gray].include?(action.tile.color))
               # Minors can only do this once...
               if action.entity.owner.type == :minor
                 ability.use!
@@ -95,6 +92,8 @@ module Engine
                 @log << "#{ability.owner.name} closes"
                 ability.owner.close!
               end
+
+              handle_extra_tile_lay_company(ability, action.entity)
             else
               super
               action.hex.tile.icons.reject! { |i| i.name == 'block' }

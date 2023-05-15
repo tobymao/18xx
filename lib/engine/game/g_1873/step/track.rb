@@ -198,6 +198,8 @@ module Engine
               @log << "Laying tile finishes concession track in #{hex.id}"
               reimburse = true
             elsif ch && entity.name != ch[:entity] && !follows_path
+              raise GameError, 'Cannot lay that color yet' unless @game.phase.tiles.include?(tile.color)
+
               res_tile = @game.reserve_tile!(entity, hex, tile)
               raise GameError, 'Tile prevents concession from being completed' unless res_tile
 
@@ -217,7 +219,7 @@ module Engine
                     " with rotation #{rotation} on #{hex.name}"\
                     "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
 
-            return unless reimburse && cost.positive?
+            return if !reimburse || !cost.positive?
 
             @game.bank.spend(cost, entity.owner)
             @log << "#{entity.owner.name} is reimbursed for building the tile"

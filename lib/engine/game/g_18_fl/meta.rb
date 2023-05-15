@@ -13,7 +13,7 @@ module Engine
         GAME_SUBTITLE = 'Railroads to Paradise'
         GAME_DESIGNER = 'David Hecht'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18FL'
-        GAME_LOCATION = 'Florida, US'
+        GAME_LOCATION = 'Florida, USA'
         GAME_PUBLISHER = :deep_thought_games
         GAME_RULES_URL = 'https://drive.google.com/file/d/1gnIU5v_Yv_F7E-jvX4VKWq19h7RKBx6X/view?usp=sharing'
 

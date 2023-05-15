@@ -9,7 +9,7 @@ module Engine
 
     attr_accessor :obsolete, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
                   :distance, :reserved
-    attr_reader :available_on, :discount, :multiplier, :sym, :variant, :requires_token, :ever_operated, :operated
+    attr_reader :available_on, :discount, :multiplier, :sym, :variant, :requires_token, :ever_operated, :operated, :salvage
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
@@ -22,6 +22,7 @@ module Engine
       @obsolete_on = opts[:obsolete_on]
       @available_on = opts[:available_on]
       @discount = opts[:discount]
+      @salvage = opts[:salvage]
       @multiplier = opts[:multiplier]
       @no_local = opts[:no_local]
       @buyable = true
@@ -51,6 +52,7 @@ module Engine
         rusts_on: @rusts_on,
         obsolete_on: @obsolete_on,
         discount: @discount,
+        salvage: @salvage,
       }
 
       # Primary variant should be at the head of the list.
@@ -68,12 +70,20 @@ module Engine
       remove_instance_variable(:@local) if defined?(@local)
     end
 
+    # remove unused variants, i.e., the physical train card is not allowed to be
+    # flipped/rotated any more
+    def remove_variants!
+      @variants.select! { |name, _| @name == name }
+    end
+
     def names_to_prices
       @variants.transform_values { |v| v[:price] }
     end
 
-    def price(exchange_train = nil)
-      @price - (@discount&.dig(exchange_train&.name) || 0)
+    def price(exchange_train = nil, variant: nil)
+      discount = variant ? variant[:discount] : self.discount
+      price = variant ? variant[:price] : @price
+      price - (discount&.dig(exchange_train&.name) || 0)
     end
 
     def id
@@ -92,8 +102,8 @@ module Engine
       owner.is_a?(Depot)
     end
 
-    def buyable
-      @buyable && !@obsolete
+    def buyable(allow_obsolete_buys: false)
+      @buyable && (!@obsolete || allow_obsolete_buys)
     end
 
     def local?

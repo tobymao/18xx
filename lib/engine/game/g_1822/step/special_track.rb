@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
+require_relative '../../../step/special_track'
 require_relative 'tracker'
 
 module Engine
   module Game
     module G1822
       module Step
-        class SpecialTrack < Engine::Step::Base
+        class SpecialTrack < Engine::Step::SpecialTrack
           include Engine::Game::G1822::Tracker
 
-          ACTIONS = %w[lay_tile].freeze
-
           def actions(entity)
+            return ACTIONS_WITH_PASS if @company == entity
+
             action = abilities(entity) && @game.round.active_step.respond_to?(:process_lay_tile)
             return [] unless action
 
@@ -20,11 +20,7 @@ module Engine
           end
 
           def description
-            'Lay Track'
-          end
-
-          def blocks?
-            false
+            @company ? "Lay Track for #{@company.name}" : 'Lay Track'
           end
 
           def process_lay_tile(action)
@@ -39,15 +35,20 @@ module Engine
                         @game.current_entity
                       end
             @in_process = true
+
+            minor_single_use = false
+
             if @game.company_ability_extra_track?(entity)
               upgraded_extra_track = upgraded_track?(action.hex.tile, action.tile, action.hex)
-              raise GameError, 'Cannot lay an extra upgrade' if upgraded_extra_track && @extra_laided_track
+              if upgraded_extra_track && @extra_laided_track && abilities(action.entity).consume_tile_lay
+                raise GameError,
+                      'Cannot lay an extra upgrade'
+              end
 
               lay_tile(action, spender: spender)
               @round.laid_hexes << action.hex
-              if upgraded_extra_track || spender.type == :minor
-                # Use the ability an extra time, upgrade counts as 2 tile lays. Or if its a minor, they ony get one use
-                ability.use!
+              if spender.type == :minor
+                minor_single_use = true
               else
                 @extra_laided_track = true
               end
@@ -56,11 +57,16 @@ module Engine
             end
             @in_process = false
             @game.after_lay_tile(action.hex, old_tile, action.tile)
-            ability.use!
+            ability.use!(upgrade: %i[green brown gray].include?(action.tile.color))
+            ability.use! if minor_single_use
 
-            if ability.type == :tile_lay && ability.count <= 0 && ability.closed_when_used_up
-              @log << "#{ability.owner.name} closes"
-              ability.owner.close!
+            if ability.type == :tile_lay
+              if ability.count <= 0 && ability.closed_when_used_up
+                @log << "#{ability.owner.name} closes"
+                ability.owner.close!
+              end
+
+              handle_extra_tile_lay_company(ability, action.entity)
             end
 
             return unless ability.type == :teleport
@@ -97,11 +103,11 @@ module Engine
               return nil
             end
 
-            # If player have choosen the tile lay option on the Edinburgh and Glasgow Railway company,
-            # only rough terrain, hill or mountains are valid hexes
+            # P8 Edinburgh and Glasgow Railway company can
+            # only lay track on hills and mountains
             if @game.must_be_on_terrain?(entity)
               tile_terrain = hex.tile.upgrades.any? do |upgrade|
-                %i[mountain hill swamp].any? { |t| upgrade.terrains.include?(t) }
+                %i[mountain hill].any? { |t| upgrade.terrains.include?(t) }
               end
               return nil unless tile_terrain
             end
@@ -150,8 +156,9 @@ module Engine
             tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
             special = tile_ability.special if tile_ability.type == :tile_lay
             if @game.can_upgrade_one_phase_ahead?(entity)
-              return tiles.compact
-                .select { |t| @game.upgrades_to?(hex.tile, t, special) }
+              return [] if entity.owner.type == :minor && !hex.tile.color == :yellow
+
+              return tiles.compact.select { |t| @game.upgrades_to?(hex.tile, t, special) }
             end
             tiles
               .compact
@@ -200,6 +207,21 @@ module Engine
                 teleported: nil,
               }
             )
+          end
+
+          def hex_neighbors(entity, hex)
+            @game.graph_for_entity(entity).connected_hexes(entity)[hex]
+          end
+
+          # Extra Tile Lay abilities need to be used either entirely before
+          # or entirely after the Major's normal tile lays
+          # https://boardgamegeek.com/thread/2425653/article/34793831#34793831
+          def handle_extra_tile_lay_company(ability, entity)
+            @company =
+              if ability.must_lay_together
+                @round.num_laid_track += 1 if @round.num_laid_track == 1
+                ability.count.positive? ? entity : nil
+              end
           end
         end
       end

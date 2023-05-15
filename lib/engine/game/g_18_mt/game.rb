@@ -37,7 +37,7 @@ module Engine
                         pink: '#FF0099',
                         purple: '#9900FF',
                         white: '#FFFFFF')
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 8000
 
@@ -221,7 +221,7 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
-          price = corporation.share_price.price
+          old_price = corporation.share_price
           was_president = corporation.president?(bundle.owner)
           was_issued = bundle.owner == bundle.corporation
 
@@ -232,7 +232,7 @@ module Engine
 
           share_drop_num.times { @stock_market.move_down(corporation) }
 
-          log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
+          log_share_price(corporation, old_price) if self.class::SELL_MOVEMENT != :none
         end
 
         def buying_power(entity)
@@ -271,7 +271,7 @@ module Engine
           return bundle if bundle.num_shares == 1
 
           new_price = (0..bundle.num_shares - 1).sum do |max_drops|
-            @stock_market.find_share_price(bundle.corporation, (1..max_drops).map { |_| :up }).price
+            @stock_market.find_share_price(bundle.corporation, (1..max_drops).map { |_| :down }).price
           end
 
           bundle.share_price = new_price / bundle.num_shares

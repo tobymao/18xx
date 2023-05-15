@@ -22,7 +22,7 @@ module Engine
                         yellow: '#ffe600',
                         lightRed: '#F3B1B3')
 
-        CURRENCY_FORMAT_STR = '%d K'
+        CURRENCY_FORMAT_STR = '%s K'
 
         BANK_CASH = 99_999
 
@@ -37,7 +37,7 @@ module Engine
         TRACK_RESTRICTION = :permissive
 
         SELL_BUY_ORDER = :sell_buy
-        SELL_MOVEMENT = :left_block
+        SELL_MOVEMENT = :down_block
         MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
 
         MUST_BUY_TRAIN = :always
@@ -135,7 +135,7 @@ module Engine
           20 => 70,
         }.freeze
 
-        TILE_RESERVATION_BLOCKS_OTHERS = true
+        TILE_RESERVATION_BLOCKS_OTHERS = :always
 
         TWO_PLAYER_HEXES_TO_REMOVE = %w[A22 B19 B21 B23 B25 C22 C24 C26 C28 D21 D23 D25 D27 D29 E20 E22 E24 E26
                                         E28 F21 F23 F25 F27 G20 G22 G24 G26 G28 H21 H23 H25 I20 I22 I24].freeze
@@ -202,11 +202,12 @@ module Engine
           train = @depot.upcoming.first
           variant = train.variants.values.find { |item| train_of_size?(item, corporation.type) }
           train.variant = variant[:name]
+          source = train.owner
           remove_train(train)
           train.owner = corporation
           corporation.trains << train
 
-          @phase.buying_train!(corporation, train)
+          @phase.buying_train!(corporation, train, source)
 
           @log << "#{corporation.name} receives a new #{train.name} train"
         end
@@ -217,24 +218,15 @@ module Engine
           companies
         end
 
-        def active_players
-          active = super
-          return active if multiplayer? || active != [@vaclav]
+        def acting_for_player(player)
+          return player unless player == @vaclav
 
           case active_step
           when G18CZ::Step::Track
-            [player_for_track(current_entity)]
+            player_for_track(current_entity)
           when G18CZ::Step::Token
-            [player_for_token(current_entity)]
-          else
-            players_without_vaclav
+            player_for_token(current_entity)
           end
-        end
-
-        def valid_actors(action)
-          return super if multiplayer?
-
-          action.entity.player == @vaclav ? active_players : super
         end
 
         def player_for_track(corporation)
@@ -433,7 +425,7 @@ module Engine
         end
 
         def status_array(corporation)
-          return unless @vaclavs_corporations.include?(corporation) && @round.current_entity&.player?
+          return unless @vaclavs_corporations.include?(corporation)
 
           ["Track: #{player_for_track(corporation).name}", "Token: #{player_for_token(corporation).name}"]
         end
@@ -638,6 +630,10 @@ module Engine
           player.value - debt(player) - penalty_interest(player)
         end
 
+        def result_players
+          @players.reject { |p| p == @vaclav }
+        end
+
         def liquidity(player, emergency: false)
           return player.cash if emergency
 
@@ -669,12 +665,6 @@ module Engine
           runnable = super
 
           runnable.select { |item| train_of_size?(item, entity.type) }
-        end
-
-        def format_currency(val)
-          return format('%0.1f K', val) if (val - val.to_i).positive?
-
-          self.class::CURRENCY_FORMAT_STR % val
         end
 
         def show_progress_bar?
@@ -753,10 +743,10 @@ module Engine
 
         # extra cash available if the corporation sells a company to the bank
         def potential_company_cash(entity)
-          if @phase.status.include?('can_buy_companies') && entity.corporation? && entity.cash.positive?
+          if @phase.status.include?('can_buy_companies') && entity.corporation?
             @companies.reduce(0) do |memo, company|
               memo +
-                if company.owned_by_player?
+                if company.owned_by_player? && entity.cash.positive?
                   company.value - 1
                 elsif company.owner == entity
                   company.value
@@ -807,7 +797,7 @@ module Engine
 
         def maximum_share_price_change(entity)
           position = entity.share_price.coordinates.last
-          return 4 if position.odd? # movement on the top row is capped only by the market's end
+          return 2 if position.odd? # movement on the top row is capped only by the market's end
 
           MARKET[0].size - 2 - position
         end

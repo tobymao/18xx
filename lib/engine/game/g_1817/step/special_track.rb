@@ -10,18 +10,31 @@ module Engine
           def process_lay_tile(action)
             tile = action.tile
             owner = action.entity.owner
+            entity = action.entity
             super
-            return if action.entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
 
-            tile.hex.assign!('mine')
-            @game.log << "#{owner.name} adds mine to #{tile.hex.name}"
+            if entity == @game.pittsburgh_private
+              action.hex.neighbors.each do |_, h|
+                next unless h.assigned?('ranch')
+
+                @game.log << "Removing Ranch from #{h.name}"
+                h.remove_assignment!('ranch')
+              end
+            elsif @game.mine_company?(entity)
+              tile.hex.assign!('mine')
+              @game.log << "#{owner.name} adds mine to #{tile.hex.name}"
+            elsif @game.ranch_company?(entity)
+              tile.hex.assign!('ranch')
+              @game.log << "#{owner.name} adds ranch to #{tile.hex.name}"
+            end
           end
 
           def hex_neighbors(entity, hex)
-            return super if entity.company? && entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
+            return super if entity.company? && entity == @game.pittsburgh_private
 
             hexes = abilities(entity)&.hexes
             return if hexes&.any? && !hexes&.include?(hex.id)
+            return if @game.ranch_company?(entity) && hex.neighbors.any? { |_, h| @game.b_city_tile?(h.tile) }
 
             # When actually laying track entity will be the corp.
             owner = entity.corporation? ? entity : entity.owner
@@ -36,7 +49,7 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            return super if entity.company? && entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
+            return super if entity.company? && entity == @game.pittsburgh_private
 
             super &&
             tile.exits.any? do |exit|

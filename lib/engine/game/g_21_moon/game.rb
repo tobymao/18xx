@@ -36,11 +36,12 @@ module Engine
                         cream: '#fffdd0',
                         yellow: '#ffdea8')
 
-        CURRENCY_FORMAT_STR = '₡%d'
+        CURRENCY_FORMAT_STR = '₡%s'
         BANK_CASH = 12_000
         CERT_LIMIT = { 2 => 18, 3 => 15, 4 => 12, 5 => 10 }.freeze
         STARTING_CASH = { 2 => 600, 3 => 540, 4 => 410, 5 => 340 }.freeze
         CAPITALIZATION = :incremental
+        SELL_AFTER = :any_time
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_block
         SOLD_OUT_INCREASE = true
@@ -379,7 +380,11 @@ module Engine
 
         def after_sell_company(buyer, company, _price, _seller)
           return ols_swap(buyer) if company.sym == 'OLS'
-          return unc_start(buyer) if company.sym == 'UNC'
+          return unless company.sym == 'UNC'
+
+          @log << "#{company.name} will close"
+          company.close!
+          unc_start(buyer)
         end
 
         def ols_start(player)
@@ -472,7 +477,7 @@ module Engine
         def new_auction_round
           Engine::Round::Auction.new(self, [
           G21Moon::Step::OLSToken,
-          Engine::Step::WaterfallAuction,
+          G21Moon::Step::WaterfallAuction,
         ])
         end
 
@@ -527,7 +532,7 @@ module Engine
           Engine::Round::Operating.new(self, [
             G21Moon::Step::Bankrupt,
             Engine::Step::BuyCompany,
-            Engine::Step::Assign,
+            G21Moon::Step::Assign,
             Engine::Step::HomeToken,
             G21Moon::Step::SpecialTrack,
             G21Moon::Step::TrainMod,
@@ -571,7 +576,7 @@ module Engine
 
         def corporate_round_finished
           @corporations.select { |c| c.floated? && c.type != :minor }.sort.each do |corp|
-            prev = corp.share_price.price
+            old_price = corp.share_price
 
             @stock_market.move_up(corp) if sold_out?(corp) && sold_out_increase?(corp)
             if corp.operated?
@@ -587,7 +592,7 @@ module Engine
               price_drops.times { @stock_market.move_down(corp) }
             end
 
-            log_share_price(corp, prev)
+            log_share_price(corp, old_price)
           end
         end
 
@@ -685,7 +690,7 @@ module Engine
         end
 
         def player_sort(entities)
-          entities.reject(&:minor?).sort_by(&:name).group_by(&:owner)
+          super(entities.reject(&:minor?))
         end
 
         def lb_trains(corporation)
@@ -782,7 +787,8 @@ module Engine
               offboards['SW'] = true if SW_HEXES.include?(hid)
             end
 
-            next unless (offboards['NE'] || offboards['SE']) && (offboards['NW'] || offboards['SW'])
+            next if !(offboards['NE'] || offboards['SE']) ||
+                    !(offboards['NW'] || offboards['SW'])
 
             offboards.keys.each do |bonus|
               next if @end_bonuses[corp].include?(bonus)
@@ -808,7 +814,7 @@ module Engine
           if corporation.corporation?
             corporation.shares_by_corporation.each do |other, _|
               shares = corporation.shares_of(other)
-              shares.each do |share|
+              shares.dup.each do |share|
                 @share_pool.transfer_shares(share.to_bundle, @share_pool)
               end
             end
@@ -885,7 +891,7 @@ module Engine
           player.shares.sum { |s| @end_bonuses[s.corporation].size * (s.percent / 10) * END_BONUS_VALUE }
         end
 
-        def end_game!
+        def end_game!(player_initiated: false)
           super
 
           if @end_bonuses.empty?
@@ -992,7 +998,7 @@ module Engine
           true
         end
 
-        def map_legend
+        def map_legend(font_color, yellow, green, brown, gray)
           [
             # table-wide props
             {
@@ -1005,42 +1011,57 @@ module Engine
             # header
             [
               { text: 'Tile Color:', props: { style: { border: '1px solid' } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: '#fde900' } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: '#71bf44' } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: '#cb7745' } } },
-              { text: '', props: { style: { border: '1px solid', backgroundColor: '#bcbdc0' } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: yellow.to_s } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: green.to_s } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: brown.to_s } } },
+              { text: '', props: { style: { border: '1px solid', backgroundColor: gray.to_s } } },
             ],
             # body
             [
-              { text: 'Source-X', props: { style: { color: 'white', backgroundColor: 'black' } } },
+              {
+                text: 'Source-X',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'black' } },
+              },
               { text: '20', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '60', props: { style: { border: '1px solid' } } },
               { text: '80', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Helium-3', props: { style: { color: 'white', backgroundColor: 'red' } } },
+              {
+                text: 'Helium-3',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'red' } },
+              },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '50', props: { style: { border: '1px solid' } } },
               { text: '60', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Regolith', props: { style: { border: '1px solid', backgroundColor: 'orange' } } },
+              {
+                text: 'Regolith',
+                props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'orange' } },
+              },
               { text: '20', props: { style: { border: '1px solid' } } },
               { text: '20', props: { style: { border: '1px solid' } } },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '50', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Armacolite', props: { style: { border: '1px solid', backgroundColor: 'yellow' } } },
+              {
+                text: 'Armacolite',
+                props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'yellow' } },
+              },
               { text: '40', props: { style: { border: '1px solid' } } },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '30', props: { style: { border: '1px solid' } } },
               { text: '20', props: { style: { border: '1px solid' } } },
             ],
             [
-              { text: 'Magnetite', props: { style: { border: '1px solid' } } },
+              {
+                text: 'Magnetite',
+                props: { style: { border: "1px solid #{font_color}", color: 'black', backgroundColor: 'white' } },
+              },
               { text: '10', props: { style: { border: '1px solid' } } },
               { text: '10', props: { style: { border: '1px solid' } } },
               { text: '10', props: { style: { border: '1px solid' } } },

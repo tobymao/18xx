@@ -69,9 +69,11 @@ module View
 
         if @game.corporation_show_shares?(@corporation)
           children << render_shares unless @corporation.hide_shares?
-          children << render_reserved if @corporation.reserved_shares.any?
-          children << render_owned_other_shares if @corporation.corporate_shares.any?
-          children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
+          if @game.corporation_show_individual_reserved_shares? && !@corporation.reserved_shares.empty?
+            children << render_reserved
+          end
+          children << render_owned_other_shares unless @corporation.corporate_shares.empty?
+          children << h(Companies, owner: @corporation, game: @game) unless @corporation.companies.empty?
           if @game.respond_to?(:corporate_card_minors) && !(ms = @game.corporate_card_minors(@corporation)).empty?
             children << render_minors(ms)
           end
@@ -81,7 +83,10 @@ module View
 
         extras = []
         if @game.corporation_show_loans?(@corporation)
-          extras.concat(render_loans) if @game.total_loans&.nonzero?
+          if @game.total_loans&.nonzero?
+            extras.concat(render_loans)
+            extras.concat(render_interest) if @game.corporation_show_interest?
+          end
           if @corporation.corporation? && @corporation.floated? &&
             @game.total_loans.positive? && @corporation.can_buy?
             extras << render_buying_power
@@ -168,6 +173,11 @@ module View
 
         if @corporation.system?
           logo_props[:attrs][:src] = logo_for_user(@corporation.corporations.last)
+          children << h(:img, logo_props)
+        end
+
+        if @game.second_icon(@corporation)
+          logo_props[:attrs][:src] = logo_for_user(@game.second_icon(@corporation))
           children << h(:img, logo_props)
         end
 
@@ -311,14 +321,28 @@ module View
         result.index('.') ? result : "#{result}.0"
       end
 
-      def entities_rows(entities)
+      def entities_rows(entities, pres_transfer_order = false)
         step = @game.round.active_step
+
+        if pres_transfer_order
+          # For player rows, create an array of names, rotate that array so
+          # the president is at index 0, and use the resulting order to sort
+          # player names when they have the same number of shares. This results
+          # in the listed order showing the correct transfer of presidency.
+          players_in_order = entities.map(&:name)
+          if @corporation.owner
+            player_index = players_in_order.index(@corporation.owner.name)
+            players_in_order = players_in_order.rotate(player_index) if player_index
+          end
+        end
+
         entity_info = entities.map do |entity|
           [
             entity,
             @corporation.president?(entity),
             entity.num_shares_of(@corporation, ceil: false),
             step&.did_sell?(@corporation, entity),
+            pres_transfer_order ? players_in_order.index(entity.name) : 0,
             step&.last_acted_upon?(@corporation, entity),
             !@corporation.holding_ok?(entity, 1),
             entity.shares_of(@corporation).count(&:double_cert),
@@ -334,8 +358,8 @@ module View
 
         entity_info
         .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
-        .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
-        .map do |entity, president, num_shares, did_sell, last_acted_upon, at_limit, double_certs, other_flags|
+        .sort_by { |_, president, num_shares, _, transfer_index| [president ? 0 : 1, -num_shares, transfer_index] }
+        .map do |entity, president, num_shares, did_sell, _, last_acted_upon, at_limit, double_certs, other_flags|
           flags = (president ? '*' : '') + ('d' * double_certs) + (at_limit ? 'L' : '') + (other_flags || '')
 
           type = entity.player? ? 'tr.player' : 'tr.corp'
@@ -360,9 +384,11 @@ module View
           },
         }
 
-        player_rows = entities_rows(@game.players)
+        player_rows = entities_rows(@game.players, true)
 
         other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation && !c.treasury_as_holding })
+
+        other_minor_rows = entities_rows(@game.minors) if @game.class::MINORS_CAN_OWN_SHARES
 
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         if @game.respond_to?(:reissued?) && @game.reissued?(@corporation) && !num_ipo_shares.empty?
@@ -432,6 +458,7 @@ module View
           *pool_rows,
           *player_rows,
           *other_corp_rows,
+          *other_minor_rows,
         ]
 
         props = { style: { borderCollapse: 'collapse' } }
@@ -543,13 +570,7 @@ module View
       end
 
       def render_loans
-        interest_props = { style: {} }
         loan_props = { style: {} }
-        unless @game.can_pay_interest?(@corporation)
-          color = StockMarket::COLOR_MAP[:yellow]
-          interest_props[:style][:backgroundColor] = color
-          interest_props[:style][:color] = contrast_on(color)
-        end
         if @corporation.loans.size > @game.maximum_loans(@corporation)
           color = StockMarket::COLOR_MAP[:red]
           loan_props[:style][:backgroundColor] = color
@@ -562,6 +583,18 @@ module View
             h('td.padded_number', "#{@corporation.loans.size}/"\
                                   "#{@game.maximum_loans(@corporation)}"),
           ]),
+        ]
+      end
+
+      def render_interest
+        interest_props = { style: {} }
+        unless @game.can_pay_interest?(@corporation)
+          color = StockMarket::COLOR_MAP[:yellow]
+          interest_props[:style][:backgroundColor] = color
+          interest_props[:style][:color] = contrast_on(color)
+        end
+
+        [
           h('tr.ipo', interest_props, [
             h('td.right', 'Interest Due'),
             h('td.padded_number', @game.format_currency(@game.interest_owed(@corporation)).to_s),

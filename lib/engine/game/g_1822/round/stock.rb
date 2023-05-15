@@ -43,6 +43,8 @@ module Engine
           end
 
           def finish_round
+            return @game.end_game! if @game.nothing_sold_in_sr?
+
             float_minors = []
             minor_count = 0
             remove_l_count = 0
@@ -189,6 +191,7 @@ module Engine
             @game.close_corporation(minor)
 
             # Remove the proxy company for the minor
+            company.close!
             @game.companies.delete(company)
           end
 
@@ -200,8 +203,9 @@ module Engine
           def remove_train
             # Remove the next train
             train = @game.depot.upcoming.first
+            source = train.owner
             @game.remove_train(train)
-            @game.phase.buying_train!(nil, train)
+            @game.phase.buying_train!(nil, train, source)
             train
           end
 

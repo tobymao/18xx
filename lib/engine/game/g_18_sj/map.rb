@@ -7,9 +7,9 @@ module Engine
         TILES = {
           '5' => 4,
           '6' => 4,
-          '7' => 20,
-          '8' => 20,
-          '9' => 20,
+          '7' => 'unlimited',
+          '8' => 'unlimited',
+          '9' => 'unlimited',
           '14' => 4,
           '15' => 4,
           '16' => 2,
@@ -40,44 +40,50 @@ module Engine
           '57' => 5,
           '63' => 2,
           '70' => 1,
-          '131' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' =>
-            'city=revenue:90,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-          },
-          '172' => 2,
-          '298SJ' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;'\
-                      'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
-                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2',
-          },
-          '299SJ' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;'\
-                      'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
-                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2',
-          },
-          '440' =>
+          '611' => 2,
+          '619' => 3,
+          'X1' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:40,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y',
           },
-          '466' =>
+          'X2' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;'\
+                      'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
+                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=A',
+          },
+          'X3' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y',
           },
-          '611' => 2,
-          '619' => 3,
+          'X4' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;'\
+                      'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
+                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=A',
+          },
+          'X5' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' =>
+            'city=revenue:90,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=A',
+          },
+          'X6' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                      'path=a:5,b:_0',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -119,7 +125,7 @@ module Engine
             ['B31'] => 'offboard=revenue:yellow_20|green_30|brown_70;path=a:0,b:_0;icon=image:18_sj/N,sticky:1;'\
                        'icon=image:18_sj/m_lower_case,sticky:1',
             ['H9'] => 'offboard=revenue:green_30|brown_40;path=a:3,b:_0;icon=image:18_sj/O,sticky:1;'\
-                      'icon=image:18_sj/b_lower_case,sticky:1;label=S;icon=image:18_sj/S,sticky:1',
+                      'icon=image:18_sj/b_lower_case,sticky:1;icon=image:18_sj/S,sticky:1',
           },
           gray: {
             ['A6'] => 'city=revenue:20;path=a:5,b:_0;path=a:0,b:_0;icon=image:port;icon=image:port',
@@ -176,7 +182,7 @@ module Engine
             ['G10'] =>
               'city=revenue:20,groups:Stockholm;city=revenue:20,groups:Stockholm;'\
               'city=revenue:20,groups:Stockholm;city=revenue:20,groups:Stockholm;path=a:1,b:_0;path=a:2,b:_1;'\
-              'path=a:3,b:_2;path=a:4,b:_3',
+              'path=a:3,b:_2;path=a:4,b:_3;label=A',
           },
         }.freeze
 
@@ -186,7 +192,7 @@ module Engine
           true
         end
 
-        def map_legend
+        def map_legend(font_color, *_extra_colors)
           [
             # table-wide props
             {
@@ -204,14 +210,31 @@ module Engine
             ],
             # body
             [
-              { text: 'Bergslagen 1', props: { style: { border: '1px solid black', color: 'white', backgroundColor: 'grey' } } },
+              {
+                text: 'Bergslagen 1',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+              },
               {
                 text: 'B-b',
-                props: { style: { textAlign: 'center', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'center',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
               {
                 text: '50',
-                props: { style: { textAlign: 'right', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'right',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
             ],
             [
@@ -222,31 +245,62 @@ module Engine
             [
               {
                 text: 'Lapplandspilen',
-                props: { style: { border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
               },
               {
                 text: 'N-S',
-                props: { style: { textAlign: 'center', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'center',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
               {
                 text: '100',
-                props: { style: { textAlign: 'right', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'right',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
             ],
             [
-              { text: 'Malmfälten 1', props: { style: { border: '1px solid black' } } },
-              { text: 'M-m', props: { style: { textAlign: 'center', border: '1px solid black' } } },
-              { text: '50', props: { style: { textAlign: 'right', border: '1px solid black' } } },
+              { text: 'Malmfälten 1', props: { style: { border: "1px solid #{font_color}" } } },
+              { text: 'M-m', props: { style: { textAlign: 'center', border: "1px solid #{font_color}" } } },
+              { text: '50', props: { style: { textAlign: 'right', border: "1px solid #{font_color}" } } },
             ],
             [
-              { text: 'Malmfälten 2', props: { style: { border: '1px solid black', color: 'white', backgroundColor: 'grey' } } },
+              {
+                text: 'Malmfälten 2',
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'grey' } },
+              },
               {
                 text: 'M-m-m',
-                props: { style: { textAlign: 'center', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'center',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
               {
                 text: '100',
-                props: { style: { textAlign: 'right', border: '1px solid black', color: 'white', backgroundColor: 'grey' } },
+                props: {
+                  style: {
+                    textAlign: 'right',
+                    border: "1px solid #{font_color}",
+                    color: 'white',
+                    backgroundColor: 'grey',
+                  },
+                },
               },
             ],
             [

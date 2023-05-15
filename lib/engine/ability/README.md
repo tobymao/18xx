@@ -37,6 +37,8 @@ These attributes may be set for all ability types
     - `track`, `track_and_token`: track-laying step; if normal track lays are used
       up, but there is still a `Track` ability, then the active step will not
       pass on to the next step automatically
+    - `token`: token-placing step
+    - `route`: running routes step
     - `sold`: when the company is bought from a player by a corporation
     - `bought_train`: when the owning corporation has bought a train; generally
       used with `close` abilities
@@ -62,7 +64,13 @@ Designate a specific corporation to be the beneficiary of the ability,
 for example Steamboat Company in 1846.
 
 When a company with this ability is sold to a corporation, the company is
-automatically assigned to the new owning corporation. With this configuration,
+automatically assigned to the new owning corporation.
+
+- `count`: The number of times the ability may be used
+- `closed_when_used_up`: This ability has a count that is decreased each time it is used. If this attribute is true the private is closed when count reaches zero, if false the private
+remains open but the discount can no longer be used. Default false.
+
+With this configuration,
 the automatic assignment will happen and the company cannot be further
 reassigned:
 
@@ -154,8 +162,8 @@ This company may not be bought in.
 
 ## purchase_train
 
-Immediately purchases (for normal amount) the currently available depot train
-for the owning corporation.
+Immediately purchases the currently available depot train for the owning corporation.
+- `free`: If true, the train cost is free, otherwase at cost. Default false.
 
 ## reservation
 
@@ -203,6 +211,11 @@ Lay a tile and place a station token without connectivity
   teleport destination.
 - `cost`: Cost to use the teleport ability.
 - `free_tile_lay`: If true, the tile is laid with 0 cost. Default false.
+- `from_owner`: If true, this ability uses a token from the owning corporation's
+  charter; if false, an additional token is created. Default true.
+- `extra_action`: If true, this ability may be used in addition to the turn's
+  normal token placement step. Default false.
+
 
 ## tile_discount
 
@@ -212,6 +225,7 @@ Discount the cost for laying tiles in the specified terrain type
 - `terrain`: If set, type of terrain for which discount is provided, otherwise the discount is off the total cost
 - `hexes`: If not specified, all applicable hexes qualifies for
   the discount. If specified, only specified hexes qualify
+- `exact_match`: Tile may only contain specified terrain type. Default true.
 
 ## tile_income
 
@@ -251,6 +265,11 @@ remains open but the discount can no longer be used. Default false.
 - `consume_tile_lay`: If true, using this private counts as a corporations tile lay
   and must follow lay/upgrade rules. Upgrade's also count towards the corporations 'upgrade' lays.
   Default false.
+- `lay_count` and `upgrade_count` - Use as an alternative to
+  `count`. `lay_count` is the number of yellow tile lays, and `upgrade_count` is
+  the number of green or higher tile upgrades. When these are set, the ability
+  cannot be used for both new tile lays and upgrades. With these set, you need
+  to make sure the `ability.use!` call includes an `upgrade` kwarg.
 
 ## train_buy
 
@@ -317,6 +336,9 @@ Modified station token placement
   therefore be placed in the same city as another token belonging to the owning
   corporation. Note that this property will bypass all tokenable checks, not
   just `:existing_token`. Default true.
+- `connected`: If true, when token placed, a check is done if the desired token slot
+  is connected by track with another city that has a token of the corporation; if not
+  a game error is triggered. Default false.
 
 
 ## sell_company

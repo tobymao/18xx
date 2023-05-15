@@ -27,7 +27,7 @@ module Engine
                         yellow: '#ffe600',
                         green: '#32763f')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = { 2 => 7000, 3 => 6500, 4 => 7500, 5 => 9000 }.freeze
 
@@ -296,7 +296,7 @@ module Engine
               abilities(corporation, :reservation) do |ability|
                 corporation.remove_ability(ability)
               end
-              place_second_token(corporation, **place_second_token_kwargs)
+              place_second_token(corporation, **place_second_token_kwargs(corporation))
             end
           end
           @log << "Privates in the game: #{@companies.reject { |c| c.name.include?('Pass') }.map(&:name).sort.join(', ')}"
@@ -385,8 +385,8 @@ module Engine
           two_player? ? [NORTH_GROUP, SOUTH_GROUP] : [GREEN_GROUP]
         end
 
-        def place_second_token_kwargs
-          { deferred: true }
+        def place_second_token_kwargs(corporation = nil)
+          { deferred: corporation != erie }
         end
 
         def place_second_token(corporation, two_player_only: true, deferred: true)
@@ -412,7 +412,7 @@ module Engine
 
         def place_token_on_upgrade(action)
           hex_id = action.tile.hex.id
-          return unless action.tile.color == :green && @second_tokens_in_green.include?(hex_id)
+          return if action.tile.color != :green || !@second_tokens_in_green.include?(hex_id)
 
           corporation = @second_tokens_in_green[hex_id]
           token = corporation.find_token_by_type
@@ -423,6 +423,7 @@ module Engine
 
           @log << "#{corporation.id} places a token on #{hex_id} (#{hex.location_name}) as the city is green"
           @second_tokens_in_green.delete(hex_id)
+          @graph.clear
         end
 
         def num_trains(train)
@@ -536,6 +537,10 @@ module Engine
 
         def lake_shore_line
           @lake_shore_line ||= company_by_id('LSL')
+        end
+
+        def erie
+          @erie ||= corporation_by_id('ERIE')
         end
 
         def illinois_central

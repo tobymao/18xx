@@ -23,7 +23,7 @@ module View
               percent: bundle.percent,
             ))
           end
-          double_cert = bundle.shares.any?(&:last_cert) ? '[d]' : ''
+          double_cert = bundle.shares.any? { |s| s.last_cert || s.double_cert } ? '[d]' : ''
           props = {
             style: {
               padding: '0.2rem 0',

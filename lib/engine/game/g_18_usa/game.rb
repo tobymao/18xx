@@ -17,7 +17,7 @@ module Engine
         attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles,
                     :mexico_hexes
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 99_999
 
@@ -221,6 +221,10 @@ module Engine
           @tiles.find { |t| t.name == name }
         end
 
+        def setup_preround
+          randomize_privates
+        end
+
         def setup
           @rhq_tile = tile_by_name('X23')
           @yellow_plain_tiles ||= @all_tiles.select { |t| YELLOW_PLAIN_TRACK_TILES.include?(t.name) }
@@ -250,7 +254,6 @@ module Engine
 
           setup_train_roster
 
-          randomize_privates
           @subsidies = SUBSIDIES.dup
           setup_resource_subsidy
           randomize_subsidies
@@ -322,10 +325,7 @@ module Engine
           end
 
           @log << "Removing #{to_remove.map(&:name).join(', ')}"
-          to_remove.each do |company|
-            company.close!
-            @round.active_step.companies.delete(company)
-          end
+          to_remove.each(&:close!)
         end
 
         def setup_resource_subsidy
@@ -436,7 +436,7 @@ module Engine
 
             @log << "#{ability.owner.name} contributes the #{resource} resource"
             ability.use!
-            next unless ability.count&.zero? && ability.closed_when_used_up
+            next if !ability.count&.zero? || !ability.closed_when_used_up
 
             company = ability.owner
             @log << "#{company.name} closes"
@@ -839,12 +839,11 @@ module Engine
           return nil if counted_stops.size < route.train.distance
 
           # Count how many of our tokens are on the route; if only one we cannot skip that one.
-          our_tokened_stops = counted_stops.select { |stop| stop.tokened_by?(route.train.owner) }
+          tokened_stops = counted_stops.select { |stop| stop.tokened_by?(route.train.owner) }
+          counted_stops.delete(tokened_stops.first) if tokened_stops.one?
 
           # Find the lowest revenue stop that can be skipped
-          counted_stops = counted_stops[1..-2]
-          counted_stops.reject! { |stop| stop == our_tokened_stops.first } if our_tokened_stops.one?
-          counted_stops.min_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
+          counted_stops.max_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
         end
 
         def check_distance(route, visits)

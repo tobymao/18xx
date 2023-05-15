@@ -6,7 +6,7 @@ module Engine
   module Part
     class Town < RevenueCenter
       attr_accessor :style
-      attr_reader :to_city, :boom, :double
+      attr_reader :to_city, :boom
 
       def initialize(revenue, **opts)
         super
@@ -14,7 +14,6 @@ module Engine
         @to_city = opts[:to_city]
         @boom = opts[:boom]
         @style = opts[:style]&.to_sym
-        @double = !!opts[:double]
       end
 
       def <=(other)
@@ -34,6 +33,10 @@ module Engine
       # less than three paths
       def rect?
         @style ? (@style == :rect) : (!paths.empty? && paths.size < 3)
+      end
+
+      def hidden?
+        @style == :hidden
       end
     end
   end

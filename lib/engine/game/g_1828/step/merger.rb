@@ -331,7 +331,8 @@ module Engine
               choices = merging_corporations.map do |c|
                 "#{c.name} (#{@game.format_currency(c.share_price.price)})"
               end
-              @player_choice = PlayerChoice.new(step_description: 'Choose share to retain after 2:1 exchange',
+              @log << "#{entity.name} chooses which odd share to retain for trading up"
+              @player_choice = PlayerChoice.new(step_description: 'Choose odd share to retain for trading up',
                                                 choice_description: 'Choose share',
                                                 choices: choices)
               nil
@@ -365,10 +366,11 @@ module Engine
               @exchange_selection = nil
 
               @log << "#{entity.name} discards 1 #{share.corporation.name} share and receives " \
-                      "#{@game.format_currency(share.price)} from the bank."
+                      "#{@game.format_currency(share.price)} from the bank"
             elsif entity.player? && !@exchange_selection
+              @log << "#{entity.name} chooses whether to trade up or sell single #{share.corporation.name} share"
               exchange_cost = share.price - @system.share_price.price
-              @player_choice = PlayerChoice.new(step_description: 'Exchange or sell share',
+              @player_choice = PlayerChoice.new(step_description: 'Trade up or sell share',
                                                 choice_description: 'Choose',
                                                 choices: ["Exchange (#{@game.format_currency(exchange_cost)})",
                                                           "Sell (#{@game.format_currency(share.price)})"])
@@ -467,19 +469,19 @@ module Engine
               log_msg += '. '
               if cash_difference.positive?
                 @game.bank.spend(cash_difference, entity_b)
-                log_msg += "#{entity_b.name} receives #{@game.format_currency(cash_difference)} from the bank."
+                log_msg += "#{entity_b.name} receives #{@game.format_currency(cash_difference)} from the bank"
               else
                 cash_difference = cash_difference.abs
                 if entity_b.cash >= cash_difference
                   entity_b.spend(cash_difference, @game.bank)
-                  log_msg += "#{entity_b.name} pays #{@game.format_currency(cash_difference)} to the bank."
+                  log_msg += "#{entity_b.name} pays #{@game.format_currency(cash_difference)} to the bank"
                 else
                   discard_share = shares_a.first
                   discard_share.transfer(@discard)
                   sold_share(entity_b, discard_share.corporation)
                   @game.bank.spend(discard_share.price, entity_b)
                   log_msg += "#{entity_b.name} must discard #{shares_str([discard_share])} and receives " \
-                             "#{@game.format_currency(discard_share.price)} from the bank."
+                             "#{@game.format_currency(discard_share.price)} from the bank"
                 end
               end
             end

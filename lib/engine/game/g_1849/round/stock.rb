@@ -13,6 +13,11 @@ module Engine
               .each { |c| @game.place_home_token(c) }
             super
           end
+
+          def start_entity
+            @game.moved_this_turn = []
+            super
+          end
         end
       end
     end

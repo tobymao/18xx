@@ -37,14 +37,20 @@ module View
           text += " (#{@game.format_currency(modified_price)})" if modified_price
           text += " for #{@purchase_for.name}" if @purchase_for
 
-          h(:button, {
-              on: {
-                click: lambda {
-                  buy_shares(@entity, bundle, share_price: modified_price, swap: @swap_share,
-                                              purchase_for: @purchase_for, borrow_from: @borrow_from)
-                },
-              },
-            }, text)
+          process_buy = lambda do
+            do_buy = lambda do
+              buy_shares(@entity, bundle, share_price: modified_price, swap: @swap_share,
+                                          purchase_for: @purchase_for, borrow_from: @borrow_from)
+            end
+
+            if (consenter = @game.consenter_for_buy_shares(@entity, bundle))
+              check_consent(@entity, consenter, do_buy)
+            else
+              do_buy.call
+            end
+          end
+
+          h(:button, { on: { click: process_buy } }, text)
         end
 
         def buy_shares(entity, bundle, share_price: nil, swap: nil, purchase_for: nil, borrow_from: nil)

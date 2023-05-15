@@ -53,15 +53,28 @@ module Engine
       end
 
       def process_program_enable(action)
+        remove_programmed_action(action.entity, action.type)
         @game.player_log(action.entity, "Enabled programmed action '#{action}'")
-        @game.programmed_actions[action.entity] = action
+        @game.programmed_actions[action.entity] << action
         @round.player_enabled_program(action.entity) if @round.respond_to?(:player_enabled_program)
       end
 
       def process_program_disable(action)
-        program = @game.programmed_actions.delete(action.entity)
+        program = remove_programmed_action(action.entity, action.original_type)
+        return unless program
+
         reason = action.reason || 'unknown reason'
         @game.player_log(action.entity, "Disabled programmed action '#{program}' due to '#{reason}'")
+      end
+
+      def remove_programmed_action(entity, type)
+        existing = if type && @game.class::ALLOW_MULTIPLE_PROGRAMS
+                     @game.programmed_actions[entity].find { |a| a.type == type }
+                   else
+                     @game.programmed_actions[entity].last # delete last added
+                   end
+        @game.programmed_actions[entity].delete(existing) if existing
+        existing
       end
 
       def skip!; end

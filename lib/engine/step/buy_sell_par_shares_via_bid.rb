@@ -6,7 +6,8 @@ require_relative 'passable_auction'
 module Engine
   module Step
     class BuySellParSharesViaBid < BuySellParShares
-      # Common code between 1867 and 18Ireland for auctioning corporations via bid
+      # Common code between 1867, 18Ireland, and 1877: Stockholm Tramways for auctioning corporations via bid
+      # Can also be used to auction private companies.
       include Engine::Step::PassableAuction
 
       def actions(entity)
@@ -17,6 +18,10 @@ module Engine
         actions << 'bid' if !bought? && can_bid?(entity)
         actions << 'pass' if actions.any? && !actions.include?('pass') && !must_sell?(entity)
         actions
+      end
+
+      def auctioning_company
+        @auctioning
       end
 
       def auctioning_corporation
@@ -57,15 +62,15 @@ module Engine
       end
 
       def add_bid(action)
-        entity = action.entity
-        corporation = action.corporation
+        player = action.entity
+        entity = action.corporation || action.company
         price = action.price
 
         if @auctioning
-          @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
+          @log << "#{player.name} bids #{@game.format_currency(price)} for #{entity.name}"
         else
-          @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
-          @game.place_home_token(action.corporation)
+          @log << "#{player.name} auctions #{entity.name} for #{@game.format_currency(price)}"
+          @game.place_home_token(entity) if (@game.class::HOME_TOKEN_TIMING == :par) && !entity.company?
         end
         super(action)
 
@@ -88,8 +93,10 @@ module Engine
       def pass_description
         if @auctioning
           'Pass (Bid)'
+        elsif @round.current_actions.empty?
+          'Pass (Share)'
         else
-          super
+          'Done (Share)'
         end
       end
 

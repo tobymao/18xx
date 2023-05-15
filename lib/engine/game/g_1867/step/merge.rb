@@ -45,7 +45,7 @@ module Engine
           end
 
           def merger_auto_pass_entity
-            current_entity unless @converting || @merge_major
+            current_entity if !@converting && !@merge_major
           end
 
           def others_acted?
@@ -214,8 +214,6 @@ module Engine
               @game.log << "#{target.name} will be above token limit and must decide which tokens to remove"
               @round.corporations_removing_tokens = [target] + @merging
             else
-              move_tokens_to_surviving(target, @merging)
-
               # Add the $40 token back
               if target.tokens.size < 3
                 new_token = Engine::Token.new(target, price: 40)

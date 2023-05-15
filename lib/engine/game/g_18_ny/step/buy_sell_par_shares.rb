@@ -40,7 +40,7 @@ module Engine
 
           def issuable_shares(entity)
             return [] unless @round.current_actions.empty?
-            return [] unless @game.check_sale_timing(entity, entity)
+            return [] unless @game.check_sale_timing(entity, Share.new(entity).to_bundle)
 
             # Done via Sell Shares
             @game.issuable_shares(entity)

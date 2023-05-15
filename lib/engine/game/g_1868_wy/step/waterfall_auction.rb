@@ -7,11 +7,22 @@ module Engine
     module G1868WY
       module Step
         class WaterfallAuction < Engine::Step::WaterfallAuction
+          def help
+            if @choosing
+              "#{@choosing_player.name} won the auction for #{@auctioned_company.name}, now chooses one of:"
+            else
+              @game.corp_stacks_str_arr
+            end
+          end
+
           def setup
             super
 
-            choice_companies = @game.class::COMPANY_CHOICES.values.flatten
-            @companies.reject! { |c| choice_companies.include?(c.id) }
+            if @game.optional_rules.include?(:p2_p6_choice)
+              choice_companies = @game.class::COMPANY_CHOICES.values.flatten
+              @companies.reject! { |c| choice_companies.include?(c.id) }
+            end
+
             @passed_on_cheapest = {}
           end
 
@@ -38,13 +49,14 @@ module Engine
             reason = "all players #{reasons.join(' or ')}"
             @log << "#{@cheapest.name} is removed (#{reason})"
 
+            @cheapest.close!
             @companies.delete(@cheapest)
             @cheapest = @companies.first
 
             resolve_bids unless @bids[@cheapest].empty?
           end
 
-          def resolve_bids
+          def resolve_bids_for_company(company)
             super unless @choosing
           end
 
@@ -52,12 +64,16 @@ module Engine
             if @choosing
               company.owner = player
               player.companies << company
-              @log << "#{player.name} chooses #{company.name}, closing #{@auctioned_company.name}"
+              @log << "#{player.name} chooses #{company.name}, closing the other #{@auctioned_company.sym} companies"
               @choosing = false
               @choosing_player = nil
+              @company_choices.each { |c| c.close! unless c == company }
               @company_choices = nil
               @auctioned_company.close!
               @auctioned_company = nil
+
+              @game.setup_strikebreakers! if company == @game.strikebreakers_private
+
               return
             end
 
@@ -69,6 +85,9 @@ module Engine
               @choosing_player = player
               @company_choices = companies
             end
+
+            company.revenue = 0 if company == @game.lhp_private
+            @game.setup_strikebreakers! if company == @game.strikebreakers_private
 
             @cheapest = @companies.first
             @passed_on_cheapest = {}
@@ -87,14 +106,14 @@ module Engine
 
           def all_passed!
             case @cheapest
-            when @game.p1_company
+            when @game.hell_on_wheels
               unless @passed_on_cheapest.value?('bid')
                 remove_cheapest!
                 @passed_on_cheapest = {}
               end
-            when @game.p11_company
-              @log << 'Companies pay out (all players passed or bid on P12)'
-              @game.isr_payout_companies(@bidders[@game.p12_company])
+            when @game.durant
+              increase_discount!(@game.ames_bros, 10) if @bids[@game.ames_bros].empty?
+              increase_discount!(@game.durant, 10)
               @passed_on_cheapest = {}
             else
               remove_cheapest!
@@ -110,7 +129,14 @@ module Engine
             elsif !(@auctioning || @choosing)
               @passed_on_cheapest[action.entity] = 'bid'
             end
-            super
+
+            if @choosing
+              action.entity.unpass!
+              placement_bid(action)
+            else
+              super
+            end
+
             maybe_all_passed!
           end
 

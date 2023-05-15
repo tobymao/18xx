@@ -11,9 +11,9 @@ module Engine
             return [] if !entity.corporation? || entity != current_entity
 
             actions = []
-            actions << 'payoff_loan' if can_payoff?(entity)
+            actions << 'payoff_loan' if can_payoff?(entity) || must_payoff?(entity)
             actions << 'take_loan' if @game.can_take_loan?(entity)
-            actions << 'pass' if blocks?
+            actions << 'pass' if blocks? && !actions.empty?
 
             actions
           end
@@ -26,6 +26,10 @@ module Engine
             (loan = entity.loans[0]) &&
               entity.cash >= loan.amount &&
               @round.step_passed?(Engine::Step::BuyTrain)
+          end
+
+          def must_payoff?(entity)
+            entity.loans.size > @game.maximum_loans(entity) && @round.step_passed?(Engine::Step::BuyTrain)
           end
 
           def blocks?

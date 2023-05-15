@@ -3,6 +3,7 @@
 require 'view/game/actionable'
 require 'view/game/company'
 require 'view/game/par'
+require 'view/game/par_chart'
 require 'view/game/players'
 require 'view/game/stock_market'
 
@@ -34,6 +35,8 @@ module View
 
           if @current_actions.include?('par') && @step.respond_to?(:companies_pending_par) && @step.companies_pending_par
             h(:div, render_company_pending_par)
+          elsif @current_actions.include?('choose')
+            h(Choose)
           else
             h(:div, [
               render_turn_bid,
@@ -69,7 +72,11 @@ module View
             next unless share.president
 
             children << h(Corporation, corporation: share.corporation)
-            children << h(Par, corporation: share.corporation)
+            children << if @game.respond_to?(:par_chart)
+                          h(ParChart, corporation_to_par: share.corporation)
+                        else
+                          h(Par, corporation: share.corporation)
+                        end
           end
 
           children
@@ -102,7 +109,8 @@ module View
 
         def render_companies
           return [] if hidden? && !@step.visible?
-          return [] unless @current_actions.include?('bid') || (@step.respond_to?(:show_companies) && @step.show_companies)
+          return [] if !@current_actions.include?('bid') &&
+                       !(@step.respond_to?(:show_companies) && @step.show_companies)
 
           @selected_company = @step.auctioning if @step.auctioning
 

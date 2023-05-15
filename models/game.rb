@@ -17,6 +17,7 @@ class Game < Base
       FROM games
       WHERE status = '%<status>s'
         AND (:title IS NULL OR :title = title)
+        AND NOT (status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY created_at DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
@@ -34,7 +35,7 @@ class Game < Base
         AND (:title IS NULL OR :title = g.title)
         AND ug.id IS NULL
         AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
-      ORDER BY g.created_at DESC
+      ORDER BY g.%<ordered_by>s DESC
       LIMIT #{QUERY_LIMIT}
       OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
     ) %<status>s_games
@@ -53,30 +54,30 @@ class Game < Base
       FROM games g
       LEFT JOIN user_games ug
         ON g.id = ug.id
-      WHERE ug.id IS NOT NULL
-        OR g.user_id = :user_id
+      WHERE (ug.id IS NOT NULL OR g.user_id = :user_id)
+        AND g.status IN :status
       ORDER BY g.id DESC
-      LIMIT 1000
+      LIMIT :limit
     ) personal_games
   SQL
 
   # rubocop:disable Style/FormatString
-  LOGGED_IN_QUERY = <<~SQL.freeze
-    #{USER_QUERY}
-    UNION
-    #{USER_STATUS_QUERY % { status: 'new' }}
-    UNION
-    #{USER_STATUS_QUERY % { status: 'active' }}
-    UNION
-    #{USER_STATUS_QUERY % { status: 'finished' }}
-  SQL
-
   LOGGED_OUT_QUERY = <<~SQL.freeze
     #{STATUS_QUERY % { status: 'new' }}
     UNION
     #{STATUS_QUERY % { status: 'active' }}
     UNION
     #{STATUS_QUERY % { status: 'finished' }}
+  SQL
+
+  LOGGED_IN_QUERY = <<~SQL.freeze
+    #{USER_QUERY}
+    UNION
+    #{USER_STATUS_QUERY % { status: 'new', ordered_by: 'created_at' }}
+    UNION
+    #{USER_STATUS_QUERY % { status: 'active', ordered_by: 'created_at' }}
+    UNION
+    #{USER_STATUS_QUERY % { status: 'finished', ordered_by: 'created_at' }}
   SQL
   # rubocop:enable Style/FormatString
 
@@ -89,7 +90,13 @@ class Game < Base
 
     kwargs[:user_id] = user.id if user
     kwargs[:title] = opts['title'] != '' ? opts['title'] : nil
-    fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs,).all.sort_by(&:id).reverse
+    kwargs[:status] = %w[new active]
+    kwargs[:limit] = 1000
+    fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all
+  end
+
+  def self.profile_games(user)
+    fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 }).all
   end
 
   SETTINGS = %w[
@@ -109,17 +116,29 @@ class Game < Base
       .shuffle(random: Random.new(settings['seed'] || 1))
   end
 
-  def archive!
-    Action.where(game: self).delete
-    update(status: 'archived')
+  def finished_at_ts
+    finished_at&.to_i
   end
 
-  def to_h(include_actions: false, player: nil)
+  def archive!
+    Action.where(game: self).delete
+    archive_data = { status: 'archived' }
+    unless finished_at
+      archive_data[:finished_at] = updated_at
+      archive_data[:manually_ended] = true
+    end
+    update(archive_data)
+  end
+
+  def to_h(include_actions: false, logged_in_user_id: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
+    if !players.find { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
+      actions_h.reject! { |a| a['type'] == 'message' }
+    end
     settings_h = settings.to_h
 
     # Move user settings and hide from other players
-    user_settings_h = settings_h.dig('players', player.to_s)
+    user_settings_h = settings_h.dig('players', logged_in_user_id.to_s)
     settings_h.delete('players')
 
     {
@@ -127,6 +146,7 @@ class Game < Base
       description: description,
       user: user.to_h,
       players: ordered_players.map(&:to_h),
+      min_players: min_players,
       max_players: max_players,
       title: title,
       settings: settings_h,
@@ -140,6 +160,12 @@ class Game < Base
       loaded: include_actions,
       created_at: created_at_ts,
       updated_at: updated_at_ts,
+      finished_at: finished_at_ts,
     }
+  end
+
+  def validate
+    super
+    errors.add(:finished_at, 'must be set for finished games') if status == 'finished' && !finished_at
   end
 end

@@ -37,38 +37,12 @@ module Engine
             @game.stock_market.set_par(corporation, share_price)
 
             if share_price.price >= company.value
-              shares = corporation.ipo_shares.take(2)
-
-              # player gets first share
-              diff = share_price.price - company.value
-              raise GameError, "#{player.name} does not have #{@game.format_currency(diff)} to spend on IPO" if player.cash < diff
-
-              @log << "#{player.name} pays difference of #{@game.format_currency(diff)} to #{corporation.name} "\
-                      'and receives one share'
-              player.spend(diff, corporation) if diff.positive?
-              @game.share_pool.buy_shares(player, shares[0].to_bundle, exchange: :free, silent: true)
-
-              # issue next share
-              @log << "#{corporation.name} issues one share and receives #{@game.format_currency(share_price.price)}"
-              @game.share_pool.sell_shares(shares[1].to_bundle, silent: true)
+              buy_and_issue(player, company, share_price, corporation, 1)
+            elsif share_price.price * 2 >= company.value
+              buy_and_issue(player, company, share_price, corporation, 2)
             else
-              shares = corporation.ipo_shares.take(4)
-
-              # player gets first two shares
-              diff = (share_price.price * 2) - company.value
-              raise GameError, "#{player.name} does not have #{@game.format_currency(diff)} to spend on IPO" if player.cash < diff
-
-              @log << "#{player.name} pays difference of #{@game.format_currency(diff)} to #{corporation.name} "\
-                      'and receives two shares'
-              player.spend(diff, corporation) if diff.positive?
-              @game.share_pool.buy_shares(player, shares[0].to_bundle, exchange: :free, silent: true)
-              @game.share_pool.buy_shares(player, shares[1].to_bundle, exchange: :free, silent: true)
-
-              # issue next two shares
-              @game.share_pool.sell_shares(shares[2].to_bundle, silent: true)
-              @game.share_pool.sell_shares(shares[3].to_bundle, silent: true)
-              @log << "#{corporation.name} issues two shares and receives "\
-                      "#{@game.format_currency(share_price.price * 2)}"
+              # we should only get here in RS not RSS
+              buy_and_issue(player, company, share_price, corporation, 3)
             end
 
             corporation.companies << company
@@ -79,6 +53,33 @@ module Engine
             pass!
           end
 
+          def buy_and_issue(player, company, share_price, corporation, num_to_buy)
+            total = num_to_buy * 2
+            if corporation.ipo_shares.size < total
+              raise GameError, "#{corporation.name} does not have #{total} shares of stock for IPO"
+            end
+
+            shares = corporation.ipo_shares.take(total)
+
+            # player gets first num_to_buy shares
+            diff = (share_price.price * num_to_buy) - company.value
+            raise GameError, "#{player.name} does not have #{@game.format_currency(diff)} to spend on IPO" if player.cash < diff
+
+            @log << "#{player.name} pays difference of #{@game.format_currency(diff)} to #{corporation.name} "\
+                    "and receives #{num_to_buy} share#{num_to_buy > 1 ? 's' : ''}"
+            player.spend(diff, corporation) if diff.positive?
+            num_to_buy.times do |i|
+              @game.share_pool.buy_shares(player, shares[i].to_bundle, exchange: :free, silent: true)
+            end
+
+            # issue next num_to_buy shares
+            num_to_buy.times do |i|
+              @game.share_pool.sell_shares(shares[num_to_buy + i].to_bundle, silent: true)
+            end
+            @log << "#{corporation.name} issues #{num_to_buy} share#{num_to_buy > 1 ? 's' : ''} and receives "\
+                    "#{@game.format_currency(share_price.price * num_to_buy)}"
+          end
+
           def get_par_prices(company, _corporation)
             @game.available_par_prices(company).select { |p| cost_to_ipo(p.price, company) <= company.owner&.cash }
           end
@@ -86,8 +87,10 @@ module Engine
           def cost_to_ipo(par_price, company)
             if par_price >= company.value
               par_price - company.value
-            else
+            elsif par_price * 2 >= company.value
               (par_price * 2) - company.value
+            else
+              (par_price * 3) - company.value
             end
           end
 

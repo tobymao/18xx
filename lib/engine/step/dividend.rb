@@ -103,7 +103,9 @@ module Engine
       end
 
       def dividends_for_entity(entity, holder, per_share)
-        # 1817 2 share half pay uses floats, for 18MEX num_shares can be a float for NdM
+        # 1817: 2 share half pay uses floats
+        # 18MEX: num_shares can be a float for NdM
+        # 1868 Wyoming: Teapot Dome private can cause per_share to be a float
         (holder.num_shares_of(entity, ceil: false) * per_share).ceil
       end
 
@@ -156,7 +158,7 @@ module Engine
         # For any company without a share price, skip price movement
         return unless entity.share_price
 
-        prev = entity.share_price.price
+        old_price = entity.share_price
 
         right_times = 0
         Array(payout[:share_times]).zip(Array(payout[:share_direction])).each do |share_times, direction|
@@ -174,19 +176,19 @@ module Engine
             end
           end
         end
-        @game.log_share_price(entity, prev, right_times)
+        @game.log_share_price(entity, old_price, right_times)
       end
 
       def routes
         @round.routes
       end
 
-      def rust_obsolete_trains!(entity)
+      def rust_obsolete_trains!(entity, log: true)
         rusted_trains = entity.trains.select(&:obsolete).each do |train|
           @game.rust(train)
         end
 
-        @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
+        @log << '-- Event: Obsolete trains rust --' if log && !rusted_trains.empty?
       end
 
       def pass!

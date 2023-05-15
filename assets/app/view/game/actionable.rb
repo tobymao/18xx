@@ -35,11 +35,20 @@ module View
         @participant = (@game.players.map(&:id) + [@game_data['user']['id']]).include?(@user&.dig('id'))
       end
 
-      def check_consent(player, click)
+      def check_consent(entity, consenters, click)
+        consenters = Array(consenters).uniq
+        names = consenters.map(&:name).sort.join(', ')
+        consenters_str = consenters.size > 1 ? "one of #{names}" : names
+
+        log_and_click = lambda do
+          process_action(Engine::Action::Log.new(entity.player, message: "• confirmed receiving consent from #{consenters_str}"))
+          click.call
+        end
+
         opts = {
           color: :yellow,
-          click: click,
-          message: "Click confirm if #{player.name} has already consented to this action.",
+          click: log_and_click,
+          message: "Click confirm if #{consenters_str} has already consented to this action.",
         }
         store(:confirm_opts, opts, skip: false)
       end
@@ -95,10 +104,12 @@ module View
 
         if game.finished
           @game_data[:result] = game.result
+          @game_data[:manually_ended] = game.manually_ended
           @game_data[:status] = 'finished'
         else
           @game_data[:result] = {}
           @game_data[:status] = 'active'
+          @game_data[:manually_ended] = nil
         end
 
         if hotseat?
@@ -113,6 +124,7 @@ module View
             meta = {
               game_result: @game_data[:result],
               game_status: @game_data[:status],
+              manually_ended: @game_data[:manually_ended],
               active_players: game.active_players_id,
               turn: game.turn,
               round: game.round.name,

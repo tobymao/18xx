@@ -46,7 +46,7 @@ module Engine
       def place_token(entity, city, token, connected: true, extra_action: false,
                       special_ability: nil, check_tokenable: true, spender: nil)
         hex = city.hex
-        extra_action ||= special_ability.extra_action if special_ability&.type == :token
+        extra_action ||= special_ability.extra_action if %i[teleport token].include?(special_ability&.type)
 
         check_connected(entity, city, hex) if connected
 
@@ -91,11 +91,12 @@ module Engine
           token.corporation.tokens << token
           @log << "#{tokener} places a neutral token on #{hex.name}#{price_log}"
         else
-          @log << "#{tokener} places a token on #{hex.name} (#{hex.location_name})#{price_log}"
+          hex_description = hex.location_name ? "#{hex.name} (#{hex.location_name}) " : "#{hex.name} "
+          @log << "#{tokener} places a token on #{hex_description}#{price_log}"
         end
 
         @round.tokened = true unless extra_action
-        @game.token_graph_for_entity(entity).clear
+        @game.clear_token_graph_for_entity(entity)
       end
 
       def pay_token_cost(entity, cost)
@@ -116,6 +117,10 @@ module Engine
 
       def adjust_token_price_ability!(entity, token, hex, city, special_ability: nil)
         if special_ability&.type == :teleport
+          unless special_ability.from_owner
+            token = Engine::Token.new(entity)
+            entity.tokens << token
+          end
           token.price = 0
           return [token, special_ability]
         end
@@ -152,6 +157,10 @@ module Engine
 
         city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
         raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
+      end
+
+      def tokener_available_hex(entity, hex)
+        @game.token_graph_for_entity(entity).reachable_hexes(entity)[hex]
       end
     end
   end

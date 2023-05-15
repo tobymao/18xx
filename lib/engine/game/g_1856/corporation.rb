@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1856
       class Corporation < Engine::Corporation
-        attr_accessor :escrow, :presidents_share
+        attr_accessor :ipoed, :escrow, :presidents_share
 
         CAPITALIZATION_STRS = {
           full: 'Full',
@@ -53,7 +53,6 @@ module Engine
         end
 
         def capitalization_type
-          # TODO: escrow
           return :escrow if !@destinated && @game.phase.status.include?('escrow')
           return :incremental if (@destinated && @game.phase.status.include?('escrow')) ||
             @game.phase.status.include?('incremental')

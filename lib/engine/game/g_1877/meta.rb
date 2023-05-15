@@ -12,6 +12,8 @@ module Engine
         PROTOTYPE = true
         DEPENDS_ON = '1817'
 
+        GAME_TITLE = '1877: Venezuela'
+        GAME_ISSUE_LABEL = '1877'
         GAME_DESIGNER = 'Scott Petersen & Toby Mao'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1877'
         GAME_LOCATION = 'Venezuela'

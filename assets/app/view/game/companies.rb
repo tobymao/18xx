@@ -35,7 +35,7 @@ module View
           h(:div, companies)
         else
           h('div.company_table', table_props, [
-            h('div.bold', 'Company'),
+            h('div.bold', @game.company_table_header),
             @game.show_value_of_companies?(@owner) ? h('div.bold.right', 'Value') : '',
             h('div.bold.right', 'Income'),
             *companies,

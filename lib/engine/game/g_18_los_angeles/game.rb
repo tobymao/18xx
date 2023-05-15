@@ -108,6 +108,11 @@ module Engine
 
         def setup
           super
+
+          %w[a5 a9 G14].each do |id|
+            hex_by_id(id)&.ignore_for_axes = true
+          end
+
           post_setup
         end
 
@@ -130,16 +135,6 @@ module Engine
           companies
         end
 
-        def init_hexes(_companies, _corporations)
-          hexes = super
-
-          hexes.each do |hex|
-            hex.ignore_for_axes = true if %w[a5 a9 G14].include?(hex.id)
-          end
-
-          hexes
-        end
-
         def num_removals(_group)
           two_player? ? 2 : 0
         end
@@ -148,7 +143,7 @@ module Engine
           two_player? ? [CORPORATIONS_GROUP] : []
         end
 
-        def place_second_token_kwargs
+        def place_second_token_kwargs(_corporation)
           { two_player_only: true, deferred: false }
         end
 

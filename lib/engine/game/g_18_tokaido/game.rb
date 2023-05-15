@@ -27,7 +27,7 @@ module Engine
         attr_reader :drafted_companies
 
         TRACK_RESTRICTION = :permissive
-        CURRENCY_FORMAT_STR = '¥%d'
+        CURRENCY_FORMAT_STR = '¥%s'
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
         STARTING_CASH = { 2 => 820, 3 => 550, 4 => 480 }.freeze
         CAPITALIZATION = :full
@@ -154,7 +154,7 @@ module Engine
 
         def after_bid; end
 
-        def cert_limit
+        def cert_limit(_player = nil)
           (8 * corporations.size / players.size).to_i
         end
 
@@ -180,7 +180,7 @@ module Engine
         def init_corporations(stock_market)
           corporations = super(stock_market)
 
-          unless @optional_rules&.include?(:no_corporation_discard) || players.size > 3
+          if !@optional_rules&.include?(:no_corporation_discard) && players.size <= 3
             removed = corporations.delete_at((rand % 6) + 1)
             @log << "Removed #{removed.full_name}"
           end

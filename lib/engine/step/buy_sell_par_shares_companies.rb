@@ -54,7 +54,7 @@ module Engine
       def can_buy_any_companies?(entity)
         return false if bought? ||
           !entity.cash.positive? ||
-          @game.num_certs(entity) >= @game.cert_limit
+          @game.num_certs(entity) >= @game.cert_limit(entity)
 
         @game.companies.any? { |c| c.owner == @game.bank && !did_sell?(c, entity) }
       end
@@ -114,7 +114,7 @@ module Engine
 
         corporation = bundle.corporation
 
-        timing = @game.check_sale_timing(entity, corporation)
+        timing = @game.check_sale_timing(entity, bundle)
 
         timing &&
           !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&

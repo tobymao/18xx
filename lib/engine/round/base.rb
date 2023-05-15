@@ -10,8 +10,8 @@ end
 module Engine
   module Round
     class Base
-      attr_reader :entities, :entity_index, :round_num, :steps
-      attr_accessor :last_to_act, :pass_order, :at_start
+      attr_reader :round_num, :steps
+      attr_accessor :last_to_act, :pass_order, :at_start, :entities, :entity_index
 
       DEFAULT_STEPS = [
         Step::EndGame,
@@ -194,6 +194,10 @@ module Engine
 
       def show_auto?
         false
+      end
+
+      def show_in_history?
+        true
       end
 
       private

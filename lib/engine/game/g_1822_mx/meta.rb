@@ -9,7 +9,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         DEPENDS_ON = '1822'
 
         GAME_SUBTITLE = 'The Railways of Mexico'

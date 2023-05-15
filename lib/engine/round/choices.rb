@@ -12,6 +12,10 @@ module Engine
       def self.short_name
         'Choices'
       end
+
+      def show_in_history?
+        false
+      end
     end
   end
 end

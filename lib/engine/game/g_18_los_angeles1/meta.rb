@@ -13,7 +13,7 @@ module Engine
         DEV_STAGE = :production
         DEPENDS_ON = '18 Los Angeles 2'
 
-        GAME_PUBLISHER = %i[traxx seahorse].freeze
+        GAME_PUBLISHER = %i[traxx].freeze
 
         GAME_RULES_URL = {
           '18 Los Angeles 1st Edition Rules' =>
@@ -22,8 +22,12 @@ module Engine
                 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
         }.freeze
         GAME_TITLE = '18 Los Angeles'
-        # GAME_IS_VARIANT_OF = G18LosAngeles::Meta
+        GAME_DISPLAY_TITLE = '18 Los Angeles 1'
+        GAME_FULL_TITLE = '18 Los Angeles: Railroading in the City of Angels 1st Edition'
+        GAME_ISSUE_LABEL = '18 Los Angeles'
+        GAME_IS_VARIANT_OF = G18LosAngeles::Meta
         GAME_ALIASES = ['18LA_1'].freeze
+        GAME_VARIANTS = [].freeze
       end
     end
   end

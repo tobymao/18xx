@@ -7,7 +7,8 @@ module Engine
     include Assignable
 
     attr_accessor :x, :y, :ignore_for_axes, :location_name
-    attr_reader :coordinates, :empty, :layout, :neighbors, :all_neighbors, :tile, :original_tile, :tokens
+    attr_reader :coordinates, :empty, :layout, :neighbors, :all_neighbors, :tile, :original_tile, :tokens,
+                :column, :row, :hide_location_name
 
     DIRECTIONS = {
       flat: {
@@ -58,21 +59,30 @@ module Engine
           number - 1
         end
 
-      [x, y]
+      column, row =
+        if axes_config[:x] == :letter
+          [letter, number]
+        else
+          [number, letter]
+        end
+
+      [x, y, column, row]
     end
 
     # Coordinates are of the form A1..Z99
     # x and y map to the double coordinate system
     # layout is :pointy or :flat
     def initialize(coordinates, layout: nil, axes: nil, tile: Tile.for('blank'),
-                   location_name: nil, empty: false)
+                   location_name: nil, hide_location_name: false, empty: false)
       @coordinates = coordinates
       @layout = layout
-      @x, @y = self.class.init_x_y(@coordinates, axes)
+      @axes = axes
+      @x, @y, @column, @row = self.class.init_x_y(@coordinates, axes)
       @neighbors = {}
       @all_neighbors = {}
       @location_name = location_name
       tile.location_name = location_name
+      @hide_location_name = hide_location_name
       @original_tile = @tile = tile
       @tile.hex = self
       @activations = []
@@ -143,7 +153,7 @@ module Engine
               next unless ability.hex == coordinates
 
               ability.tile = new_city.tile
-              ability.city = new_city.index
+              ability.city = new_city.tile.cities.index(new_city)
             end
           end
 
@@ -178,11 +188,10 @@ module Engine
       end
       @tile.icons = @tile.icons.select(&:preprinted)
 
+      tile.future_label.sticker = tile.future_label if tile.future_label
       if @tile.future_label
-        if @tile.future_label&.color != tile.color
-          @tile.future_label.sticker = tile.future_label
-          tile.future_label = @tile.future_label
-        end
+        # future label transfers over
+        tile.future_label = @tile.future_label if @tile.future_label.color != tile.color.to_s
         # restore old tile's future_label
         @tile.future_label = @tile.future_label.sticker
       end
@@ -253,16 +262,16 @@ module Engine
       end
     end
 
-    def place_token(token, logo: nil)
+    def place_token(token, logo: nil, blocks_lay: nil, preprinted: true, loc: nil)
       token.place(self)
       @tokens << token
-      icon = Part::Icon.new('', token.corporation.id, true)
+      icon = Part::Icon.new('', token.corporation.id, true, blocks_lay, preprinted, loc: loc)
       icon.image = logo || token.corporation.logo
       @tile.icons << icon
     end
 
     def remove_token(token)
-      @tile.icons.delete(@tile.icons.find { |_name| token.corporation.id })
+      @tile.icons.delete(@tile.icons.find { |icon| icon.name == token.corporation.id })
       @tokens.delete(token)
     end
 

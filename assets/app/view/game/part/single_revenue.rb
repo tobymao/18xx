@@ -16,7 +16,7 @@ module View
 
           circle_props = {
             attrs: {
-              r: @revenue > 99 ? 17 : 15,
+              r: radius_for_revenue(@revenue),
               fill: 'white',
             },
             style: {
@@ -41,6 +41,16 @@ module View
               h('text.number', text_props, @revenue),
             ]
           )
+        end
+
+        def radius_for_revenue(_revenue)
+          if @revenue > 99
+            17
+          elsif @revenue.negative?
+            18
+          else
+            15
+          end
         end
       end
     end

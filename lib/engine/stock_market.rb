@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'share_price'
+require_relative 'stock_movement'
 
 module Engine
   class StockMarket
     attr_reader :market, :par_prices, :has_close_cell, :zigzag
 
-    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil)
+    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil, ledge_movement: nil)
       @par_prices = []
       @has_close_cell = false
       @zigzag = zigzag
@@ -27,6 +28,15 @@ module Engine
         r, c = p.coordinates
         [p.price, c, r]
       end.reverse!
+
+      @movement =
+        if @zigzag
+          ZigZagMovement.new(self, ledge_movement)
+        elsif one_d?
+          OneDimensionalMovement.new(self)
+        else
+          TwoDimensionalMovement.new(self)
+        end
     end
 
     def one_d?
@@ -40,42 +50,41 @@ module Engine
       corporation.original_par_price = share_price
     end
 
-    def move_right(corporation)
-      r, c = corporation.share_price.coordinates
+    def right_ledge?(coordinates)
+      row, col = coordinates
+      col + 1 == @market[row].size
+    end
 
-      if c + 1 < @market[r].size
-        c += 1
-        move(corporation, r, c)
-      else
-        move_up(corporation) unless one_d?
-      end
+    def move_right(corporation)
+      move(corporation, right(corporation, corporation.share_price.coordinates))
+    end
+
+    def right(corporation, coordinates)
+      @movement.right(corporation, coordinates)
     end
 
     def move_up(corporation)
-      return move_right(corporation) if one_d?
+      move(corporation, up(corporation, corporation.share_price.coordinates))
+    end
 
-      r, c = corporation.share_price.coordinates
-      r -= 1 if r - 1 >= 0
-      move(corporation, r, c)
+    def up(corporation, coordinates)
+      @movement.up(corporation, coordinates)
     end
 
     def move_down(corporation)
-      return move_left(corporation) if one_d?
+      move(corporation, down(corporation, corporation.share_price.coordinates))
+    end
 
-      r, c = corporation.share_price.coordinates
-      r += 1 if r + 1 < @market.size && share_price(r + 1, c)
-      move(corporation, r, c)
+    def down(corporation, coordinates)
+      @movement.down(corporation, coordinates)
     end
 
     def move_left(corporation)
-      r, c = corporation.share_price.coordinates
+      move(corporation, left(corporation, corporation.share_price.coordinates))
+    end
 
-      if c - 1 >= 0 && share_price(r, c - 1)
-        c -= 1
-        move(corporation, r, c)
-      else
-        move_down(corporation) unless one_d?
-      end
+    def left(corporation, coordinates)
+      @movement.left(corporation, coordinates)
     end
 
     def find_share_price(corporation, directions)
@@ -83,35 +92,32 @@ module Engine
     end
 
     def find_relative_share_price(share, directions)
-      r, c = share.coordinates
+      coordinates = share.coordinates
 
-      prices = [share_price(r, c)]
+      price = share_price(coordinates)
 
       Array(directions).each do |direction|
         case direction
         when :left
-          c -= 1 if c.positive?
+          coordinates = left(nil, coordinates)
         when :right
-          c += 1
+          coordinates = right(nil, coordinates)
         when :down
-          r -= 1 if r.positive?
+          coordinates = down(nil, coordinates)
         when :up
-          r += 1
+          coordinates = up(nil, coordinates)
         end
-        price = share_price(r, c)
-        break unless price
-
-        prices << price
+        price = share_price(coordinates) || price
       end
-      prices.last
+      price
     end
 
     def max_reached?
       @max_reached
     end
 
-    def move(corporation, row, column, force: false)
-      share_price = share_price(row, column)
+    def move(corporation, coordinates, force: false)
+      share_price = share_price(coordinates)
       return unless share_price
       return if share_price == corporation.share_price
       return if !force && !share_price.normal_movement?
@@ -129,7 +135,8 @@ module Engine
       .reverse
     end
 
-    def share_price(row, column)
+    def share_price(coordinates)
+      row, column = coordinates
       @market[row]&.[](column)
     end
 

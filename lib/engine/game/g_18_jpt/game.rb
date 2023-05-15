@@ -27,8 +27,8 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy_sell
-        TILE_RESERVATION_BLOCKS_OTHERS = true
-        CURRENCY_FORMAT_STR = '¥%d'
+        TILE_RESERVATION_BLOCKS_OTHERS = :always
+        CURRENCY_FORMAT_STR = '¥%s'
 
         BANK_CASH = 12_000
 
@@ -180,22 +180,16 @@ module Engine
             @share_pool,
             ShareBundle.new(tr.shares.dup.reverse.take(3)),
           )
-        end
-
-        def init_hexes(companies, corporations)
-          hexes = super
 
           @corporations.each do |corporation|
             next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
 
-            dest_hexes = dest_abilities.map(&:hexes).flatten
-
-            hexes
-              .select { |h| dest_hexes.include?(h.name) }
-              .each { |h| h.assign!(corporation) }
+            dest_abilities.each do |ability|
+              ability.hexes.each do |id|
+                hex_by_id(id).assign!(corporation)
+              end
+            end
           end
-
-          hexes
         end
 
         def operating_round(round_num)
@@ -208,7 +202,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18JPT::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -217,7 +211,7 @@ module Engine
           super
 
           # Place second starting token for TR
-          return unless corporation == tr && !corporation.tokens[1]&.used
+          return if corporation != tr || corporation.tokens[1]&.used
 
           @hexes.find { |hex| hex.name == TR_SECOND_STARTING_TOKEN }.tile.cities.first.place_token(tr, tr.next_token)
         end
@@ -250,17 +244,11 @@ module Engine
           str
         end
 
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
-        end
-
         def tile_lays(entity)
           # Enable double tile lay for TR after ability activation
           return self.class::DOUBLE_TILE_LAYS if ABILITY_DOUBLE_TILE_LAY.owner == entity
 
-          return self.class::TILE_LAYS unless entity == tc && @round.num_additional_lays.positive?
+          return self.class::TILE_LAYS if entity != tc || !@round.num_additional_lays.positive?
 
           # Each tile lay on hex with a town provides additional tile lay to TC
           Array.new(1 + @round.num_additional_lays) { { lay: true, upgrade: true } }
@@ -269,12 +257,6 @@ module Engine
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Allow merging of two separate cities into one with two slots
           return to.name == '611' if from.hex.coordinates == 'F92' && from.color == :green
-
-          super
-        end
-
-        def upgrades_to_correct_label?(from, to)
-          return to.labels.empty? if from.label.to_s == 'KU' && from.color != :brown
 
           super
         end
