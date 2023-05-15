@@ -1087,6 +1087,7 @@ module Engine
         end
 
         def setup
+          @nothing_sold_in_sr = true
           @game_end_reason = nil
 
           # Setup the bidding token per player
@@ -1447,7 +1448,7 @@ module Engine
         end
 
         def company_choices_egr(company, time)
-          return {} if !company.all_abilities.empty? || time != :special_choose
+          return {} if company.all_abilities.size != 3 || time != :special_choose
 
           choices = {}
           choices['token'] = 'Receive a discount token that can be used to pay the full cost of a single '\
@@ -1558,17 +1559,9 @@ module Engine
 
         def company_made_choice_egr(company, choice, time)
           company.desc = company_choices(company, time)[choice]
-          if choice == 'token'
-            # Give the company a free tile lay.
-            ability = Engine::Ability::TileLay.new(type: 'tile_lay', tiles: [], hexes: [], owner_type: 'corporation',
-                                                   count: 1, closed_when_used_up: true, reachable: true, free: true,
-                                                   special: false, when: 'track')
-            company.add_ability(ability)
-          else
-            %w[mountain hill].each do |terrain|
-              ability = Engine::Ability::TileDiscount.new(type: 'tile_discount', discount: 20, terrain: terrain)
-              company.add_ability(ability)
-            end
+          remove_type = choice == 'token' ? :tile_discount : :tile_lay
+          company.all_abilities.dup.each do |ability|
+            company.remove_ability(ability) if ability.type == remove_type
           end
         end
 
@@ -1654,7 +1647,7 @@ module Engine
         end
 
         def exchange_tokens(entity)
-          return 0 unless entity.corporation?
+          return 0 unless entity&.corporation?
 
           ability = entity.all_abilities.find { |a| a.type == :exchange_token }
           return 0 unless ability
@@ -1930,6 +1923,14 @@ module Engine
 
         def london_hex
           @london_hex ||= hex_by_id(LONDON_HEX)
+        end
+
+        def something_sold_in_sr!
+          @nothing_sold_in_sr = false
+        end
+
+        def nothing_sold_in_sr?
+          @nothing_sold_in_sr
         end
 
         private

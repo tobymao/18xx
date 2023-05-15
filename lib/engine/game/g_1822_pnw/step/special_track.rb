@@ -149,6 +149,8 @@ module Engine
               @extra_laided_track = true
             end
             check_company_closing(ability)
+
+            handle_extra_tile_lay_company(ability, action.entity)
           end
 
           def process_lay_tile_portage_company(action)
