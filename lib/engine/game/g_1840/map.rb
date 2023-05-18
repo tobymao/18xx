@@ -317,14 +317,62 @@ module Engine
             ['B28'] => 'upgrade=cost:40,terrain:water',
             %w[H10 D18 E17] =>
             'city=revenue:0;city=revenue:0;label=OO',
-            %w[D12 I9] => 'city=revenue:0;upgrade=cost:20;frame=color:#ffa500;icon=image:1840/green_hex',
-            %w[B10 D22] => 'city=revenue:0;upgrade=cost:20;frame=color:#ffa500;icon=image:1840/yellow_hex',
-            %w[E23 F6 I15] => 'city=revenue:0;upgrade=cost:20;frame=color:#ffa500;icon=image:1840/token',
-            %w[C9 E7 H16] => 'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/green_hex',
-            %w[I3 B14 C21] => 'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/red_hex',
-            %w[I7 I13 H12 F12 G23 B16 G19] => 'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/yellow_hex',
-            %w[C13 I5 G5 G21 B20] => 'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/purple_hex',
-            %w[D6 E13 G17] => 'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/token',
+            %w[D12] => 'city=revenue:0;path=track:future,a:3,b:_0;path=track:future,a:5,b:_0;' \
+                       'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/green_hex',
+            %w[I9] => 'city=revenue:0;path=track:future,a:1,b:_0;path=track:future,a:_0,b:4;' \
+                      'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/green_hex',
+            %w[B10] => 'city=revenue:0;path=track:future,a:0,b:_0;path=track:future,a:3,b:_0;' \
+                       'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/yellow_hex',
+            %w[D22] => 'city=revenue:0;path=track:future,a:2,b:_0;path=track:future,a:_0,b:5;' \
+                       'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/yellow_hex',
+            %w[E23] => 'city=revenue:0;path=track:future,a:2,b:_0;path=track:future,a:_0,b:5;' \
+                       'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/token',
+            %w[F6] => 'city=revenue:0;path=track:future,a:0,b:_0;path=track:future,a:3,b:_0;' \
+                      'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/token',
+            %w[I15] => 'city=revenue:0;path=track:future,a:1,b:_0;path=track:future,a:_0,b:3;' \
+                       'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/token',
+            %w[C9] => 'path=track:future,a:1,b:3;upgrade=cost:20;' \
+                      'frame=color:#ffa500;icon=image:1840/green_hex',
+            %w[E7] => 'path=track:future,a:0,b:2;upgrade=cost:20;' \
+                      'frame=color:#ffa500;icon=image:1840/green_hex',
+            %w[H16] => 'path=track:future,a:0,b:3;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/green_hex',
+            %w[B14] => 'path=track:future,a:0,b:4;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/red_hex',
+            %w[C21] => 'path=track:future,a:2,b:5;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/red_hex',
+            %w[I3] => 'path=track:future,a:1,b:4;upgrade=cost:20;' \
+                      'frame=color:#ffa500;icon=image:1840/red_hex',
+            %w[I7] => 'path=track:future,a:1,b:4;upgrade=cost:20;' \
+                      'frame=color:#ffa500;icon=image:1840/yellow_hex',
+            %w[I13] => 'path=track:future,a:1,b:4;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/yellow_hex',
+            %w[B16] => 'path=track:future,a:1,b:3;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/yellow_hex',
+            %w[F12] => 'path=track:future,a:0,b:3;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/yellow_hex',
+            %w[H12] => 'path=track:future,a:0,b:2;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/yellow_hex',
+            %w[G23] => 'path=track:future,a:1,b:3;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/yellow_hex',
+            %w[G19] => 'path=track:future,a:1,b:4;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/yellow_hex',
+            %w[B20] => 'path=track:future,a:2,b:5;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/purple_hex',
+            %w[C13] => 'path=track:future,a:0,b:3;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/purple_hex',
+            %w[G5] => 'path=track:future,a:1,b:3;upgrade=cost:20;' \
+                      'frame=color:#ffa500;icon=image:1840/purple_hex',
+            %w[G21] => 'path=track:future,a:1,b:4;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/purple_hex',
+            %w[I5] => 'path=track:future,a:1,b:4;upgrade=cost:20;' \
+                      'frame=color:#ffa500;icon=image:1840/purple_hex',
+            %w[D6] => 'path=track:future,a:3,b:5;upgrade=cost:20;' \
+                      'frame=color:#ffa500;icon=image:1840/token',
+            %w[E13] => 'path=track:future,a:0,b:2;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/token',
+            %w[G17] => 'path=track:future,a:0,b:4;upgrade=cost:20;' \
+                       'frame=color:#ffa500;icon=image:1840/token',
           },
           yellow: {
 
