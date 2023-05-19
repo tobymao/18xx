@@ -13,6 +13,8 @@ module Engine
         include Entities
         include Map
 
+        attr_reader :corporation_info
+
         register_colors(black: '#16190e',
                         blue: '#0189d1',
                         brown: '#7b352a',
@@ -195,18 +197,35 @@ module Engine
           },
         ].freeze
 
-        HOME_TOKEN_TIMING = :start
+        HOME_TOKEN_TIMING = :par
         SELL_BUY_ORDER = :sell_buy
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         GAME_END_CHECK = { bankrupt: :immediate, stock_market: :immediate, bank: :current_or }.freeze
 
-        # Per base (needs special code in track step)
+        # Per railhead/base (needs special code in track step)
         TILE_LAYS = [
           { lay: true, upgrade: true, cost: 0 },
+          { lay: true, upgrade: true, cost: 0, cannot_reuse_same_hex: true  },
+          { lay: true, upgrade: true, cost: 0, cannot_reuse_same_hex: true  },
+          { lay: true, upgrade: true, cost: 0, cannot_reuse_same_hex: true  },
+          { lay: true, upgrade: true, cost: 0, cannot_reuse_same_hex: true  },
         ].freeze
 
+        def init_graph
+          Graph.new(self, check_tokens: true)
+        end
+
+        # load non-standard corporation info
+        def load_corporation_extended
+          game_corporations.to_h do |cm|
+            corp = @corporations.find { |m| m.name == cm[:sym] }
+            [corp, cm[:extended]]
+          end
+        end
+
         def setup
+          @corporation_info = load_corporation_extended
           modify_regions(2, true)
         end
 
@@ -239,12 +258,46 @@ module Engine
 
         def add_region(hex, edge)
           remove_region(hex, edge)
-          hex.tile.borders << Part::Border.new(edge, 'province', nil, 'black')
+          hex.tile.borders << Part::Border.new(edge, 'province', nil, 'red')
         end
 
         def remove_region(hex, edge)
           old = hex.tile.borders.find { |b| b.edge == edge }
           hex.tile.borders.delete(old) if old
+        end
+
+        # returns a list of cities with tokens for this corporation
+        def railheads(entity)
+          return [] unless entity.corporation?
+
+          entity.tokens.select { |t| t.used && t.city && !t.city.pass? }.map(&:city)
+        end
+
+        def skip_token?(_graph, _corporation, city)
+          city.pass?
+        end
+
+        # FIXME: need to deal with SFMA and non-historical corps
+        def place_home_token(corporation)
+          return if corporation.tokens.first&.used # FIXME: will this work if this token is sold to another corp?
+
+          Array(corporation.coordinates).each do |coord|
+            hex = hex_by_id(coord)
+            tile = hex&.tile
+            cities = tile.cities
+            city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+            token = corporation.find_token_by_type
+
+            @log << "#{corporation.name} places a token on #{hex.name}"
+            city.place_token(corporation, token)
+          end
+          @graph.clear
+        end
+
+        def legal_tile_rotation?(_entity, _hex, tile)
+          return true unless NO_ROTATION_TILES.include?(tile.name)
+
+          tile.rotation.zero?
         end
 
         def transfer_share(share, new_owner)
@@ -271,6 +324,32 @@ module Engine
           return false unless corporation_available?(corporation)
 
           super
+        end
+
+        # FIXME
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            # G1841::Step::BuyTOkens,
+            Engine::Step::BuySellParShares,
+          ])
+        end
+
+        # FIXME
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            G1841::Step::Track,
+            Engine::Step::Token, # FIXME
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            # G1841::Step::BuyToken,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            # G1841::Step::SellCorpShares,
+            # G1841::Step::BuyCorpShares,
+            # G1841::Step::Merge,
+            # G1841::Step::Transform,
+          ], round_num: round_num)
         end
       end
     end
