@@ -15,12 +15,15 @@ module Engine
           def setup
             super
             @round.old_tiles = []
+            @unused_railheads = {}
           end
 
           def lay_tile_action(action, entity: nil, spender: nil)
             old_tile = action.hex.tile
+            @previous_railheads = unused_railheads(entity || action.entity) unless @game.loading
             super
             @round.old_tiles << old_tile
+            @unused_railheads = {}
           end
 
           def num_possible_lays(entity)
@@ -38,7 +41,17 @@ module Engine
             !entity.tokens.empty? && (@round.num_laid_track < num_possible_lays(entity))
           end
 
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            return if @game.loading || !entity.operator?
+
+            raise GameError, 'Must connect to a different base' unless find_railhead(entity, @previous_railheads, old_tile, new_tile)
+
+            super
+          end
+
           def find_railhead(entity, railheads, old_tile, new_tile)
+            return nil if railheads.empty?
+
             graph = @game.graph_for_entity(entity)
             old_paths = old_tile.paths # will this work if old_tile has been reusused already?
             new_tile.paths.each do |np|
@@ -64,7 +77,7 @@ module Engine
           end
 
           # create list of railheads that haven't been used by tile lays this step
-          def unused_railheads(entity)
+          def calc_unused_railheads(entity)
             railheads = @game.railheads(entity)
             @round.num_laid_track.times do |i|
               # Find new paths on laid tile and determine which railhead it connects to
@@ -73,6 +86,10 @@ module Engine
               railheads.delete(find_railhead(entity, railheads, old_tile, new_tile))
             end
             railheads
+          end
+
+          def unused_railheads(entity)
+            @unused_railheads[entity] ||= calc_unused_railheads(entity)
           end
 
           def railhead_connected(entity, hex)
