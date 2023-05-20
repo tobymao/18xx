@@ -36,9 +36,9 @@ module View
             dash: '12',
           },
           future: {
-            color: '#000000',
-            width: 2,
-            dash: '6',
+            color: '#888888',
+            width: 6,
+            dash: '9 3',
           },
         }.freeze
 
