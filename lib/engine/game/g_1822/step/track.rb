@@ -56,12 +56,6 @@ module Engine
             @game.after_lay_tile(action.hex, old_tile, action.tile)
           end
 
-          def process_pass(action)
-            super
-
-            @game.after_track_pass(action.entity)
-          end
-
           def available_hex(entity, hex)
             connected = hex_neighbors(entity, hex)
             return nil unless connected
