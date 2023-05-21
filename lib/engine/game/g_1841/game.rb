@@ -96,6 +96,7 @@ module Engine
             tiles: %i[yellow green],
             operating_rounds: 2,
             status: %w[one_tile_per_base_max_2 start_non_hist concessions_removed],
+            events: [{ 'type' => 'phase4_regions' }],
           },
           {
             name: '5',
@@ -104,6 +105,7 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 3,
             status: %w[one_tile_per_or start_non_hist],
+            events: [{ 'type' => 'phase5_regions' }],
           },
           {
             name: '6',
@@ -130,6 +132,13 @@ module Engine
             status: %w[one_tile_per_or start_non_hist],
           },
         ].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'phase4_regions' => ['Phase4 Regions',
+                               'Conservative Zone border is eliminated; The Austrian possesions are limited to Veneto'],
+          'phase5_regions' => ['Phase5 Regions',
+                               'Austrian possessions are eliminated; 1859-1866 Austrian border is deleted'],
+        )
 
         TRAINS = [
           {
@@ -196,6 +205,47 @@ module Engine
         TILE_LAYS = [
           { lay: true, upgrade: true, cost: 0 },
         ].freeze
+
+        def setup
+          modify_regions(2, true)
+        end
+
+        def event_phase4_regions!
+          modify_regions(2, false)
+          modify_regions(4, true)
+          @log << 'Border change: Conservative Zone border is eliminated; The Austrian possesions are limited to Veneto'
+        end
+
+        def event_phase5_regions!
+          modify_regions(4, false)
+          modify_regions(5, true)
+          @log << 'Border change: Austrian possessions are eliminated; 1859-1866 Austrian border is deleted'
+        end
+
+        def modify_regions(phase, add)
+          REGIONS_BY_PHASE[phase].each do |coord, edges|
+            hex = hex_by_id(coord)
+            edges.each do |edge|
+              if add
+                add_region(hex, edge)
+                add_region(hex.neighbors[edge], Hex.invert(edge))
+              else
+                remove_region(hex, edge)
+                remover_region(hex.neighbors[edge], Hex.invert(edge))
+              end
+            end
+          end
+        end
+
+        def add_region(hex, edge)
+          remove_region(hex, edge)
+          hex.tile.borders << Part::Border.new(edge, 'province', nil, 'black')
+        end
+
+        def remove_region(hex, edge)
+          old = hex.tile.borders.find { |b| b.edge == edge }
+          hex.tile.borders.delete(old) if old
+        end
 
         def transfer_share(share, new_owner)
           corp = share.corporation

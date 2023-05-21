@@ -265,7 +265,7 @@ module Engine
             %w[F6] => 'border=edge:3,type:water,cost:40;upgrade=cost:60,terrain:mountain',
             %w[F8] => 'border=edge:4,type:impassable;upgrade=cost:60,terrain:mountain',
             %w[H18] => 'border=edge:4,type:water,cost:80',
-            %w[I21] => 'border=edge:1,type:water,cost:80',
+            %w[I21] => 'border=edge:1,type:water,cost:80;border=edge:5,type:impassable',
             %w[B12] => 'town=revenue:0',
             %w[C11] => 'town=revenue:0',
             %w[C23] => 'town=revenue:0',
