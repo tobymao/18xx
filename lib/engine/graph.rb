@@ -20,6 +20,7 @@ module Engine
       @no_blocking = opts[:no_blocking] || false
       @skip_track = opts[:skip_track]
       @check_tokens = opts[:check_tokens]
+      @check_regions = opts[:check_regions]
     end
 
     def clear
@@ -219,7 +220,7 @@ module Engine
 
       routes = @routes[corporation] || {}
       walk_corporation = @no_blocking ? nil : corporation
-      skip_paths = @game.graph_skip_paths(corporation)
+      skip_paths = @check_regions ? @game.graph_border_paths(corporation) : @game.graph_skip_paths(corporation)
 
       tokens.keys.each do |node|
         return nil if routes[:route_train_purchase] && routes_only
@@ -243,7 +244,7 @@ module Engine
 
           path.exits.each do |edge|
             hexes[hex][edge] = true
-            hexes[hex.neighbors[edge]][hex.invert(edge)] = true
+            hexes[hex.neighbors[edge]][hex.invert(edge)] = true if !@check_regions || !@game.region_border?(hex, edge)
           end
         end
 

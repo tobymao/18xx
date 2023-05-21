@@ -150,7 +150,7 @@ module Engine
           '633' => 1,
         }.freeze
         # rubocop:enable Layout/LineLength
-        
+
         NO_ROTATION_TILES = %w[
           601
         ].freeze

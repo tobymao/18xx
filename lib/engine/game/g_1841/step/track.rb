@@ -9,10 +9,11 @@ module Engine
         class Track < Engine::Step::Track
           # extra state for figuring out which railheads were used by a tile lay
           def round_state
-            super.merge( { old_tiles: [] })
+            super.merge({ old_tiles: [] })
           end
 
           def setup
+            @game.select_track_graph
             super
             @round.old_tiles = []
             @unused_railheads = {}
@@ -27,6 +28,8 @@ module Engine
           end
 
           def num_possible_lays(entity)
+            return 1 unless @game.major?(entity)
+
             case @game.phase.name
             when '2'
               @game.railheads(entity).size
@@ -44,7 +47,8 @@ module Engine
           def check_track_restrictions!(entity, old_tile, new_tile)
             return if @game.loading || !entity.operator?
 
-            raise GameError, 'Must connect to a different base' unless find_railhead(entity, @previous_railheads, old_tile, new_tile)
+            raise GameError, 'Must connect to a different base' unless find_railhead(entity, @previous_railheads, old_tile,
+                                                                                     new_tile)
 
             super
           end
@@ -56,13 +60,10 @@ module Engine
             old_paths = old_tile.paths # will this work if old_tile has been reusused already?
             new_tile.paths.each do |np|
               next unless graph.connected_paths(entity)[np]
+              next if old_paths.find { |path| np <= path }
 
-              op = old_paths.find { |path| np <= path }
-
-              if !op
-                railheads.each do |t|
-                  return t if graph.connected_paths_by_token(entity, t).include?(np)
-                end
+              railheads.each do |t|
+                return t if graph.connected_paths_by_token(entity, t).include?(np)
               end
             end
 
@@ -72,7 +73,7 @@ module Engine
                 return t if graph.connected_nodes_by_token(entity, t).include?(n)
               end
             end
-            
+
             nil
           end
 

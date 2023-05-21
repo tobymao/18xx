@@ -220,24 +220,61 @@ module Engine
         def load_corporation_extended
           game_corporations.to_h do |cm|
             corp = @corporations.find { |m| m.name == cm[:sym] }
-            [corp, cm[:extended]]
+            [corp, { historical: cm[:historical], startable: cm[:startable] }]
           end
         end
 
         def setup
+          # used for tokens and for track in phase 2
+          @region_graph = Graph.new(self, check_tokens: true, check_regions: true)
+          @selected_graph = @region_graph
+
           @corporation_info = load_corporation_extended
           modify_regions(2, true)
+          @border_paths = nil
+        end
+
+        def select_track_graph
+          @selected_graph = if @phase.name == '2'
+                              @region_graph
+                            else
+                              @graph
+                            end
+        end
+
+        def select_token_graph
+          @selected_graph = @region_graph
+        end
+
+        def graph_for_entity(_entity)
+          @selected_graph
+        end
+
+        def token_graph_for_entity(_entity)
+          @region_graph
+        end
+
+        def clear_graph_for_entity(entity)
+          super
+          @border_paths = nil
+        end
+
+        def clear_token_graph_for_entity(entity)
+          super
+          @border_paths = nil
         end
 
         def event_phase4_regions!
           modify_regions(2, false)
           modify_regions(4, true)
+          @border_paths = nil
           @log << 'Border change: Conservative Zone border is eliminated; The Austrian possesions are limited to Veneto'
         end
 
         def event_phase5_regions!
           modify_regions(4, false)
           modify_regions(5, true)
+          @border_paths = nil
           @log << 'Border change: Austrian possessions are eliminated; 1859-1866 Austrian border is deleted'
         end
 
@@ -264,6 +301,35 @@ module Engine
         def remove_region(hex, edge)
           old = hex.tile.borders.find { |b| b.edge == edge }
           hex.tile.borders.delete(old) if old
+        end
+
+        def calc_border_paths
+          border_paths = {}
+          @hexes.each do |hex|
+            hex_border_edges = hex.tile.borders.select { |b| b.type == :province }.map(&:edge)
+            next if hex_border_edges.empty?
+
+            hex.tile.paths.each do |path|
+              border_paths[path] = true unless (path.edges & hex_border_edges).empty?
+            end
+          end
+          border_paths
+        end
+
+        def border_paths
+          @border_paths ||= calc_border_paths
+        end
+
+        def graph_border_paths(_entity)
+          border_paths
+        end
+
+        def region_border?(hex, edge)
+          hex.tile.borders.any? { |b| (b.type == :province) && (b.edge == edge) }
+        end
+
+        def major?(entity)
+          entity.corporation? && (entity.type == :major)
         end
 
         # returns a list of cities with tokens for this corporation
