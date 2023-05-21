@@ -5,12 +5,16 @@ require_relative 'base'
 module Engine
   module Step
     class Message < Base
-      ACTIONS = %w[message].freeze
+      ACTIONS = %w[log message].freeze
 
       def actions(entity)
         return [] unless entity.player?
 
         ACTIONS
+      end
+
+      def process_log(action)
+        @log << action
       end
 
       def process_message(action)

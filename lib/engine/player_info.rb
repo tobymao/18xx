@@ -13,7 +13,7 @@ module Engine
     end
 
     def round
-      if %w[AR MR OR].include?(round_name)
+      if %w[AR MR OR DEV].include?(round_name)
         "#{round_name} #{turn}.#{round_no}"
       else
         "#{round_name} #{turn}"

@@ -30,8 +30,9 @@ module Engine
           def ability_lcdr?(entity)
             return unless entity.corporation?
 
-            # Special case if corporation have no tokens available and have LCDR. Make sure we are stopping on this step
-            entity.companies.any? { |c| c.id == @game.class::COMPANY_LCDR }
+            # Special case if corporation has no tokens available, but does have
+            # LCDR and an exchange token
+            entity.companies.any? { |c| c.id == @game.class::COMPANY_LCDR } && @game.exchange_tokens(entity).positive?
           end
 
           def can_place_token?(entity)

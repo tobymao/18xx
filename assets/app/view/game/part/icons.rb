@@ -24,8 +24,12 @@ module View
           end
         end
 
+        def parts_for_loc
+          @icons
+        end
+
         def load_from_tile
-          @icons = @tile.icons.reject(&:large)
+          @icons = @tile.icons.select { |i| !i.large && (i.loc == @loc) }
           @num_cities = @tile.cities.size
         end
 

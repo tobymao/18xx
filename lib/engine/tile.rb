@@ -17,7 +17,8 @@ module Engine
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
                   :name, :opposite, :reservations, :upgrades, :color, :future_label
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
-                :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
+                :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden,
+                :hidden_blockers
     attr_writer :revenue_to_render
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
@@ -169,7 +170,7 @@ module Engine
       when 'label'
         Part::Label.new(params)
       when 'upgrade'
-        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'])
+        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'], loc: params['loc'])
       when 'border'
         Part::Border.new(params['edge'], params['type'], params['cost'], params['color'])
       when 'junction'
@@ -178,7 +179,7 @@ module Engine
         junction
       when 'icon'
         Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'],
-                       large: params['large'])
+                       large: params['large'], loc: params['loc'])
       when 'stub'
         Part::Stub.new(params['edge'].to_i)
       when 'partition'
@@ -228,6 +229,7 @@ module Engine
       @location_name = location_name
       @legal_rotations = []
       @blockers = []
+      @hidden_blockers = []
       @reservations = []
       @preprinted = preprinted
       @index = index
@@ -340,8 +342,9 @@ module Engine
       end
     end
 
-    def add_blocker!(private_company)
+    def add_blocker!(private_company, hidden: false)
       @blockers << private_company
+      @hidden_blockers << private_company if hidden
     end
 
     def inspect

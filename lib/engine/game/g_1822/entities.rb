@@ -90,14 +90,17 @@ module Engine
                   'power to place a token in the English Channel). If no token spaces are available, but a space '\
                   'could be created by upgrading the English Channel track then this power may be used to place a '\
                   'token and upgrade the track simultaneously. This counts as the acquiring company’s tile lay '\
-                  'action and incurs the usual costs for doing so. Alternatively, it can move an exchange station '\
-                  'token to the available station token section on its company charter.',
+                  'action and incurs the usual costs for doing so. It does not count as the company’s token placing '\
+                  'step. Alternatively, it can move an exchange station token to the available station token section '\
+                  'on its company charter.',
             abilities: [
               {
                 type: 'teleport',
                 owner_type: 'corporation',
                 hexes: ['P43'],
                 tiles: %w[X9 X15],
+                from_owner: false,  # uses an exchange token
+                extra_action: true,
               },
               {
                 type: 'token',
@@ -107,6 +110,8 @@ module Engine
                 teleport_price: 0,
                 count: 1,
                 extra_action: true,
+                special_only: true,
+                when: 'token',
               },
             ],
             color: nil,
@@ -150,7 +155,35 @@ module Engine
                   'receives a £20 discount off the cost of all hill and mountain terrain (i.e. NOT off the cost of '\
                   'rough terrain). The private company does not close. Closes if free token taken when acquired. '\
                   'Otherwise, flips when acquired and does not close.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                tiles: [],
+                hexes: %w[
+                  B41 C40 D39 E10 F9 G14 G30 G8 H15 H39 H7 H9 I10 I12 I14 I16 I18
+                  I20 I22 I24 I38 I40 I8 J19 J21 J23 J25 J39 J7 O40
+                ],
+                owner_type: 'corporation',
+                count: 1,
+                closed_when_used_up: true,
+                reachable: true,
+                free: true,
+                special: false,
+                when: 'track',
+              },
+              {
+                type: 'tile_discount',
+                owner_type: 'corporation',
+                discount: 20,
+                terrain: 'hill',
+              },
+              {
+                type: 'tile_discount',
+                owner_type: 'corporation',
+                discount: 20,
+                terrain: 'mountain',
+              },
+            ],
             color: nil,
           },
           {
@@ -235,8 +268,10 @@ module Engine
               {
                 type: 'tile_lay',
                 owner_type: 'corporation',
-                when: 'track',
-                count: 2,
+                when: %w[track special_track],
+                must_lay_together: true,
+                lay_count: 2,
+                upgrade_count: 1,
                 reachable: true,
                 closed_when_used_up: true,
                 hexes: [],
@@ -397,6 +432,7 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              { type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M36'], hidden: true },
             ],
             color: '#000',
             text_color: 'white',
@@ -414,6 +450,7 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              { type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['L39'], hidden: true },
             ],
             color: '#165016',
             text_color: 'white',
@@ -432,6 +469,7 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              { type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M40'], hidden: true },
             ],
             color: '#cccc00',
             text_color: 'white',
@@ -450,6 +488,7 @@ module Engine
                 owner_type: 'player',
                 from: 'par',
               },
+              { type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['N39'], hidden: true },
             ],
             color: '#ff7f2a',
             text_color: 'white',
@@ -703,7 +742,7 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is M38 (London).',
-            abilities: [],
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['N37'], hidden: true }],
             color: '#ffffff',
             text_color: 'black',
           },
@@ -713,7 +752,7 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is M38 (London).',
-            abilities: [],
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['L37'], hidden: true }],
             color: '#ffffff',
             text_color: 'black',
           },
@@ -1357,6 +1396,7 @@ module Engine
             reservation_color: nil,
             destination_coordinates: 'I22',
             destination_icon: '1822/LNWR_DEST',
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M36'], hidden: true }],
           },
           {
             sym: 'GWR',
@@ -1372,6 +1412,7 @@ module Engine
             reservation_color: nil,
             destination_coordinates: 'G36',
             destination_icon: '1822/GWR_DEST',
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['L39'], hidden: true }],
           },
           {
             sym: 'LBSCR',
@@ -1388,6 +1429,7 @@ module Engine
             reservation_color: nil,
             destination_coordinates: 'M42',
             destination_icon: '1822/LBSCR_DEST',
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M40'], hidden: true }],
           },
           {
             sym: 'SECR',
@@ -1407,6 +1449,7 @@ module Engine
                 count: 1,
                 price: 0,
               },
+              { type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['N39'], hidden: true },
             ],
             color: '#ff7f2a',
             reservation_color: nil,

@@ -43,7 +43,7 @@ module View
           ))
         end
 
-        buy = -> { check_consent(company.owner, buy_company) }
+        buy = -> { check_consent(@game.current_entity, company.owner, buy_company) }
 
         owner_name = company.owner.nil? ? 'the market' : company.owner.name
         h(:button, { on: { click: buy } }, "Buy #{company.id} from #{owner_name}")

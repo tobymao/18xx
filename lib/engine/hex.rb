@@ -8,7 +8,7 @@ module Engine
 
     attr_accessor :x, :y, :ignore_for_axes, :location_name
     attr_reader :coordinates, :empty, :layout, :neighbors, :all_neighbors, :tile, :original_tile, :tokens,
-                :column, :row
+                :column, :row, :hide_location_name
 
     DIRECTIONS = {
       flat: {
@@ -73,7 +73,7 @@ module Engine
     # x and y map to the double coordinate system
     # layout is :pointy or :flat
     def initialize(coordinates, layout: nil, axes: nil, tile: Tile.for('blank'),
-                   location_name: nil, empty: false)
+                   location_name: nil, hide_location_name: false, empty: false)
       @coordinates = coordinates
       @layout = layout
       @axes = axes
@@ -82,6 +82,7 @@ module Engine
       @all_neighbors = {}
       @location_name = location_name
       tile.location_name = location_name
+      @hide_location_name = hide_location_name
       @original_tile = @tile = tile
       @tile.hex = self
       @activations = []
@@ -261,10 +262,10 @@ module Engine
       end
     end
 
-    def place_token(token, logo: nil, blocks_lay: nil, preprinted: true)
+    def place_token(token, logo: nil, blocks_lay: nil, preprinted: true, loc: nil)
       token.place(self)
       @tokens << token
-      icon = Part::Icon.new('', token.corporation.id, true, blocks_lay, preprinted)
+      icon = Part::Icon.new('', token.corporation.id, true, blocks_lay, preprinted, loc: loc)
       icon.image = logo || token.corporation.logo
       @tile.icons << icon
     end

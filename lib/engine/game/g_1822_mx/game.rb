@@ -536,6 +536,10 @@ module Engine
           super
         end
 
+        def acting_for_entity(entity)
+          entity == ndem ? active_players.first : super
+        end
+
         def set_private_revenues
           @companies.each do |c|
             next unless c.owner
@@ -747,6 +751,29 @@ module Engine
             ['One or more shares sold (if sold by non-director)', '1 ←'],
             ['Corporation (except NdeM) sold out at end of SR', '1 →'],
           ]
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          return false if must_connect_mc?(hex) && !connects_mc?(tile)
+
+          super
+        end
+
+        # Per 6.9.2 and clarification in discussion at
+        # https://github.com/tobymao/18xx/issues/7812, if MC Major/Concession
+        # does not have an owner, then the track that is laid in M22 must not
+        # only connect to Mexico City, but also connect to other existing track.
+        def must_connect_mc?(hex)
+          hex.id == 'M22' && !company_by_id('C2').player && !corporation_by_id('MC').player
+        end
+
+        def connects_mc?(tile)
+          path_to_mc = tile.paths.find { |p| p.edges[0].num == 5 }
+          return false unless path_to_mc
+
+          exit_out = tile.paths.find { |p| p.town == path_to_mc.town && p != path_to_mc }.edges[0].num
+          @m22_adjacent_hexes ||= { 0 => 'N21', 1 => 'M20', 2 => 'L21', 3 => 'L23', 4 => 'M24' }
+          hex_by_id(@m22_adjacent_hexes[exit_out]).tile.exits.include?((exit_out + 3) % 6)
         end
       end
     end

@@ -43,7 +43,6 @@ module Engine
             @round.gauges_added << new_track_gauge(old_tile, new_tile)
 
             super
-            new_tile.icons = old_tile.icons
           end
 
           def process_lay_tile(action)

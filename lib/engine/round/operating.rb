@@ -46,12 +46,12 @@ module Engine
           return if entity.owner&.player? || entity.receivership?
         end
 
-        after_end_of_turn(action)
+        after_end_of_turn(@current_operator)
 
         next_entity! unless @game.finished
       end
 
-      def after_end_of_turn(action); end
+      def after_end_of_turn(operator); end
 
       def force_next_entity!
         @steps.each(&:pass!)
@@ -84,7 +84,10 @@ module Engine
         @log << "#{@game.acting_for_entity(entity).name} operates #{entity.name}" unless finished?
         @game.place_home_token(entity) if @home_token_timing == :operate
         skip_steps
-        next_entity! if finished?
+        return unless finished?
+
+        after_end_of_turn(entity)
+        next_entity!
       end
 
       def recalculate_order

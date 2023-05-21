@@ -211,8 +211,10 @@ module Engine
               {
                 type: 'tile_lay',
                 owner_type: 'corporation',
-                when: 'track',
-                count: 2,
+                when: %w[track special_track],
+                must_lay_together: true,
+                lay_count: 2,
+                upgrade_count: 1,
                 reachable: true,
                 closed_when_used_up: true,
                 hexes: [],

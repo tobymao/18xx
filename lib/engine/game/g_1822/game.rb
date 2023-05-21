@@ -539,8 +539,7 @@ module Engine
 
         UPGRADE_COST_L_TO_2 = 80
 
-        include StubsAreRestricted
-
+        attr_reader :minor_14_city_exit
         attr_accessor :bidding_token_per_player, :player_debts
 
         def bank_sort(corporations)
@@ -1088,6 +1087,7 @@ module Engine
         end
 
         def setup
+          @nothing_sold_in_sr = true
           @game_end_reason = nil
 
           # Setup the bidding token per player
@@ -1448,7 +1448,7 @@ module Engine
         end
 
         def company_choices_egr(company, time)
-          return {} if !company.all_abilities.empty? || time != :special_choose
+          return {} if company.all_abilities.size != 3 || time != :special_choose
 
           choices = {}
           choices['token'] = 'Receive a discount token that can be used to pay the full cost of a single '\
@@ -1559,17 +1559,9 @@ module Engine
 
         def company_made_choice_egr(company, choice, time)
           company.desc = company_choices(company, time)[choice]
-          if choice == 'token'
-            # Give the company a free tile lay.
-            ability = Engine::Ability::TileLay.new(type: 'tile_lay', tiles: [], hexes: [], owner_type: 'corporation',
-                                                   count: 1, closed_when_used_up: true, reachable: true, free: true,
-                                                   special: false, when: 'track')
-            company.add_ability(ability)
-          else
-            %w[mountain hill].each do |terrain|
-              ability = Engine::Ability::TileDiscount.new(type: 'tile_discount', discount: 20, terrain: terrain)
-              company.add_ability(ability)
-            end
+          remove_type = choice == 'token' ? :tile_discount : :tile_lay
+          company.all_abilities.dup.each do |ability|
+            company.remove_ability(ability) if ability.type == remove_type
           end
         end
 
@@ -1655,7 +1647,7 @@ module Engine
         end
 
         def exchange_tokens(entity)
-          return 0 unless entity.corporation?
+          return 0 unless entity&.corporation?
 
           ability = entity.all_abilities.find { |a| a.type == :exchange_token }
           return 0 unless ability
@@ -1772,8 +1764,9 @@ module Engine
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
 
-          ability = entity.all_abilities.find { |a| a.type == :destination }
-          entity.remove_ability(ability)
+          entity.all_abilities.each do |ability|
+            entity.remove_ability(ability) if ability.type == :destination
+          end
 
           @graph.clear
 
@@ -1894,6 +1887,52 @@ module Engine
           return %i[stock_market current_or] if @stock_market.max_reached?
         end
 
+        def preprocess_action(action)
+          case action
+          when Action::LayTile
+            if action.tile.name != 'BC'
+              action.hex.tile.blockers.each do |entity|
+                entity.all_abilities.dup.each do |ability|
+                  entity.remove_ability(ability) if ability.type == :blocks_hexes_consent
+                end
+              end
+            end
+          end
+        end
+
+        def hex_blocked_by_ability?(entity, ability, hex, tile)
+          return false if tile.name == 'BC'
+          return false unless ability.player
+          return false if entity.player == ability.player
+          return false unless ability.hexes.include?(hex.id)
+          return false if hex.tile.blockers.map(&:player).include?(entity.player)
+
+          true
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          rights_owners = hex.tile.blockers.map(&:owner).compact.uniq
+          return true if rights_owners.delete(acting_for_entity(entity))
+
+          rights_owners.empty? ? legal_if_stubbed?(hex, tile) : super
+        end
+
+        def legal_if_stubbed?(hex, tile)
+          hex.tile.stubs.empty? || (hex.tile.stubs.map(&:edge) - tile.exits).empty?
+        end
+
+        def london_hex
+          @london_hex ||= hex_by_id(LONDON_HEX)
+        end
+
+        def something_sold_in_sr!
+          @nothing_sold_in_sr = false
+        end
+
+        def nothing_sold_in_sr?
+          @nothing_sold_in_sr
+        end
+
         private
 
         def find_and_remove_train_by_id(train_id, buyable: true)
@@ -1981,20 +2020,31 @@ module Engine
           @corporations.each do |c|
             next unless c.destination_coordinates
 
-            description = if c.id == self.class::TWO_HOME_CORPORATION
-                            "Gets destination token at #{c.destination_coordinates} when floated"
-                          else
-                            "Connect to #{c.destination_coordinates} for your destination token"
-                          end
+            home_hex = hex_by_id(c.coordinates)
             ability = Ability::Base.new(
-              type: 'destination',
-              description: description
+              type: 'base',
+              description: "Home: #{home_hex.location_name} (#{home_hex.name})",
             )
             c.add_ability(ability)
+
+            dest_hex = hex_by_id(c.destination_coordinates)
+            ability = Ability::Base.new(
+              type: 'base',
+              description: "Destination: #{dest_hex.location_name} (#{dest_hex.name})",
+            )
+            c.add_ability(ability)
+
             c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
                                              simple_logo: "../#{c.destination_icon}.svg",
                                              type: :destination)
-            hex_by_id(c.destination_coordinates).tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
+            dest_hex.tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
+
+            next unless c.id == self.class::TWO_HOME_CORPORATION
+
+            c.add_ability(Ability::Base.new(
+              type: 'destination',
+              description: 'Places destination token in its first OR'
+            ))
           end
         end
 
