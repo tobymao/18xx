@@ -65,7 +65,7 @@ module Engine
              77
              82
              88
-             93
+             94
              100p
              109
              120
@@ -158,7 +158,7 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 8 },
+        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 7 },
                   {
                     name: '3',
                     distance: 3,

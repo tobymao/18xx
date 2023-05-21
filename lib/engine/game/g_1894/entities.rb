@@ -6,34 +6,34 @@ module Engine
       module Entities
         COMPANIES = [
           {
+            name: 'Ligne Longwy-Villerupt-Micheville',
+            sym: 'LVM',
+            value: 20,
+            revenue: 5,
+            desc: 'Once per game the owning corporation may pay 50 F to lay a yellow track.'\
+            ' This is in addition to the corporation\'s tile builds'\
+            ' Blocks I14 while owned by a player.',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I14'] },
+            {
+              type: 'tile_lay',
+              owner_type: 'corporation',
+            when: 'track',
+              cost: 50,
+              count: 1,
+              special: false,
+              reachable: true,
+              hexes: [],
+              tiles: %w[X1 X2 X3a 1 7 8 9 55 56 57 58 69 630],
+              }],
+              color: '#d9d9d9',
+          },
+          {
             name: 'Antwerpen-Rotterdamsche Spoorwegmaatschappij',
             sym: 'AR',
-            value: 20,
+            value: 25,
             revenue: 5,
             desc: 'When owned by a corporation, the revenue is equal to 10 F.',
             abilities: [{ type: 'revenue_change', revenue: 10, when: 'sold' }],
-            color: '#d9d9d9',
-          },
-          {
-            name: 'Ligne Longwy-Villerupt-Micheville',
-            sym: 'LVM',
-            value: 25,
-            revenue: 5,
-            desc: 'Once per game the owning corporation may pay 50 F to lay a yellow track.'\
-                  ' This is in addition to the corporation\'s tile builds'\
-                  ' Blocks I14 while owned by a player.',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I14'] },
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          when: 'track',
-                          cost: 50,
-                          count: 1,
-                          special: false,
-                          reachable: true,
-                          hexes: [],
-                          tiles: %w[X1 X2 X3a 1 7 8 9 55 56 57 58 69 630],
-                        }],
             color: '#d9d9d9',
           },
           {
