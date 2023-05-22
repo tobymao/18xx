@@ -4,6 +4,7 @@ require_relative '../base'
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'stock_market'
 
 module Engine
   module Game
@@ -48,14 +49,14 @@ module Engine
         TRACK_RESTRICTION = :semi_restrictive
 
         MARKET = [
-          %w[72 83 95 107 120 133 147 164 182 202 224 248 276 306 340p 377 419 465 516],
-          %w[63 72 82 93 104 116 128 142 158 175 195 216p 240 266 295 328 365 404 449],
-          %w[57 66 75 84 95 105 117 129 144p 159 177 196 218 242 269 298 331 367 408],
-          %w[54 62 71 80 90 100p 111 123 137 152 169 187 208 230 256 284],
-          %w[52 59 68p 77 86 95 106 117 130 145 160 178 198 219],
-          %w[47 54 62 70 78 87 96 107 118 131 146 162 180],
-          %w[41 47 54 61 68 75 84 93 103 114 127 141],
-          %w[34 39 45 50 57 63 70 77 86 95 106],
+          %w[72 83 95 107 120 133 147 164 182 202 224m 248 276 306 340x 377n 419 465 516],
+          %w[63 72 82 93 104 116 128 142 158 175 195m 216x 240 266 295 328n 365 404 449],
+          %w[57 66 75 84 95 105 117 129 144p 159 177m 196 218 242 269 298n 331 367 408],
+          %w[54 62 71 80 90 100p 111 123 137 152 169m 187 208 230 256 284n],
+          %w[52 59 68p 77 86 95 106 117 130 145 160m 178 198 219],
+          %w[47 54 62 70 78 87 96 107 118 131 146m 162 180],
+          %w[41 47 54 61 68 75 84 93 103 114 127m 141],
+          %w[34 39 45 50 57 63 70 77 86 95 106m],
           %w[27 31 36 40 45 50 56 62 69 76],
           %w[21 24 27 31 35 39 43 48 53],
           %w[16 18 20 23 26 29 32 35],
@@ -63,17 +64,14 @@ module Engine
           %w[8 9 10 11 13 14],
         ].freeze
 
-        MARKET_TEXT = {
-          par: 'Par value',
-          no_cert_limit: 'Corporation shares do not count towards cert limit',
-          unlimited: 'Corporation shares can be held above 60%',
-          multiple_buy: 'Can buy more than one share in the corporation per turn',
-          close: 'Corporation closes',
-          endgame: 'End game trigger',
-          liquidation: 'Liquidation',
-          repar: 'Minor company value',
-          ignore_one_sale: 'Ignore first share sold when moving price',
-        }.freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Major Corporation Par',
+                                              par: 'Major/Minor Corporation Par',
+                                              max_price: 'Maximum price for a minor',
+                                              max_price_1: 'Maximum price before phase 8').freeze
+
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :green,
+                                                            max_price: :orange,
+                                                            max_price_1: :blue).freeze
 
         PHASES = [
           {
@@ -222,6 +220,11 @@ module Engine
             corp = @corporations.find { |m| m.name == cm[:sym] }
             [corp, { historical: cm[:historical], startable: cm[:startable] }]
           end
+        end
+
+        def init_stock_market
+          G1841::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES, game: self)
         end
 
         def setup

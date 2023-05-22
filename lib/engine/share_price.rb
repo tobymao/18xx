@@ -23,6 +23,7 @@ module Engine
       'w' => :par_3,
       'C' => :convert_range,
       'm' => :max_price,
+      'n' => :max_price_1,
       'u' => :phase_limited,
       'B' => :pays_bonus,
       'W' => :pays_bonus_1,
@@ -32,7 +33,7 @@ module Engine
     }.freeze
 
     # Types which are info only and shouldn't
-    NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 par_3 par_overlap safe_par convert_range max_price repar].freeze
+    NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 par_3 par_overlap safe_par convert_range max_price max_price_1 repar].freeze
 
     # Types which count as par
     PAR_TYPES = %i[par par_overlap par_1 par_2 par_3].freeze

@@ -146,6 +146,7 @@ module Engine
         repar: :gray,
         ignore_one_sale: :green,
         safe_par: :white,
+        max_price: :purple,
       }.freeze
 
       MIN_BID_INCREMENT = 5
