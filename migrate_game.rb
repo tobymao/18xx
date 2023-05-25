@@ -30,7 +30,7 @@ end
 # be in both the originally given `actions` and in the returned array)
 def repair(game, original_actions, actions, broken_action, data, pry_db: false)
   optionalish_actions = %w[message buy_company]
-  broken_action_idx= actions.index(broken_action)
+  broken_action_idx = actions.index(broken_action)
   action = broken_action['original_id'] || broken_action['id']
   step = game.active_step
   prev_actions = actions[0..broken_action_idx - 1]
@@ -68,9 +68,10 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
      actions[broken_action_idx].delete('auto_actions')
      puts '        patched: removed auto_action pass from broken_action'
      return [actions[broken_action_idx]]
+  end
 
   # fix entity for pass action
-  elsif broken_action['type'] == 'pass' && game.current_entity.id != broken_action['entity']
+  if broken_action['type'] == 'pass' && game.current_entity.id != broken_action['entity']
     entity_type =
       if game.current_entity.company?
         'company'
@@ -81,24 +82,27 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
     actions[broken_action_idx]['entity'] = game.current_entity.id
     actions[broken_action_idx]['entity_type'] = entity_type
     return [actions[broken_action_idx]]
+  end
 
   # delete pass from current_action
-  elsif broken_action['type'] == 'pass' && !step_actions.include?('pass')
+  if broken_action['type'] == 'pass' && !step_actions.include?('pass')
     actions.delete(broken_action)
     puts '        patched: deleted pass from current_action'
     return
+  end
 
   # delete pass from current_action, move its auto_actions to prev_action
-  elsif broken_action['type'] == 'pass' && broken_action.include?('auto_actions')
+  if broken_action['type'] == 'pass' && broken_action.include?('auto_actions')
     if (auto_actions = broken_action.delete('auto_actions'))
       actions[broken_action_idx - 1]['auto_actions'] = auto_actions
     end
     puts '        patched: deleted pass from current_action, moved auto_actions to pre_action'
     return
+  end
 
   # delete pass from prev_action when the broken_action would have worked in
   # that spot
-  elsif !step_actions.include?(broken_action['type']) &&
+  if !step_actions.include?(broken_action['type']) &&
         prev_action['type'] == 'pass' &&
         (g = Engine::Game.load(data, actions: prev_actions[..-2]))
           .round
@@ -107,9 +111,10 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
     actions.delete(prev_action)
     puts '        patched: deleted pass from prev_action'
     return
+  end
 
   # delete pass from prev_action, move its auto_action pass to the prior action
-  elsif !step_actions.include?(broken_action['type']) &&
+  if !step_actions.include?(broken_action['type']) &&
         prev_action['type'] == 'pass' &&
         (prev_action['auto_actions'] || []).map { |aa| aa['type'] } == ['pass'] &&
         !actions[broken_action_idx - 2].include?('auto_actions')
@@ -118,9 +123,10 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
     actions.delete(prev_action)
     puts '        patched: deleted pass from prev_action and moved pass auto_action to prior action'
     return
+  end
 
   # insert pass
-  elsif !step_actions.include?(broken_action['type']) && step_actions.include?('pass')
+  if !step_actions.include?(broken_action['type']) && step_actions.include?('pass')
     pass = Engine::Action::Pass.new(current_entity)
     pass.user = pass.entity.player.id
     actions.insert(broken_action_idx, pass.to_h)
