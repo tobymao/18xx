@@ -1575,12 +1575,12 @@ module Engine
         cost - discount
       end
 
-      def log_cost_discount(spender, ability, discount)
+      def log_cost_discount(spender, abilities, discount)
         return unless discount.positive?
 
         @log << "#{spender.name} receives a discount of "\
                 "#{format_currency(discount)} from "\
-                "#{ability.owner.name}"
+                "#{Array(abilities).map { |a| a.owner.name }.join(', ')}"
       end
 
       def declare_bankrupt(player)
@@ -1913,6 +1913,34 @@ module Engine
         return active_abilities.first if active_abilities.one?
 
         active_abilities
+      end
+
+      # Returns list of companies which can combo with the given company.
+      # Currently only combos with :tile_lay abilities are supported.
+      def ability_combo_entities(company)
+        abilities(company, :tile_lay).combo_entities.filter_map do |id|
+          company_ = company_by_id(id)
+          next unless company_.owner == company.corporation
+          next unless abilities(company_, :tile_lay)
+
+          company_
+        end
+      end
+
+      def valid_combos?(companies)
+        return true if companies.size < 2
+
+        # some of the companies are just IDs when passed from the abilities view
+        companies = companies.map do |company|
+          company.is_a?(String) ? company_by_id(company) : company
+        end
+
+        # for each company, check that it combos with the companies after it in
+        # the array
+        companies.to_enum.with_index.all? do |company, index|
+          combos = ability_combo_entities(company)
+          companies[(index + 1)..].all? { |c| combos.include?(c) }
+        end
       end
 
       def entity_can_use_company?(_entity, _company)

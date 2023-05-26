@@ -119,7 +119,11 @@ module Engine
         @game.hex_by_id(hex.id).neighbors.keys
       end
 
-      def potential_tiles(entity, hex)
+      def potential_tiles(entities, hex)
+        # entities is sometimes an array for combining private company abilities
+        entities = Array(entities)
+        entity, *_combo_entities = entities
+
         return [] unless (tile_ability = abilities(entity))
 
         tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
