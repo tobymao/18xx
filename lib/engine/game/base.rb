@@ -384,6 +384,13 @@ module Engine
         optional_rules
       end
 
+      def check_optional_rules!
+        min_players = @players.size
+        max_players = @players.size
+        error_string = meta.check_options(@optional_rules, min_players, max_players)&.[](:error)
+        raise OptionError, error_string if error_string
+      end
+
       def setup_optional_rules; end
 
       def log_optional_rules
@@ -568,8 +575,9 @@ module Engine
 
         init_company_abilities
 
-        setup_optional_rules
+        check_optional_rules!
         log_optional_rules
+        setup_optional_rules
         setup
         @round.setup
 
