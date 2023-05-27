@@ -40,8 +40,10 @@ module Engine
           two_player_map = optional_rules.include?(:two_player_ew) ? 'East-West' : 'North-South'
           four_player_setup = optional_rules.include?(:four_player_alt) ? 'Alternative' : 'Standard'
 
-          "The 2P #{two_player_map} map will be used if the game is started with 2 players. The 4P #{four_player_setup} setup " \
-            'will be used if the game is started with 4 players.'
+          {
+            info: "The 2P #{two_player_map} map will be used if the game is started with 2 players. The "\
+                  "4P #{four_player_setup} setup will be used if the game is started with 4 players.",
+          }
         end
       end
     end

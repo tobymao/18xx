@@ -126,6 +126,8 @@ module Engine
             self::GAME_IMPLEMENTER,
           ].compact.flat_map { |c| c.upcase.split(/[:, ]+/) }.uniq
         end
+
+        def check_options(_options, _min_players, _max_players); end
       end
     end
   end

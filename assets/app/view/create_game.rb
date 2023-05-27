@@ -30,13 +30,19 @@ module View
     needs :min_players, default: nil, store: true
     needs :max_players, default: nil, store: true
 
+    def render_create_button(check_options: true)
+      error = check_options &&
+              selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)&.[](:error)
+      (render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' }, attrs: { disabled: !!error } }) { submit })
+    end
+
     def render_content
       @label_style = { display: 'block' }
 
       inputs = [mode_selector]
 
       if @mode == :json
-        inputs << (render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' } }) { submit })
+        inputs << render_create_button(check_options: false)
         inputs << render_upload_button
         inputs << render_input(
           '',
@@ -58,7 +64,7 @@ module View
       else
         if selected_game_or_variant
           update_player_range(selected_game_or_variant)
-          inputs << (render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' } }) { submit })
+          inputs << render_create_button
           inputs << h(:h2, selected_game_or_variant.meta.full_title)
           inputs << render_inputs
 
@@ -274,23 +280,34 @@ module View
         },
       }
 
-      info = selected_game_or_variant.respond_to?(:check_options) &&
-        selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)
+      children = [
+        h(:h4, 'Game Variants / Optional Rules'),
+        h(:ul, ul_props, [*game_variants, *optional_rules]),
+      ]
 
-      if info
-        h(:div, [
-          h(:h4, 'Game Variants / Optional Rules'),
-          h(:ul, ul_props, [*game_variants, *optional_rules]),
-          h(:h4, 'Option Info/Errors'),
-          h(:div, info),
-          h(:br),
-        ])
-      else
-        h(:div, [
-          h(:h4, 'Game Variants / Optional Rules'),
-          h(:ul, ul_props, [*game_variants, *optional_rules]),
-        ])
+      checked_options = selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)
+      if checked_options
+        if (info = checked_options[:info])
+          children.concat(
+            [
+              h(:h4, 'Option Info'),
+              h(:div, info),
+              h(:br),
+            ]
+          )
+        end
+        if (error = checked_options[:error])
+          children.concat(
+            [
+              h(:h4, 'Option Errors'),
+              h(:div, error),
+              h(:br),
+            ]
+          )
+        end
       end
+
+      h(:div, children)
     end
 
     def render_upload_button
@@ -378,18 +395,12 @@ module View
       game_params[:seed] = game_params[:seed].to_i
       game_params[:seed] = nil if (game_params[:seed]).zero?
 
-      if @mode == :multi
-        begin
-          return create_game(game_params)
-        rescue Engine::OptionError => e
-          return store(:flash_opts, e.message)
-        end
-      end
+      return create_game(game_params) if @mode == :multi
 
       players = game_params
-        .select { |k, _| k.start_with?('player_') }
-        .values
-        .map { |name| name.gsub(/\s+/, ' ').strip }
+                  .select { |k, _| k.start_with?('player_') }
+                  .values
+                  .map { |name| name.gsub(/\s+/, ' ').strip }
 
       return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
@@ -406,6 +417,13 @@ module View
           },
         }
         game_data[:settings][:seed] = game_params[:seed] if game_params[:seed]
+      end
+
+      checked_options = Engine.meta_by_title(game_data[:title])
+                          .check_options(game_data[:settings][:optional_rules],
+                                         game_data[:min_players], game_data[:max_players])
+      if (options_error_msg = checked_options&.[](:error))
+        return store(:flash_opts, "game_data Optional Rules Error: #{options_error_msg}")
       end
 
       create_hotseat(
