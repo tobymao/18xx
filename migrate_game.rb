@@ -319,12 +319,12 @@ def migrate_title(title, pin, dry_run=false, debug = false, require_pin: false)
   end
 end
 
-def migrate_all(pin=nil, dry_run=false, debug = false, pry_db: false, game_ids: nil, require_pin: false)
+def migrate_all(pin=nil, dry_run=false, debug = false, pry_db: false, game_ids: nil, require_pin: false, status: %w[active finished])
   DB.loggers.first.level = Logger::FATAL
 
   where_args = {
     Sequel.pg_jsonb_op(:settings).has_key?('pin') => false,
-    status: %w[active finished],
+    status: status,
   }
   where_args[:id] = game_ids if game_ids
 
