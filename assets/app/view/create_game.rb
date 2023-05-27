@@ -32,7 +32,6 @@ module View
 
     def render_create_button(check_options: true)
       error = check_options &&
-              selected_game_or_variant.respond_to?(:check_options) &&
               selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)&.[](:error)
       (render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' }, attrs: { disabled: !!error } }) { submit })
     end
@@ -286,8 +285,7 @@ module View
         h(:ul, ul_props, [*game_variants, *optional_rules]),
       ]
 
-      checked_options = selected_game_or_variant.respond_to?(:check_options) &&
-        selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)
+      checked_options = selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)
       if checked_options
         if (info = checked_options[:info])
           children.concat(
