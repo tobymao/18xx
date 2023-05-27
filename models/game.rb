@@ -118,7 +118,7 @@ class Game < Base
 
     players
       .sort_by(&:id)
-      .shuffle(random: Random.new(settings['seed'] || 1))
+      .shuffle(random: Random.new(settings['seed'] || settings['seed_v2'] || 1))
   end
 
   def finished_at_ts

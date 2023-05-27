@@ -187,7 +187,7 @@ class Api
             min_players: r['min_players'],
             max_players: r['max_players'],
             settings: {
-              seed: (r['seed'] || Random.new_seed) % (2**31),
+              seed_v2: (r['seed'] || Random.new_seed) % (2**31),
               player_order: r['player_order'],
               unlisted: r['unlisted'],
               optional_rules: r['optional_rules'],

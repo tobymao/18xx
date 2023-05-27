@@ -420,7 +420,7 @@ module View
             optional_rules: game_params[:optional_rules] || [],
           },
         }
-        game_data[:settings][:seed] = game_params[:seed] if game_params[:seed]
+        game_data[:settings][:seed_v2] = game_params[:seed] if game_params[:seed]
       end
 
       checked_options = Engine.meta_by_title(game_data[:title])
