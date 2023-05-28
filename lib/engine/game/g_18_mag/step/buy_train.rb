@@ -30,12 +30,9 @@ module Engine
 
           def train_discount_ability(entity)
             all_abilities = []
-            if entity.owner.respond_to?(:companies)
-              all_abilities += entity.owner.companies&.flat_map do |c|
-                c.all_abilities.select do |a|
-                  a.type == :train_discount
-                end
-              end
+            entity.owner.companies.each do |c|
+              ability = c.all_abilities.select { |a| a.type == :train_discount }
+              all_abilities.concat(ability) if ability
             end
             all_abilities.empty? ? nil : all_abilities
           end
