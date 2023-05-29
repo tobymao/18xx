@@ -590,6 +590,10 @@ module Engine
       cities.sum(&:available_slots).positive?
     end
 
+    def hide
+      @hidden = true
+    end
+
     private
 
     def separate_parts

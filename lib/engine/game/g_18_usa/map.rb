@@ -53,7 +53,7 @@ module Engine
         RIVER_HEXES = %w[B4 D18 E21 F18 H18 I19 C3 C17 D14 E15 E17 F20 G17].freeze
         MEXICO_HEXES = %w[I5 I7 I9 I11 J12 K13].freeze
 
-        METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
+        METROPOLIS_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
         SUBSIDIZED_HEXES = %w[B8 B14 C3 D6 D14 E3 E7 E23 G7 G11 G27 H8 I13 I25].freeze
 
         TILES = {
@@ -370,7 +370,7 @@ module Engine
             'count' => 'unlimited',
             'color' => 'yellow',
             'code' => "offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:1;label=#{RESOURCE_LABELS[:oil]}",
-            'hidden' => false,
+            'hidden' => true,
           },
           '8oil' =>
           {
@@ -508,7 +508,7 @@ module Engine
             'color' => 'yellow',
             'code' => 'offboard=revenue:yellow_20|brown_30,hide:1;path=a:0,b:1;' \
                       "label=#{RESOURCE_LABELS[:coal]}#{RESOURCE_LABELS[:oil]}",
-            'hidden' => false,
+            'hidden' => true,
           },
           '8coaloil' =>
           {
