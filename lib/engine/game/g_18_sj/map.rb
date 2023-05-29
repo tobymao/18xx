@@ -142,21 +142,39 @@ module Engine
             %w[B13 C14] => '',
           },
           white: {
-            %w[A4 C6 D7] => 'icon=image:18_sj/M-S,sticky:1',
-            ['D13'] => 'icon=image:18_sj/G-S,sticky:1',
-            %w[E14 E16 E18 E24 F25 G12] =>
+            %w[A4] => 'path=track:future,a:1,b:5;icon=image:18_sj/M-S,sticky:1',
+            %w[C6 D7] => 'path=track:future,a:2,b:5;icon=image:18_sj/M-S,sticky:1',
+            ['D13'] => 'path=track:future,a:0,b:2;icon=image:18_sj/G-S,sticky:1',
+            %w[E14] => 'path=track:future,a:0,b:4;icon=image:18_sj/L-S,sticky:1',
+            %w[E16 E18] => 'path=track:future,a:1,b:4;icon=image:18_sj/L-S,sticky:1',
+            %w[E24] => 'path=track:future,a:1,b:5;icon=image:18_sj/L-S,sticky:1',
+            %w[F25] => 'path=track:future,a:2,b:5;icon=image:18_sj/L-S,sticky:1',
+            %w[G12] => 'path=track:future,a:1,b:3;icon=image:18_sj/L-S,sticky:1',
+            ['E22'] =>
+              'path=track:future,a:1,b:4;upgrade=cost:75,terrain:mountain;'\
               'icon=image:18_sj/L-S,sticky:1',
-            ['E22'] => 'upgrade=cost:75,terrain:mountain;icon=image:18_sj/L-S,sticky:1',
-            ['B5'] => 'city=revenue:0;icon=image:18_sj/M-S,sticky:1',
+            ['B5'] =>
+              'city=revenue:0;path=track:future,a:2,b:_0;path=track:future,a:5,b:_0;'\
+              'icon=image:18_sj/M-S,sticky:1',
             ['E8'] =>
-              'city=revenue:0;icon=image:18_sj/M-S,sticky:1;icon=image:18_sj/GKB,sticky:1',
-            ['E12'] => 'city=revenue:0;icon=image:18_sj/G-S,sticky:1',
-            %w[F13 E20] => 'city=revenue:0;icon=image:18_sj/L-S,sticky:1',
+              'city=revenue:0;path=track:future,a:2,b:_0;path=track:future,a:5,b:_0;'\
+              'icon=image:18_sj/M-S,sticky:1;icon=image:18_sj/GKB,sticky:1',
+            ['E12'] =>
+              'city=revenue:0;path=track:future,a:0,b:_0;path=track:future,a:3,b:_0;'\
+              'icon=image:18_sj/G-S,sticky:1',
+            %w[E20] =>
+              'city=revenue:0;path=track:future,a:1,b:_0;path=track:future,a:4,b:_0;'\
+              'icon=image:18_sj/L-S,sticky:1',
+            %w[F13] =>
+              'city=revenue:0;path=track:future,a:0,b:_0;path=track:future,a:3,b:_0;'\
+              'icon=image:18_sj/L-S,sticky:1',
             ['C12'] =>
-              'city=revenue:0;border=edge:2,type:mountain,cost:75;icon=image:18_sj/G-S,sticky:1;'\
+              'city=revenue:0;path=track:future,a:2,b:_0;path=track:future,a:5,b:_0;'\
+              'border=edge:2,type:mountain,cost:75;icon=image:18_sj/G-S,sticky:1;'\
               'icon=image:18_sj/GKB,sticky:1',
             ['B11'] =>
-              'city=revenue:0;border=edge:5,type:mountain,cost:75;icon=image:18_sj/G-S,sticky:1',
+              'city=revenue:0;path=track:future,a:2,b:_0;path=track:future,a:5,b:_0;'\
+              'border=edge:5,type:mountain,cost:75;icon=image:18_sj/G-S,sticky:1',
             %w[A12 B19 B21 B23 B25 B27] =>
               'upgrade=cost:75,terrain:mountain',
             ['C30'] => 'upgrade=cost:150,terrain:mountain',
@@ -169,8 +187,12 @@ module Engine
             ['D11'] => 'city=revenue:0;border=edge:2,type:impassable',
             ['D29'] =>
               'city=revenue:0;upgrade=cost:75,terrain:mountain;icon=image:18_sj/M,sticky:1',
-            ['F9'] => 'upgrade=cost:150,terrain:mountain;icon=image:18_sj/M-S,sticky:1',
-            ['F11'] => 'upgrade=cost:75,terrain:mountain;icon=image:18_sj/G-S,sticky:1',
+            ['F9'] =>
+              'path=track:future,a:2,b:5;upgrade=cost:150,terrain:mountain;'\
+              'icon=image:18_sj/M-S,sticky:1',
+            ['F11'] =>
+              'path=track:future,a:0,b:3;upgrade=cost:75,terrain:mountain;'\
+              'icon=image:18_sj/G-S,sticky:1',
           },
           yellow: {
             ['C2'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y;icon=image:port,sticky:1',
