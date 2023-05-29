@@ -195,7 +195,7 @@ module Engine
           },
         ].freeze
 
-        HOME_TOKEN_TIMING = :par
+        HOME_TOKEN_TIMING = nil
         SELL_BUY_ORDER = :sell_buy
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
@@ -335,6 +335,10 @@ module Engine
           entity.corporation? && (entity.type == :major)
         end
 
+        def historical?(entity)
+          entity.corporation? && @corporation_info[entity][:historical]
+        end
+
         # returns a list of cities with tokens for this corporation
         def railheads(entity)
           return [] unless entity.corporation?
@@ -346,10 +350,56 @@ module Engine
           city.pass?
         end
 
-        # FIXME: need to deal with SFMA and non-historical corps
-        def place_home_token(corporation)
-          return if corporation.tokens.first&.used # FIXME: will this work if this token is sold to another corp?
+        def all_token_cities
+          ZONES.flatten
+        end
 
+        def austrian_cities
+          if @phase.name.to_i < 4
+            (ZONES[3] | ZONES[4])
+          else
+            []
+          end
+        end
+
+        def reserved_cities
+          if @phase.name.to_i < 4
+            HISTORICAL_CITIES
+          else
+            []
+          end
+        end
+
+        def home_token_locations(corporation)
+          if corporation.name == 'SFMA'
+            [hex_by_id(corporation.coordinates)]
+          elsif major?(corporation)
+            # major non-historical
+            if corporation.tokens.first&.used
+              home_hex = corporation.tokens.first.city.hex.name
+              zone = ZONES.index { |z| z.include?(home_hex) }
+              # need to account for regions merging on and after phase 4
+              major_pool = if @phase.name.to_i < 4
+                             ZONES[zone].dup
+                           elsif @phase.name.to_i == 4
+                             zone < 4 ? (all_token_cities - ZONE[4]) : ZONE[4].dup
+                           else
+                             all_token_cities
+                           end
+              major_pool -= [home_hex]
+            else
+              major_pool = all_token_cities
+            end
+            (major_pool - reserved_cities - austrian_cities).map { |h| hex_by_id(h) }
+          else
+            # minor non-historical
+            minor_pool = (all_token_cities - reserved_cities - austrian_cities - MAJOR_CITIES).map { |h| hex_by_id(h) }
+            minor_pool.reject { |h| h.tile.cities.any?(&:tokened?) }
+          end
+        end
+
+        # SFMA and non-historical corps are dealt with elsewhere
+        def place_home_token(corporation)
           Array(corporation.coordinates).each do |coord|
             hex = hex_by_id(coord)
             tile = hex&.tile
@@ -361,6 +411,88 @@ module Engine
             city.place_token(corporation, token)
           end
           @graph.clear
+        end
+
+        # from https://www.redblobgames.com/grids/hexagons
+        def doubleheight_coordinates(hex)
+          [hex.id[1..-1].to_i, hex.id[0].ord - 'A'.ord] # works because AZ isn't close to a home city
+        end
+
+        def hex_distance(hex_a, hex_b)
+          x_a, y_a = doubleheight_coordinates(hex_a)
+          x_b, y_b = doubleheight_coordinates(hex_b)
+
+          # from https://www.redblobgames.com/grids/hexagons#distances
+          # this game essentially uses double-height coordinates
+          dx = (x_a - x_b).abs
+          dy = (y_a - y_b).abs
+          distance = hex_a == hex_b ? -1 : [0, dx + [0, (dy - dx) / 2].max - 1].max
+          distance + 1
+        end
+
+        def tile_laid_at_exit?(hex)
+          hex.tile.exits.any? do |e|
+            next if hex.tile.borders.any? { |b| b.edge == e && ((b.type == :impassable) || (b.type == :province)) }
+
+            neighbor = hex_neighbor(hex, e)
+            neighbor && !neighbor.tile.preprinted
+          end
+        end
+
+        def hex_connected?(hex)
+          !hex.tile.preprinted ||                                  # any tile has been laid here
+            (!hex.tile.paths.empty? && !hex.tile.cities.empty?) || # pre-printed with track and a city
+            (!hex.tile.paths.empty? && tile_laid_at_exit?(hex)) # pre-printed with track and tile connecting to it
+        end
+
+        def search_hexes(current_hex, hex_list, start_hex)
+          hex_list << current_hex
+          distance = hex_distance(current_hex, start_hex)
+          @min_connected_distance = distance if hex_connected?(current_hex) && (distance < @min_connected_distance)
+          return if distance >= 2
+
+          6.times do |edge|
+            neighbor = hex_neighbor(current_hex, edge)
+            next unless neighbor
+            next if hex_list.include?(neighbor)
+            next if hex_distance(neighbor, start_hex) > 2
+            next if current_hex.tile.borders.any? { |b| b.edge == edge && ((b.type == :impassable) || (b.type == :province)) }
+
+            search_hexes(neighbor, hex_list, start_hex)
+          end
+        end
+
+        def hex_price(token_hex)
+          hex_list = []
+          @min_connected_distance = 3
+          search_hexes(token_hex, hex_list, token_hex)
+          case @min_connected_distance
+          when 3
+            25
+          when 2
+            50
+          when 1
+            100
+          else
+            200
+          end
+        end
+
+        def token_price(corporation)
+          if historical?(corporation)
+            50
+          else
+            price = hex_price(corporation.tokens.first.city.hex)
+            price = [price, hex_price(corporation.tokens[1].city.hex)].max if corporation.tokens[1]&.used
+            price
+          end
+        end
+
+        def purchase_tokens!(corporation, count, price)
+          min = major?(corporation) ? 2 : 1
+          (count - min).times { corporation.tokens << Token.new(corporation, price: 0) }
+          corporation.spend((cost = price * count), @bank)
+          @log << "#{corporation.name} buys #{count} tokens for #{format_currency(cost)}"
         end
 
         def legal_tile_rotation?(_entity, _hex, tile)
@@ -399,8 +531,9 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            # G1841::Step::BuyTOkens,
-            Engine::Step::BuySellParShares,
+            G1841::Step::HomeToken,
+            G1841::Step::BuyTokens,
+            G1841::Step::BuySellParShares,
           ])
         end
 
