@@ -460,8 +460,8 @@ module Engine
                     'path=track:future,a:1,b:_0;' \
                     'path=track:future,a:3,b:_1;' \
                     'upgrade=cost:40,terrain:mountain;' \
-                    'icon=image:1858/SC,sticky:1;' \
-                    'icon=image:1858/OV,sticky:1;',
+                    'icon=image:1858/SC,sticky:1,loc:0;' \
+                    'icon=image:1858/OV,sticky:1,loc:1;',
 
             # City hexes
             %w[C2] =>
@@ -498,8 +498,8 @@ module Engine
                     'path=track:future,a:0,b:_0;' \
                     'path=track:future,a:4,b:_0;' \
                     'upgrade=cost:20,terrain:water;' \
-                    'icon=image:1858/CS,sticky:1;' \
-                    'icon=image:1858/SJC,sticky:1;' \
+                    'icon=image:1858/SJC,sticky:1,loc:0;' \
+                    'icon=image:1858/CS,sticky:1,loc:1;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3',
             %w[E20] =>
@@ -511,8 +511,8 @@ module Engine
                     'path=track:future,a:0,b:_0;' \
                     'path=track:future,a:2,b:_0;' \
                     'upgrade=cost:20,terrain:water;' \
-                    'icon=image:1858/CM,sticky:1;' \
-                    'icon=image:1858/CS,sticky:1;',
+                    'icon=image:1858/CM,sticky:1,loc:0;' \
+                    'icon=image:1858/CS,sticky:1,loc:1;',
             %w[K18] =>
                     'city=revenue:0;' \
                     'path=track:future,a:_0,b:5;' \
