@@ -569,6 +569,14 @@ module Engine
           setup_tokencity_tiles
         end
 
+        def setup_optional_rules
+          if @optional_rules&.include?(:remove_three_ls)
+            remove_l_trains(3)
+          elsif @optional_rules&.include?(:remove_two_ls)
+            remove_l_trains(2)
+          end
+        end
+
         def remove_l_trains(num_trains)
           @log << "#{num_trains} L/2 train(s) have been discarded"
           num_trains.times { @depot.remove_train(@depot.upcoming.first) }
