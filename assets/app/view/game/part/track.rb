@@ -61,6 +61,11 @@ module View
             width: 0,
             dash: '12',
           },
+          future: {
+            color: '#00000000',
+            width: 0,
+            dash: '9 3',
+          },
         }.freeze
 
         # width here is subtracted from track width
