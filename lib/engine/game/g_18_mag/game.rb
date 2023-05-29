@@ -415,6 +415,12 @@ module Engine
           false
         end
 
+        def entity_can_use_company?(entity, company)
+          return false unless entity.minor?
+
+          entity.owner == company.owner
+        end
+
         # price is nil, :free, or a positive int
         def buy_train(operator, train, price = nil)
           @train_bought = true if train.owner == @depot # No idea if this is what Lonny wants
