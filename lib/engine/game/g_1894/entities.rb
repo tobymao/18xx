@@ -11,21 +11,21 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'Once per game the owning corporation may pay 50 F to lay a yellow track.'\
-            ' This is in addition to the corporation\'s tile builds'\
-            ' Blocks I14 while owned by a player.',
+                  ' This is in addition to the corporation\'s tile builds'\
+                  ' Blocks I14 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I14'] },
-            {
-              type: 'tile_lay',
-              owner_type: 'corporation',
-            when: 'track',
-              cost: 50,
-              count: 1,
-              special: false,
-              reachable: true,
-              hexes: [],
-              tiles: %w[X1 X2 X3a 1 7 8 9 55 56 57 58 69 630],
-              }],
-              color: '#d9d9d9',
+                        {
+                          type: 'tile_lay',
+                          owner_type: 'corporation',
+                          when: 'track',
+                          cost: 50,
+                          count: 1,
+                          special: false,
+                          reachable: true,
+                          hexes: [],
+                          tiles: %w[X1 X2 X3a 1 7 8 9 55 56 57 58 69 630],
+                        }],
+            color: '#d9d9d9',
           },
           {
             name: 'Antwerpen-Rotterdamsche Spoorwegmaatschappij',
@@ -80,7 +80,8 @@ module Engine
             sym: 'SQG',
             value: 100,
             revenue: 0,
-            desc: 'Revenue is equal to 70 F if Saint-Quentin (G10) is green, to 100 F if Saint-Quentin is brown and to 0 F otherwise.'\
+            desc: 'Revenue is equal to 70 F if Saint-Quentin (G10) is green, to 100 F if'\
+                  ' Saint-Quentin is brown and to 0 F otherwise.'\
                   ' Closes in purple phase. May not be sold to corporation in red and gray phase.',
             abilities: [{ type: 'close', on_phase: 'Purple' }],
             color: '#d9d9d9',

@@ -99,7 +99,7 @@ module Engine
           %w[40o 50o 54o 60o 64 67p 75],
           %w[30o 40o 50o 54o 60o],
           %w[20o 30o 40o 50o 54o],
-          %w[10o, 20o, 30o, 40o, 50o],
+          %w[10o 20o 30o 40o 50o],
         ].freeze
 
         PHASES = [{ name: 'Yellow', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
