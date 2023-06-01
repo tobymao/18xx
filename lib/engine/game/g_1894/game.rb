@@ -19,7 +19,7 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 16, 4 => 13 }.freeze
+        CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
 
         STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
 
@@ -28,8 +28,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[77
-             83
+          %w[83
              89
              96
              103
@@ -39,46 +38,40 @@ module Engine
              145
              160
              185
-             217
-             248
-             285
-             325
-             375e],
-          %w[72
-             77
+             213
+             250
+             290
+             350e],
+          %w[77
              82
              90p
-             94
-             99
-             109
-             121
-             134
-             150
-             170
-             194
-             222
-             254
-             290
-             335],
-          %w[67o
-             72
-             77
-             82
-             88
              94
              100p
              109
              120
+             132
+             150
+             170
+             195
+             230
+             270
+             320],
+          %w[72
+             77
+             82
+             88
+             93
+             99
+             109
+             120
              135
              153
-             174
-             200
-             229
-             262
-             300],
-          %w[63o
-             66o
-             70o
+             176
+             205
+             240
+             290],
+          %w[66
+             70
              75
              82p
              87
@@ -87,28 +80,26 @@ module Engine
              109
              120
              138
-             159
-             179
-             206
-             236],
-          %w[59o
-             63o
-             66o
+             160
+             185
+             220],
+          %w[63o
+             66
              70
              75
              80
              85
              92
-             100
-             112
+             102
+             115
              128
-             146],
-          %w[56o 59o 63o 66o 70 76p 81 88 97 107],
-          %w[42o 55o 59o 62o 65 69 73 81 89],
-          %w[30o 40o 50o 54o 60o 64 67p 74],
-          %w[20o 30o 40o 50o 54o 60o],
-          %w[10o 20o 30o 40o 50o 54o],
-          ['', '10o', '20o', '30o', '40o', '50o'],
+             147],
+          %w[59o 63o 66 70 76p 81 88 99 109],
+          %w[55o 59o 62o 65 69 73 82 92],
+          %w[40o 50o 54o 60o 64 67p 75],
+          %w[30o 40o 50o 54o 60o],
+          %w[20o 30o 40o 50o 54o],
+          %w[10o, 20o, 30o, 40o, 50o],
         ].freeze
 
         PHASES = [{ name: 'Yellow', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
@@ -170,7 +161,7 @@ module Engine
                   {
                     name: '4',
                     distance: 4,
-                    price: 300,
+                    price: 320,
                     rusts_on: '7',
                     num: 4,
                     discount: { '3' => 60 },
@@ -182,7 +173,7 @@ module Engine
                     rusts_on: 'D',
                     num: 5,
                     events: [{ 'type' => 'late_corporations_available' }],
-                    discount: { '4' => 150 },
+                    discount: { '4' => 160 },
                   },
                   {
                     name: '6',
