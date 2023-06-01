@@ -510,7 +510,6 @@ module Engine
           'P21' => { acquire: %i[major minor], phase: 2 },
         }.freeze
 
-        PRIVATE_CLOSE_AFTER_PASS = %w[P12 P21].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P6 P7].freeze
         PRIVATE_REMOVE_REVENUE = %w[P5 P6 P7 P8 P10 P17 P18 P21].freeze
         PRIVATE_PHASE_REVENUE = %w[P15 P20].freeze
@@ -1233,7 +1232,7 @@ module Engine
             return self.class::UPGRADABLE_S_YELLOW_CITY_TILE == to.name
           end
 
-          # Special case for Middleton Railway where we remove a town from a tile
+          # Special case for P2 Middleton Railway where we remove a town from a tile
           if self.class::TRACK_TOWN.include?(from.name) && self.class::TRACK_PLAIN.include?(to.name)
             return Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
           end
@@ -1305,21 +1304,6 @@ module Engine
           return if hex.name != self.class::ENGLISH_CHANNEL_HEX || tile.color != :brown
 
           upgrade_france_to_brown
-        end
-
-        def after_track_pass(entity)
-          # Special case of when we only used up one of the 2 track lays of
-          # Leicester & Swannington Railway or Humber Suspension Bridge Company
-          self.class::PRIVATE_CLOSE_AFTER_PASS.each do |company_id|
-            company = entity.companies.find { |c| c.id == company_id }
-            next unless company
-
-            count = company.all_abilities.find { |a| a.type == :tile_lay }&.count
-            next if !count || count == 2
-
-            @log << "#{company.name} closes"
-            company.close!
-          end
         end
 
         def bank_companies(prefix)
@@ -1866,6 +1850,10 @@ module Engine
 
         def must_be_on_terrain?(entity)
           entity.id == self.class::COMPANY_EGR
+        end
+
+        def must_be_on_estuary?(entity)
+          entity.id == self.class::COMPANY_GSWR
         end
 
         def must_remove_town?(entity)

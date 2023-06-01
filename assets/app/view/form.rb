@@ -77,9 +77,10 @@ module View
       )
     end
 
-    def render_button(text, style: {}, &block)
+    def render_button(text, style: {}, attrs: {}, &block)
       props = {
         attrs: {
+          **attrs,
           type: :button,
         },
         style: {

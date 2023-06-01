@@ -153,17 +153,17 @@ module Engine
           if optional_rules.empty?
             case max_players
             when 2
-              return 'No Unit(s) selected. Will use Unit 3 based on player count'
+              return { info: 'No Unit(s) selected. Will use Unit 3 based on player count' }
             when 3
-              return 'No Unit(s) selected. Will use Unit 2 based on player count'
+              return { info: 'No Unit(s) selected. Will use Unit 2 based on player count' }
             when 4, 5
-              return 'No Unit(s) selected. Will use Unit 1 based on player count'
+              return { info: 'No Unit(s) selected. Will use Unit 1 based on player count' }
             when 6, 7
-              return 'No Unit(s) selected. Will use Units 1+2 based on player count'
+              return { info: 'No Unit(s) selected. Will use Units 1+2 based on player count' }
             when 8
-              return 'No Unit(s) selected. Will use Units 1+2+3 based on player count'
+              return { info: 'No Unit(s) selected. Will use Units 1+2+3 based on player count' }
             else
-              return 'No Unit(s) selected. Will use Units 1+2+3 and R1+R2+R3 based on player count'
+              return { info: 'No Unit(s) selected. Will use Units 1+2+3 and R1+R2+R3 based on player count' }
             end
           end
 
@@ -199,21 +199,25 @@ module Engine
           regionals[3] = true if optional_rules.include?(:r3)
 
           if !units[1] && !units[2] && !units[3] && !optional_rules.empty?
-            return 'Must select at least one Unit if using other options'
+            return { error: 'Must select at least one Unit if using other options' }
           end
-          return 'Cannot combine Units 1 and 3 without Unit 2' if units[1] && !units[2] && units[3]
-          return 'Cannot add Regionals without Unit 1' if !regionals.keys.empty? && !units[1]
-          return 'Cannot add K5 without Unit 2' if kits[5] && !units[2]
-          return 'Cannot add K7 without Unit 1' if kits[7] && !units[1]
-          return 'K2 not supported with just Unit 3' if kits[2] && !units[1] && !units[2] && units[3]
-          return 'K2 not supported without K3' if kits[2] && !kits[3]
-          return 'Cannot use extra Unit 3 trains without Unit 3' if !units[3] && optional_rules.include?(:u3p)
-          return 'Cannot use K1 or K6 with D1' if (kits[1] || kits[6]) && optional_rules.include?(:d1)
-          return 'Cannot use both bank options' if optional_rules.include?(:big_bank) && optional_rules.include?(:strict_bank)
-          return 'Variant DB1 not useful in a Unit 2 only game' if !units[1] && !units[3] && optional_rules.include?(:db1)
-          return 'Variant DB2 is for Unit 1' if !units[1] && optional_rules.include?(:db2)
-          return 'Variant DB3 is for Unit 3' if !units[3] && optional_rules.include?(:db3)
-          return 'Unit 4 requires Unit 3' if units4 && !units[3]
+          return { error: 'Cannot combine Units 1 and 3 without Unit 2' } if units[1] && !units[2] && units[3]
+          return { error: 'Cannot add Regionals without Unit 1' } if !regionals.keys.empty? && !units[1]
+          return { error: 'Cannot add K5 without Unit 2' } if kits[5] && !units[2]
+          return { error: 'Cannot add K7 without Unit 1' } if kits[7] && !units[1]
+          return { error: 'K2 not supported with just Unit 3' } if kits[2] && !units[1] && !units[2] && units[3]
+          return { error: 'K2 not supported without K3' } if kits[2] && !kits[3]
+          return { error: 'Cannot use extra Unit 3 trains without Unit 3' } if !units[3] && optional_rules.include?(:u3p)
+          return { error: 'Cannot use K1 or K6 with D1' } if (kits[1] || kits[6]) && optional_rules.include?(:d1)
+          if optional_rules.include?(:big_bank) && optional_rules.include?(:strict_bank)
+            return { error: 'Cannot use both bank options' }
+          end
+          if !units[1] && !units[3] && optional_rules.include?(:db1)
+            return { error: 'Variant DB1 not useful in a Unit 2 only game' }
+          end
+          return { error: 'Variant DB2 is for Unit 1' } if !units[1] && optional_rules.include?(:db2)
+          return { error: 'Variant DB3 is for Unit 3' } if !units[3] && optional_rules.include?(:db3)
+          return { error: 'Unit 4 requires Unit 3' } if units4 && !units[3]
 
           nil
         end

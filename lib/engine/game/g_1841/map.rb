@@ -171,9 +171,9 @@ module Engine
           N6: 'Savona',
           A7: 'Gotthard',
           C7: 'Lugano',
-          E7: 'Buso Arsizio',
+          E7: 'Busto Arsizio',
           M7: 'Genova',
-          D8: 'Como',
+          D8: 'Cosmo',
           F8: 'Milano',
           H8: 'Pavia',
           E9: 'Bergamo',
@@ -185,7 +185,7 @@ module Engine
           K11: 'Parma',
           Q11: 'Pisa',
           S11: 'Livorno',
-          H12: 'Montova',
+          H12: 'Mantova',
           L12: "Reggio nell'Emilia",
           P12: 'Lucca',
           C13: 'Trento & Brennero',
@@ -338,6 +338,17 @@ module Engine
             'C7' => [0, 5],
           },
         }.freeze
+
+        ZONES = [
+          %w[H4 J6 M3 M7],               # 0 PIEDMONT
+          %w[R14 P12 Q11 S11],           # 1 TUSCANY
+          %w[K11 L12 K13 L14 K15],       # 2 CONSERVATIVE_ZONE
+          %w[C7 D8 E7 F8 E9 H8 H10 E11], # 3 LOMBARDIA
+          %w[H12 G13 F14 G15 F16 D16],   # 4 VENETO
+        ].freeze
+
+        MAJOR_CITIES = %w[L14 R14 M7 F8 H4 F16].freeze
+        HISTORICAL_CITIES = %w[F8 F16 H4 J6 M3 R14 P12 Q11].freeze
 
         AXES = { x: :number, y: :letter }.freeze
       end
