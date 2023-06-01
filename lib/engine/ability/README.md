@@ -37,6 +37,8 @@ These attributes may be set for all ability types
     - `track`, `track_and_token`: track-laying step; if normal track lays are used
       up, but there is still a `Track` ability, then the active step will not
       pass on to the next step automatically
+    - `special_track`: `SpecialTrack` step when it blocks for a private company
+      that gets multiple lays
     - `token`: token-placing step
     - `route`: running routes step
     - `sold`: when the company is bought from a player by a corporation
@@ -258,7 +260,8 @@ remains open but the discount can no longer be used. Default false.
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
 - `must_lay_together`: If true and `count` is greater than 1, all the tile lays
-  must happen at the same time. Default false.
+  must happen at the same time. If this is `true`, you might want `when` to
+  include `special_track`. Default false.
 - `must_lay_all`: If true and `count` is greater than 1 and `must_lay_together`
   is true, all the tile lays must be used; if false, then some tile lays may be
   forfeited. Default false.

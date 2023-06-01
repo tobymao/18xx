@@ -40,9 +40,12 @@ module Engine
               buy_and_issue(player, company, share_price, corporation, 1)
             elsif share_price.price * 2 >= company.value
               buy_and_issue(player, company, share_price, corporation, 2)
-            else
+            elsif share_price.price * 3 >= company.value
               # we should only get here in RS not RSS
               buy_and_issue(player, company, share_price, corporation, 3)
+            else
+              # we should only get here in RS not RSS
+              buy_and_issue(player, company, share_price, corporation, 4)
             end
 
             corporation.companies << company
@@ -89,8 +92,10 @@ module Engine
               par_price - company.value
             elsif par_price * 2 >= company.value
               (par_price * 2) - company.value
-            else
+            elsif par_price * 3 >= company.value
               (par_price * 3) - company.value
+            else
+              (par_price * 4) - company.value
             end
           end
 

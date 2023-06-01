@@ -38,6 +38,7 @@ module Engine
         DISCARDED_TRAINS = :remove
         CERT_LIMIT_INCLUDES_PRIVATES = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        MARKET_SHARE_LIMIT = 80 # percent
 
         BANK_CASH = 37_860
 
