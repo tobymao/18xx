@@ -296,12 +296,12 @@ module Engine
         end
 
         METROPOLIS_TILE_FOR_HEX = {
-          H14: ['X03', 0],
-          E11: ['X04s', 0],
-          G3: ['X05', 3],
-          D20: ['X02', 1],
-          I19: ['X06', 0],
-          H22: ['X01', 0],
+          'H14' => ['X03', 0],
+          'E11' => ['X04s', 0],
+          'G3' => ['X05', 3],
+          'D20' => ['X02', 1],
+          'I19' => ['X06', 0],
+          'H22' => ['X01', 0],
         }.freeze
 
         # Convert a potential metro hex to a metro hex
