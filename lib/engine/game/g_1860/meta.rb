@@ -39,6 +39,11 @@ module Engine
             short_name: 'First edition rules and map',
             desc: 'Use all of the first edition rules (smaller map, original insolvency, no skipping towns)',
           },
+          {
+            sym: :re_enter_hexes,
+            short_name: 'Re-enter hexes',
+            desc: 'Routes may enter the same hex more than once, so long as no track is re-used.',
+          },
         ].freeze
       end
     end
