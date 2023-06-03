@@ -1130,7 +1130,7 @@ module Engine
           minor.tokens.each do |token|
             city = token&.city
             token.remove!
-            place_blocking_token(city.hex) if block && city
+            place_blocking_token(city.hex, city: city) if block && city
           end
           @graph.clear_graph_for(minor)
           @minors.delete(minor)
@@ -1494,7 +1494,7 @@ module Engine
             next unless tokens.size > 1
 
             tokens[1].remove!
-            place_blocking_token(city.hex)
+            place_blocking_token(city.hex, city: city)
           end
         end
 
