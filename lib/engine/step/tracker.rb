@@ -363,15 +363,11 @@ module Engine
           .reject(&:blocks_lay)
       end
 
-      def upgradeable_tiles(entities, ui_hex)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
-        _entity, *_combo_entities = entities
-
+      def upgradeable_tiles(entity_or_entities, ui_hex)
         hex = @game.hex_by_id(ui_hex.id) # hex instance from UI can go stale
-        tiles = potential_tiles(entities, hex).map do |tile|
+        tiles = potential_tiles(entity_or_entities, hex).map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute
-          tile.legal_rotations = legal_tile_rotations(entities, hex, tile)
+          tile.legal_rotations = legal_tile_rotations(entity_or_entities, hex, tile)
           next if tile.legal_rotations.empty?
 
           tile.rotate! # rotate it to the first legal rotation
