@@ -227,9 +227,9 @@ module Engine
         @game.update_tile_lists(tile, old_tile)
       end
 
-      def pay_tile_cost!(entities, tile, rotation, hex, spender, cost, _extra_cost)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
+      def pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, _extra_cost)
+        # entity_or_entities is an array when combining private company abilities
+        entities = Array(entity_or_entities)
         entity, *_combo_entities = entities
 
         try_take_loan(spender, cost)
@@ -263,9 +263,9 @@ module Engine
         end
       end
 
-      def remove_border_calculate_cost!(tile, entities, spender)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
+      def remove_border_calculate_cost!(tile, entity_or_entities, spender)
+        # entity_or_entities is an array when combining private company abilities
+        entities = Array(entity_or_entities)
         entity, *_combo_entities = entities
 
         hex = tile.hex
@@ -350,9 +350,9 @@ module Engine
         @game.phase.tiles.dup
       end
 
-      def potential_tiles(entities, hex)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
+      def potential_tiles(entity_or_entities, hex)
+        # entity_or_entities is an array when combining private company abilities
+        entities = Array(entity_or_entities)
         entity, *_combo_entities = entities
 
         colors = potential_tile_colors(entity, hex)
@@ -389,9 +389,9 @@ module Engine
         end
       end
 
-      def legal_tile_rotation?(entities, hex, tile)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
+      def legal_tile_rotation?(entity_or_entities, hex, tile)
+        # entity_or_entities is an array when combining private company abilities
+        entities = Array(entity_or_entities)
         entity, *_combo_entities = entities
 
         return false unless @game.legal_tile_rotation?(entity, hex, tile)
@@ -416,10 +416,10 @@ module Engine
           (!multi_city_upgrade || old_ctedges.all? { |oldct| new_ctedges.one? { |newct| (oldct & newct) == oldct } })
       end
 
-      def legal_tile_rotations(entities, hex, tile)
+      def legal_tile_rotations(entity_or_entities, hex, tile)
         Engine::Tile::ALL_EDGES.select do |rotation|
           tile.rotate!(rotation)
-          legal_tile_rotation?(entities, hex, tile)
+          legal_tile_rotation?(entity_or_entities, hex, tile)
         end
       end
 

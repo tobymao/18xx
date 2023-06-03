@@ -48,7 +48,7 @@ module Engine
             end
           end
 
-          def potential_tiles(entities, hex)
+          def potential_tiles(entity_or_entities, hex)
             tiles = super
             if @game.can_hold_builder_cubes?(hex.tile)
               cube_tile = @game.tile_by_id('BC-0')
@@ -57,9 +57,9 @@ module Engine
             tiles
           end
 
-          def legal_tile_rotation?(entities, hex, tile)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def legal_tile_rotation?(entity_or_entities, hex, tile)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             return true if hex.tile.name == tile.name && hex.tile.rotation == tile.rotation
@@ -87,9 +87,9 @@ module Engine
             end
           end
 
-          def available_hex(entities, hex)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def available_hex(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             return hex_neighbors(entity, hex) if @game.can_hold_builder_cubes?(hex.tile)

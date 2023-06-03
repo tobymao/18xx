@@ -89,9 +89,9 @@ module Engine
             action.entity.close!
           end
 
-          def available_hex(entities, hex)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def available_hex(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             return unless (ability = abilities(entity))
@@ -149,9 +149,9 @@ module Engine
             connected
           end
 
-          def legal_tile_rotation?(entities, hex, tile)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def legal_tile_rotation?(entity_or_entities, hex, tile)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             return tile.rotation.zero? if entity.id == @game.class::COMPANY_LCDR && hex.name == @game.class::ENGLISH_CHANNEL_HEX
@@ -182,9 +182,9 @@ module Engine
             (old_exits - new_exits).empty?
           end
 
-          def potential_tiles(entities, hex)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def potential_tiles(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *combo_entities = entities
 
             return [] unless (tile_ability = abilities(entity))

@@ -29,9 +29,9 @@ module Engine
           super
         end
 
-        def legal_tile_rotation?(entities, hex, tile)
-          # entities is sometimes an array for combining private company abilities
-          entities = Array(entities)
+        def legal_tile_rotation?(entity_or_entities, hex, tile)
+          # entity_or_entities is an array when combining private company abilities
+          entities = Array(entity_or_entities)
           entity, *_combo_entities = entities
 
           # We will remove a town from the white S tile, this meaning we will not follow the normal path upgrade rules
@@ -45,9 +45,9 @@ module Engine
           super(operator, hex, tile)
         end
 
-        def potential_tiles(entities, hex)
-          # entities is sometimes an array for combining private company abilities
-          entities = Array(entities)
+        def potential_tiles(entity_or_entities, hex)
+          # entity_or_entities is an array when combining private company abilities
+          entities = Array(entity_or_entities)
           entity, *_combo_entities = entities
 
           colors = if entity.corporation? && entity.type == :minor &&
@@ -63,9 +63,9 @@ module Engine
                .reject(&:blocks_lay)
         end
 
-        def remove_border_calculate_cost!(tile, entities, spender)
-          # entities is sometimes an array for combining private company abilities
-          entities = Array(entities)
+        def remove_border_calculate_cost!(tile, entity_or_entities, spender)
+          # entity_or_entities is an array when combining private company abilities
+          entities = Array(entity_or_entities)
           entity, *_combo_entities = entities
 
           hex = tile.hex

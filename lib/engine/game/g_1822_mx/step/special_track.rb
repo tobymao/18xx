@@ -9,9 +9,9 @@ module Engine
         class SpecialTrack < Engine::Game::G1822::Step::SpecialTrack
           PORT_TILES = %w[P1-0 P2-0].freeze
 
-          def potential_tiles(entities, hex)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def potential_tiles(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             if @game.port_company?(entity)
@@ -31,9 +31,9 @@ module Engine
             tiles
           end
 
-          def legal_tile_rotation?(entities, hex, tile)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def legal_tile_rotation?(entity_or_entities, hex, tile)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             return hex.tile.paths[0].exits == tile.exits if @game.port_company?(entity)
@@ -60,9 +60,9 @@ module Engine
             nil
           end
 
-          def available_hex(entities, hex)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def available_hex(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             if @game.port_company?(entity)

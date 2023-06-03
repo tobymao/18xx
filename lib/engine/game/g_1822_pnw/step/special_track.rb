@@ -20,9 +20,9 @@ module Engine
             @round.num_laid_portage = 0
           end
 
-          def available_hex(entities, hex)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def available_hex(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             if @game.port_company?(entity)
@@ -42,9 +42,9 @@ module Engine
             super
           end
 
-          def potential_tiles(entities, hex)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def potential_tiles(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             if @game.port_company?(entity)
@@ -66,9 +66,9 @@ module Engine
             tiles
           end
 
-          def legal_tile_rotation?(entities, hex, tile)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
+          def legal_tile_rotation?(entity_or_entities, hex, tile)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
             return hex.tile.paths.any? { |p| p.exits == tile.exits } if @game.port_company?(entity)

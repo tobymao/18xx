@@ -38,9 +38,9 @@ module Engine
         pass! unless can_lay_tile?(action.entity)
       end
 
-      def available_hex(entities, hex)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
+      def available_hex(entity_or_entities, hex)
+        # entity_or_entities is an array when combining private company abilities
+        entities = Array(entity_or_entities)
         entity, *_combo_entities = entities
 
         tracker_available_hex(entity, hex)
