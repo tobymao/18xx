@@ -147,7 +147,7 @@ module Engine
               hex.neighbors.each do |edge, neighbor|
                 next unless home_hexes.include?(neighbor)
 
-                stub = Engine::Part::Stub.new(edge)
+                stub = Engine::Part::Stub.new(edge, :future)
                 tile.stubs << stub
                 stubs[minor] << { tile: tile, stub: stub }
               end
