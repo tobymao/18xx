@@ -54,7 +54,7 @@ module Engine
           end
 
           def find_railhead(entity, railheads, old_tile, new_tile)
-            return nil if railheads.empty?
+            return nil if !railheads || railheads.empty?
 
             graph = @game.graph_for_entity(entity)
             old_paths = old_tile.paths # will this work if old_tile has been reusused already?
@@ -63,14 +63,14 @@ module Engine
               next if old_paths.find { |path| np <= path }
 
               railheads.each do |t|
-                return t if graph.connected_paths_by_token(entity, t).include?(np)
+                return t if graph.connected_paths_by_token(entity, t.city).include?(np)
               end
             end
 
             # if we are here, must be an upgraded city/town
             new_tile.nodes each do |n|
               railheads.each do |t|
-                return t if graph.connected_nodes_by_token(entity, t).include?(n)
+                return t if graph.connected_nodes_by_token(entity, t.city).include?(n)
               end
             end
 
@@ -95,7 +95,7 @@ module Engine
 
           def railhead_connected(entity, hex)
             unused_railheads(entity).each do |t|
-              return true if @game.graph_for_entity(entity).connected_hexes_by_token(entity, t)[hex]
+              return true if @game.graph_for_entity(entity).connected_hexes_by_token(entity, t.city)[hex]
             end
             false
           end

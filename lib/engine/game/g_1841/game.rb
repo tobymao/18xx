@@ -210,6 +210,16 @@ module Engine
           { lay: true, upgrade: true, cost: 0, cannot_reuse_same_hex: true  },
         ].freeze
 
+        REAL_PHASE_TO_REV_PHASE = {
+          '2' => :white,
+          '3' => :white,
+          '4' => :gray,
+          '5' => :gray,
+          '6' => :black,
+          '7' => :black,
+          '8' => :black,
+        }.freeze
+
         def init_graph
           Graph.new(self, check_tokens: true)
         end
@@ -339,11 +349,11 @@ module Engine
           entity.corporation? && @corporation_info[entity][:historical]
         end
 
-        # returns a list of cities with tokens for this corporation
+        # returns a list of tokens on cities for this corporation
         def railheads(entity)
           return [] unless entity.corporation?
 
-          entity.tokens.select { |t| t.used && t.city && !t.city.pass? }.map(&:city)
+          entity.tokens.select { |t| t.used && t.city && !t.city.pass? }
         end
 
         def skip_token?(_graph, _corporation, city)
@@ -541,9 +551,9 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             G1841::Step::Track,
-            Engine::Step::Token, # FIXME
+            Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1841::Step::Dividend,
             # G1841::Step::BuyToken,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
@@ -552,6 +562,30 @@ module Engine
             # G1841::Step::Merge,
             # G1841::Step::Transform,
           ], round_num: round_num)
+        end
+
+        # implement non-standard offboard colors
+        def game_route_revenue(stop, phase, train)
+          return 0 unless stop
+
+          if stop.offboard?
+            stop.revenue[REAL_PHASE_TO_REV_PHASE[phase.name]]
+          else
+            stop.route_revenue(phase, train)
+          end
+        end
+
+        def revenue_for(route, stops)
+          stops.sum { |stop| game_route_revenue(stop, route.phase, route.train) }
+        end
+
+        # route must have at least two cities, non-port towns or offboards
+        # - passes and ports don't count
+        def check_other(route)
+          required_stops = route.visited_stops.count do |stop|
+            !stop.pass? && !(stop.town? && stop.tile.icons.any? { |i| i.name == 'port' })
+          end
+          raise GameError, 'Route must have at least 2 cities, non-port towns or offboards' unless required_stops > 1
         end
       end
     end
