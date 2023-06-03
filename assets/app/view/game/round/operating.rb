@@ -86,10 +86,6 @@ module View
           elsif (company = entity).company?
             left << h(Company, company: company)
 
-            # render combos if blocking for a private company with
-            # must_lay_together=true
-            left << h(Game::Abilities, user: @user, game: @game, combos_only: true)
-
             if @game.abilities(company, :assign_corporation)
               props = {
                 style: {

@@ -16,7 +16,6 @@ module View
       needs :tile_selector, default: nil, store: true
       needs :selected_route, default: nil, store: true
       needs :selected_company, default: nil, store: true
-      needs :selected_combos, default: nil, store: true
       needs :opacity, default: nil
       needs :show_starting_map, default: false, store: true
       needs :routes, default: [], store: true
@@ -42,8 +41,6 @@ module View
 
         step = @game.round.active_step(@selected_company)
         current_entity = @selected_company || step&.current_entity
-        combo_entities = (@selected_combos || []).map { |id| @game.company_by_id(id) }
-        current_entities = [current_entity, *combo_entities]
         actions = step&.actions(current_entity) || []
 
         unless (laid_hexes = @historical_laid_hexes)
@@ -57,11 +54,7 @@ module View
         routes = @historical_routes if routes.none?
 
         @hexes.map! do |hex|
-          clickable = if @show_starting_map
-                        false
-                      else
-                        step&.available_hex(combo_entities.empty? ? current_entity : current_entities, hex)
-                      end
+          clickable = @show_starting_map ? false : step&.available_hex(current_entity, hex)
           opacity = clickable ? 1.0 : 0.5
           h(
             Hex,
@@ -91,7 +84,7 @@ module View
             elsif @tile_selector.hex.tile != @tile_selector.tile
               h(TileConfirmation, zoom: map_zoom)
             else
-              tiles = step.upgradeable_tiles(current_entities, @tile_selector.hex)
+              tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
               all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile, selected_company: @selected_company)
               phase_colors = step.potential_tile_colors(current_entity, @tile_selector.hex)
               select_tiles = all_upgrades.map do |tile|

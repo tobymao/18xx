@@ -56,11 +56,7 @@ module Engine
             @game.after_lay_tile(action.hex, old_tile, action.tile)
           end
 
-          def available_hex(entities, hex)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
-            entity, *_combo_entities = entities
-
+          def available_hex(entity, hex)
             connected = hex_neighbors(entity, hex)
             return nil unless connected
 

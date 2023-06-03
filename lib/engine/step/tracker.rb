@@ -86,12 +86,6 @@ module Engine
 
       def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
         entity ||= action.entity
-        entities = [entity, *action.combo_entities]
-
-        # games that support combining private company abilities will expect an
-        # array of entities, all others a single entity
-        entity_or_entities = action.combo_entities.empty? ? entity : entities
-
         spender ||= entity
         tile = action.tile
         hex = action.hex
@@ -108,7 +102,7 @@ module Engine
         unless @game.upgrades_to?(old_tile, tile, entity.company?, selected_company: (entity.company? && entity) || nil)
           raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"
         end
-        if !@game.loading && !legal_tile_rotation?(entity_or_entities, hex, tile)
+        if !@game.loading && !legal_tile_rotation?(entity, hex, tile)
           raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
         end
 
@@ -116,7 +110,7 @@ module Engine
 
         hex.lay(tile)
 
-        # Impassable hex is no longer impassable, update neighbors
+        # Impassable hex is no longer impassible, update neighbors
         if @game.class::IMPASSABLE_HEX_COLORS.include?(old_tile.color)
           hex.all_neighbors.each do |direction, neighbor|
             next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
@@ -132,34 +126,32 @@ module Engine
         discount = 0
         teleport = false
         ability_found = false
-        discount_abilities = []
+        discount_ability = nil
 
-        entities.each do |entity_|
-          abilities(entity_) do |ability|
-            next if ability.owner != entity_
-            next if !ability.hexes.empty? && !ability.hexes.include?(hex.id)
-            next if !ability.tiles.empty? && !ability.tiles.include?(tile.name)
+        abilities(entity) do |ability|
+          next if ability.owner != entity
+          next if !ability.hexes.empty? && !ability.hexes.include?(hex.id)
+          next if !ability.tiles.empty? && !ability.tiles.include?(tile.name)
 
-            ability_found = true
-            if ability.type == :teleport
-              teleport ||= true
-              free = true if ability.free_tile_lay
-              if ability.cost&.positive?
-                spender.spend(ability.cost, @game.bank)
-                @log << "#{spender.name} (#{ability.owner.sym}) spends #{@game.format_currency(ability.cost)} "\
-                        "and teleports to #{hex.name} (#{hex.location_name})"
-              end
-            else
-              raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
-                hex.name != spender.coordinates &&
-                !@game.loading &&
-                !graph.reachable_hexes(spender)[hex]
-
-              free ||= ability.free
-              discount += ability.discount
-              discount_abilities << ability if discount&.positive?
-              extra_cost += ability.cost
+          ability_found = true
+          if ability.type == :teleport
+            teleport = true
+            free = true if ability.free_tile_lay
+            if ability.cost&.positive?
+              spender.spend(ability.cost, @game.bank)
+              @log << "#{spender.name} (#{ability.owner.sym}) spends #{@game.format_currency(ability.cost)} "\
+                      "and teleports to #{hex.name} (#{hex.location_name})"
             end
+          else
+            raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
+              hex.name != spender.coordinates &&
+              !@game.loading &&
+              !graph.reachable_hexes(spender)[hex]
+
+            free = ability.free
+            discount = ability.discount
+            discount_ability = ability if discount&.positive?
+            extra_cost += ability.cost
           end
         end
 
@@ -173,24 +165,24 @@ module Engine
         cost =
           if free
             # call for the side effect of deleting a completed border cost
-            remove_border_calculate_cost!(tile, entity_or_entities, spender)
+            remove_border_calculate_cost!(tile, entity, spender)
 
             extra_cost
           else
-            border, border_types = remove_border_calculate_cost!(tile, entity_or_entities, spender)
+            border, border_types = remove_border_calculate_cost!(tile, entity, spender)
             terrain += border_types if border.positive?
 
             base_cost = @game.upgrade_cost(old_tile, hex, entity, spender) + border + extra_cost
 
-            unless discount_abilities.empty?
-              discount = [base_cost, discount].min
-              @game.log_cost_discount(spender, discount_abilities, discount)
+            if discount_ability
+              discount = [base_cost, discount_ability.discount].min
+              @game.log_cost_discount(spender, discount_ability, discount)
             end
 
             @game.tile_cost_with_discount(tile, hex, entity, spender, base_cost - discount)
           end
 
-        pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, extra_cost)
+        pay_tile_cost!(entity, tile, rotation, hex, spender, cost, extra_cost)
 
         update_token!(action, entity, tile, old_tile)
 
@@ -227,16 +219,12 @@ module Engine
         @game.update_tile_lists(tile, old_tile)
       end
 
-      def pay_tile_cost!(entities, tile, rotation, hex, spender, cost, _extra_cost)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
-        entity, *_combo_entities = entities
-
+      def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
         try_take_loan(spender, cost)
         spender.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{spender.name}"\
-                "#{spender == entity || !entity.company? ? '' : " (#{entities.map(&:sym).join('+')})"}"\
+                "#{spender == entity || !entity.company? ? '' : " (#{entity.sym})"}"\
                 "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
                 " lays tile ##{tile.name}"\
                 " with rotation #{rotation} on #{hex.name}"\
@@ -263,11 +251,7 @@ module Engine
         end
       end
 
-      def remove_border_calculate_cost!(tile, entities, spender)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
-        entity, *_combo_entities = entities
-
+      def remove_border_calculate_cost!(tile, entity, spender)
         hex = tile.hex
         types = []
 
@@ -350,11 +334,7 @@ module Engine
         @game.phase.tiles.dup
       end
 
-      def potential_tiles(entities, hex)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
-        entity, *_combo_entities = entities
-
+      def potential_tiles(entity, hex)
         colors = potential_tile_colors(entity, hex)
         @game.tiles
           .select { |tile| @game.tile_valid_for_phase?(tile, hex: hex, phase_color_cache: colors) }
@@ -363,15 +343,11 @@ module Engine
           .reject(&:blocks_lay)
       end
 
-      def upgradeable_tiles(entities, ui_hex)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
-        _entity, *_combo_entities = entities
-
+      def upgradeable_tiles(entity, ui_hex)
         hex = @game.hex_by_id(ui_hex.id) # hex instance from UI can go stale
-        tiles = potential_tiles(entities, hex).map do |tile|
+        tiles = potential_tiles(entity, hex).map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute
-          tile.legal_rotations = legal_tile_rotations(entities, hex, tile)
+          tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
           next if tile.legal_rotations.empty?
 
           tile.rotate! # rotate it to the first legal rotation
@@ -393,11 +369,7 @@ module Engine
         end
       end
 
-      def legal_tile_rotation?(entities, hex, tile)
-        # entities is sometimes an array for combining private company abilities
-        entities = Array(entities)
-        entity, *_combo_entities = entities
-
+      def legal_tile_rotation?(entity, hex, tile)
         return false unless @game.legal_tile_rotation?(entity, hex, tile)
 
         old_paths = hex.tile.paths
@@ -420,10 +392,10 @@ module Engine
           (!multi_city_upgrade || old_ctedges.all? { |oldct| new_ctedges.one? { |newct| (oldct & newct) == oldct } })
       end
 
-      def legal_tile_rotations(entities, hex, tile)
+      def legal_tile_rotations(entity, hex, tile)
         Engine::Tile::ALL_EDGES.select do |rotation|
           tile.rotate!(rotation)
-          legal_tile_rotation?(entities, hex, tile)
+          legal_tile_rotation?(entity, hex, tile)
         end
       end
 

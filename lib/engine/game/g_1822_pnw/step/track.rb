@@ -7,11 +7,7 @@ module Engine
     module G1822PNW
       module Step
         class Track < Engine::Game::G1822::Step::Track
-          def available_hex(entities, hex)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
-            entity, *_combo_entities = entities
-
+          def available_hex(entity, hex)
             return nil if @game.tokencity?(hex) && (!get_tile_lay(entity) & [:upgrade])
             return true if @game.can_hold_builder_cubes?(hex.tile) && @game.graph.connected_hexes(entity)[hex]
             return nil if hex.tile.icons.any? { |i| i.name.start_with?('mountain') }
@@ -27,11 +23,7 @@ module Engine
             tiles
           end
 
-          def legal_tile_rotation?(entities, hex, tile)
-            # entities is sometimes an array for combining private company abilities
-            entities = Array(entities)
-            _entity, *_combo_entities = entities
-
+          def legal_tile_rotation?(entity, hex, tile)
             return true if hex.tile.name == tile.name && hex.tile.rotation == tile.rotation
             return true if tile == @game.cube_tile
             return true if @game.legal_city_and_town_tile(hex, tile)
