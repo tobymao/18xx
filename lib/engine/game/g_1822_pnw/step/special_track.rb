@@ -20,7 +20,11 @@ module Engine
             @round.num_laid_portage = 0
           end
 
-          def available_hex(entity, hex)
+          def available_hex(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
+            entity, *_combo_entities = entities
+
             if @game.port_company?(entity)
               return nil unless abilities(entity).hexes.include?(hex.id)
               return [hex.tile.exits] if hex.tile.color == :blue && !PORT_TILES.include?(hex.tile.id)
@@ -38,7 +42,11 @@ module Engine
             super
           end
 
-          def potential_tiles(entity, hex)
+          def potential_tiles(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
+            entity, *_combo_entities = entities
+
             if @game.port_company?(entity)
               return [] if PORT_TILES.include?(hex.tile.id)
 
@@ -58,7 +66,11 @@ module Engine
             tiles
           end
 
-          def legal_tile_rotation?(entity, hex, tile)
+          def legal_tile_rotation?(entity_or_entities, hex, tile)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
+            entity, *_combo_entities = entities
+
             return hex.tile.paths.any? { |p| p.exits == tile.exits } if @game.port_company?(entity)
             return true if tile == @game.cube_tile
             return true if @game.legal_city_and_town_tile(hex, tile)
