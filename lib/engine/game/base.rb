@@ -1925,13 +1925,17 @@ module Engine
 
       # Returns list of companies which can combo with the given company.
       # Currently only combos with :tile_lay abilities are supported.
-      def ability_combo_entities(company)
-        abilities(company, :tile_lay).combo_entities.filter_map do |id|
-          company_ = company_by_id(id)
-          next unless company_.owner == company.corporation
-          next unless abilities(company_, :tile_lay)
+      def ability_combo_entities(entity)
+        return [] unless entity.company?
 
-          company_
+        Array(abilities(entity, :tile_lay)).each_with_object([]) do |ability, companies|
+          ability.combo_entities.each do |id|
+            company = company_by_id(id)
+            next unless company.owner == entity.corporation
+            next unless abilities(company, :tile_lay)
+
+            companies << company
+          end
         end
       end
 
