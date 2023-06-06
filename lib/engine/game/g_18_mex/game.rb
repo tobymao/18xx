@@ -695,8 +695,8 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # Copper Canyon uses a special orange color
-          return true if from.name == 'F5' && to.name == '470'
+          # Copper Canyon cannot be upgraded
+          return false if from.name == '470'
 
           super
         end
