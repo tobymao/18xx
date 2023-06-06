@@ -384,9 +384,15 @@ module View
           },
         }
 
-        player_rows = entities_rows(@game.players, true)
-
-        other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation && !c.treasury_as_holding })
+        if @game.corporations_can_ipo?
+          player_rows = entities_rows(@game.players + @game.operating_order.reject do |c|
+                                                        c == @corporation && !c.treasury_as_holding
+                                                      end.sort, true)
+          other_corp_rows = []
+        else
+          player_rows = entities_rows(@game.players, true)
+          other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation && !c.treasury_as_holding })
+        end
 
         other_minor_rows = entities_rows(@game.minors) if @game.class::MINORS_CAN_OWN_SHARES
 

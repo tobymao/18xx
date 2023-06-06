@@ -58,10 +58,13 @@ module View
           elsif @step.respond_to?(:cash_crisis?) && @step.cash_crisis?
             left << h(CashCrisis)
             loans_rendered = true if (%w[take_loan payoff_loan] & @current_actions).any?
-          elsif @current_actions.include?('buy_shares') || @current_actions.include?('sell_shares')
+          elsif @current_actions.include?('buy_shares') || @current_actions.include?('sell_shares') ||
+            @current_actions.include?('ipo')
             if @step.respond_to?(:price_protection) && (price_protection = @step.price_protection)
               left << h(Corporation, corporation: price_protection.corporation)
               left << h(BuySellShares, corporation: price_protection.corporation)
+            elsif @step.respond_to?(:can_ipo_any?)
+              left << h(CorporateBuySellShares)
             else
               left << h(IssueShares)
             end

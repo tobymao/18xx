@@ -318,7 +318,7 @@ module Engine
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
 
-      entities = @game.players.reject(&:bankrupt)
+      entities = @game.possible_presidents
       a = entities.find_index(player_a)
       b = entities.find_index(player_b)
       a < b ? b - a : b - (a - entities.size)

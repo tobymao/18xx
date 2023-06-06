@@ -50,7 +50,7 @@ module View
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
           *@game.unowned_purchasable_companies(@current_entity).map { |company| h(Company, company: company) },
-          *@game.corporations.select(&:receivership?).map { |c| h(Corporation, corporation: c) },
+          *@game.receivership_corporations.map { |c| h(Corporation, corporation: c) },
           *extra_bank,
         ].compact)
 
