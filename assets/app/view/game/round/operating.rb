@@ -63,7 +63,7 @@ module View
             if @step.respond_to?(:price_protection) && (price_protection = @step.price_protection)
               left << h(Corporation, corporation: price_protection.corporation)
               left << h(BuySellShares, corporation: price_protection.corporation)
-            elsif @step.respond_to?(:can_ipo_any?)
+            elsif @game.corporations_can_ipo?
               left << h(CorporateBuySellShares)
             else
               left << h(IssueShares)
