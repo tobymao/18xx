@@ -1,8 +1,12 @@
 Fixes #[PUT_ISSUE_NUMBER_HERE]
 
-> Please minimize the amount of changes to shared `lib/engine` code, if possible
+<!--
 
-> If you are implementing a new game, please break up the changes into multiple PRs for ease of review.
+Please minimize the amount of changes to shared `lib/engine` code, if possible
+
+If you are implementing a new game, please break up the changes into multiple PRs for ease of review.
+
+-->
 
 ### Before clicking "Create"
 

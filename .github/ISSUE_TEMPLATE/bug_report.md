@@ -6,13 +6,17 @@ labels: needs triage
 assignees: ''
 
 ---
-DO NOT PASTE THE GAME JSON! Please use [gist](https://gist.github.com/) instead.
 
+<!--
 Please fill out the bug report title with the game name and description
 
 e.g. "[18Chesapeake] Incorrect revenue for route from Baltimore to DC"
+-->
 
 **What's your Game ID?**
+
+<!--
+DO NOT PASTE THE GAME JSON! Please use [gist](https://gist.github.com/) instead.
 
 If your game is "Multiplayer", provide the link to the game. Copy the link from your browser which will look something like `https://18xx.games/game/31337`
 
@@ -22,8 +26,11 @@ If your game is "Hotseat", provide a link to your raw game data by using the `To
 
 Paste that data [into a github gist](https://gist.github.com/) and share the resulting link which will look something like `https://gist.github.com/[your_name]/[some_letters]`.
 
+-->
+
 **How to Reproduce the Bug?**
 
+<!--
 What steps cause the unexpected behavior?
 
 e.g.
@@ -33,9 +40,15 @@ e.g.
 
 Please include screenshots (you can drag and drop or upload them into this issue)
 
+-->
+
 **Which Browser / Platform?**
+
+<!--
 - Browser Version
   - On Chrome, see [chrome://version](chrome://version)
   - On Firefox, see [about:support](about:support)
   - On Safari, see [these methods](https://www.lifewire.com/check-the-version-number-of-safari-446563)
 - Platform (Mobile, Tablet, Desktop)
+
+-->

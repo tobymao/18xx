@@ -154,9 +154,9 @@ module Engine
             corporation = company.owner
             corporation_hex = corporation.tokens.first.hex
             hex_name = "#{corporation_hex.name} (#{corporation_hex.location_name})"
-            if @game.active_metropolitan_hexes.include?(corporation_hex)
+            if @game.active_metropolis_hexes.include?(corporation_hex)
               @game.log << "#{hex_name} is already a Metropolis"
-            elsif !@game.potential_metropolitan_hexes.include?(corporation_hex)
+            elsif !@game.potential_metropolis_hexes.include?(corporation_hex)
               @game.log << "#{hex_name} is not an unselected Metropolis and cannot become a Metroplis"
             elsif corporation_hex.tile.color != :white
               @game.log << "#{hex_name} has already been improved and can no longer become a Metropolis"
@@ -164,6 +164,7 @@ module Engine
               @game.log << "#{hex_name} becomes a Metropolis"
               @game.convert_potential_metro(corporation_hex)
             end
+            @game.remove_unused_metropolis_tiles
             company.close!
           end
 

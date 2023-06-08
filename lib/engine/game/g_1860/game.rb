@@ -986,7 +986,7 @@ module Engine
         end
 
         def check_other(route)
-          check_hex_reentry(route)
+          check_hex_reentry(route) unless @optional_rules&.include?(:re_enter_hexes)
           check_home_token(current_entity, route.routes) unless route.routes.empty?
           check_intersection(route.routes) unless route.routes.empty?
         end

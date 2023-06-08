@@ -29,7 +29,11 @@ module Engine
           super
         end
 
-        def legal_tile_rotation?(entity, hex, tile)
+        def legal_tile_rotation?(entity_or_entities, hex, tile)
+          # entity_or_entities is an array when combining private company abilities
+          entities = Array(entity_or_entities)
+          entity, *_combo_entities = entities
+
           # We will remove a town from the white S tile, this meaning we will not follow the normal path upgrade rules
           if hex.name == @game.class::UPGRADABLE_S_HEX_NAME &&
             tile.name == @game.class::UPGRADABLE_S_YELLOW_CITY_TILE &&
@@ -41,7 +45,11 @@ module Engine
           super(operator, hex, tile)
         end
 
-        def potential_tiles(entity, hex)
+        def potential_tiles(entity_or_entities, hex)
+          # entity_or_entities is an array when combining private company abilities
+          entities = Array(entity_or_entities)
+          entity, *_combo_entities = entities
+
           colors = if entity.corporation? && entity.type == :minor &&
             @game.phase.status.include?('minors_green_upgrade')
                      @game.class::MINOR_GREEN_UPGRADE
@@ -55,7 +63,11 @@ module Engine
                .reject(&:blocks_lay)
         end
 
-        def remove_border_calculate_cost!(tile, entity, spender)
+        def remove_border_calculate_cost!(tile, entity_or_entities, spender)
+          # entity_or_entities is an array when combining private company abilities
+          entities = Array(entity_or_entities)
+          entity, *_combo_entities = entities
+
           hex = tile.hex
           types = []
           total_cost = tile.borders.dup.sum do |border|
@@ -70,14 +82,15 @@ module Engine
             cost - border_cost_discount(entity, spender, border, cost, hex)
           end
 
-          # If we use the Glasgow and South-Western Railway private, it removes the border cost of one estuary crossing
-          if entity.id == @game.class::COMPANY_GSWR
+          # P10 Glasgow and South-Western Railway private removes the border
+          # cost of one estuary crossing
+          if entities.any? { |e| e.id == @game.class::COMPANY_GSWR }
             raise GameError, 'Must lay tile with one path over an estuary crossing' if total_cost.zero?
 
             total_cost -= @game.class::COMPANY_GSWR_DISCOUNT
           end
 
-          # If we use the Humber Suspension Bridge Company private, it must point into a estuary crossing
+          # P21 Humber Suspension Bridge Company private must point into a estuary crossing
           if entity.id == @game.class::COMPANY_HSBC && total_cost.zero?
             raise GameError, 'Must lay tile with one path over the Hull / Grimsby estuary'
           end
