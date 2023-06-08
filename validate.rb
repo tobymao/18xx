@@ -21,7 +21,7 @@ def run_game(game, actions = nil, strict: false)
   time = Time.now
   engine = Engine::Game.load(game, strict: strict)
   begin
-    engine.maybe_raise!    
+    engine.maybe_raise!
 
     time = Time.now - time
     $total_time += time
@@ -40,14 +40,14 @@ def run_game(game, actions = nil, strict: false)
   data
 end
 
-def validate_all(*titles, game_ids: nil, strict: false)
+def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finished])
   $count = 0
   $total = 0
   $total_time = 0
   page = []
   data = {}
 
-  where_args = {Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished]}
+  where_args = {Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: status}
   where_args[:title] = titles if titles.any?
   where_args[:id] = game_ids if game_ids
 

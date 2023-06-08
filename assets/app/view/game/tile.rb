@@ -74,7 +74,9 @@ module View
         children = []
 
         render_revenue = should_render_revenue?
-        children << render_tile_part(Part::Track, routes: @routes) if !@tile.paths.empty? || !@tile.stubs.empty?
+        if !@tile.paths.empty? || !@tile.stubs.empty? || !@tile.future_paths.empty?
+          children << render_tile_part(Part::Track, routes: @routes)
+        end
         children << render_tile_part(Part::Cities, show_revenue: !render_revenue) unless @tile.cities.empty?
 
         children << render_tile_part(Part::Towns, routes: @routes, show_revenue: !render_revenue) unless @tile.towns.empty?

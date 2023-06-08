@@ -23,26 +23,21 @@ module Engine
         PLAYER_RANGE = [3, 5].freeze
         OPTIONAL_RULES = [
           {
-            sym: :one_less_l,
-            short_name: 'One less L/2 train',
-            desc: 'Game starts with one less L/2 train (Playtest Trial)',
+            sym: :remove_two_ls,
+            short_name: 'Remove two L/2 trains',
           },
           {
-            sym: :two_less_ls,
-            short_name: 'Two less L/2 trains',
-            desc: 'Game starts with two less L/2 trains.  Takes priority over earlier options. (Playtest Trial)',
-          },
-          {
-            sym: :three_less_ls,
-            short_name: 'Three less L/2 trains',
-            desc: 'Game starts with three less L/2 trains.  Takes priority over earlier options. (Playtest Trial)',
-          },
-          {
-            sym: :four_less_ls,
-            short_name: 'Four less L/2 trains',
-            desc: 'Game starts with four less L/2 trains.  Takes priority over earlier options. (Playtest Trial)',
+            sym: :remove_three_ls,
+            short_name: 'Remove three L/2 trains',
           },
         ].freeze
+
+        def self.check_options(options, _min_players, _max_players)
+          optional_rules = (options || []).map(&:to_sym)
+          return if !optional_rules.include?(:remove_two_ls) || !optional_rules.include?(:remove_three_ls)
+
+          { error: 'Cannot use both L/2 Train Roster Adjustment Variants' }
+        end
       end
     end
   end

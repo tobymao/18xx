@@ -85,7 +85,7 @@ module View
       end
 
       CROSSHATCH_TYPES = %i[par_overlap convert_range].freeze
-      BORDER_TYPES = %i[max_price].freeze
+      BORDER_TYPES = %i[max_price max_price_1].freeze
 
       def cell_style(box_style, types)
         normal_types = types.reject { |t| BORDER_TYPES.include?(t) }
@@ -103,7 +103,7 @@ module View
 
         unless (types & BORDER_TYPES).empty?
           style[:borderRightWidth] = "#{BORDER * 4}px"
-          style[:borderRightColor] = COLOR_MAP[:purple]
+          style[:borderRightColor] = @game.class::STOCKMARKET_COLORS[(types & BORDER_TYPES).first]
           style[:width] = "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER) - 3}px"
         end
         if color == :black

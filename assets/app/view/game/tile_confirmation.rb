@@ -87,8 +87,10 @@ module View
           tile: tile,
           hex: hex,
           rotation: tile.rotation,
+          combo_entities: @selected_combos.map { |id| @game.company_by_id(id) },
         )
         store(:tile_selector, nil, skip: true)
+        store(:selected_combos, [], skip: true)
         process_action(action)
       end
     end

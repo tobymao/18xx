@@ -85,7 +85,6 @@ module Engine
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P9].freeze
-        PRIVATE_CLOSE_AFTER_PASS = %w[P11].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
 
         IMPASSABLE_HEX_COLORS = %i[gray red blue].freeze
@@ -568,6 +567,14 @@ module Engine
         def setup_game_specific
           setup_regional_payout_count
           setup_tokencity_tiles
+        end
+
+        def setup_optional_rules
+          if @optional_rules&.include?(:remove_three_ls)
+            remove_l_trains(3)
+          elsif @optional_rules&.include?(:remove_two_ls)
+            remove_l_trains(2)
+          end
         end
 
         def remove_l_trains(num_trains)
