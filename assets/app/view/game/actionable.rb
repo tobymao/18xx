@@ -16,6 +16,7 @@ module View
         base.needs :user, store: true, default: nil
         base.needs :tile_selector, default: nil, store: true
         base.needs :selected_company, default: nil, store: true
+        base.needs :selected_combos, default: [], store: true
         base.needs :selected_corporation, default: nil, store: true
         base.needs :app_route, default: nil, store: true
         base.needs :round_history, default: nil, store: true
@@ -155,6 +156,7 @@ module View
 
       def clear_ui_state
         store(:selected_company, nil, skip: true)
+        store(:selected_combos, [], skip: true)
         store(:selected_corporation, nil, skip: true)
         store(:tile_selector, nil, skip: true)
         store(:selected_action_id, nil, skip: true)

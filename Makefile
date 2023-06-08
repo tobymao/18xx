@@ -52,3 +52,9 @@ prod_deploy : clean
 	$(CONTAINER_COMPOSE) run rack rake precompile && \
 		rsync --verbose --checksum public/assets/*.js public/assets/*.js.gz public/assets/version.json deploy@18xx:~/18xx/public/assets/ && \
 		ssh -l deploy 18xx "source ~/.profile && cd ~/18xx/ && git pull && make prod_rack_up_b_d"
+
+style:
+	$(CONTAINER_COMPOSE) exec rack rubocop -A
+
+test:
+	$(CONTAINER_COMPOSE) exec rack rake

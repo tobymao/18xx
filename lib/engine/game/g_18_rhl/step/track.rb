@@ -21,6 +21,7 @@ module Engine
 
           def check_track_restrictions!(entity, old_tile, new_tile)
             return if FOUR_SPOKERS_TO.include?(new_tile.name)
+            return if @game.optional_promotion_tiles && old_tile.name == '929' && new_tile.name == '949'
 
             super
           end
