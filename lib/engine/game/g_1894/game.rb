@@ -258,12 +258,13 @@ module Engine
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
-        BROWN_CITY_14_UPGRADE_TILES = %w[X14 X15 36].freeze
+        BROWN_CITY_14_UPGRADE_TILES = %w[X18 X19 36].freeze
         GREEN_CITY_15_TILE = '15'
-        BROWN_CITY_15_UPGRADE_TILES = %w[X12 35 118].freeze
+        BROWN_CITY_15_UPGRADE_TILES = %w[X16 35 118].freeze
         GREEN_CITY_619_TILE = '619'
-        BROWN_CITY_619_UPGRADE_TILES = %w[X10 X11 X13].freeze
-        BROWN_CITY_TILES = %w[X10 X11 X12 X13 X14 X15 35 36 118].freeze
+        BROWN_CITY_619_UPGRADE_TILES = %w[X14 X15 X17].freeze
+        BROWN_CITY_TILES = %w[X14 X15 X16 X17 X18 X19 35 36 118].freeze
+        PARIS_TILES = %w[X1 X4 X5 X9 X10].freeze
 
         FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CFOR].freeze
         BELGIAN_REGULAR_CORPORATIONS = %w[AG Belge].freeze
@@ -347,9 +348,8 @@ module Engine
           @ferry_marker_ability =
             Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
           block_london
-
-          paris_tiles_names = %w[X1 X4 X5 X7 X8]
-          paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
+          
+          paris_tiles = @all_tiles.select { |t| PARIS_TILES.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
           @french_starting_corporation_id = FRENCH_REGULAR_CORPORATIONS.sort_by { rand }.take(1).first
