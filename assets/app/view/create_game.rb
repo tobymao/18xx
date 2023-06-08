@@ -392,6 +392,8 @@ module View
       return if !selected_game_or_variant && @mode != :json
 
       game_params = params
+      title = selected_game_or_variant.title
+      game_params[:max_players] = @max_p[title] if game_params[:max_players].to_i <= 0
       game_params[:seed] = game_params[:seed].to_i
       game_params[:seed] = nil if (game_params[:seed]).zero?
 
@@ -499,13 +501,12 @@ module View
         max_players = (val = max_players_elm&.value.to_i).zero? ? nil : val
         min_players = (val = min_players_elm&.value.to_i).zero? ? nil : val
       end
-
       if max_players
         max_players = [max_players, max_p].min
+        max_players = [max_players, min_p].max
         if selected_game_or_variant.respond_to?(:min_players)
           min_p = selected_game_or_variant.min_players(@optional_rules, max_players)
         end
-        max_players_elm&.value = max_players
       end
 
       if min_players
