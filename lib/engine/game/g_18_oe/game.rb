@@ -508,6 +508,12 @@ module Engine
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
         end
 
+        def value_for_dumpable(player, corporation)
+          return 0 if corporation.type == :regional
+
+          super
+        end
+
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
