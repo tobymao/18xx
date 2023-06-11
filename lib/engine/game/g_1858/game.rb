@@ -147,7 +147,7 @@ module Engine
               hex.neighbors.each do |edge, neighbor|
                 next unless home_hexes.include?(neighbor)
 
-                stub = Engine::Part::Stub.new(edge)
+                stub = Engine::Part::Stub.new(edge, :future)
                 tile.stubs << stub
                 stubs[minor] << { tile: tile, stub: stub }
               end
@@ -329,6 +329,19 @@ module Engine
         # Returns true if the hex is this private railway's home hex.
         def home_hex?(operator, hex)
           operator.coordinates.include?(hex.coordinates)
+        end
+
+        # Constent for a share purchase is only needed in one circumstance:
+        # - A private railway company is being exchanged for a share.
+        # - The share is from the corporation's treasury (not the market).
+        # - The private railway and corporation are controlled by different players.
+        def consenter_for_buy_shares(entity, bundle)
+          return unless entity.minor?
+          return unless bundle.share_price.nil?
+          return if entity.owner == bundle.corporation.owner
+          return unless bundle.shares.first.owner.corporation?
+
+          bundle.corporation.owner
         end
 
         def tile_lays(entity)

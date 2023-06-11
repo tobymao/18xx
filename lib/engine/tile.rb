@@ -15,7 +15,7 @@ module Engine
     include Config::Tile
 
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
-                  :name, :opposite, :reservations, :upgrades, :color, :future_label
+                  :name, :opposite, :reservations, :upgrades, :color, :future_label, :future_paths
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
                 :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden,
                 :hidden_blockers
@@ -170,7 +170,7 @@ module Engine
       when 'label'
         Part::Label.new(params)
       when 'upgrade'
-        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'])
+        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'], loc: params['loc'])
       when 'border'
         Part::Border.new(params['edge'], params['type'], params['cost'], params['color'])
       when 'junction'
@@ -179,7 +179,7 @@ module Engine
         junction
       when 'icon'
         Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'],
-                       large: params['large'])
+                       large: params['large'], loc: params['loc'])
       when 'stub'
         Part::Stub.new(params['edge'].to_i)
       when 'partition'
@@ -210,6 +210,7 @@ module Engine
       @rotation = rotation
       @cities = []
       @paths = []
+      @future_paths = []
       @stubs = []
       @partitions = []
       @towns = []
@@ -590,6 +591,10 @@ module Engine
       cities.sum(&:available_slots).positive?
     end
 
+    def hide
+      @hidden = true
+    end
+
     private
 
     def separate_parts
@@ -602,7 +607,11 @@ module Engine
         elsif part.label?
           @labels << part
         elsif part.path?
-          @paths << part
+          if part.track == :future
+            @future_paths << part
+          else
+            @paths << part
+          end
         elsif part.town?
           @towns << part
           @city_towns << part

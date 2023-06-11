@@ -35,6 +35,11 @@ module View
             width: 2,
             dash: '12',
           },
+          future: {
+            color: '#888888',
+            width: 6,
+            dash: '9 3',
+          },
         }.freeze
 
         # width here is added to track width
@@ -55,6 +60,11 @@ module View
             color: '#FFFFFF',
             width: 0,
             dash: '12',
+          },
+          future: {
+            color: '#00000000',
+            width: 0,
+            dash: '9 3',
           },
         }.freeze
 
@@ -91,7 +101,7 @@ module View
           # Array<Array<Path>>
           @routes_paths = @routes.map { |route| route.paths_for(@tile.paths) }
 
-          paths_and_stubs = @tile.paths + @tile.stubs
+          paths_and_stubs = @tile.paths + @tile.stubs + @tile.future_paths
           path_indexes = paths_and_stubs.to_h { |p| [p, indexes_for(p)] }
 
           sorted = paths_and_stubs
@@ -127,7 +137,7 @@ module View
             elsif path.offboard
               pass1 << h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use,
                                         border_props: border_props, **props)
-            elsif path.track == :thin
+            elsif path.track == :thin || path.track == :future
               pass1 << h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
                                         pass: 1, border_props: border_props, inner_props: inner_props, **props)
 

@@ -30,13 +30,13 @@ module Engine
             super
           end
 
-          def after_end_of_turn(_action)
-            @game.end_game! if trigger_game_end?
+          def after_end_of_turn(operator)
+            @game.end_game! if trigger_game_end?(operator)
           end
 
-          def trigger_game_end?
+          def trigger_game_end?(operator)
             round_num == @game.final_operating_rounds &&
-            @current_operator == @game.train_marker
+            operator == @game.train_marker
           end
         end
       end

@@ -146,6 +146,7 @@ module Engine
         repar: :gray,
         ignore_one_sale: :green,
         safe_par: :white,
+        max_price: :purple,
       }.freeze
 
       MIN_BID_INCREMENT = 5
@@ -383,6 +384,13 @@ module Engine
         optional_rules
       end
 
+      def check_optional_rules!
+        min_players = @players.size
+        max_players = @players.size
+        error_string = meta.check_options(@optional_rules, min_players, max_players)&.[](:error)
+        raise OptionError, error_string if error_string
+      end
+
       def setup_optional_rules; end
 
       def log_optional_rules
@@ -567,8 +575,9 @@ module Engine
 
         init_company_abilities
 
-        setup_optional_rules
+        check_optional_rules!
         log_optional_rules
+        setup_optional_rules
         setup
         @round.setup
 
@@ -1208,6 +1217,12 @@ module Engine
         end
       end
 
+      # A hook to allow a game to request a consent check for a share exchange
+      # or purchase. If consent is needed then this method should return the
+      # player that needs to consent to this action. Returning nil or false
+      # means that consent is not required.
+      def consenter_for_buy_shares(_entity, _bundle); end
+
       def can_run_route?(entity)
         graph_for_entity(entity).route_info(entity)&.dig(:route_available)
       end
@@ -1568,12 +1583,12 @@ module Engine
         cost - discount
       end
 
-      def log_cost_discount(spender, ability, discount)
+      def log_cost_discount(spender, abilities, discount)
         return unless discount.positive?
 
         @log << "#{spender.name} receives a discount of "\
                 "#{format_currency(discount)} from "\
-                "#{ability.owner.name}"
+                "#{Array(abilities).map { |a| a.owner.name }.join(', ')}"
       end
 
       def declare_bankrupt(player)
@@ -1906,6 +1921,38 @@ module Engine
         return active_abilities.first if active_abilities.one?
 
         active_abilities
+      end
+
+      # Returns list of companies which can combo with the given company.
+      # Currently only combos with :tile_lay abilities are supported.
+      def ability_combo_entities(entity)
+        return [] unless entity.company?
+
+        Array(abilities(entity, :tile_lay)).each_with_object([]) do |ability, companies|
+          ability.combo_entities.each do |id|
+            company = company_by_id(id)
+            next unless company.owner == entity.corporation
+            next unless abilities(company, :tile_lay)
+
+            companies << company
+          end
+        end
+      end
+
+      def valid_combos?(companies)
+        return true if companies.size < 2
+
+        # some of the companies are just IDs when passed from the abilities view
+        companies = companies.map do |company|
+          company.is_a?(String) ? company_by_id(company) : company
+        end
+
+        # for each company, check that it combos with the companies after it in
+        # the array
+        companies.to_enum.with_index.all? do |company, index|
+          combos = ability_combo_entities(company)
+          companies[(index + 1)..].all? { |c| combos.include?(c) }
+        end
       end
 
       def entity_can_use_company?(_entity, _company)
@@ -2902,9 +2949,9 @@ module Engine
           when 'owning_corp_or_turn'
             @round.operating? && @round.current_operator == ability.corporation
           when 'owning_player_or_turn'
-            @round.operating? && @round.current_operator.player == ability.player
+            @round.operating? && @round.current_operator&.player == ability.player
           when 'owning_player_track'
-            @round.operating? && @round.current_operator.player == ability.player && current_step.is_a?(Step::Track)
+            @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Track)
           when 'owning_player_sr_turn'
             @round.stock? && @round.current_entity == ability.player
           when 'or_between_turns'

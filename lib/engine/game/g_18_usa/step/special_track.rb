@@ -55,7 +55,7 @@ module Engine
           end
 
           def p16_available_hex(_entity, hex)
-            %i[green brown].include?(hex.tile.color) && !@game.active_metropolitan_hexes.include?(hex)
+            %i[green brown].include?(hex.tile.color) && !@game.active_metropolis_hexes.include?(hex)
           end
 
           def p26_available_hex(entity, hex)
@@ -65,7 +65,7 @@ module Engine
           def p27_available_hex(_entity, hex)
             hex.tile.color == :white &&
               (hex.tile.cities.empty? || hex.tile.cities.none?(&:tokened?)) &&
-              (hex.neighbors.values & @game.active_metropolitan_hexes).empty?
+              (hex.neighbors.values & @game.active_metropolis_hexes).empty?
           end
 
           def legal_tile_rotation?(entity, hex, tile)

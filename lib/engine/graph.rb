@@ -9,6 +9,9 @@ module Engine
       @connected_hexes = {}
       @connected_nodes = {}
       @connected_paths = {}
+      @connected_hexes_by_token = Hash.new { |h, k| h[k] = {} }
+      @connected_paths_by_token = Hash.new { |h, k| h[k] = {} }
+      @connected_nodes_by_token = Hash.new { |h, k| h[k] = {} }
       @reachable_hexes = {}
       @tokenable_cities = {}
       @routes = {}
@@ -17,12 +20,16 @@ module Engine
       @no_blocking = opts[:no_blocking] || false
       @skip_track = opts[:skip_track]
       @check_tokens = opts[:check_tokens]
+      @check_regions = opts[:check_regions]
     end
 
     def clear
       @connected_hexes.clear
       @connected_nodes.clear
       @connected_paths.clear
+      @connected_hexes_by_token.clear
+      @connected_nodes_by_token.clear
+      @connected_paths_by_token.clear
       @reachable_hexes.clear
       @tokenable_cities.clear
       @tokens.clear
@@ -92,9 +99,36 @@ module Engine
       @connected_paths[corporation]
     end
 
+    def connected_hexes_by_token(corporation, token)
+      compute_by_token(corporation) unless @connected_hexes_by_token[corporation][token]
+      @connected_hexes_by_token[corporation][token]
+    end
+
+    def connected_nodes_by_token(corporation, token)
+      compute_by_token(corporation) unless @connected_nodes_by_token[corporation][token]
+      @connected_nodes_by_token[corporation][token]
+    end
+
+    def connected_paths_by_token(corporation, token)
+      compute_by_token(corporation) unless @connected_paths_by_token[corporation][token]
+      @connected_paths_by_token[corporation][token]
+    end
+
     def reachable_hexes(corporation)
       compute(corporation) unless @reachable_hexes[corporation]
       @reachable_hexes[corporation]
+    end
+
+    def compute_by_token(corporation)
+      compute(corporation)
+      @game.hexes.each do |hex|
+        hex.tile.cities.each do |city|
+          next unless @game.city_tokened_by?(city, corporation)
+          next if @check_tokens && @game.skip_token?(self, corporation, city)
+
+          compute(corporation, one_token: city)
+        end
+      end
     end
 
     # Called from #compute when @home_is_token is true.
@@ -135,13 +169,15 @@ module Engine
       nodes
     end
 
-    def compute(corporation, routes_only: false)
+    def compute(corporation, routes_only: false, one_token: nil)
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
       paths = {}
 
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
+          next if one_token && (city != one_token)
+
           next unless @game.city_tokened_by?(city, corporation)
           next if @check_tokens && @game.skip_token?(self, corporation, city)
 
@@ -184,7 +220,7 @@ module Engine
 
       routes = @routes[corporation] || {}
       walk_corporation = @no_blocking ? nil : corporation
-      skip_paths = @game.graph_skip_paths(corporation)
+      skip_paths = @check_regions ? @game.graph_border_paths(corporation) : @game.graph_skip_paths(corporation)
 
       tokens.keys.each do |node|
         return nil if routes[:route_train_purchase] && routes_only
@@ -208,7 +244,7 @@ module Engine
 
           path.exits.each do |edge|
             hexes[hex][edge] = true
-            hexes[hex.neighbors[edge]][hex.invert(edge)] = true
+            hexes[hex.neighbors[edge]][hex.invert(edge)] = true if !@check_regions || !@game.region_border?(hex, edge)
           end
         end
 
@@ -241,11 +277,17 @@ module Engine
       # connected_nodes - hexes in which this corporation can token
       # reachable_hexes - hexes in which this corporation can run
 
-      @routes[corporation] = routes
-      @connected_hexes[corporation] = hexes
-      @connected_nodes[corporation] = nodes
-      @connected_paths[corporation] = paths
-      @reachable_hexes[corporation] = paths.to_h { |path, _| [path.hex, true] }
+      if one_token
+        @connected_hexes_by_token[corporation][one_token] = hexes
+        @connected_nodes_by_token[corporation][one_token] = nodes
+        @connected_paths_by_token[corporation][one_token] = paths
+      else
+        @routes[corporation] = routes
+        @connected_hexes[corporation] = hexes
+        @connected_nodes[corporation] = nodes
+        @connected_paths[corporation] = paths
+        @reachable_hexes[corporation] = paths.to_h { |path, _| [path.hex, true] }
+      end
     end
   end
 end

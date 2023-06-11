@@ -22,11 +22,19 @@ module Engine
             # All trains start out available
             depot_trains = @depot.upcoming.group_by(&:name).map { |_k, v| v.first }
             other_trains = @depot.other_trains(entity)
-
-            depot_trains.reject! { |t| entity.cash < t.price }
+            depot_trains.reject! { |t| entity.cash < t.min_price(ability: train_discount_ability(entity)) }
             other_trains = [] if entity.cash < @game.class::TRAIN_PRICE_MIN
 
             depot_trains + other_trains
+          end
+
+          def train_discount_ability(entity)
+            all_abilities = []
+            entity.owner.companies.each do |c|
+              ability = c.all_abilities.select { |a| a.type == :train_discount }
+              all_abilities.concat(ability) if ability
+            end
+            all_abilities.empty? ? nil : all_abilities
           end
         end
       end

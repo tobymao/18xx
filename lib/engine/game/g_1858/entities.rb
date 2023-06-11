@@ -634,7 +634,7 @@ module Engine
             logo: '1858/PL',
             coordinates: %w[B9 B11],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[B9 B11] },
+              { type: 'blocks_hexes', hexes: %w[B9 B11], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -691,7 +691,7 @@ module Engine
             logo: '1858/LC',
             coordinates: %w[A14 B13],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[B13] },
+              { type: 'blocks_hexes', hexes: %w[B13], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -711,7 +711,7 @@ module Engine
             coordinates: %w[G8 H11 G10],
             city: [0, 1],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[G8 G10] },
+              { type: 'blocks_hexes', hexes: %w[G8 G10], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -730,7 +730,7 @@ module Engine
             logo: '1858/MZ',
             coordinates: %w[I10 J9 K8 L7],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[I10 J9 K8] },
+              { type: 'blocks_hexes', hexes: %w[I10 J9 K8], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -749,7 +749,7 @@ module Engine
             logo: '1858/CS',
             coordinates: %w[E18 F17 G18],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[E18 F17 G18] },
+              { type: 'blocks_hexes', hexes: %w[E18 F17 G18], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -768,7 +768,7 @@ module Engine
             logo: '1858/SJC',
             coordinates: %w[E18 E20],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[E18 E20] },
+              { type: 'blocks_hexes', hexes: %w[E18 E20], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -787,7 +787,7 @@ module Engine
             logo: '1858/ZP',
             coordinates: %w[K4 K6 L7],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[K4 K6] },
+              { type: 'blocks_hexes', hexes: %w[K4 K6], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -825,7 +825,7 @@ module Engine
             logo: '1858/CM',
             coordinates: %w[G18 G20],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[G18 G20] },
+              { type: 'blocks_hexes', hexes: %w[G18 G20], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -844,7 +844,7 @@ module Engine
             logo: '1858/MC',
             coordinates: %w[K18 L19],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[K18] },
+              { type: 'blocks_hexes', hexes: %w[K18], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -863,7 +863,7 @@ module Engine
             logo: '1858/AS',
             coordinates: %w[G4 H3],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[G4 H3] },
+              { type: 'blocks_hexes', hexes: %w[G4 H3], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -882,7 +882,7 @@ module Engine
             logo: '1858/BCR',
             coordinates: %w[D15 E14 F15],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[D15 E14 F15] },
+              { type: 'blocks_hexes', hexes: %w[D15 E14 F15], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -901,7 +901,7 @@ module Engine
             logo: '1858/SC',
             coordinates: %w[C2 C4],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[C2 C4] },
+              { type: 'blocks_hexes', hexes: %w[C2 C4], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -940,7 +940,7 @@ module Engine
             coordinates: %w[H11 D13 E12 F13 G12],
             city: 0,
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[D13 E12 F13 G12] },
+              { type: 'blocks_hexes', hexes: %w[D13 E12 F13 G12], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -959,7 +959,7 @@ module Engine
             logo: '1858/OV',
             coordinates: %w[B5 C4],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[B5 C4] },
+              { type: 'blocks_hexes', hexes: %w[B5 C4], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -978,7 +978,7 @@ module Engine
             logo: '1858/LG',
             coordinates: %w[F1 F3 F5],
             abilities: [
-              { type: 'blocks_hexes', hexes: %w[F3 F5] },
+              { type: 'blocks_hexes', hexes: %w[F3 F5], hidden: true },
               {
                 type: 'exchange',
                 owner_type: 'player',

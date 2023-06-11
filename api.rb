@@ -11,6 +11,7 @@ require 'json'
 require_relative 'models'
 require_rel './lib'
 require_rel './models'
+require_relative 'lib/engine/test_tiles'
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -132,7 +133,16 @@ class Api < Roda
 
     r.on 'tiles' do
       parts = request.path.split('/')
-      titles = parts.size == 4 ? parts[2].split(/[+ ]/) : []
+
+      titles =
+        if parts.size == 4
+          parts[2].split(/[+ ]/)
+        elsif parts[2] == 'test'
+          Engine::TestTiles::TEST_TILES.keys.compact
+        else
+          []
+        end
+
       render(titles: titles)
     end
 

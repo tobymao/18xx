@@ -9,8 +9,12 @@ module View
       include Actionable
 
       needs :show_other_abilities, default: false, store: true
+      needs :combo_checkboxes, default: {}, store: false
+      needs :combos_only, default: false
 
       def render
+        return render_ability_combos(@game.round.current_entity) if @combos_only
+
         companies = @game.companies.select do |company|
           company.owner &&
             !company.closed? &&
@@ -56,6 +60,9 @@ module View
           props = {
             on: {
               click: lambda do
+                @combo_checkboxes.each { |_, checkbox| Native(checkbox)&.elm&.checked = false }
+                store(:selected_combos, [], skip: true)
+
                 store(:tile_selector, nil, skip: true)
                 store(:selected_company, @selected_company == company ? nil : company)
               end,
@@ -80,6 +87,7 @@ module View
         views << render_sell_company_button if actions.include?('sell_company')
         views << render_close_company_button if actions.include?('manual_close_company')
         views << render_ability_choice_buttons if actions.include?('choose_ability')
+        views << render_ability_combos(@selected_company) if actions.include?('lay_tile')
         views << h(Exchange) if actions.include?('buy_shares')
         views << h(Map, game: @game) if !@game.round.is_a?(Engine::Round::Operating) &&
           (actions & %w[lay_tile place_token]).any?
@@ -157,6 +165,61 @@ module View
           h('button', props, label)
         end
         h(:div, [*ability_choice_buttons])
+      end
+
+      def render_ability_combos(entity)
+        return '' unless entity&.company?
+        return '' unless @game.abilities(entity, :tile_lay)
+
+        @selected_combos ||= []
+
+        rendered_combos = @game.ability_combo_entities(entity).map do |company|
+          id = company.sym
+          elm_id = "#{company.id}-combine-with-#{company.sym}"
+
+          checked = @selected_combos.include?(id)
+
+          label_props = {
+            attrs: { for: elm_id },
+            style: { cursor: 'pointer' },
+          }
+          input_props = {
+            attrs: {
+              id: elm_id,
+              type: 'checkbox',
+              checked: checked,
+              disabled: checked ? false : !@game.valid_combos?([company, entity, *@selected_combos]),
+            },
+            on: {
+              click: lambda {
+                if @selected_combos.include?(id)
+                  @selected_combos.delete(id)
+                else
+                  @selected_combos << id
+                end
+
+                store(:selected_combos, @selected_combos, skip: false)
+              },
+            },
+          }
+
+          h(
+            :div,
+            {},
+            [
+              (@combo_checkboxes[elm_id] = h('input', input_props)),
+              h(:label, label_props, company.name.to_s),
+            ],
+          )
+        end
+
+        return '' if rendered_combos.empty?
+
+        h(:div, {}, [
+            h(:br),
+            h('h4.inline', {}, 'Combine with:'),
+            *rendered_combos,
+          ])
       end
     end
   end
