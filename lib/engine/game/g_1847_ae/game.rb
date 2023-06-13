@@ -30,6 +30,8 @@ module Engine
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 9 }.freeze
         STARTING_CASH = { 3 => 500, 4 => 390, 5 => 320 }.freeze
 
+        LAST_TRANCH_CORPORATIONS = %w[NDB M N RNB].freeze
+
         MARKET = [
           ['', '', '', '', '130', '150', '170', '190', '210', '230', '255', '285', '315', '350', '385', '420'],
           ['', '', '98', '108', '120', '135', '150', '170', '190', '210', '235', '260', '285', '315', '350', '385'],
@@ -54,7 +56,7 @@ module Engine
             train_limit: 3,
             tiles: [:yellow],
             operating_rounds: 1,
-            status: %w[investor_exchange two_yellow_tracks],
+            status: %w[investor_exchange two_yellow_tracks can_buy_trains],
           },
           {
             name: '4',
@@ -62,7 +64,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[investor_exchange can_buy_companies can_buy_companies_from_other_players],
+            status: %w[investor_exchange can_buy_companies can_buy_companies_from_other_players can_buy_trains],
           },
           {
             name: '4+4',
@@ -70,7 +72,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[investor_exchange can_buy_companies can_buy_companies_from_other_players],
+            status: %w[investor_exchange can_buy_companies can_buy_companies_from_other_players can_buy_trains],
           },
           {
             name: '5',
@@ -78,7 +80,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[investor_exchange can_buy_companies can_buy_companies_from_other_players],
+            status: %w[investor_exchange can_buy_companies can_buy_companies_from_other_players can_buy_trains],
           },
           {
             name: '5+5',
@@ -86,7 +88,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[can_buy_companies can_buy_companies_from_other_players],
+            status: %w[can_buy_companies can_buy_companies_from_other_players can_buy_trains],
           },
           {
             name: '6E',
@@ -94,7 +96,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[can_buy_companies can_buy_companies_from_other_players],
+            status: %w[can_buy_companies can_buy_companies_from_other_players can_buy_trains],
           },
           {
             name: '6+6',
@@ -102,7 +104,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[can_buy_companies can_buy_companies_from_other_players],
+            status: %w[can_buy_companies can_buy_companies_from_other_players can_buy_trains],
           },
         ].freeze
 
@@ -147,6 +149,7 @@ module Engine
                   }].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'can_buy_trains' => ['Can buy trains', 'Can buy trains from other corporations'],
           'investor_exchange' => ['May exchange investor company', 'In Stock Round, instead of buying a share,
                                    a player may exchange an entitled company against the corresponding investor share'],
           'two_yellow_tracks' => ['Two yellow tracks', 'A corporation may lay two yellow tracks']
@@ -186,7 +189,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1847AE::Step::BuySingleTrainOfType,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -291,6 +294,13 @@ module Engine
           hlb.coordinates = [hlb.coordinates.first]
           ability = hlb.all_abilities.find { |a| a.description.include?('Two home stations') }
           hlb.remove_ability(ability)
+        end
+
+        def can_par?(corporation, _parrer)
+          return false if corporation.id == 'HLB' && !saar.floated?
+          return false if LAST_TRANCH_CORPORATIONS.include?(corporation.id) && !hlb.floated?
+
+          !corporation.ipoed
         end
 
         # Cannot build in E9 before Phase 5
