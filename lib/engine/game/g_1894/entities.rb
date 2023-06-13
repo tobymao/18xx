@@ -55,6 +55,17 @@ module Engine
             color: '#d9d9d9',
           },
           {
+            name: 'Ligne de Saint-Quentin à Guise',
+            sym: 'SQG',
+            value: 70,
+            revenue: 0,
+            desc: 'Revenue is equal to 70 F if Saint-Quentin (G10) is green, to 100 F if'\
+                  ' Saint-Quentin is brown and to 0 F otherwise.'\
+                  ' Closes in purple phase. May not be sold to corporation in red and gray phase.',
+            abilities: [{ type: 'close', on_phase: 'Purple' }],
+            color: '#d9d9d9',
+          },
+          {
             name: 'London shipping',
             sym: 'LS',
             value: 90,
@@ -73,17 +84,6 @@ module Engine
               from_owner: true,
               owner_type: 'corporation',
             }],
-            color: '#d9d9d9',
-          },
-          {
-            name: 'Ligne de Saint-Quentin à Guise',
-            sym: 'SQG',
-            value: 100,
-            revenue: 0,
-            desc: 'Revenue is equal to 70 F if Saint-Quentin (G10) is green, to 100 F if'\
-                  ' Saint-Quentin is brown and to 0 F otherwise.'\
-                  ' Closes in purple phase. May not be sold to corporation in red and gray phase.',
-            abilities: [{ type: 'close', on_phase: 'Purple' }],
             color: '#d9d9d9',
           },
           {

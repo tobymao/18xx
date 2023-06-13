@@ -60,6 +60,7 @@ module Engine
 
             cheater = action.city.tokens.count { |t| !t.nil? }
             action.city.place_token(action.entity, token, free: true, check_tokenable: false, cheater: cheater)
+            @log << "#{corporation.id} places a token on #{hex_id} (#{hex.location_name})"
             saved_tokens = @game.saved_tokens
             saved_tokens.shift
             @game.save_tokens(saved_tokens)

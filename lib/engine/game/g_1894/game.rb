@@ -21,7 +21,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
 
-        STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
+        STARTING_CASH = { 3 => 570, 4 => 440 }.freeze
 
         CAPITALIZATION = :full
 
@@ -348,7 +348,7 @@ module Engine
           @ferry_marker_ability =
             Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
           block_london
-          
+
           paris_tiles = @all_tiles.select { |t| PARIS_TILES.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
@@ -746,11 +746,6 @@ module Engine
 
           company_to_remove.close!
           @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
-
-          sqg.value = 70
-          sqg.min_price = 35
-          sqg.max_price = 140
-          @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.sort_by!(&:value)
         end
 
         def remove_extra_french_major_shareholding_companies
