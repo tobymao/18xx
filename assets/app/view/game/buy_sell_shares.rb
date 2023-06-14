@@ -65,6 +65,7 @@ module View
         children.concat(render_treasury_shares)
         children.concat(render_market_shares)
         children.concat(render_corporate_shares)
+        children.concat(render_other_player_shares)
         children.concat(render_shares_for_others)
         children.concat(render_price_protection)
         children.concat(render_reduced_price_shares(@ipo_shares, source: @game.ipo_name(@corporation)))
@@ -129,6 +130,21 @@ module View
               percentages_available: @ipo_shares.group_by(&:percent).size,
               source: share.corporation.name,
               prefix: button_prefix)
+          end
+        end
+      end
+
+      def render_other_player_shares
+        @corporation.player_share_holders.keys.reject { |sh| sh == @current_entity }.flat_map do |sh|
+          shares = sh.shares_of(@corporation).select(&:buyable).group_by(&:percent).values.map(&:first)
+          shares.sort_by(&:percent).reverse.map do |share|
+            next unless @step.can_buy?(@current_entity, share.to_bundle)
+
+            h(Button::BuyShare,
+              share: share,
+              entity: @current_entity,
+              percentages_available: shares.group_by(&:percent).size,
+              source: sh.name)
           end
         end
       end

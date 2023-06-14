@@ -16,6 +16,7 @@ module Engine
           # ignore the 50% limit
           def can_gain?(entity, bundle, exchange: false)
             return if !bundle || !entity
+            return if bundle.owner&.player?
 
             exchange || @game.num_certs(entity) < @game.cert_limit
           end

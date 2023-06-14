@@ -9,6 +9,7 @@ module Engine
         # such as in 1889 for exchanging Dougo
         #
         def can_gain?(entity, bundle, exchange: false)
+          return if bundle.owner&.player?
           return if !bundle || !entity
 
           corporation = bundle.corporation
