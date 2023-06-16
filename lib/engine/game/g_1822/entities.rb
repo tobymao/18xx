@@ -153,8 +153,8 @@ module Engine
             desc: 'MAJOR/MINOR, Phase 3. Mountain/Hill Discount. Either: The acquiring company receives a discount '\
                   'token that can be used to pay the full cost of a single track tile lay on a rough terrain, hill '\
                   'or mountain hex. This closes the company. Or: The acquiring company rejects the token and '\
-                  'receives a £20 discount off the cost of all hill and mountain terrain (i.e. NOT off the cost of '\
-                  'rough terrain). The private company does not close. Closes if free token taken when acquired. '\
+                  'receives a £20 discount off the cost of all £60 hill and £80 mountain terrain (i.e. NOT off the cost of '\
+                  '£40 rough terrain). The private company does not close. Closes if free token taken when acquired. '\
                   'Otherwise, flips when acquired and does not close.',
             abilities: [
               {
@@ -177,7 +177,7 @@ module Engine
                 type: 'tile_discount',
                 owner_type: 'corporation',
                 discount: 20,
-                terrain: 'hill',
+                hexes: %w[C40 E10 F9 G8 H7 H9 H15 I8 I10 I22 J7 J21 J23 J25],
               },
               {
                 type: 'tile_discount',
