@@ -2002,7 +2002,7 @@ module Engine
           after
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           before = before_sell_up(bundle)
           super
           return unless (after = after_sell_up(bundle, before))
