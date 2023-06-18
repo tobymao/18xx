@@ -250,6 +250,7 @@ module Engine
       DISCARDED_TRAINS = :discard # discard or remove
       DISCARDED_TRAIN_DISCOUNT = 0 # percent
       CLOSED_CORP_TRAINS_REMOVED = true
+      CLOSED_CORP_TOKENS_REMOVED = true
       CLOSED_CORP_RESERVATIONS_REMOVED = true
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
