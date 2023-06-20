@@ -54,7 +54,7 @@ module Engine
             action = @round.current_actions.find { |a| a.is_a?(Engine::Action::Convert) }
             return unless bundle
             return false if bundle.corporation.type == :regional
-            return false if action && action&.entity == bundle.corporation
+            return false if bundle.corporation == @converted
 
             super
           end
@@ -66,7 +66,7 @@ module Engine
           end
 
           def can_convert_any?
-            @game.corporations.select { |corp| can_convert?(corp) }.any?
+            @game.corporations.any? { |corp| can_convert?(corp) }
           end
 
           def can_convert?(entity)
@@ -77,15 +77,15 @@ module Engine
             # has any shares been sold?
             return if @sold
             # has there already been a conversion?
-            return unless @converted.nil?
+            return false if @converted
             # if anything has been bought, is it the current corp?
-            return if !@bought.nil? && @bought != entity
+            return if @bought && @bought != entity
 
             unless entity.president?(current_entity)
               # does the converter have 50% ownership?
               return unless entity.share_holders[current_entity] >= 50
               # does the converter have the ability to buy a share to take the presidency?
-              return unless @bought.nil?
+              return false if @bought
 
               # does the converter have enough liquidity to become president?
               new_share_price = @game.stock_market.find_share_price(entity, %i[right right up])
