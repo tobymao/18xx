@@ -97,7 +97,7 @@ module Engine
       def available_hex(entity, hex)
         ability = ability(entity)
 
-        return if !ability.hexes.empty? && !ability.hexes.include?(hex.id)
+        return if ability.hexes && !ability.hexes.empty? && !ability.hexes.include?(hex.id)
 
         if ability.type == :token && ability.connected
           return @game.token_graph_for_entity(entity.owner).reachable_hexes(entity.owner)[hex]

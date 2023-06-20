@@ -36,7 +36,9 @@ module Engine
         bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
       end
 
-      if !@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && shares.owner.player?
+      if bundle.owner.player? &&
+         !@game.class::BUY_SHARE_FROM_OTHER_PLAYER &&
+         (!@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT || !entity.corporation?)
         raise GameError, 'Cannot buy share from player'
       end
 
