@@ -38,21 +38,19 @@ module Engine
           end
 
           def can_buy_any_from_ipo?(entity)
-            return unless @game.corporations.all?(&:ipoed)
+            return false unless @game.corporations.all?(&:ipoed)
 
             super
           end
 
           def can_buy?(entity, bundle)
-            action = @round.current_actions.find { |a| a.is_a?(Engine::Action::Convert) }
-            return false if action && action&.entity != bundle.corporation
+            return false if @converted && bundle.corporation != @converted
 
             super
           end
 
           def can_sell?(entity, bundle)
-            action = @round.current_actions.find { |a| a.is_a?(Engine::Action::Convert) }
-            return unless bundle
+            return false unless bundle
             return false if bundle.corporation.type == :regional
             return false if bundle.corporation == @converted
 
@@ -60,7 +58,7 @@ module Engine
           end
 
           def can_float_minor?(entity)
-            return unless entity.player?
+            return false unless entity.player?
 
             !bought? && entity.companies.any? { |company| @game.company_becomes_minor?(company) }
           end
@@ -71,25 +69,25 @@ module Engine
 
           def can_convert?(entity)
             # are we in the major railroad phase?
-            return unless @game.corporations.all?(&:ipoed)
+            return false unless @game.corporations.all?(&:ipoed)
             # is the current entity a regional?
-            return unless entity.type == :regional
+            return false unless entity.type == :regional
             # has any shares been sold?
-            return if @sold
+            return false if @sold
             # has there already been a conversion?
             return false if @converted
             # if anything has been bought, is it the current corp?
-            return if @bought && @bought != entity
+            return false if @bought && @bought != entity
 
             unless entity.president?(current_entity)
               # does the converter have 50% ownership?
-              return unless entity.share_holders[current_entity] >= 50
+              return false unless entity.share_holders[current_entity] >= 50
               # does the converter have the ability to buy a share to take the presidency?
               return false if @bought
 
               # does the converter have enough liquidity to become president?
               new_share_price = @game.stock_market.find_share_price(entity, %i[right right up])
-              return unless @game.liquidity(current_entity) >= new_share_price.price
+              return false unless @game.liquidity(current_entity) >= new_share_price.price
             end
 
             true

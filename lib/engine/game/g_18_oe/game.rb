@@ -460,7 +460,7 @@ module Engine
         def must_buy_train?(entity)
           # must buy the reserved 2+2, otherwise only majors must buy trains
           # return unless entity.type == 'major'
-          return if depot.depot_trains.first&.name != '2+2' && entity.type != :major
+          return false if depot.depot_trains.first&.name != '2+2' && entity.type != :major
 
           super
         end
@@ -485,7 +485,7 @@ module Engine
 
         def company_becomes_minor?(company)
           corp = @corporations.find { |c| c.name == company.sym }
-          return unless corp
+          return false unless corp
 
           corp.type == :minor
         end
