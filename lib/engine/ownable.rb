@@ -12,17 +12,17 @@ module Engine
 
     # avoid infinite recursion for 1841
     def player
-      owner_chain = [owner]
-      test_owner = owner
-      until test_owner&.player?
-        return nil unless test_owner&.owner
+      chain = { owner => true }
+      current = owner
+      until current&.player?
+        return nil unless current&.owner
 
-        test_owner = test_owner.owner
-        return nil if owner_chain.include?(test_owner)
+        current = current.owner
+        return nil if chain[current]
 
-        owner_chain << test_owner
+        chain[current] = true
       end
-      test_owner
+      current
     end
 
     def corporation
