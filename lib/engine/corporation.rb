@@ -277,6 +277,21 @@ module Engine
       @forced_share_percent || @second_share&.percent || (presidents_percent / 2)
     end
 
+    # avoid infinite recursion for 1841
+    def player
+      chain = { owner => true }
+      current = owner
+      while current&.corporation?
+        return nil unless current&.owner # unowned corp
+
+        current = current.owner
+        return nil if chain[current] # cycle detected
+
+        chain[current] = true
+      end
+      current&.player? ? current : current&.player
+    end
+
     def closed?
       @closed
     end
