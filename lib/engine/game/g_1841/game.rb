@@ -220,8 +220,16 @@ module Engine
           '8' => :black,
         }.freeze
 
+        CERT_LIMIT_INCLUDES_PRIVATES = false
+        MAX_CORPORATE_CERTS = 5
+
         def init_graph
           Graph.new(self, check_tokens: true)
+        end
+
+        # only allow president shares in market on EMR/Frozen
+        def init_share_pool
+          SharePool.new(self, allow_president_sale: true)
         end
 
         # load non-standard corporation info
@@ -245,6 +253,8 @@ module Engine
           @corporation_info = load_corporation_extended
           modify_regions(2, true)
           @border_paths = nil
+          update_frozen!
+          corporations.each { |corp| @corporation_info[corp][:operated] = false }
         end
 
         def select_track_graph
@@ -342,16 +352,16 @@ module Engine
         end
 
         def major?(entity)
-          entity.corporation? && (entity.type == :major)
+          entity&.corporation? && (entity.type == :major)
         end
 
         def historical?(entity)
-          entity.corporation? && @corporation_info[entity][:historical]
+          entity&.corporation? && @corporation_info[entity][:historical]
         end
 
         # returns a list of tokens on cities for this corporation
         def railheads(entity)
-          return [] unless entity.corporation?
+          return [] unless entity&.corporation?
 
           entity.tokens.select { |t| t.used && t.city && !t.city.pass? }
         end
@@ -520,9 +530,8 @@ module Engine
           share.owner = new_owner
         end
 
-        # FIXME
         def ipo_name(_corp)
-          'Treasury'
+          'IPO'
         end
 
         # FIXME
@@ -537,9 +546,8 @@ module Engine
           super
         end
 
-        # FIXME
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1841::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1841::Step::HomeToken,
             G1841::Step::BuyTokens,
@@ -549,7 +557,7 @@ module Engine
 
         # FIXME
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1841::Round::Operating.new(self, [
             G1841::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -557,8 +565,9 @@ module Engine
             # G1841::Step::BuyToken,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            # G1841::Step::SellCorpShares,
-            # G1841::Step::BuyCorpShares,
+            G1841::Step::HomeToken,
+            G1841::Step::BuyTokens,
+            G1841::Step::CorporateBuySellParShares,
             # G1841::Step::Merge,
             # G1841::Step::Transform,
           ], round_num: round_num)
@@ -586,6 +595,145 @@ module Engine
             !stop.pass? && !(stop.town? && stop.tile.icons.any? { |i| i.name == 'port' })
           end
           raise GameError, 'Route must have at least 2 cities, non-port towns or offboards' unless required_stops > 1
+        end
+
+        # return a list of owners from the current corporation to a human (or the share pool)
+        # return nil if circular chain of ownership
+        def chain_of_control(entity)
+          return [entity] unless entity&.corporation?
+
+          owner = entity&.owner
+          chain = [owner]
+          while owner&.corporation?
+            owner = owner&.owner
+            if chain.include?(owner)
+              chain << share_pool
+              return chain
+            end
+
+            chain << owner
+          end
+          chain
+        end
+
+        # find the human in control if there is one, or the share pool if not
+        def controller(entity)
+          return entity unless entity.corporation?
+
+          chain_of_control(entity)&.last
+        end
+
+        # return list of corporations controlled by a given player
+        def controlled_corporations(entity)
+          return [] unless entity&.player?
+
+          controlled = []
+          corporations.each do |corp|
+            next if controlled.include?(corp)
+
+            controlled << corp if controller(corp) == entity
+          end
+          controlled
+        end
+
+        def in_chain?(entity1, entity2)
+          chain_of_control(entity1).include?(entity2)
+        end
+
+        def player_controlled_percentage(buyer, corporation)
+          human = controller(buyer)
+          total_percent = human.common_percent_of(corporation)
+          controlled_corporations(human).each do |c|
+            next if c == corporation
+
+            total_percent += c.common_percent_of(corporation)
+          end
+          total_percent
+        end
+
+        def acting_for_entity(entity)
+          return entity if entity&.player?
+          return controller(entity) if entity&.corporation?
+
+          super
+        end
+
+        def frozen?(entity)
+          entity.corporation? && @corporation_info[entity][:frozen]
+        end
+
+        def frozen_corporations
+          corporations.select { |corp| frozen?(corp) }
+        end
+
+        def update_frozen!
+          corporations.each do |corp|
+            frozen = corp.ipoed && !controller(corp)&.player?
+            @log << "#{corp.name} is no longer frozen" if frozen?(corp) && !frozen
+            @log << "#{corp.name} is now frozen" if !frozen?(corp) && frozen
+            @corporation_info[corp][:frozen] = frozen
+          end
+        end
+
+        # A corp is not considered to have operated until the end of it's first OR
+        def done_operating!(entity)
+          return unless entity&.corporation?
+
+          @log << "#{entity.name} has finished operating for the first time" unless operated?(entity)
+
+          @corporation_info[entity][:operated] = true
+        end
+
+        def operated?(entity)
+          return nil unless entity&.corporation?
+
+          @corporation_info[entity][:operated]
+        end
+
+        def check_sale_timing(_entity, bundle)
+          operated?(bundle.corporation)
+        end
+
+        def num_certs(entity)
+          return super unless entity&.corporation?
+
+          entity.shares.sum do |s|
+            (s.corporation != entity) && s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
+          end
+        end
+
+        def cert_limit(entity)
+          return super unless entity&.corporation?
+
+          MAX_CORPORATE_CERTS
+        end
+
+        def corporations_can_ipo?
+          true
+        end
+
+        def separate_treasury?
+          true
+        end
+
+        def player_sort(entities)
+          entities.sort_by { |entity| [operating_order.index(entity) || Float::INFINITY, entity.name] }
+            .group_by { |e| acting_for_entity(e) }
+        end
+
+        def possible_presidents
+          players.reject(&:bankrupt) + corporations.select(&:floated?).reject(&:closed?).sort
+        end
+
+        # for 1841, this means frozen
+        def receivership_corporations
+          frozen_corporations
+        end
+
+        def status_str(corp)
+          return unless frozen?(corp)
+
+          'FROZEN'
         end
       end
     end

@@ -8,6 +8,8 @@ module Engine
       module Step
         module CorpStart
           def post_share_pass_step!
+            return unless @round.corp_started
+
             corp = @round.corp_started
             if @game.historical?(corp) && corp.name != 'SFMA'
               @game.place_home_token(corp)
@@ -32,6 +34,8 @@ module Engine
           end
 
           def post_token_lay_step!
+            return unless @round.corp_started
+
             corp = @round.corp_started
             if @game.major?(corp)
               min = 2

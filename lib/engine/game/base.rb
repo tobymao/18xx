@@ -2190,6 +2190,18 @@ module Engine
 
       def after_buying_train(train, source); end
 
+      def corporations_can_ipo?
+        false
+      end
+
+      def possible_presidents
+        players.reject(&:bankrupt)
+      end
+
+      def receivership_corporations
+        corporations.select(&:receivership?)
+      end
+
       private
 
       def init_graph
