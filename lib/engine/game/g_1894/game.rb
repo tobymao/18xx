@@ -251,6 +251,7 @@ module Engine
         LUXEMBOURG_HEX = 'I18'
         SQ_HEX = 'G10'
         BRUXELLES_HEX = 'F15'
+        LILLE_HEX = 'D11'
         NETHERLANDS_HEX = 'C18'
         GREAT_BRITAIN_HEX = 'A4'
 
@@ -591,9 +592,16 @@ module Engine
 
           return tile.add_reservation!(corporation, 0) if tile.color != :brown
 
-          return tile.add_reservation!(corporation, 0) if coordinates == BRUXELLES_HEX
+          return tile.add_reservation!(corporation, 0) if [BRUXELLES_HEX, LILLE_HEX].include?(coordinates)
 
-          tile.add_reservation!(corporation, nil, false)
+          # tile is brown, non-Bruxelles, non-Lille
+          if tile.cities.first.tokenable?(corporation) && !tile.cities[1].tokenable?(corporation)
+            tile.add_reservation!(corporation, 0)
+          elsif !tile.cities.first.tokenable?(corporation) && tile.cities[1].tokenable?
+            tile.add_reservation!(corporation, 1)
+          else
+            tile.add_reservation!(corporation, nil, false)
+          end
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)

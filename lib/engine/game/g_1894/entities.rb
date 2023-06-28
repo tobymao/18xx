@@ -23,7 +23,7 @@ module Engine
                           special: false,
                           reachable: true,
                           hexes: [],
-                          tiles: %w[X1 X2 X3a 1 7 8 9 55 56 57 58 69 630],
+                          tiles: %w[X1 X2 X3 1 7 8 9 55 56 57 58 69 630],
                         }],
             color: '#d9d9d9',
           },
@@ -41,16 +41,16 @@ module Engine
             sym: 'GLG',
             value: 50,
             revenue: 10,
-            desc: 'Owning corporation may lay a yellow tile or upgrade a yellow tile in Liège'\
-                  ' (H17) and optionally place a token for free there.'\
-                  ' This counts as one of the corporation\'s tile builds and token laying.'\
-                  ' Blocks H17 while owned by a player.',
+            desc: 'Owning corporation may lay or upgrade a tile in Liège'\
+                  ' (H17). If it does, it may then optionally place a token for free there.'\
+                  ' This counts as one of the corporation\'s tile builds and token laying'\
+                  ' (if token was placed). Blocks H17 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H17'] },
                         {
                           type: 'teleport',
                           owner_type: 'corporation',
                           hexes: ['H17'],
-                          tiles: %w[14 15 57 619],
+                          tiles: %w[14 15 57 619 X14 X15 X16 X17 X18 X19 35 36 118],
                         }],
             color: '#d9d9d9',
           },
