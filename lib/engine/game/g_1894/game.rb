@@ -21,7 +21,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
 
-        STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
+        STARTING_CASH = { 3 => 570, 4 => 440 }.freeze
 
         CAPITALIZATION = :full
 
@@ -251,6 +251,7 @@ module Engine
         LUXEMBOURG_HEX = 'I18'
         SQ_HEX = 'G10'
         BRUXELLES_HEX = 'F15'
+        LILLE_HEX = 'D11'
         NETHERLANDS_HEX = 'C18'
         GREAT_BRITAIN_HEX = 'A4'
 
@@ -258,12 +259,13 @@ module Engine
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
-        BROWN_CITY_14_UPGRADE_TILES = %w[X14 X15 36].freeze
+        BROWN_CITY_14_UPGRADE_TILES = %w[X18 X19 36].freeze
         GREEN_CITY_15_TILE = '15'
-        BROWN_CITY_15_UPGRADE_TILES = %w[X12 35 118].freeze
+        BROWN_CITY_15_UPGRADE_TILES = %w[X16 35 118].freeze
         GREEN_CITY_619_TILE = '619'
-        BROWN_CITY_619_UPGRADE_TILES = %w[X10 X11 X13].freeze
-        BROWN_CITY_TILES = %w[X10 X11 X12 X13 X14 X15 35 36 118].freeze
+        BROWN_CITY_619_UPGRADE_TILES = %w[X14 X15 X17].freeze
+        BROWN_CITY_TILES = %w[X14 X15 X16 X17 X18 X19 35 36 118].freeze
+        PARIS_TILES = %w[X1 X4 X5 X9 X10].freeze
 
         FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CFOR].freeze
         BELGIAN_REGULAR_CORPORATIONS = %w[AG Belge].freeze
@@ -348,8 +350,7 @@ module Engine
             Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
           block_london
 
-          paris_tiles_names = %w[X1 X4 X5 X7 X8]
-          paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
+          paris_tiles = @all_tiles.select { |t| PARIS_TILES.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
           @french_starting_corporation_id = FRENCH_REGULAR_CORPORATIONS.sort_by { rand }.take(1).first
@@ -591,9 +592,16 @@ module Engine
 
           return tile.add_reservation!(corporation, 0) if tile.color != :brown
 
-          return tile.add_reservation!(corporation, 0) if coordinates == BRUXELLES_HEX
+          return tile.add_reservation!(corporation, 0) if [BRUXELLES_HEX, LILLE_HEX].include?(coordinates)
 
-          tile.add_reservation!(corporation, nil, false)
+          # tile is brown, non-Bruxelles, non-Lille
+          if tile.cities.first.tokenable?(corporation) && !tile.cities[1].tokenable?(corporation)
+            tile.add_reservation!(corporation, 0)
+          elsif !tile.cities.first.tokenable?(corporation) && tile.cities[1].tokenable?
+            tile.add_reservation!(corporation, 1)
+          else
+            tile.add_reservation!(corporation, nil, false)
+          end
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
@@ -746,11 +754,6 @@ module Engine
 
           company_to_remove.close!
           @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
-
-          sqg.value = 70
-          sqg.min_price = 35
-          sqg.max_price = 140
-          @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.sort_by!(&:value)
         end
 
         def remove_extra_french_major_shareholding_companies
