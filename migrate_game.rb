@@ -126,7 +126,8 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
   end
 
   # insert pass
-  if !step_actions.include?(broken_action['type']) && step_actions.include?('pass')
+  if (!step_actions.include?(broken_action['type']) && step_actions.include?('pass')) ||
+      broken_action['entity'] != current_entity.id
     pass = Engine::Action::Pass.new(current_entity)
     pass.user = pass.entity.player.id
     actions.insert(broken_action_idx, pass.to_h)
