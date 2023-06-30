@@ -57,17 +57,17 @@ module Engine
     end
 
     def can_token?(corporation, cheater: false)
-      hash = cheater ? @cheater_tokens : @tokens
-      return hash[corporation] if hash.key?(corporation)
+      tokens = cheater ? @cheater_tokens : @tokens
+      return tokens[corporation] if tokens.key?(corporation)
 
       compute(corporation) do |node|
         if node.tokenable?(corporation, free: true, cheater: cheater)
-          hash[corporation] = true
+          tokens[corporation] = true
           break
         end
       end
-      hash[corporation] ||= false
-      hash[corporation]
+      tokens[corporation] ||= false
+      tokens[corporation]
     end
 
     def no_blocking?
