@@ -7,6 +7,14 @@ module Engine
     module G1841
       module Round
         class Operating < Engine::Round::Operating
+          def setup
+            @current_operator = nil
+            @home_token_timing = @game.class::HOME_TOKEN_TIMING
+            @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
+            (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or!)
+            after_setup
+          end
+
           def after_process(action)
             return if action.type == 'message'
 

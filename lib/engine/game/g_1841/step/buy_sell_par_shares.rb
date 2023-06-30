@@ -30,11 +30,6 @@ module Engine
             []
           end
 
-          # FIXME
-          def buyable_bank_owned_companies(_entity)
-            []
-          end
-
           def can_buy_multiple?(entity, corporation, _owner)
             @round.current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation } &&
               entity.percent_of(corporation) < 40
@@ -43,7 +38,9 @@ module Engine
           def can_buy?(entity, bundle)
             return unless bundle
             return unless bundle.buyable
-            return if bundle.owner.corporation? && bundle.owner != bundle.corporation
+            return if bundle.owner.corporation? && bundle.owner != bundle.corporation # can't buy non-IPO shares in treasury
+            return if bundle.owner.player? && entity.player? && !@game.allow_player2player_sales?
+            return if bundle.owner.player? && entity.corporation?
 
             super
           end
@@ -60,6 +57,10 @@ module Engine
                                                    corporation) + bundle.common_percent) <= corporation.max_ownership_percent)
           end
 
+          def can_dump?(entity, bundle)
+            super && (!bundle.presidents_share || @game.pres_change_ok?(bundle.corporation))
+          end
+
           def pass!
             super
             post_share_pass_step! if @round.corp_started
@@ -73,7 +74,11 @@ module Engine
 
           def sell_shares(entity, shares, swap: nil)
             old_frozen = @game.frozen_corporations
-            super
+            raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
+
+            @round.players_sold[shares.owner][shares.corporation] = :now
+            @game.sell_shares_and_change_price(shares, swap: swap,
+                                                       allow_president_change: @game.pres_change_ok?(shares.corporation))
             @game.update_frozen!
             return if @game.frozen_corporations.none? { |c| !old_frozen.include?(c) }
 
@@ -81,13 +86,36 @@ module Engine
           end
 
           def process_buy_shares(action)
-            super
+            old_frozen = @game.frozen_corporations
+            @round.players_bought[action.entity][action.bundle.corporation] += action.bundle.percent
+            @round.bought_from_ipo = true if action.bundle.owner.corporation?
+            buy_shares(action.purchase_for || action.entity, action.bundle,
+                       swap: action.swap, borrow_from: action.borrow_from,
+                       allow_president_change: @game.pres_change_ok?(action.bundle.corporation))
+            track_action(action, action.bundle.corporation)
             @game.update_frozen!
+            return if @game.frozen_corporations.none? { |c| !old_frozen.include?(c) }
+
+            raise GameError, 'Cannot purchase if it causes a circular chain of ownership'
           end
 
           def process_par(action)
             @round.corp_started = action.corporation
             super
+          end
+
+          def visible_corporations
+            @game.corporations.reject { |c| c.closed? || (@game.historical?(c) && !@game.startable?(c)) }
+          end
+
+          def can_buy_company?(player, company)
+            !bought? && super
+          end
+
+          def process_buy_company(action)
+            super
+            @round.last_to_act = action.entity.player
+            @round.current_actions << action
           end
         end
       end

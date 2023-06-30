@@ -1158,7 +1158,7 @@ module Engine
         def new_auction_round
           @log << "-- #{round_description('Auction')} --"
           G1873::Round::Auction.new(self, [
-            G1873::Step::ConcessionAuction,
+            Engine::Step::ConcessionAuction,
           ])
         end
 
