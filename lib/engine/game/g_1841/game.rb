@@ -47,6 +47,7 @@ module Engine
         SOLD_OUT_INCREASE = true
         POOL_SHARE_DROP = :one
         TRACK_RESTRICTION = :semi_restrictive
+        MIN_BID_INCREMENT = 5
 
         MARKET = [
           %w[72 83 95 107 120 133 147 164 182 202 224m 248 276 306 340x 377n 419 465 516],
@@ -96,7 +97,6 @@ module Engine
             tiles: %i[yellow green],
             operating_rounds: 2,
             status: %w[one_tile_per_base_max_2 start_non_hist concessions_removed],
-            events: [{ 'type' => 'phase4_regions' }],
           },
           {
             name: '5',
@@ -105,7 +105,6 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 3,
             status: %w[one_tile_per_or start_non_hist],
-            events: [{ 'type' => 'phase5_regions' }],
           },
           {
             name: '6',
@@ -133,12 +132,14 @@ module Engine
           },
         ].freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        EVENTS_TEXT = {
+          'close_companies' => ['Concessions Close',
+                                'All concessions are discarded from the game'],
           'phase4_regions' => ['Phase4 Regions',
                                'Conservative Zone border is eliminated; The Austrian possesions are limited to Veneto'],
           'phase5_regions' => ['Phase5 Regions',
                                'Austrian possessions are eliminated; 1859-1866 Austrian border is deleted'],
-        )
+        }.freeze
 
         TRAINS = [
           {
@@ -164,6 +165,7 @@ module Engine
             price: 350,
             rusts_on: '7',
             num: 4,
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'phase4_regions' }],
           },
           {
             name: '5',
@@ -171,6 +173,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 550,
             num: 2,
+            events: [{ 'type' => 'phase5_regions' }],
           },
           {
             name: '6',
@@ -359,6 +362,10 @@ module Engine
           entity&.corporation? && @corporation_info[entity][:historical]
         end
 
+        def startable?(entity)
+          entity&.corporation? && @corporation_info[entity][:startable]
+        end
+
         # returns a list of tokens on cities for this corporation
         def railheads(entity)
           return [] unless entity&.corporation?
@@ -534,16 +541,59 @@ module Engine
           'IPO'
         end
 
-        # FIXME
         def corporation_available?(corp)
+          (historical?(corp) && startable?(corp)) ||
+            (!historical?(corp) && (@phase.name.to_i >= 3))
+        end
+
+        def concession_ok?(player, corp)
+          return true if @phase.name.to_i >= 4
+          return true unless historical?(corp)
+          return false unless player.player?
+
+          player.companies.any? { |c| c.sym == corp.name }
+        end
+
+        def can_par?(corporation, entity)
+          return false unless corporation_available?(corporation)
+          return false unless concession_ok?(entity, corporation)
+
           super
         end
 
-        # FIXME
-        def can_par?(corporation, entity)
-          return false unless corporation_available?(corporation)
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1841::Step::ConcessionAuction,
+          ])
+        end
 
-          super
+        def auction_companies
+          companies.dup
+        end
+
+        # reorder players by least cash.
+        # - if tied, lowest numbered concession
+        # - if tied, original order
+        def init_reorder_players
+          current_order = @players.dup
+          lowest_concession = {}
+          @players.each do |p|
+            lowest = p.companies.min_by { |c| @companies.index(c) }
+            lowest_concession[p] = lowest ? @companies.index(lowest) : -1
+          end
+          @players.sort_by! { |p| [p.cash, lowest_concession[p], current_order.index(p)] }
+          @log << '-- New player order: --'
+          @players.each.with_index do |p, idx|
+            pd = idx.zero? ? ' - Priority Deal -' : ''
+            @log << "#{p.name}#{pd} (#{format_currency(p.cash)})"
+          end
+        end
+
+        def init_round_finished
+          companies.reject { |c| c&.owner&.player? }.each do |c|
+            c.owner = bank
+            @log << "#{c.name} (#{c.sym}) has not been bought and is moved to the bank"
+          end
         end
 
         def stock_round
@@ -571,6 +621,52 @@ module Engine
             # G1841::Step::Merge,
             # G1841::Step::Transform,
           ], round_num: round_num)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              init_reorder_players
+              new_stock_round
+            end
+        end
+
+        def bayard
+          @bayard ||= company_by_id('Bayard')
+        end
+
+        def return_concessions!
+          companies.each do |c|
+            next if c == bayard
+            next unless c&.owner&.player?
+            next if corporation_by_id(c.sym).ipoed
+
+            player = c.owner
+            player.companies.delete(c)
+            c.owner = bank
+            @log << "#{c.name} (#{c.sym}) has not been used by #{player.name} and is returned to the bank"
+          end
+        end
+
+        def finish_stock_round
+          payout_companies
+          return_concessions!
         end
 
         # implement non-standard offboard colors
@@ -734,6 +830,61 @@ module Engine
           return unless frozen?(corp)
 
           'FROZEN'
+        end
+
+        def company_header(_company)
+          'CONCESSION'
+        end
+
+        # FIXME
+        def allow_player2player_sales?
+          false
+        end
+
+        def event_close_companies!
+          @log << '-- Event: Concessions close --'
+          @companies.each do |company|
+            if (ability = abilities(company, :close, on_phase: 'any')) && (ability.on_phase == 'never' ||
+                @phase.phases.any? { |phase| ability.on_phase == phase[:name] })
+              next
+            end
+
+            corp = corporation_by_id(company.sym)
+            deferred_president_change(corp) if corp&.ipoed
+
+            company.close!
+          end
+        end
+
+        def pres_change_ok?(corporation)
+          (@phase.name.to_i >= 4) || !historical?(corporation)
+        end
+
+        # change president if needed
+        def deferred_president_change(corporation)
+          previous_president = corporation.owner
+          max_shares = corporation.player_share_holders.values.max
+          majority_share_holders = corporation.player_share_holders.select { |_, p| p == max_shares }.keys
+          return if majority_share_holders.any? { |entity| entity == previous_president }
+
+          president = majority_share_holders
+            .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
+            .min_by { |p| @share_pool.distance(previous_president, p) }
+          return unless president
+
+          corporation.owner = president
+          @log << "#{president.name} becomes the president of #{corporation.name}"
+
+          presidents_share = previous_president.shares_of(corporation).find(&:president)
+
+          # swap shares so new president has president share
+          @share_pool.change_president(presidents_share, previous_president, president)
+        end
+
+        def buyable_bank_owned_companies
+          return [] unless @turn > 1
+
+          super
         end
       end
     end

@@ -27,6 +27,7 @@ module Engine
 
               @game.log_share_price(corp, old_price)
             end
+            @game.finish_stock_round
           end
         end
       end
