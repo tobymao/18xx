@@ -136,7 +136,7 @@ module Engine
 
       log_sell_shares(entity, verb, bundle, price, swap_text) unless silent
 
-      transfer_to = @game.class::SOLD_SHARES_DESTINATION == :corporation ? bundle.corporation : self
+      transfer_to = @game.sold_shares_destination(bundle.corporation) == :corporation ? bundle.corporation : self
 
       transfer_shares(bundle,
                       transfer_to,
@@ -282,7 +282,7 @@ module Engine
       # previous president if they haven't sold the president's share
       # give the president the president's share
       # if the owner only sold half of their president's share, take one away
-      transfer_to = @game.class::SOLD_SHARES_DESTINATION == :corporation ? corporation : self
+      transfer_to = @game.sold_shares_destination(corporation) == :corporation ? corporation : self
       swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : transfer_to
 
       change_president(presidents_share, swap_to, president, previous_president)

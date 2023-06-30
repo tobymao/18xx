@@ -168,7 +168,9 @@ module Engine
       def process_buy_shares(action)
         @round.players_bought[action.entity][action.bundle.corporation] += action.bundle.percent
         @round.bought_from_ipo = true if action.bundle.owner.corporation?
-        buy_shares(action.purchase_for || action.entity, action.bundle, swap: action.swap, borrow_from: action.borrow_from)
+        buy_shares(action.purchase_for || action.entity, action.bundle,
+                   swap: action.swap, borrow_from: action.borrow_from,
+                   allow_president_change: allow_president_change?(action.bundle.corporation))
         track_action(action, action.bundle.corporation)
       end
 
@@ -506,6 +508,10 @@ module Engine
 
       def modify_purchase_price(bundle)
         bundle.price
+      end
+
+      def allow_president_change?(_corporation)
+        true
       end
     end
   end

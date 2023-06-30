@@ -2,7 +2,7 @@
 
 module Engine
   class SharePrice
-    attr_reader :coordinates, :price, :corporations, :can_par, :type, :types
+    attr_reader :coordinates, :price, :corporations, :can_par, :type, :types, :info
 
     TYPE_MAP = {
       'p' => :par,
@@ -52,6 +52,7 @@ module Engine
 
       SharePrice.new([row, column],
                      price: price,
+                     info: nil,
                      types: types,
                      unlimited_types: unlimited_types,
                      multiple_buy_types: multiple_buy_types)
@@ -59,6 +60,7 @@ module Engine
 
     def initialize(coordinates,
                    price:,
+                   info: nil,
                    types: [],
                    unlimited_types: [],
                    multiple_buy_types: [])
@@ -69,6 +71,7 @@ module Engine
       @corporations = []
       @can_buy_multiple = multiple_buy_types.include?(type)
       @limited = !unlimited_types.include?(type)
+      @info = info
     end
 
     def ==(other)
