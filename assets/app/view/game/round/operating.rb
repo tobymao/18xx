@@ -19,12 +19,14 @@ require 'view/game/buy_corporation'
 require 'view/game/route_selector'
 require 'view/game/cash_crisis'
 require 'view/game/double_head_trains'
+require 'view/game/buy_token'
 
 module View
   module Game
     module Round
       class Operating < Snabberb::Component
         needs :game
+        needs :selected_token, default: nil, store: true
 
         def render
           round = @game.round
@@ -37,6 +39,7 @@ module View
           convert_track = @step.respond_to?(:conversion?) && @step.conversion?
 
           left = []
+          right = []
           left << h(SpecialBuy) if @current_actions.include?('special_buy')
           left << h(RouteSelector) if @current_actions.include?('run_routes') && !convert_track
           left << h(TrackConversion) if @current_actions.include?('run_routes') && convert_track
@@ -46,6 +49,7 @@ module View
           left << h(ReassignTrains) if @current_actions.include?('reassign_trains')
           left << h(DoubleHeadTrains) if @current_actions.include?('double_head_trains')
           left << h(Choose) if @current_actions.include?('choose')
+          left << h(BuyToken, entity: entity, selected_token: @selected_token) if @current_actions.include?('buy_token')
 
           if @current_actions.include?('buy_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares') || @current_actions.include?('buy_shares')
@@ -64,7 +68,7 @@ module View
               left << h(Corporation, corporation: price_protection.corporation)
               left << h(BuySellShares, corporation: price_protection.corporation)
             elsif @game.corporations_can_ipo?
-              left << h(CorporateBuySellShares)
+              right << h(CorporateBuySellShares)
             else
               left << h(IssueShares)
             end
@@ -116,8 +120,7 @@ module View
           }
 
           aquire_company_action = @current_actions.include?('acquire_company')
-          right = []
-          right << h(Map, game: @game) unless aquire_company_action
+          right << h(Map, game: @game, selected_token: @selected_token) unless aquire_company_action
           right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @current_actions.include?('buy_company')
           right << h(:div, div_props, [h(AcquireCompanies)]) if aquire_company_action
 

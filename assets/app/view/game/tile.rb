@@ -20,6 +20,7 @@ module View
       needs :tile
       needs :routes, default: []
       needs :show_coords, default: nil
+      needs :selected_token, default: nil, store: true
 
       # helper method to pass @tile and @region_use to every part
       def render_tile_part(part_class, **kwargs)
@@ -77,7 +78,10 @@ module View
         if !@tile.paths.empty? || !@tile.stubs.empty? || !@tile.future_paths.empty?
           children << render_tile_part(Part::Track, routes: @routes)
         end
-        children << render_tile_part(Part::Cities, show_revenue: !render_revenue) unless @tile.cities.empty?
+        unless @tile.cities.empty?
+          children << render_tile_part(Part::Cities, show_revenue: !render_revenue,
+                                                     selected_token: @selected_token)
+        end
 
         children << render_tile_part(Part::Towns, routes: @routes, show_revenue: !render_revenue) unless @tile.towns.empty?
 
