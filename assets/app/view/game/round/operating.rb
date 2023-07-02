@@ -26,7 +26,6 @@ module View
     module Round
       class Operating < Snabberb::Component
         needs :game
-        needs :selected_token, default: nil, store: true
 
         def render
           round = @game.round
@@ -49,7 +48,7 @@ module View
           left << h(ReassignTrains) if @current_actions.include?('reassign_trains')
           left << h(DoubleHeadTrains) if @current_actions.include?('double_head_trains')
           left << h(Choose) if @current_actions.include?('choose')
-          left << h(BuyToken, entity: entity, selected_token: @selected_token) if @current_actions.include?('buy_token')
+          left << h(BuyToken, entity: entity) if @current_actions.include?('buy_token')
 
           if @current_actions.include?('buy_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares') || @current_actions.include?('buy_shares')
@@ -120,7 +119,7 @@ module View
           }
 
           aquire_company_action = @current_actions.include?('acquire_company')
-          right << h(Map, game: @game, selected_token: @selected_token) unless aquire_company_action
+          right << h(Map, game: @game) unless aquire_company_action
           right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @current_actions.include?('buy_company')
           right << h(:div, div_props, [h(AcquireCompanies)]) if aquire_company_action
 

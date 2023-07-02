@@ -8,7 +8,7 @@ module View
       class BuyToken < Snabberb::Component
         include Actionable
         needs :entity
-        needs :selected_token, default: nil
+        needs :selected_token, default: nil, store: true
 
         def render
           step = @game.active_step

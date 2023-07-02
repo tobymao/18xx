@@ -42,7 +42,6 @@ module View
       needs :routes, default: []
       needs :start_pos, default: [1, 1]
       needs :highlight, default: false
-      needs :selected_token, default: nil, store: true
 
       def render
         return nil if @hex.empty
@@ -95,8 +94,7 @@ module View
             tile: @tile,
             show_coords: setting_for(:show_coords, @game) && (@role == :map),
             routes: @routes,
-            game: @game,
-            selected_token: @selected_token,
+            game: @game
           )
         end
         children << h(TriangularGrid) if Lib::Params['grid']

@@ -23,7 +23,6 @@ module View
       needs :historical_laid_hexes, default: nil, store: true
       needs :historical_routes, default: [], store: true
       needs :map_zoom, default: nil, store: true
-      needs :selected_token, default: nil, store: true
 
       EDGE_LENGTH = 50
       SIDE_TO_SIDE = 87
@@ -70,7 +69,6 @@ module View
             routes: routes,
             start_pos: @start_pos,
             highlight: laid_hexes.include?(hex),
-            selected_token: @selected_token,
           )
         end
         @hexes.compact!
