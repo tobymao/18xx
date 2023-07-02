@@ -282,11 +282,13 @@ module Engine
 
         def clear_graph_for_entity(entity)
           super
+          token_graph_for_entity(entity).clear
           @border_paths = nil
         end
 
         def clear_token_graph_for_entity(entity)
           super
+          graph_for_entity(entity).clear
           @border_paths = nil
         end
 
@@ -330,16 +332,16 @@ module Engine
         end
 
         def calc_border_paths
-          border_paths = {}
+          b_paths = {}
           @hexes.each do |hex|
             hex_border_edges = hex.tile.borders.select { |b| b.type == :province }.map(&:edge)
             next if hex_border_edges.empty?
 
             hex.tile.paths.each do |path|
-              border_paths[path] = true unless (path.edges & hex_border_edges).empty?
+              b_paths[path] = true unless (path.edges.map(&:num) & hex_border_edges).empty?
             end
           end
-          border_paths
+          b_paths
         end
 
         def border_paths
@@ -612,7 +614,7 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             G1841::Step::Dividend,
-            # G1841::Step::BuyToken,
+            G1841::Step::BuyToken,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             G1841::Step::HomeToken,
@@ -883,6 +885,15 @@ module Engine
 
         def buyable_bank_owned_companies
           return [] unless @turn > 1
+
+          super
+        end
+
+        # passes and only passes upgrade only to passes
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          from_pass_size = from.cities.any?(&:pass?) ? from.cities[0].size : 0
+          to_pass_size = to.cities.any?(&:pass?) ? to.cities[0].size : 0
+          return false if from_pass_size != to_pass_size
 
           super
         end
