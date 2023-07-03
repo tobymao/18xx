@@ -11,7 +11,18 @@ module Engine
             value: 20,
             revenue: 0,
             desc: 'Company may build an extra tile on F5 with a ƒ40 discount. Blocks F5 while owned by a player.',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F5'] }],
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F5'] },
+                        {
+                          type: 'tile_lay',
+                          when: 'track',
+                          owner_type: 'corporation',
+                          discount: 40,
+                          hexes: 'F5',
+                          tiles: %w[7 8 9],
+                          special: false,
+                          count: 1,
+                        },
+          ],
             color: nil,
           },
           {
@@ -91,7 +102,7 @@ module Engine
                   ' NFL without further payment and immediately sets its par price. The private company may not be sold to any'\
                   ' corporation, and does not exchange hands if the owning player loses the Presidency of the NFL.'\
                   ' When the NFL purchases its first train the private company is closed.'\
-                  ' Blocks E4 & E6 while owned by a player.',
+                  ' Blocks J3 & K2 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[J3 K2] },
                         { type: 'close', when: 'bought_train', corporation: 'NFL' },
                         { type: 'no_buy' },

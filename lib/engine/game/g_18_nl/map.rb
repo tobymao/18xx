@@ -142,7 +142,7 @@ module Engine
             ['B17'] => 'offboard=revenue:yellow_30|brown_50,hide:1,groups:Bremen;path=a:5,b:_0;border=edge:4',
             ['B19'] => 'offboard=revenue:yellow_30|brown_50,groups:Bremen;path=a:0,b:_0;border=edge:1',
             ['E20'] => 'offboard=revenue:yellow_10|brown_70;path=a:0,b:_0;path=a:1,b:_0',
-            ['F21'] => 'offboard=revenue:brown_40;path=a:1,b:_0',
+            ['F21'] => 'offboard=revenue:yellow_0|brown_40;path=a:1,b:_0',
             ['I14'] => 'offboard=revenue:yellow_40|brown_70;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
             ['L1'] => 'offboard=revenue:yellow_40|brown_80,groups:Antwerpen;path=a:3,b:_0;border=edge:4',
             ['L3'] => 'offboard=revenue:yellow_40|brown_80,hide:1,groups:Antwerpen;path=a:2,b:_0;border=edge:1',
