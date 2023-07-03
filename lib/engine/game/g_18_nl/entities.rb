@@ -21,8 +21,7 @@ module Engine
                           tiles: %w[7 8 9],
                           special: false,
                           count: 1,
-                        },
-          ],
+                        }],
             color: nil,
           },
           {
