@@ -35,7 +35,7 @@ module Engine
           },
           {
             sym: :volatility,
-            short_name: 'Volatility Expansion (Alpha)',
+            short_name: 'Volatility Expansion',
             desc: '13 additional private companies and a modified initial auction',
           },
         ].freeze
