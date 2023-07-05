@@ -487,6 +487,48 @@ module Engine
           exchange_presidencies(primary_corp, secondary_corp, merger_corp)
         end
 
+        def all_players_exchange_share_pairs(primary_corp, secondary_corp, merger_corp)
+          president = merger_corp.owner
+          index_for_trigger = @players.index(president)
+          # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
+          #  where the exact value doesn't really matter
+          total_shares_by_player = {}
+          [primary_corp, secondary_corp].each do |corp|
+            corp.player_share_holders.each do |player, num|
+              total_shares_by_player[player] ||= 0
+              total_shares_by_player[player] += num
+            end
+          end
+          awarded_shares_by_player = {}
+          half_shares_by_player = {}
+          total_shares_by_player.each do |player, percentage|
+            num = percentage / 10
+            if num % 2 == 1
+              half_shares_by_player[player] = 1
+              num -= 1
+            end
+            awarded_shares_by_player[player] = num/2
+          end
+          order = @players.rotate(index_for_trigger)
+          order.each { |p| award_shares(merger_corp, p, awarded_shares_by_player[p] || 0) }
+          @round.merge_half_shares_by_player = half_shares_by_player
+        end
+
+        def award_shares(corp, player, num)
+          return unless num.positive?
+          @log << "#{player.name} exchanges for #{num} shares of #{corp.name}"
+          num.times { @share_pool.buy_shares(player, corp.shares_by_corporation[corp].last, exchange: :free, exchange_price: 0) }
+        end
+
+        def exchange_share_pairs(primary_corp, secondary_corp, merger_corp, player)
+          shares_to_exchange = primary_corp.player_share_holders[player] + secondary_corp.player_share_holders[player]
+          if shares_to_exchange % 2 == 1
+            players_with_half_shares.add(player)
+            shares_to_exchange -= 1
+          end
+          shares_to_exchange /= 2
+        end
+
         def exchange_presidencies(primary_corp, secondary_corp, merger_corp)
           # Setup
           @round.merge_presidency_exchange_merging_corp = merger_corp
@@ -520,8 +562,9 @@ module Engine
           end
         end
 
-        def finish_exchanges(_primary_corp, _secondary_corp, _merger_corp)
-          @log << 'Exchanges done'
+        def finish_exchanges(primary_corp, secondary_corp, merger_corp)
+          @log << 'Presidency exchanges done'
+          all_players_exchange_share_pairs(primary_corp, secondary_corp, merger_corp)
         end
 
         # Return true if exchange was done automatically, return false if intervention is needed
