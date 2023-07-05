@@ -26,6 +26,7 @@ module View
         needs :reservation, default: nil
         needs :game, default: nil, store: true
         needs :city_render_location, default: nil
+        needs :selected_token, default: nil, store: true
 
         RESERVATION_FONT_SIZE = {
           1 => 22,
@@ -122,17 +123,22 @@ module View
           entity = @selected_company || step.current_entity
           remove_token_step = @game.round.step_for(entity, 'remove_token')
           place_token_step = @game.round.step_for(entity, 'place_token')
-          return if !remove_token_step && !place_token_step
+          buy_token_step = @game.round.step_for(entity, 'buy_token')
+          return if !remove_token_step && !place_token_step && !buy_token_step
           return if @token &&
                     (!remove_token_step&.can_replace_token?(entity, @token) &&
-                     !place_token_step&.can_replace_token?(entity, @token)) &&
+                     !place_token_step&.can_replace_token?(entity, @token) &&
+                     !buy_token_step&.can_replace_token?(entity, @token)) &&
                     !(cheater = @game.abilities(entity, :token)&.cheater) &&
                     !@game.abilities(entity, :token)&.extra_slot
+          return if !@token && buy_token_step
 
           event.JS.stopPropagation
 
           # if remove_token and place_token is possible, remove should only be called when a token is available
-          if remove_token_step && (@token || !place_token_step)
+          if buy_token_step
+            store(:selected_token, @token)
+          elsif remove_token_step && (@token || !place_token_step)
             return unless @token
 
             action = Engine::Action::RemoveToken.new(

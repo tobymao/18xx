@@ -331,6 +331,9 @@ module Engine
             @game.abilities(company, :additional_token) do |ability|
               corporation.tokens << Engine::Token.new(corporation)
               ability.use!
+              @log << "#{corporation.name} acquires additonal token from #{company.name}"
+              @log << "#{company.name} closes"
+              company.close!
             end
           end
 

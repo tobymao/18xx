@@ -47,6 +47,7 @@ module Engine
         SOLD_OUT_INCREASE = true
         POOL_SHARE_DROP = :one
         TRACK_RESTRICTION = :semi_restrictive
+        MIN_BID_INCREMENT = 5
 
         MARKET = [
           %w[72 83 95 107 120 133 147 164 182 202 224m 248 276 306 340x 377n 419 465 516],
@@ -96,7 +97,6 @@ module Engine
             tiles: %i[yellow green],
             operating_rounds: 2,
             status: %w[one_tile_per_base_max_2 start_non_hist concessions_removed],
-            events: [{ 'type' => 'phase4_regions' }],
           },
           {
             name: '5',
@@ -105,7 +105,6 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 3,
             status: %w[one_tile_per_or start_non_hist],
-            events: [{ 'type' => 'phase5_regions' }],
           },
           {
             name: '6',
@@ -133,12 +132,14 @@ module Engine
           },
         ].freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        EVENTS_TEXT = {
+          'close_companies' => ['Concessions Close',
+                                'All concessions are discarded from the game'],
           'phase4_regions' => ['Phase4 Regions',
                                'Conservative Zone border is eliminated; The Austrian possesions are limited to Veneto'],
           'phase5_regions' => ['Phase5 Regions',
                                'Austrian possessions are eliminated; 1859-1866 Austrian border is deleted'],
-        )
+        }.freeze
 
         TRAINS = [
           {
@@ -164,6 +165,7 @@ module Engine
             price: 350,
             rusts_on: '7',
             num: 4,
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'phase4_regions' }],
           },
           {
             name: '5',
@@ -171,6 +173,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 550,
             num: 2,
+            events: [{ 'type' => 'phase5_regions' }],
           },
           {
             name: '6',
@@ -220,8 +223,16 @@ module Engine
           '8' => :black,
         }.freeze
 
+        CERT_LIMIT_INCLUDES_PRIVATES = false
+        MAX_CORPORATE_CERTS = 5
+
         def init_graph
           Graph.new(self, check_tokens: true)
+        end
+
+        # only allow president shares in market on EMR/Frozen
+        def init_share_pool
+          SharePool.new(self, allow_president_sale: true)
         end
 
         # load non-standard corporation info
@@ -245,6 +256,8 @@ module Engine
           @corporation_info = load_corporation_extended
           modify_regions(2, true)
           @border_paths = nil
+          update_frozen!
+          corporations.each { |corp| @corporation_info[corp][:operated] = false }
         end
 
         def select_track_graph
@@ -269,11 +282,13 @@ module Engine
 
         def clear_graph_for_entity(entity)
           super
+          token_graph_for_entity(entity).clear
           @border_paths = nil
         end
 
         def clear_token_graph_for_entity(entity)
           super
+          graph_for_entity(entity).clear
           @border_paths = nil
         end
 
@@ -317,16 +332,16 @@ module Engine
         end
 
         def calc_border_paths
-          border_paths = {}
+          b_paths = {}
           @hexes.each do |hex|
             hex_border_edges = hex.tile.borders.select { |b| b.type == :province }.map(&:edge)
             next if hex_border_edges.empty?
 
             hex.tile.paths.each do |path|
-              border_paths[path] = true unless (path.edges & hex_border_edges).empty?
+              b_paths[path] = true unless (path.edges.map(&:num) & hex_border_edges).empty?
             end
           end
-          border_paths
+          b_paths
         end
 
         def border_paths
@@ -342,16 +357,20 @@ module Engine
         end
 
         def major?(entity)
-          entity.corporation? && (entity.type == :major)
+          entity&.corporation? && (entity.type == :major)
         end
 
         def historical?(entity)
-          entity.corporation? && @corporation_info[entity][:historical]
+          entity&.corporation? && @corporation_info[entity][:historical]
+        end
+
+        def startable?(entity)
+          entity&.corporation? && @corporation_info[entity][:startable]
         end
 
         # returns a list of tokens on cities for this corporation
         def railheads(entity)
-          return [] unless entity.corporation?
+          return [] unless entity&.corporation?
 
           entity.tokens.select { |t| t.used && t.city && !t.city.pass? }
         end
@@ -520,26 +539,67 @@ module Engine
           share.owner = new_owner
         end
 
-        # FIXME
         def ipo_name(_corp)
-          'Treasury'
+          'IPO'
         end
 
-        # FIXME
         def corporation_available?(corp)
-          super
+          (historical?(corp) && startable?(corp)) ||
+            (!historical?(corp) && (@phase.name.to_i >= 3))
         end
 
-        # FIXME
+        def concession_ok?(player, corp)
+          return true if @phase.name.to_i >= 4
+          return true unless historical?(corp)
+          return false unless player.player?
+
+          player.companies.any? { |c| c.sym == corp.name }
+        end
+
         def can_par?(corporation, entity)
           return false unless corporation_available?(corporation)
+          return false unless concession_ok?(entity, corporation)
 
           super
         end
 
-        # FIXME
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1841::Step::ConcessionAuction,
+          ])
+        end
+
+        def auction_companies
+          companies.dup
+        end
+
+        # reorder players by least cash.
+        # - if tied, lowest numbered concession
+        # - if tied, original order
+        def init_reorder_players
+          current_order = @players.dup
+          lowest_concession = {}
+          @players.each do |p|
+            lowest = p.companies.min_by { |c| @companies.index(c) }
+            lowest_concession[p] = lowest ? @companies.index(lowest) : -1
+          end
+          @players.sort_by! { |p| [p.cash, lowest_concession[p], current_order.index(p)] }
+          @log << '-- New player order: --'
+          @players.each.with_index do |p, idx|
+            pd = idx.zero? ? ' - Priority Deal -' : ''
+            @log << "#{p.name}#{pd} (#{format_currency(p.cash)})"
+          end
+        end
+
+        def init_round_finished
+          companies.reject { |c| c&.owner&.player? }.each do |c|
+            c.owner = bank
+            @log << "#{c.name} (#{c.sym}) has not been bought and is moved to the bank"
+          end
+        end
+
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1841::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1841::Step::HomeToken,
             G1841::Step::BuyTokens,
@@ -549,19 +609,66 @@ module Engine
 
         # FIXME
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1841::Round::Operating.new(self, [
             G1841::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1841::Step::Dividend,
-            # G1841::Step::BuyToken,
+            G1841::Step::BuyToken,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            # G1841::Step::SellCorpShares,
-            # G1841::Step::BuyCorpShares,
+            G1841::Step::HomeToken,
+            G1841::Step::BuyTokens,
+            G1841::Step::CorporateBuySellParShares,
             # G1841::Step::Merge,
             # G1841::Step::Transform,
           ], round_num: round_num)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              init_reorder_players
+              new_stock_round
+            end
+        end
+
+        def bayard
+          @bayard ||= company_by_id('Bayard')
+        end
+
+        def return_concessions!
+          companies.each do |c|
+            next if c == bayard
+            next unless c&.owner&.player?
+            next if corporation_by_id(c.sym).ipoed
+
+            player = c.owner
+            player.companies.delete(c)
+            c.owner = bank
+            @log << "#{c.name} (#{c.sym}) has not been used by #{player.name} and is returned to the bank"
+          end
+        end
+
+        def finish_stock_round
+          payout_companies
+          return_concessions!
         end
 
         # implement non-standard offboard colors
@@ -586,6 +693,209 @@ module Engine
             !stop.pass? && !(stop.town? && stop.tile.icons.any? { |i| i.name == 'port' })
           end
           raise GameError, 'Route must have at least 2 cities, non-port towns or offboards' unless required_stops > 1
+        end
+
+        # return a list of owners from the current corporation to a human (or the share pool)
+        # return nil if circular chain of ownership
+        def chain_of_control(entity)
+          return [entity] unless entity&.corporation?
+
+          owner = entity&.owner
+          chain = [owner]
+          while owner&.corporation?
+            owner = owner&.owner
+            if chain.include?(owner)
+              chain << share_pool
+              return chain
+            end
+
+            chain << owner
+          end
+          chain
+        end
+
+        # find the human in control if there is one, or the share pool if not
+        def controller(entity)
+          return entity unless entity.corporation?
+
+          chain_of_control(entity)&.last
+        end
+
+        # return list of corporations controlled by a given player
+        def controlled_corporations(entity)
+          return [] unless entity&.player?
+
+          controlled = []
+          corporations.each do |corp|
+            next if controlled.include?(corp)
+
+            controlled << corp if controller(corp) == entity
+          end
+          controlled
+        end
+
+        def in_chain?(entity1, entity2)
+          chain_of_control(entity1).include?(entity2)
+        end
+
+        def player_controlled_percentage(buyer, corporation)
+          human = controller(buyer)
+          total_percent = human.common_percent_of(corporation)
+          controlled_corporations(human).each do |c|
+            next if c == corporation
+
+            total_percent += c.common_percent_of(corporation)
+          end
+          total_percent
+        end
+
+        def acting_for_entity(entity)
+          return entity if entity&.player?
+          return controller(entity) if entity&.corporation?
+
+          super
+        end
+
+        def frozen?(entity)
+          entity.corporation? && @corporation_info[entity][:frozen]
+        end
+
+        def frozen_corporations
+          corporations.select { |corp| frozen?(corp) }
+        end
+
+        def update_frozen!
+          corporations.each do |corp|
+            frozen = corp.ipoed && !controller(corp)&.player?
+            @log << "#{corp.name} is no longer frozen" if frozen?(corp) && !frozen
+            @log << "#{corp.name} is now frozen" if !frozen?(corp) && frozen
+            @corporation_info[corp][:frozen] = frozen
+          end
+        end
+
+        # A corp is not considered to have operated until the end of it's first OR
+        def done_operating!(entity)
+          return unless entity&.corporation?
+
+          @log << "#{entity.name} has finished operating for the first time" unless operated?(entity)
+
+          @corporation_info[entity][:operated] = true
+        end
+
+        def operated?(entity)
+          return nil unless entity&.corporation?
+
+          @corporation_info[entity][:operated]
+        end
+
+        def check_sale_timing(_entity, bundle)
+          operated?(bundle.corporation)
+        end
+
+        def num_certs(entity)
+          return super unless entity&.corporation?
+
+          entity.shares.sum do |s|
+            (s.corporation != entity) && s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
+          end
+        end
+
+        def cert_limit(entity)
+          return super unless entity&.corporation?
+
+          MAX_CORPORATE_CERTS
+        end
+
+        def corporations_can_ipo?
+          true
+        end
+
+        def separate_treasury?
+          true
+        end
+
+        def player_sort(entities)
+          entities.sort_by { |entity| [operating_order.index(entity) || Float::INFINITY, entity.name] }
+            .group_by { |e| acting_for_entity(e) }
+        end
+
+        def possible_presidents
+          players.reject(&:bankrupt) + corporations.select(&:floated?).reject(&:closed?).sort
+        end
+
+        # for 1841, this means frozen
+        def receivership_corporations
+          frozen_corporations
+        end
+
+        def status_str(corp)
+          return unless frozen?(corp)
+
+          'FROZEN'
+        end
+
+        def company_header(_company)
+          'CONCESSION'
+        end
+
+        # FIXME
+        def allow_player2player_sales?
+          false
+        end
+
+        def event_close_companies!
+          @log << '-- Event: Concessions close --'
+          @companies.each do |company|
+            if (ability = abilities(company, :close, on_phase: 'any')) && (ability.on_phase == 'never' ||
+                @phase.phases.any? { |phase| ability.on_phase == phase[:name] })
+              next
+            end
+
+            corp = corporation_by_id(company.sym)
+            deferred_president_change(corp) if corp&.ipoed
+
+            company.close!
+          end
+        end
+
+        def pres_change_ok?(corporation)
+          (@phase.name.to_i >= 4) || !historical?(corporation)
+        end
+
+        # change president if needed
+        def deferred_president_change(corporation)
+          previous_president = corporation.owner
+          max_shares = corporation.player_share_holders.values.max
+          majority_share_holders = corporation.player_share_holders.select { |_, p| p == max_shares }.keys
+          return if majority_share_holders.any? { |entity| entity == previous_president }
+
+          president = majority_share_holders
+            .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
+            .min_by { |p| @share_pool.distance(previous_president, p) }
+          return unless president
+
+          corporation.owner = president
+          @log << "#{president.name} becomes the president of #{corporation.name}"
+
+          presidents_share = previous_president.shares_of(corporation).find(&:president)
+
+          # swap shares so new president has president share
+          @share_pool.change_president(presidents_share, previous_president, president)
+        end
+
+        def buyable_bank_owned_companies
+          return [] unless @turn > 1
+
+          super
+        end
+
+        # passes and only passes upgrade only to passes
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          from_pass_size = from.cities.any?(&:pass?) ? from.cities[0].size : 0
+          to_pass_size = to.cities.any?(&:pass?) ? to.cities[0].size : 0
+          return false if from_pass_size != to_pass_size
+
+          super
         end
       end
     end

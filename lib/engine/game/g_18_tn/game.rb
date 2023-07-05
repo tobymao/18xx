@@ -179,9 +179,14 @@ module Engine
           Engine::Step::SingleDepotTrainBuy::STATUS_TEXT
         ).freeze
 
-        # Two lays or one upgrade
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
-
+        # Two lays or one upgrade, with a optional third yellow variant on first run.
+        def tile_lays(entity)
+          lays = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+          if @optional_rules&.include?(:triple_yellow_first_or) && @recently_floated&.include?(entity)
+            lays << { lay: :not_if_upgraded, upgrade: false }
+          end
+          lays
+        end
         STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
         GREEN_CITY_TILES = %w[14 15 619].freeze
 
@@ -203,6 +208,9 @@ module Engine
 
           @brown_p_tile ||= @tiles.find { |t| t.name == '170' }
           @green_nashville_tile ||= @tiles.find { |t| t.name == 'TN2' }
+
+          # needed for triple_yellow_first_or variant
+          @recently_floated = []
         end
 
         def status_str(corp)
@@ -236,6 +244,18 @@ module Engine
             Engine::Step::SingleDepotTrainBuy,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        # needed for triple_yellow_first_or variant
+        def or_round_finished
+          @recently_floated = []
+        end
+
+        # needed for triple_yellow_first_or variant
+        def float_corporation(corporation)
+          @recently_floated << corporation
+
+          super
         end
 
         def stock_round

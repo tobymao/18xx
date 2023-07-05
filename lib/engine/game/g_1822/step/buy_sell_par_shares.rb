@@ -81,6 +81,7 @@ module Engine
 
           def can_gain?(entity, bundle, exchange: false)
             return if !bundle || !entity
+            return if bundle.owner&.player?
 
             corporation = bundle.corporation
             corporation.holding_ok?(entity, bundle.percent) &&

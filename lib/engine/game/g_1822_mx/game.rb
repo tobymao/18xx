@@ -508,7 +508,7 @@ module Engine
           @round.entities.insert(@round.entity_index + 1, ndem)
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           return super unless bundle.corporation == corporation_by_id('NDEM')
 
           @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
