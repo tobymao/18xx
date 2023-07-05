@@ -21,8 +21,8 @@ module Engine
         false
       end
 
-      def choices_ability
-        abilities(current_entity).choices
+      def choices_ability(entity)
+        abilities(entity).choices
       end
 
       def abilities(entity, **kwargs, &block)

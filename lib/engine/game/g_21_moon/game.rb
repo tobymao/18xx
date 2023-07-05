@@ -928,7 +928,7 @@ module Engine
           super
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           return super if bundle.corporation.operated?
 
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)

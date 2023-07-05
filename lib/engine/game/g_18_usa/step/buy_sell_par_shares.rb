@@ -39,28 +39,32 @@ module Engine
             max_bid = max_bid(entity, corporation)
             raise GameError, "Invalid bid, maximum bidding power is #{max_bid}" if bid > max_bid
 
-            cash = entity.cash + city_subsidy_value(corporation)
+            cash = entity.cash + city_cash_subsidy(corporation)
             return if cash >= bid
 
             options = available_company_options(entity).map(&:sum)
-            return if options.any? { |option| option <= bid && (option + cash) >= bid }
+            return if options.any? { |option| (option + cash) >= bid }
 
             raise GameError, 'Invalid bid, no combination of privates and cash add up to bid amount'
           end
 
           def max_bid(entity, corporation = nil)
-            super + city_subsidy_value(corporation)
+            super + city_cash_subsidy(corporation)
           end
 
-          def max_city_subsidy
-            @game.subsidies_by_hex.values.map { |s| s[:value] }.max || 0
+          def city_cash_subsidies
+            @game.subsidies_by_hex.values.map { |s| s[:value] }
+          end
+
+          def max_cash_subsidy
+            city_cash_subsidies&.max || 0
           end
 
           def add_bid(action)
             unless @auctioning
               bid = action.price
               max_bid = @game.bidding_power(action.entity)
-              @round.minimum_city_subsidy = bid - max_bid if bid > max_bid
+              @round.minimum_cash_subsidy = bid - max_bid if bid > max_bid
             end
 
             super
@@ -108,33 +112,27 @@ module Engine
             par_corporation if available_subsidiaries(winner.entity).none?
           end
 
-          def city_subsidy_value(corporation)
-            return max_city_subsidy if !corporation || !corporation.tokens.first.used
+          def city_cash_subsidy(corporation)
+            return max_cash_subsidy if !corporation || !corporation.tokens.first.used
 
             corporation.companies.find { |c| c.value.positive? }&.value || 0
+          end
+
+          def available_company_options(entity)
+            [[entity.companies.sum(&:value)]]
           end
 
           def available_subsidiaries(entity)
             entity ||= current_entity
             return [] if !@winning_bid || @winning_bid.entity != entity
 
-            max_total = @remaining_bid_amount
-            min_total = entity.cash.negative? ? entity.cash.abs : 0
-
-            # Filter potential values to those that are valid options
-            options = available_company_options(entity).select do |option|
-              total = option.sum
-              total >= min_total && total <= max_total
-            end.flatten
-
-            entity.companies.select do |company|
-              options.include?(company.value)
-            end
+            entity.companies
           end
 
           def process_assign(action)
             super
             @remaining_bid_amount -= action.target.value
+            @remaining_bid_amount = 0 if @remaining_bid_amount.negative?
           end
 
           def use_on_assign_abilities(company)

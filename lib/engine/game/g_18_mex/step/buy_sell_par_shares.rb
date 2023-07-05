@@ -18,6 +18,7 @@ module Engine
 
           def can_gain?(entity, bundle, exchange: false)
             return if !bundle || !entity || attempt_ndm_action_on_unavailable?(bundle)
+            return if bundle.owner&.player?
 
             bundle.corporation.holding_ok?(entity, bundle.percent) && (exchange || room_to_gain?(entity, bundle))
           end

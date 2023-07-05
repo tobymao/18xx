@@ -94,9 +94,10 @@ module Engine
       # Some 18xx games can only buy one share per turn.
       def can_buy?(entity, bundle)
         return unless bundle&.buyable
+        return false if entity == bundle.owner
 
         corporation = bundle.corporation
-        entity.cash >= bundle.price &&
+        entity.cash >= modify_purchase_price(bundle) &&
           !@round.players_sold[entity][corporation] &&
           (can_buy_multiple?(entity, corporation, bundle.owner) || !bought?) &&
           can_gain?(entity, bundle)
@@ -167,7 +168,9 @@ module Engine
       def process_buy_shares(action)
         @round.players_bought[action.entity][action.bundle.corporation] += action.bundle.percent
         @round.bought_from_ipo = true if action.bundle.owner.corporation?
-        buy_shares(action.purchase_for || action.entity, action.bundle, swap: action.swap, borrow_from: action.borrow_from)
+        buy_shares(action.purchase_for || action.entity, action.bundle,
+                   swap: action.swap, borrow_from: action.borrow_from,
+                   allow_president_change: allow_president_change?(action.bundle.corporation))
         track_action(action, action.bundle.corporation)
       end
 
@@ -239,7 +242,7 @@ module Engine
         bundle = min_share&.to_bundle
         return unless bundle
 
-        entity.cash >= bundle.price && can_gain?(entity, bundle)
+        entity.cash >= modify_purchase_price(bundle) && can_gain?(entity, bundle)
       end
 
       def can_buy_any_from_market?(entity)
@@ -259,9 +262,16 @@ module Engine
         false
       end
 
+      def can_buy_any_from_player?(entity)
+        return unless @game.class::BUY_SHARE_FROM_OTHER_PLAYER
+
+        @game.players.reject { |p| p == entity }.any? { |p| can_buy_shares?(entity, p.shares) }
+      end
+
       def can_buy_any?(entity)
         (can_buy_any_from_market?(entity) ||
-        can_buy_any_from_ipo?(entity))
+        can_buy_any_from_ipo?(entity) ||
+        can_buy_any_from_player?(entity))
       end
 
       def can_ipo_any?(entity)
@@ -494,6 +504,14 @@ module Engine
 
       def from_market?(program)
         program.from_market
+      end
+
+      def modify_purchase_price(bundle)
+        bundle.price
+      end
+
+      def allow_president_change?(_corporation)
+        true
       end
     end
   end

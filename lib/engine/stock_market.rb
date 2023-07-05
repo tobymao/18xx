@@ -13,11 +13,16 @@ module Engine
       @zigzag = zigzag
       @market = market.map.with_index do |row, r_index|
         row.map.with_index do |code, c_index|
-          price = SharePrice.from_code(code,
-                                       r_index,
-                                       c_index,
-                                       unlimited_types,
-                                       multiple_buy_types: multiple_buy_types)
+          price = if code.instance_of?(Hash)
+                    SharePrice.new([r_index, c_index], unlimited_types: unlimited_types, multiple_buy_types: multiple_buy_types,
+                                                       **code)
+                  else
+                    SharePrice.from_code(code,
+                                         r_index,
+                                         c_index,
+                                         unlimited_types,
+                                         multiple_buy_types: multiple_buy_types)
+                  end
           @par_prices << price if price&.can_par?
           @has_close_cell = true if price&.type == :close
           price

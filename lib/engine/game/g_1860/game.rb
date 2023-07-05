@@ -773,7 +773,7 @@ module Engine
           corporation.operated? && !@no_price_drop_on_sale
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           corporation = bundle.corporation
           old_price = corporation.share_price
 

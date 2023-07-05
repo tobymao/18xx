@@ -25,6 +25,11 @@ module Engine
             desc: 'Allow corporation to lay 2 yellows its first OR',
           },
           {
+            sym: :new_georgia_florida_home,
+            short_name: 'New Georgia & Florida home',
+            desc: 'The Georgia & Florida Railroad home is moved from Albany to Columbus',
+          },
+          {
             sym: :soft_rust_4t,
             short_name: 'Soft rust',
             desc: '4 trains run once more after 8 train is bought',

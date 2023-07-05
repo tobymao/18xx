@@ -210,6 +210,7 @@ module Engine
 
       TRAIN_CLASS = Train
       DEPOT_CLASS = Depot
+      PLAYER_CLASS = Player
 
       MINORS = [].freeze
 
@@ -250,6 +251,7 @@ module Engine
       DISCARDED_TRAINS = :discard # discard or remove
       DISCARDED_TRAIN_DISCOUNT = 0 # percent
       CLOSED_CORP_TRAINS_REMOVED = true
+      CLOSED_CORP_TOKENS_REMOVED = true
       CLOSED_CORP_RESERVATIONS_REMOVED = true
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
@@ -338,6 +340,8 @@ module Engine
 
       CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = false
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = false
+
+      BUY_SHARE_FROM_OTHER_PLAYER = false
 
       VARIABLE_FLOAT_PERCENTAGES = false
 
@@ -506,7 +510,7 @@ module Engine
                    names.to_h { |n| [n, n] }
                  end
 
-        @players = @names.map { |player_id, name| Player.new(player_id, name) }
+        @players = @names.map { |player_id, name| self.class::PLAYER_CLASS.new(player_id, name) }
         @user = user
         @programmed_actions = Hash.new { |h, k| h[k] = [] }
         @round_counter = 0
@@ -1139,12 +1143,12 @@ module Engine
         self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
-      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
         corporation = bundle.corporation
         old_price = corporation.share_price
         was_president = corporation.president?(bundle.owner)
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-        case self.class::SELL_MOVEMENT
+        case movement || self.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
@@ -1705,7 +1709,7 @@ module Engine
 
         hexes.each do |hex|
           hex.tile.cities.each do |city|
-            city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!)
+            city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!) if self.class::CLOSED_CORP_TOKENS_REMOVED
 
             if self.class::CLOSED_CORP_RESERVATIONS_REMOVED && city.reserved_by?(corporation)
               city.reservations.delete(corporation)
@@ -1849,6 +1853,8 @@ module Engine
             next if entity&.name != ability.corporation
 
             company.close!
+            next if ability.silent
+
             @log << "#{company.name} closes"
           end
         end
@@ -2184,6 +2190,22 @@ module Engine
       end
 
       def after_buying_train(train, source); end
+
+      def sold_shares_destination(_entity)
+        self.class::SOLD_SHARES_DESTINATION
+      end
+
+      def corporations_can_ipo?
+        false
+      end
+
+      def possible_presidents
+        players.reject(&:bankrupt)
+      end
+
+      def receivership_corporations
+        corporations.select(&:receivership?)
+      end
 
       private
 

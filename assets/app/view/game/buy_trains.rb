@@ -30,7 +30,7 @@ module View
         cheapest_train_price = if @step.respond_to?(:cheapest_train_price)
                                  @step.cheapest_train_price(@corporation)
                                else
-                                 @depot.min_depot_price
+                                 discounted_train(@depot.min_depot_train, @depot.min_depot_price).first
                                end
         cash = @corporation.cash + player.cash
         share_funds_required = cheapest_train_price - cash
@@ -298,6 +298,29 @@ module View
         h('div#buy_trains', props, children)
       end
 
+      def discounted_train(train, price)
+        entity = @corporation
+
+        if @selected_company && [@corporation, @corporation.owner].include?(@selected_company.owner) \
+          && @step.respond_to?(:ability_timing)
+          @game.abilities(@selected_company, :train_discount, time: @step.ability_timing) do |ability|
+            if ability.trains.empty? || ability.trains.include?(train.name)
+              price = ability.discounted_price(train, price)
+              entity = @selected_company
+            end
+          end
+        elsif @step.respond_to?(:ability_timing)
+          # Handle a corporation having train discount ability
+          @game.abilities(@corporation, :train_discount, time: @step.ability_timing) do |ability|
+            next if ability.count
+
+            price = ability.discounted_price(train, price) if ability.trains.empty? || ability.trains.include?(train.name)
+          end
+        end
+
+        [@game.discard_discount(train, price), entity]
+      end
+
       def from_depot(depot_trains, corporation)
         depot_trains.flat_map do |train|
           train.variants
@@ -308,24 +331,7 @@ module View
             president_assist, _fee = @game.president_assisted_buy(@corporation, train, price)
             entity = @corporation
 
-            if @selected_company && [@corporation, @corporation.owner].include?(@selected_company.owner) \
-              && @step.respond_to?(:ability_timing)
-              @game.abilities(@selected_company, :train_discount, time: @step.ability_timing) do |ability|
-                if ability.trains.include?(train.name)
-                  price = ability.discounted_price(train, price)
-                  entity = @selected_company
-                end
-              end
-            elsif @step.respond_to?(:ability_timing)
-              # Handle a corporation having train discount ability
-              @game.abilities(@corporation, :train_discount, time: @step.ability_timing) do |ability|
-                next if ability.count
-
-                price = ability.discounted_price(train, price) if ability.trains.include?(train.name)
-              end
-            end
-
-            price = @game.discard_discount(train, price)
+            price, entity = discounted_train(train, price)
 
             buy_train = lambda do
               process_action(Engine::Action::BuyTrain.new(
