@@ -184,6 +184,7 @@ module Engine
           # ICG/SCL Merger!
           G18Dixie::Step::MergeConsent,
           G18Dixie::Step::PresidencyShareExchange,
+          G18Dixie::Step::OptionShare,
           # normal stuff
           Engine::Step::BuyTrain,
           [Engine::Step::BuyCompany, { blocks: true }],
@@ -511,7 +512,43 @@ module Engine
           end
           order = @players.rotate(index_for_trigger)
           order.each { |p| award_shares(merger_corp, p, awarded_shares_by_player[p] || 0) }
-          @round.merge_half_shares_by_player = half_shares_by_player
+
+          sell_price = (merger_corp.share_price.price / 2).floor
+          buy_price = (merger_corp.share_price.price / 2).ceil
+
+          order = @players.rotate(@players.index(merger_corp.owner))
+          order.each do |player|
+            next unless half_shares_by_player[player]
+            @round.pending_options << {
+              entity: player,
+              corporation: merger_corp,
+              sell_price: sell_price,
+              buy_price: buy_price
+            }
+          end
+          after_option_choice(merger_corp)
+        end
+
+        def after_option_choice(corp)
+          return unless @round.pending_options.empty?
+          # shares are done being exchanged; final cleanup
+          # all remaining icg/scl shares go to pool
+          @share_pool.transfer_shares(ShareBundle.new(corp.shares_of(corp)), @share_pool)
+
+          #@log << "#{merger_corp.name} gets the cash from #{primary_corp.name} and #{secondary_corp.name}"
+          #primary_corp.spend(primary_corp.cash, merger_corp)
+          #secondary_corp.spend(secondary_corp.cash, merger_corp)
+        end
+
+        # just a basic share move without payment or president change
+        #
+        def transfer_share(share, new_owner)
+          corp = share.corporation
+          corp.share_holders[share.owner] -= share.percent
+          corp.share_holders[new_owner] += share.percent
+          share.owner.shares_by_corporation[corp].delete(share)
+          new_owner.shares_by_corporation[corp] << share
+          share.owner = new_owner
         end
 
         def award_shares(corp, player, num)
