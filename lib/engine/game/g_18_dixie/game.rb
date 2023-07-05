@@ -105,6 +105,12 @@ module Engine
             'End of OR 3.1: Minors 9-13 are closed',
           ].freeze
         end
+        def after_buying_train(train, source)
+          # if it is a 4D from the depot (not discard, event time)
+          if train.variant['name'] == '4D' && source == @depot && !@depot.discarded.include?(train)
+            event_scl_formation_chance!
+          end
+        end
 
         def next_round!
           @round =
@@ -150,6 +156,15 @@ module Engine
 
         def ipo_reserved_name(_entity = nil)
           'IPO Preferred'
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          if @round.merge_presidency_cash_crisis_player
+            # Normal train bankruptcy check, except for SCL/ICG formation
+            total_emr_buying_power(player, corporation).negative?
+          else
+            total_emr_buying_power(player, corporation) < @depot.min_depot_price
+          end
         end
 
         # OR Stuff
@@ -449,7 +464,7 @@ module Engine
         def merger_price(merging_corps)
           # Putting the value, lower, and upper bounds in an array, sorting, and taking the new middle value
           #  is a pretty easy & lazy way to get the "capped" value. Sorting an array of length 3 is also pretty quick
-          merger_value = [90, merging_corps.sum { |c| c.share_price.price } / 2, 140].sort[1]
+          merger_value = [90, merging_corps.sum { |c| c.share_price.price } , 140].sort[1]
           # The 'highest stock value that does not exceed this sum'
           # Search from right to left (highest to lowest), take the first that does not exceed and call it a day
           @stock_market.market[0].reverse.find { |p| p.price <= merger_value }
@@ -515,7 +530,7 @@ module Engine
           shares_to_exchange = 4
           # exchange presidency certificates first to make the later 2-for-1 share swap step easier
           [primary_corp, secondary_corp].each do |corp|
-            president.shares_of(corp).each do |share|
+            president.shares_of(corp).dup.each do |share|
               next unless share&.president
 
               @log << "#{president.name} exchanges #{corp.name}'s president's certificate"
@@ -526,25 +541,25 @@ module Engine
           return true if shares_to_exchange.zero?
 
           # The player still has to exchange shares, now try 10% shares of the primary
-          president.shares_of(primary_corp).each do |share|
+          president.shares_of(primary_corp).dup.each do |share|
             next if share.president
 
             @log << "#{president.name} exchanges a 10% share of #{primary_corp.name}"
             share.transfer(primary_corp)
             shares_to_exchange -= 1
+            return true if shares_to_exchange.zero?
           end
-          return true if shares_to_exchange.zero?
 
           # The player still has to exchange shares, finally try 10% shares of the secondary
-          president.shares_of(secondary_corp).each do |share|
+          president.shares_of(secondary_corp).dup.each do |share|
             # If the player is president of the other corp, then they'll get a chance to exchange this later.
             next if share.president
 
             @log << "#{president.name} exchanges a 10% share of #{secondary_corp.name}"
             share.transfer(secondary_corp)
             shares_to_exchange -= 1
+            return true if shares_to_exchange.zero?
           end
-          return true if shares_to_exchange.zero?
 
           # The player has a share shortfall and has to pay a penalty of merger_corp's market price _for_each_share_short_
           penalty = shares_to_exchange * merger_corp.share_price.price

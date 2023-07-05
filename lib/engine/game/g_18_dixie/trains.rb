@@ -75,10 +75,8 @@ module Engine
             variants: [
               name: '4D',
               distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4, 'multiplier' => 2 }],
-              events: [{ 'type' => 'scl_formation_chance' }],
               price: 800,
             ],
-            variant_event_handling: :individual,
           },
           {
             name: '5D',
@@ -87,7 +85,6 @@ module Engine
             events: [{ 'type' => 'icg_formation_chance' }],
             price: 900,
             num: 5,
-            variant_event_handling: :individual,
           },
         ].freeze
       end
