@@ -519,7 +519,7 @@ module Engine
           @players.size == 3 ? { max_ownership_percent: 70 } : {}
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           super(bundle, allow_president_change: pres_change_ok?(bundle.corporation), swap: nil)
         end
 

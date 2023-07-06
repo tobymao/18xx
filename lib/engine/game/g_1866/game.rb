@@ -1302,7 +1302,7 @@ module Engine
           entity.runnable_trains.reject { |t| infrastructure_train?(t) }
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           corporation = bundle.corporation
           before_share_price = corporation.share_price
           was_president = corporation.president?(bundle.owner) || bundle.owner == corporation

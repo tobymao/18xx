@@ -6,6 +6,33 @@ module View
   module Game
     module Part
       module SmallItem
+        def preferred_render_locations_by_loc
+          parts = parts_for_loc
+
+          if layout == :pointy
+            case @loc.to_s
+            when '0.5'
+              parts.one? ? [PP_BOTTOM_LEFT_CORNER] : [PP_WIDE_BOTTOM_LEFT_CORNER]
+            when '1.5'
+              parts.one? ? [PP_UPPER_LEFT_CORNER] : [PP_WIDE_UPPER_LEFT_CORNER]
+            when '2.5'
+              parts.one? ? [PP_TOP_CORNER] : [PP_WIDE_TOP_CORNER]
+            when '3.5'
+              parts.one? ? [PP_UPPER_RIGHT_CORNER] : [PP_WIDE_UPPER_RIGHT_CORNER]
+            when '4.5'
+              parts.one? ? [PP_BOTTOM_RIGHT_CORNER] : [PP_WIDE_BOTTOM_RIGHT_CORNER]
+            when '5.5'
+              parts.one? ? [PP_BOTTOM_CORNER] : [PP_WIDE_BOTTOM_CORNER]
+            else
+              @loc = nil
+              preferred_render_locations
+            end
+          else
+            @loc = nil
+            preferred_render_locations
+          end
+        end
+
         P_RIGHT_CORNER = {
           region_weights: Base::RIGHT_CORNER,
           x: 75,
@@ -58,6 +85,24 @@ module View
           region_weights: Base::UPPER_LEFT_CORNER,
           x: -0,
           y: -75,
+        }.freeze
+
+        PP_TOP_LEFT_CORNER = {
+          region_weights: Base::UPPER_LEFT_CORNER,
+          x: -65,
+          y: -37.5,
+        }.freeze
+
+        PP_TOP_RIGHT_CORNER = {
+          region_weights: Base::UPPER_RIGHT_CORNER,
+          x: 65,
+          y: -37.5,
+        }.freeze
+
+        PP_BOTTOM_RIGHT_CORNER = {
+          region_weights: Base::BOTTOM_LEFT_CORNER,
+          x: 65,
+          y: 37.5,
         }.freeze
 
         PP_BOTTOM_LEFT_CORNER = {
@@ -130,6 +175,24 @@ module View
           region_weights: [10, 11, 13, 19],
           x: 0,
           y: 16,
+        }.freeze
+
+        PP_WIDE_UPPER_RIGHT_CORNER = {
+          region_weights: Base::RIGHT_CORNER,
+          x: 52,
+          y: -25,
+        }.freeze
+
+        PP_WIDE_UPPER_LEFT_CORNER = {
+          region_weights: Base::LEFT_CORNER,
+          x: -52,
+          y: -25,
+        }.freeze
+
+        PP_WIDE_BOTTOM_RIGHT_CORNER = {
+          region_weights: [9, 10, 11, 16],
+          x: 52,
+          y: 25,
         }.freeze
 
         PP_WIDE_BOTTOM_LEFT_CORNER = {

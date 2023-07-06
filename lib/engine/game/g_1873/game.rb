@@ -1158,7 +1158,7 @@ module Engine
         def new_auction_round
           @log << "-- #{round_description('Auction')} --"
           G1873::Round::Auction.new(self, [
-            G1873::Step::ConcessionAuction,
+            Engine::Step::ConcessionAuction,
           ])
         end
 
@@ -1458,7 +1458,7 @@ module Engine
           bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           corporation = bundle.corporation
           old_price = corporation.share_price
 
@@ -2883,58 +2883,75 @@ module Engine
               # HBE concession route
               %w[
                 B17
-              ] => 'icon=image:1873/HBE,sticky:1',
+              ] => 'icon=image:1873/HBE,sticky:1;'\
+                   'path=track:future,a:0,b:4',
               # GHE concession route
               %w[
                 H19
-              ] => 'upgrade=cost:150,terrain:mountain;icon=image:1873/GHE,sticky:1',
+              ] => 'upgrade=cost:150,terrain:mountain;icon=image:1873/GHE,sticky:1;'\
+                   'path=track:future,a:1,b:3',
               # NWE concession route
               %w[
                 I8
-              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
+              ] => 'town=revenue:0,style:dot;upgrade=cost:150,terrain:mountain;'\
+                   'icon=image:1873/NWE,sticky:1;'\
+                   'path=track:future,a:0,b:_0;path=track:future,a:3,b:_0;'\
                    'border=edge:2,type:impassable;'\
                    'icon=image:1873/8_open,sticky:1,large:1',
               %w[
                 H7
               ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
+                   'path=track:future,a:2,b:4;'\
                    'border=edge:5,type:impassable',
               %w[
                 E6
                 D7
-              ] => 'town=revenue:0;upgrade=cost:50,terrain:mountain;icon=image:1873/NWE,sticky:1',
+              ] => 'town=revenue:0,style:dot;upgrade=cost:50,terrain:mountain;'\
+                   'icon=image:1873/NWE,sticky:1;'\
+                   'path=track:future,a:0,b:_0;path=track:future,a:3,b:_0',
               %w[
                 C8
-              ] => 'upgrade=cost:150,terrain:mountain;icon=image:1873/NWE,sticky:1;',
+              ] => 'upgrade=cost:150,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
+                   'path=track:future,a:0,b:3',
               # SHE concession route
               %w[
                 G2
-              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1;'\
+              ] => 'town=revenue:0,style:dot;upgrade=cost:150,terrain:mountain;'\
+                   'icon=image:1873/SHE,sticky:1;'\
                    'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
+                   'path=track:future,a:0,b:_0;path=track:future,a:3,b:_0;'\
                    'icon=image:1873/9_open,sticky:1,large:1',
               %w[
                 F3
-              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1',
+              ] => 'town=revenue:0,style:dot;upgrade=cost:150,terrain:mountain;'\
+                   'icon=image:1873/SHE,sticky:1;'\
+                   'path=track:future,a:0,b:_0;path=track:future,a:3,b:_0',
               # KEZ concession route
               %w[
                 H3
               ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/KEZ,sticky:1;'\
+                   'path=track:future,a:3,b:5;'\
                    'border=edge:2,type:impassable',
               # WBE concession route
               %w[
                 C10
               ] => 'border=edge:5,type:impassable;'\
                    'icon=image:1873/lock;'\
-                   'icon=image:1873/WBE,sticky:1',
+                   'icon=image:1873/WBE,sticky:1;'\
+                   'path=track:future,a:2,b:4',
               %w[
                 C12
-              ] => 'town=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;'\
+              ] => 'town=revenue:0,style:dot;'\
+                   'border=edge:0,type:impassable;border=edge:5,type:impassable;'\
                    'icon=image:1873/lock;'\
-                   'icon=image:1873/WBE,sticky:1',
+                   'icon=image:1873/WBE,sticky:1;'\
+                   'path=track:future,a:1,b:_0;path=track:future,a:4,b:_0',
               %w[
                 C14
-              ] => 'town=revenue:0;border=edge:0,type:impassable;'\
+              ] => 'town=revenue:0,style:dot;border=edge:0,type:impassable;'\
                    'icon=image:1873/lock;'\
-                   'icon=image:1873/WBE,sticky:1',
+                   'icon=image:1873/WBE,sticky:1;'\
+                   'path=track:future,a:1,b:_0;path=track:future,a:5,b:_0',
               # empty tiles
               %w[
                 C18

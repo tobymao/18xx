@@ -81,6 +81,7 @@ module Engine
 
           def can_gain?(entity, bundle, exchange: false)
             return if !bundle || !entity
+            return if bundle.owner&.player?
 
             corporation = bundle.corporation
             corporation.holding_ok?(entity, bundle.percent) &&
@@ -132,6 +133,7 @@ module Engine
           end
 
           def process_bid(action)
+            @game.something_sold_in_sr! if @game.nothing_sold_in_sr?
             action.entity.unpass!
             add_bid(action)
             store_bids!

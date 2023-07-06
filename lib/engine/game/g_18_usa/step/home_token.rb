@@ -10,7 +10,7 @@ module Engine
           def round_state
             super.merge(
               {
-                minimum_city_subsidy: 0,
+                minimum_cash_subsidy: 0,
               }
             )
           end
@@ -19,15 +19,15 @@ module Engine
             corporation = token.corporation
             super
             @game.add_subsidy(corporation, action.city.hex)
-            @round.minimum_city_subsidy = 0
+            @round.minimum_cash_subsidy = 0
           end
 
           def available_hex(_entity, hex)
             return false unless super
-            return true if @round.minimum_city_subsidy.zero?
+            return true if @round.minimum_cash_subsidy.zero?
 
-            city_subsidy = (subsidy = @game.subsidies_by_hex[hex.coordinates]) ? subsidy[:value] : 0
-            city_subsidy >= @round.minimum_city_subsidy
+            cash_subsidy = (subsidy = @game.subsidies_by_hex[hex.coordinates]) ? subsidy[:value] : 0
+            cash_subsidy >= @round.minimum_cash_subsidy
           end
         end
       end

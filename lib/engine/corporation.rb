@@ -79,6 +79,7 @@ module Engine
       @price_percent = opts[:price_percent] || @second_share&.percent || (@presidents_share.percent / 2)
       @price_multiplier = (@second_share&.percent || (@presidents_share.percent / 2)) / @price_percent
       @treasury_as_holding = opts[:treasury_as_holding] || false
+      @corporation_can_ipo = opts[:corporation_can_ipo]
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -168,7 +169,7 @@ module Engine
 
     def player_share_holders(corporate: false)
       share_holders.select do |s_h, _|
-        s_h.player? || (corporate && s_h.corporation? && s_h != self)
+        s_h.player? || ((corporate || @corporation_can_ipo) && s_h.corporation? && s_h != self)
       end
     end
 
@@ -274,6 +275,21 @@ module Engine
 
     def share_percent
       @forced_share_percent || @second_share&.percent || (presidents_percent / 2)
+    end
+
+    # avoid infinite recursion for 1841
+    def player
+      chain = { owner => true }
+      current = owner
+      while current&.corporation?
+        return nil unless current&.owner # unowned corp
+
+        current = current.owner
+        return nil if chain[current] # cycle detected
+
+        chain[current] = true
+      end
+      current&.player? ? current : current&.player
     end
 
     def closed?

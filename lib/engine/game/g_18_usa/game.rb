@@ -175,8 +175,8 @@ module Engine
         # Does not include guaranteed metropolis New York City
         POTENTIAL_METROPOLIS_HEX_IDS = %w[D20 E11 G3 H14 H22 I19].freeze
 
-        def potential_metropolitan_hexes
-          @potential_metropolitan_hexes ||= POTENTIAL_METROPOLIS_HEX_IDS.map { |hex_id| @hexes.find { |h| h.id == hex_id } }
+        def potential_metropolis_hexes
+          @potential_metropolis_hexes ||= POTENTIAL_METROPOLIS_HEX_IDS.map { |hex_id| @hexes.find { |h| h.id == hex_id } }
         end
 
         EXTENDED_MAX_LOAN = 60
@@ -192,8 +192,8 @@ module Engine
 
         SEED_MONEY = nil
 
-        def active_metropolitan_hexes
-          @active_metropolitan_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
+        def active_metropolis_hexes
+          @active_metropolis_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
         end
 
         def metro_new_orleans
@@ -248,8 +248,10 @@ module Engine
           @recently_floated = []
 
           @mexico_hexes = MEXICO_HEXES.map { |h| hex_by_id(h) }
-          metro_hexes = METROPOLITAN_HEXES.sort_by { rand }.take(3)
+          metro_hexes = METROPOLIS_HEXES.sort_by { rand }.take(3)
           metro_hexes.each { |metro_hex| convert_potential_metro(hex_by_id(metro_hex)) }
+          remove_unused_metropolis_tiles if company_by_id('P10').closed?
+
           @p8_hexes = []
 
           setup_train_roster
@@ -293,26 +295,36 @@ module Engine
           end
         end
 
+        METROPOLIS_TILE_FOR_HEX = {
+          'H14' => ['X03', 0],
+          'E11' => ['X04s', 0],
+          'G3' => ['X05', 3],
+          'D20' => ['X02', 1],
+          'I19' => ['X06', 0],
+          'H22' => ['X01', 0],
+        }.freeze
+
         # Convert a potential metro hex to a metro hex
         def convert_potential_metro(hex)
-          active_metropolitan_hexes << hex
+          active_metropolis_hexes << hex
+
+          tile_name, rotation = METROPOLIS_TILE_FOR_HEX[hex.id]
+          hex.lay(@tiles.find { |t| t.name == tile_name }.rotate!(rotation))
+
           case hex.id
-          when 'H14'
-            hex.lay(@tiles.find { |t| t.name == 'X03' })
-          when 'E11'
-            hex.lay(@tiles.find { |t| t.name == 'X04s' })
-            @metro_denver = true
-          when 'G3'
-            hex.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
-          when 'D20'
-            hex.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
-          when 'I19'
-            hex.lay(@tiles.find { |t| t.name == 'X06' })
-            @metro_new_orleans = true
-          when 'H22'
-            hex.lay(@tiles.find { |t| t.name == 'X01' })
+          when 'E11' then @metro_denver = true
+          when 'I19' then @metro_new_orleans = true
           end
+
           @graph.clear
+        end
+
+        def remove_unused_metropolis_tiles
+          (potential_metropolis_hexes - active_metropolis_hexes).each do |hex|
+            tile_name, = METROPOLIS_TILE_FOR_HEX[hex.id]
+            starting_tile = @tiles.find { |t| t.name == tile_name }
+            @all_tiles.each { |tile| tile.hide if tile.label == starting_tile.label }
+          end
         end
 
         def randomize_privates

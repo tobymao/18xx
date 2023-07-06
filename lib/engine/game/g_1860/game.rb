@@ -773,7 +773,7 @@ module Engine
           corporation.operated? && !@no_price_drop_on_sale
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           corporation = bundle.corporation
           old_price = corporation.share_price
 
@@ -986,7 +986,7 @@ module Engine
         end
 
         def check_other(route)
-          check_hex_reentry(route)
+          check_hex_reentry(route) unless @optional_rules&.include?(:re_enter_hexes)
           check_home_token(current_entity, route.routes) unless route.routes.empty?
           check_intersection(route.routes) unless route.routes.empty?
         end

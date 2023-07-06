@@ -76,6 +76,9 @@ game config/code:
 - **upgrade**
     - **cost** - *required* - integer
     - **terrain** - `mountain`/`water` - multiple terrain types separated by `|`
+    - **loc** - (currently only supported for `:pointy` layouts) corner to
+      render the upgrade in, `5.5` to be where edges `5` and `0` meet, `0.5` for
+      edges `0` and `1`, and so on
 - **border**
     - **edge** - *required* - integer - which edge to modify
     - **type** - `mountain`/`water`/`impassable` - Border type. If not'
@@ -91,6 +94,9 @@ game config/code:
       upgrade is placed on this hex
     - **blocks_lay** - indicates this tile cannot be laid normally
       but can only be laid by special ability, such as a private company's ability.
+    - **loc** - (currently only supported for `:pointy` layouts) corner to
+      render the upgrade in, `5.5` to be where edges `5` and `0` meet, `0.5` for
+      edges `0` and `1`, and so on
 - **frame**
     - **color** - *required* - the color of the frame
     - **color2** - A second color to display on the frame

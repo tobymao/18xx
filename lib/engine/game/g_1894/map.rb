@@ -6,9 +6,9 @@ module Engine
       module Map
         TILES = {
           '1' => 1,
-          '7' => 3,
-          '8' => 11,
-          '9' => 11,
+          '7' => 4,
+          '8' => 15,
+          '9' => 12,
           '14' => 4,
           '15' => 4,
           '16' => 1,
@@ -56,31 +56,10 @@ module Engine
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;label=B',
           },
-          'X3a' => {
+          'X3' => {
             'count' => 1,
             'color' => 'yellow',
             'code' => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;label=L',
-          },
-          'X3b' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=L',
-          },
-          'X3c' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L',
-          },
-          'X3d' => {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L',
-          },
-          'X3e' => {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L',
           },
           'X4' => {
             'count' => 1,
@@ -101,47 +80,68 @@ module Engine
           },
           'X7' => {
             'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=L',
+          },
+          'X8' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L',
+          },
+          'X9' => {
+            'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:80,loc:0.5;city=revenue:80,slots:2;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;label=P',
           },
-          'X8' => {
+          'X10' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:80,loc:0.5;city=revenue:80,slots:2:;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;path=a:4,b:_1;label=P',
           },
-          'X9' => {
+          'X11' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
           },
-          'X10' => {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40,loc:3.5;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1',
-          },
-          'X11' => {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40,loc:2.5;path=a:0,b:_0;path=a:4,b:_0;path=a:2,b:_1;path=a:3,b:_1',
-          },
           'X12' => {
-            'count' => 2,
+            'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40,loc:1.5;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L',
           },
           'X13' => {
-            'count' => 2,
+            'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_0;path=a:2,b:_1;path=a:4,b:_1',
+            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L',
           },
           'X14' => {
             'count' => 2,
             'color' => 'brown',
-            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:4,b:_1',
+            'code' => 'city=revenue:40;city=revenue:40,loc:3.5;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1',
           },
           'X15' => {
+            'count' => 2,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;city=revenue:40,loc:2.5;path=a:0,b:_0;path=a:4,b:_0;path=a:2,b:_1;path=a:3,b:_1',
+          },
+          'X16' => {
+            'count' => 2,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;city=revenue:40,loc:1.5;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1',
+          },
+          'X17' => {
+            'count' => 2,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_0;path=a:2,b:_1;path=a:4,b:_1',
+          },
+          'X18' => {
+            'count' => 2,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:4,b:_1',
+          },
+          'X19' => {
             'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:3.5;'\
@@ -157,6 +157,7 @@ module Engine
           'B9' => 'Calais',
           'B11' => 'Dunkerque',
           'C18' => 'Netherlands',
+          'C6' => 'Abbeville & Blangy-sur-Blesne',
           'D1' => 'Évreux',
           'D3' => 'Rouen',
           'D11' => 'Lille',
@@ -165,14 +166,18 @@ module Engine
           'E6' => 'Amiens',
           'E10' => 'Arras',
           'E16' => 'Mechelen',
+          'F5' => ' Beauvais & Breteuil',
+          'F9' => ' Bapaume & Cambrai',
           'F15' => 'Bruxelles',
           'G2' => 'Versailles',
           'G4' => 'Paris',
           'G10' => 'Saint-Quentin',
           'G14' => 'Charleroi',
+          'G16' => 'Namur & Sint-Truiden',
           'G18' => 'Hasselt',
           'H1' => 'Chartres',
           'H7' => 'Soissons',
+          'H13' => 'Charleville-Mézières',
           'H17' => 'Liège',
           'I2' => 'Centre & Bourgogne',
           'I8' => 'Reims',
@@ -212,7 +217,7 @@ module Engine
             ['C16'] => 'path=a:0,b:1;path=a:4,b:5;path=a:5,b:0',
             ['D1'] => 'town=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
             ['G18'] => 'city=revenue:20,loc:4;path=a:0,b:2;path=a:0,b:_0;path=a:2,b:_0',
-            ['H1'] => 'city=revenue:20;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
+            ['H1'] => 'city=revenue:yellow_20|brown_40;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
             ['I10'] => 'path=a:1,b:4',
             ['I16'] => 'path=a:1,b:4;path=a:1,b:2;',
           },

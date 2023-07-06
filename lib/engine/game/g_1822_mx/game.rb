@@ -54,7 +54,6 @@ module Engine
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         EXTRA_TRAINS = %w[2P P+ LP 3/2P].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP 3/2P].freeze
-        PRIVATE_CLOSE_AFTER_PASS = %w[P9].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P14 P15].freeze
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
         P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
@@ -509,7 +508,7 @@ module Engine
           @round.entities.insert(@round.entity_index + 1, ndem)
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           return super unless bundle.corporation == corporation_by_id('NDEM')
 
           @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)

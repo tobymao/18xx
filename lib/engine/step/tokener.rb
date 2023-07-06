@@ -46,7 +46,7 @@ module Engine
       def place_token(entity, city, token, connected: true, extra_action: false,
                       special_ability: nil, check_tokenable: true, spender: nil)
         hex = city.hex
-        extra_action ||= special_ability.extra_action if special_ability&.type == :token
+        extra_action ||= special_ability.extra_action if %i[teleport token].include?(special_ability&.type)
 
         check_connected(entity, city, hex) if connected
 
@@ -117,6 +117,10 @@ module Engine
 
       def adjust_token_price_ability!(entity, token, hex, city, special_ability: nil)
         if special_ability&.type == :teleport
+          unless special_ability.from_owner
+            token = Engine::Token.new(entity)
+            entity.tokens << token
+          end
           token.price = 0
           return [token, special_ability]
         end

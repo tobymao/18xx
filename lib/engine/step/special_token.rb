@@ -97,7 +97,7 @@ module Engine
       def available_hex(entity, hex)
         ability = ability(entity)
 
-        return if !ability.hexes.empty? && !ability.hexes.include?(hex.id)
+        return if ability.hexes && !ability.hexes.empty? && !ability.hexes.include?(hex.id)
 
         if ability.type == :token && ability.connected
           return @game.token_graph_for_entity(entity.owner).reachable_hexes(entity.owner)[hex]
@@ -108,7 +108,7 @@ module Engine
 
       def available_tokens(entity)
         ability = ability(entity)
-        return [Engine::Token.new(entity.owner)] if ability&.type == :token && !ability.from_owner
+        return [Engine::Token.new(entity.owner)] if %i[teleport token].include?(ability&.type) && !ability.from_owner
 
         super(@game.token_owner(entity))
       end

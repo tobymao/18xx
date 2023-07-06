@@ -19,17 +19,16 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 16, 4 => 13 }.freeze
+        CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
 
-        STARTING_CASH = { 3 => 580, 4 => 440 }.freeze
+        STARTING_CASH = { 3 => 570, 4 => 440 }.freeze
 
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[77
-             83
+          %w[83
              89
              96
              103
@@ -39,76 +38,68 @@ module Engine
              145
              160
              185
-             217
-             248
-             285
-             325
-             375e],
-          %w[72
-             77
+             213
+             250
+             290
+             350e],
+          %w[77
              82
              90p
              94
              100p
-             110
-             121
-             134
+             109
+             120
+             132
              150
              170
-             194
-             222
-             254
-             290
-             335],
-          %w[67o
-             72
+             195
+             230
+             270
+             320],
+          %w[72
              77
              82
              88
-             95
-             100
-             110
-             121
-             136
+             93
+             99
+             109
+             120
+             135
              153
-             174
-             200
-             229
-             262
-             300],
-          %w[63o
-             66o
-             70o
+             176
+             205
+             240
+             290],
+          %w[66
+             70
              75
              82p
              87
              93
-             100
+             99
              109
              120
              138
-             159
-             179
-             206
-             236],
-          %w[59o
-             63o
-             66o
+             160
+             185
+             220],
+          %w[63o
+             66
              70
              75
              80
              85
              92
-             100
-             112
+             102
+             115
              128
-             146],
-          %w[56o 59o 63o 66o 70 76p 81 88 97 107],
-          %w[42o 55o 59o 62o 65 69 74 81 89],
-          %w[30o 40o 50o 54o 60o 64 67p 74],
-          %w[20o 30o 40o 50o 54o 60o],
-          %w[10o 20o 30o 40o 50o 54o],
-          ['', '10o', '20o', '30o', '40o', '50o'],
+             147],
+          %w[59o 63o 66 70 76p 81 88 99 109],
+          %w[55o 59o 62o 65 69 73 82 92],
+          %w[40o 50o 54o 60o 64 67p 75],
+          %w[30o 40o 50o 54o 60o],
+          %w[20o 30o 40o 50o 54o],
+          %w[10o 20o 30o 40o 50o],
         ].freeze
 
         PHASES = [{ name: 'Yellow', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
@@ -158,7 +149,7 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 8 },
+        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 7 },
                   {
                     name: '3',
                     distance: 3,
@@ -170,7 +161,7 @@ module Engine
                   {
                     name: '4',
                     distance: 4,
-                    price: 300,
+                    price: 320,
                     rusts_on: '7',
                     num: 4,
                     discount: { '3' => 60 },
@@ -180,9 +171,9 @@ module Engine
                     distance: 5,
                     price: 400,
                     rusts_on: 'D',
-                    num: 4,
+                    num: 5,
                     events: [{ 'type' => 'late_corporations_available' }],
-                    discount: { '4' => 150 },
+                    discount: { '4' => 160 },
                   },
                   {
                     name: '6',
@@ -202,7 +193,7 @@ module Engine
                   {
                     name: 'D',
                     distance: 999,
-                    price: 820,
+                    price: 800,
                     num: 22,
                     events: [{ 'type' => 'last_or_set_triggered' }],
                     discount: { '5' => 200, '6' => 300, '7' => 350 },
@@ -260,6 +251,7 @@ module Engine
         LUXEMBOURG_HEX = 'I18'
         SQ_HEX = 'G10'
         BRUXELLES_HEX = 'F15'
+        LILLE_HEX = 'D11'
         NETHERLANDS_HEX = 'C18'
         GREAT_BRITAIN_HEX = 'A4'
 
@@ -267,12 +259,13 @@ module Engine
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
-        BROWN_CITY_14_UPGRADE_TILES = %w[X14 X15 36].freeze
+        BROWN_CITY_14_UPGRADE_TILES = %w[X18 X19 36].freeze
         GREEN_CITY_15_TILE = '15'
-        BROWN_CITY_15_UPGRADE_TILES = %w[X12 35 118].freeze
+        BROWN_CITY_15_UPGRADE_TILES = %w[X16 35 118].freeze
         GREEN_CITY_619_TILE = '619'
-        BROWN_CITY_619_UPGRADE_TILES = %w[X10 X11 X13].freeze
-        BROWN_CITY_TILES = %w[X10 X11 X12 X13 X14 X15 35 36 118].freeze
+        BROWN_CITY_619_UPGRADE_TILES = %w[X14 X15 X17].freeze
+        BROWN_CITY_TILES = %w[X14 X15 X16 X17 X18 X19 35 36 118].freeze
+        PARIS_TILES = %w[X1 X4 X5 X9 X10].freeze
 
         FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CFOR].freeze
         BELGIAN_REGULAR_CORPORATIONS = %w[AG Belge].freeze
@@ -357,8 +350,7 @@ module Engine
             Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
           block_london
 
-          paris_tiles_names = %w[X1 X4 X5 X7 X8]
-          paris_tiles = @all_tiles.select { |t| paris_tiles_names.include?(t.name) }
+          paris_tiles = @all_tiles.select { |t| PARIS_TILES.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
           @french_starting_corporation_id = FRENCH_REGULAR_CORPORATIONS.sort_by { rand }.take(1).first
@@ -600,9 +592,16 @@ module Engine
 
           return tile.add_reservation!(corporation, 0) if tile.color != :brown
 
-          return tile.add_reservation!(corporation, 0) if coordinates == BRUXELLES_HEX
+          return tile.add_reservation!(corporation, 0) if [BRUXELLES_HEX, LILLE_HEX].include?(coordinates)
 
-          tile.add_reservation!(corporation, nil, false)
+          # tile is brown, non-Bruxelles, non-Lille
+          if tile.cities.first.tokenable?(corporation) && !tile.cities[1].tokenable?(corporation)
+            tile.add_reservation!(corporation, 0)
+          elsif !tile.cities.first.tokenable?(corporation) && tile.cities[1].tokenable?
+            tile.add_reservation!(corporation, 1)
+          else
+            tile.add_reservation!(corporation, nil, false)
+          end
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
@@ -630,14 +629,22 @@ module Engine
 
         attr_reader :saved_tokens_hex
 
+        def check_distance(route, _visits)
+          if route.connection_hexes.flatten.include?(LONDON_HEX) && !ferry_marker?(current_entity)
+            raise GameError, 'Cannot run to London without a Ferry marker'
+          end
+
+          raise GameError, 'Train visits Paris more than once' if route.hexes.count { |h| h.id == PARIS_HEX } > 1
+
+          super
+        end
+
         def revenue_for(route, stops)
           revenue = super
           revenue += est_centre_bourgogne_bonus(route.corporation, stops)
           revenue += luxembourg_value(route.corporation, stops)
           revenue += london_bonus(route.corporation, stops)
           revenue += netherlands_bonus(route.corporation, stops)
-
-          raise GameError, 'Train visits Paris more than once' if route.hexes.count { |h| h.id == PARIS_HEX } > 1
 
           revenue
         end
@@ -689,14 +696,6 @@ module Engine
           phase.tiles.reverse_each { |color| return (revenue[color]) if revenue[color] }
 
           0
-        end
-
-        def check_distance(route, _visits)
-          if route.connection_hexes.flatten.include?(LONDON_HEX) && !ferry_marker?(current_entity)
-            raise GameError, 'Cannot run to London without a Ferry marker'
-          end
-
-          super
         end
 
         def ferry_marker_available?
@@ -755,11 +754,6 @@ module Engine
 
           company_to_remove.close!
           @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
-
-          sqg.value = 70
-          sqg.min_price = 35
-          sqg.max_price = 140
-          @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.sort_by!(&:value)
         end
 
         def remove_extra_french_major_shareholding_companies

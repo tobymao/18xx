@@ -3,6 +3,7 @@
 require 'lib/settings'
 require 'view/game/token'
 require 'view/game/par_chart'
+require 'view/game/loan_chart'
 
 module View
   module Game
@@ -63,6 +64,14 @@ module View
         textAlign: 'center',
       }.freeze
 
+      PRICE_STYLE_INFO = {
+        fontSize: '80%',
+        textAlign: 'center',
+        position: 'absolute',
+        bottom: "#{PAD}px",
+        width: "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER)}px",
+      }.freeze
+
       def box_style_1d
         {
           position: 'relative',
@@ -85,7 +94,7 @@ module View
       end
 
       CROSSHATCH_TYPES = %i[par_overlap convert_range].freeze
-      BORDER_TYPES = %i[max_price].freeze
+      BORDER_TYPES = %i[max_price max_price_1].freeze
 
       def cell_style(box_style, types)
         normal_types = types.reject { |t| BORDER_TYPES.include?(t) }
@@ -103,7 +112,7 @@ module View
 
         unless (types & BORDER_TYPES).empty?
           style[:borderRightWidth] = "#{BORDER * 4}px"
-          style[:borderRightColor] = COLOR_MAP[:purple]
+          style[:borderRightColor] = @game.class::STOCKMARKET_COLORS[(types & BORDER_TYPES).first]
           style[:width] = "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER) - 3}px"
         end
         if color == :black
@@ -223,10 +232,11 @@ module View
         @game.stock_market.market.first.each_with_index do |price, idx|
           tokens = price.corporations.map { |corporation| h(:img, token_props(corporation)) }
 
-          element = h(:div, { style: cell_style(box_style, price.types) }, [
-                      h(:div, { style: PRICE_STYLE_1D }, price.price),
-                      h(:div, { style: TOKEN_STYLE_1D }, tokens),
-                    ])
+          cell_elements = [h(:div, { style: PRICE_STYLE_1D }, price.price),
+                           h(:div, { style: TOKEN_STYLE_1D }, tokens)]
+          cell_elements << h(:div, { style: PRICE_STYLE_INFO }, price.info) if price.info
+
+          element = h(:div, { style: cell_style(box_style, price.types) }, cell_elements)
           if idx.even?
             row0 << element
           else
@@ -396,6 +406,7 @@ module View
         end
 
         children << h(ParChart) if @game.respond_to?(:par_chart)
+        children << h(LoanChart) if @game.respond_to?(:loan_chart)
 
         h(:div, children)
       end

@@ -146,6 +146,7 @@ module Engine
         repar: :gray,
         ignore_one_sale: :green,
         safe_par: :white,
+        max_price: :purple,
       }.freeze
 
       MIN_BID_INCREMENT = 5
@@ -209,6 +210,7 @@ module Engine
 
       TRAIN_CLASS = Train
       DEPOT_CLASS = Depot
+      PLAYER_CLASS = Player
 
       MINORS = [].freeze
 
@@ -249,6 +251,7 @@ module Engine
       DISCARDED_TRAINS = :discard # discard or remove
       DISCARDED_TRAIN_DISCOUNT = 0 # percent
       CLOSED_CORP_TRAINS_REMOVED = true
+      CLOSED_CORP_TOKENS_REMOVED = true
       CLOSED_CORP_RESERVATIONS_REMOVED = true
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
@@ -338,6 +341,8 @@ module Engine
       CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = false
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = false
 
+      BUY_SHARE_FROM_OTHER_PLAYER = false
+
       VARIABLE_FLOAT_PERCENTAGES = false
 
       # whether corporation cards should show percentage ownership breakdown for players
@@ -381,6 +386,13 @@ module Engine
           optional_rules.delete(rule[:sym]) if rule[:players] && !rule[:players].include?(@players.size)
         end
         optional_rules
+      end
+
+      def check_optional_rules!
+        min_players = @players.size
+        max_players = @players.size
+        error_string = meta.check_options(@optional_rules, min_players, max_players)&.[](:error)
+        raise OptionError, error_string if error_string
       end
 
       def setup_optional_rules; end
@@ -498,7 +510,7 @@ module Engine
                    names.to_h { |n| [n, n] }
                  end
 
-        @players = @names.map { |player_id, name| Player.new(player_id, name) }
+        @players = @names.map { |player_id, name| self.class::PLAYER_CLASS.new(player_id, name) }
         @user = user
         @programmed_actions = Hash.new { |h, k| h[k] = [] }
         @round_counter = 0
@@ -567,8 +579,9 @@ module Engine
 
         init_company_abilities
 
-        setup_optional_rules
+        check_optional_rules!
         log_optional_rules
+        setup_optional_rules
         setup
         @round.setup
 
@@ -1130,12 +1143,12 @@ module Engine
         self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
-      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
         corporation = bundle.corporation
         old_price = corporation.share_price
         was_president = corporation.president?(bundle.owner)
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-        case self.class::SELL_MOVEMENT
+        case movement || self.class::SELL_MOVEMENT
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
@@ -1574,12 +1587,12 @@ module Engine
         cost - discount
       end
 
-      def log_cost_discount(spender, ability, discount)
+      def log_cost_discount(spender, abilities, discount)
         return unless discount.positive?
 
         @log << "#{spender.name} receives a discount of "\
                 "#{format_currency(discount)} from "\
-                "#{ability.owner.name}"
+                "#{Array(abilities).map { |a| a.owner.name }.join(', ')}"
       end
 
       def declare_bankrupt(player)
@@ -1696,7 +1709,7 @@ module Engine
 
         hexes.each do |hex|
           hex.tile.cities.each do |city|
-            city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!)
+            city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!) if self.class::CLOSED_CORP_TOKENS_REMOVED
 
             if self.class::CLOSED_CORP_RESERVATIONS_REMOVED && city.reserved_by?(corporation)
               city.reservations.delete(corporation)
@@ -1840,6 +1853,8 @@ module Engine
             next if entity&.name != ability.corporation
 
             company.close!
+            next if ability.silent
+
             @log << "#{company.name} closes"
           end
         end
@@ -1912,6 +1927,38 @@ module Engine
         return active_abilities.first if active_abilities.one?
 
         active_abilities
+      end
+
+      # Returns list of companies which can combo with the given company.
+      # Currently only combos with :tile_lay abilities are supported.
+      def ability_combo_entities(entity)
+        return [] unless entity.company?
+
+        Array(abilities(entity, :tile_lay)).each_with_object([]) do |ability, companies|
+          ability.combo_entities.each do |id|
+            company = company_by_id(id)
+            next unless company.owner == entity.corporation
+            next unless abilities(company, :tile_lay)
+
+            companies << company
+          end
+        end
+      end
+
+      def valid_combos?(companies)
+        return true if companies.size < 2
+
+        # some of the companies are just IDs when passed from the abilities view
+        companies = companies.map do |company|
+          company.is_a?(String) ? company_by_id(company) : company
+        end
+
+        # for each company, check that it combos with the companies after it in
+        # the array
+        companies.to_enum.with_index.all? do |company, index|
+          combos = ability_combo_entities(company)
+          companies[(index + 1)..].all? { |c| combos.include?(c) }
+        end
       end
 
       def entity_can_use_company?(_entity, _company)
@@ -2143,6 +2190,22 @@ module Engine
       end
 
       def after_buying_train(train, source); end
+
+      def sold_shares_destination(_entity)
+        self.class::SOLD_SHARES_DESTINATION
+      end
+
+      def corporations_can_ipo?
+        false
+      end
+
+      def possible_presidents
+        players.reject(&:bankrupt)
+      end
+
+      def receivership_corporations
+        corporations.select(&:receivership?)
+      end
 
       private
 
@@ -2908,9 +2971,9 @@ module Engine
           when 'owning_corp_or_turn'
             @round.operating? && @round.current_operator == ability.corporation
           when 'owning_player_or_turn'
-            @round.operating? && @round.current_operator.player == ability.player
+            @round.operating? && @round.current_operator&.player == ability.player
           when 'owning_player_track'
-            @round.operating? && @round.current_operator.player == ability.player && current_step.is_a?(Step::Track)
+            @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Track)
           when 'owning_player_sr_turn'
             @round.stock? && @round.current_entity == ability.player
           when 'or_between_turns'
