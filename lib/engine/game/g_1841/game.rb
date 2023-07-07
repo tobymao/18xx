@@ -1109,7 +1109,7 @@ module Engine
         end
 
         def pres_upgrade_cost(percent, target)
-          (target.share_price.price * (40 - percent) / 40.0).to_i
+          (target.share_price.price * (40 - percent) / 20.0).to_i
         end
 
         def full_upgrade_cost(target)
