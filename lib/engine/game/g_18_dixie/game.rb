@@ -105,11 +105,10 @@ module Engine
             'End of OR 3.1: Minors 9-13 are closed',
           ].freeze
         end
+
         def after_buying_train(train, source)
           # if it is a 4D from the depot (not discard, event time)
-          if train.variant['name'] == '4D' && source == @depot && !@depot.discarded.include?(train)
-            event_scl_formation_chance!
-          end
+          event_scl_formation_chance! if train.variant['name'] == '4D' && source == @depot && !@depot.discarded.include?(train)
         end
 
         def next_round!
@@ -207,7 +206,7 @@ module Engine
         end
 
         def home_token_locations(corporation)
-          hexes.select { |hex| corporation.coordinates.include?(hex.coordinates) }
+          corporation.coordinates && hexes.select { |hex| corporation.coordinates.include?(hex.coordinates) }
         end
 
         def closing_minors
@@ -436,7 +435,7 @@ module Engine
           end
           unfloated_input_corp = [primary_corp, secondary_corp].find { |c| !c.floated? }
           unoperated_input_corp = [primary_corp, secondary_corp].find { |c| !c.operated? }
-          return true unless unfloated_input_corp || unoperated_input_corp
+          return true if !unfloated_input_corp && !unoperated_input_corp
 
           @log << "-- #{unfloated_input_corp.name} has not floated so #{merger_corp.name} cannot form --" if unfloated_input_corp
           if unoperated_input_corp
@@ -466,7 +465,7 @@ module Engine
         def merger_price(merging_corps)
           # Putting the value, lower, and upper bounds in an array, sorting, and taking the new middle value
           #  is a pretty easy & lazy way to get the "capped" value. Sorting an array of length 3 is also pretty quick
-          merger_value = [90, merging_corps.sum { |c| c.share_price.price } , 140].sort[1]
+          merger_value = [90, merging_corps.sum { |c| c.share_price.price }, 140].sort[1]
           # The 'highest stock value that does not exceed this sum'
           # Search from right to left (highest to lowest), take the first that does not exceed and call it a day
           @stock_market.market[0].reverse.find { |p| p.price <= merger_value }
@@ -505,11 +504,11 @@ module Engine
           half_shares_by_player = {}
           total_shares_by_player.each do |player, percentage|
             num = percentage / 10
-            if num % 2 == 1
+            if num.odd?
               half_shares_by_player[player] = 1
               num -= 1
             end
-            awarded_shares_by_player[player] = num/2
+            awarded_shares_by_player[player] = num / 2
           end
           order = @players.rotate(index_for_trigger)
           order.each { |p| award_shares(merger_corp, p, awarded_shares_by_player[p] || 0) }
@@ -520,13 +519,14 @@ module Engine
           order = @players.rotate(@players.index(merger_corp.owner))
           order.each do |player|
             next unless half_shares_by_player[player]
+
             @round.pending_options << {
               entity: player,
               corporation: merger_corp,
               primary_corp: primary_corp,
               secondary_corp: secondary_corp,
               sell_price: sell_price,
-              buy_price: buy_price
+              buy_price: buy_price,
             }
           end
           after_option_choice(primary_corp, secondary_corp, merger_corp)
@@ -534,17 +534,18 @@ module Engine
 
         def after_option_choice(primary_corp, secondary_corp, merger_corp)
           return unless @round.pending_options.empty?
+
           # shares are done being exchanged; final cleanup
           # all remaining icg/scl shares go to pool
           @share_pool.transfer_shares(ShareBundle.new(merger_corp.shares_of(merger_corp)), @share_pool)
 
           @log << "#{merger_corp.name} gets the cash from #{primary_corp.name} and #{secondary_corp.name}"
-          primary_corp.spend(primary_corp.cash, merger_corp)
-          secondary_corp.spend(secondary_corp.cash, merger_corp)
+          primary_corp.spend(primary_corp.cash, merger_corp) if primary_corp.cash.positive?
+          secondary_corp.spend(secondary_corp.cash, merger_corp) if secondary_corp.cash.positive?
 
           @log << "#{merger_corp.name} gets the trains from #{primary_corp.name} and #{secondary_corp.name}"
           [primary_corp, secondary_corp].each do |corp|
-            corp.trains.dup.each {|t| buy_train(merger_corp, t, :free) }
+            corp.trains.dup.each { |t| buy_train(merger_corp, t, :free) }
             hexes.each do |hex|
               hex.tile.cities.each do |city|
                 if city.tokened_by?(corp)
@@ -593,17 +594,16 @@ module Engine
               replace_token(merger_corp, corp, token, merger_corp_token)
             end
           end
+          return unless merger_corp.tokens.count(&:used) > tokens_to_keep
 
-          if merger_corp.tokens.count(&:used) > tokens_to_keep
-            @log << "-- #{merger_corp.name} is above token transfer limit (#{tokens_to_keep}) "\
-            " and must decide which tokens to remove --"
-            # This will be resolved in RemoveTokens
-            @round.pending_removals << {
-              corp: merger_corp,
-              count: merger_corp.tokens.count(&:used) - tokens_to_keep,
-              hexes: merger_corp.tokens.map(&:hex),
-            }
-          end
+          @log << "-- #{merger_corp.name} is above token transfer limit (#{tokens_to_keep}) "\
+                  ' and must decide which tokens to remove --'
+          # This will be resolved in RemoveTokens
+          @round.pending_removals << {
+            corp: merger_corp,
+            count: merger_corp.tokens.count(&:used) - tokens_to_keep,
+            hexes: merger_corp.tokens.map(&:hex),
+          }
         end
 
         # just a basic share move without payment or president change
@@ -619,17 +619,9 @@ module Engine
 
         def award_shares(corp, player, num)
           return unless num.positive?
+
           @log << "#{player.name} exchanges for #{num} shares of #{corp.name}"
           num.times { @share_pool.buy_shares(player, corp.shares_by_corporation[corp].last, exchange: :free, exchange_price: 0) }
-        end
-
-        def exchange_share_pairs(primary_corp, secondary_corp, merger_corp, player)
-          shares_to_exchange = primary_corp.player_share_holders[player] + secondary_corp.player_share_holders[player]
-          if shares_to_exchange % 2 == 1
-            players_with_half_shares.add(player)
-            shares_to_exchange -= 1
-          end
-          shares_to_exchange /= 2
         end
 
         def exchange_presidencies(primary_corp, secondary_corp, merger_corp)

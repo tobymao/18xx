@@ -60,6 +60,7 @@ module Engine
 
           def can_buy_share
             return false if pending_option[:corporation].shares_by_corporation[:corporation].empty?
+
             pending_option[:entity].cash >= pending_option[:buy_price]
           end
 
@@ -69,7 +70,7 @@ module Engine
                 sell: "Sell #{pending_option[:corporation].name} 10% option share "\
                       "for #{@game.format_currency(pending_option[:sell_price])}",
               }
-            else 
+            else
               {
                 sell: "Sell #{pending_option[:corporation].name} 10% option share "\
                       "for #{@game.format_currency(pending_option[:sell_price])}",

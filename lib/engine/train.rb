@@ -69,7 +69,7 @@ module Engine
       return unless new_variant
 
       @variant = @variants[new_variant]
-      @variant.each { |k, v| instance_variable_set("@#{k}", v) unless @variant_event_handling == :individual && k == :events }
+      @variant.each { |k, v| instance_variable_set("@#{k}", v) if @variant_event_handling != :individual || k != :events }
       @events = select_events(@variant[:events]) if @variant_event_handling == :individual
 
       # Remove the @local variable, this to get the local? method evaluate the new variant

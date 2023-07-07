@@ -6,6 +6,7 @@ module Engine
       module Corporations
         CORPORATIONS = [
           {
+            type: 'major',
             float_percent: 50,
             sym: 'ACL',
             name: 'Atlantic Coast Line',
@@ -16,6 +17,7 @@ module Engine
             color: 'black',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'CoG',
             name: 'Central of Georgia Railroad',
@@ -26,6 +28,7 @@ module Engine
             color: 'red',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'Fr',
             name: 'Frisco',
@@ -36,6 +39,7 @@ module Engine
             color: '#ed1c24',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'IC',
             name: 'Illinois Central Railroad',
@@ -46,6 +50,7 @@ module Engine
             color: '#397641',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'L&N',
             name: 'Louisville and Nashville Railroad',
@@ -56,6 +61,7 @@ module Engine
             color: '#0d5ba5',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'SAL',
             name: 'Seaboard Air Line',
@@ -67,6 +73,7 @@ module Engine
             text_color: 'black',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'SR',
             name: 'Southern Railway',
@@ -79,6 +86,7 @@ module Engine
             reservation_color: nil,
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'WRA',
             name: 'Western Railway of Alabama',
@@ -90,6 +98,8 @@ module Engine
             text_color: 'black',
           },
           {
+            type: 'system',
+            capitalization: 'none',
             sym: 'ICG',
             name: 'Illinois Central Gulf Railway',
             logo: '18_dixie/ICG.alt',
@@ -144,6 +154,8 @@ module Engine
             ],
           },
           {
+            type: 'system',
+            capitalization: 'none',
             sym: 'SCL',
             name: 'Seaboard Coast Line',
             logo: '18_dixie/SCL.alt',
