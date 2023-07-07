@@ -946,16 +946,23 @@ module Engine
         end
 
         def find_rightmost_share_price(value)
-          highest = -1
-          best = nil
+          market_best_col = -1
+          market_best = nil
           @stock_market.market.reverse_each do |row|
-            row_best = row.reverse.find { |sp| sp.price <= value }
-            next unless row_best.price > highest
+            row_col = 0
+            row_best = row.first
+            row.each_with_index do |sp, col|
+              if sp.price > row_best.price && sp.price < value
+                row_col = col
+                row_best = sp
+              end
+            end
+            next unless row_col > market_best_col
 
-            best = row_best
-            highest = row_best.price
+            market_best_col = row_col
+            market_best = row_best
           end
-          best
+          market_best
         end
 
         def merger_values(corpa, corpb)
@@ -971,8 +978,8 @@ module Engine
           return [corpb.share_price] if corpa.type == :major && corpb.share_price.price > 250
 
           if corpa.type == :major
-            # neither majors are above 250
-            sum = [corpa.share_price.price + corpa.share_price.price, 250].min
+            # neither major is above 250
+            sum = [corpa.share_price.price + corpb.share_price.price, 250].min
             return [find_rightmost_share_price(sum)]
           end
 
