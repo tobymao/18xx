@@ -20,6 +20,7 @@ require 'view/game/route_selector'
 require 'view/game/cash_crisis'
 require 'view/game/double_head_trains'
 require 'view/game/buy_token'
+require 'view/game/request_undo'
 
 module View
   module Game
@@ -49,6 +50,7 @@ module View
           left << h(DoubleHeadTrains) if @current_actions.include?('double_head_trains')
           left << h(Choose) if @current_actions.include?('choose')
           left << h(BuyToken, entity: entity) if @current_actions.include?('buy_token')
+          left << h(RequestUndo) if @current_actions.include?('request_undo')
 
           if @current_actions.include?('buy_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares') || @current_actions.include?('buy_shares')

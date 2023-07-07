@@ -26,7 +26,7 @@ module View
           if @step.respond_to?(:mergeable)
             mergeable_entities = @step.mergeable(merge_entity)
             player_corps = mergeable_entities.select do |target|
-              target.owner == merge_entity.owner || @step.show_other_players
+              target.player == merge_entity.player || @step.show_other_players
             end
             @selected_corporation = player_corps.first if player_corps.one? && !@selected_corporation
           end
@@ -78,7 +78,7 @@ module View
           elsif merge_entity&.corporation? || merge_entity&.minor?
             children << h(:div, props, [h(Corporation, corporation: merge_entity, selectable: false)])
           end
-          children << h(Player, game: @game, player: entity.owner) if entity.owner.player?
+          children << h(Player, game: @game, player: entity.player) if entity.player&.player?
 
           if mergeable_entities
             props = {
@@ -93,7 +93,7 @@ module View
             hidden_corps = false
             mergeable_entities.each do |target|
               corp = @selected_corporation if corps_actionable
-              if @step.show_other_players || @show_other_players || target.owner == merge_entity.owner || !target.owner
+              if @step.show_other_players || @show_other_players || target.player == merge_entity.player || !target.player
                 children << h(Corporation, corporation: target, selected_corporation: corp)
               else
                 hidden_corps = true
@@ -181,11 +181,11 @@ module View
               end
 
               if @step.show_other_players ||
-                !merge_corporation.owner ||
-                merge_corporation.owner == corporation.owner
+                  !merge_corporation.player ||
+                  merge_corporation.player == corporation.player
                 do_merge.call
               else
-                check_consent(corporation, merge_corporation.owner, do_merge)
+                check_consent(corporation, merge_corporation.player, do_merge)
               end
 
             else

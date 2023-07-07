@@ -73,20 +73,20 @@ module Engine
           end
 
           def sell_shares(entity, shares, swap: nil)
-            old_frozen = @game.frozen_corporations
+            old_circular = @game.circular_corporations
             raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
 
             @round.players_sold[shares.owner][shares.corporation] = :now
             @game.sell_shares_and_change_price(shares, swap: swap,
                                                        allow_president_change: @game.pres_change_ok?(shares.corporation))
             @game.update_frozen!
-            return if @game.frozen_corporations.none? { |c| !old_frozen.include?(c) }
+            return if @game.circular_corporations.none? { |c| !old_circular.include?(c) }
 
             raise GameError, 'Cannot sell if it causes a circular chain of ownership'
           end
 
           def process_buy_shares(action)
-            old_frozen = @game.frozen_corporations
+            old_circular = @game.circular_corporations
             @round.players_bought[action.entity][action.bundle.corporation] += action.bundle.percent
             @round.bought_from_ipo = true if action.bundle.owner.corporation?
             buy_shares(action.purchase_for || action.entity, action.bundle,
@@ -94,9 +94,18 @@ module Engine
                        allow_president_change: @game.pres_change_ok?(action.bundle.corporation))
             track_action(action, action.bundle.corporation)
             @game.update_frozen!
-            return if @game.frozen_corporations.none? { |c| !old_frozen.include?(c) }
+            return if @game.circular_corporations.none? { |c| !old_circular.include?(c) }
 
             raise GameError, 'Cannot purchase if it causes a circular chain of ownership'
+          end
+
+          def get_par_prices(entity, corp)
+            return super if corp.type == :major
+
+            @game
+              .stock_market
+              .par_prices
+              .select { |p| p.type == :par && p.price * 2 <= entity.cash }
           end
 
           def process_par(action)
