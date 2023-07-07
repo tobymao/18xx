@@ -928,12 +928,6 @@ module Engine
         # no payment or president change
         #
         def simple_transfer_share(share, new_owner)
-          # corp = share.corporation
-          # corp.share_holders[share.owner] -= share.percent
-          # corp.share_holders[new_owner] += share.percent
-          # share.owner.shares_by_corporation[corp].delete(share)
-          # new_owner.shares_by_corporation[corp] << share
-          # share.owner = new_owner
           @share_pool.transfer_shares(share.to_bundle, new_owner, allow_president_change: false)
         end
 
