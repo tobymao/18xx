@@ -175,6 +175,7 @@ module Engine
           G18Dixie::Step::HomeToken,
           Engine::Step::Exchange,
           Engine::Step::SpecialTrack,
+          G18Dixie::Step::RemoveTokens,
           Engine::Step::BuyCompany,
           Engine::Step::Track,
           Engine::Step::Token,
@@ -522,22 +523,87 @@ module Engine
             @round.pending_options << {
               entity: player,
               corporation: merger_corp,
+              primary_corp: primary_corp,
+              secondary_corp: secondary_corp,
               sell_price: sell_price,
               buy_price: buy_price
             }
           end
-          after_option_choice(merger_corp)
+          after_option_choice(primary_corp, secondary_corp, merger_corp)
         end
 
-        def after_option_choice(corp)
+        def after_option_choice(primary_corp, secondary_corp, merger_corp)
           return unless @round.pending_options.empty?
           # shares are done being exchanged; final cleanup
           # all remaining icg/scl shares go to pool
-          @share_pool.transfer_shares(ShareBundle.new(corp.shares_of(corp)), @share_pool)
+          @share_pool.transfer_shares(ShareBundle.new(merger_corp.shares_of(merger_corp)), @share_pool)
 
-          #@log << "#{merger_corp.name} gets the cash from #{primary_corp.name} and #{secondary_corp.name}"
-          #primary_corp.spend(primary_corp.cash, merger_corp)
-          #secondary_corp.spend(secondary_corp.cash, merger_corp)
+          @log << "#{merger_corp.name} gets the cash from #{primary_corp.name} and #{secondary_corp.name}"
+          primary_corp.spend(primary_corp.cash, merger_corp)
+          secondary_corp.spend(secondary_corp.cash, merger_corp)
+
+          @log << "#{merger_corp.name} gets the trains from #{primary_corp.name} and #{secondary_corp.name}"
+          [primary_corp, secondary_corp].each do |corp|
+            corp.trains.dup.each {|t| buy_train(merger_corp, t, :free) }
+            hexes.each do |hex|
+              hex.tile.cities.each do |city|
+                if city.tokened_by?(corp)
+                  city.tokens.map! { |token| token&.corporation == corp ? nil : token }
+                  city.reservations.delete(corp)
+                end
+              end
+            end
+          end
+
+          @log << "#{merger_corp.name} gets the tokens from #{primary_corp.name} and #{secondary_corp.name}"
+          merger_token_swap(primary_corp, secondary_corp, merger_corp)
+          [primary_corp, secondary_corp].each { |corp| close_corporation(corp) }
+        end
+
+        # Creates and returns a token for the merger_corp
+        def create_merger_corp_token(merger_corp, token_price)
+          token = Engine::Token.new(merger_corp, price: token_price)
+          merger_corp.tokens << token
+          token
+        end
+
+        def remove_duplicate_tokens(merger_corp, corp)
+          cities = Array(corp).flat_map(&:tokens).map(&:city).compact
+          merger_corp.tokens.select { |t| cities.include?(t.city) }.each(&:destroy!)
+        end
+
+        def replace_token(merger_corp, major, major_token, merger_corp_token)
+          city = major_token.city
+          @log << "#{major.name}'s token in #{city.hex.name} is replaced with a #{merger_corp.name} token"
+          major_token.remove!
+          city.place_token(merger_corp, merger_corp_token, check_tokenable: false)
+        end
+
+        def merger_token_swap(primary_corp, secondary_corp, merger_corp)
+          tokens_to_keep = 6
+          token_cost = 100
+
+          [primary_corp, secondary_corp].each do |corp|
+            corp.tokens.each do |token|
+              next if !token.used || !token.city
+
+              remove_duplicate_tokens(merger_corp, corp)
+              merger_corp_token = create_merger_corp_token(merger_corp, token_cost)
+              merger_corp_token.price = 0
+              replace_token(merger_corp, corp, token, merger_corp_token)
+            end
+          end
+
+          if merger_corp.tokens.count(&:used) > tokens_to_keep
+            @log << "-- #{merger_corp.name} is above token transfer limit (#{tokens_to_keep}) "\
+            " and must decide which tokens to remove --"
+            # This will be resolved in RemoveTokens
+            @round.pending_removals << {
+              corp: merger_corp,
+              count: merger_corp.tokens.count(&:used) - tokens_to_keep,
+              hexes: merger_corp.tokens.map(&:hex),
+            }
+          end
         end
 
         # just a basic share move without payment or president change

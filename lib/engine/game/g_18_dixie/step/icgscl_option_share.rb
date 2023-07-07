@@ -36,6 +36,8 @@ module Engine
           def process_choose(action)
             entity = action.entity
             corp = pending_option[:corporation]
+            primary_corp = pending_option[:primary_corp]
+            secondary_corp = pending_option[:secondary_corp]
             share = corp.shares_by_corporation[corp].last
             if action.choice.to_s == 'sell'
               @game.bank.spend(pending_option[:sell_price], entity)
@@ -49,7 +51,7 @@ module Engine
             end
 
             @round.pending_options.shift
-            @game.after_option_choice(corp)
+            @game.after_option_choice(primary_corp, secondary_corp, corp)
           end
 
           def choice_name
