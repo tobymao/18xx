@@ -61,6 +61,13 @@ module Engine
               raise GameError, "#{other.name} is not available to merge with" unless @game.mergeable?(other)
 
               @merging = other
+              values = @game.merger_values(action.entity, other)
+              price = if values.one?
+                        @game.format_currency(values.first.price)
+                      else
+                        "#{@game.format_currency(values.first.price)} or #{@game.format_currency(values.last.price)}"
+                      end
+              @log << "#{action.entity.name} and #{other.name} selected to merge. New share price will be #{price}"
             end
           end
 

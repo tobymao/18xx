@@ -973,7 +973,7 @@ module Engine
           if corpa.type == :major
             # neither majors are above 250
             sum = [corpa.share_price.price + corpa.share_price.price, 250].min
-            [find_rightmost_share_price(sum)]
+            return [find_rightmost_share_price(sum)]
           end
 
           # minor
@@ -981,7 +981,6 @@ module Engine
         end
 
         def merger_start(corpa, corpb, target, tuscan_merge: false)
-          puts "merger_start #{corpa.name} + #{corpb.name} => #{target.name}"
           @merger_state = :start
           @merger_corpa = corpa
           @merger_corpb = corpb
@@ -1000,7 +999,6 @@ module Engine
             type: :price,
             share_prices: share_prices,
           }
-          puts "@round.pending_options #{@round.pending_options}"
           @round.clear_cache!
         end
 
@@ -1011,7 +1009,6 @@ module Engine
         #
         # returns true if no undo required
         def merger_move_assets(from, other, target)
-          puts 'merger_move_assets'
           other_shares = from.shares_of(other)
           @log << "Removing #{other_shares.size} share(s) of #{other.name} in #{from.name} treasury" unless other_shares.empty?
           other_shares.each do |cross_share|
@@ -1024,7 +1021,6 @@ module Engine
             next if corp == from
             next if shares[corp].empty?
 
-            puts "Moving #{shares[corp].size} share(s) of #{corp.name} from #{from.name} to #{target.name} treasury"
             @log << "Moving #{shares[corp].size} share(s) of #{corp.name} from #{from.name} to #{target.name} treasury"
             bundle = ShareBundle.new(Array(shares[corp]))
             @share_pool.transfer_shares(bundle, target, allow_president_change: true)
@@ -1033,7 +1029,7 @@ module Engine
 
             @log << 'Illegal circular ownership chain is created by this merger. Undo required.'
             @round.pending_undo_requests << {
-              entity: from,
+              entity: @merger_decider,
               message: 'Merger creates an illegal circular ownership chain. '\
                        'Please "undo" to the point prior to the start of the merger',
             }
@@ -1062,34 +1058,27 @@ module Engine
         # of merging corp then to any controlled corps for that person, then to the next person, and so on
         def share_holder_list(corpa, corpb, percent)
           sh_list = []
-          puts "first player: #{corpa.player.player}"
           @players.rotate(@players.index(corpa.player)).each do |p|
-            puts "adding player #{p.name} #{total_percent(p, corpa, corpb)}" if total_percent(p, corpa, corpb) >= percent
             sh_list << p if total_percent(p, corpa, corpb) >= percent
             controlled_corporations(p).each do |c|
               next if c == corpa || c == corpb
 
-              puts "adding corp #{c.name} #{total_percent(c, corpa, corpb)}" if total_percent(c, corpa, corpb) >= percent
               sh_list << c if total_percent(c, corpa, corpb) >= percent
             end
           end
 
           # pool and frozen corps are next
-          puts "adding share_pool #{total_percent(@share_pool, corpa, corpb)}" if total_percent(@share_pool, corpa,
-                                                                                                corpb) >= percent
           sh_list << @share_pool if total_percent(@share_pool, corpa, corpb) >= percent
 
           frozen_corporations.each do |c|
             next if c == corpa || c == corpb
 
-            puts "adding frozen corp #{c} #{total_percent(c, corpa, corpb)}" if total_percent(c, corpa, corpb) >= percent
             sh_list << c if total_percent(c, corpa, corpb) >= percent
           end
           sh_list
         end
 
         def merger_exchange_start(share_price)
-          puts "merger_exchange_start share_price: #{share_price.price}"
           @merger_share_price = share_price
           stock_market.set_par(@merger_target, share_price)
           @log << "#{@merger_target.name} share price will be #{format_currency(share_price.price)}"
@@ -1102,10 +1091,7 @@ module Engine
           return unless merger_move_assets(@merger_corpa, @merger_corpb, @merger_target)
           return unless merger_move_assets(@merger_corpb, @merger_corpa, @merger_target)
 
-          puts 'done moving assets'
-
           @merger_sh_list = share_holder_list(@merger_corpa, @merger_corpb, 20)
-          puts "@merger_sh_list: #{@merger_sh_list}"
           if @merger_corpa.type == :major
             @merger_state = :exchange_pass1
             merger_next_exchange
@@ -1134,7 +1120,6 @@ module Engine
         def merger_next_exchange
           entity = @merger_sh_list.first
           tp = total_percent(entity, @merger_corpa, @merger_corpb)
-          puts "merger_next_exchange entity: #{entity.name} tp: #{tp}"
           pres_share = @merger_target.shares_of(@merger_target).find(&:president)
           if @merger_state == :exchange_pass1
             if tp >= 40 || !pres_share || !entity.player? || !afford_upgrade_to_pres?(entity, tp, @merger_target)
@@ -1148,16 +1133,13 @@ module Engine
                 target: @merger_target,
                 choices: %i[pres no],
               }
-              puts "@round.pending_options #{@round.pending_options}"
               @round.clear_cache!
             end
           else # pass2
             normal_share = @merger_target.shares_of(@merger_target).reject(&:president).first
             current_shares = entity.shares_of(@merger_target)
 
-            puts "entity: #{entity.name} entity.player: #{entity.player}"
-
-            options = [:no]
+            options = [:cash]
             options << :pres if entity.player? && pres_share && afford_upgrade_to_pres?(entity, tp, @merger_target)
             options << :full if entity.player && normal_share && afford_upgrade_to_full?(entity, @merger_target)
             if entity.player && !normal_share && pres_share && !current_shares.emtpy? &&
@@ -1167,7 +1149,6 @@ module Engine
               options << :full
             end
             options.uniq!
-            puts "options: #{options}"
 
             if options.one?
               merger_do_exchange(options.first)
@@ -1180,7 +1161,6 @@ module Engine
                 target: @merger_target,
                 choices: options,
               }
-              puts "@round.pending_options #{@round.pending_options}"
               @round.clear_cache!
             end
           end
@@ -1188,19 +1168,14 @@ module Engine
 
         def merger_do_exchange(answer)
           entity = @merger_sh_list.shift
-          puts "merger_do_exchange(#{answer}) entity: #{entity.name}"
-          old_circular = circular_corporations
           share_list = (entity.shares_of(@merger_corpa) + entity.shares_of(@merger_corpb)).sort_by(&:percent).reverse
           tp = total_percent(entity, @merger_corpa, @merger_corpb)
-          puts "share_list: #{share_list}"
-          puts "tp: #{tp}"
           if tp > 10
             # player/corp has at least one pair of shares. Answer indicates whether the player
             # wants to upgrade to a president's share (always no for corps)
 
             if answer == :pres
               # upgrade to president's share
-              puts "-> upgrade to president's share"
               share_list.each { |s| simple_transfer_share(s, s.corporation) }
               pres_share = @merger_target.shares_of(@merger_target).find(&:president)
               cost = pres_upgrade_cost(tp, @merger_target)
@@ -1212,17 +1187,12 @@ module Engine
               # exchange pairs until only a single share left
               #
               while total_percent(entity, @merger_corpa, @merger_corpb) > 10
-                puts "share_list: #{share_list} percent #{total_percent(entity, @merger_corpa, @merger_corpb)}"
                 # move old shares out (20%)
                 share0 = share_list.shift
                 share1 = nil
                 share1 = share_list.shift if share0.percent < 20
-                puts "-> transfering out #{share0}"
-                puts 'done'
                 simple_transfer_share(share0, share0.corporation)
-                puts "-> transfering out #{share1}" if share0.percent < 20
                 simple_transfer_share(share1, share1.corporation) if share0.percent < 20
-                puts 'done'
 
                 # move new share in (10%), if available
                 new_share = @merger_target.shares_of(@merger_target).reject(&:president).first
@@ -1234,12 +1204,10 @@ module Engine
                   pres_share = @merger_target.shares_of(@merger_target).find(&:president)
                   ten_share = entity.shares_of(@merger_target).first
                   if pres_share && ten_share
-                    puts "-> getting president's share instead of 10% share"
                     @log << "#{entity.name} exchanges 20% of old shares for president share of #{@merger_target.name}"
                     @share_pool.transfer_shares(ten_share.to_bundle, @merger_target, allow_president_change: true)
                     @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
                   else
-                    puts '-> no 10% shares left'
                     @log << "Out of 10% shares for #{entity.name} to exchange pairs of old shares for. "\
                             "Will sell 2 old shares for #{format_currency(@merger_target.share_price.price)}"
                     @bank.spend(@merger_target.share_price.price, entity)
@@ -1254,7 +1222,6 @@ module Engine
             raise GameError, 'Inconsistant share count' unless share_list.one?
 
             last_share = share_list.first
-            puts "-> transfering out #{last_share}"
             simple_transfer_share(last_share, last_share.corporation)
             cost = full_upgrade_cost(@merger_target)
 
@@ -1264,7 +1231,6 @@ module Engine
             if answer == :pres
               raise GameError, 'Missing president share' unless pres_share
 
-              puts '-> exchanging for president'
               cost = pres_upgrade_cost(tp, @merger_target)
               @log << "#{entity.name} upgrades to a president share for #{format_currency(cost)}"
               entity.spend(cost, @bank)
@@ -1274,13 +1240,11 @@ module Engine
 
               @log << "#{entity.name} upgrades to full share for #{format_currency(cost)}"
               if new_share
-                puts '-> exchanging for full share'
                 entity.spend(cost, @bank)
                 @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
               else
                 raise GameError, 'No shares to transfer' unless pres_share
 
-                puts "-> getting president's share instead of 10% share"
                 ten_share = entity.shares_of(@merger_target).first
                 entity.spend(cost, @bank)
                 @share_pool.transfer_shares(ten_share.to_bundle, @merger_target, allow_president_change: true)
@@ -1288,26 +1252,12 @@ module Engine
               end
             elsif entity != @share_pool
               # cash out
-              puts '-> cashing out'
               cost = full_upgrade_cost(@merger_target)
               @log << "#{entity.name} sells share of #{last_share.corporation.name} for #{format_currency(cost)}"
               @bank.spend(cost, entity)
             else
-              puts '-> share pool discards'
               @log << "#{entity.name} discards share of #{last_share.corporation.name}"
             end
-          end
-
-          update_frozen!
-          if !@merger_tuscan && circular_corporations.any? { |c| !old_circular.include?(c) }
-            @log << 'Illegal circular ownership chain is created by this merger exchange. Undo required.'
-            @round.pending_undo_requests << {
-              entity: from,
-              message: 'Merger exchange creates an illegal circular ownership chain. '\
-                       'Please "undo" to the point prior to the start of the merger',
-            }
-            @round.clear_cache!
-            return
           end
 
           if !@merger_sh_list.empty?
@@ -1329,8 +1279,6 @@ module Engine
         end
 
         def merger_minor_exchange
-          puts 'merger_minor_exchange'
-          old_circular = circular_corporations
           @merger_sh_list.each do |entity|
             share_list = (entity.shares_of(@merger_corpa) + entity.shares_of(@merger_corpb)).sort_by(&:percent).reverse
             share_list.each do |old_share|
@@ -1359,18 +1307,6 @@ module Engine
             end
           end
 
-          update_frozen!
-          if !@merger_tuscan && circular_corporations.any? { |c| !old_circular.include?(c) }
-            @log << 'Illegal circular ownership chain is created by this merger. Undo required.'
-            @round.pending_undo_requests << {
-              entity: from,
-              message: 'Merger exchange creates an illegal circular ownership chain. '\
-                       'Please "undo" to the point prior to the start of the merger',
-            }
-            @round.clear_cache!
-            return
-          end
-
           merger_tokens
         end
 
@@ -1391,7 +1327,7 @@ module Engine
               # Cannot complete merger w/o a president, ask to undo
               @log << 'Cannot complete this merger without a president. Undo required.'
               @round.pending_undo_requests << {
-                entity: from,
+                entity: @merger_decider,
                 message: "No player or corporation became president of #{@merger_target.name}. "\
                          'Please "undo" to the point prior to the start of the merger',
               }
@@ -1399,8 +1335,21 @@ module Engine
               return
             end
           end
+
+          old_circular = circular_corporations
+          update_frozen!
+          if !@merger_tuscan && circular_corporations.any? { |c| !old_circular.include?(c) }
+            @log << 'Illegal circular ownership chain is created by this merger and exchange. Undo required.'
+            @round.pending_undo_requests << {
+              entity: @merger_decider,
+              message: 'Merger exchange creates an illegal circular ownership chain. '\
+                       'Please "undo" to the point prior to the start of the merger',
+            }
+            @round.clear_cache!
+            return
+          end
+
           @merger_state = :select_tokens
-          puts 'merger_tokens'
           # delete duplicate tokens between corporations
           dup_token_cnt = 0
           @merger_corpb.tokens.select(&:used).each do |t|
@@ -1418,22 +1367,14 @@ module Engine
           map_token_cnt = @merger_corpa.tokens.count(&:used) + @merger_corpb.tokens.count(&:used)
           unplaced_token_cnt = total_token_cnt - map_token_cnt
 
-          puts "total_token_cnt = #{total_token_cnt}"
-          puts "@merger_token_cnt = #{@merger_token_cnt}"
-          puts "map_token_cnt = #{map_token_cnt}"
-          puts "unplaced_token_cnt = #{unplaced_token_cnt}"
-
           max_unplaced = [unplaced_token_cnt, @merger_token_cnt - 1].min
           min_unplaced = [@merger_token_cnt - map_token_cnt, 0].max
-          puts "max/min_unplaced= #{max_unplaced} #{min_unplaced}"
 
           max_placed = @merger_token_cnt - min_unplaced
           min_placed = @merger_token_cnt - max_unplaced
-          puts "max/min_placed= #{max_placed} #{min_placed}"
 
           min_to_remove = map_token_cnt - max_placed
           max_to_remove = map_token_cnt - min_placed
-          puts "max/min_to_remove = #{max_to_remove} #{min_to_remove}"
 
           if max_to_remove.positive?
             @log << if min_to_remove == max_to_remove
@@ -1449,7 +1390,6 @@ module Engine
               max: max_to_remove,
               count: 0,
             }
-            puts "@round.pending_removals #{@round.pending_removals}"
             @round.clear_cache!
           else
             finish_merge
@@ -1459,7 +1399,6 @@ module Engine
         def swap_token(target, old_corp, old_token)
           new_token = target.next_token
           city = old_token.city
-          puts "Replaced #{old_corp.name} token in #{city.hex.id} with #{target.name} token"
           @log << "Replaced #{old_corp.name} token in #{city.hex.id} with #{target.name} token"
           new_token.place(city)
           city.tokens[city.tokens.find_index(old_token)] = new_token
@@ -1467,7 +1406,6 @@ module Engine
         end
 
         def finish_merge
-          puts 'finish_merge'
           # create new tokens if needed
           (@merger_token_cnt - 2).times { @merger_target.tokens << Token.new(@merger_target, price: 0) } if @merger_token_cnt > 2
 
@@ -1484,8 +1422,6 @@ module Engine
           @merged_this_round[@merger_corpa] = true
           @merged_this_round[@merger_corpb] = true
           @round.clear_cache!
-
-          puts 'Finished merge!'
         end
 
         def restart_corporation!(corporation)

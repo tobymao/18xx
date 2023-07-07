@@ -72,6 +72,23 @@ module Engine
             @log << "#{entity.name} declines to purchase additional shares of #{@round.corp_started.name}"
           end
 
+          def can_sell_any_of_corporation?(entity, corporation)
+            bundles = @game.bundles_for_corporation(entity, corporation)
+            bundles.any? { |bundle| can_sell?(entity, bundle) }
+          end
+
+          # include anti-trust rule
+          def must_sell?(entity)
+            return false unless can_sell_any?(entity)
+            return true if @game.num_certs(entity) > @game.cert_limit(entity)
+
+            player = @game.controller(entity)
+            @game.corporations.any? do |corp|
+              (@game.player_controlled_percentage(player, corp) > corp.max_ownership_percent) &&
+                can_sell_any_of_corporation?(entity, corp)
+            end
+          end
+
           def sell_shares(entity, shares, swap: nil)
             old_circular = @game.circular_corporations
             raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap

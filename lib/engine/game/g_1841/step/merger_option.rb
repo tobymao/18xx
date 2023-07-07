@@ -56,7 +56,7 @@ module Engine
           def choice_name
             return 'Choose share price' if pending_type == :price
 
-            'Decision for stock exchange'
+            'Decision for exchange of stocks'
           end
 
           def choices
@@ -78,9 +78,13 @@ module Engine
                 opts[:full] = "Upgrade to a full share of #{target.name}. "\
                               "Cost: #{@game.format_currency(@game.full_upgrade_cost(target))}"
               end
+              if pending_choices.include?(:cash)
+                opts[:cash] = "No exchange for #{target.name} "\
+                              "and receive: #{@game.format_currency(@game.full_upgrade_cost(target))}"
+              end
               if pending_choices.include?(:no)
-                opts[:no] = "No exchange for #{target.name} "\
-                            "and receive: #{@game.format_currency(@game.full_upgrade_cost(target))}"
+                opts[:no] = "Don't upgrade to the president's share of #{target.name}, "\
+                            'just receive a normal share'
               end
               opts
             end
