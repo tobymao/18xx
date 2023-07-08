@@ -614,7 +614,6 @@ module Engine
         # FIXME
         def operating_round(round_num)
           G1841::Round::Operating.new(self, [
-            G1841::Step::RequestUndo,
             G1841::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -1008,7 +1007,6 @@ module Engine
         # - cross purchased stock (will be discarded -> moved to ipo of old corporation)
         # - tokens (handled later)
         #
-        # returns true if no undo required
         def merger_move_assets(from, other, target)
           other_shares = from.shares_of(other)
           @log << "Removing #{other_shares.size} share(s) of #{other.name} in #{from.name} treasury" unless other_shares.empty?
@@ -1028,14 +1026,7 @@ module Engine
             update_frozen!
             next if @merger_tuscan || circular_corporations.none? { |c| !old_circular.include?(c) }
 
-            @log << 'Illegal circular ownership chain is created by this merger. Undo required.'
-            @round.pending_undo_requests << {
-              entity: @merger_decider,
-              message: 'Merger creates an illegal circular ownership chain. '\
-                       'Please "undo" to the point prior to the start of the merger',
-            }
-            @round.clear_cache!
-            return false
+            raise GameError, 'Illegal circular ownership chain is created by this merger. Undo required.'
           end
 
           # cash
@@ -1047,8 +1038,6 @@ module Engine
           from.trains.each { |t| t.owner = target }
           target.trains.concat(from.trains)
           from.trains.clear
-
-          true
         end
 
         def total_percent(entity, corpa, corpb)
@@ -1089,8 +1078,8 @@ module Engine
           @merger_target.share_price = share_price
 
           # move assets (except for tokens) to the target
-          return unless merger_move_assets(@merger_corpa, @merger_corpb, @merger_target)
-          return unless merger_move_assets(@merger_corpb, @merger_corpa, @merger_target)
+          merger_move_assets(@merger_corpa, @merger_corpb, @merger_target)
+          merger_move_assets(@merger_corpb, @merger_corpa, @merger_target)
 
           @merger_sh_list = share_holder_list(@merger_corpa, @merger_corpb, 20)
           if @merger_corpa.type == :major
@@ -1315,39 +1304,23 @@ module Engine
           # first check to see if president share was exchanged
           pres_share = @merger_target.shares_of(@merger_target).find(&:president)
           if pres_share
-            if @merger_tuscan
-              # put president share in pool in exchange for 0, 1, or 2 shares there
-              pool_shares = @share_pool.shares_of(@merger_target).take(2)
-              @log << "Moving #{pool_shares.size} #{@merger_target.name} shares from Market to IPO"
-              pool_shares.each do |s|
-                @share_pool.transfer_shares(s.to_bundle, entity, allow_president_change: true)
-              end
-              @log << "Moving #{@merger_target.name} president's share to Market from IPO"
-              update_frozen!
-            else
-              # Cannot complete merger w/o a president, ask to undo
-              @log << 'Cannot complete this merger without a president. Undo required.'
-              @round.pending_undo_requests << {
-                entity: @merger_decider,
-                message: "No player or corporation became president of #{@merger_target.name}. "\
-                         'Please "undo" to the point prior to the start of the merger',
-              }
-              @round.clear_cache!
-              return
+            raise GameError, 'Cannot complete this merger without a president. Undo required.' unless @merger_tuscan
+
+            # tuscan merge
+            # put president share in pool in exchange for 0, 1, or 2 shares there
+            pool_shares = @share_pool.shares_of(@merger_target).take(2)
+            @log << "Moving #{pool_shares.size} #{@merger_target.name} shares from Market to IPO"
+            pool_shares.each do |s|
+              @share_pool.transfer_shares(s.to_bundle, entity, allow_president_change: true)
             end
+            @log << "Moving #{@merger_target.name} president's share to Market from IPO"
+            update_frozen!
           end
 
           old_circular = circular_corporations
           update_frozen!
           if !@merger_tuscan && circular_corporations.any? { |c| !old_circular.include?(c) }
-            @log << 'Illegal circular ownership chain is created by this merger and exchange. Undo required.'
-            @round.pending_undo_requests << {
-              entity: @merger_decider,
-              message: 'Merger exchange creates an illegal circular ownership chain. '\
-                       'Please "undo" to the point prior to the start of the merger',
-            }
-            @round.clear_cache!
-            return
+            raise GameError, 'Illegal circular ownership chain is created by this merger and exchange. Undo required.'
           end
 
           @merger_state = :select_tokens
@@ -1423,6 +1396,7 @@ module Engine
           @merged_this_round[@merger_corpa] = true
           @merged_this_round[@merger_corpb] = true
           @round.clear_cache!
+          @merger_state = nil
         end
 
         def restart_corporation!(corporation)
