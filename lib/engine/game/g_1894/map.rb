@@ -49,44 +49,44 @@ module Engine
           'X1' => {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:30,loc:0.5,reservation:PLM;city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;label=P',
+            'code' => 'city=revenue:30,loc:0.5,reservation:PLM;city=revenue:30;upgrade=cost:50,terrain:water;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;label=P',
           },
           'X2' => {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;label=B',
+            'code' => 'city=revenue:30;upgrade=cost:50,terrain:water;path=a:0,b:_0;path=a:2,b:_0;label=B',
           },
           'X3' => {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;label=L',
+            'code' => 'city=revenue:30;upgrade=cost:50,terrain:water;path=a:0,b:_0;path=a:1,b:_0;label=L',
           },
           'X4' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;'\
+            'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;upgrade=cost:50,terrain:water;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;label=P',
           },
           'X5' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:3.5;'\
+            'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:3.5;upgrade=cost:50,terrain:water;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;path=a:4,b:_1;label=P',
           },
           'X6' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=B',
+            'code' => 'city=revenue:50,slots:2;upgrade=cost:50,terrain:water;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=B',
           },
           'X7' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=L',
+            'code' => 'city=revenue:50;upgrade=cost:50,terrain:water;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=L',
           },
           'X8' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L',
+            'code' => 'city=revenue:40,slots:2;upgrade=cost:50,terrain:water;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L',
           },
           'X9' => {
             'count' => 1,
@@ -108,12 +108,12 @@ module Engine
           'X12' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L',
+            'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L',
           },
           'X13' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L',
           },
           'X14' => {
