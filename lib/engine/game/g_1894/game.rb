@@ -246,7 +246,7 @@ module Engine
         FERRY_MARKER_ICON = 'ferry'
         FERRY_MARKER_COST = 50
 
-        PARIS_HEX = 'G4'
+        PARIS_HEX = 'G6'
         CENTRE_BOURGOGNE_HEX = 'I2'
         LUXEMBOURG_HEX = 'I18'
         SQ_HEX = 'G10'
@@ -541,6 +541,11 @@ module Engine
               sqg.revenue = 100
             end
             @log << "#{sqg.name}'s revenue increased to #{sqg.revenue}"
+          when Action::BuyCompany
+            return unless action.company == ls
+
+            action.entity.add_ability(@ferry_marker_ability.dup)
+            @log << "#{action.entity.name} gets a ferry marker"
           end
         end
 
@@ -654,7 +659,7 @@ module Engine
 
           return 0 unless stops.any? { |s| NON_NETHERLANDS_OFFBOARDS.include?(s.hex.id) }
 
-          50
+          100
         end
 
         def london_bonus(corporation, stops)
@@ -666,7 +671,7 @@ module Engine
         end
 
         def est_centre_bourgogne_bonus(corporation, stops)
-          est_running_to_centre_bourgogne(corporation, stops) ? 30 : 0
+          est_running_to_centre_bourgogne(corporation, stops) ? 20 : 0
         end
 
         def est_running_to_centre_bourgogne(corporation, stops)
