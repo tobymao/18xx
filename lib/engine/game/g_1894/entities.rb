@@ -10,7 +10,7 @@ module Engine
             sym: 'LVM',
             value: 20,
             revenue: 5,
-            desc: 'Once per game the owning corporation may pay 50 F to lay a yellow track.'\
+            desc: 'Once per game the owning corporation may pay 70 F to lay a yellow track.'\
                   ' This is in addition to the corporation\'s regular track actions.'\
                   ' Blocks I14 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I14'] },
@@ -18,7 +18,7 @@ module Engine
                           type: 'tile_lay',
                           owner_type: 'corporation',
                           when: 'track',
-                          cost: 50,
+                          cost: 70,
                           count: 1,
                           special: false,
                           reachable: true,
