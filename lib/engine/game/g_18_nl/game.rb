@@ -160,6 +160,12 @@ module Engine
                     discount: { '4' => 300, '5' => 300, '6' => 300 },
                   }].freeze
 
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G18NL::Step::WaterfallAuction,
+          ])
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
