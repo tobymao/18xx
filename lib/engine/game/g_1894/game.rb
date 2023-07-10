@@ -46,7 +46,7 @@ module Engine
              82
              90p
              94
-             100p
+             99
              109
              120
              132
@@ -61,7 +61,7 @@ module Engine
              82
              88
              93
-             99
+             100p
              109
              120
              135
@@ -244,7 +244,7 @@ module Engine
         LONDON_HEX = 'A10'
         LONDON_BONUS_FERRY_SUPPLY_HEX = 'A12'
         FERRY_MARKER_ICON = 'ferry'
-        FERRY_MARKER_COST = 70
+        FERRY_MARKER_COST = 60
 
         PARIS_HEX = 'G6'
         CENTRE_BOURGOGNE_HEX = 'I2'
@@ -254,6 +254,8 @@ module Engine
         LILLE_HEX = 'D11'
         NETHERLANDS_HEX = 'C18'
         GREAT_BRITAIN_HEX = 'A4'
+        FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D9 D11 E2 E6 E10 G4 G6 G10 H9 I10].freeze
+        BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[C14 D15 D17 E16 F15 G14 G18 H17].freeze
 
         NON_NETHERLANDS_OFFBOARDS = [CENTRE_BOURGOGNE_HEX, LUXEMBOURG_HEX, GREAT_BRITAIN_HEX].freeze
 
@@ -271,9 +273,7 @@ module Engine
         BELGIAN_REGULAR_CORPORATIONS = %w[AG Belge].freeze
         REGULAR_CORPORATIONS = FRENCH_REGULAR_CORPORATIONS + BELGIAN_REGULAR_CORPORATIONS
         FRENCH_LATE_CORPORATIONS = %w[LF].freeze
-        FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 H7 I8].freeze
         BELGIAN_LATE_CORPORATIONS = %w[LB].freeze
-        BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 G18 H17].freeze
 
         DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
 
@@ -330,6 +330,10 @@ module Engine
 
         def sqg
           company_by_id('SQG')
+        end
+
+        def ls
+          company_by_id('LS')
         end
 
         def starting_corporation_ids
