@@ -564,12 +564,6 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          if entity.share_price.type == :unlimited
-            return bundles_for_corporation(share_pool, entity).reject do |bundle|
-                     bundle.shares.size > 2 || entity.cash < bundle.price
-                   end
-          end
-
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
         end
