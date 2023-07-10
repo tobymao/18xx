@@ -151,7 +151,7 @@ module Engine
 
         if @junction && @junction != jskip
           @junction.paths.each do |jp|
-            jp.walk(jskip: @junction, visited: visited, counter: counter, converging: converging, &block)
+            jp.walk(jskip: @junction, visited: visited, skip_paths: skip_paths, counter: counter, converging: converging, &block)
           end
         end
 
@@ -168,7 +168,7 @@ module Engine
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
             next if !@ignore_gauge_walk && !tracks_match?(np, dual_ok: true)
 
-            np.walk(skip: np_edge, visited: visited, counter: counter, skip_track: skip_track,
+            np.walk(skip: np_edge, visited: visited, skip_paths: skip_paths, counter: counter, skip_track: skip_track,
                     converging: converging || @tile.converging_exit?(edge), &block)
           end
 

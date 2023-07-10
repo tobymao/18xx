@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1841
       module Step
-        class BuyTokens < Engine::Step::Base
+        class BuyNewTokens < Engine::Step::Base
           def actions(entity)
             return [] unless entity == pending_entity
 
@@ -42,7 +42,7 @@ module Engine
           end
 
           def description
-            'Buy Tokens'
+            'Buy New Tokens'
           end
 
           def process_choose(action)
