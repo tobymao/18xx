@@ -267,7 +267,7 @@ module Engine
         GREEN_CITY_619_TILE = '619'
         BROWN_CITY_619_UPGRADE_TILES = %w[X14 X15 X17].freeze
         BROWN_CITY_TILES = %w[X14 X15 X16 X17 X18 X19 35 36 118].freeze
-        PARIS_TILES = %w[X1 X4 X5 X9 X10].freeze
+        PARIS_TILES = %w[X1 X4 X5 X9 X10 X9b X10b].freeze
 
         FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CFOR].freeze
         BELGIAN_REGULAR_CORPORATIONS = %w[AG Belge].freeze
@@ -564,6 +564,12 @@ module Engine
         end
 
         def redeemable_shares(entity)
+          if @round.round_num == 1
+            return bundles_for_corporation(share_pool, entity).reject do |bundle|
+                     bundle.shares.size > 2 || entity.cash < bundle.price
+                   end
+          end
+
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
         end
