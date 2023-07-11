@@ -12,7 +12,12 @@ module Engine
             @home_token_timing = @game.class::HOME_TOKEN_TIMING
             @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
             (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or!)
+            @game.merged_this_round.clear
             after_setup
+          end
+
+          def skip_entity?(entity)
+            entity.closed? || @game.merged_this_round[entity]
           end
 
           def after_process(action)
@@ -61,7 +66,9 @@ module Engine
             2.times { @game.stock_market.move_left(entity) }
             @game.log_share_price(entity, old_price, 2)
 
-            # sell shares of controlling corps
+            return unless @game.circular?(entity)
+
+            # for circular ownership, sell shares of controlling corps
             entity.corporate_shares.select { |s| @game.in_chain?(entity, s.corporation) }.each do |share|
               @game.sell_shares_and_change_price(share.to_bundle, allow_president_change: true)
             end
