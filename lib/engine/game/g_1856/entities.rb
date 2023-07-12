@@ -245,7 +245,7 @@ module Engine
             abilities: [
               {
                 type: 'train_buy',
-                description: 'Inter train buy/sell at face value',
+                description: 'Inter-corporation train buy/sell at face value only',
                 face_value: true,
               },
               {
