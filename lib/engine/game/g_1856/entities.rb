@@ -250,7 +250,7 @@ module Engine
               },
               {
                 type: 'train_limit',
-                increase: 99,
+                increase: 1,
                 description: '3 train limit',
               },
               {
