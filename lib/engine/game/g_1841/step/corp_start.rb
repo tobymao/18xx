@@ -53,6 +53,8 @@ module Engine
                     end
             @round.buy_tokens << {
               entity: corp,
+              type: :start,
+              first_price: price,
               price: price,
               min: min,
               max: max,

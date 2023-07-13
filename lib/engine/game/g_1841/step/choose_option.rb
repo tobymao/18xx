@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1841
       module Step
-        class MergerOption < Engine::Step::Base
+        class ChooseOption < Engine::Step::Base
           def actions(entity)
             return [] unless entity == pending_entity
 
@@ -49,12 +49,14 @@ module Engine
 
           def description
             return 'Choose share price' if pending_type == :price
+            return 'Optional share buy' if pending_type == :share_offer
 
             'Choose share upgrade'
           end
 
           def choice_name
             return 'Choose share price' if pending_type == :price
+            return 'Share purchase' if pending_type == :share_offer
 
             'Decision for exchange of stocks'
           end
@@ -87,6 +89,13 @@ module Engine
                             'just receive a normal share'
               end
               opts
+            when :share_offer
+              target = pending_option[:target]
+              price = @game.format_currency(target.share_price.price)
+              {
+                no: 'Pass',
+                yes: "Buy one share of #{target.name} for #{price}",
+              }
             end
           end
 
@@ -99,6 +108,9 @@ module Engine
             when :upgrade
               @round.pending_options.shift
               @game.merger_do_exchange(action.choice)
+            when :share_offer
+              @round.pending_options.shift
+              @game.share_offer_option(action.choice)
             end
           end
         end

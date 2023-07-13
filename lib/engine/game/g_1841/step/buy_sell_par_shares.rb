@@ -73,7 +73,7 @@ module Engine
           end
 
           def can_sell_any_of_corporation?(entity, corporation)
-            bundles = @game.bundles_for_corporation(entity, corporation)
+            bundles = @game.bundles_for_corporation(entity, corporation).reject { |b| b.corporation == entity }
             bundles.any? { |bundle| can_sell?(entity, bundle) }
           end
 

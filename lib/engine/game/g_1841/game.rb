@@ -14,7 +14,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :corporation_info, :merger_state, :merged_this_round
+        attr_reader :corporation_info, :done_this_round
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -225,6 +225,8 @@ module Engine
 
         CERT_LIMIT_INCLUDES_PRIVATES = false
         MAX_CORPORATE_CERTS = 5
+        XFORM_REQ_TOKEN_COST = 50
+        XFORM_OPT_TOKEN_COST = 100
 
         def init_graph
           Graph.new(self, check_tokens: true)
@@ -261,7 +263,9 @@ module Engine
 
           @merger_state = nil
           @merger_share_price = nil
-          @merged_this_round = {}
+          @done_this_round = {}
+
+          @transform_state = nil
         end
 
         def select_track_graph
@@ -528,6 +532,17 @@ module Engine
           @log << "#{corporation.name} buys #{count} tokens for #{format_currency(cost)}"
         end
 
+        def purchase_additional_tokens!(corporation, count, total_cost)
+          if count.zero?
+            @log << "#{corporation.name} skips buying additional tokens"
+            return
+          end
+
+          count.times { corporation.tokens << Token.new(corporation, price: 0) }
+          corporation.spend(total_cost, @bank)
+          @log << "#{corporation.name} buys #{count} additional tokens for #{format_currency(total_cost)}"
+        end
+
         def legal_tile_rotation?(_entity, _hex, tile)
           return true unless NO_ROTATION_TILES.include?(tile.name)
 
@@ -621,13 +636,13 @@ module Engine
             G1841::Step::BuyToken,
             Engine::Step::DiscardTrain,
             G1841::Step::RemoveTokens,
-            G1841::Step::MergerOption,
+            G1841::Step::ChooseOption,
             Engine::Step::BuyTrain,
             G1841::Step::HomeToken,
             G1841::Step::BuyNewTokens,
             G1841::Step::CorporateBuySellParShares,
             G1841::Step::Merge,
-            # G1841::Step::Transform,
+            G1841::Step::Transform,
           ], round_num: round_num)
         end
 
@@ -745,6 +760,8 @@ module Engine
         end
 
         def in_chain?(entity1, entity2)
+          return false unless entity1&.corporation?
+
           chain_of_control(entity1).include?(entity2)
         end
 
@@ -796,7 +813,7 @@ module Engine
         # A corp is not considered to have operated until the end of it's first OR
         def done_operating!(entity)
           return unless entity&.corporation?
-          return if @merged_this_round[entity]
+          return if @done_this_round[entity]
 
           @log << "#{entity.name} has finished operating for the first time" unless operated?(entity)
 
@@ -934,6 +951,7 @@ module Engine
           (!historical?(corp) || (@phase.name.to_i >= 4)) && operated?(corp)
         end
 
+        # also for transformations
         def merge_target?(corp)
           !historical?(corp) && !corp.ipoed && corp.type == :major
         end
@@ -1007,11 +1025,13 @@ module Engine
         # - cross purchased stock (will be discarded -> moved to ipo of old corporation)
         # - tokens (handled later)
         #
-        def merger_move_assets(from, other, target)
-          other_shares = from.shares_of(other)
-          @log << "Removing #{other_shares.size} share(s) of #{other.name} in #{from.name} treasury" unless other_shares.empty?
-          other_shares.each do |cross_share|
-            simple_transfer_share(cross_share, other)
+        def move_assets(from, other, target)
+          if other
+            other_shares = from.shares_of(other)
+            @log << "Removing #{other_shares.size} share(s) of #{other.name} in #{from.name} treasury" unless other_shares.empty?
+            other_shares.each do |cross_share|
+              simple_transfer_share(cross_share, other)
+            end
           end
 
           old_circular = circular_corporations
@@ -1046,7 +1066,7 @@ module Engine
 
         # build a list of stockholders that own percent shares of the old companies, starting with controller
         # of merging corp then to any controlled corps for that person, then to the next person, and so on
-        def share_holder_list(corpa, corpb, percent)
+        def merger_share_holder_list(corpa, corpb, percent)
           sh_list = []
           @players.rotate(@players.index(corpa.player)).each do |p|
             sh_list << p if total_percent(p, corpa, corpb) >= percent
@@ -1078,10 +1098,10 @@ module Engine
           @merger_target.share_price = share_price
 
           # move assets (except for tokens) to the target
-          merger_move_assets(@merger_corpa, @merger_corpb, @merger_target)
-          merger_move_assets(@merger_corpb, @merger_corpa, @merger_target)
+          move_assets(@merger_corpa, @merger_corpb, @merger_target)
+          move_assets(@merger_corpb, @merger_corpa, @merger_target)
 
-          @merger_sh_list = share_holder_list(@merger_corpa, @merger_corpb, 20)
+          @merger_sh_list = merger_share_holder_list(@merger_corpa, @merger_corpb, 20)
           if @merger_corpa.type == :major
             @merger_state = :exchange_pass1
             merger_next_exchange
@@ -1256,7 +1276,7 @@ module Engine
             # start 2nd pass of exchanges
             #
             @merger_state = :exchange_pass2
-            @merger_sh_list = share_holder_list(@merger_corpa, @merger_corpb, 10)
+            @merger_sh_list = merger_share_holder_list(@merger_corpa, @merger_corpb, 10)
             if !@merger_sh_list.empty?
               merger_next_exchange
             else
@@ -1393,8 +1413,9 @@ module Engine
           restart_corporation!(@merger_corpa)
           restart_corporation!(@merger_corpb)
 
-          @merged_this_round[@merger_corpa] = true
-          @merged_this_round[@merger_corpb] = true
+          @done_this_round[@merger_corpa] = true
+          @done_this_round[@merger_corpb] = true
+          @done_this_round[@merger_target] = true
           @round.clear_cache!
           @merger_state = nil
         end
@@ -1427,6 +1448,168 @@ module Engine
 
           # re-sort shares
           corporation.shares_by_corporation[corporation].sort_by!(&:id)
+        end
+
+        def transformable?(corp)
+          corp.type == :minor && (!historical?(corp) || (@phase.name.to_i >= 4))
+        end
+
+        def transform_shares(corp, target)
+          possible_shareholders = @players + @corporations + [@share_pool]
+          possible_shareholders.each do |sh|
+            next if sh == corp
+
+            shares = sh.shares_of(corp).sort_by(&:percent).reverse
+            shares.each do |s|
+              simple_transfer_share(s, corp)
+
+              new_share = if s.percent == 40
+                            target.shares_of(target).find(&:president)
+                          else
+                            target.shares_of(target).reject(&:president).first
+                          end
+              pres = s.percent == 40 ? 'president' : 'normal'
+              raise GameError, "No #{pres} share to tranfer" unless new_share
+
+              @log << "#{sh.name} swaps #{pres} share of #{corp.name} for #{target.name}"
+              @share_pool.transfer_shares(new_share.to_bundle, sh, allow_president_change: true)
+            end
+          end
+        end
+
+        def active_share_holder_list(corp, include_corporations: nil)
+          sh_list = []
+          @players.rotate(@players.index(corp.player)).each do |p|
+            sh_list << p unless p.shares_of(corp).empty?
+            next unless include_corporations
+
+            controlled_corporations(p).each do |c|
+              next if c == corp
+
+              sh_list << c unless c.shares_of(corp).empty?
+            end
+          end
+          sh_list
+        end
+
+        def transform_start(corp, target, tuscan_merge: false)
+          @transform_corp = corp
+          @transform_target = target
+
+          # move everything over
+          move_assets(corp, nil, target)
+
+          # substitute tokens
+          target.tokens.clear
+          corp.tokens.size.times { |_t| target.tokens << Token.new(target, price: 0) }
+          corp.tokens.select(&:used).each { |t| swap_token(target, corp, t) }
+
+          # open and set share price of target
+          @stock_market.set_par(target, corp.share_price)
+          target.ipoed = true
+
+          # convert shares
+          transform_shares(corp, target)
+
+          # swap in operating order
+          @round.entities[@round.entity_index] = target
+
+          # offer a share to all current shareholders
+          @transform_state = :offer1
+          @share_offer_list = active_share_holder_list(target, include_corporations: true)
+          @share_offer_corp = target
+          @log << 'First round of share puchase (players and corporations)'
+          share_offer_next
+        end
+
+        # can a share be offered to sale from IPO to entity?
+        def can_buy_share?(entity, corp)
+          return false if corp.shares_of(corp).empty?
+          return false if entity.cash < corp.share_price.price
+          return false if in_chain?(entity, corp)
+
+          # can't exceed cert limit
+          (!corp.counts_for_limit || num_certs(entity) < cert_limit(entity)) &&
+            # can't allow player to control too much
+            ((player_controlled_percentage(entity, corp) + 10) <= corp.max_ownership_percent)
+        end
+
+        # @share_offer_list contains list of who to offer shares to
+        # @share_offer_corp is the corp to buy
+        def share_offer_next
+          return transform_2nd_offer if @share_offer_list.empty? && @transform_state == :offer1
+          return transform_tokens if @share_offer_list.empty? && @transform_state == :offer2
+
+          entity = @share_offer_list.first
+          unless can_buy_share?(entity, @share_offer_corp)
+            @log << "#{entity.name} cannot buy a share of #{@share_offer_corp.name} and is skipped"
+            @share_offer_list.shift
+            return share_offer_next
+          end
+
+          @round.pending_options << {
+            entity: entity,
+            type: :share_offer,
+            target: @share_offer_corp,
+          }
+          @round.clear_cache!
+        end
+
+        def share_offer_option(opt)
+          entity = @share_offer_list.first
+          if opt == :no
+            @log << "#{entity.name} declines to buy a share of #{@share_offer_corp.name}"
+            @share_offer_list.shift
+            return share_offer_next
+          end
+
+          share = @share_offer_corp.shares_of(@share_offer_corp).first
+          @log << "#{entity.name} buys a share of #{@share_offer_corp.name}"
+          @share_pool.buy_shares(entity, share, allow_president_change: true)
+          @share_offer_list.shift
+          share_offer_next
+        end
+
+        def transform_2nd_offer
+          # offer a share to all current player shareholders
+          @transform_state = :offer2
+          @share_offer_list = active_share_holder_list(@share_offer_corp, include_corporations: false)
+          @log << 'Second round of share puchase (players only)'
+          share_offer_next
+        end
+
+        def transform_tokens
+          @transform_state = :tokens
+
+          current_token_cnt = @transform_target.tokens.size
+          min = current_token_cnt == 1 ? 1 : 0
+
+          first_price = min.zero? ? XFORM_OPT_TOKEN_COST : XFORM_REQ_TOKEN_COST
+          max_opt_tokens = [((@transform_target.cash - first_price) / XFORM_OPT_TOKEN_COST).to_i, 0].max
+          max = [max_opt_tokens + min, 5 - current_token_cnt].min
+
+          if max.zero?
+            @log << "#{@tranform_target.name} cannot buy additional tokens"
+            return transform_finish
+          end
+
+          @round.buy_tokens << {
+            entity: @transform_target,
+            type: :transform,
+            first_price: first_price,
+            price: XFORM_OPT_TOKEN_COST,
+            min: min,
+            max: max,
+          }
+          @round.clear_cache!
+        end
+
+        def transform_finish
+          restart_corporation!(@transform_corp)
+          @done_this_round[@transform_corp] = true
+          @done_this_round[@transform_target] = true
+          @round.clear_cache!
+          @transform_state = nil
         end
       end
     end

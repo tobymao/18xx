@@ -11,17 +11,20 @@ module Engine
             'Corporate Sell then Buy Shares'
           end
 
+          def log_pass(entity)
+            return @log << "#{entity.name} passes corporate sell/buy" if @round.current_actions.empty?
+            return if bought? && sold?
+
+            action = bought? ? 'to sell' : 'to buy'
+            @log << "#{entity.name} declines #{action} shares"
+          end
+
           def pass_description
             if @round.current_actions.empty?
               'Pass (Corporate Share)'
             else
               'Done (Corporate Share)'
             end
-          end
-
-          # FIXME
-          def must_sell?(_entity)
-            nil
           end
 
           def can_sell_any?(entity)
@@ -61,6 +64,20 @@ module Engine
               # can't allow player to control too much
               ((@game.player_controlled_percentage(entity,
                                                    corporation) + bundle.common_percent) <= corporation.max_ownership_percent)
+          end
+
+          def must_sell?(entity)
+            return false unless can_sell_any?(entity)
+            return true if @game.num_certs(entity) > @game.cert_limit(entity)
+
+            # controlling player controls more than 60% of a stock
+            # or this corp owns stock of a corp that controls it
+            player = @game.controller(entity)
+            @game.corporations.any? do |corp|
+              can_sell_any_of_corporation?(entity, corp) &&
+              (@game.player_controlled_percentage(player, corp) > corp.max_ownership_percent ||
+               (!entity.shares_of(corp).empty? && @game.in_chain?(entity, corp)))
+            end
           end
         end
       end
