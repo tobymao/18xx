@@ -106,13 +106,13 @@ module Engine
           'X9b' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:90,loc:0.5;city=revenue:90;'\
+            'code' => 'city=revenue:80,loc:0.5;city=revenue:80;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;label=P',
           },
           'X10b' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:90,loc:0.5;city=revenue:90;'\
+            'code' => 'city=revenue:80,loc:0.5;city=revenue:80;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_1;path=a:4,b:_1;label=P',
           },
           'X11' => {

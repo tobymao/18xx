@@ -564,14 +564,10 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          if @round.round_num == 1
-            return bundles_for_corporation(share_pool, entity).reject do |bundle|
-                     bundle.shares.size > 2 || entity.cash < bundle.price
-                   end
-          end
+          max_bundle_size = @round.round_num == 1 ? 2 : 1 
 
           bundles_for_corporation(share_pool, entity)
-            .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
+            .reject { |bundle| bundle.shares.size > max_bundle_size || entity.cash < bundle.price }
         end
 
         def late_corporation_possible_home_hexes(corporation)
