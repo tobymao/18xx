@@ -44,10 +44,6 @@ module Engine
             must_buy_train?(corporation) && ebuy_president_can_contribute?(corporation)
           end
 
-          # def must_issue_before_ebuy?(corporation)
-          #  super
-          # end
-
           def issuable_shares(entity)
             return [] unless must_buy_train?(entity)
 
