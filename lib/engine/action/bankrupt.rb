@@ -9,7 +9,7 @@ module Engine
 
       def initialize(entity, option: nil)
         super(entity)
-        @type = type
+        @option = option
       end
 
       def self.h_to_args(h, _game)
