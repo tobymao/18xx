@@ -8,7 +8,7 @@ module Engine
       module Step
         class Transform < Engine::Step::Base
           def actions(entity)
-            return [] if !entity.corporation? || entity != current_entity
+            return [] if !entity.corporation? || entity != current_entity || @game.done_this_round[entity]
             return [] if @xform_target
             return [] unless @game.transformable?(entity)
             return [] if target_corporations.empty?

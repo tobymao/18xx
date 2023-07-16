@@ -2207,6 +2207,10 @@ module Engine
         corporations.select(&:receivership?)
       end
 
+      def bankruptcy_options(_entity)
+        []
+      end
+
       private
 
       def init_graph
