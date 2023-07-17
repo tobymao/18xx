@@ -70,9 +70,24 @@ module Engine
 
             @game.declare_bankrupt(player, option)
 
-            # let the company off the hook (for this round)
-            @game.done_operating!(corp)
-            @game.done_this_round[corp] = true
+            if @round.token_emr_entity
+              # went bankrupt because of a L.50 token! => in rules limbo
+              # just give the company a stupid token and move on
+              #
+              @log << "Giving #{corp.name} a discounted token due to bankruptcy"
+              corp << Token.new(corp, price: 0)
+              corp.spend(corp.cash, @game.bank) if corp.cash.positive?
+
+              @round.token_emr_entity = nil
+              @round.token_emr_amount = 0
+
+              @game.transform_finish if @game.transform_state
+            else
+              # went bankrupt because of a train purchase
+              # let the company off the hook (for this round)
+              @game.done_operating!(corp)
+              @game.done_this_round[corp] = true
+            end
             @round.clear_cache!
           end
         end

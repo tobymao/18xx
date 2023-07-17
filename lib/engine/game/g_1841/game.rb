@@ -14,7 +14,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :corporation_info, :done_this_round
+        attr_reader :corporation_info, :done_this_round, :transform_state
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -101,7 +101,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { minor: 2, major: 2 },
+            train_limit: { minor: 2, major: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
             status: %w[one_tile_per_or start_non_hist],
@@ -537,18 +537,15 @@ module Engine
           @log << "#{corporation.name} buys #{count} tokens for #{format_currency(total_cost)}"
         end
 
-        def purchase_additional_tokens!(corporation, count, total_cost)
+        def purchase_additional_tokens!(corp, count, total_cost)
           if count.zero?
-            @log << "#{corporation.name} skips buying additional tokens"
+            @log << "#{corp.name} skips buying additional tokens"
             return
           end
 
-          count.times { corporation.tokens << Token.new(corporation, price: 0) }
-          # FIXME: add something like cash_crisis to BuyNewTokens step
-          raise GameError, 'Full EMR for tokens not implemented yet' if corporation.cash < total_cost
-
-          corporation.spend(total_cost, @bank)
-          @log << "#{corporation.name} buys #{count} additional tokens for #{format_currency(total_cost)}"
+          count.times { corp.tokens << Token.new(corp, price: 0) }
+          corp.spend(total_cost, @bank)
+          @log << "#{corp.name} buys #{count} additional tokens for #{format_currency(total_cost)}"
         end
 
         def legal_tile_rotation?(_entity, _hex, tile)
@@ -647,6 +644,7 @@ module Engine
             G1841::Step::ChooseOption,
             G1841::Step::BuyTrain,
             G1841::Step::HomeToken,
+            G1841::Step::TokenEmergencyMoney,
             G1841::Step::BuyNewTokens,
             G1841::Step::CorporateBuySellParShares,
             G1841::Step::Merge,
@@ -1081,8 +1079,10 @@ module Engine
           end
 
           # cash
-          @log << "Moving #{format_currency(from.cash)} from #{from.name} to #{target.name} treasury"
-          from.spend(from.cash, target)
+          if from.cash.positive?
+            @log << "Moving #{format_currency(from.cash)} from #{from.name} to #{target.name} treasury"
+            from.spend(from.cash, target)
+          end
 
           # trains
           @log << "Moving #{from.trains.size} train(s) from #{from.name} to #{target.name}"
@@ -1624,6 +1624,13 @@ module Engine
             return transform_finish
           end
 
+          if min == 1 && max == 1 && emergency_cash_before_selling(@transform_target, XFORM_REQ_TOKEN_COST) < XFORM_REQ_TOKEN_COST
+            # have to sell something
+            @round.token_emr_entity = @transform_target
+            @round.token_emr_amount = XFORM_REQ_TOKEN_COST
+            @log << "#{@transform_target.name} will need to perform EMR to buy a token"
+          end
+
           @round.buy_tokens << {
             entity: @transform_target,
             type: :transform,
@@ -1715,6 +1722,8 @@ module Engine
 
         # prioritize treasury shares before IPO shares
         def emr_shares_next(corporation, active, needed)
+          return [] unless needed.positive?
+
           all_bundles = emr_bundles_all(corporation, active)
           all_bundles.reject! { |b| b.price >= (needed + b.share_price) }
           return [] if all_bundles.empty?
@@ -1727,8 +1736,8 @@ module Engine
         end
 
         # returns bundles for first corp in chain that has any to sell
-        def emergency_issuable_bundles(corporation)
-          needed = @depot.min_depot_price
+        def emergency_issuable_bundles(corporation, needed = nil)
+          needed ||= @depot.min_depot_price
           chain_of_corps(corporation).each do |corp|
             needed -= corp.cash
             return [] unless needed.positive?
@@ -1750,16 +1759,42 @@ module Engine
           total - emergency_cash_before_issuing(corporation)
         end
 
+        # returns total emr cash that could be raised by corp and all corps in ownership chain
+        # doesn't include cash or shares held by president
+        def emergency_issuable_funds(corporation)
+          total = 0
+          chain_of_corps(corporation).each do |corp|
+            total += corp.cash
+            total += emr_value(corp, corporation)
+          end
+          total
+        end
+
         # Returns cash in any corps in ownership chain, stopping
         # when reaching corp with sellable shares
         # Doesn't include player cash
-        def emergency_cash_before_issuing(corporation)
-          needed = @depot.min_depot_price
+        def emergency_cash_before_issuing(corporation, needed = nil)
+          needed ||= @depot.min_depot_price
           total = 0
           chain_of_corps(corporation).each do |corp|
             total += corp.cash
             needed -= corp.cash
             shares = emr_shares_next(corp, corporation, needed)
+            return total unless shares.empty?
+          end
+          total
+        end
+
+        # Returns cash in any corps in ownership chain, stopping
+        # when reaching entity with sellable shares
+        # Includes player cash
+        def emergency_cash_before_selling(corporation, needed = nil)
+          needed ||= @depot.min_depot_price
+          total = 0
+          ([corporation] + chain_of_control(corporation)).each do |entity|
+            total += entity.cash
+            needed -= entity.cash
+            shares = emr_shares_next(entity, corporation, needed)
             return total unless shares.empty?
           end
           total

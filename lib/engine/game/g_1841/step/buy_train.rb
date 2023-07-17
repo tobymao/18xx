@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_train'
+require_relative 'emergency_assist'
 
 module Engine
   module Game
     module G1841
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          include EmergencyAssist
+
           def actions(entity)
             return [] unless can_entity_buy_train?(entity)
             return ['sell_shares'] if entity == current_entity&.player && can_ebuy_sell_shares?(current_entity)
@@ -60,7 +63,6 @@ module Engine
             variants = train.variants.values
             return variants if train.owned_by_corporation?
 
-            # variants.reject! { |v| entity.cash < v[:price] } if must_issue_before_ebuy?(entity)
             variants
           end
 
@@ -68,32 +70,18 @@ module Engine
             @game.emr_can_sell?(current_entity, bundle)
           end
 
-          def sweep_cash(entity, seller, train_cost)
-            @emr_triggered = true
-            return if entity == seller
-
-            @game.chain_of_control(entity).each do |controller|
-              needed = [train_cost - entity.cash, 0].max
-              amount = [needed, controller.cash].min
-              if amount.positive?
-                @log << "Sweeping #{@game.format_currency(amount)} from #{controller.name} to #{entity.name} (EMR)"
-                controller.spend(amount, entity)
-              end
-              break if controller == seller
-            end
-          end
-
           def process_buy_train(action)
             entity = action.entity
             price = action.price
             player = entity.player
-            raise GameError, 'Cannot purchase with selling shares' unless issuable_shares(entity).empty?
+            raise GameError, 'Cannot purchase without selling shares' unless issuable_shares(entity).empty?
 
             if @emr_triggered && action.train.owner != @game.depot
               raise GameError, 'Must purchase first train from depot after EMR'
             end
 
             if entity.cash < price
+              @emr_triggered = true
               sweep_cash(entity, player, price)
 
               if entity.cash < price
@@ -119,6 +107,7 @@ module Engine
 
             @game.sell_shares_and_change_price(action.bundle, allow_president_change: @game.pres_change_ok?(corp))
             @game.update_frozen!
+            @emr_triggered = true
             sweep_cash(current_entity, seller, @game.depot.min_depot_price)
             track_action(action, action.bundle.corporation)
             @round.recalculate_order if @round.respond_to?(:recalculate_order)
