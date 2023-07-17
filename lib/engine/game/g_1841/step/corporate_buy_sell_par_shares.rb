@@ -7,6 +7,12 @@ module Engine
     module G1841
       module Step
         class CorporateBuySellParShares < BuySellParShares
+          def actions(entity)
+            return [] if @game.done_this_round[entity]
+
+            super
+          end
+
           def description
             'Corporate Sell then Buy Shares'
           end

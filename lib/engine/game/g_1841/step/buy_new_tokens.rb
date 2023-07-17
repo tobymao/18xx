@@ -58,12 +58,11 @@ module Engine
             total = price(num)
             type = pending_type
             entity = pending_entity
-            price = pending_price
             @round.buy_tokens.shift
 
             case type
             when :start
-              @game.purchase_tokens!(entity, num, price)
+              @game.purchase_tokens!(entity, num, total)
             when :transform
               @game.purchase_additional_tokens!(entity, num, total)
               @game.transform_finish

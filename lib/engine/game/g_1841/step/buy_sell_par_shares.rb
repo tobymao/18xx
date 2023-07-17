@@ -97,6 +97,7 @@ module Engine
             @game.sell_shares_and_change_price(shares, swap: swap,
                                                        allow_president_change: @game.pres_change_ok?(shares.corporation))
             @game.update_frozen!
+            @round.recalculate_order if @round.respond_to?(:recalculate_order)
             return if @game.circular_corporations.none? { |c| !old_circular.include?(c) }
 
             raise GameError, 'Cannot sell if it causes a circular chain of ownership'

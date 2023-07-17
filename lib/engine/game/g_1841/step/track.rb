@@ -68,7 +68,7 @@ module Engine
             end
 
             # if we are here, must be an upgraded city/town
-            new_tile.nodes each do |n|
+            new_tile.nodes.each do |n|
               railheads.each do |t|
                 return t if graph.connected_nodes_by_token(entity, t.city).include?(n)
               end

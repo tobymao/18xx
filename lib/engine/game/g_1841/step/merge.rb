@@ -8,7 +8,7 @@ module Engine
       module Step
         class Merge < Engine::Step::Base
           def actions(entity)
-            return [] if !entity.corporation? || entity != current_entity
+            return [] if !entity.corporation? || entity != current_entity || @game.done_this_round[entity]
             return [] unless @game.mergeable?(entity)
             return [] if target_corporations.empty?
             return [] if @merge_target
@@ -25,7 +25,7 @@ module Engine
           end
 
           def auto_actions(entity)
-            return super if @merging
+            return super if @merging || !@round.pending_tokens.empty? || !@round.buy_tokens.empty?
 
             return [Engine::Action::Pass.new(entity)] if mergeable_candidates(entity).empty?
 

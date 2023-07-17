@@ -201,6 +201,7 @@ module Engine
         HOME_TOKEN_TIMING = nil
         SELL_BUY_ORDER = :sell_buy
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
         GAME_END_CHECK = { bankrupt: :immediate, stock_market: :immediate, bank: :current_or }.freeze
 
@@ -225,6 +226,7 @@ module Engine
 
         CERT_LIMIT_INCLUDES_PRIVATES = false
         MAX_CORPORATE_CERTS = 5
+        BANKRUPTCY_LOAN = 500
         XFORM_REQ_TOKEN_COST = 50
         XFORM_OPT_TOKEN_COST = 100
 
@@ -266,6 +268,8 @@ module Engine
           @done_this_round = {}
 
           @transform_state = nil
+
+          @loans = Hash.new { |h, k| h[k] = 0 }
         end
 
         def select_track_graph
@@ -419,7 +423,7 @@ module Engine
               major_pool = if @phase.name.to_i < 4
                              ZONES[zone].dup
                            elsif @phase.name.to_i == 4
-                             zone < 4 ? (all_token_cities - ZONE[4]) : ZONE[4].dup
+                             zone < 4 ? (all_token_cities - ZONES[4]) : ZONES[4].dup
                            else
                              all_token_cities
                            end
@@ -525,11 +529,12 @@ module Engine
           end
         end
 
-        def purchase_tokens!(corporation, count, price)
+        def purchase_tokens!(corporation, count, total_cost)
           min = major?(corporation) ? 2 : 1
           (count - min).times { corporation.tokens << Token.new(corporation, price: 0) }
-          corporation.spend((cost = price * count), @bank)
-          @log << "#{corporation.name} buys #{count} tokens for #{format_currency(cost)}"
+          auto_emr(corporation, total_cost) if corporation.cash < total_cost
+          corporation.spend(total_cost, @bank)
+          @log << "#{corporation.name} buys #{count} tokens for #{format_currency(total_cost)}"
         end
 
         def purchase_additional_tokens!(corporation, count, total_cost)
@@ -539,6 +544,9 @@ module Engine
           end
 
           count.times { corporation.tokens << Token.new(corporation, price: 0) }
+          # FIXME: add something like cash_crisis to BuyNewTokens step
+          raise GameError, 'Full EMR for tokens not implemented yet' if corporation.cash < total_cost
+
           corporation.spend(total_cost, @bank)
           @log << "#{corporation.name} buys #{count} additional tokens for #{format_currency(total_cost)}"
         end
@@ -626,9 +634,9 @@ module Engine
           ])
         end
 
-        # FIXME
         def operating_round(round_num)
           G1841::Round::Operating.new(self, [
+            G1841::Step::Bankrupt,
             G1841::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -637,7 +645,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G1841::Step::RemoveTokens,
             G1841::Step::ChooseOption,
-            Engine::Step::BuyTrain,
+            G1841::Step::BuyTrain,
             G1841::Step::HomeToken,
             G1841::Step::BuyNewTokens,
             G1841::Step::CorporateBuySellParShares,
@@ -735,6 +743,12 @@ module Engine
           chain
         end
 
+        def chain_of_corps(entity)
+          return [entity] unless entity&.corporation?
+
+          ([entity] + chain_of_control(entity)[0...-1])
+        end
+
         # find the human in control if there is one, or the share pool if not
         def controller(entity)
           return entity unless entity.corporation?
@@ -763,6 +777,12 @@ module Engine
           return false unless entity1&.corporation?
 
           chain_of_control(entity1).include?(entity2)
+        end
+
+        def in_full_chain?(entity1, entity2)
+          return false unless entity1&.corporation?
+
+          ([entity1] + chain_of_control(entity1)).include?(entity2)
         end
 
         def player_controlled_percentage(buyer, corporation)
@@ -890,9 +910,20 @@ module Engine
             end
 
             corp = corporation_by_id(company.sym)
+
             if corp&.ipoed
               deferred_president_change(corp)
             else
+              # remove reservations and close
+              if corp
+                @hexes.each do |hex|
+                  tile = hex.tile
+                  tile.reservations.delete(corp) if tile.reserved_by?(corp)
+                  tile.cities.each do |city|
+                    city.reservations.delete(corp) if city.reserved_by?(corp)
+                  end
+                end
+              end
               @log << "Inactive corporation #{corp.name} closes" if corp
               corp&.close!
             end
@@ -1526,7 +1557,7 @@ module Engine
         def can_buy_share?(entity, corp)
           return false if corp.shares_of(corp).empty?
           return false if entity.cash < corp.share_price.price
-          return false if in_chain?(entity, corp)
+          return false if in_full_chain?(entity, corp)
 
           # can't exceed cert limit
           (!corp.counts_for_limit || num_certs(entity) < cert_limit(entity)) &&
@@ -1610,6 +1641,160 @@ module Engine
           @done_this_round[@transform_target] = true
           @round.clear_cache!
           @transform_state = nil
+        end
+
+        # sell IPO shares to make up shortfall
+        def auto_emr(corp, total_cost)
+          diff = total_cost - corp.cash
+          return unless diff.positive?
+
+          num_shares = (2.0 * (diff / corp.share_price.price)).ceil
+          raise GameError, 'Assumption about starting token EMR is wrong' if num_shares > corp.shares_of(corp).size
+
+          bundle = ShareBundle.new(corp.shares_of(corp).take(num_shares))
+          bundle.share_price = corp.share_price.price / 2.0
+          sell_shares_and_change_price(bundle)
+          @log << "#{corp.name} raises #{format_currency(bundle.price)} and completes EMR"
+          @round.recalculate_order if @round.respond_to?(:recalculate_order)
+        end
+
+        # can sell any amount?
+        def can_dump?(owner, corp, active)
+          # can dump IPO stock
+          owner == corp ||
+            # can dump stock if not president of corp
+            owner != corp.owner ||
+            # can dump if corp is not not in chain of ownership and not a historical corp (before phase 4)
+            (!in_full_chain?(active, corp) && (!historical?(corp) || @phase.name.to_i >= 4))
+        end
+
+        def corp_minimum_to_retain(owner, corp, active)
+          return 0 if can_dump?(owner, corp, active)
+          return 0 if historical?(corp)
+
+          corp.player_share_holders.reject { |s_h, _| s_h == owner }.values.max || 0
+        end
+
+        def emr_can_sell?(active, bundle)
+          owner = bundle.owner
+          corp = bundle.corporation
+
+          return true if can_dump?(owner, corp, active)
+
+          corp_minimum_to_retain(owner, corp, active) <= bundle.percent &&
+            !bundle.presidents_share
+        end
+
+        def emr_valid_bundles(owner, corp, active)
+          return [] if owner.shares_of(corp).empty?
+
+          bundles = all_bundles_for_corporation(owner, corp)
+          bundles.each { |b| b.share_price = corp.share_price.price / 2.0 }
+          max = owner.percent_of(corp) - corp_minimum_to_retain(owner, corp, active)
+          bundles.reject!(&:presidents_share) unless can_dump?(owner, corp, active)
+          bundles.reject { |b| b.percent > max }
+        end
+
+        def emr_value(corp, active)
+          value = 0
+          corporations.each do |c|
+            bundles = emr_valid_bundles(corp, c, active)
+            value += bundles.max_by(&:num_shares)&.price unless bundles.empty?
+          end
+          value
+        end
+
+        def emr_bundles_all(corp, active)
+          all_bundles = []
+          corporations.each do |c|
+            bundles = emr_valid_bundles(corp, c, active)
+            all_bundles.concat(bundles) unless bundles.empty?
+          end
+          all_bundles
+        end
+
+        # prioritize treasury shares before IPO shares
+        def emr_shares_next(corporation, active, needed)
+          all_bundles = emr_bundles_all(corporation, active)
+          all_bundles.reject! { |b| b.price >= (needed + b.share_price) }
+          return [] if all_bundles.empty?
+
+          ipo, treasury = all_bundles.partition { |s| s.corporation == corporation }
+
+          return treasury unless treasury.empty?
+
+          ipo unless ipo.empty?
+        end
+
+        # returns bundles for first corp in chain that has any to sell
+        def emergency_issuable_bundles(corporation)
+          needed = @depot.min_depot_price
+          chain_of_corps(corporation).each do |corp|
+            needed -= corp.cash
+            return [] unless needed.positive?
+
+            shares = emr_shares_next(corp, corporation, needed)
+            return shares unless shares.empty?
+          end
+          []
+        end
+
+        # returns total emr cash that could be raised by corp and all corps in ownership chain
+        # doesn't include cash in current corp or cash in corps prior to selling shares
+        def emergency_issuable_cash(corporation)
+          total = 0
+          chain_of_corps(corporation).each do |corp|
+            total += corp.cash
+            total += emr_value(corp, corporation)
+          end
+          total - emergency_cash_before_issuing(corporation)
+        end
+
+        # Returns cash in any corps in ownership chain, stopping
+        # when reaching corp with sellable shares
+        # Doesn't include player cash
+        def emergency_cash_before_issuing(corporation)
+          needed = @depot.min_depot_price
+          total = 0
+          chain_of_corps(corporation).each do |corp|
+            total += corp.cash
+            needed -= corp.cash
+            shares = emr_shares_next(corp, corporation, needed)
+            return total unless shares.empty?
+          end
+          total
+        end
+
+        def bankruptcy_options(_entity)
+          [0, 1]
+        end
+
+        def bankruptcy_button_text(option)
+          case option
+          when 0
+            'Declare Bankruptcy and Resign'
+          when 1
+            "Declare Bankruptcy and take a loan of #{format_currency(BANKRUPTCY_LOAN)}"
+          else
+            ''
+          end
+        end
+
+        def declare_bankrupt(player, option = 0)
+          raise GameError, "#{player.name} is already bankrupt, cannot declare bankruptcy again." if player.bankrupt
+
+          if option.zero?
+            player.bankrupt = true
+            @log << "#{player.name} is now bankrupt and out of the game"
+            return
+          end
+
+          @log << "#{player.name} is bankrupt and receives a #{format_currency(BANKRUPTCY_LOAN)} loan form the bank"
+          @loans[player] += BANKRUPTCY_LOAN
+        end
+
+        def player_value(player)
+          player.value - @loans[player]
         end
       end
     end
