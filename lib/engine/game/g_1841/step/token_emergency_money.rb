@@ -108,6 +108,10 @@ module Engine
             str
           end
 
+          def issuable_cash(entity)
+            @game.emergency_issuable_cash(entity)
+          end
+
           def owner_funds(entity)
             [needed_cash(entity) - @game.emergency_issuable_funds(entity), 0].max
           end

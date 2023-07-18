@@ -42,8 +42,9 @@ module View
 
           bundle = step.issuable_shares(entity).max_by(&:price)
           issue_verb = step.respond_to?(:issue_verb) ? step.issue_verb(entity) : 'issue'
+          issuable_cash = step.respond_to?(:issuable_cash) ? step.issuable_cash(entity) : bundle.price
           children << h('div.margined',
-                        "#{entity.name} can #{issue_verb} shares to raise up to #{@game.format_currency(bundle.price)}.")
+                        "#{entity.name} can #{issue_verb} shares to raise up to #{@game.format_currency(issuable_cash)}.")
         end
         if actions.include?('take_loan')
           num_loans = @game.num_emergency_loans(entity, funds_required)
