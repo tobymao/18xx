@@ -56,7 +56,7 @@ module View
         trs = if @game.depot.upcoming.empty?
                 'No Upcoming Trains'
               else
-                @game.depot.upcoming.group_by(&:name).map do |name, trains|
+                @game.depot.upcoming.reject(&:reserved).group_by(&:name).map do |name, trains|
                   events = []
                   events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") if rust_schedule[name]
                   events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") if obsolete_schedule[name]
