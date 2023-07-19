@@ -63,7 +63,7 @@ module Engine
           def show_other
             [@round.merge_consent_primary_corp,
              @round.merge_consent_secondary_corp,
-             @round.merge_consent_merging_corp].freeze - [current_entity]
+             @round.merge_consent_merging_corp] - [current_entity]
           end
 
           def turn_to_choose(entity)
@@ -76,7 +76,7 @@ module Engine
           end
 
           def help
-            return "Choosing to merge WILL form the #{merger_corp_name}" if @round.merge_consent_pending_corps.length < 2
+            return "Choosing to merge WILL form the #{merger_corp_name}" if @round.merge_consent_pending_corps.size < 2
 
             "The formation of the #{merger_corp_name} is also conditional on the consent of #{secondary_corp_president}"
           end

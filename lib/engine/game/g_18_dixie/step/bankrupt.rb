@@ -8,7 +8,7 @@ module Engine
       module Step
         class Bankrupt < Engine::Step::Bankrupt
           def active?
-            active_entities.any?
+            !active_entities.empty?
           end
 
           def actions(entity)
