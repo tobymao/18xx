@@ -51,6 +51,7 @@ module Engine
                                                                            'ICG may form on purchase of first 5D '\
                                                                            'if SCL not formed'],
                                               }).freeze
+        SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy_sell
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 425, 6 => 375 }.freeze
         TILE_RESERVATION_BLOCKS_OTHERS = :always
