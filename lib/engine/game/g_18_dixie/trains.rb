@@ -75,7 +75,6 @@ module Engine
             variants: [
               name: '4D',
               distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4, 'multiplier' => 2 }],
-              events: [{ 'type' => 'scl_formation_chance' }],
               price: 800,
             ],
           },

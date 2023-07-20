@@ -13,35 +13,35 @@ module Engine
         PHASES = [
           {
             name: '1',
-            train_limit: 4,
+            train_limit: { minor: 1, major: 4 },
             tiles: [:yellow],
             operating_rounds: 2,
           },
           {
             name: '2',
             on: '2',
-            train_limit: 4,
+            train_limit: { minor: 1, major: 4 },
             tiles: [:yellow],
             operating_rounds: 2,
           },
           {
             name: '3',
             on: '3',
-            train_limit: 4,
+            train_limit: { minor: 1, major: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '4',
             on: '4',
-            train_limit: 3,
+            train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '5',
             on: '5⛭',
-            train_limit: 3,
+            train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green],
             status: [],
             operating_rounds: 2,
@@ -49,7 +49,7 @@ module Engine
           {
             name: '6',
             on: '6+1',
-            train_limit: 3,
+            train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green brown],
             status: ['multiple_train_buy'],
             operating_rounds: 2,
@@ -57,7 +57,7 @@ module Engine
           {
             name: '7',
             on: '7+3',
-            train_limit: 2,
+            train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown],
             status: ['multiple_train_buy'],
             operating_rounds: 2,
@@ -65,7 +65,7 @@ module Engine
           {
             name: 'D',
             on: %w[2D 4D 5D],
-            train_limit: 2,
+            train_limit: { minor: 1, major: 2, system: 3 },
             tiles: %i[yellow green brown gray],
             status: ['multiple_train_buy'],
             operating_rounds: 2,

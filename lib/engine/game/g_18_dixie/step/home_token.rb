@@ -7,6 +7,10 @@ module Engine
     module G18Dixie
       module Step
         class HomeToken < Engine::Step::HomeToken
+          def round_state
+            super
+          end
+
           def process_place_token(action)
             super
             entity = action.entity
