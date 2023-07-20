@@ -6,7 +6,8 @@ require_relative 'program_enable'
 module Engine
   module Action
     class ProgramBuyShares < ProgramEnable
-      attr_reader :corporation, :until_condition, :from_market, :auto_pass_after
+      attr_accessor :from_market
+      attr_reader :corporation, :until_condition, :auto_pass_after
 
       def initialize(entity, corporation:, until_condition:, from_market: false, auto_pass_after: false)
         super(entity)
