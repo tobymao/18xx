@@ -1801,7 +1801,7 @@ module Engine
             # Mail contract
             mail_first_stop = stops.first
             mail_last_stop = stops.last
-            first_stop_revenue = if mail_first_stop.city? && mail_first_stop.tokened_by?(entity)
+            first_stop_revenue = if !stops.empty? && mail_first_stop.city? && mail_first_stop.tokened_by?(entity)
                                    mail_first_stop.route_base_revenue(phase, train)
                                  else
                                    0
