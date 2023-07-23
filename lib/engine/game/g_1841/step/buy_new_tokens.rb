@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
+require_relative 'emergency_assist'
 
 module Engine
   module Game
     module G1841
       module Step
         class BuyNewTokens < Engine::Step::Base
+          include EmergencyAssist
+
           def actions(entity)
             return [] unless entity == pending_entity
 
@@ -62,8 +65,13 @@ module Engine
 
             case type
             when :start
-              @game.purchase_tokens!(entity, num, total)
+              @game.purchase_tokens!(entity, num, total) # should never need token_emegency_money
             when :transform
+              if entity.cash < total
+                sweep_cash(entity, entity.player, total)
+                raise GameError, "#{entity.name} does not have #{format_currency(total_cost)} for token" if entity.cash < total
+              end
+
               @game.purchase_additional_tokens!(entity, num, total)
               @game.transform_finish
             end
