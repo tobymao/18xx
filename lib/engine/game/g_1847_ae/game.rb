@@ -335,6 +335,7 @@ module Engine
           return 0 if train.name == '6E'
           return 0 unless stops.any? { |s| COAL_HEXES.include?(s.hex.id) }
           return 0 unless stops.any? { |s| Z_HEXES.include?(s.hex.id) }
+
           70
         end
 
@@ -342,9 +343,9 @@ module Engine
           # A hex to B hex
           return 0 unless stops.any? { |s| A_HEXES.include?(s.hex.id) }
           return 0 unless stops.any? { |s| B_HEXES.include?(s.hex.id) }
+
           40
         end
-
       end
     end
   end
