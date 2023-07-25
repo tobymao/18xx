@@ -130,21 +130,21 @@ module Engine
                   {
                     name: 'Red',
                     on: '6',
-                    train_limit: 2,
+                    train_limit: 3,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
                   },
                   {
                     name: 'Gray',
                     on: '7',
-                    train_limit: 2,
+                    train_limit: 3,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
                   },
                   {
                     name: 'Purple',
                     on: 'D',
-                    train_limit: 2,
+                    train_limit: 3,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
                   }].freeze
