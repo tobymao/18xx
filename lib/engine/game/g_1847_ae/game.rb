@@ -32,6 +32,11 @@ module Engine
 
         LAST_TRANCH_CORPORATIONS = %w[NDB M N RNB].freeze
 
+        COAL_HEXES = %w[G7 H6].freeze
+        Z_HEXES = %w[G21 I21].freeze
+        A_HEXES = %w[B2 B14 B22].freeze
+        B_HEXES = %w[I3 I13].freeze
+
         MARKET = [
           ['', '', '', '', '130', '150', '170', '190', '210', '230', '255', '285', '315', '350', '385', '420'],
           ['', '', '98', '108', '120', '135', '150', '170', '190', '210', '235', '260', '285', '315', '350', '385'],
@@ -187,7 +192,7 @@ module Engine
             G1847AE::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1847AE::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1847AE::Step::BuySingleTrainOfType,
             [Engine::Step::BuyCompany, { blocks: true }],
@@ -316,6 +321,30 @@ module Engine
           r.revenue = 50
           @log << "Tile laid in E9 - #{r.name}'s revenue increased to 50M"
         end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue += coal_bonus(route.train, stops)
+          revenue += local_bonus(stops)
+
+          revenue
+        end
+
+        def coal_bonus(train, stops)
+          # coal hex to Z hex, not if 6E train
+          return 0 if train.name == '6E'
+          return 0 unless stops.any? { |s| COAL_HEXES.include?(s.hex.id) }
+          return 0 unless stops.any? { |s| Z_HEXES.include?(s.hex.id) }
+          70
+        end
+
+        def local_bonus(stops)
+          # A hex to B hex
+          return 0 unless stops.any? { |s| A_HEXES.include?(s.hex.id) }
+          return 0 unless stops.any? { |s| B_HEXES.include?(s.hex.id) }
+          40
+        end
+
       end
     end
   end
