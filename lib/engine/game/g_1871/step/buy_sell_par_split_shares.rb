@@ -186,6 +186,12 @@ module Engine
               @game.can_par?(c, entity) && can_buy?(entity, @game.share_by_id("#{c.name}_0")&.to_bundle)
             end
           end
+
+          # handle auto-floating, since we can only buy from market
+          def activate_program_buy_shares(entity, program)
+            program.from_market = true
+            super
+          end
         end
       end
     end

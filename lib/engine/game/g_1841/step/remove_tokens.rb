@@ -67,6 +67,8 @@ module Engine
 
           def pass!
             super
+            return unless active?
+
             @round.pending_removals.shift
             @game.finish_merge
           end

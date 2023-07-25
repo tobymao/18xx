@@ -8,10 +8,10 @@ module Engine
       module Step
         class Merge < Engine::Step::Base
           def actions(entity)
-            return [] if !entity.corporation? || entity != current_entity
+            return [] if !entity.corporation? || entity != current_entity || @game.done_this_round[entity]
             return [] unless @game.mergeable?(entity)
             return [] if target_corporations.empty?
-            return [] if @target
+            return [] if @merge_target
 
             actions = %w[merge]
             actions << 'pass' unless @merging
@@ -21,11 +21,11 @@ module Engine
           def setup
             @mergeable_ = {}
             @merging = nil
-            @target = nil
+            @merge_target = nil
           end
 
           def auto_actions(entity)
-            return super if @merging
+            return super if @merging || !@round.pending_tokens.empty? || !@round.buy_tokens.empty?
 
             return [Engine::Action::Pass.new(entity)] if mergeable_candidates(entity).empty?
 
@@ -51,10 +51,10 @@ module Engine
 
           def process_merge(action)
             if @merging
-              @target = action.corporation
-              raise GameError, "#{target.name} is not available to merge into" unless @game.merge_target?(@target)
+              @merge_target = action.corporation
+              raise GameError, "#{@merge_target.name} is not available to merge into" unless @game.merge_target?(@merge_target)
 
-              @game.merger_start(action.entity, @merging, @target)
+              @game.merger_start(action.entity, @merging, @merge_target)
             else
               other = action.corporation
               raise GameError, "#{other.name} is the wrong corporation type" if other.type != action.entity.type
