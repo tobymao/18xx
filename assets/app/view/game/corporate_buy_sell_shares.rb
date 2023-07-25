@@ -19,7 +19,7 @@ module View
         @entity ||= @game.current_entity
         children = []
 
-        children << h('div.margined', 'Must sell stock') if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
+        children << h('div.margined', 'Must sell stock') if @step.respond_to?(:must_sell?) && @step.must_sell?(@entity)
 
         children.concat(render_corporations)
 

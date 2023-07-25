@@ -12,12 +12,12 @@ module Engine
             @home_token_timing = @game.class::HOME_TOKEN_TIMING
             @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
             (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or!)
-            @game.merged_this_round.clear
+            @game.done_this_round.clear
             after_setup
           end
 
           def skip_entity?(entity)
-            entity.closed? || @game.merged_this_round[entity]
+            entity.closed? || @game.done_this_round[entity]
           end
 
           def after_process(action)
