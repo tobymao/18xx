@@ -36,7 +36,9 @@ module Engine
         bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
       end
 
-      if !@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && shares.owner.player?
+      if bundle.owner.player? &&
+         !@game.class::BUY_SHARE_FROM_OTHER_PLAYER &&
+         (!@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT || !entity.corporation?)
         raise GameError, 'Cannot buy share from player'
       end
 
@@ -99,6 +101,7 @@ module Engine
       else
         receiver = if (%i[escrow incremental].include?(corporation.capitalization) && bundle.owner.corporation?) ||
                        (bundle.owner.corporation? && !corporation.ipo_is_treasury?) ||
+                       (bundle.owner.corporation? && bundle.owner != corporation) ||
                        bundle.owner.player?
                      bundle.owner
                    else
@@ -133,7 +136,7 @@ module Engine
 
       log_sell_shares(entity, verb, bundle, price, swap_text) unless silent
 
-      transfer_to = @game.class::SOLD_SHARES_DESTINATION == :corporation ? bundle.corporation : self
+      transfer_to = @game.sold_shares_destination(bundle.corporation) == :corporation ? bundle.corporation : self
 
       transfer_shares(bundle,
                       transfer_to,
@@ -279,7 +282,7 @@ module Engine
       # previous president if they haven't sold the president's share
       # give the president the president's share
       # if the owner only sold half of their president's share, take one away
-      transfer_to = @game.class::SOLD_SHARES_DESTINATION == :corporation ? corporation : self
+      transfer_to = @game.sold_shares_destination(corporation) == :corporation ? corporation : self
       swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : transfer_to
 
       change_president(presidents_share, swap_to, president, previous_president)
@@ -318,7 +321,7 @@ module Engine
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
 
-      entities = @game.players.reject(&:bankrupt)
+      entities = @game.possible_presidents
       a = entities.find_index(player_a)
       b = entities.find_index(player_b)
       a < b ? b - a : b - (a - entities.size)

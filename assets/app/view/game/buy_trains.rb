@@ -16,7 +16,7 @@ module View
       needs :active_shell, default: nil, store: true
 
       def render_president_contributions
-        player = @corporation.owner
+        player = corp_owner(@corporation)
         owner = nil
         if @game.class::EBUY_OWNER_MUST_HELP
           owner = @game.acting_for_entity(player)
@@ -30,9 +30,9 @@ module View
         cheapest_train_price = if @step.respond_to?(:cheapest_train_price)
                                  @step.cheapest_train_price(@corporation)
                                else
-                                 @depot.min_depot_price
+                                 discounted_train(@depot.min_depot_train, @depot.min_depot_price).first
                                end
-        cash = @corporation.cash + player.cash
+        cash = available_cash(@corporation) + player.cash
         share_funds_required = cheapest_train_price - cash
         share_funds_allowed = if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
                                 share_funds_required
@@ -190,7 +190,7 @@ module View
 
         available = @step.buyable_trains(@corporation).group_by(&:owner)
         depot_trains = available.delete(@depot) || []
-        other_corp_trains = available.sort_by { |c, _| c.owner == @corporation.owner ? 0 : 1 }
+        other_corp_trains = available.sort_by { |c, _| corp_owner(c) == corp_owner(@corporation) ? 0 : 1 }
         children = []
 
         @must_buy_train = @step.must_buy_train?(@corporation)
@@ -263,12 +263,13 @@ module View
         children << h(:h3, 'Remaining Trains')
         children << remaining_trains
 
-        children << h(:div, "#{@corporation.name} has #{@game.format_currency(@corporation.cash)}.")
+        children << h(:div, "#{@corporation.name} has #{available_cash_str(@corporation)}.")
         if @step.issuable_shares(@corporation).any? &&
            (issuable_cash = @game.emergency_issuable_cash(@corporation)).positive?
           issue_verb = 'issue'
           issue_verb = @step.issue_verb(@corporation) if @step.respond_to?(:issue_verb)
-          issue_str = "#{@corporation.name} can #{issue_verb} shares to raise up to #{@game.format_currency(issuable_cash)}"
+          issue_str = "#{issuing_corporation(@corporation).name} can #{issue_verb} shares"\
+                      " to raise up to #{@game.format_currency(issuable_cash)}"
           if @step.must_issue_before_ebuy?(@corporation)
             issue_str += " (the corporation must #{issue_verb} shares before the president may contribute)"
           end
@@ -298,6 +299,29 @@ module View
         h('div#buy_trains', props, children)
       end
 
+      def discounted_train(train, price)
+        entity = @corporation
+
+        if @selected_company && [@corporation, corp_owner(@corporation)].include?(@selected_company.owner) \
+          && @step.respond_to?(:ability_timing)
+          @game.abilities(@selected_company, :train_discount, time: @step.ability_timing) do |ability|
+            if ability.trains.empty? || ability.trains.include?(train.name)
+              price = ability.discounted_price(train, price)
+              entity = @selected_company
+            end
+          end
+        elsif @step.respond_to?(:ability_timing)
+          # Handle a corporation having train discount ability
+          @game.abilities(@corporation, :train_discount, time: @step.ability_timing) do |ability|
+            next if ability.count
+
+            price = ability.discounted_price(train, price) if ability.trains.empty? || ability.trains.include?(train.name)
+          end
+        end
+
+        [@game.discard_discount(train, price), entity]
+      end
+
       def from_depot(depot_trains, corporation)
         depot_trains.flat_map do |train|
           train.variants
@@ -308,24 +332,7 @@ module View
             president_assist, _fee = @game.president_assisted_buy(@corporation, train, price)
             entity = @corporation
 
-            if @selected_company && [@corporation, @corporation.owner].include?(@selected_company.owner) \
-              && @step.respond_to?(:ability_timing)
-              @game.abilities(@selected_company, :train_discount, time: @step.ability_timing) do |ability|
-                if ability.trains.include?(train.name)
-                  price = ability.discounted_price(train, price)
-                  entity = @selected_company
-                end
-              end
-            elsif @step.respond_to?(:ability_timing)
-              # Handle a corporation having train discount ability
-              @game.abilities(@corporation, :train_discount, time: @step.ability_timing) do |ability|
-                next if ability.count
-
-                price = ability.discounted_price(train, price) if ability.trains.include?(train.name)
-              end
-            end
-
-            price = @game.discard_discount(train, price)
+            price, entity = discounted_train(train, price)
 
             buy_train = lambda do
               process_action(Engine::Action::BuyTrain.new(
@@ -432,7 +439,7 @@ module View
                 ))
               end
 
-              if other_owner(other) == @corporation.owner
+              if other_owner(other) == corp_owner(@corporation)
                 if !@corporation.loans.empty? &&
                    !@game.interest_paid?(@corporation) &&
                    !@game.can_pay_interest?(@corporation, -price)
@@ -454,7 +461,7 @@ module View
 
             count = group.size
 
-            real_name = other_owner(other) != other.owner ? " [#{other_owner(other).name}]" : ''
+            real_name = other_owner(other) != corp_owner(other) ? " [#{other_owner(other).name}]" : ''
 
             train_props = { style: {} }
             unless @game.able_to_operate?(corporation, group[0], name)
@@ -462,10 +469,10 @@ module View
               train_props[:style][:backgroundColor] = color
               train_props[:style][:color] = contrast_on(color)
             end
-            line = if @show_other_players || other_owner(other) == @corporation.owner
+            line = if @show_other_players || other_owner(other) == corp_owner(@corporation)
                      [h(:div, train_props, name),
                       h('div.nowrap', train_props,
-                        "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name}#{real_name})"),
+                        "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{corp_owner(other).name}#{real_name})"),
                       input,
                       h('button.no_margin', { on: { click: buy_train_click } }, 'Buy')]
                    else
@@ -520,6 +527,22 @@ module View
       # need to abstract due to corporations owning minors owning trains
       def other_owner(other)
         @step.respond_to?(:real_owner) ? @step.real_owner(other) : other.owner
+      end
+
+      def corp_owner(corp)
+        @step.respond_to?(:corp_owner) ? @step.corp_owner(corp) : corp.owner
+      end
+
+      def available_cash(corp)
+        @step.respond_to?(:available_cash) ? @step.available_cash(corp) : corp.cash
+      end
+
+      def available_cash_str(corp)
+        @step.respond_to?(:available_cash_str) ? @step.available_cash_str(corp) : @game.format_currency(corp.cash)
+      end
+
+      def issuing_corporation(corp)
+        @step.respond_to?(:issuing_corporation) ? @step.issuing_corporation(corp) : corp
       end
 
       def price_range(train)

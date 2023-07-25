@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
+require_relative 'emergency_assist'
 
 module Engine
   module Game
     module G1841
       module Step
-        class BuyTokens < Engine::Step::Base
+        class BuyNewTokens < Engine::Step::Base
+          include EmergencyAssist
+
           def actions(entity)
             return [] unless entity == pending_entity
 
@@ -29,6 +32,14 @@ module Engine
             pending_buy[:price]
           end
 
+          def pending_first_price
+            pending_buy[:first_price]
+          end
+
+          def pending_type
+            pending_buy[:type]
+          end
+
           def pending_min
             pending_buy[:min]
           end
@@ -42,13 +53,28 @@ module Engine
           end
 
           def description
-            'Buy Tokens'
+            'Buy New Tokens'
           end
 
           def process_choose(action)
-            @game.purchase_tokens!(pending_entity, action.choice.to_i, pending_price)
-
+            num = action.choice.to_i
+            total = price(num)
+            type = pending_type
+            entity = pending_entity
             @round.buy_tokens.shift
+
+            case type
+            when :start
+              @game.purchase_tokens!(entity, num, total) # should never need token_emegency_money
+            when :transform
+              if entity.cash < total
+                sweep_cash(entity, entity.player, total)
+                raise GameError, "#{entity.name} does not have #{format_currency(total_cost)} for token" if entity.cash < total
+              end
+
+              @game.purchase_additional_tokens!(entity, num, total)
+              @game.transform_finish
+            end
           end
 
           def choice_available?(entity)
@@ -56,17 +82,26 @@ module Engine
           end
 
           def choice_name
+            return 'Number of Additional Tokens to Buy' if pending_type != :start
+
             'Number of Tokens to Buy'
+          end
+
+          def price(num)
+            return 0 if num.zero?
+
+            pending_first_price + ((num - 1) * pending_price)
           end
 
           def choices
             Array.new(pending_max - pending_min + 1) do |i|
               num = i + pending_min
-              next if (num > pending_min) && ((num * pending_price) > pending_entity.cash)
+              total = price(num)
+              next if (num > pending_min) && (total > pending_entity.cash)
 
-              emr = pending_min * pending_price > pending_entity.cash ? ' - EMR' : ''
+              emr = total > pending_entity.cash ? ' - EMR' : ''
 
-              [num, "#{num} (#{@game.format_currency(num * pending_price)}#{emr})"]
+              [num, "#{num} (#{@game.format_currency(total)}#{emr})"]
             end.compact.to_h
           end
 

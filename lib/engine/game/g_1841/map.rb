@@ -94,7 +94,7 @@ module Engine
           {
             'count' => 2,
             'color' => 'brown',
-            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:3,b:_0',
+            'code' => 'pass=revenue:0,size:2;path=a:0,b:_0;path=a:3,b:_0',
           },
           '611' => 3,
           '612' => 1,
@@ -120,19 +120,19 @@ module Engine
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            'code' => 'pass=revenue:0,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           '617' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+            'code' => 'pass=revenue:0,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
           },
           '618' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'pass=revenue:0;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            'code' => 'pass=revenue:0,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           '619' => 2,
           '621' => 2,

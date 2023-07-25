@@ -25,7 +25,10 @@ module View
           show_percentage = @percentages_available > 1 ||
                             (bundle.percent != bundle.corporation.share_percent && !bundle.presidents_share)
           reduced_price = @game.format_currency(bundle.price - @swap_share.price) if @swap_share
-          modified_price = step.respond_to?(:modify_purchase_price) && step.modify_purchase_price(bundle)
+          if step.respond_to?(:modify_purchase_price)
+            modified_price = step.modify_purchase_price(bundle)
+            modified_price = nil if bundle.price == modified_price
+          end
 
           text = @prefix.to_s
           text += " #{@partial_percent}% of" if @partial_percent

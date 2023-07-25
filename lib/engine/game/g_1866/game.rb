@@ -1302,7 +1302,7 @@ module Engine
           entity.runnable_trains.reject { |t| infrastructure_train?(t) }
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           corporation = bundle.corporation
           before_share_price = corporation.share_price
           was_president = corporation.president?(bundle.owner) || bundle.owner == corporation
@@ -1801,7 +1801,7 @@ module Engine
             # Mail contract
             mail_first_stop = stops.first
             mail_last_stop = stops.last
-            first_stop_revenue = if mail_first_stop.city? && mail_first_stop.tokened_by?(entity)
+            first_stop_revenue = if !stops.empty? && mail_first_stop.city? && mail_first_stop.tokened_by?(entity)
                                    mail_first_stop.route_base_revenue(phase, train)
                                  else
                                    0

@@ -1158,7 +1158,7 @@ module Engine
         def new_auction_round
           @log << "-- #{round_description('Auction')} --"
           G1873::Round::Auction.new(self, [
-            G1873::Step::ConcessionAuction,
+            Engine::Step::ConcessionAuction,
           ])
         end
 
@@ -1458,7 +1458,7 @@ module Engine
           bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           corporation = bundle.corporation
           old_price = corporation.share_price
 

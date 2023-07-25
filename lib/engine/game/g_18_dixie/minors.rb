@@ -40,6 +40,7 @@ module Engine
 
         MINORS = [
           {
+            type: 'minor',
             sym: ' 1',
             coordinates: 'K17',
             logo: '18_mag/1',
@@ -58,6 +59,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: ' 2',
             coordinates: 'C11',
             logo: '18_mag/2',
@@ -76,6 +78,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: ' 3',
             coordinates: 'J6',
             logo: '18_mag/3',
@@ -94,6 +97,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: ' 4',
             coordinates: 'J10',
             logo: '18_mag/4',
@@ -112,6 +116,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: ' 5',
             coordinates: 'M17',
             logo: '18_mag/5',
@@ -130,6 +135,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: ' 6',
             coordinates: 'H10',
             logo: '18_mag/6',
@@ -148,6 +154,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: ' 7',
             coordinates: 'G17',
             logo: '18_mag/7',
@@ -166,6 +173,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: ' 8',
             coordinates: 'G23',
             logo: '18_mag/8',
@@ -184,6 +192,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: ' 9',
             coordinates: %w[D12 E15],
             logo: '18_mag/9',
@@ -206,6 +215,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: '10',
             coordinates: 'E3',
             logo: '18_mag/10',
@@ -224,6 +234,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: '11',
             coordinates: 'M7',
             logo: '18_mag/11',
@@ -242,6 +253,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: '12',
             coordinates: %w[F6 F14],
             logo: '18_mag/12',
@@ -265,6 +277,7 @@ module Engine
             text_color: 'white',
           },
           {
+            type: 'minor',
             sym: '13',
             coordinates: 'N2',
             logo: '18_mag/13',

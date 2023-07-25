@@ -3,6 +3,7 @@
 require 'lib/settings'
 require 'view/game/token'
 require 'view/game/par_chart'
+require 'view/game/loan_chart'
 
 module View
   module Game
@@ -61,6 +62,14 @@ module View
       PRICE_STYLE_1D = {
         fontSize: '100%',
         textAlign: 'center',
+      }.freeze
+
+      PRICE_STYLE_INFO = {
+        fontSize: '80%',
+        textAlign: 'center',
+        position: 'absolute',
+        bottom: "#{PAD}px",
+        width: "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER)}px",
       }.freeze
 
       def box_style_1d
@@ -223,10 +232,11 @@ module View
         @game.stock_market.market.first.each_with_index do |price, idx|
           tokens = price.corporations.map { |corporation| h(:img, token_props(corporation)) }
 
-          element = h(:div, { style: cell_style(box_style, price.types) }, [
-                      h(:div, { style: PRICE_STYLE_1D }, price.price),
-                      h(:div, { style: TOKEN_STYLE_1D }, tokens),
-                    ])
+          cell_elements = [h(:div, { style: PRICE_STYLE_1D }, price.price),
+                           h(:div, { style: TOKEN_STYLE_1D }, tokens)]
+          cell_elements << h(:div, { style: PRICE_STYLE_INFO }, price.info) if price.info
+
+          element = h(:div, { style: cell_style(box_style, price.types) }, cell_elements)
           if idx.even?
             row0 << element
           else
@@ -396,6 +406,7 @@ module View
         end
 
         children << h(ParChart) if @game.respond_to?(:par_chart)
+        children << h(LoanChart) if @game.respond_to?(:loan_chart)
 
         h(:div, children)
       end

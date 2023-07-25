@@ -330,7 +330,7 @@ module Engine
           revenue
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           @sell_queue << [bundle, bundle.corporation.owner]
 
           @share_pool.sell_shares(bundle)

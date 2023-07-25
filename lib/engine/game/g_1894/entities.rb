@@ -11,7 +11,7 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'Once per game the owning corporation may pay 50 F to lay a yellow track.'\
-                  ' This is in addition to the corporation\'s tile builds'\
+                  ' This is in addition to the corporation\'s regular track actions.'\
                   ' Blocks I14 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I14'] },
                         {
@@ -23,7 +23,7 @@ module Engine
                           special: false,
                           reachable: true,
                           hexes: [],
-                          tiles: %w[X1 X2 X3a 1 7 8 9 55 56 57 58 69 630],
+                          tiles: %w[X1 X2 X3 1 7 8 9 55 56 57 58 69 630],
                         }],
             color: '#d9d9d9',
           },
@@ -41,17 +41,28 @@ module Engine
             sym: 'GLG',
             value: 50,
             revenue: 10,
-            desc: 'Owning corporation may lay a yellow tile or upgrade a yellow tile in Liège'\
-                  ' (H17) and optionally place a token for free there.'\
-                  ' This counts as one of the corporation\'s tile builds and token laying.'\
-                  ' Blocks H17 while owned by a player.',
+            desc: 'Owning corporation may lay or upgrade a tile in Liège'\
+                  ' (H17). If it does, it may then optionally place a token for free there.'\
+                  ' This counts as one of the corporation\'s tile builds and token laying'\
+                  ' (if token was placed). Blocks H17 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H17'] },
                         {
                           type: 'teleport',
                           owner_type: 'corporation',
                           hexes: ['H17'],
-                          tiles: %w[14 15 57 619],
+                          tiles: %w[14 15 57 619 X14 X15 X16 X17 X18 X19 35 36 118],
                         }],
+            color: '#d9d9d9',
+          },
+          {
+            name: 'Ligne de Saint-Quentin à Guise',
+            sym: 'SQG',
+            value: 70,
+            revenue: 0,
+            desc: 'Revenue is equal to 70 F if Saint-Quentin (G10) is green, to 100 F if'\
+                  ' Saint-Quentin is brown and to 0 F otherwise.'\
+                  ' Closes in purple phase. May not be sold to corporation in red and gray phase.',
+            abilities: [{ type: 'close', on_phase: 'Purple' }],
             color: '#d9d9d9',
           },
           {
@@ -73,17 +84,6 @@ module Engine
               from_owner: true,
               owner_type: 'corporation',
             }],
-            color: '#d9d9d9',
-          },
-          {
-            name: 'Ligne de Saint-Quentin à Guise',
-            sym: 'SQG',
-            value: 100,
-            revenue: 0,
-            desc: 'Revenue is equal to 70 F if Saint-Quentin (G10) is green, to 100 F if'\
-                  ' Saint-Quentin is brown and to 0 F otherwise.'\
-                  ' Closes in purple phase. May not be sold to corporation in red and gray phase.',
-            abilities: [{ type: 'close', on_phase: 'Purple' }],
             color: '#d9d9d9',
           },
           {
@@ -285,7 +285,7 @@ module Engine
             name: 'Late Belgian',
             logo: '1894/LB',
             simple_logo: '1894/LB.alt',
-            tokens: [0, 40, 100],
+            tokens: [0, 40],
             max_ownership_percent: 60,
             color: '#c9c9c9',
             text_color: 'black',

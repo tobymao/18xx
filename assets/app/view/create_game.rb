@@ -392,12 +392,14 @@ module View
       return if !selected_game_or_variant && @mode != :json
 
       game_params = params
-      title = selected_game_or_variant.title
-      game_params[:max_players] = @max_p[title] if game_params[:max_players].to_i <= 0
-      game_params[:seed] = game_params[:seed].to_i
-      game_params[:seed] = nil if (game_params[:seed]).zero?
 
-      return create_game(game_params) if @mode == :multi
+      if @mode == :multi
+        title = selected_game_or_variant.title
+        game_params[:max_players] = @max_p[title] if game_params[:max_players].to_i <= 0
+        game_params[:seed] = game_params[:seed].to_i
+        game_params[:seed] = nil if (game_params[:seed]).zero?
+        return create_game(game_params)
+      end
 
       players = game_params
                   .select { |k, _| k.start_with?('player_') }
