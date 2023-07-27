@@ -743,6 +743,14 @@ module Engine
           graph.clear
         end
 
+        def event_close_companies!
+          if ls.owner.player?
+            hex_by_id(LONDON_BONUS_FERRY_SUPPLY_HEX).tile.icons << Part::Icon.new('1894/ferry')
+          end
+
+          super
+        end
+
         def block_london
           london = hex_by_id(LONDON_HEX).tile.towns.first
           london.instance_variable_set(:@game, self)
