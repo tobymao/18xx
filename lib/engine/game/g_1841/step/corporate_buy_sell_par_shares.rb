@@ -85,6 +85,11 @@ module Engine
                (!entity.shares_of(corp).empty? && @game.in_chain?(entity, corp)))
             end
           end
+
+          def process_sell_shares(action)
+            super
+            @round.recalculate_order
+          end
         end
       end
     end

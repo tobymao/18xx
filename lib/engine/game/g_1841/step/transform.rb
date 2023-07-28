@@ -37,7 +37,6 @@ module Engine
             @xform_target = action.corporation
             raise GameError, "#{@xform_target.name} is not available to merge into" unless @game.merge_target?(@xform_target)
 
-            @log << "#{action.entity.name} will transform to a major and form #{@xform_target.name}"
             @game.transform_start(action.entity, @xform_target)
           end
 

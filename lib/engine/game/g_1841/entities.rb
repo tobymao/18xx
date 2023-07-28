@@ -456,6 +456,21 @@ module Engine
             historical: false,
             startable: true,
           },
+          {
+            sym: 'Holding',
+            name: 'Tuscan Merge Holding',
+            logo: '1841/H',
+            color: 'black',
+            tokens: [0, 0],
+            type: 'major',
+            shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
+            float_percent: 20,
+            max_ownership_percent: 60,
+            always_market_price: true,
+            corporation_can_ipo: true,
+            historical: true,
+            startable: false,
+          },
         ].freeze
       end
     end
