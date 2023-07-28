@@ -56,7 +56,7 @@ module Engine
           def buyable_trains(entity)
             return super unless @emr_triggered
 
-            [@game.depot.min_depot_train(entity)]
+            [@game.depot.min_depot_train]
           end
 
           def train_vatiant_helper(train, _entity)

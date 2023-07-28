@@ -126,26 +126,27 @@ module Engine
           end
 
           def process_choose(action)
+            choice = action.choice.to_sym
             case pending_type
             when :price
-              sp = action.chioce == :first ? pending_option[:share_prices].first : pending_option[:share_prices].last
+              sp = choice == :first ? pending_option[:share_prices].first : pending_option[:share_prices].last
               @round.pending_options.shift
               @game.merger_exchange_start(sp)
             when :upgrade
               @round.pending_options.shift
-              @game.merger_do_exchange(action.choice)
+              @game.merger_do_exchange(choice)
             when :share_offer
               @round.pending_options.shift
-              @game.share_offer_option(action.choice)
+              @game.share_offer_option(choice)
             when :pick_exchange_pres
               @round.pending_options.shift
-              @game.secession_corp(action.choice)
+              @game.secession_corp(choice)
             when :pick_exchange_corp
               @round.pending_options.shift
-              @game.secession_do_exchange(action.choice)
+              @game.secession_do_exchange(choice)
             when :offer_again
               @round.pending_options.shift
-              @game.secession_offer_response(action.choice)
+              @game.secession_offer_response(choice)
             end
           end
         end

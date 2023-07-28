@@ -17,7 +17,7 @@ module Engine
             corporation: nil,
           },
           {
-            name: 'Società della Dtrada Ferrata da Lucca a Pistoia',
+            name: 'Società della Drada Ferrata da Lucca a Pistoia',
             sym: 'SFLP',
             value: 50,
             revenue: 0,
