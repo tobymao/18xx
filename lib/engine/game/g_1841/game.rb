@@ -193,7 +193,7 @@ module Engine
             name: '7',
             distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 7, 'visit' => 7 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 110,
+            price: 1100,
             num: 2,
           },
           {
@@ -1222,6 +1222,7 @@ module Engine
 
           # start the target
           @merger_target.ipoed = true
+          @merger_target.floated = true
           @merger_target.share_price = share_price
 
           # move assets (except for tokens) to the target
@@ -1695,6 +1696,7 @@ module Engine
           # open and set share price of target
           @stock_market.set_par(target, corp.share_price)
           target.ipoed = true
+          target.floated = true
 
           # convert shares
           transform_shares(corp, target)

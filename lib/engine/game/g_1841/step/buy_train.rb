@@ -74,7 +74,6 @@ module Engine
             entity = action.entity
             price = action.price
             player = entity.player
-            raise GameError, 'Cannot purchase without selling shares' unless issuable_shares(entity).empty?
 
             if @emr_triggered && action.train.owner != @game.depot
               raise GameError, 'Must purchase first train from depot after EMR'
