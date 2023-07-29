@@ -17,7 +17,7 @@ module Engine
             corporation: nil,
           },
           {
-            name: 'Società della Dtrada Ferrata da Lucca a Pistoia',
+            name: 'Società della Drada Ferrata da Lucca a Pistoia',
             sym: 'SFLP',
             value: 50,
             revenue: 0,
@@ -455,6 +455,21 @@ module Engine
             corporation_can_ipo: true,
             historical: false,
             startable: true,
+          },
+          {
+            sym: 'Holding',
+            name: 'Tuscan Merge Holding',
+            logo: '1841/H',
+            color: 'black',
+            tokens: [0, 0],
+            type: 'major',
+            shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
+            float_percent: 20,
+            max_ownership_percent: 60,
+            always_market_price: true,
+            corporation_can_ipo: true,
+            historical: true,
+            startable: false,
           },
         ].freeze
       end

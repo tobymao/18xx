@@ -56,7 +56,7 @@ module Engine
           def buyable_trains(entity)
             return super unless @emr_triggered
 
-            [@game.depot.min_depot_train(entity)]
+            [@game.depot.min_depot_train]
           end
 
           def train_vatiant_helper(train, _entity)
@@ -74,7 +74,6 @@ module Engine
             entity = action.entity
             price = action.price
             player = entity.player
-            raise GameError, 'Cannot purchase without selling shares' unless issuable_shares(entity).empty?
 
             if @emr_triggered && action.train.owner != @game.depot
               raise GameError, 'Must purchase first train from depot after EMR'

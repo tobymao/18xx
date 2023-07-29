@@ -39,8 +39,16 @@ module Engine
             pending_option[:type]
           end
 
+          def pending_corp
+            pending_option[:corp]
+          end
+
           def pending_choices
             pending_option[:choices]
+          end
+
+          def pending_share_owner
+            pending_option[:share_owner]
           end
 
           def pending_option
@@ -50,13 +58,19 @@ module Engine
           def description
             return 'Choose share price' if pending_type == :price
             return 'Optional share buy' if pending_type == :share_offer
+            return 'Choose president share to exchange IRSFF president share for' if pending_type == :pick_exchange_pres
+            return 'Choose share to exchange IRSFF share for' if pending_type == :pick_exchange_corp
+            return 'Continue with share purchase round' if pending_type == :offer_again
 
             'Choose share upgrade'
           end
 
           def choice_name
             return 'Choose share price' if pending_type == :price
-            return 'Share purchase' if pending_type == :share_offer
+            return "Optional share purchase by #{pending_entity.name}" if pending_type == :share_offer
+            return "Choose president share for #{pending_share_owner.name}" if pending_type == :pick_exchange_pres
+            return "Choose share for #{pending_share_owner.name}" if pending_type == :pick_exchange_corp
+            return "Perform another share purchase round for #{pending_corp.name}?" if pending_type == :offer_again
 
             'Decision for exchange of stocks'
           end
@@ -96,21 +110,43 @@ module Engine
                 no: 'Pass',
                 yes: "Buy one share of #{target.name} for #{price}",
               }
+            when :pick_exchange_pres, :pick_exchange_corp
+              corpa = pending_option[:corpa]
+              corpb = pending_option[:corpb]
+              {
+                a: corpa.name.to_s,
+                b: corpb.name.to_s,
+              }
+            when :offer_again
+              {
+                y: 'Yes',
+                n: 'No',
+              }
             end
           end
 
           def process_choose(action)
+            choice = action.choice.to_sym
             case pending_type
             when :price
-              sp = action.chioce == :first ? pending_option[:share_prices].first : pending_option[:share_prices].last
+              sp = choice == :first ? pending_option[:share_prices].first : pending_option[:share_prices].last
               @round.pending_options.shift
               @game.merger_exchange_start(sp)
             when :upgrade
               @round.pending_options.shift
-              @game.merger_do_exchange(action.choice)
+              @game.merger_do_exchange(choice)
             when :share_offer
               @round.pending_options.shift
-              @game.share_offer_option(action.choice)
+              @game.share_offer_option(choice)
+            when :pick_exchange_pres
+              @round.pending_options.shift
+              @game.secession_corp(choice)
+            when :pick_exchange_corp
+              @round.pending_options.shift
+              @game.secession_do_exchange(choice)
+            when :offer_again
+              @round.pending_options.shift
+              @game.secession_offer_response(choice)
             end
           end
         end

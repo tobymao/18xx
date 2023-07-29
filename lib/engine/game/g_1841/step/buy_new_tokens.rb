@@ -20,8 +20,8 @@ module Engine
             pending_entity
           end
 
-          def current_entity
-            pending_entity
+          def active_entities
+            [pending_entity]
           end
 
           def pending_entity
@@ -48,6 +48,10 @@ module Engine
             pending_buy[:max]
           end
 
+          def pending_corp
+            pending_buy[:corp] || pending_entity
+          end
+
           def pending_buy
             @round.buy_tokens&.first || {}
           end
@@ -69,11 +73,16 @@ module Engine
             when :transform
               if entity.cash < total
                 sweep_cash(entity, entity.player, total)
-                raise GameError, "#{entity.name} does not have #{format_currency(total_cost)} for token" if entity.cash < total
+                raise GameError, "#{entity.name} does not have #{format_currency(total)} for token" if entity.cash < total
               end
 
               @game.purchase_additional_tokens!(entity, num, total)
               @game.transform_finish
+            when :secession
+              raise GameError, "#{entity.name} does not have #{format_currency(total)} for token" if entity.cash < total
+
+              @game.purchase_additional_tokens!(entity, num, total)
+              @game.secession_tokens_next
             end
           end
 
@@ -82,9 +91,9 @@ module Engine
           end
 
           def choice_name
-            return 'Number of Additional Tokens to Buy' if pending_type != :start
+            return "Number of Additional Tokens to Buy for #{pending_corp.name}" if pending_type != :start
 
-            'Number of Tokens to Buy'
+            "Number of Tokens to Buy for #{pending_corp.name}"
           end
 
           def price(num)
