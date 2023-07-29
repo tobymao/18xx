@@ -664,6 +664,13 @@ module Engine
                 ability.icon = nil
               end
             end
+
+            # If there's still a single slot in the city and one of the two
+            # companies reserving the slot has closed, make sure that its
+            # reservation is pointing to this slot. Without this the city's
+            # reservations array could be [nil, company] and no reservation
+            # would be shown on the map.
+            city.reservations.compact! if city.reservations.size > city.slots
           end
         end
 
