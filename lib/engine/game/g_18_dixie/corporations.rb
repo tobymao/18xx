@@ -6,6 +6,7 @@ module Engine
       module Corporations
         CORPORATIONS = [
           {
+            type: 'major',
             float_percent: 50,
             sym: 'ACL',
             name: 'Atlantic Coast Line',
@@ -16,6 +17,7 @@ module Engine
             color: 'black',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'CoG',
             name: 'Central of Georgia Railroad',
@@ -26,6 +28,7 @@ module Engine
             color: 'red',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'Fr',
             name: 'Frisco',
@@ -36,6 +39,7 @@ module Engine
             color: '#ed1c24',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'IC',
             name: 'Illinois Central Railroad',
@@ -46,6 +50,7 @@ module Engine
             color: '#397641',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'L&N',
             name: 'Louisville and Nashville Railroad',
@@ -56,6 +61,7 @@ module Engine
             color: '#0d5ba5',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'SAL',
             name: 'Seaboard Air Line',
@@ -67,6 +73,7 @@ module Engine
             text_color: 'black',
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'SR',
             name: 'Southern Railway',
@@ -79,6 +86,7 @@ module Engine
             reservation_color: nil,
           },
           {
+            type: 'major',
             float_percent: 50,
             sym: 'WRA',
             name: 'Western Railway of Alabama',
@@ -90,11 +98,14 @@ module Engine
             text_color: 'black',
           },
           {
+            type: 'system',
+            capitalization: 'none',
             sym: 'ICG',
             name: 'Illinois Central Gulf Railway',
             logo: '18_dixie/ICG.alt',
             simple_logo: '18_dixie/ICG.alt',
-            tokens: [nil, nil, nil, nil, nil, nil],
+            tokens: [100, 100],
+            shares: [20, 10, 10, 10, 10, 10, 10, 20],
             color: '#FFF',
             text_color: 'black',
             abilities: [
@@ -107,11 +118,6 @@ module Engine
                 type: 'train_limit',
                 increase: 3,
                 description: '3 train limit',
-              },
-              {
-                type: 'description',
-                description: 'Cannot lay tokens',
-                desc_detail: 'ICG inherits tokens from IC and Frisco and cannot lay any addiitonal tokens',
               },
               {
                 type: 'description',
@@ -130,7 +136,8 @@ module Engine
                 desc_detail: 'Both IC and Frisco needs to have floated and have operated at least once for the merger to '\
                              'be considered. Both the presidents of the IC and Frisco need to consent for the merger to take '\
                              'place. IC presidency is tiebreaker for ICG presidency. Up to 6 IC and Frisco tokens are exchanged '\
-                             'for ICG tokens with any excess and unplaced tokens being lost. The initial stock value of the '\
+                             'for ICG tokens with any excess and unplaced tokens being lost. The ICG has 2 additional $100 '\
+                             'tokens it may lay. The initial stock value of the '\
                              'ICG will be the highest stock value on the top row of the stock market that is both less than '\
                              'the sum of the stock values of the IC & Frisco and also no greater than $160. The president of '\
                              'the IC will get the 20% ICG presidency certificate and the president of the ICG will get the '\
@@ -147,13 +154,16 @@ module Engine
             ],
           },
           {
+            type: 'system',
+            capitalization: 'none',
             sym: 'SCL',
             name: 'Seaboard Coast Line',
             logo: '18_dixie/SCL.alt',
             simple_logo: '18_dixie/SCL.alt',
-            tokens: [nil, nil, nil, nil, nil, nil],
+            tokens: [100, 100],
             color: '#777',
             text_color: 'black',
+            shares: [20, 10, 10, 10, 10, 10, 10, 20],
             abilities: [
               {
                 type: 'train_buy',
@@ -164,11 +174,6 @@ module Engine
                 type: 'train_limit',
                 increase: 3,
                 description: '3 train limit',
-              },
-              {
-                type: 'description',
-                description: 'Cannot lay tokens',
-                desc_detail: 'SCL inherits tokens from ACL and SAL and cannot lay any addiitonal tokens',
               },
               {
                 type: 'description',
@@ -187,7 +192,8 @@ module Engine
                 desc_detail: 'Both ACL and SAL needs to have floated and have operated at least once for the merger to '\
                              'be considered. Both the presidents of the ACL and SAL need to consent for the merger to take '\
                              'place. ACL presidency is tiebreaker for SCL presidency. Up to 6 ACL and SAL tokens are '\
-                             'exchanged for SCL tokens with any excess and unplaced tokens being lost. The initial stock '\
+                             'exchanged for SCL tokens with any excess and unplaced tokens being lost. The SCL has two '\
+                             'additional $100 tokens it may lay. The initial stock '\
                              'value of the SCL will be the highest stock value on the top row of the stock market that is '\
                              'both less than the sum of the stock values of the ACL & SAL and also no greater than $160. '\
                              'The president of the ACL will get the 20% SCL presidency certificate and the president of the '\

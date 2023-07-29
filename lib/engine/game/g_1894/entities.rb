@@ -11,7 +11,7 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'Once per game the owning corporation may pay 50 F to lay a yellow track.'\
-                  ' This is in addition to the corporation\'s tile builds'\
+                  ' This is in addition to the corporation\'s regular track actions.'\
                   ' Blocks I14 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I14'] },
                         {
@@ -285,7 +285,7 @@ module Engine
             name: 'Late Belgian',
             logo: '1894/LB',
             simple_logo: '1894/LB.alt',
-            tokens: [0, 40, 100],
+            tokens: [0, 40],
             max_ownership_percent: 60,
             color: '#c9c9c9',
             text_color: 'black',

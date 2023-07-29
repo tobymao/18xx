@@ -14,7 +14,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :corporation_info
+        attr_reader :corporation_info, :done_this_round, :transform_state
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -101,7 +101,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { minor: 2, major: 2 },
+            train_limit: { minor: 2, major: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
             status: %w[one_tile_per_or start_non_hist],
@@ -201,6 +201,7 @@ module Engine
         HOME_TOKEN_TIMING = nil
         SELL_BUY_ORDER = :sell_buy
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
         GAME_END_CHECK = { bankrupt: :immediate, stock_market: :immediate, bank: :current_or }.freeze
 
@@ -225,6 +226,9 @@ module Engine
 
         CERT_LIMIT_INCLUDES_PRIVATES = false
         MAX_CORPORATE_CERTS = 5
+        BANKRUPTCY_LOAN = 500
+        XFORM_REQ_TOKEN_COST = 50
+        XFORM_OPT_TOKEN_COST = 100
 
         def init_graph
           Graph.new(self, check_tokens: true)
@@ -258,6 +262,14 @@ module Engine
           @border_paths = nil
           update_frozen!
           corporations.each { |corp| @corporation_info[corp][:operated] = false }
+
+          @merger_state = nil
+          @merger_share_price = nil
+          @done_this_round = {}
+
+          @transform_state = nil
+
+          @loans = Hash.new { |h, k| h[k] = 0 }
         end
 
         def select_track_graph
@@ -315,7 +327,7 @@ module Engine
                 add_region(hex.neighbors[edge], Hex.invert(edge))
               else
                 remove_region(hex, edge)
-                remover_region(hex.neighbors[edge], Hex.invert(edge))
+                remove_region(hex.neighbors[edge], Hex.invert(edge))
               end
             end
           end
@@ -411,7 +423,7 @@ module Engine
               major_pool = if @phase.name.to_i < 4
                              ZONES[zone].dup
                            elsif @phase.name.to_i == 4
-                             zone < 4 ? (all_token_cities - ZONE[4]) : ZONE[4].dup
+                             zone < 4 ? (all_token_cities - ZONES[4]) : ZONES[4].dup
                            else
                              all_token_cities
                            end
@@ -517,11 +529,23 @@ module Engine
           end
         end
 
-        def purchase_tokens!(corporation, count, price)
+        def purchase_tokens!(corporation, count, total_cost)
           min = major?(corporation) ? 2 : 1
           (count - min).times { corporation.tokens << Token.new(corporation, price: 0) }
-          corporation.spend((cost = price * count), @bank)
-          @log << "#{corporation.name} buys #{count} tokens for #{format_currency(cost)}"
+          auto_emr(corporation, total_cost) if corporation.cash < total_cost
+          corporation.spend(total_cost, @bank)
+          @log << "#{corporation.name} buys #{count} tokens for #{format_currency(total_cost)}"
+        end
+
+        def purchase_additional_tokens!(corp, count, total_cost)
+          if count.zero?
+            @log << "#{corp.name} skips buying additional tokens"
+            return
+          end
+
+          count.times { corp.tokens << Token.new(corp, price: 0) }
+          corp.spend(total_cost, @bank)
+          @log << "#{corp.name} buys #{count} additional tokens for #{format_currency(total_cost)}"
         end
 
         def legal_tile_rotation?(_entity, _hex, tile)
@@ -602,26 +626,29 @@ module Engine
           G1841::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1841::Step::HomeToken,
-            G1841::Step::BuyTokens,
+            G1841::Step::BuyNewTokens,
             G1841::Step::BuySellParShares,
           ])
         end
 
-        # FIXME
         def operating_round(round_num)
           G1841::Round::Operating.new(self, [
+            G1841::Step::Bankrupt,
             G1841::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1841::Step::Dividend,
             G1841::Step::BuyToken,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1841::Step::RemoveTokens,
+            G1841::Step::ChooseOption,
+            G1841::Step::BuyTrain,
             G1841::Step::HomeToken,
-            G1841::Step::BuyTokens,
+            G1841::Step::TokenEmergencyMoney,
+            G1841::Step::BuyNewTokens,
             G1841::Step::CorporateBuySellParShares,
-            # G1841::Step::Merge,
-            # G1841::Step::Transform,
+            G1841::Step::Merge,
+            G1841::Step::Transform,
           ], round_num: round_num)
         end
 
@@ -705,7 +732,7 @@ module Engine
           while owner&.corporation?
             owner = owner&.owner
             if chain.include?(owner)
-              chain << share_pool
+              chain << nil
               return chain
             end
 
@@ -714,11 +741,21 @@ module Engine
           chain
         end
 
+        def chain_of_corps(entity)
+          return [entity] unless entity&.corporation?
+
+          ([entity] + chain_of_control(entity)[0...-1])
+        end
+
         # find the human in control if there is one, or the share pool if not
         def controller(entity)
           return entity unless entity.corporation?
 
-          chain_of_control(entity)&.last
+          chain_of_control(entity)&.last || @share_pool
+        end
+
+        def corporation_owner(entity)
+          controller(entity)
         end
 
         # return list of corporations controlled by a given player
@@ -735,7 +772,15 @@ module Engine
         end
 
         def in_chain?(entity1, entity2)
+          return false unless entity1&.corporation?
+
           chain_of_control(entity1).include?(entity2)
+        end
+
+        def in_full_chain?(entity1, entity2)
+          return false unless entity1&.corporation?
+
+          ([entity1] + chain_of_control(entity1)).include?(entity2)
         end
 
         def player_controlled_percentage(buyer, corporation)
@@ -764,18 +809,29 @@ module Engine
           corporations.select { |corp| frozen?(corp) }
         end
 
+        def circular?(entity)
+          entity.corporation? && @corporation_info[entity][:circular]
+        end
+
+        def circular_corporations
+          corporations.select { |corp| circular?(corp) }
+        end
+
         def update_frozen!
           corporations.each do |corp|
             frozen = corp.ipoed && !controller(corp)&.player?
+            circular = corp.ipoed && !controller(corp)
             @log << "#{corp.name} is no longer frozen" if frozen?(corp) && !frozen
             @log << "#{corp.name} is now frozen" if !frozen?(corp) && frozen
             @corporation_info[corp][:frozen] = frozen
+            @corporation_info[corp][:circular] = circular
           end
         end
 
         # A corp is not considered to have operated until the end of it's first OR
         def done_operating!(entity)
           return unless entity&.corporation?
+          return if @done_this_round[entity]
 
           @log << "#{entity.name} has finished operating for the first time" unless operated?(entity)
 
@@ -852,7 +908,23 @@ module Engine
             end
 
             corp = corporation_by_id(company.sym)
-            deferred_president_change(corp) if corp&.ipoed
+
+            if corp&.ipoed
+              deferred_president_change(corp)
+            else
+              # remove reservations and close
+              if corp
+                @hexes.each do |hex|
+                  tile = hex.tile
+                  tile.reservations.delete(corp) if tile.reserved_by?(corp)
+                  tile.cities.each do |city|
+                    city.reservations.delete(corp) if city.reserved_by?(corp)
+                  end
+                end
+              end
+              @log << "Inactive corporation #{corp.name} closes" if corp
+              corp&.close!
+            end
 
             company.close!
           end
@@ -896,6 +968,868 @@ module Engine
           return false if from_pass_size != to_pass_size
 
           super
+        end
+
+        # no payment or president change
+        #
+        def simple_transfer_share(share, new_owner)
+          @share_pool.transfer_shares(share.to_bundle, new_owner, allow_president_change: false)
+        end
+
+        def mergeable?(corp)
+          (!historical?(corp) || (@phase.name.to_i >= 4)) && operated?(corp)
+        end
+
+        # also for transformations
+        def merge_target?(corp)
+          !historical?(corp) && !corp.ipoed && corp.type == :major
+        end
+
+        def find_rightmost_share_price(value)
+          market_best_col = -1
+          market_best = nil
+          @stock_market.market.reverse_each do |row|
+            row_col = 0
+            row_best = row.first
+            row.each_with_index do |sp, col|
+              if sp.price > row_best.price && sp.price < value
+                row_col = col
+                row_best = sp
+              end
+            end
+            next unless row_col > market_best_col
+
+            market_best_col = row_col
+            market_best = row_best
+          end
+          market_best
+        end
+
+        def merger_values(corpa, corpb)
+          if corpa.type == :major && corpa.share_price.price > 250 && corpa.share_price.price > 250
+            #  both majors are above 250
+            return [corpa.share_price, corpb.share_price].sort if corpa.share_price.price != corpb.share_price.price
+
+            return [corpa.share_price]
+          end
+
+          # choose the major above 250
+          return [corpa.share_price] if corpa.type == :major && corpa.share_price.price > 250
+          return [corpb.share_price] if corpa.type == :major && corpb.share_price.price > 250
+
+          if corpa.type == :major
+            # neither major is above 250
+            sum = [corpa.share_price.price + corpb.share_price.price, 250].min
+            return [find_rightmost_share_price(sum)]
+          end
+
+          # minor
+          [find_rightmost_share_price(((corpa.share_price.price + corpb.share_price.price) / 2.0).to_i)]
+        end
+
+        def merger_start(corpa, corpb, target, tuscan_merge: false)
+          @merger_state = :start
+          @merger_corpa = corpa
+          @merger_corpb = corpb
+          @merger_target = target
+          @merger_tuscan = tuscan_merge
+          @merger_decider = corpa.player
+          @log << "#{corpa.name} and #{corpb.name} will merge and form #{target.name}"
+          share_prices = merger_values(corpa, corpb)
+          if share_prices.one?
+            merger_exchange_start(share_prices.first)
+            return
+          end
+          # player must choose share price
+          @round.pending_options << {
+            entity: corpa,
+            type: :price,
+            share_prices: share_prices,
+          }
+          @round.clear_cache!
+        end
+
+        # move all assets over to target except for:
+        # - ipo stock (will be ignored - essentially becomes ipo stock of target)
+        # - cross purchased stock (will be discarded -> moved to ipo of old corporation)
+        # - tokens (handled later)
+        #
+        def move_assets(from, other, target)
+          if other
+            other_shares = from.shares_of(other)
+            @log << "Removing #{other_shares.size} share(s) of #{other.name} in #{from.name} treasury" unless other_shares.empty?
+            other_shares.each do |cross_share|
+              simple_transfer_share(cross_share, other)
+            end
+          end
+
+          old_circular = circular_corporations
+          shares = from.shares_by_corporation
+          shares.keys.each do |corp|
+            next if corp == from
+            next if shares[corp].empty?
+
+            @log << "Moving #{shares[corp].size} share(s) of #{corp.name} from #{from.name} to #{target.name} treasury"
+            bundle = ShareBundle.new(Array(shares[corp]))
+            @share_pool.transfer_shares(bundle, target, allow_president_change: true)
+            update_frozen!
+            next if @merger_tuscan || circular_corporations.none? { |c| !old_circular.include?(c) }
+
+            raise GameError, 'Illegal circular ownership chain is created by this merger. Undo required.'
+          end
+
+          # cash
+          if from.cash.positive?
+            @log << "Moving #{format_currency(from.cash)} from #{from.name} to #{target.name} treasury"
+            from.spend(from.cash, target)
+          end
+
+          # trains
+          @log << "Moving #{from.trains.size} train(s) from #{from.name} to #{target.name}"
+          from.trains.each { |t| t.owner = target }
+          target.trains.concat(from.trains)
+          from.trains.clear
+        end
+
+        def total_percent(entity, corpa, corpb)
+          entity.percent_of(corpa) + entity.percent_of(corpb)
+        end
+
+        # build a list of stockholders that own percent shares of the old companies, starting with controller
+        # of merging corp then to any controlled corps for that person, then to the next person, and so on
+        def merger_share_holder_list(corpa, corpb, percent)
+          sh_list = []
+          @players.rotate(@players.index(corpa.player)).each do |p|
+            sh_list << p if total_percent(p, corpa, corpb) >= percent
+            controlled_corporations(p).each do |c|
+              next if c == corpa || c == corpb
+
+              sh_list << c if total_percent(c, corpa, corpb) >= percent
+            end
+          end
+
+          # pool and frozen corps are next
+          sh_list << @share_pool if total_percent(@share_pool, corpa, corpb) >= percent
+
+          frozen_corporations.each do |c|
+            next if c == corpa || c == corpb
+
+            sh_list << c if total_percent(c, corpa, corpb) >= percent
+          end
+          sh_list
+        end
+
+        def merger_exchange_start(share_price)
+          @merger_share_price = share_price
+          stock_market.set_par(@merger_target, share_price)
+          @log << "#{@merger_target.name} share price will be #{format_currency(share_price.price)}"
+
+          # start the target
+          @merger_target.ipoed = true
+          @merger_target.share_price = share_price
+
+          # move assets (except for tokens) to the target
+          move_assets(@merger_corpa, @merger_corpb, @merger_target)
+          move_assets(@merger_corpb, @merger_corpa, @merger_target)
+
+          @merger_sh_list = merger_share_holder_list(@merger_corpa, @merger_corpb, 20)
+          if @merger_corpa.type == :major
+            @merger_state = :exchange_pass1
+            merger_next_exchange
+          else
+            @merger_state = :exchange_minor
+            merger_minor_exchange
+          end
+        end
+
+        def pres_upgrade_cost(percent, target)
+          (target.share_price.price * (40 - percent) / 20.0).to_i
+        end
+
+        def full_upgrade_cost(target)
+          (target.share_price.price / 2.0).to_i
+        end
+
+        def afford_upgrade_to_pres?(player, percent, target)
+          player.cash >= pres_upgrade_cost(percent, target)
+        end
+
+        def afford_upgrade_to_full?(player, target)
+          player.cash >= full_upgrade_cost(target)
+        end
+
+        def merger_next_exchange
+          entity = @merger_sh_list.first
+          tp = total_percent(entity, @merger_corpa, @merger_corpb)
+          pres_share = @merger_target.shares_of(@merger_target).find(&:president)
+          if @merger_state == :exchange_pass1
+            if tp >= 40 || !pres_share || !entity.player? || !afford_upgrade_to_pres?(entity, tp, @merger_target)
+              merger_do_exchange(:no)
+            else
+              # ask to see if they want to upgrade to president's share
+              @round.pending_options << {
+                entity: entity,
+                type: :upgrade,
+                percent: tp,
+                target: @merger_target,
+                choices: %i[pres no],
+              }
+              @round.clear_cache!
+            end
+          else # pass2
+            normal_share = @merger_target.shares_of(@merger_target).reject(&:president).first
+            current_shares = entity.shares_of(@merger_target)
+
+            options = [:cash]
+            options << :pres if entity.player? && pres_share && afford_upgrade_to_pres?(entity, tp, @merger_target)
+            options << :full if entity.player && normal_share && afford_upgrade_to_full?(entity, @merger_target)
+            if entity.player && !normal_share && pres_share && !current_shares.emtpy? &&
+                afford_upgrade_to_full?(entity, @merger_target)
+              # special case: entity already has a share, no target normal shares left but
+              # president share is still available
+              options << :full
+            end
+            options.uniq!
+
+            if options.one?
+              merger_do_exchange(options.first)
+            else
+              # ask to see if they want to buy into a pres share or full share
+              @round.pending_options << {
+                entity: entity,
+                type: :upgrade,
+                percent: tp,
+                target: @merger_target,
+                choices: options,
+              }
+              @round.clear_cache!
+            end
+          end
+        end
+
+        def merger_do_exchange(answer)
+          entity = @merger_sh_list.shift
+          share_list = (entity.shares_of(@merger_corpa) + entity.shares_of(@merger_corpb)).sort_by(&:percent).reverse
+          tp = total_percent(entity, @merger_corpa, @merger_corpb)
+          if tp > 10
+            # player/corp has at least one pair of shares. Answer indicates whether the player
+            # wants to upgrade to a president's share (always no for corps)
+
+            if answer == :pres
+              # upgrade to president's share
+              share_list.each { |s| simple_transfer_share(s, s.corporation) }
+              pres_share = @merger_target.shares_of(@merger_target).find(&:president)
+              cost = pres_upgrade_cost(tp, @merger_target)
+              share_list.each { |s| simple_transfer_share(s, s.corporation) }
+              @log << "#{entity.name} upgrades to a president share for #{format_currency(cost)}"
+              entity.spend(cost, @bank)
+              @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
+            else
+              # exchange pairs until only a single share left
+              #
+              while total_percent(entity, @merger_corpa, @merger_corpb) > 10
+                # move old shares out (20%)
+                share0 = share_list.shift
+                share1 = nil
+                share1 = share_list.shift if share0.percent < 20
+                simple_transfer_share(share0, share0.corporation)
+                simple_transfer_share(share1, share1.corporation) if share0.percent < 20
+
+                # move new share in (10%), if available
+                new_share = @merger_target.shares_of(@merger_target).reject(&:president).first
+                if new_share
+                  @log << "#{entity.name} exchanges 20% of old shares for a share of #{@merger_target.name}"
+                  @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
+                else
+                  # out of 10% shares, but can get president's share if we have 10% of target
+                  pres_share = @merger_target.shares_of(@merger_target).find(&:president)
+                  ten_share = entity.shares_of(@merger_target).first
+                  if pres_share && ten_share
+                    @log << "#{entity.name} exchanges 20% of old shares for president share of #{@merger_target.name}"
+                    @share_pool.transfer_shares(ten_share.to_bundle, @merger_target, allow_president_change: true)
+                    @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
+                  else
+                    @log << "Out of 10% shares for #{entity.name} to exchange pairs of old shares for. "\
+                            "Will sell 2 old shares for #{format_currency(@merger_target.share_price.price)}"
+                    @bank.spend(@merger_target.share_price.price, entity)
+                  end
+                end
+              end
+            end
+          else
+            # only one share. Answer indicates whether the player/corp wants to buy
+            # a full share or a pres share
+            #
+            raise GameError, 'Inconsistant share count' unless share_list.one?
+
+            last_share = share_list.first
+            simple_transfer_share(last_share, last_share.corporation)
+            cost = full_upgrade_cost(@merger_target)
+
+            pres_share = @merger_target.shares_of(@merger_target).find(&:president)
+            new_share = @merger_target.shares_of(@merger_target).reject(&:president).first
+
+            if answer == :pres
+              raise GameError, 'Missing president share' unless pres_share
+
+              cost = pres_upgrade_cost(tp, @merger_target)
+              @log << "#{entity.name} upgrades to a president share for #{format_currency(cost)}"
+              entity.spend(cost, @bank)
+              @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
+            elsif answer == :full
+              # upgrade to a full share
+
+              @log << "#{entity.name} upgrades to full share for #{format_currency(cost)}"
+              if new_share
+                entity.spend(cost, @bank)
+                @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
+              else
+                raise GameError, 'No shares to transfer' unless pres_share
+
+                ten_share = entity.shares_of(@merger_target).first
+                entity.spend(cost, @bank)
+                @share_pool.transfer_shares(ten_share.to_bundle, @merger_target, allow_president_change: true)
+                @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
+              end
+            elsif entity != @share_pool
+              # cash out
+              cost = full_upgrade_cost(@merger_target)
+              @log << "#{entity.name} sells share of #{last_share.corporation.name} for #{format_currency(cost)}"
+              @bank.spend(cost, entity)
+            else
+              @log << "#{entity.name} discards share of #{last_share.corporation.name}"
+            end
+          end
+
+          if !@merger_sh_list.empty?
+            merger_next_exchange
+          elsif @merger_state == :exchange_pass1
+            # start 2nd pass of exchanges
+            #
+            @merger_state = :exchange_pass2
+            @merger_sh_list = merger_share_holder_list(@merger_corpa, @merger_corpb, 10)
+            if !@merger_sh_list.empty?
+              merger_next_exchange
+            else
+              merger_tokens
+            end
+          else
+            # move on
+            merger_tokens
+          end
+        end
+
+        def merger_minor_exchange
+          @merger_sh_list.each do |entity|
+            share_list = (entity.shares_of(@merger_corpa) + entity.shares_of(@merger_corpb)).sort_by(&:percent).reverse
+            share_list.each do |old_share|
+              pres_share = @merger_target.shares_of(@merger_target).find(&:president)
+              new_share = @merger_target.shares_of(@merger_target).reject(&:president).first
+              next_share = @merger_target.shares_of(@merger_target).reject(&:president)[1]
+              simple_transfer_share(old_share, old_share.corporation)
+
+              if pres_share
+                raise GameError, 'First share was not a 40% share' if old_share.percent != 40
+
+                @log << "#{entity.name} exchanges president share for president share of #{@merger_target.name}"
+                @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
+              elsif old_share.percent > 20
+                raise GameError, 'Not enough shares' if !new_share && !next_share
+
+                @log << "#{entity.name} exchanges president share for 2 shares of #{@merger_target.name}"
+                @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
+                @share_pool.transfer_shares(next_share.to_bundle, entity, allow_president_change: true)
+              else
+                raise GameError, 'Not enough shares' unless new_share
+
+                @log << "#{entity.name} exchanges 20% of old shares for a shares of #{@merger_target.name}"
+                @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
+              end
+            end
+          end
+
+          merger_tokens
+        end
+
+        def merger_tokens
+          # first check to see if president share was exchanged
+          pres_share = @merger_target.shares_of(@merger_target).find(&:president)
+          if pres_share
+            raise GameError, 'Cannot complete this merger without a president. Undo required.' unless @merger_tuscan
+
+            # tuscan merge
+            # put president share in pool in exchange for 0, 1, or 2 shares there
+            pool_shares = @share_pool.shares_of(@merger_target).take(2)
+            @log << "Moving #{pool_shares.size} #{@merger_target.name} shares from Market to IPO"
+            pool_shares.each do |s|
+              @share_pool.transfer_shares(s.to_bundle, entity, allow_president_change: true)
+            end
+            @log << "Moving #{@merger_target.name} president's share to Market from IPO"
+            update_frozen!
+          end
+
+          old_circular = circular_corporations
+          update_frozen!
+          if !@merger_tuscan && circular_corporations.any? { |c| !old_circular.include?(c) }
+            raise GameError, 'Illegal circular ownership chain is created by this merger and exchange. Undo required.'
+          end
+
+          @merger_state = :select_tokens
+          # delete duplicate tokens between corporations
+          dup_token_cnt = 0
+          @merger_corpb.tokens.select(&:used).each do |t|
+            next unless t.city.tokened_by?(@merger_corpa)
+
+            @log << "Removing duplicate token in hex #{t.city.hex.id}"
+            dup_token_cnt += 1
+            t.remove!
+          end
+
+          hexes = (@merger_corpa.tokens.select(&:used) + @merger_corpb.tokens.select(&:used)).map { |t| t.city.hex }
+
+          total_token_cnt = @merger_corpa.tokens.size + @merger_corpb.tokens.size - dup_token_cnt
+          @merger_token_cnt = [total_token_cnt, 5].min
+          map_token_cnt = @merger_corpa.tokens.count(&:used) + @merger_corpb.tokens.count(&:used)
+          unplaced_token_cnt = total_token_cnt - map_token_cnt
+
+          max_unplaced = [unplaced_token_cnt, @merger_token_cnt - 1].min
+          min_unplaced = [@merger_token_cnt - map_token_cnt, 0].max
+
+          max_placed = @merger_token_cnt - min_unplaced
+          min_placed = @merger_token_cnt - max_unplaced
+
+          min_to_remove = map_token_cnt - max_placed
+          max_to_remove = map_token_cnt - min_placed
+
+          if max_to_remove.positive?
+            @log << if min_to_remove == max_to_remove
+                      "Must remove #{min_to_remove} token(s) from map"
+                    else
+                      "Must remove #{min_to_remove} to #{max_to_remove} tokens from map"
+                    end
+            @round.pending_removals << {
+              entity: @merger_decider,
+              hexes: hexes,
+              corporations: [@merger_corpa, @merger_corpb],
+              min: min_to_remove,
+              max: max_to_remove,
+              count: 0,
+            }
+            @round.clear_cache!
+          else
+            finish_merge
+          end
+        end
+
+        def swap_token(target, old_corp, old_token)
+          new_token = target.next_token
+          city = old_token.city
+          @log << "Replaced #{old_corp.name} token in #{city.hex.id} with #{target.name} token"
+          new_token.place(city)
+          city.tokens[city.tokens.find_index(old_token)] = new_token
+          old_corp.tokens.delete(old_token)
+        end
+
+        def finish_merge
+          # create new tokens if needed
+          (@merger_token_cnt - 2).times { @merger_target.tokens << Token.new(@merger_target, price: 0) } if @merger_token_cnt > 2
+
+          # copy tokens on map to target
+          @merger_corpa.tokens.select(&:used).each { |t| swap_token(@merger_target, @merger_corpa, t) }
+          @merger_corpb.tokens.select(&:used).each { |t| swap_token(@merger_target, @merger_corpb, t) }
+          @graph.clear
+          @region_graph.clear
+
+          # reset the corps
+          restart_corporation!(@merger_corpa)
+          restart_corporation!(@merger_corpb)
+
+          @done_this_round[@merger_corpa] = true
+          @done_this_round[@merger_corpb] = true
+          @done_this_round[@merger_target] = true
+          @round.clear_cache!
+          @merger_state = nil
+        end
+
+        def restart_corporation!(corporation)
+          if historical?(corporation)
+            @log << "#{corporation.name} closes"
+            corporation.close!
+            return
+          end
+
+          @log << "#{corporation.name} is available to start"
+
+          # un-IPO the corporation
+          corporation.share_price&.corporations&.delete(corporation)
+          corporation.share_price = nil
+          corporation.par_price = nil
+          corporation.ipoed = false
+          corporation.unfloat!
+          corporation.owner = nil
+          @corporation_info[corporation][:operated] = false
+
+          # get back to 1 or 2 tokens
+          corporation.tokens.clear
+          num_tokens = corporation.type == :major ? 2 : 1
+          num_tokens.times { |_t| corporation.tokens << Token.new(corporation, price: 0) }
+
+          # remove trains
+          corporation.trains.clear
+
+          # re-sort shares
+          corporation.shares_by_corporation[corporation].sort_by!(&:id)
+        end
+
+        def transformable?(corp)
+          corp.type == :minor && (!historical?(corp) || (@phase.name.to_i >= 4))
+        end
+
+        def transform_shares(corp, target)
+          possible_shareholders = @players + @corporations + [@share_pool]
+          possible_shareholders.each do |sh|
+            next if sh == corp
+
+            shares = sh.shares_of(corp).sort_by(&:percent).reverse
+            shares.each do |s|
+              simple_transfer_share(s, corp)
+
+              new_share = if s.percent == 40
+                            target.shares_of(target).find(&:president)
+                          else
+                            target.shares_of(target).reject(&:president).first
+                          end
+              pres = s.percent == 40 ? 'president' : 'normal'
+              raise GameError, "No #{pres} share to tranfer" unless new_share
+
+              @log << "#{sh.name} swaps #{pres} share of #{corp.name} for #{target.name}"
+              @share_pool.transfer_shares(new_share.to_bundle, sh, allow_president_change: true)
+            end
+          end
+        end
+
+        def active_share_holder_list(corp, include_corporations: nil)
+          sh_list = []
+          @players.rotate(@players.index(corp.player)).each do |p|
+            sh_list << p unless p.shares_of(corp).empty?
+            next unless include_corporations
+
+            controlled_corporations(p).each do |c|
+              next if c == corp
+
+              sh_list << c unless c.shares_of(corp).empty?
+            end
+          end
+          sh_list
+        end
+
+        def transform_start(corp, target, tuscan_merge: false)
+          @transform_corp = corp
+          @transform_target = target
+
+          # move everything over
+          move_assets(corp, nil, target)
+
+          # substitute tokens
+          target.tokens.clear
+          corp.tokens.size.times { |_t| target.tokens << Token.new(target, price: 0) }
+          corp.tokens.select(&:used).each { |t| swap_token(target, corp, t) }
+
+          # open and set share price of target
+          @stock_market.set_par(target, corp.share_price)
+          target.ipoed = true
+
+          # convert shares
+          transform_shares(corp, target)
+
+          # swap in operating order
+          @round.entities[@round.entity_index] = target
+
+          # offer a share to all current shareholders
+          @transform_state = :offer1
+          @share_offer_list = active_share_holder_list(target, include_corporations: true)
+          @share_offer_corp = target
+          @log << 'First round of share puchase (players and corporations)'
+          share_offer_next
+        end
+
+        # can a share be offered to sale from IPO to entity?
+        def can_buy_share?(entity, corp)
+          return false if corp.shares_of(corp).empty?
+          return false if entity.cash < corp.share_price.price
+          return false if in_full_chain?(entity, corp)
+
+          # can't exceed cert limit
+          (!corp.counts_for_limit || num_certs(entity) < cert_limit(entity)) &&
+            # can't allow player to control too much
+            ((player_controlled_percentage(entity, corp) + 10) <= corp.max_ownership_percent)
+        end
+
+        # @share_offer_list contains list of who to offer shares to
+        # @share_offer_corp is the corp to buy
+        def share_offer_next
+          return transform_2nd_offer if @share_offer_list.empty? && @transform_state == :offer1
+          return transform_tokens if @share_offer_list.empty? && @transform_state == :offer2
+
+          entity = @share_offer_list.first
+          unless can_buy_share?(entity, @share_offer_corp)
+            @log << "#{entity.name} cannot buy a share of #{@share_offer_corp.name} and is skipped"
+            @share_offer_list.shift
+            return share_offer_next
+          end
+
+          @round.pending_options << {
+            entity: entity,
+            type: :share_offer,
+            target: @share_offer_corp,
+          }
+          @round.clear_cache!
+        end
+
+        def share_offer_option(opt)
+          entity = @share_offer_list.first
+          if opt == :no
+            @log << "#{entity.name} declines to buy a share of #{@share_offer_corp.name}"
+            @share_offer_list.shift
+            return share_offer_next
+          end
+
+          share = @share_offer_corp.shares_of(@share_offer_corp).first
+          @log << "#{entity.name} buys a share of #{@share_offer_corp.name}"
+          @share_pool.buy_shares(entity, share, allow_president_change: true)
+          @share_offer_list.shift
+          share_offer_next
+        end
+
+        def transform_2nd_offer
+          # offer a share to all current player shareholders
+          @transform_state = :offer2
+          @share_offer_list = active_share_holder_list(@share_offer_corp, include_corporations: false)
+          @log << 'Second round of share puchase (players only)'
+          share_offer_next
+        end
+
+        def transform_tokens
+          @transform_state = :tokens
+
+          current_token_cnt = @transform_target.tokens.size
+          min = current_token_cnt == 1 ? 1 : 0
+
+          first_price = min.zero? ? XFORM_OPT_TOKEN_COST : XFORM_REQ_TOKEN_COST
+          max_opt_tokens = [((@transform_target.cash - first_price) / XFORM_OPT_TOKEN_COST).to_i, 0].max
+          max = [max_opt_tokens + min, 5 - current_token_cnt].min
+
+          if max.zero?
+            @log << "#{@tranform_target.name} cannot buy additional tokens"
+            return transform_finish
+          end
+
+          if min == 1 && max == 1 && emergency_cash_before_selling(@transform_target, XFORM_REQ_TOKEN_COST) < XFORM_REQ_TOKEN_COST
+            # have to sell something
+            @round.token_emr_entity = @transform_target
+            @round.token_emr_amount = XFORM_REQ_TOKEN_COST
+            @log << "#{@transform_target.name} will need to perform EMR to buy a token"
+          end
+
+          @round.buy_tokens << {
+            entity: @transform_target,
+            type: :transform,
+            first_price: first_price,
+            price: XFORM_OPT_TOKEN_COST,
+            min: min,
+            max: max,
+          }
+          @round.clear_cache!
+        end
+
+        def transform_finish
+          restart_corporation!(@transform_corp)
+          @done_this_round[@transform_corp] = true
+          @done_this_round[@transform_target] = true
+          @round.clear_cache!
+          @transform_state = nil
+        end
+
+        # sell IPO shares to make up shortfall
+        def auto_emr(corp, total_cost)
+          diff = total_cost - corp.cash
+          return unless diff.positive?
+
+          num_shares = (2.0 * (diff / corp.share_price.price)).ceil
+          raise GameError, 'Assumption about starting token EMR is wrong' if num_shares > corp.shares_of(corp).size
+
+          bundle = ShareBundle.new(corp.shares_of(corp).take(num_shares))
+          bundle.share_price = corp.share_price.price / 2.0
+          sell_shares_and_change_price(bundle)
+          @log << "#{corp.name} raises #{format_currency(bundle.price)} and completes EMR"
+          @round.recalculate_order if @round.respond_to?(:recalculate_order)
+        end
+
+        # can sell any amount?
+        def can_dump?(owner, corp, active)
+          # can dump IPO stock
+          owner == corp ||
+            # can dump stock if not president of corp
+            owner != corp.owner ||
+            # can dump if corp is not not in chain of ownership and not a historical corp (before phase 4)
+            (!in_full_chain?(active, corp) && (!historical?(corp) || @phase.name.to_i >= 4))
+        end
+
+        def corp_minimum_to_retain(owner, corp, active)
+          return 0 if can_dump?(owner, corp, active)
+          return 0 if historical?(corp)
+
+          corp.player_share_holders.reject { |s_h, _| s_h == owner }.values.max || 0
+        end
+
+        def emr_can_sell?(active, bundle)
+          owner = bundle.owner
+          corp = bundle.corporation
+
+          return true if can_dump?(owner, corp, active)
+
+          corp_minimum_to_retain(owner, corp, active) <= bundle.percent &&
+            !bundle.presidents_share
+        end
+
+        def emr_valid_bundles(owner, corp, active)
+          return [] if owner.shares_of(corp).empty?
+
+          bundles = all_bundles_for_corporation(owner, corp)
+          bundles.each { |b| b.share_price = corp.share_price.price / 2.0 }
+          max = owner.percent_of(corp) - corp_minimum_to_retain(owner, corp, active)
+          bundles.reject!(&:presidents_share) unless can_dump?(owner, corp, active)
+          bundles.reject { |b| b.percent > max }
+        end
+
+        def emr_value(corp, active)
+          value = 0
+          corporations.each do |c|
+            bundles = emr_valid_bundles(corp, c, active)
+            value += bundles.max_by(&:num_shares)&.price unless bundles.empty?
+          end
+          value
+        end
+
+        def emr_bundles_all(corp, active)
+          all_bundles = []
+          corporations.each do |c|
+            bundles = emr_valid_bundles(corp, c, active)
+            all_bundles.concat(bundles) unless bundles.empty?
+          end
+          all_bundles
+        end
+
+        # prioritize treasury shares before IPO shares
+        def emr_shares_next(corporation, active, needed)
+          return [] unless needed.positive?
+
+          all_bundles = emr_bundles_all(corporation, active)
+          all_bundles.reject! { |b| b.price >= (needed + b.share_price) }
+          return [] if all_bundles.empty?
+
+          ipo, treasury = all_bundles.partition { |s| s.corporation == corporation }
+
+          return treasury unless treasury.empty?
+
+          ipo unless ipo.empty?
+        end
+
+        # returns bundles for first corp in chain that has any to sell
+        def emergency_issuable_bundles(corporation, needed = nil)
+          needed ||= @depot.min_depot_price
+          chain_of_corps(corporation).each do |corp|
+            needed -= corp.cash
+            return [] unless needed.positive?
+
+            shares = emr_shares_next(corp, corporation, needed)
+            return shares unless shares.empty?
+          end
+          []
+        end
+
+        # returns total emr cash that could be raised by corp and all corps in ownership chain
+        # doesn't include cash in current corp or cash in corps prior to selling shares
+        def emergency_issuable_cash(corporation)
+          total = 0
+          chain_of_corps(corporation).each do |corp|
+            total += corp.cash
+            total += emr_value(corp, corporation)
+          end
+          total - emergency_cash_before_issuing(corporation)
+        end
+
+        # returns total emr cash that could be raised by corp and all corps in ownership chain
+        # doesn't include cash or shares held by president
+        def emergency_issuable_funds(corporation)
+          total = 0
+          chain_of_corps(corporation).each do |corp|
+            total += corp.cash
+            total += emr_value(corp, corporation)
+          end
+          total
+        end
+
+        # Returns cash in any corps in ownership chain, stopping
+        # when reaching corp with sellable shares
+        # Doesn't include player cash
+        def emergency_cash_before_issuing(corporation, needed = nil)
+          needed ||= @depot.min_depot_price
+          total = 0
+          chain_of_corps(corporation).each do |corp|
+            total += corp.cash
+            needed -= corp.cash
+            shares = emr_shares_next(corp, corporation, needed)
+            return total unless shares.empty?
+          end
+          total
+        end
+
+        # Returns cash in any corps in ownership chain, stopping
+        # when reaching entity with sellable shares
+        # Includes player cash
+        def emergency_cash_before_selling(corporation, needed = nil)
+          needed ||= @depot.min_depot_price
+          total = 0
+          ([corporation] + chain_of_control(corporation)).each do |entity|
+            total += entity.cash
+            needed -= entity.cash
+            shares = emr_shares_next(entity, corporation, needed)
+            return total unless shares.empty?
+          end
+          total
+        end
+
+        def bankruptcy_options(_entity)
+          [0, 1]
+        end
+
+        def bankruptcy_button_text(option)
+          case option
+          when 0
+            'Declare Bankruptcy and Resign'
+          when 1
+            "Declare Bankruptcy and take a loan of #{format_currency(BANKRUPTCY_LOAN)}"
+          else
+            ''
+          end
+        end
+
+        def declare_bankrupt(player, option = 0)
+          raise GameError, "#{player.name} is already bankrupt, cannot declare bankruptcy again." if player.bankrupt
+
+          if option.zero?
+            player.bankrupt = true
+            @log << "#{player.name} is now bankrupt and out of the game"
+            return
+          end
+
+          @log << "#{player.name} is bankrupt and receives a #{format_currency(BANKRUPTCY_LOAN)} loan form the bank"
+          @loans[player] += BANKRUPTCY_LOAN
+        end
+
+        def player_value(player)
+          player.value - @loans[player]
         end
       end
     end

@@ -33,7 +33,12 @@ module View
 
         if @game.round.actions_for(entity).include?('bankrupt') &&
            @game.can_go_bankrupt?(player, @corporation)
-          children << render_bankruptcy
+          b_options = @game.bankruptcy_options(player)
+          if b_options.empty?
+            children << render_bankruptcy
+          else
+            b_options.each { |o| children << render_bankruptcy_option(o) }
+          end
         end
         children
       end
@@ -64,6 +69,21 @@ module View
         }
 
         h(:button, props, 'Declare Bankruptcy')
+      end
+
+      def render_bankruptcy_option(option)
+        resign = lambda do
+          process_action(Engine::Action::Bankrupt.new(entity, type: option))
+        end
+
+        props = {
+          style: {
+            width: 'max-content',
+          },
+          on: { click: resign },
+        }
+
+        h(:button, props, @game.bankruptcy_button_text(option))
       end
 
       private
