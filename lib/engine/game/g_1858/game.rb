@@ -646,11 +646,40 @@ module Engine
           corporation
         end
 
+        # Finds any reservation abilities for a hex that have custom icons,
+        # and clears these icons. This is to be used for the cities which have
+        # two private railway companies competing for the same slots. Once one
+        # there is no longer competition for a slot (either because one of the
+        # reservation abilities is used, or the city is upgraded to two slots)
+        # then the default reservation display is needed to show a single
+        # company's name.
+        def clear_reservation_icons(hex)
+          hex.tile.cities.each do |city|
+            city.reservations.compact.each do |entity|
+              entity.all_abilities.each do |ability|
+                next unless ability.type == :reservation
+                next unless ability.hex == hex.coordinates
+                next unless ability.icon
+
+                ability.icon = nil
+              end
+            end
+          end
+        end
+
         # Removes all of the icons on the map for a private railway company.
+        # Also resets reservation icons in the private's home cities.
         def delete_icons(company)
           icon_name = company.sym.delete('&')
           @hexes.each do |hex|
             hex.tile.icons.reject! { |icon| icon.name == icon_name }
+          end
+
+          minor = private_minor(company)
+          return unless minor
+
+          minor.coordinates.each do |coord|
+            clear_reservation_icons(hex_by_id(coord))
           end
         end
 
