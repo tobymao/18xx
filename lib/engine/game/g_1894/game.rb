@@ -492,6 +492,14 @@ module Engine
           super
 
           case action
+          when Action::Par
+            if action.corporation == ouest
+              ouest.remove_ability_when(:par)
+              subsidy = ouest.par_price&.price
+              @bank.spend(subsidy, ouest)
+              @log << "#{ouest.name} receives a #{format_currency(subsidy)} subsidy"
+            end
+
           when Action::PlaceToken
             # Mark the corporation that has London bonus
             if action.city.hex.id == LONDON_BONUS_FERRY_SUPPLY_HEX
