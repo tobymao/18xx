@@ -271,14 +271,6 @@ module Engine
             coordinates: 'I10',
             color: '#ff9966',
             text_color: 'black',
-            abilities: [
-              {
-                type: 'hex_bonus',
-                amount: 0,
-                description: 'Value of I2 increased to 60',
-                hexes: ['I2'],
-              },
-            ],
           },
           {
             sym: 'LF',

@@ -403,11 +403,11 @@ module Engine
           @players.rotate!(@round.entity_index)
         end
 
-        def assignment_tokens(assignment)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
+        # def assignment_tokens(assignment)
+        #   return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
 
-          super
-        end
+        #   super
+        # end
 
         def init_stock_market
           StockMarket.new(self.class::MARKET, [:unlimited],
@@ -654,7 +654,6 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          revenue += est_centre_bourgogne_bonus(route.corporation, stops)
           revenue += luxembourg_value(route.corporation, stops)
           revenue += london_bonus(route.corporation, stops)
           revenue += netherlands_bonus(route.corporation, stops)
@@ -678,14 +677,6 @@ module Engine
           get_route_max_value(corporation, stops, ignore_london: true)
         end
 
-        def est_centre_bourgogne_bonus(corporation, stops)
-          est_running_to_centre_bourgogne(corporation, stops) ? 20 : 0
-        end
-
-        def est_running_to_centre_bourgogne(corporation, stops)
-          corporation == est && stops.any? { |s| s.hex.id == CENTRE_BOURGOGNE_HEX }
-        end
-
         def luxembourg_value(corporation, stops)
           return 0 unless stops.any? { |s| s.hex.id == LUXEMBOURG_HEX }
 
@@ -694,8 +685,6 @@ module Engine
 
         def get_route_max_value(corporation, stops, ignore_london: false)
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
-
-          revenues << 60 if est_running_to_centre_bourgogne(corporation, stops)
 
           if ignore_london
             london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.towns.first.revenue)
