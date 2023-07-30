@@ -265,7 +265,7 @@ module Engine
         GREEN_CITY_15_TILE = '15'
         BROWN_CITY_15_UPGRADE_TILES = %w[X19 X20 X21].freeze
         GREEN_CITY_619_TILE = '619'
-        BROWN_CITY_619_UPGRADE_TILES = %w[X16 X17 X19].freeze
+        BROWN_CITY_619_UPGRADE_TILES = %w[X22 X23 X24].freeze
         BROWN_CITY_TILES = %w[X16 X17 X18 X19 X20 X21 X22 X23 X24].freeze
         PARIS_TILES = %w[X1 X4 X5 X9 X10 X11 X12].freeze
 

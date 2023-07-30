@@ -36,7 +36,6 @@ module Engine
           '47' => 1,
           '56' => 1,
           '57' => 10,
-          '58' => 3,
           '70' => 2,
           '619' => 4,
           '624' => 1,
@@ -216,7 +215,7 @@ module Engine
 
         HEXES = {
           white: {
-            %w[C4 C8 C10 D5 E8 E18 F3 F5 F9 F17 G2 H5 H7 I6 I8 I12] => '',
+            %w[C4 C8 C10 D5 E18 F3 F5 F9 F17 G2 H5 H7 I6 I8 I12] => '',
             %w[B1 E8 H11] => 'upgrade=cost:40,terrain:water',
             %w[B7 C2 E4 G8 I4] => 'upgrade=cost:60,terrain:water',
             %w[B3 B9 D3 D9 D15 D17 E2 E6 E10 E16 H9 H17] => 'city=revenue:0',
