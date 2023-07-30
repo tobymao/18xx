@@ -261,13 +261,13 @@ module Engine
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
-        BROWN_CITY_14_UPGRADE_TILES = %w[X18 X19 36].freeze
+        BROWN_CITY_14_UPGRADE_TILES = %w[X16 X17 X18].freeze
         GREEN_CITY_15_TILE = '15'
-        BROWN_CITY_15_UPGRADE_TILES = %w[X16 35 118].freeze
+        BROWN_CITY_15_UPGRADE_TILES = %w[X19 X20 X21].freeze
         GREEN_CITY_619_TILE = '619'
-        BROWN_CITY_619_UPGRADE_TILES = %w[X14 X15 X17].freeze
-        BROWN_CITY_TILES = %w[X14 X15 X16 X17 X18 X19 35 36 118].freeze
-        PARIS_TILES = %w[X1 X4 X5 X9 X10 X9b X10b].freeze
+        BROWN_CITY_619_UPGRADE_TILES = %w[X16 X17 X19].freeze
+        BROWN_CITY_TILES = %w[X16 X17 X18 X19 X20 X21 X22 X23 X24].freeze
+        PARIS_TILES = %w[X1 X4 X5 X9 X10 X11 X12].freeze
 
         FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CFOR].freeze
         BELGIAN_REGULAR_CORPORATIONS = %w[AG Belge].freeze
