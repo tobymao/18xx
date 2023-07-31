@@ -351,6 +351,8 @@ module Engine
         HISTORICAL_CITIES = %w[F8 F16 H4 J6 M3 R14 P12 Q11].freeze
         VENETO = %w[H12 G13 F14 G15 F16 D16 D14 C15].freeze
         TUSCAN_TOKEN_HEXES = %w[Q11 R14].freeze
+        LUGANO = 'C7'
+        FIRENZE = 'R14'
 
         AXES = { x: :number, y: :letter }.freeze
       end

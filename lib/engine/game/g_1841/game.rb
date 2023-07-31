@@ -50,7 +50,7 @@ module Engine
         MIN_BID_INCREMENT = 5
 
         MARKET = [
-          %w[72 83 95 107 120 133 147 164 182 202 224m 248 276 306 340x 377n 419 465 516],
+          %w[72 83 95 107 120 133 147 164 182 202 224m 248 276 306 340x 377n 419 465 516e],
           %w[63 72 82 93 104 116 128 142 158 175 195m 216x 240 266 295 328n 365 404 449],
           %w[57 66 75 84 95 105 117 129 144p 159 177m 196 218 242 269 298n 331 367 408],
           %w[54 62 71 80 90 100p 111 123 137 152 169m 187 208 230 256 284n],
@@ -231,6 +231,7 @@ module Engine
           '8' => :black,
         }.freeze
 
+        BUY_SHARE_FROM_OTHER_PLAYER = true
         CERT_LIMIT_INCLUDES_PRIVATES = false
         MAX_CORPORATE_CERTS = 5
         BANKRUPTCY_LOAN = 500
@@ -282,9 +283,8 @@ module Engine
           @loans = Hash.new { |h, k| h[k] = 0 }
         end
 
-        # FIXME: add option for version 1
         def version
-          2
+          @version ||= @optional_rules&.include?(:version_1) ? 1 : 2
         end
 
         def select_track_graph
@@ -371,7 +371,6 @@ module Engine
           end
 
           sflp = corporation_by_id('SFLP')
-          sfma = corporation_by_id('SFMA')
           ssfl = corporation_by_id('SSFL')
           sfli = corporation_by_id('SFLi')
           holding = find_holding_corp
@@ -495,9 +494,9 @@ module Engine
 
         def reserved_cities
           if @phase.name.to_i < 4
-            HISTORICAL_CITIES
+            HISTORICAL_CITIES + [LUGANO]
           else
-            []
+            [LUGANO]
           end
         end
 
@@ -725,7 +724,7 @@ module Engine
           G1841::Round::Operating.new(self, [
             G1841::Step::Bankrupt,
             G1841::Step::Track,
-            Engine::Step::Token,
+            G1841::Step::Token,
             Engine::Step::Route,
             G1841::Step::Dividend,
             G1841::Step::BuyToken,
@@ -770,6 +769,10 @@ module Engine
           @bayard ||= company_by_id('Bayard')
         end
 
+        def sfma
+          @sfma ||= corporation_by_id('SFMA')
+        end
+
         def return_concessions!
           companies.each do |c|
             next if c == bayard
@@ -779,6 +782,7 @@ module Engine
             player = c.owner
             player.companies.delete(c)
             c.owner = bank
+            bank.companies << c
             @log << "#{c.name} (#{c.sym}) has not been used by #{player.name} and is returned to the bank"
           end
         end
@@ -984,9 +988,8 @@ module Engine
           'CONCESSION'
         end
 
-        # FIXME
         def allow_player2player_sales?
-          false
+          @player2player ||= @optional_rules&.include?(:p2p_purchases)
         end
 
         def event_close_companies!
@@ -1067,12 +1070,12 @@ module Engine
         end
 
         def mergeable?(corp)
-          (!historical?(corp) || (@phase.name.to_i >= 4)) && operated?(corp)
+          (!historical?(corp) || (@phase.name.to_i >= 4)) && operated?(corp) && !frozen?(corp) && !corp.closed?
         end
 
         # also for transformations
         def merge_target?(corp)
-          !historical?(corp) && !corp.ipoed && corp.type == :major
+          !historical?(corp) && !corp.ipoed && corp.type == :major && !corp.closed?
         end
 
         def find_rightmost_share_price(value)
@@ -2469,6 +2472,13 @@ module Engine
 
         def player_value(player)
           player.value - @loans[player]
+        end
+
+        # Firenze is off limits for tokens until either SFMA starts or phase 4
+        def check_token_hex(entity, hex)
+          return true if @phase.name.to_i >= 4 || sfma.floated? || entity == sfma
+
+          hex.id != FIRENZE
         end
       end
     end
