@@ -21,7 +21,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
 
-        STARTING_CASH = { 3 => 570, 4 => 440 }.freeze
+        STARTING_CASH = { 3 => 570, 4 => 460 }.freeze
 
         CAPITALIZATION = :full
 
@@ -364,7 +364,7 @@ module Engine
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
           belgian_starting_corporation = corporation_by_id('Belge')
 
-          adjust_companies
+          #adjust_companies
           remove_extra_french_major_shareholding_companies
 
           @corporations.each do |corporation|
@@ -757,14 +757,14 @@ module Engine
           end
         end
 
-        def adjust_companies
-          return unless @players.size == 4
+        # def adjust_companies
+        #   return unless @players.size == 4
 
-          company_to_remove = companies.find { |c| c.id == 'AR' }
+        #   company_to_remove = companies.find { |c| c.id == 'AR' }
 
-          company_to_remove.close!
-          @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
-        end
+        #   company_to_remove.close!
+        #   @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
+        # end
 
         def remove_extra_french_major_shareholding_companies
           major_shareholdings = companies.find_all { |c| c.value == 180 }
