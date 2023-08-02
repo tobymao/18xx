@@ -78,8 +78,8 @@ module Engine
             raise GameError, 'Cannot purchase these shares' unless flexible_can_buy_shares?(entity, bundle.shares, price)
 
             # can't use share_pool.buy_shares since it uses bundle.share_price
-            @log << "#{entity.name} buys a #{bundle.percent}% share"\
-                    " of #{corporation.name} from #{owner.name} for #{@game.format_currency(price)}"
+            @log << "-- #{entity.name} buys a #{bundle.percent}% share"\
+                    " of #{corporation.name} from #{owner.name} for #{@game.format_currency(price)} --"
 
             @game.share_pool.transfer_shares(bundle,
                                              entity,

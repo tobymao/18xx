@@ -38,9 +38,22 @@ module Engine
                         yellow: '#ffdea8')
 
         CURRENCY_FORMAT_STR = 'L.%s'
-        BANK_CASH = 14_400
+
+        BANK_CASH_NORMAL = 14_400
+        BANK_CASH_LITE = 10_900
+        def init_bank
+          cash = lite? ? BANK_CASH_LITE : BANK_CASH_NORMAL
+          Bank.new(cash, log: @log)
+        end
+
+        STARTING_CASH_NORMAL = { 3 => 1120, 4 => 840, 5 => 672, 6 => 560, 7 => 480, 8 => 420 }.freeze
+        STARTING_CASH_LITE = { 3 => 840, 4 => 630, 5 => 504, 6 => 420 }.freeze
+        def init_starting_cash(players, bank)
+          cash = (lite? ? STARTING_CASH_LITE : STARTING_CASH_NORMAL)[players.size]
+          players.each { |player| bank.spend(cash, player) }
+        end
+
         CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11, 7 => 10, 8 => 9 }.freeze
-        STARTING_CASH = { 3 => 1120, 4 => 840, 5 => 672, 7 => 480, 8 => 420 }.freeze
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_share
@@ -145,72 +158,120 @@ module Engine
                                'Austrian possessions are eliminated; 1859-1866 Austrian border is deleted'],
         }.freeze
 
-        TRAINS = [
-          {
-            name: '2',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 2, 'visit' => 2 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 100,
-            rusts_on: '4',
-            num: 8,
-          },
-          {
-            name: '3',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 3, 'visit' => 3 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 200,
-            rusts_on: '5',
-            num: 6,
-          },
-          {
-            name: '4',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 4, 'visit' => 4 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 350,
-            rusts_on: '7',
-            num: 4,
-            events: [{ 'type' => 'close_companies' },
-                     { 'type' => 'phase4_regions' },
-                     { 'type' => 'ferd_secession' },
-                     { 'type' => 'tuscan_merge' }],
-          },
-          {
-            name: '5',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 5, 'visit' => 5 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 550,
-            num: 2,
-            events: [{ 'type' => 'phase5_regions' }],
-          },
-          {
-            name: '6',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 6, 'visit' => 6 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 800,
-            num: 2,
-          },
-          {
-            name: '7',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 7, 'visit' => 7 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 1100,
-            num: 2,
-          },
-          {
-            name: '8',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
-                       { 'nodes' => %w[town pass], 'pay' => 99, 'visit' => 99 }],
-            price: 1450,
-            num: 7,
-          },
-        ].freeze
+        def game_trains
+          trains = [
+            {
+              name: '2',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 2, 'visit' => 2 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 100,
+              rusts_on: '4',
+              num: lite? ? 6 : 8,
+            },
+            {
+              name: '3',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 3, 'visit' => 3 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 200,
+              rusts_on: '5',
+              num: lite? ? 5 : 6,
+            },
+          ]
+
+          trains << if lite?
+                      {
+                        name: '4',
+                        distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 4, 'visit' => 4 },
+                                   { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                        price: 350,
+                        rusts_on: '7',
+                        num: 3,
+                        events: [{ 'type' => 'close_companies' },
+                                 { 'type' => 'phase4_regions' },
+                                 { 'type' => 'ferd_secession' }],
+                      }
+                    else
+                      {
+                        name: '4',
+                        distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 4, 'visit' => 4 },
+                                   { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                        price: 350,
+                        rusts_on: '7',
+                        num: 4,
+                        events: [{ 'type' => 'close_companies' },
+                                 { 'type' => 'phase4_regions' },
+                                 { 'type' => 'ferd_secession' },
+                                 { 'type' => 'tuscan_merge' }],
+                      }
+                    end
+
+          trains.concat([
+            {
+              name: '5',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 5, 'visit' => 5 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 550,
+              num: 2,
+              events: [{ 'type' => 'phase5_regions' }],
+            },
+            {
+              name: '6',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 6, 'visit' => 6 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 800,
+              num: 2,
+            },
+            {
+              name: '7',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 7, 'visit' => 7 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 1100,
+              num: 2,
+            },
+            {
+              name: '8',
+              distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
+                         { 'nodes' => %w[town pass], 'pay' => 99, 'visit' => 99 }],
+              price: 1450,
+              num: 7,
+            },
+          ])
+
+          trains
+        end
 
         HOME_TOKEN_TIMING = nil
         SELL_BUY_ORDER = :sell_buy
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
-        GAME_END_CHECK = { bankrupt: :immediate, stock_market: :immediate, bank: :current_or }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :current_or, stock_market: :current_turn, custom: :current_turn }.freeze
+
+        GAME_END_REASONS_TEXT = {
+          bankrupt: 'player is bankrupt', # this is prefixed in the UI
+          bank: 'The bank runs out of money',
+          stock_market: 'Corporation enters end game trigger on stock market',
+          final_train: 'The final train is purchased',
+          final_phase: 'The final phase is entered',
+          custom: 'All offboards are connected to a city',
+        }.freeze
+
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
+          bank: 'Bank Broken',
+          bankrupt: 'Bankruptcy',
+          stock_market: 'Company hit max stock value',
+          final_train: 'Final train was purchased',
+          final_phase: 'Final phase was reached',
+          custom: 'All offboards are connected to a city',
+        }.freeze
+        GAME_END_REASONS_TIMING_TEXT = {
+          immediate: 'Immediately',
+          current_round: 'End of the current round',
+          current_or: 'Next end of an OR',
+          full_or: 'Next end of a complete OR set',
+          one_more_full_or_set: 'End of the next complete OR set after the current one',
+          current_turn: 'End of an OR turn or end of a SR',
+        }.freeze
 
         # Per railhead/base (needs special code in track step)
         TILE_LAYS = [
@@ -281,6 +342,7 @@ module Engine
           @tuscan_merge_state = nil
 
           @loans = Hash.new { |h, k| h[k] = 0 }
+          init_offboard_list
         end
 
         def version
@@ -408,7 +470,7 @@ module Engine
         end
 
         def modify_regions(phase, add)
-          REGIONS_BY_PHASE[phase].each do |coord, edges|
+          regions_by_phase[phase].each do |coord, edges|
             hex = hex_by_id(coord)
             edges.each do |edge|
               if add
@@ -724,6 +786,7 @@ module Engine
           G1841::Round::Operating.new(self, [
             G1841::Step::Bankrupt,
             G1841::Step::Track,
+            G1841::Step::Destinate,
             G1841::Step::Token,
             Engine::Step::Route,
             G1841::Step::Dividend,
@@ -924,6 +987,9 @@ module Engine
 
         # A corp is not considered to have operated until the end of it's first OR
         def done_operating!(entity)
+          end_timing = game_end_check&.last
+          end_game! if end_timing == :current_turn
+
           return unless entity&.corporation?
           return if @done_this_round[entity]
 
@@ -979,9 +1045,19 @@ module Engine
         end
 
         def status_str(corp)
-          return unless frozen?(corp)
+          str = ''
+          str = 'Minor ' unless major?(corp)
+          if historical?(corp)
+            company = @companies.find { |c| !c.closed? && c.sym == corp.name }
+            str += if company&.owner&.player?
+                     "Concession: #{company.owner.name} "
+                   else
+                     'Historical '
+                   end
+          end
 
-          'FROZEN'
+          str += 'FROZEN' if frozen?(corp)
+          str.strip
         end
 
         def company_header(_company)
@@ -990,6 +1066,10 @@ module Engine
 
         def allow_player2player_sales?
           @player2player ||= @optional_rules&.include?(:p2p_purchases)
+        end
+
+        def lite?
+          @lite ||= @optional_rules&.include?(:lite)
         end
 
         def event_close_companies!
@@ -1552,9 +1632,11 @@ module Engine
 
           if max_to_remove.positive?
             @log << if min_to_remove == max_to_remove
-                      "Must remove #{min_to_remove} token(s) from map"
+                      "Must remove #{min_to_remove} token(s) of #{@merger_corpa.name}"\
+                        " and/or #{@merger_corpb.name} from map"
                     else
-                      "Must remove #{min_to_remove} to #{max_to_remove} tokens from map"
+                      "Must remove #{min_to_remove} to #{max_to_remove} tokens of "\
+                        "#{@merger_corpa.name} and/or #{@merger_corpb.name} from map"
                     end
             @round.pending_removals << {
               entity: @merger_decider,
@@ -2476,9 +2558,114 @@ module Engine
 
         # Firenze is off limits for tokens until either SFMA starts or phase 4
         def check_token_hex(entity, hex)
-          return true if @phase.name.to_i >= 4 || sfma.floated? || entity == sfma
+          return true if lite? || version == 1 || @phase.name.to_i >= 4 || sfma.floated? || entity == sfma
 
           hex.id != FIRENZE
+        end
+
+        def init_offboard_list
+          @offboard_connected = {}
+          @offboard_list = []
+          @offboard_groups = Hash.new { |h, k| h[k] = [] }
+
+          @hexes.each do |hex|
+            hex.tile.nodes.each do |node|
+              next unless node.offboard?
+
+              group = node.groups.empty? ? hex.id : node.groups[0] # expect only one group per offboard
+              @offboard_groups[group] << hex
+              @offboard_list << hex
+            end
+          end
+        end
+
+        def new_offboard_connections(entity)
+          new_hexes = []
+          @selected_graph.connected_nodes(entity).keys.map(&:hex).each do |hex|
+            new_hexes << hex if @offboard_list.include?(hex) && !@offboard_connected[hex]
+          end
+          new_hexes.uniq
+        end
+
+        def make_offboard_connection(hexes)
+          hexes.each do |hex|
+            @offboard_connected[hex] = true if @offboard_list.include?(hex)
+          end
+        end
+
+        def all_offboards_connected?
+          @offboard_groups.all? { |_k, v| v.any? { |hex| @offboard_connected[hex] } }
+        end
+
+        def game_end_check
+          triggers = {
+            bankrupt: bankruptcy_limit_reached?,
+            bank: @bank.broken?,
+            stock_market: @stock_market.max_reached?,
+            final_train: @depot.empty?,
+            final_phase: @phase&.phases&.last == @phase&.current,
+            custom: custom_end_game_reached?,
+          }.select { |_, t| t }
+
+          %i[immediate current_round current_or full_or one_more_full_or_set current_turn].each do |after|
+            triggers.keys.each do |reason|
+              if game_end_check_values[reason] == after
+                @final_turn ||= @turn + 1 if after == :one_more_full_or_set
+                return [reason, after]
+              end
+            end
+          end
+
+          nil
+        end
+
+        def end_now?(after)
+          return true if after == :current_turn
+
+          super
+        end
+
+        def custom_end_game_reached?
+          all_offboards_connected?
+        end
+
+        def game_ending_description
+          reason, after = game_end_check
+          return unless after
+
+          after_text = ''
+
+          unless @finished
+            after_text = case after
+                         when :immediate
+                           ' : Game Ends immediately'
+                         when :current_round
+                           if @round.is_a?(Round::Operating)
+                             " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                           else
+                             " : Game Ends at conclusion of this round (#{turn})"
+                           end
+                         when :current_or
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         when :full_or
+                           if @round.is_a?(Round::Operating)
+                             " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
+                           else
+                             " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
+                           end
+                         when :one_more_full_or_set
+                           " : Game Ends at conclusion of #{round_end.short_name}"\
+                           " #{@final_turn}.#{final_operating_rounds}"
+                         when :current_turn
+                           if @round.is_a?(Round::Operating)
+                             ' : Game Ends at conclusion of this turn'
+                           else
+                             ' : Game Ends at conclusion of this SR' # probably never seen
+                           end
+                         end
+
+          end
+          "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
         end
       end
     end
