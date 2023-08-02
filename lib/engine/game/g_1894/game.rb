@@ -244,7 +244,7 @@ module Engine
         LONDON_HEX = 'A10'
         LONDON_BONUS_FERRY_SUPPLY_HEX = 'A12'
         FERRY_MARKER_ICON = 'ferry'
-        FERRY_MARKER_COST = 60
+        FERRY_MARKER_COST = 80
 
         PARIS_HEX = 'G6'
         CENTRE_BOURGOGNE_HEX = 'I2'
@@ -556,6 +556,8 @@ module Engine
           when Action::BuyCompany
             return unless action.company == ls
 
+            return add_ferry_marker_to_common_supply if ferry_marker?(action.entity)
+
             action.entity.add_ability(@ferry_marker_ability.dup)
             @log << "#{action.entity.name} gets a ferry marker"
           end
@@ -740,10 +742,13 @@ module Engine
           graph.clear
         end
 
+        def add_ferry_marker_to_common_supply
+          @log << "Reserved ferry marker returned to the common supply"
+          hex_by_id(LONDON_BONUS_FERRY_SUPPLY_HEX).tile.icons << Part::Icon.new('1894/ferry')
+        end
+
         def event_close_companies!
-          if ls.owner.player?
-            hex_by_id(LONDON_BONUS_FERRY_SUPPLY_HEX).tile.icons << Part::Icon.new('1894/ferry')
-          end
+          add_ferry_marker_to_common_supply if ls.owner.player?
 
           super
         end
