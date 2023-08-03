@@ -38,10 +38,12 @@ module Engine
 
           def next_entity!
             after_operating(@entities[@entity_index])
-            super
+            super unless @game.finished
           end
 
           def start_operating
+            return if @game.finished
+
             entity = @entities[@entity_index]
 
             if @game.frozen?(entity)

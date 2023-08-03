@@ -79,6 +79,10 @@ module Engine
               raise GameError, 'Must purchase first train from depot after EMR'
             end
 
+            if entity.cash < price && !must_buy_train?(entity)
+              raise GameError, "#{entity.name} has #{@game.format_currency(entity.cash)} and cannot afford train"
+            end
+
             if entity.cash < price
               @emr_triggered = true
               sweep_cash(entity, player, price)
