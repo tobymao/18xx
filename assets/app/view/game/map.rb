@@ -12,7 +12,7 @@ module View
   module Game
     class Map < Snabberb::Component
       include Lib::Settings
-      needs :game
+      needs :game, store: true
       needs :tile_selector, default: nil, store: true
       needs :selected_route, default: nil, store: true
       needs :selected_company, default: nil, store: true
