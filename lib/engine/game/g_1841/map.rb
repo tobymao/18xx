@@ -232,7 +232,7 @@ module Engine
             )
           end
 
-          location_names[:O13] = 'Tuscana - Roma' if lite?
+          location_names[:P12] = 'Tuscana - Roma' if lite?
 
           location_names
         end
@@ -356,6 +356,7 @@ module Engine
               },
             }
           else
+            # lite map
             {
               white: {
                 # no cities, towns
@@ -405,6 +406,9 @@ module Engine
                 %w[D12] => 'pass=revenue:0;border=edge:0,type:impassable;border=edge:2,type:impassable;border=edge:5,type:impassable;upgrade=cost:100',
                 %w[L8] => 'pass=revenue:0;border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:5,type:impassable;upgrade=cost:100',
                 %w[M9] => 'pass=revenue:0;border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:2,type:impassable;border=edge:5,type:impassable;upgrade=cost:100',
+                %w[O13] => 'pass=revenue:0;border=edge:5,type:impassable;upgrade=cost:100',
+                %w[P14] => 'pass=revenue:0;border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:100',
+                %w[Q15] => 'pass=revenue:0;upgrade=cost:100',
                 # cities
                 %w[F8] => 'city=revenue:60;path=a:_0,b:3,terminal:1;path=a:_0,b:4,terminal:1;label=M',
                 %w[H4] => 'city=revenue:40,loc:1;city=revenue:40,loc:3.5;path=a:_0,b:1;path=a:_0,b:5;path=a:_1,b:4;label=T',
@@ -431,10 +435,9 @@ module Engine
                 %w[O17] => 'offboard=revenue:white_10|gray_70|black_150;path=a:_0,b:1;path=a:_0,b:2',
                 %w[P4] => 'offboard=revenue:white_60|gray_100|black_150,groups:Marseille',
                 %w[Q3 Q5] => 'offboard=revenue:white_60|gray_100|black_150,groups:Marseille,hide:1;path=a:_0,b:3',
-                %w[O13] => 'offboard=revenue:white_50|gray_100|black_250,groups:Roma;path=a:_0,b:2;path=a:_0,b:3;path=a:_0,b:4',
-                %w[P12] => 'offboard=revenue:white_50|gray_100|black_250,groups:Roma,hide:1;path=a:_0,b:2;path=a:_0,b:3',
-                %w[Q11] => '',
-                %w[P14 Q15] => 'offboard=revenue:white_50|gray_100|black_250,groups:Roma,hide:1;path=a:_0,b:3;path=a:_0,b:4',
+                %w[P12] => 'offboard=revenue:white_50|gray_100|black_250,groups:Roma;path=a:_0,b:2;path=a:_0,b:3;path=a:_0,b:4',
+                %w[Q11] => 'offboard=revenue:white_50|gray_100|black_250,groups:Roma,hide:1;path=a:_0,b:2;path=a:_0,b:3',
+                %w[Q13 R14] => 'offboard=revenue:white_50|gray_100|black_250,groups:Roma,hide:1;path=a:_0,b:3;path=a:_0,b:4',
               },
               blue: {
                 %w[G17] => 'town=revenue:40,route:never,loc:2;path=a:_0,b:2;icon=image:port',
@@ -469,6 +472,7 @@ module Engine
                 'J16' => [2, 3],
                 'P10' => [3],
                 'O15' => [2, 3, 4],
+                'O13' => [2, 3, 4],
                 'P16' => [3],
               },
               4 => {
