@@ -739,9 +739,15 @@ module Engine
         end
 
         def new_auction_round
-          Engine::Round::Auction.new(self, [
-            G1841::Step::ConcessionAuction,
-          ])
+          if version == 1
+            Engine::Round::Auction.new(self, [
+              G1841::Step::BlindAuction,
+            ])
+          else
+            Engine::Round::Auction.new(self, [
+              G1841::Step::ConcessionAuction,
+            ])
+          end
         end
 
         def auction_companies
@@ -752,6 +758,8 @@ module Engine
         # - if tied, lowest numbered concession
         # - if tied, original order
         def init_reorder_players
+          return if version == 1 # already done
+
           current_order = @players.dup
           lowest_concession = {}
           @players.each do |p|
@@ -940,6 +948,14 @@ module Engine
           ([entity1] + chain_of_control(entity1)).include?(entity2)
         end
 
+        # entity2 was in chain of control of entity1 when it became frozen, or
+        # entity2 is currently in chain of control of entity1
+        def in_circular_chain?(entity1, entity2)
+          return false unless entity1&.corporation?
+
+          @corporation_info[entity1][:circular_chain]&.include?(entity2) || in_chain?(entity1, entity2)
+        end
+
         def player_controlled_percentage(buyer, corporation)
           human = controller(buyer)
           total_percent = human.common_percent_of(corporation)
@@ -981,7 +997,13 @@ module Engine
             @log << "#{corp.name} is no longer frozen" if frozen?(corp) && !frozen
             @log << "#{corp.name} is now frozen" if !frozen?(corp) && frozen
             @corporation_info[corp][:frozen] = frozen
-            @corporation_info[corp][:circular] = circular
+            if frozen
+              @corporation_info[corp][:circular] = circular || circular?(corp) # sticky until unfrozen
+              @corporation_info[corp][:circular_chain] = chain_of_control(corp) if circular
+            else
+              @corporation_info[corp][:circular] = false
+              @corporation_info[corp][:circular_chain] = []
+            end
           end
         end
 
@@ -993,7 +1015,7 @@ module Engine
           return unless entity&.corporation?
           return if @done_this_round[entity]
 
-          @log << "#{entity.name} has finished operating for the first time" unless operated?(entity)
+          @log << "#{entity.name} has finished operating for the first time" if !operated?(entity) && !@finished
 
           @corporation_info[entity][:operated] = true
         end
