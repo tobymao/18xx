@@ -83,6 +83,11 @@ module Engine
               raise GameError, "#{entity.name} has #{@game.format_currency(entity.cash)} and cannot afford train"
             end
 
+            # need to check this before sweeping owner's (or owner's owner's...) cash into corp
+            if entity.cash < price && !issuable_shares(entity).empty?
+              raise GameError, "#{entity.name} must sell shares before buying this train"
+            end
+
             if entity.cash < price
               @emr_triggered = true
               sweep_cash(entity, player, price)

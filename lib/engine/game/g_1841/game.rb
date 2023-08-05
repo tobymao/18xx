@@ -2121,7 +2121,12 @@ module Engine
               shares = sh.shares_of(@secession_old).dup
               simple_transfer_share(shares[0], @secession_old)
               simple_transfer_share(shares[1], @secession_old)
-              if other_pres
+              if other_pres && sh == @share_pool
+                simple_transfer_share(other_pres, sh)
+                other.owner = sh
+                @log << "#{other.name} president share moved to share pool"
+                other_pres = nil
+              elsif other_pres
                 @share_pool.transfer_shares(other_pres.to_bundle, sh, allow_president_change: true)
                 @log << "Transferred president share of #{other.name} to #{sh.name}"
                 other_pres = nil
@@ -2266,6 +2271,11 @@ module Engine
         end
 
         def secession_offer_response(choice)
+          @log << if choice == :y
+                    "Another round of purchases for #{@secession_offer_corp} was approved"
+                  else
+                    "Another round of purchases for #{@secession_offer_corp} was declined"
+                  end
           return secession_offer(@secession_offer_corp) if choice == :y
 
           if @secession_offer_corp == @secession_newa
