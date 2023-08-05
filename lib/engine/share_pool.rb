@@ -214,7 +214,7 @@ module Engine
       return unless allow_president_change
 
       # check if we need to change presidency
-      max_shares = presidency_check_shares(corporation).values.max
+      max_shares = presidency_check_shares(corporation).values.max || 0
 
       # handle selling president's share to the pool
       # if partial, move shares from pool to old president
