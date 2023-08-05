@@ -541,6 +541,7 @@ module Engine
         TUSCAN_TOKEN_HEXES = %w[Q11 R14].freeze
         LUGANO = 'C7'
         FIRENZE = 'R14'
+        MILANO = 'F8'
 
         AXES = { x: :number, y: :letter }.freeze
       end
