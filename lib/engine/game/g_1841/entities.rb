@@ -14,7 +14,7 @@ module Engine
               sym: 'Bayard',
               value: 50,
               revenue: 20,
-              desc: 'Pays L.50 at the end of each Stock Round',
+              desc: 'Pays L.20 at the end of each Stock Round',
               corporation: nil,
             },
           ]

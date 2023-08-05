@@ -1255,7 +1255,7 @@ module Engine
         #
         def move_assets(from, other, target)
           if other
-            other_shares = from.shares_of(other)
+            other_shares = from.shares_of(other).dup
             @log << "Removing #{other_shares.size} share(s) of #{other.name} in #{from.name} treasury" unless other_shares.empty?
             other_shares.each do |cross_share|
               simple_transfer_share(cross_share, other)
@@ -2688,6 +2688,19 @@ module Engine
 
           end
           "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
+        end
+
+        def milano_hex
+          @milano_hex = hex_by_id(MILANO)
+        end
+
+        def check_overlap(routes)
+          if milano_hex.tile.color.to_s == 'yellow' && routes.size > 1 &&
+              routes.count { |route| route.hexes.include?(milano_hex) } > 1
+            raise GameError, 'Cannot visit Yellow Milano more than once'
+          end
+
+          super
         end
       end
     end

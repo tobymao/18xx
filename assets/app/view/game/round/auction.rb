@@ -488,7 +488,7 @@ module View
         end
 
         def show_bids?(company)
-          @step.respond_to?(:show_bids?) ? @step.show_bids?(company) : !@step.bids[company].empty?
+          @step.respond_to?(:show_bids?) ? @step.show_bids?(company) : true
         end
       end
     end
