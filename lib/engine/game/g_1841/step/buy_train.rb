@@ -162,6 +162,12 @@ module Engine
           def issuing_corporation(corp)
             issuable_shares(corp).first&.owner || corp
           end
+
+          def sellable_bundles(player, corp)
+            bundles = @game.sellable_bundles(player, corp)
+            bundles.each { |b| b.share_price = corp.share_price.price / 2.0 }
+            bundles
+          end
         end
       end
     end

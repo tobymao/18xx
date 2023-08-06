@@ -1263,7 +1263,6 @@ module Engine
             end
           end
 
-          old_circular = circular_corporations
           shares = from.shares_by_corporation
           shares.keys.each do |corp|
             next if corp == from
@@ -1272,10 +1271,6 @@ module Engine
             @log << "Moving #{shares[corp].size} share(s) of #{corp.name} from #{from.name} to #{target.name} treasury"
             bundle = ShareBundle.new(Array(shares[corp]))
             @share_pool.transfer_shares(bundle, target, allow_president_change: true)
-            update_frozen!
-            next if @merger_tuscan || circular_corporations.none? { |c| !old_circular.include?(c) }
-
-            raise GameError, 'Illegal circular ownership chain is created by this merger. Undo required.'
           end
 
           # cash
@@ -2581,7 +2576,8 @@ module Engine
             return
           end
 
-          @log << "#{player.name} is bankrupt and receives a #{format_currency(BANKRUPTCY_LOAN)} loan form the bank"
+          @log << "#{player.name} is bankrupt and receives a #{format_currency(BANKRUPTCY_LOAN)} loan from the bank"
+          @bank.spend(BANKRUPTCY_LOAN, player)
           @loans[player] += BANKRUPTCY_LOAN
         end
 

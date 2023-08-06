@@ -73,7 +73,7 @@ module View
 
       def render_bankruptcy_option(option)
         resign = lambda do
-          process_action(Engine::Action::Bankrupt.new(entity, type: option))
+          process_action(Engine::Action::Bankrupt.new(entity, option: option))
         end
 
         props = {
