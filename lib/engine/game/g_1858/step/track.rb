@@ -38,11 +38,17 @@ module Engine
           end
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
-            old_tile = action.hex.tile
+            hex = action.hex
+            old_tile = hex.tile
             new_tile = action.tile
             @round.gauges_added << new_track_gauge(old_tile, new_tile)
 
             super
+
+            return if new_tile.cities.empty?
+            return unless track_upgrade?(old_tile, new_tile, hex)
+
+            @game.clear_reservation_icons(hex)
           end
 
           def process_lay_tile(action)

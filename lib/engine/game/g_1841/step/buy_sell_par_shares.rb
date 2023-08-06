@@ -1,148 +1,165 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/buy_sell_par_shares'
-require_relative '../../../step/share_buying'
-require_relative '../../../action/buy_shares'
-require_relative '../../../action/par'
-require_relative 'corp_start'
+require_relative 'base_buy_sell_par_shares'
 
 module Engine
   module Game
     module G1841
       module Step
-        class BuySellParShares < Engine::Step::BuySellParShares
-          include CorpStart
-          def description
-            'Sell then Buy Shares or Concessions'
+        class BuySellParShares < BaseBuySellParShares
+          def flexible_buy?(entity)
+            entity&.player? && @game.allow_player2player_sales?
           end
 
-          def round_state
-            super.merge({ corp_started: nil })
+          def can_buy_any_from_player?(entity)
+            return false unless flexible_buy?(entity)
+            return false unless entity.cash.positive?
+            return false if bought?
+
+            @game.players.reject { |p| p == entity }.any? { |p| flexible_can_buy_any_shares?(entity, p.shares) }
           end
 
-          def setup
-            super
-            @round.corp_started = nil
-          end
+          def flexible_can_buy_any_shares?(entity, shares)
+            return false if shares.empty?
 
-          # FIXME
-          def purchasable_companies(_entity)
-            []
-          end
+            shares.each do |share|
+              next if entity == share.owner || @round.players_sold[entity][share.corporation]
+              next if share.president && !@game.pres_change_ok?(share.corporation)
+              next unless can_gain?(entity, share.to_bundle)
 
-          def can_buy_multiple?(entity, corporation, _owner)
-            @round.current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation } &&
-              entity.percent_of(corporation) < 40
-          end
-
-          def can_buy?(entity, bundle)
-            return unless bundle
-            return unless bundle.buyable
-            return if bundle.owner.corporation? && bundle.owner != bundle.corporation # can't buy non-IPO shares in treasury
-            return if bundle.owner.player? && entity.player? && !@game.allow_player2player_sales?
-            return if bundle.owner.player? && entity.corporation?
-
-            super
-          end
-
-          def can_gain?(entity, bundle, exchange: false)
-            return if !bundle || !entity
-
-            corporation = bundle.corporation
-
-            # can't exceed cert limit
-            (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity)) &&
-              # can't allow player to control too much
-              ((@game.player_controlled_percentage(entity,
-                                                   corporation) + bundle.common_percent) <= corporation.max_ownership_percent)
-          end
-
-          def can_dump?(entity, bundle)
-            super && (!bundle.presidents_share || @game.pres_change_ok?(bundle.corporation))
-          end
-
-          def pass!
-            super
-            post_share_pass_step! if @round.corp_started
-          end
-
-          def log_pass(entity)
-            return super unless @round.corp_started
-
-            @log << "#{entity.name} declines to purchase additional shares of #{@round.corp_started.name}"
-          end
-
-          def can_sell_any_of_corporation?(entity, corporation)
-            bundles = @game.bundles_for_corporation(entity, corporation).reject { |b| b.corporation == entity }
-            bundles.any? { |bundle| can_sell?(entity, bundle) }
-          end
-
-          # include anti-trust rule
-          def must_sell?(entity)
-            return false unless can_sell_any?(entity)
-            return true if @game.num_certs(entity) > @game.cert_limit(entity)
-
-            player = @game.controller(entity)
-            @game.corporations.any? do |corp|
-              (@game.player_controlled_percentage(player, corp) > corp.max_ownership_percent) &&
-                can_sell_any_of_corporation?(entity, corp)
+              return true
             end
+            false
           end
 
-          def sell_shares(entity, shares, swap: nil)
-            old_circular = @game.circular_corporations
-            raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
+          def flexible_bundles(buyer, owner, corporation)
+            shares = owner.shares_of(corporation).sort_by(&:percent)
+            shares.reject! { |s| s.president && !@game.pres_change_ok?(corporation) }
+            bundles = @game.all_bundles_for_corporation(owner, corporation, shares: shares)
+            bundles.select { |bundle| can_sell_to_player?(buyer, owner, bundle) }
+          end
 
-            @round.players_sold[shares.owner][shares.corporation] = :now
-            @game.sell_shares_and_change_price(shares, swap: swap,
-                                                       allow_president_change: @game.pres_change_ok?(shares.corporation))
-            @game.update_frozen!
-            @round.recalculate_order if @round.respond_to?(:recalculate_order)
-            return if @game.circular_corporations.none? { |c| !old_circular.include?(c) }
+          def can_sell_to_player?(buyer, owner, bundle)
+            return unless bundle
+            return false if owner != bundle.owner
+            return true unless (pres = bundle.presidents_share)
+            return true if bundle.percent >= pres.percent # new owner can take presidency
 
-            raise GameError, 'Cannot sell if it causes a circular chain of ownership'
+            # we are dealing with a partial pres share, somebody better have
+            # enough take the presidency
+            sh = bundle.corporation.player_share_holders(corporate: true)
+            return true if sh[buyer]&.positive? # buyer just needs 1 share
+
+            (sh.reject { |k, _| k == owner }.values.max || 0) >= pres.percent
+          end
+
+          def flexible_can_buy_shares?(entity, shares, price)
+            return false if shares.empty? || entity.cash < price || bought?
+            return false if @round.players_sold[entity][shares[0].corporation]
+
+            pres = shares.find(&:president)
+            return false if pres && !@game.pres_change_ok?(pres.corporation)
+
+            can_gain?(entity, ShareBundle.new(shares))
           end
 
           def process_buy_shares(action)
+            return super unless action.bundle.owner.player?
+
+            # player to player purchase
+            #
             old_circular = @game.circular_corporations
-            @round.players_bought[action.entity][action.bundle.corporation] += action.bundle.percent
-            @round.bought_from_ipo = true if action.bundle.owner.corporation?
-            buy_shares(action.purchase_for || action.entity, action.bundle,
-                       swap: action.swap, borrow_from: action.borrow_from,
-                       allow_president_change: @game.pres_change_ok?(action.bundle.corporation))
-            track_action(action, action.bundle.corporation)
+            entity = action.entity
+            price = action.total_price
+            bundle = action.bundle
+            owner = bundle.owner
+            corporation = bundle.corporation
+            raise GameError, 'Not enough cash for purchase' unless entity.cash >= price
+            raise GameError, 'Cannot purchase these shares' unless flexible_can_buy_shares?(entity, bundle.shares, price)
+
+            # can't use share_pool.buy_shares since it uses bundle.share_price
+            @log << "-- #{entity.name} buys a #{bundle.percent}% share"\
+                    " of #{corporation.name} from #{owner.name} for #{@game.format_currency(price)} --"
+
+            @game.share_pool.transfer_shares(bundle,
+                                             entity,
+                                             spender: entity,
+                                             receiver: owner,
+                                             price: price,
+                                             allow_president_change: @game.pres_change_ok?(corporation))
+
+            track_action(action, corporation)
             @game.update_frozen!
             return if @game.circular_corporations.none? { |c| !old_circular.include?(c) }
 
             raise GameError, 'Cannot purchase if it causes a circular chain of ownership'
           end
 
-          def get_par_prices(entity, corp)
-            return super if corp.type == :major
+          def company_president_share(company)
+            corp = @game.corporation_by_id(company&.sym)
+            return nil unless corp
 
-            @game
-              .stock_market
-              .par_prices
-              .select { |p| p.type == :par && p.price * 2 <= entity.cash }
+            owner = company.owner
+            owner = @game.share_pool if owner == @game.bank
+            owner.shares_of(corp).find(&:president)
           end
 
-          def process_par(action)
-            @round.corp_started = action.corporation
-            super
+          def purchasable_companies(entity)
+            return [] if bought? || !entity.cash.positive? || !@game.allow_player2player_sales?
+
+            @game.companies.select { |c| !c.closed? && c.owner.player? && can_buy_company?(entity, c) }
           end
 
-          def visible_corporations
-            @game.corporations.reject { |c| c.closed? || (@game.historical?(c) && !@game.startable?(c)) }
+          def buyable_bank_owned_companies(entity)
+            return [] if bought? || @game.phase.name.to_i < 3
+
+            @game.companies.select { |c| !c.closed? && c.owner == @game.bank && can_buy_company?(entity, c) }
           end
 
+          # this works for both buying from the bank as well as players
           def can_buy_company?(player, company)
-            !bought? && super
+            return false unless player.player?
+            return false if company.closed?
+            return false unless (owner = company.owner)
+            return false if owner.player? && !@game.allow_player2player_sales?
+            return false if !owner.player? && @game.phase.name.to_i < 3
+
+            # can afford?
+            pres = company_president_share(company)
+            pres_value = pres ? pres.corporation.share_price.price * 2 : 0
+            price = owner.player? ? 1 : company.value + pres_value
+            return false unless player.cash >= price
+
+            # can take pres share?
+            return true unless pres
+
+            can_gain?(player, pres.to_bundle)
           end
 
           def process_buy_company(action)
+            entity = action.entity
+            company = action.company
+            price = action.price
+            owner = company.owner
+
+            # increase price when bought from bank to account for president's share
+            pres = company_president_share(company)
+            extra = pres && !owner.player? ? pres.corporation.share_price.price * 2 : 0
+
+            raise GameError, "Not enough cash to buy #{action.company.name}" unless entity.cash >= (price + extra)
+            raise GameError, "Cannot buy #{action.company.name}" unless can_buy_company?(entity, company)
+
             super
-            @round.last_to_act = action.entity.player
-            @round.current_actions << action
+
+            return unless pres
+
+            if extra.positive?
+              @log << "#{entity.name} pays the bank for the president's share of #{pres.corporation.name}"
+              entity.spend(extra, @game.bank)
+            end
+            @log << "#{entity.name} takes the president's share and becomes president of #{pres.corporation.name}"
+            @game.share_pool.transfer_shares(pres.to_bundle, entity, allow_president_change: false)
+            pres.corporation.owner = entity
           end
         end
       end

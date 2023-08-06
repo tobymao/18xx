@@ -65,7 +65,7 @@ module View
             }
             h(:tr, props, [
               h('td.left', bid.entity.name.truncate(20)),
-              h('td.right', @game.format_currency(bid.price)),
+              h('td.right', bid.price >= 0 ? @game.format_currency(bid.price) : '--'),
             ])
           end
 

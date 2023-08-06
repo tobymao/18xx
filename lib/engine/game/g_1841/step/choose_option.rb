@@ -69,10 +69,12 @@ module Engine
             return 'Choose share price' if pending_type == :price
             return "Optional share purchase by #{pending_entity.name}" if pending_type == :share_offer
             return "Choose president share for #{pending_share_owner.name}" if pending_type == :pick_exchange_pres
-            return "Choose share for #{pending_share_owner.name}" if pending_type == :pick_exchange_corp
+            if pending_type == :pick_exchange_corp
+              return "Choose share that #{pending_share_owner.name} will exchange an IRSFF share for"
+            end
             return "Perform another share purchase round for #{pending_corp.name}?" if pending_type == :offer_again
 
-            'Decision for exchange of stocks'
+            'Decision for exchange of stocks in merger'
           end
 
           def choices

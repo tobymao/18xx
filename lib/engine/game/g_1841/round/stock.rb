@@ -29,6 +29,14 @@ module Engine
             end
             @game.finish_stock_round
           end
+
+          def sold_out?(corporation)
+            super && !@game.frozen?(corporation)
+          end
+
+          def corporations_to_move_price
+            @game.corporations.select(&:floated?)
+          end
         end
       end
     end
