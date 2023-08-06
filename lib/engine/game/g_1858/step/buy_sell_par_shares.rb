@@ -85,6 +85,16 @@ module Engine
             true # Show bank owned private companies before public companies
           end
 
+          def visible_corporations
+            # Don't show public companies in the first stock round, only the
+            # private railway companies can be purchased.
+            if @game.turn == 1
+              @game.sorted_corporations.select { |c| c.type == :minor }
+            else
+              @game.sorted_corporations.reject(&:closed?)
+            end
+          end
+
           def process_par(action)
             super
             pass!
