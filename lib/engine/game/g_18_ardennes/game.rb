@@ -19,8 +19,20 @@ module Engine
         include Tiles
         include Trains
 
-        def reservation_corporations
-          minors + corporations
+        MIN_BID_INCREMENT = 5
+        MUST_BID_INCREMENT_MULTIPLE = true
+
+        CAPITALIZATION = :incremental
+        HOME_TOKEN_TIMING = :par
+
+        def setup_preround
+          @minors, @corporations = @corporations.partition { |c| c.type == :minor }
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G18Ardennes::Step::MinorAuction,
+          ])
         end
       end
     end
