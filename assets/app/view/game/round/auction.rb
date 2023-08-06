@@ -358,7 +358,13 @@ module View
         end
 
         def render_ipo_input
-          h('div.margined_bottom', { style: { width: '20rem' } }, [h(Par, corporation: @selected_corporation)])
+          type = @step.respond_to?(:ipo_type) ? @step.ipo_type(@selected_corporation) : :par
+          case type
+          when :par
+            h('div.margined_bottom', { style: { width: '20rem' } }, [h(Par, corporation: @selected_corporation)])
+          when :bid
+            h(Bid, entity: @current_entity, corporation: @selected_corporation)
+          end
         end
 
         def render_corp_choose_input
