@@ -12,7 +12,7 @@ module View
 
         def render
           @step = @game.active_step
-          max_price = step.max_price(@entity)
+          max_price = @step.max_price(@entity)
 
           children = []
 
