@@ -211,6 +211,7 @@ module Engine
               distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 5, 'visit' => 5 },
                          { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
               price: 550,
+              rusts_on: '8',
               num: 2,
               events: [{ 'type' => 'phase5_regions' }],
             },
@@ -2272,9 +2273,9 @@ module Engine
 
         def secession_offer_response(choice)
           @log << if choice == :y
-                    "Another round of purchases for #{@secession_offer_corp} was approved"
+                    "Another round of purchases for #{@secession_offer_corp.name} was approved"
                   else
-                    "Another round of purchases for #{@secession_offer_corp} was declined"
+                    "Another round of purchases for #{@secession_offer_corp.name} was declined"
                   end
           return secession_offer(@secession_offer_corp) if choice == :y
 

@@ -11,7 +11,7 @@ module View
         needs :selected_token, default: nil, store: true
 
         def render
-          step = @game.active_step
+          @step = @game.active_step
           max_price = step.max_price(@entity)
 
           children = []
