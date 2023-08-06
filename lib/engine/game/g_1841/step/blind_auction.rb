@@ -85,7 +85,7 @@ module Engine
               sort_values.concat(@player_bids[player])
               sort_values << current_order.index(player)
               sort_values
-            end.reverse
+            end.reverse!
             @log << '-- New player order: --'
             @game.players.each.with_index do |p, idx|
               pd = idx.zero? ? ' - Priority Deal -' : ''
