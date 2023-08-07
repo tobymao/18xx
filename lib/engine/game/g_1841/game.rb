@@ -1202,9 +1202,11 @@ module Engine
         end
 
         def merger_values(corpa, corpb)
-          if corpa.type == :major && corpa.share_price.price > 250 && corpa.share_price.price > 250
+          raise GameError, 'Both corporations must be the same type' unless corpa.type == corpb.type
+
+          if corpa.type == :major && corpa.share_price.price > 250 && corpb.share_price.price > 250
             #  both majors are above 250
-            return [corpa.share_price, corpb.share_price].sort if corpa.share_price.price != corpb.share_price.price
+            return [corpa.share_price, corpb.share_price].sort_by(&:price) if corpa.share_price.price != corpb.share_price.price
 
             return [corpa.share_price]
           end
@@ -1230,6 +1232,9 @@ module Engine
           @merger_target = target
           @merger_tuscan = tuscan_merge
           @merger_decider = tuscan_merge ? @tuscan_merge_decider : corpa.player
+          @merger_title = tuscan_merge ? 'Tuscan Merge - ' : ''
+          @merger_title += "Merging #{corpa.name} with #{corpb.name} to form #{target.name}: "
+
           @log << if tuscan_merge
                     "-- Tuscan Merge: #{corpa.name} and #{corpb.name} will merge and form #{target.name} --"
                   else
@@ -1242,6 +1247,7 @@ module Engine
           end
           # player must choose share price
           @round.pending_options << {
+            title: @merger_title,
             entity: @merger_tuscan ? @tuscan_merge_decider : corpa,
             type: :price,
             share_prices: share_prices,
@@ -1326,11 +1332,14 @@ module Engine
           @merger_target.floated = true
           @merger_target.share_price = share_price
 
+          @merger_share_holders = merger_share_holder_list(@merger_corpa, @merger_corpb, 10)
+
+          @merger_sh_list = @merger_share_holders.select { |sh| total_percent(sh, @merger_corpa, @merger_corpb) >= 20 }
+
           # move assets (except for tokens) to the target
           move_assets(@merger_corpa, @merger_corpb, @merger_target)
           move_assets(@merger_corpb, @merger_corpa, @merger_target)
 
-          @merger_sh_list = merger_share_holder_list(@merger_corpa, @merger_corpb, 20)
           if @merger_corpa.type == :major
             @merger_state = :exchange_pass1
             merger_next_exchange
@@ -1364,11 +1373,13 @@ module Engine
             if tp >= 40 || !pres_share || !entity.player? || !afford_upgrade_to_pres?(entity, tp, @merger_target)
               merger_do_exchange(:no)
             else
-              # ask to see if they want to upgrade to president's share
+              # ask to see if the player wants to upgrade to president's share
               @round.pending_options << {
+                title: @merger_title,
                 entity: entity,
                 type: :upgrade,
                 percent: tp,
+                old_shares: (entity.shares_of(@merger_corpa) + entity.shares_of(@merger_corpb)).sort_by(&:percent).reverse,
                 target: @merger_target,
                 choices: %i[pres no],
               }
@@ -1394,9 +1405,11 @@ module Engine
             else
               # ask to see if they want to buy into a pres share or full share
               @round.pending_options << {
+                title: @merger_title,
                 entity: entity,
                 type: :upgrade,
                 percent: tp,
+                old_shares: (entity.shares_of(@merger_corpa) + entity.shares_of(@merger_corpb)).sort_by(&:percent).reverse,
                 target: @merger_target,
                 choices: options,
               }
@@ -1505,7 +1518,7 @@ module Engine
             # start 2nd pass of exchanges
             #
             @merger_state = :exchange_pass2
-            @merger_sh_list = merger_share_holder_list(@merger_corpa, @merger_corpb, 10)
+            @merger_sh_list = @merger_share_holders.select { |sh| total_percent(sh, @merger_corpa, @merger_corpb) >= 10 }
             if !@merger_sh_list.empty?
               merger_next_exchange
             else
@@ -1841,7 +1854,14 @@ module Engine
             return share_offer_next
           end
 
+          title = if @secession_state
+                    'Ferdinandea Secession: '
+                  else
+                    "#{@tranform_tuscan ? 'Tuscan Merge - ' : ''}Transforming #{@transform_corp}: "
+                  end
+
           @round.pending_options << {
+            title: title,
             entity: entity,
             type: :share_offer,
             target: @share_offer_corp,
@@ -2050,6 +2070,7 @@ module Engine
             else
               # ask decider which corp current president of IRSFF wants to be president of
               @round.pending_options << {
+                title: 'Ferdinandea Secession: ',
                 entity: old.player ? old_owner : @secession_decider,
                 type: :pick_exchange_pres,
                 share_owner: old_owner,
@@ -2160,6 +2181,7 @@ module Engine
 
           if a_avail && b_avail && entity.player
             @round.pending_options << {
+              title: 'Ferdinandea Secession: ',
               entity: entity,
               type: :pick_exchange_corp,
               share_owner: entity,
@@ -2169,6 +2191,7 @@ module Engine
             @round.clear_cache!
           elsif a_avail && b_avail && entity == @share_pool
             @round.pending_options << {
+              title: 'Ferdinandea Secession: ',
               entity: @secession_decider,
               type: :pick_exchange_corp,
               share_owner: entity,
@@ -2259,6 +2282,7 @@ module Engine
           end
 
           @round.pending_options << {
+            title: 'Ferdinandea Secession: ',
             entity: corp.player ? corp : @secession_decider,
             type: :offer_again,
             corp: corp,
