@@ -7,21 +7,21 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { 'minor': 2, '5-share': 4, '10-share': 4 },
+            train_limit: { minor: 2, '5-share': 4, '10-share': 4 },
             tiles: [:yellow],
             operating_rounds: 2,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { 'minor': 2, '5-share': 4, '10-share': 4 },
+            train_limit: { minor: 2, '5-share': 4, '10-share': 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '4',
             on: '4',
-            train_limit: { 'minor': 2, '5-share': 3, '10-share': 3 },
+            train_limit: { minor: 2, '5-share': 3, '10-share': 3 },
             tiles: %i[yellow green],
             status: %w[green_privates narrow_gauge],
             operating_rounds: 2,
@@ -29,14 +29,14 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { 'minor': 2, '5-share': 2, '10-share': 2 },
+            train_limit: { minor: 2, '5-share': 2, '10-share': 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
           },
           {
             name: '6',
             on: %w[6 4D],
-            train_limit: { 'minor': 2, '5-share': 2, '10-share': 2 },
+            train_limit: { minor: 2, '5-share': 2, '10-share': 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
           },

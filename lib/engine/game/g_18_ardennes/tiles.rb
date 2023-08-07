@@ -34,7 +34,6 @@ module Engine
           '144' => 2,
           '207' => 6,
           '208' => 6,
-          #'405' => 2,
           '405' => {
             'count' => 2,
             'color' => 'green',
@@ -43,7 +42,7 @@ module Engine
                       'city=revenue:40,slots:2;' \
                       'path=a:2,b:_0;' \
                       'path=a:3,b:_0;' \
-                      'path=a:4,b:_0;'
+                      'path=a:4,b:_0;',
           },
           '580' => 1,
           '619' => 3,
@@ -58,7 +57,7 @@ module Engine
                       'path=a:0,b:_0;' \
                       'path=a:1,b:_0;' \
                       'path=a:4,b:_1;' \
-                      'path=a:5,b:_1;'
+                      'path=a:5,b:_1;',
           },
           'X11' => {
             'count' => 1,
@@ -68,13 +67,12 @@ module Engine
                       'city=revenue:60,slots:2;' \
                       'path=a:0,b:_0;' \
                       'path=a:1,b:_0;' \
-                      'path=a:5,b:_0;'
+                      'path=a:5,b:_0;',
           },
 
           # Brown tiles.
           '63' => 6,
           '216' => 6,
-          #'431' => 2,
           '431' => {
             'count' => 2,
             'color' => 'brown',
@@ -83,7 +81,7 @@ module Engine
                       'city=revenue:60,slots:2;' \
                       'path=a:2,b:_0;' \
                       'path=a:3,b:_0;' \
-                      'path=a:4,b:_0;'
+                      'path=a:4,b:_0;',
           },
           '583' => 1,
           'X20' => {
@@ -95,7 +93,7 @@ module Engine
                       'path=a:0,b:_0;' \
                       'path=a:1,b:_0;' \
                       'path=a:4,b:_0;' \
-                      'path=a:5,b:_0;'
+                      'path=a:5,b:_0;',
           },
           'X21' => {
             'count' => 1,
@@ -105,7 +103,7 @@ module Engine
                       'city=revenue:80,slots:3;' \
                       'path=a:0,b:_0;' \
                       'path=a:1,b:_0;' \
-                      'path=a:5,b:_0;'
+                      'path=a:5,b:_0;',
           },
           'X22' => {
             'count' => 1,
@@ -118,7 +116,7 @@ module Engine
                       'path=a:2,b:_0;' \
                       'path=a:3,b:_0;' \
                       'path=a:4,b:_0;' \
-                      'path=a:5,b:_0;'
+                      'path=a:5,b:_0;',
           },
         }.freeze
       end

@@ -87,7 +87,7 @@ module Engine
               pass_auction(entity)
               resolve_bids
             else
-              #raise GameError, 'Not allowed to pass selecting a minor'
+              # raise GameError, 'Not allowed to pass selecting a minor'
               @log << "#{entity.name} passes bidding"
               entity.pass!
               all_passed! if entities.all?(&:passed?)
