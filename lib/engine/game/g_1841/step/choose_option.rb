@@ -88,7 +88,7 @@ module Engine
             when :share_offer
               pending_title + "Optional purchase of a share of #{pending_target.name} by #{pending_entity.name}"
             when :pick_exchange_pres
-              pending_title + "Choose corporation to exchange of IRSFF president share for #{pending_share_owner.name}"
+              pending_title + "Choose corporation to exchange IRSFF president share for #{pending_share_owner.name}"
             when :pick_exchange_corp
               pending_title + "Choose share that #{pending_share_owner.name} will exchange an IRSFF share for"
             when :offer_again
