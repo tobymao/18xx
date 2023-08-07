@@ -1370,10 +1370,10 @@ module Engine
           tp = total_percent(entity, @merger_corpa, @merger_corpb)
           pres_share = @merger_target.shares_of(@merger_target).find(&:president)
           if @merger_state == :exchange_pass1
-            if tp >= 40 || !pres_share || !entity.player || !afford_upgrade_to_pres?(entity, tp, @merger_target)
+            if tp >= 40 || !pres_share || !entity.player? || !afford_upgrade_to_pres?(entity, tp, @merger_target)
               merger_do_exchange(:no)
             else
-              # ask to see if they want to upgrade to president's share
+              # ask to see if the player wants to upgrade to president's share
               @round.pending_options << {
                 title: @merger_title,
                 entity: entity,
