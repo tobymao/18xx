@@ -212,7 +212,7 @@ module Engine
                          { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
               price: 550,
               rusts_on: '8',
-              num: 2,
+              num: lite? ? 2 : 3,
               events: [{ 'type' => 'phase5_regions' }],
             },
             {
