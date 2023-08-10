@@ -111,7 +111,7 @@ module Engine
           end
 
           def buyable_bank_owned_companies(entity)
-            return [] if bought? || @game.phase.name.to_i < 3
+            return [] if bought? || @game.turn < 2
 
             @game.companies.select { |c| !c.closed? && c.owner == @game.bank && can_buy_company?(entity, c) }
           end
@@ -122,7 +122,7 @@ module Engine
             return false if company.closed?
             return false unless (owner = company.owner)
             return false if owner.player? && !@game.allow_player2player_sales?
-            return false if !owner.player? && @game.phase.name.to_i < 3
+            return false if !owner.player? && @game.turn < 2
 
             # can afford?
             pres = company_president_share(company)
