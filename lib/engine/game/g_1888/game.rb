@@ -133,7 +133,6 @@ module Engine
             distance: 999,
             price: 900,
             num: 17,
-            available_on: '6',
             discount: { '4' => 200, '5' => 200, '6' => 200 },
           },
         ].freeze
