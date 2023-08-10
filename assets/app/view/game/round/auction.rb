@@ -6,6 +6,7 @@ require 'view/game/par'
 require 'view/game/par_chart'
 require 'view/game/players'
 require 'view/game/stock_market'
+require 'view/game/blind_bid'
 
 module View
   module Game
@@ -132,7 +133,11 @@ module View
             },
           }
 
-          children = [h(Company, company: company, bids: @step.bids[company])]
+          children = if show_bids?(company)
+                       [h(Company, company: company, bids: @step.bids[company])]
+                     else
+                       [h(Company, company: company)]
+                     end
           children << render_input(company) if @selected_company == company
           h(:div, props, children)
         end
@@ -204,6 +209,7 @@ module View
         end
 
         def render_turn_bid
+          return h(BlindBid) if @current_actions.include?('blind_bid')
           return if !@current_actions.include?('bid') || @step.auctioning != :turn
 
           if @step.respond_to?(:bid_choices)
@@ -479,6 +485,10 @@ module View
           return nil unless show
 
           h(StockMarket, game: @game, show_bank: false)
+        end
+
+        def show_bids?(company)
+          @step.respond_to?(:show_bids?) ? @step.show_bids?(company) : true
         end
       end
     end

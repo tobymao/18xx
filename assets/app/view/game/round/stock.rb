@@ -23,6 +23,7 @@ module View
         needs :last_player, default: nil, store: true
         needs :corporation_to_par, default: nil, store: true
         needs :show_other_players, default: nil, store: true
+        needs :flexible_player, default: nil, store: true
 
         def render
           round = @game.round
@@ -55,6 +56,7 @@ module View
           children = []
 
           children << h(Choose) if @current_actions.include?('choose') && @step.choice_available?(@current_entity)
+          children << h(FlexibleBuy) if @current_actions.include?('buy_shares') && @flexible_player
 
           if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
             children << if @game.num_certs(@current_entity) > @game.cert_limit(@current_entity)
