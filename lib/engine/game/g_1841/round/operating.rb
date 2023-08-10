@@ -36,12 +36,9 @@ module Engine
             next_entity! unless @game.finished
           end
 
-          def next_entity!
-            after_operating(@entities[@entity_index])
-            super
-          end
-
           def start_operating
+            return if @game.finished
+
             entity = @entities[@entity_index]
 
             if @game.frozen?(entity)
@@ -52,7 +49,7 @@ module Engine
             super
           end
 
-          def after_operating(entity)
+          def after_end_of_turn(entity)
             return unless entity&.corporation?
 
             @game.done_operating!(entity)
@@ -68,8 +65,9 @@ module Engine
 
             return unless @game.circular?(entity)
 
-            # for circular ownership, sell shares of controlling corps
-            entity.corporate_shares.select { |s| @game.in_chain?(entity, s.corporation) }.each do |share|
+            # for circular ownership, sell shares of corps that were in chain when it became frozen
+            # circular will remain set as long as corp is frozen
+            entity.corporate_shares.select { |s| @game.in_cicular_chain?(entity, s.corporation) }.each do |share|
               @game.sell_shares_and_change_price(share.to_bundle, allow_president_change: true)
             end
             @game.update_frozen!

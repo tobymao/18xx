@@ -5,15 +5,17 @@ require_relative 'base'
 module Engine
   module Action
     class BuyShares < Base
-      attr_reader :entity, :bundle, :swap, :purchase_for, :borrow_from
+      attr_reader :entity, :bundle, :swap, :purchase_for, :borrow_from, :total_price
 
-      def initialize(entity, shares:, share_price: nil, percent: nil, swap: nil, purchase_for: nil, borrow_from: nil)
+      def initialize(entity, shares:, share_price: nil, percent: nil, swap: nil, purchase_for: nil,
+                     borrow_from: nil, total_price: nil)
         super(entity)
         @bundle = ShareBundle.new(Array(shares), percent)
         @bundle.share_price = share_price
         @swap = swap
         @purchase_for = purchase_for
         @borrow_from = borrow_from
+        @total_price = total_price
       end
 
       def self.h_to_args(h, game)
@@ -24,6 +26,7 @@ module Engine
           swap: game.share_by_id(h['swap']),
           purchase_for: game.get(h['purchase_for_type'], h['purchase_for']),
           borrow_from: game.get(h['borrow_from_type'], h['borrow_from']),
+          total_price: h['total_price'],
         }
       end
 
@@ -37,6 +40,7 @@ module Engine
           'purchase_for' => @purchase_for&.id,
           'borrow_from_type' => type_s(@borrow_from),
           'borrow_from' => @borrow_from&.id,
+          'total_price' => @total_price,
         }
       end
     end

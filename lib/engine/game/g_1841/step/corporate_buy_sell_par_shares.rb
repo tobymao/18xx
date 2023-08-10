@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'buy_sell_par_shares'
+require_relative 'base_buy_sell_par_shares'
 
 module Engine
   module Game
     module G1841
       module Step
-        class CorporateBuySellParShares < BuySellParShares
+        class CorporateBuySellParShares < BaseBuySellParShares
           def actions(entity)
             return [] if @game.done_this_round[entity]
 
@@ -84,6 +84,19 @@ module Engine
               (@game.player_controlled_percentage(player, corp) > corp.max_ownership_percent ||
                (!entity.shares_of(corp).empty? && @game.in_chain?(entity, corp)))
             end
+          end
+
+          def process_sell_shares(action)
+            super
+            @round.recalculate_order
+          end
+
+          def purchaseable_companies(_entity)
+            []
+          end
+
+          def buyable_bank_owned_companies(_entity)
+            []
           end
         end
       end

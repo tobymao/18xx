@@ -16,6 +16,10 @@ module Engine
             ACTIONS
           end
 
+          def active_entities
+            [pending_entity]
+          end
+
           def can_pass?
             @round.pending_tokens.one? && @game.major?(token.corporation)
           end

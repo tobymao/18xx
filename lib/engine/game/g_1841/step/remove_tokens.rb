@@ -51,6 +51,10 @@ module Engine
             pending_removal[:max]
           end
 
+          def pending_oo
+            pending_removal[:oo] || false
+          end
+
           def pending_removal
             @round.pending_removals&.first || {}
           end
@@ -69,8 +73,11 @@ module Engine
             super
             return unless active?
 
+            oo = pending_oo
             @round.pending_removals.shift
-            @game.finish_merge
+            return @game.merger_tokens_finish if oo
+
+            @game.merger_finish
           end
 
           def process_remove_token(action)
@@ -93,8 +100,11 @@ module Engine
 
             return if count < pending_max
 
+            oo = pending_oo
             @round.pending_removals.shift
-            @game.finish_merge
+            return @game.merger_tokens_finish if oo
+
+            @game.merger_finish
           end
 
           def available_hex(entity, hex)

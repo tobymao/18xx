@@ -56,7 +56,7 @@ module Engine
           def buyable_trains(entity)
             return super unless @emr_triggered
 
-            [@game.depot.min_depot_train(entity)]
+            [@game.depot.min_depot_train]
           end
 
           def train_vatiant_helper(train, _entity)
@@ -74,10 +74,18 @@ module Engine
             entity = action.entity
             price = action.price
             player = entity.player
-            raise GameError, 'Cannot purchase without selling shares' unless issuable_shares(entity).empty?
 
             if @emr_triggered && action.train.owner != @game.depot
               raise GameError, 'Must purchase first train from depot after EMR'
+            end
+
+            if entity.cash < price && !must_buy_train?(entity)
+              raise GameError, "#{entity.name} has #{@game.format_currency(entity.cash)} and cannot afford train"
+            end
+
+            # need to check this before sweeping owner's (or owner's owner's...) cash into corp
+            if entity.cash < price && !issuable_shares(entity).empty?
+              raise GameError, "#{entity.name} must sell shares before buying this train"
             end
 
             if entity.cash < price
@@ -153,6 +161,12 @@ module Engine
 
           def issuing_corporation(corp)
             issuable_shares(corp).first&.owner || corp
+          end
+
+          def sellable_bundles(player, corp)
+            bundles = @game.sellable_bundles(player, corp)
+            bundles.each { |b| b.share_price = corp.share_price.price / 2.0 }
+            bundles
           end
         end
       end

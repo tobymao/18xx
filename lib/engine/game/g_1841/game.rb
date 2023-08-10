@@ -38,9 +38,22 @@ module Engine
                         yellow: '#ffdea8')
 
         CURRENCY_FORMAT_STR = 'L.%s'
-        BANK_CASH = 14_400
+
+        BANK_CASH_NORMAL = 14_400
+        BANK_CASH_LITE = 10_900
+        def init_bank
+          cash = lite? ? BANK_CASH_LITE : BANK_CASH_NORMAL
+          Bank.new(cash, log: @log)
+        end
+
+        STARTING_CASH_NORMAL = { 3 => 1120, 4 => 840, 5 => 672, 6 => 560, 7 => 480, 8 => 420 }.freeze
+        STARTING_CASH_LITE = { 3 => 840, 4 => 630, 5 => 504, 6 => 420 }.freeze
+        def init_starting_cash(players, bank)
+          cash = (lite? ? STARTING_CASH_LITE : STARTING_CASH_NORMAL)[players.size]
+          players.each { |player| bank.spend(cash, player) }
+        end
+
         CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11, 7 => 10, 8 => 9 }.freeze
-        STARTING_CASH = { 3 => 1120, 4 => 840, 5 => 672, 7 => 480, 8 => 420 }.freeze
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_share
@@ -50,7 +63,7 @@ module Engine
         MIN_BID_INCREMENT = 5
 
         MARKET = [
-          %w[72 83 95 107 120 133 147 164 182 202 224m 248 276 306 340x 377n 419 465 516],
+          %w[72 83 95 107 120 133 147 164 182 202 224m 248 276 306 340x 377n 419 465 516e],
           %w[63 72 82 93 104 116 128 142 158 175 195m 216x 240 266 295 328n 365 404 449],
           %w[57 66 75 84 95 105 117 129 144p 159 177m 196 218 242 269 298n 331 367 408],
           %w[54 62 71 80 90 100p 111 123 137 152 169m 187 208 230 256 284n],
@@ -137,73 +150,129 @@ module Engine
                                 'All concessions are discarded from the game'],
           'phase4_regions' => ['Phase4 Regions',
                                'Conservative Zone border is eliminated; The Austrian possesions are limited to Veneto'],
+          'ferd_secession' => ['Ferdinandea Secession',
+                               'The IRSFF is broken into two corporations'],
+          'tuscan_merge' => ['Tuscan Merge',
+                             'Corporations in Tuscany are merged together'],
           'phase5_regions' => ['Phase5 Regions',
                                'Austrian possessions are eliminated; 1859-1866 Austrian border is deleted'],
         }.freeze
 
-        TRAINS = [
-          {
-            name: '2',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 2, 'visit' => 2 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 100,
-            rusts_on: '4',
-            num: 8,
-          },
-          {
-            name: '3',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 3, 'visit' => 3 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 200,
-            rusts_on: '5',
-            num: 6,
-          },
-          {
-            name: '4',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 4, 'visit' => 4 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 350,
-            rusts_on: '7',
-            num: 4,
-            events: [{ 'type' => 'close_companies' }, { 'type' => 'phase4_regions' }],
-          },
-          {
-            name: '5',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 5, 'visit' => 5 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 550,
-            num: 2,
-            events: [{ 'type' => 'phase5_regions' }],
-          },
-          {
-            name: '6',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 6, 'visit' => 6 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 800,
-            num: 2,
-          },
-          {
-            name: '7',
-            distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 7, 'visit' => 7 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 110,
-            num: 2,
-          },
-          {
-            name: '8',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
-                       { 'nodes' => %w[town pass], 'pay' => 99, 'visit' => 99 }],
-            price: 1450,
-            num: 7,
-          },
-        ].freeze
+        def game_trains
+          trains = [
+            {
+              name: '2',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 2, 'visit' => 2 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 100,
+              rusts_on: '4',
+              num: lite? ? 6 : 8,
+            },
+            {
+              name: '3',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 3, 'visit' => 3 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 200,
+              rusts_on: '5',
+              num: lite? ? 5 : 6,
+            },
+          ]
+
+          trains << if lite?
+                      {
+                        name: '4',
+                        distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 4, 'visit' => 4 },
+                                   { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                        price: 350,
+                        rusts_on: '7',
+                        num: 3,
+                        events: [{ 'type' => 'close_companies' },
+                                 { 'type' => 'phase4_regions' },
+                                 { 'type' => 'ferd_secession' }],
+                      }
+                    else
+                      {
+                        name: '4',
+                        distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 4, 'visit' => 4 },
+                                   { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                        price: 350,
+                        rusts_on: '7',
+                        num: 4,
+                        events: [{ 'type' => 'close_companies' },
+                                 { 'type' => 'phase4_regions' },
+                                 { 'type' => 'ferd_secession' },
+                                 { 'type' => 'tuscan_merge' }],
+                      }
+                    end
+
+          trains.concat([
+            {
+              name: '5',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 5, 'visit' => 5 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 550,
+              rusts_on: '8',
+              num: lite? ? 2 : 3,
+              events: [{ 'type' => 'phase5_regions' }],
+            },
+            {
+              name: '6',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 6, 'visit' => 6 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 800,
+              num: 2,
+            },
+            {
+              name: '7',
+              distance: [{ 'nodes' => %w[city offboard pass], 'pay' => 7, 'visit' => 7 },
+                         { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+              price: 1100,
+              num: 2,
+            },
+            {
+              name: '8',
+              distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
+                         { 'nodes' => %w[town pass], 'pay' => 99, 'visit' => 99 }],
+              price: 1450,
+              num: 7,
+            },
+          ])
+
+          trains
+        end
 
         HOME_TOKEN_TIMING = nil
         SELL_BUY_ORDER = :sell_buy
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
-        GAME_END_CHECK = { bankrupt: :immediate, stock_market: :immediate, bank: :current_or }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :current_or, stock_market: :current_turn, custom: :current_turn }.freeze
+
+        GAME_END_REASONS_TEXT = {
+          bankrupt: 'player is bankrupt', # this is prefixed in the UI
+          bank: 'The bank runs out of money',
+          stock_market: 'Corporation enters end game trigger on stock market',
+          final_train: 'The final train is purchased',
+          final_phase: 'The final phase is entered',
+          custom: 'All offboards are connected to a city',
+        }.freeze
+
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
+          bank: 'Bank Broken',
+          bankrupt: 'Bankruptcy',
+          stock_market: 'Company hit max stock value',
+          final_train: 'Final train was purchased',
+          final_phase: 'Final phase was reached',
+          custom: 'All offboards are connected to a city',
+        }.freeze
+        GAME_END_REASONS_TIMING_TEXT = {
+          immediate: 'Immediately',
+          current_round: 'End of the current round',
+          current_or: 'Next end of an OR',
+          full_or: 'Next end of a complete OR set',
+          one_more_full_or_set: 'End of the next complete OR set after the current one',
+          current_turn: 'End of an OR turn or end of a SR',
+        }.freeze
 
         # Per railhead/base (needs special code in track step)
         TILE_LAYS = [
@@ -224,11 +293,13 @@ module Engine
           '8' => :black,
         }.freeze
 
+        BUY_SHARE_FROM_OTHER_PLAYER = true
         CERT_LIMIT_INCLUDES_PRIVATES = false
         MAX_CORPORATE_CERTS = 5
         BANKRUPTCY_LOAN = 500
         XFORM_REQ_TOKEN_COST = 50
         XFORM_OPT_TOKEN_COST = 100
+        SECESSION_OPT_TOKEN_COST = 50
 
         def init_graph
           Graph.new(self, check_tokens: true)
@@ -268,8 +339,15 @@ module Engine
           @done_this_round = {}
 
           @transform_state = nil
+          @secession_state = nil
+          @tuscan_merge_state = nil
 
           @loans = Hash.new { |h, k| h[k] = 0 }
+          init_offboard_list
+        end
+
+        def version
+          @version ||= @optional_rules&.include?(:version_1) ? 1 : 2
         end
 
         def select_track_graph
@@ -311,6 +389,80 @@ module Engine
           @log << 'Border change: Conservative Zone border is eliminated; The Austrian possesions are limited to Veneto'
         end
 
+        def event_ferd_secession!
+          irsff = corporation_by_id('IRSFF')
+          sb = corporation_by_id(version == 2 ? 'SB' : 'SFV')
+          sfl = corporation_by_id('SFL')
+
+          unless irsff.floated?
+            @log << '-- Event: The Ferdinandea Secession will not occur - IRSFF is not active --'
+            sb.close!
+            sfl.close!
+            return
+          end
+
+          # see if Milano and Venezia are connected by any legal route (i.e. for any corporation)
+          milano = irsff.tokens.find { |t| t.city&.hex&.id == 'F8' }&.city
+          venezia = irsff.tokens.find { |t| t.city&.hex&.id == 'F16' }&.city
+
+          # any? vs. find ???
+          connected = corporations.find do |corp|
+            corp.tokens.select(&:used).map(&:city).find do |city|
+              nodes = @graph.connected_nodes_by_token(corp, city)
+              nodes.include?(milano) && nodes.include?(venezia)
+            end
+          end
+          if connected
+            @log << '-- Event: The Ferdinandea Secession will not occur - Milano and Venezia are connected --'
+            sb.close!
+            sfl.close!
+            return
+          end
+          @log << '-- Event: The Ferdinandea Secession begins - Milano and Venezia are not connected --'
+          secession_start(irsff, sb, sfl)
+        end
+
+        def find_holding_corp
+          @corporations.find { |c| major?(c) && !historical?(c) && !c.closed? && !c.floated? } ||
+            corporation_by_id('Holding')
+        end
+
+        def event_tuscan_merge!
+          if @secession_state
+            @tuscan_merge_state = :deferred
+            return
+          end
+
+          sflp = corporation_by_id('SFLP')
+          ssfl = corporation_by_id('SSFL')
+          sfli = corporation_by_id('SFLi')
+          holding = find_holding_corp
+
+          count = 0
+          count += 1 if sflp.floated?
+          count += 1 if sfma.floated?
+          count += 1 if ssfl.floated?
+
+          if count < 2
+            @log << '-- Event: The Tuscan Merge will not occur - 2 or more Tuscan corporations are not active --'
+            sfli.close!
+            holding.close!
+            return
+          end
+
+          sflp_idx = @round.entities.find_index(sflp)
+          sfma_idx = @round.entities.find_index(sfma)
+          ssfl_idx = @round.entities.find_index(ssfl)
+
+          will_run = true
+          will_run = false if sflp_idx && sflp_idx <= @round.entity_index
+          will_run = false if sfma_idx && sfma_idx <= @round.entity_index
+          will_run = false if ssfl_idx && ssfl_idx <= @round.entity_index
+
+          @log << '-- Event: The Tuscan Merge begins --'
+          tuscan_merge_start(sflp, sfma, ssfl, sfli, holding, will_run)
+        end
+
         def event_phase5_regions!
           modify_regions(4, false)
           modify_regions(5, true)
@@ -319,7 +471,7 @@ module Engine
         end
 
         def modify_regions(phase, add)
-          REGIONS_BY_PHASE[phase].each do |coord, edges|
+          regions_by_phase[phase].each do |coord, edges|
             hex = hex_by_id(coord)
             edges.each do |edge|
               if add
@@ -405,9 +557,9 @@ module Engine
 
         def reserved_cities
           if @phase.name.to_i < 4
-            HISTORICAL_CITIES
+            HISTORICAL_CITIES + [LUGANO]
           else
-            []
+            [LUGANO]
           end
         end
 
@@ -431,10 +583,10 @@ module Engine
             else
               major_pool = all_token_cities
             end
-            (major_pool - reserved_cities - austrian_cities).map { |h| hex_by_id(h) }
+            (major_pool - reserved_cities - austrian_cities).map { |h| hex_by_id(h) }.compact
           else
             # minor non-historical
-            minor_pool = (all_token_cities - reserved_cities - austrian_cities - MAJOR_CITIES).map { |h| hex_by_id(h) }
+            minor_pool = (all_token_cities - reserved_cities - austrian_cities - MAJOR_CITIES).map { |h| hex_by_id(h) }.compact
             minor_pool.reject { |h| h.tile.cities.any?(&:tokened?) }
           end
         end
@@ -588,9 +740,15 @@ module Engine
         end
 
         def new_auction_round
-          Engine::Round::Auction.new(self, [
-            G1841::Step::ConcessionAuction,
-          ])
+          if version == 1
+            Engine::Round::Auction.new(self, [
+              G1841::Step::BlindAuction,
+            ])
+          else
+            Engine::Round::Auction.new(self, [
+              G1841::Step::ConcessionAuction,
+            ])
+          end
         end
 
         def auction_companies
@@ -601,6 +759,8 @@ module Engine
         # - if tied, lowest numbered concession
         # - if tied, original order
         def init_reorder_players
+          return if version == 1 # already done
+
           current_order = @players.dup
           lowest_concession = {}
           @players.each do |p|
@@ -635,17 +795,18 @@ module Engine
           G1841::Round::Operating.new(self, [
             G1841::Step::Bankrupt,
             G1841::Step::Track,
-            Engine::Step::Token,
+            G1841::Step::Destinate,
+            G1841::Step::Token,
             Engine::Step::Route,
             G1841::Step::Dividend,
             G1841::Step::BuyToken,
             Engine::Step::DiscardTrain,
             G1841::Step::RemoveTokens,
             G1841::Step::ChooseOption,
+            G1841::Step::BuyNewTokens,
             G1841::Step::BuyTrain,
             G1841::Step::HomeToken,
             G1841::Step::TokenEmergencyMoney,
-            G1841::Step::BuyNewTokens,
             G1841::Step::CorporateBuySellParShares,
             G1841::Step::Merge,
             G1841::Step::Transform,
@@ -680,6 +841,10 @@ module Engine
           @bayard ||= company_by_id('Bayard')
         end
 
+        def sfma
+          @sfma ||= corporation_by_id('SFMA')
+        end
+
         def return_concessions!
           companies.each do |c|
             next if c == bayard
@@ -689,6 +854,7 @@ module Engine
             player = c.owner
             player.companies.delete(c)
             c.owner = bank
+            bank.companies << c
             @log << "#{c.name} (#{c.sym}) has not been used by #{player.name} and is returned to the bank"
           end
         end
@@ -783,6 +949,14 @@ module Engine
           ([entity1] + chain_of_control(entity1)).include?(entity2)
         end
 
+        # entity2 was in chain of control of entity1 when it became frozen, or
+        # entity2 is currently in chain of control of entity1
+        def in_circular_chain?(entity1, entity2)
+          return false unless entity1&.corporation?
+
+          @corporation_info[entity1][:circular_chain]&.include?(entity2) || in_chain?(entity1, entity2)
+        end
+
         def player_controlled_percentage(buyer, corporation)
           human = controller(buyer)
           total_percent = human.common_percent_of(corporation)
@@ -824,16 +998,25 @@ module Engine
             @log << "#{corp.name} is no longer frozen" if frozen?(corp) && !frozen
             @log << "#{corp.name} is now frozen" if !frozen?(corp) && frozen
             @corporation_info[corp][:frozen] = frozen
-            @corporation_info[corp][:circular] = circular
+            if frozen
+              @corporation_info[corp][:circular] = circular || circular?(corp) # sticky until unfrozen
+              @corporation_info[corp][:circular_chain] = chain_of_control(corp) if circular
+            else
+              @corporation_info[corp][:circular] = false
+              @corporation_info[corp][:circular_chain] = []
+            end
           end
         end
 
         # A corp is not considered to have operated until the end of it's first OR
         def done_operating!(entity)
+          end_timing = game_end_check&.last
+          end_game! if end_timing == :current_turn
+
           return unless entity&.corporation?
           return if @done_this_round[entity]
 
-          @log << "#{entity.name} has finished operating for the first time" unless operated?(entity)
+          @log << "#{entity.name} has finished operating for the first time" if !operated?(entity) && !@finished
 
           @corporation_info[entity][:operated] = true
         end
@@ -885,18 +1068,31 @@ module Engine
         end
 
         def status_str(corp)
-          return unless frozen?(corp)
+          str = ''
+          str = 'Minor ' unless major?(corp)
+          if historical?(corp)
+            company = @companies.find { |c| !c.closed? && c.sym == corp.name }
+            str += if company&.owner&.player?
+                     "Concession: #{company.owner.name} "
+                   else
+                     'Historical '
+                   end
+          end
 
-          'FROZEN'
+          str += 'FROZEN' if frozen?(corp)
+          str.strip
         end
 
         def company_header(_company)
           'CONCESSION'
         end
 
-        # FIXME
         def allow_player2player_sales?
-          false
+          @player2player ||= @optional_rules&.include?(:p2p_purchases)
+        end
+
+        def lite?
+          @lite ||= @optional_rules&.include?(:lite)
         end
 
         def event_close_companies!
@@ -977,12 +1173,12 @@ module Engine
         end
 
         def mergeable?(corp)
-          (!historical?(corp) || (@phase.name.to_i >= 4)) && operated?(corp)
+          (!historical?(corp) || (@phase.name.to_i >= 4)) && operated?(corp) && !frozen?(corp) && !corp.closed?
         end
 
         # also for transformations
         def merge_target?(corp)
-          !historical?(corp) && !corp.ipoed && corp.type == :major
+          !historical?(corp) && !corp.ipoed && corp.type == :major && !corp.closed?
         end
 
         def find_rightmost_share_price(value)
@@ -1006,9 +1202,11 @@ module Engine
         end
 
         def merger_values(corpa, corpb)
-          if corpa.type == :major && corpa.share_price.price > 250 && corpa.share_price.price > 250
+          raise GameError, 'Both corporations must be the same type' unless corpa.type == corpb.type
+
+          if corpa.type == :major && corpa.share_price.price > 250 && corpb.share_price.price > 250
             #  both majors are above 250
-            return [corpa.share_price, corpb.share_price].sort if corpa.share_price.price != corpb.share_price.price
+            return [corpa.share_price, corpb.share_price].sort_by(&:price) if corpa.share_price.price != corpb.share_price.price
 
             return [corpa.share_price]
           end
@@ -1033,8 +1231,15 @@ module Engine
           @merger_corpb = corpb
           @merger_target = target
           @merger_tuscan = tuscan_merge
-          @merger_decider = corpa.player
-          @log << "#{corpa.name} and #{corpb.name} will merge and form #{target.name}"
+          @merger_decider = tuscan_merge ? @tuscan_merge_decider : corpa.player
+          @merger_title = tuscan_merge ? 'Tuscan Merge - ' : ''
+          @merger_title += "Merging #{corpa.name} with #{corpb.name} to form #{target.name}: "
+
+          @log << if tuscan_merge
+                    "-- Tuscan Merge: #{corpa.name} and #{corpb.name} will merge and form #{target.name} --"
+                  else
+                    "#{corpa.name} and #{corpb.name} will merge and form #{target.name}"
+                  end
           share_prices = merger_values(corpa, corpb)
           if share_prices.one?
             merger_exchange_start(share_prices.first)
@@ -1042,7 +1247,8 @@ module Engine
           end
           # player must choose share price
           @round.pending_options << {
-            entity: corpa,
+            title: @merger_title,
+            entity: @merger_tuscan ? @tuscan_merge_decider : corpa,
             type: :price,
             share_prices: share_prices,
           }
@@ -1056,14 +1262,13 @@ module Engine
         #
         def move_assets(from, other, target)
           if other
-            other_shares = from.shares_of(other)
+            other_shares = from.shares_of(other).dup
             @log << "Removing #{other_shares.size} share(s) of #{other.name} in #{from.name} treasury" unless other_shares.empty?
             other_shares.each do |cross_share|
               simple_transfer_share(cross_share, other)
             end
           end
 
-          old_circular = circular_corporations
           shares = from.shares_by_corporation
           shares.keys.each do |corp|
             next if corp == from
@@ -1072,10 +1277,6 @@ module Engine
             @log << "Moving #{shares[corp].size} share(s) of #{corp.name} from #{from.name} to #{target.name} treasury"
             bundle = ShareBundle.new(Array(shares[corp]))
             @share_pool.transfer_shares(bundle, target, allow_president_change: true)
-            update_frozen!
-            next if @merger_tuscan || circular_corporations.none? { |c| !old_circular.include?(c) }
-
-            raise GameError, 'Illegal circular ownership chain is created by this merger. Undo required.'
           end
 
           # cash
@@ -1089,6 +1290,7 @@ module Engine
           from.trains.each { |t| t.owner = target }
           target.trains.concat(from.trains)
           from.trains.clear
+          @crowded_corps = nil
         end
 
         def total_percent(entity, corpa, corpb)
@@ -1099,7 +1301,8 @@ module Engine
         # of merging corp then to any controlled corps for that person, then to the next person, and so on
         def merger_share_holder_list(corpa, corpb, percent)
           sh_list = []
-          @players.rotate(@players.index(corpa.player)).each do |p|
+          priority = @merger_tuscan ? @tuscan_merge_decider : corpa.player
+          @players.rotate(@players.index(priority)).each do |p|
             sh_list << p if total_percent(p, corpa, corpb) >= percent
             controlled_corporations(p).each do |c|
               next if c == corpa || c == corpb
@@ -1126,13 +1329,17 @@ module Engine
 
           # start the target
           @merger_target.ipoed = true
+          @merger_target.floated = true
           @merger_target.share_price = share_price
+
+          @merger_share_holders = merger_share_holder_list(@merger_corpa, @merger_corpb, 10)
+
+          @merger_sh_list = @merger_share_holders.select { |sh| total_percent(sh, @merger_corpa, @merger_corpb) >= 20 }
 
           # move assets (except for tokens) to the target
           move_assets(@merger_corpa, @merger_corpb, @merger_target)
           move_assets(@merger_corpb, @merger_corpa, @merger_target)
 
-          @merger_sh_list = merger_share_holder_list(@merger_corpa, @merger_corpb, 20)
           if @merger_corpa.type == :major
             @merger_state = :exchange_pass1
             merger_next_exchange
@@ -1166,11 +1373,13 @@ module Engine
             if tp >= 40 || !pres_share || !entity.player? || !afford_upgrade_to_pres?(entity, tp, @merger_target)
               merger_do_exchange(:no)
             else
-              # ask to see if they want to upgrade to president's share
+              # ask to see if the player wants to upgrade to president's share
               @round.pending_options << {
+                title: @merger_title,
                 entity: entity,
                 type: :upgrade,
                 percent: tp,
+                old_shares: (entity.shares_of(@merger_corpa) + entity.shares_of(@merger_corpb)).sort_by(&:percent).reverse,
                 target: @merger_target,
                 choices: %i[pres no],
               }
@@ -1196,9 +1405,11 @@ module Engine
             else
               # ask to see if they want to buy into a pres share or full share
               @round.pending_options << {
+                title: @merger_title,
                 entity: entity,
                 type: :upgrade,
                 percent: tp,
+                old_shares: (entity.shares_of(@merger_corpa) + entity.shares_of(@merger_corpb)).sort_by(&:percent).reverse,
                 target: @merger_target,
                 choices: options,
               }
@@ -1307,15 +1518,15 @@ module Engine
             # start 2nd pass of exchanges
             #
             @merger_state = :exchange_pass2
-            @merger_sh_list = merger_share_holder_list(@merger_corpa, @merger_corpb, 10)
+            @merger_sh_list = @merger_share_holders.select { |sh| total_percent(sh, @merger_corpa, @merger_corpb) >= 10 }
             if !@merger_sh_list.empty?
               merger_next_exchange
             else
-              merger_tokens
+              merger_tokens_start
             end
           else
             # move on
-            merger_tokens
+            merger_tokens_start
           end
         end
 
@@ -1348,10 +1559,10 @@ module Engine
             end
           end
 
-          merger_tokens
+          merger_tokens_start
         end
 
-        def merger_tokens
+        def merger_tokens_start
           # first check to see if president share was exchanged
           pres_share = @merger_target.shares_of(@merger_target).find(&:president)
           if pres_share
@@ -1364,7 +1575,8 @@ module Engine
             pool_shares.each do |s|
               @share_pool.transfer_shares(s.to_bundle, entity, allow_president_change: true)
             end
-            @log << "Moving #{@merger_target.name} president's share to Market from IPO"
+            @log << "Moving #{@merger_target.name} president's share to IPO to Market"
+            @share_pool.transfer_shares(pres_share.to_bundle, @share_pool, allow_president_change: true)
             update_frozen!
           end
 
@@ -1376,36 +1588,86 @@ module Engine
 
           @merger_state = :select_tokens
           # delete duplicate tokens between corporations
-          dup_token_cnt = 0
+          @merger_dup_tokens = 0
           @merger_corpb.tokens.select(&:used).each do |t|
             next unless t.city.tokened_by?(@merger_corpa)
 
             @log << "Removing duplicate token in hex #{t.city.hex.id}"
-            dup_token_cnt += 1
+            @merger_dup_tokens += 1
             t.remove!
           end
 
+          # Need to deal with the yellow Firenze tile - the only OO tile in the game
+          # Ask which to remove
+          oo_hex = nil
+          @merger_corpb.tokens.select(&:used).each do |t|
+            if t.city.tile.cities.any? { |city| city.tokened_by?(@merger_corpa) }
+              oo_hex = t.city.hex
+              break
+            end
+          end
+          return merger_tokens_finish unless oo_hex
+
+          @log << "#{@merger_corpa.name} and #{@merger_corpb.name} both have tokens in #{oo_hex.id}. Must remove one."
+          @merger_dup_tokens += 1
+          @round.pending_removals << {
+            entity: @merger_decider,
+            hexes: [oo_hex],
+            corporations: [@merger_corpa, @merger_corpb],
+            min: 1,
+            max: 1,
+            count: 0,
+            oo: true,
+          }
+          @round.clear_cache!
+        end
+
+        def merger_tokens_finish
+          @merger_keep_hexes = []
+          if @merger_tuscan && @tuscan_merge_ssfl
+            # Tuscan Merge: first merge (of minors)
+            # - just replace tokens and bring total to four
+            @merger_token_cnt = 4
+            return merger_finish
+          end
+
           hexes = (@merger_corpa.tokens.select(&:used) + @merger_corpb.tokens.select(&:used)).map { |t| t.city.hex }
-
-          total_token_cnt = @merger_corpa.tokens.size + @merger_corpb.tokens.size - dup_token_cnt
-          @merger_token_cnt = [total_token_cnt, 5].min
           map_token_cnt = @merger_corpa.tokens.count(&:used) + @merger_corpb.tokens.count(&:used)
-          unplaced_token_cnt = total_token_cnt - map_token_cnt
 
-          max_unplaced = [unplaced_token_cnt, @merger_token_cnt - 1].min
-          min_unplaced = [@merger_token_cnt - map_token_cnt, 0].max
+          # Tuscan Merge: second or only merge - don't allow removal of Pisa or Firenze
+          #                                    - always get 5 tokens
+          #                                    - different rules for keeping tokens than for normal mergers
+          if @merger_tuscan
+            keep_hexes = hexes.select { |hex| TUSCAN_TOKEN_HEXES.include?(hex.id) }
+            hexes -= keep_hexes
+            kept = keep_hexes.size
+            @merger_token_cnt = 5
 
-          max_placed = @merger_token_cnt - min_unplaced
-          min_placed = @merger_token_cnt - max_unplaced
+            map_token_cnt -= kept
+            max_to_remove = map_token_cnt
+            min_to_remove = [map_token_cnt - (5 - kept), 0].max
+          else
+            total_token_cnt = @merger_corpa.tokens.size + @merger_corpb.tokens.size - @merger_dup_tokens
+            @merger_token_cnt = [total_token_cnt, 5].min
+            unplaced_token_cnt = total_token_cnt - map_token_cnt
 
-          min_to_remove = map_token_cnt - max_placed
-          max_to_remove = map_token_cnt - min_placed
+            max_unplaced = [unplaced_token_cnt, @merger_token_cnt - 1].min
+            min_unplaced = [@merger_token_cnt - map_token_cnt, 0].max
+
+            max_placed = @merger_token_cnt - min_unplaced
+            min_placed = @merger_token_cnt - max_unplaced
+
+            min_to_remove = map_token_cnt - max_placed
+            max_to_remove = map_token_cnt - min_placed
+          end
 
           if max_to_remove.positive?
             @log << if min_to_remove == max_to_remove
-                      "Must remove #{min_to_remove} token(s) from map"
+                      "Must remove #{min_to_remove} token(s) of #{@merger_corpa.name}"\
+                        " and/or #{@merger_corpb.name} from map"
                     else
-                      "Must remove #{min_to_remove} to #{max_to_remove} tokens from map"
+                      "Must remove #{min_to_remove} to #{max_to_remove} tokens of "\
+                        "#{@merger_corpa.name} and/or #{@merger_corpb.name} from map"
                     end
             @round.pending_removals << {
               entity: @merger_decider,
@@ -1417,7 +1679,7 @@ module Engine
             }
             @round.clear_cache!
           else
-            finish_merge
+            merger_finish
           end
         end
 
@@ -1430,7 +1692,10 @@ module Engine
           old_corp.tokens.delete(old_token)
         end
 
-        def finish_merge
+        def merger_finish
+          hexes = (@merger_corpa.tokens.select(&:used) + @merger_corpb.tokens.select(&:used)).map { |t| t.city.hex }
+          raise GameError, 'Must leave token in Pisa and/or Firenze' unless @merger_keep_hexes.all? { |h| hexes.include(h) }
+
           # create new tokens if needed
           (@merger_token_cnt - 2).times { @merger_target.tokens << Token.new(@merger_target, price: 0) } if @merger_token_cnt > 2
 
@@ -1449,6 +1714,8 @@ module Engine
           @done_this_round[@merger_target] = true
           @round.clear_cache!
           @merger_state = nil
+
+          return tuscan_merge_post_merge if @merger_tuscan
         end
 
         def restart_corporation!(corporation)
@@ -1508,9 +1775,9 @@ module Engine
           end
         end
 
-        def active_share_holder_list(corp, include_corporations: nil)
+        def active_share_holder_list(priority, corp, include_corporations: nil)
           sh_list = []
-          @players.rotate(@players.index(corp.player)).each do |p|
+          @players.rotate(@players.index(priority)).each do |p|
             sh_list << p unless p.shares_of(corp).empty?
             next unless include_corporations
 
@@ -1526,6 +1793,13 @@ module Engine
         def transform_start(corp, target, tuscan_merge: false)
           @transform_corp = corp
           @transform_target = target
+          @transform_tuscan = tuscan_merge
+
+          @log << if tuscan_merge
+                    "-- Tuscan Merger: #{corp.name} will transform to a major and form #{target.name} --"
+                  else
+                    "#{corp.name} will transform to a major and form #{target.name}"
+                  end
 
           # move everything over
           move_assets(corp, nil, target)
@@ -1538,16 +1812,17 @@ module Engine
           # open and set share price of target
           @stock_market.set_par(target, corp.share_price)
           target.ipoed = true
+          target.floated = true
 
           # convert shares
           transform_shares(corp, target)
 
           # swap in operating order
-          @round.entities[@round.entity_index] = target
+          @round.entities[@round.entities.find_index(corp)] = target
 
           # offer a share to all current shareholders
           @transform_state = :offer1
-          @share_offer_list = active_share_holder_list(target, include_corporations: true)
+          @share_offer_list = active_share_holder_list(target.player, target, include_corporations: true)
           @share_offer_corp = target
           @log << 'First round of share puchase (players and corporations)'
           share_offer_next
@@ -1570,6 +1845,7 @@ module Engine
         def share_offer_next
           return transform_2nd_offer if @share_offer_list.empty? && @transform_state == :offer1
           return transform_tokens if @share_offer_list.empty? && @transform_state == :offer2
+          return secession_post_offer if @share_offer_list.empty? && @secession_state == :offer
 
           entity = @share_offer_list.first
           unless can_buy_share?(entity, @share_offer_corp)
@@ -1578,7 +1854,14 @@ module Engine
             return share_offer_next
           end
 
+          title = if @secession_state
+                    'Ferdinandea Secession: '
+                  else
+                    "#{@tranform_tuscan ? 'Tuscan Merge - ' : ''}Transforming #{@transform_corp}: "
+                  end
+
           @round.pending_options << {
+            title: title,
             entity: entity,
             type: :share_offer,
             target: @share_offer_corp,
@@ -1604,13 +1887,19 @@ module Engine
         def transform_2nd_offer
           # offer a share to all current player shareholders
           @transform_state = :offer2
-          @share_offer_list = active_share_holder_list(@share_offer_corp, include_corporations: false)
+          @share_offer_list = active_share_holder_list(@share_offer_corp.player, @share_offer_corp, include_corporations: false)
           @log << 'Second round of share puchase (players only)'
           share_offer_next
         end
 
         def transform_tokens
           @transform_state = :tokens
+
+          if @transform_tuscan
+            # in Tuscan merger, just give target a 2nd token
+            @transform_target.tokens << Token.new(@transform_target, price: 0) if @transform_target.tokens.size < 2
+            return transform_finish
+          end
 
           current_token_cnt = @transform_target.tokens.size
           min = current_token_cnt == 1 ? 1 : 0
@@ -1632,7 +1921,7 @@ module Engine
           end
 
           @round.buy_tokens << {
-            entity: @transform_target,
+            entity: @transform_tuscan ? @tuscan_merge_decider : @transform_target,
             type: :transform,
             first_price: first_price,
             price: XFORM_OPT_TOKEN_COST,
@@ -1648,6 +1937,493 @@ module Engine
           @done_this_round[@transform_target] = true
           @round.clear_cache!
           @transform_state = nil
+
+          return tuscan_merge_post_transform if @transform_tuscan
+        end
+
+        def secession_replace_price_tokens(old, newa, newb)
+          share_price = old.share_price
+
+          newa.share_price = share_price
+          newa.par_price = share_price
+          newa.original_par_price = share_price
+
+          newb.share_price = share_price
+          newb.par_price = share_price
+          newb.original_par_price = share_price
+
+          corps = share_price.corporations
+          index = corps.index(old)
+          corps[index] = newa
+          corps.insert(index + 1, newb)
+          old.share_price = nil
+        end
+
+        def secession_replace_other_tokens(old, newa, newb)
+          newa.tokens.clear
+          newb.tokens.clear
+
+          placed, unplaced = old.tokens.partition(&:used)
+          # First replace the tokens on the map
+          placed.each do |old_token|
+            if VENETO.include?(old_token.city.hex.id)
+              next if version == 1 && newa.tokens.size > 1
+
+              # newa goes in Veneto (Austrian possesions in phase 4)
+              newa.tokens << Token.new(newa, price: 0)
+              swap_token(newa, old, old_token)
+            else
+              next if version == 1 && newb.tokens.size > 1
+
+              # newb goes in the rest
+              newb.tokens << Token.new(newb, price: 0)
+              swap_token(newb, old, old_token)
+            end
+          end
+
+          # Now the rest
+          unplaced.size.times do |i|
+            newa.tokens << Token.new(newa, price: 0) if i.even? && (version == 2 || newa.tokens.size < 2)
+            newb.tokens << Token.new(newb, price: 0) if i.odd? && (version == 2 || newb.tokens.size < 2)
+          end
+
+          # make sure they both have at least two tokens
+          newa.tokens << Token.new(newa, price: 0) if newa.tokens.size < 2
+          newb.tokens << Token.new(newb, price: 0) if newb.tokens.size < 2
+        end
+
+        def secession_move_trains(old, newa, newb)
+          trains = old.trains.sort_by(&:name).reverse
+          trains.each_with_index do |t, i|
+            if i.even?
+              t.owner = newa
+              newa.trains << t
+              @log << "#{newa.name} receives a #{t.name} train from #{old.name}"
+            else
+              t.owner = newb
+              newb.trains << t
+              @log << "#{newb.name} receives a #{t.name} train from #{old.name}"
+            end
+          end
+          old.trains.clear
+        end
+
+        def secession_move_cash(old, newa, newb)
+          cashb = (old.cash / 10).to_i
+          casha = old.cash - cashb
+          if casha.positive?
+            old.spend(casha, newa)
+            @log << "#{newa.name} receives #{format_currency(casha)} from #{old.name}"
+          end
+          return unless cashb.positive?
+
+          old.spend(cashb, newb)
+          @log << "#{newb.name} receives #{format_currency(cashb)} from #{old.name}"
+        end
+
+        def secession_move_treasury_shares(old, newa, newb)
+          tshares = old.corporate_shares.sort_by(&:price).reverse
+          tshares.each_with_index do |share, i|
+            @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true) if i.even?
+            @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true) if i.odd?
+          end
+        end
+
+        # for version 1, old = IRSFF, newa = SFV (minor), newb = SFL (minor)
+        # for version 2, old = IRSFF, newa = SB (major), newb = SFL (major)
+        def secession_start(old, newa, newb)
+          @secession_old = old
+          @secession_newa = newa
+          @secession_newb = newb
+          @secession_state = :exchange_pairs
+          @secession_decider = old.player || @round.current_entity.player # in case IRSFF is frozen
+
+          secession_replace_price_tokens(old, newa, newb)
+          newa.ipoed = true
+          newa.floated = true
+          newb.ipoed = true
+          newb.floated = true
+          @corporation_info[newa][:startable] = true
+          @corporation_info[newb][:startable] = true
+
+          secession_replace_other_tokens(old, newa, newb)
+          secession_move_trains(old, newa, newb)
+          secession_move_cash(old, newa, newb)
+          secession_move_treasury_shares(old, newa, newb)
+
+          old_owner = old.owner
+          presa = newa.shares_of(newa).find(&:president)
+          presb = newb.shares_of(newb).find(&:president)
+
+          if !@share_pool.shares_of(old).find(&:president) && old_owner
+            if old_owner.percent_of(old) >= 40
+              # old owner will get both president's certs
+              old_pres = old_owner.shares_of(@secession_old).find(&:president)
+              shares = old_owner.shares_of(@secession_old).reject(&:president)
+              simple_transfer_share(old_pres, old)
+              simple_transfer_share(shares[0], old)
+              simple_transfer_share(shares[1], old)
+              @share_pool.transfer_shares(presa.to_bundle, old_owner, allow_president_change: true)
+              @share_pool.transfer_shares(presb.to_bundle, old_owner, allow_president_change: true)
+              @log << "Transferred president shares of #{newa.name} and #{newb.name} to #{old_owner.name}"
+              secession_exchange_pairs(newb)
+            else
+              # ask decider which corp current president of IRSFF wants to be president of
+              @round.pending_options << {
+                title: 'Ferdinandea Secession: ',
+                entity: old.player ? old_owner : @secession_decider,
+                type: :pick_exchange_pres,
+                share_owner: old_owner,
+                corpa: newa,
+                corpb: newb,
+              }
+              @round.clear_cache!
+            end
+            return
+          end
+
+          # IRSFF pres cert is in share pool - move both newa and newb pres cert to share pool
+          @share_pool.transfer_shares(presa.to_bundle, @share_pool, allow_president_change: true)
+          @share_pool.transfer_shares(presa.to_bundle, @share_pool, allow_president_change: true)
+
+          # by definition, no one else has a pair of IRSFF shares, so go to single share exchange
+          secession_exchange_singles
+        end
+
+        # build a list of stockholders that own percent shares of the old company
+        # then to any controlled corps for that person, then to the next person, and so on
+        def secession_share_holder_list(owner, old, percent)
+          sh_list = []
+          @players.rotate(@players.index(owner)).each do |p|
+            sh_list << p if p.percent_of(old) >= percent
+            controlled_corporations(p).each do |c|
+              next if c == old
+
+              sh_list << c if c.percent_of(old) >= percent
+            end
+          end
+
+          # pool and frozen corps are next
+          sh_list << @share_pool if @share_pool.percent_of(old) >= percent
+
+          frozen_corporations.each do |c|
+            next if c == old
+
+            sh_list << c if c.percent_of(old) >= percent
+          end
+          sh_list
+        end
+
+        # choice = :a or :b
+        def secession_corp(choice)
+          new = choice == :a ? @secession_newa : @secession_newb
+          other = choice == :a ? @secession_newb : @secession_newa
+
+          # exchange president cert for president cert
+          old_owner = @secession_old.owner
+          old_pres = old_owner.shares_of(@secession_old).find(&:president)
+          new_pres = new.shares_of(new).find(&:president)
+          simple_transfer_share(old_pres, @secession_old)
+          @share_pool.transfer_shares(new_pres.to_bundle, old_owner, allow_president_change: true)
+          @log << "Transferred president share of #{new.name} to #{old_owner.name}"
+
+          secession_exchange_pairs(other)
+        end
+
+        # do exchanges of all pairs held by shareholders of IRSFF
+        def secession_exchange_pairs(other)
+          other_pres = other.shares_of(other).find(&:president)
+          secession_share_holder_list(@secession_decider, @secession_old, 20).each do |sh|
+            while sh.percent_of(@secession_old) > 10
+              shares = sh.shares_of(@secession_old).dup
+              simple_transfer_share(shares[0], @secession_old)
+              simple_transfer_share(shares[1], @secession_old)
+              if other_pres && sh == @share_pool
+                simple_transfer_share(other_pres, sh)
+                other.owner = sh
+                @log << "#{other.name} president share moved to share pool"
+                other_pres = nil
+              elsif other_pres
+                @share_pool.transfer_shares(other_pres.to_bundle, sh, allow_president_change: true)
+                @log << "Transferred president share of #{other.name} to #{sh.name}"
+                other_pres = nil
+              else
+                share_a = @secession_newa.shares_of(@secession_newa)[0]
+                share_b = @secession_newb.shares_of(@secession_newb)[0]
+                @share_pool.transfer_shares(share_a.to_bundle, sh, allow_president_change: true)
+                @log << "Transferred share of #{@secession_newa.name} to #{sh.name}"
+                @share_pool.transfer_shares(share_b.to_bundle, sh, allow_president_change: true)
+                @log << "Transferred share of #{@secession_newb.name} to #{sh.name}"
+              end
+            end
+          end
+          if other_pres
+            # no one had 20% -> move other pres to share pool
+            @share_pool.transfer_shares(other_pres.to_bundle, @share_pool, allow_president_change: true)
+            @log << "#{other.name} president share moved to share pool"
+          end
+
+          secession_exchange_singles
+        end
+
+        def secession_exchange_singles
+          @secession_state = :exchange_singles
+          @secession_sh_list = secession_share_holder_list(@secession_decider, @secession_old, 10)
+
+          secession_next_exchange
+        end
+
+        def secession_next_exchange
+          entity = @secession_sh_list.first
+
+          a_avail = !@secession_newa.shares_of(@secession_newa).empty?
+          b_avail = !@secession_newb.shares_of(@secession_newb).empty?
+
+          if a_avail && b_avail && entity.player
+            @round.pending_options << {
+              title: 'Ferdinandea Secession: ',
+              entity: entity,
+              type: :pick_exchange_corp,
+              share_owner: entity,
+              corpa: @secession_newa,
+              corpb: @secession_newb,
+            }
+            @round.clear_cache!
+          elsif a_avail && b_avail && entity == @share_pool
+            @round.pending_options << {
+              title: 'Ferdinandea Secession: ',
+              entity: @secession_decider,
+              type: :pick_exchange_corp,
+              share_owner: entity,
+              corpa: @secession_newa,
+              corpb: @secession_newb,
+            }
+            @round.clear_cache!
+          elsif a_avail
+            # frozen or no shares in b left
+            secession_do_exchange(:a)
+          elsif b_avail
+            # no shares in b left
+            secession_do_exchange(:b)
+          else
+            secession_offer_start
+          end
+        end
+
+        def secession_do_exchange(choice)
+          entity = @secession_sh_list.shift
+
+          old_share = entity.shares_of(@secession_old).first
+          new = choice == :a ? @secession_newa : @secession_newb
+          new_share = new.shares_of(new).first
+          simple_transfer_share(old_share, @secession_old)
+          @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
+          @log << "#{entity.name} exchanges a share of #{@secession_old.name} for a share of #{new.name}"
+
+          if @secession_sh_list.empty?
+            secession_offer_start
+          else
+            secession_next_exchange
+          end
+        end
+
+        def secession_offer_start
+          @secession_state = :offer
+          @secession_offer_corp = @secession_newa
+          @secession_offer_donea = false
+          @secession_offer_doneb = false
+          @secession_offer_first = true
+
+          secession_offer(@secession_newa)
+        end
+
+        def secession_offer(corp)
+          @share_offer_list = active_share_holder_list(corp.player || @secession_decider,
+                                                       corp, include_corporations: true)
+          @share_offer_corp = corp
+          @log << "Starting round of share puchases of #{corp.name}"
+          share_offer_next
+        end
+
+        def secession_post_offer
+          if @secession_offer_first
+            @secession_offer_corp = @secession_newb
+            @secession_offer_first = false
+            return secession_offer(@secession_newb)
+          end
+
+          return secession_tokens_start if @secession_offer_donea && @secession_offer_doneb
+
+          if @secession_offer_corp == @secession_newa
+            # just did A, now do B
+            @secession_offer_corp = @secession_newb
+            return secession_post_offer if @secession_offer_doneb
+          else
+            # just did B, now do A
+            @secession_offer_corp = @secession_newa
+            return secession_post_offer if @secession_offer_donea
+          end
+          secession_offer_again(@secession_offer_corp)
+        end
+
+        def secession_can_any_buy?(corp)
+          sh_list = active_share_holder_list(corp.player || @secession_decider, corp, include_corporations: true)
+          sh_list.any? { |sh| can_buy_share?(sh, corp) }
+        end
+
+        def secession_offer_again(corp)
+          unless secession_can_any_buy?(corp)
+            if corp == @secession_newa
+              @secession_offer_donea = true
+            else
+              @secession_offer_doneb = true
+            end
+            return secession_post_offer
+          end
+
+          @round.pending_options << {
+            title: 'Ferdinandea Secession: ',
+            entity: corp.player ? corp : @secession_decider,
+            type: :offer_again,
+            corp: corp,
+          }
+          @round.clear_cache!
+        end
+
+        def secession_offer_response(choice)
+          @log << if choice == :y
+                    "Another round of purchases for #{@secession_offer_corp.name} was approved"
+                  else
+                    "Another round of purchases for #{@secession_offer_corp.name} was declined"
+                  end
+          return secession_offer(@secession_offer_corp) if choice == :y
+
+          if @secession_offer_corp == @secession_newa
+            @secession_offer_donea = true
+          else
+            @secession_offer_doneb = true
+          end
+          secession_post_offer
+        end
+
+        def secession_tokens_start
+          return secession_finish if version == 1
+
+          @secession_state = :tokens
+          @secession_tokens_corp = @secession_newa
+          secession_tokens
+        end
+
+        def secession_tokens
+          token_cnt = @secession_tokens_corp.tokens.size
+          if token_cnt == 5 || @secession_tokens_corp.cash < SECESSION_OPT_TOKEN_COST
+            @log << "#{@secession_tokens_corp.name} cannot buy additional tokens"
+            return secession_tokens_next
+          end
+
+          max = [(@secession_tokens_corp.cash / SECESSION_OPT_TOKEN_COST).to_i, 3].min
+
+          @round.buy_tokens << {
+            entity: @secession_tokens_corp.player ? @secession_tokens_corp : @secession_decider,
+            corp: @secession_tokens_corp,
+            type: :secession,
+            first_price: SECESSION_OPT_TOKEN_COST,
+            price: SECESSION_OPT_TOKEN_COST,
+            min: 0,
+            max: max,
+          }
+          @round.clear_cache!
+        end
+
+        def secession_tokens_next
+          if @secession_tokens_corp == @secession_newa
+            @secession_tokens_corp = @secession_newb
+            return secession_tokens
+          end
+
+          secession_finish
+        end
+
+        def secession_finish
+          old_pos = @round.entities.find_index(@secession_old)
+
+          if old_pos <= @round.entity_index
+            # IRSFF already ran or triggered the phase change
+            @log << "#{@secession_newa.name} and #{@secession_newb.name} will not run this OR"
+            @done_this_round[@secession_newa] = true
+            @done_this_round[@secession_newb] = true
+          else
+            # IRSFF hasn't run
+            @log << "#{@secession_newa.name} and #{@secession_newb.name} will run this OR"
+            @done_this_round[@secession_newa] = false
+            @done_this_round[@secession_newb] = false
+            @round.entities[old_pos] = @secession_newa
+            @round.entities.insert(old_pos + 1, @secession_newb)
+          end
+          restart_corporation!(@secession_old)
+          @round.clear_cache!
+          @secession_state = nil
+          @log << '-- Ferdinandea Secession Complete --'
+          return unless @tuscan_merge_state == :deferred
+
+          @tuscan_merge_state = nil
+          event_tuscan_merge!
+        end
+
+        def best_stock_value(corps)
+          corps.compact.max_by { |c| c.share_price&.price }
+        end
+
+        def tuscan_merge_start(sflp, sfma, ssfl, sfli, holding, will_run)
+          @tuscan_merge_sfli = sfli
+          @tuscan_merge_holding = holding
+          @tuscan_merge_run = will_run
+
+          decider = best_stock_value([sflp, sfma, ssfl])
+          @tuscan_merge_decider = decider.player || @round.current_entity.player
+          @log << "#{@tuscan_merge_decider.name} will perform Tuscan Merge operations"
+          @tuscan_merge_ssfl = ssfl
+          @corporation_info[sfli][:startable] = true
+
+          if sflp.floated? && sfma.floated? && ssfl.floated?
+            # all three are open
+            merger_start(sflp, sfma, holding, tuscan_merge: true)
+          elsif !sflp.floated?
+            # sfma and ssfl are open, but not sflp
+            transform_start(sfma, holding, tuscan_merge: true)
+          elsif !sfma.floated?
+            # sflp and ssfl are open, but not sfma
+            transform_start(sflp, holding, tuscan_merge: true)
+          else
+            # sflp and sfma are open, but not ssfl
+            holding.close! # not needed
+            @tuscan_merge_ssfl = nil
+            merger_start(sflp, sfma, sfli, tuscan_merge: true)
+          end
+        end
+
+        def tuscan_merge_post_transform
+          # always merge after a tranform
+          ssfl = @tuscan_merge_ssfl
+          @tuscan_merge_ssfl = nil
+          merger_start(@tuscan_merge_holding, ssfl, @tuscan_merge_sfli, tuscan_merge: true)
+        end
+
+        def tuscan_merge_post_merge
+          return tuscan_merge_finish unless @tuscan_merge_ssfl
+
+          tuscan_merge_post_transform
+        end
+
+        def tuscan_merge_finish
+          @done_this_round[@tuscan_merge_sfli] = !@tuscan_merge_run
+          @log << "#{@tuscan_merge_sfli.name} will #{@tuscan_merge_run ? '' : 'not '} run this OR"
+          if @tuscan_merge_run
+            @round.entities << @tuscan_merge_sfli
+            @round.recalculate_order
+          end
+
+          @log << '-- Tuscan Merge complete --'
         end
 
         # sell IPO shares to make up shortfall
@@ -1824,12 +2600,138 @@ module Engine
             return
           end
 
-          @log << "#{player.name} is bankrupt and receives a #{format_currency(BANKRUPTCY_LOAN)} loan form the bank"
+          @log << "#{player.name} is bankrupt and receives a #{format_currency(BANKRUPTCY_LOAN)} loan from the bank"
+          @bank.spend(BANKRUPTCY_LOAN, player)
           @loans[player] += BANKRUPTCY_LOAN
         end
 
         def player_value(player)
           player.value - @loans[player]
+        end
+
+        # Firenze is off limits for tokens until either SFMA starts or phase 4
+        def check_token_hex(entity, hex)
+          return true if lite? || version == 1 || @phase.name.to_i >= 4 || sfma.floated? || entity == sfma
+
+          hex.id != FIRENZE
+        end
+
+        def init_offboard_list
+          @offboard_connected = {}
+          @offboard_list = []
+          @offboard_groups = Hash.new { |h, k| h[k] = [] }
+
+          @hexes.each do |hex|
+            hex.tile.nodes.each do |node|
+              next unless node.offboard?
+
+              group = node.groups.empty? ? hex.id : node.groups[0] # expect only one group per offboard
+              @offboard_groups[group] << hex
+              @offboard_list << hex
+            end
+          end
+        end
+
+        def new_offboard_connections(entity)
+          new_hexes = []
+          @selected_graph.connected_nodes(entity).keys.map(&:hex).each do |hex|
+            new_hexes << hex if @offboard_list.include?(hex) && !@offboard_connected[hex]
+          end
+          new_hexes.uniq
+        end
+
+        def make_offboard_connection(hexes)
+          hexes.each do |hex|
+            @offboard_connected[hex] = true if @offboard_list.include?(hex)
+          end
+        end
+
+        def all_offboards_connected?
+          @offboard_groups.all? { |_k, v| v.any? { |hex| @offboard_connected[hex] } }
+        end
+
+        def game_end_check
+          triggers = {
+            bankrupt: bankruptcy_limit_reached?,
+            bank: @bank.broken?,
+            stock_market: @stock_market.max_reached?,
+            final_train: @depot.empty?,
+            final_phase: @phase&.phases&.last == @phase&.current,
+            custom: custom_end_game_reached?,
+          }.select { |_, t| t }
+
+          %i[immediate current_round current_or full_or one_more_full_or_set current_turn].each do |after|
+            triggers.keys.each do |reason|
+              if game_end_check_values[reason] == after
+                @final_turn ||= @turn + 1 if after == :one_more_full_or_set
+                return [reason, after]
+              end
+            end
+          end
+
+          nil
+        end
+
+        def end_now?(after)
+          return true if after == :current_turn
+
+          super
+        end
+
+        def custom_end_game_reached?
+          all_offboards_connected?
+        end
+
+        def game_ending_description
+          reason, after = game_end_check
+          return unless after
+
+          after_text = ''
+
+          unless @finished
+            after_text = case after
+                         when :immediate
+                           ' : Game Ends immediately'
+                         when :current_round
+                           if @round.is_a?(Round::Operating)
+                             " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                           else
+                             " : Game Ends at conclusion of this round (#{turn})"
+                           end
+                         when :current_or
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         when :full_or
+                           if @round.is_a?(Round::Operating)
+                             " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
+                           else
+                             " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
+                           end
+                         when :one_more_full_or_set
+                           " : Game Ends at conclusion of #{round_end.short_name}"\
+                           " #{@final_turn}.#{final_operating_rounds}"
+                         when :current_turn
+                           if @round.is_a?(Round::Operating)
+                             ' : Game Ends at conclusion of this turn'
+                           else
+                             ' : Game Ends at conclusion of this SR' # probably never seen
+                           end
+                         end
+
+          end
+          "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
+        end
+
+        def milano_hex
+          @milano_hex = hex_by_id(MILANO)
+        end
+
+        def check_overlap(routes)
+          if milano_hex.tile.color.to_s == 'yellow' && routes.size > 1 &&
+              routes.count { |route| route.hexes.include?(milano_hex) } > 1
+            raise GameError, 'Cannot visit Yellow Milano more than once'
+          end
+
+          super
         end
       end
     end
