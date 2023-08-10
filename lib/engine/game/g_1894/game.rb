@@ -144,7 +144,7 @@ module Engine
                   {
                     name: 'Purple',
                     on: 'D',
-                    train_limit: 3,
+                    train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
                   }].freeze
