@@ -583,10 +583,10 @@ module Engine
             else
               major_pool = all_token_cities
             end
-            (major_pool - reserved_cities - austrian_cities).map { |h| hex_by_id(h) }
+            (major_pool - reserved_cities - austrian_cities).map { |h| hex_by_id(h) }.compact
           else
             # minor non-historical
-            minor_pool = (all_token_cities - reserved_cities - austrian_cities - MAJOR_CITIES).map { |h| hex_by_id(h) }
+            minor_pool = (all_token_cities - reserved_cities - austrian_cities - MAJOR_CITIES).map { |h| hex_by_id(h) }.compact
             minor_pool.reject { |h| h.tile.cities.any?(&:tokened?) }
           end
         end
