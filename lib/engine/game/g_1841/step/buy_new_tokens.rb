@@ -106,16 +106,16 @@ module Engine
             Array.new(pending_max - pending_min + 1) do |i|
               num = i + pending_min
               total = price(num)
-              next if (num > pending_min) && (total > pending_entity.cash)
+              next if (num > pending_min) && (total > pending_corp.cash)
 
-              emr = total > pending_entity.cash ? ' - EMR' : ''
+              emr = total > pending_corp.cash ? ' - EMR' : ''
 
               [num, "#{num} (#{@game.format_currency(total)}#{emr})"]
             end.compact.to_h
           end
 
           def visible_corporations
-            [pending_entity]
+            [pending_corp]
           end
 
           def round_state
