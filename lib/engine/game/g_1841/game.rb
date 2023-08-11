@@ -1824,7 +1824,7 @@ module Engine
           @transform_state = :offer1
           @share_offer_list = active_share_holder_list(target.player, target, include_corporations: true)
           @share_offer_corp = target
-          @log << 'First round of share puchase (players and corporations)'
+          @log << 'First round of share purchase (players and corporations)'
           share_offer_next
         end
 
@@ -1857,7 +1857,7 @@ module Engine
           title = if @secession_state
                     'Ferdinandea Secession: '
                   else
-                    "#{@tranform_tuscan ? 'Tuscan Merge - ' : ''}Transforming #{@transform_corp}: "
+                    "#{@transform_tuscan ? 'Tuscan Merge - ' : ''}Transforming #{@transform_corp.name}: "
                   end
 
           @round.pending_options << {
@@ -1888,7 +1888,7 @@ module Engine
           # offer a share to all current player shareholders
           @transform_state = :offer2
           @share_offer_list = active_share_holder_list(@share_offer_corp.player, @share_offer_corp, include_corporations: false)
-          @log << 'Second round of share puchase (players only)'
+          @log << 'Second round of share purchase (players only)'
           share_offer_next
         end
 
@@ -1909,7 +1909,7 @@ module Engine
           max = [max_opt_tokens + min, 5 - current_token_cnt].min
 
           if max.zero?
-            @log << "#{@tranform_target.name} cannot buy additional tokens"
+            @log << "#{@transform_target.name} cannot buy additional tokens"
             return transform_finish
           end
 
@@ -2241,7 +2241,11 @@ module Engine
           @share_offer_list = active_share_holder_list(corp.player || @secession_decider,
                                                        corp, include_corporations: true)
           @share_offer_corp = corp
-          @log << "Starting round of share puchases of #{corp.name}"
+          @log << if @share_offer_list.empty?
+                    "Skipping round of share purchases of #{corp.name}"
+                  else
+                    "Starting round of share purchases of #{corp.name}"
+                  end
           share_offer_next
         end
 
@@ -2321,7 +2325,8 @@ module Engine
             return secession_tokens_next
           end
 
-          max = [(@secession_tokens_corp.cash / SECESSION_OPT_TOKEN_COST).to_i, 3].min
+          available = 5 - token_cnt
+          max = [(@secession_tokens_corp.cash / SECESSION_OPT_TOKEN_COST).to_i, available].min
 
           @round.buy_tokens << {
             entity: @secession_tokens_corp.player ? @secession_tokens_corp : @secession_decider,
@@ -2361,6 +2366,7 @@ module Engine
             @round.entities.insert(old_pos + 1, @secession_newb)
           end
           restart_corporation!(@secession_old)
+          update_frozen!
           @round.clear_cache!
           @secession_state = nil
           @log << '-- Ferdinandea Secession Complete --'
@@ -2371,7 +2377,7 @@ module Engine
         end
 
         def best_stock_value(corps)
-          corps.compact.max_by { |c| c.share_price&.price }
+          corps.compact.select(&:floated?).max_by { |c| c.share_price.price }
         end
 
         def tuscan_merge_start(sflp, sfma, ssfl, sfli, holding, will_run)
@@ -2403,7 +2409,7 @@ module Engine
         end
 
         def tuscan_merge_post_transform
-          # always merge after a tranform
+          # always merge after a transform
           ssfl = @tuscan_merge_ssfl
           @tuscan_merge_ssfl = nil
           merger_start(@tuscan_merge_holding, ssfl, @tuscan_merge_sfli, tuscan_merge: true)
