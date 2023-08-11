@@ -1936,7 +1936,7 @@ module Engine
 
         Array(abilities(entity, :tile_lay)).each_with_object([]) do |ability, companies|
           ability.combo_entities.each do |id|
-            company = company_by_id(id)
+            next unless (company = company_by_id(id))
             next unless company.owner == entity.corporation
             next unless abilities(company, :tile_lay)
 
