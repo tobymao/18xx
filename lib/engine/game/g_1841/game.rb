@@ -307,7 +307,7 @@ module Engine
 
         # only allow president shares in market on EMR/Frozen
         def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
+          SharePool.new(self, allow_president_sale: true, no_rebundle_president_buy: true)
         end
 
         # load non-standard corporation info
@@ -2742,6 +2742,10 @@ module Engine
           end
 
           super
+        end
+
+        def can_buy_presidents_share_directly_from_market?(corporation)
+          (@phase.name.to_i >= 4) || !historical?(corporation)
         end
       end
     end
