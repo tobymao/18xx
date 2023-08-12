@@ -26,18 +26,26 @@ module View
 
         choice_buttons = choices.map do |choice, label|
           label ||= choice
-          click = lambda do
-            process_action(Engine::Action::Choose.new(
-              @game.current_entity,
-              choice: choice,
-            ))
+          process_choose = lambda do
+            choose = lambda do
+              process_action(Engine::Action::Choose.new(
+                @game.current_entity,
+                choice: choice,
+              ))
+            end
+
+            if (consenter = @game.consenter_for_choice(@game.current_entity, choice, label))
+              check_consent(@game.current_entity, consenter, choose)
+            else
+              choose.call
+            end
           end
 
           props = {
             style: {
               padding: '0.2rem 0.2rem',
             },
-            on: { click: click },
+            on: { click: process_choose },
           }
           h('button', props, label)
         end

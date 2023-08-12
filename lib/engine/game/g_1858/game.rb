@@ -344,6 +344,17 @@ module Engine
           bundle.corporation.owner
         end
 
+        # Consent for a share exchange in the private closure round is needed
+        # if the corporation whose share is being taken is not run by the same
+        # player as the private railway company being exchanged, and the share
+        # is from the corporation's treasury.
+        def consenter_for_choice(minor, choice, _label)
+          return if choice['from'] == 'market'
+
+          corporation = @corporations.find { |c| c.id == choice['corporation'] }
+          corporation.owner unless corporation.owner == minor.owner
+        end
+
         def tile_lays(entity)
           entity.corporation? ? TILE_LAYS : MINOR_TILE_LAYS
         end
