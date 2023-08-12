@@ -10,11 +10,12 @@ module Engine
     include Entity
     include ShareHolder
 
-    def initialize(game, allow_president_sale: false)
+    def initialize(game, allow_president_sale: false, no_rebundle_president_buy: false)
       @game = game
       @bank = game.bank
       @log = game.log
       @allow_president_sale = allow_president_sale
+      @no_rebundle_president_buy = no_rebundle_president_buy
     end
 
     def name
@@ -32,7 +33,7 @@ module Engine
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
                    allow_president_change: true, silent: nil, borrow_from: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
-      if @allow_president_sale && bundle.presidents_share && bundle.owner == self
+      if @allow_president_sale && !@no_rebundle_president_buy && bundle.presidents_share && bundle.owner == self
         bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
       end
 

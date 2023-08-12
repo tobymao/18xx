@@ -1120,7 +1120,7 @@ module Engine
         end
       end
 
-      def can_buy_presidents_share_directly_from_market?
+      def can_buy_presidents_share_directly_from_market?(_corporation)
         false
       end
 
