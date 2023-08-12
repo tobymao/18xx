@@ -2170,7 +2170,11 @@ module Engine
           @secession_state = :exchange_singles
           @secession_sh_list = secession_share_holder_list(@secession_decider, @secession_old, 10)
 
-          secession_next_exchange
+          if @secession_sh_list.empty?
+            secession_offer_start
+          else
+            secession_next_exchange
+          end
         end
 
         def secession_next_exchange
