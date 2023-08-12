@@ -15,6 +15,8 @@ module Engine
         GAME_LOCATION = 'Iberia'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://docs.google.com/viewer?a=v&pid=sites&srcid=YWxsLWFib2FyZGdhbWVzLmNvbXxhYWdsbGN8Z3g6NGJmNDUwZjAyOTYwZDJhMg'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1858'
+        GAME_IMPLEMENTER = 'Oliver Burnett-Hall'
 
         PLAYER_RANGE = [2, 6].freeze
 
@@ -35,12 +37,7 @@ module Engine
           },
         ].freeze
 
-        def self.check_options(options, _min_players, _max_players)
-          optional_rules = (options || []).map(&:to_sym)
-          return if !optional_rules.include?(:quick_start_a) || !optional_rules.include?(:quick_start_b)
-
-          { error: 'Cannot choose both quick start variants.' }
-        end
+        MUTEX_RULES = [%i[quick_start_a quick_start_b]].freeze
       end
     end
   end
