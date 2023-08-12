@@ -19,8 +19,6 @@ module Engine
         BIDDING_BOX_START_CONCESSION = 'C2'
         BIDDING_BOX_START_PRIVATE = 'P1'
 
-        PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
-
         COMPANY_MTONR = nil # Remove Town; two companies instead of one here
         COMPANY_LCDR = nil # English Channel
         COMPANY_EGR = nil # Hill Discount
@@ -35,6 +33,12 @@ module Engine
         COMPANY_5X_REVENUE = 'P9'
         COMPANY_HSBC = nil # Grimsby/Hull Bridge
 
+        COMPANIES_BIG_CITY_UPGRADES = %w[P14 P15 P16 P17 P18].freeze
+        COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P19 P20 P21]).freeze
+
+        PRIVATE_MAIL_CONTRACTS = %w[P22 P23].freeze
+        PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
+        PRIVATE_REMOVE_REVENUE = %w[P1 P5 P6 P7 P14 P15 P16 P17 P18 P22 P23 P24 P25 P26 P27 P28].freeze
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
 
         COMPANY_SHORT_NAMES = {
@@ -293,6 +297,10 @@ module Engine
           return %w[5 6 57].include?(to.name) if from.name == 'AG13' && from.color == :white
 
           super
+        end
+
+        def company_ability_extra_track?(company)
+          self.class::COMPANIES_EXTRA_TRACK_LAYS.include?(company.id)
         end
       end
     end

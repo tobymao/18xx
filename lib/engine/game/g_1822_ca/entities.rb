@@ -210,7 +210,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AC21],
+                tiles: %w[T1 T2 T3 T4 T5 T6 T7],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -222,7 +234,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AE15],
+                tiles: %w[O1 O2 O3 O4 O5 O6 O7 O8],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -234,7 +258,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AF12],
+                tiles: %w[M1 M2 M3 M4 M5 M6 M7],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -246,7 +282,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AH8],
+                tiles: %w[Q1 Q2 Q3 Q4 Q5 Q6 Q7 Q8],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -258,7 +306,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[N16],
+                tiles: %w[W1 W2 W3 W4 W5 W6 W7],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {

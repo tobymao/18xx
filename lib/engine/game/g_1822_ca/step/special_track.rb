@@ -9,6 +9,12 @@ module Engine
       module Step
         class SpecialTrack < G1822::Step::SpecialTrack
           include G1822CA::Tracker
+
+          def actions(entity)
+            return [] unless entity.company?
+
+            super
+          end
         end
       end
     end
