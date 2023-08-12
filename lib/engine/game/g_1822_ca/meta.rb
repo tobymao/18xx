@@ -19,8 +19,24 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/219065/1822-railways-great-britain-rules'
         GAME_TITLE = '1822CA'
+        GAME_ISSUE_LABEL = '1822CA'
 
         PLAYER_RANGE = [3, 7].freeze
+
+        GAME_VARIANTS = [
+          {
+            sym: :ers,
+            name: 'Eastern Regional Scenario',
+            title: '1822CA ERS',
+            desc: 'shorter game on the eastern half of the map',
+          },
+          {
+            sym: :wrs,
+            name: 'Western Regional Scenario',
+            title: '1822CA WRS',
+            desc: 'shorter game on the western half of the map',
+          },
+        ].freeze
       end
     end
   end
