@@ -2747,6 +2747,20 @@ module Engine
         def can_buy_presidents_share_directly_from_market?(corporation)
           (@phase.name.to_i >= 4) || !historical?(corporation)
         end
+
+        def liquidity(player, emergency: false)
+          return player.cash unless sellable_turn?
+          return super unless emergency
+          return liquidity(player) unless @round
+
+          value = player.cash
+          value += player.shares_by_corporation.sum do |corporation, shares|
+            next 0 if shares.empty?
+
+            (value_for_sellable(player, corporation) / 2.0).to_i
+          end
+          value
+        end
       end
     end
   end
