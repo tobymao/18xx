@@ -20,18 +20,27 @@ module Engine
 
         OPTIONAL_RULES = [
           {
-            sym: :quick_start,
-            short_name: 'Quick start',
+            sym: :quick_start_a,
+            short_name: 'Quick start, set A',
             desc: 'The yellow private companies are given to players in ' \
                   'randomly assigned batches, instead of being auctioned.',
+            players: (3..6).to_a,
           },
           {
-            sym: :set_b,
+            sym: :quick_start_b,
             short_name: 'Quick start, set B',
             desc: 'Different sets of private companies for four players ' \
                   'in the quick start variant.',
+            players: (3..6).to_a,
           },
         ].freeze
+
+        def self.check_options(options, _min_players, _max_players)
+          optional_rules = (options || []).map(&:to_sym)
+          return if !optional_rules.include?(:quick_start_a) || !optional_rules.include?(:quick_start_b)
+
+          { error: 'Cannot choose both quick start variants.' }
+        end
       end
     end
   end
