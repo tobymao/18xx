@@ -1172,15 +1172,6 @@ module Engine
           @share_pool.transfer_shares(share.to_bundle, new_owner, allow_president_change: false)
         end
 
-        # no payment, only for asset movement
-        def asset_transfer_shares(bundle, new_owner)
-          @share_pool.transfer_shares(bundle, new_owner, allow_president_change: false)
-          return unless bundle.presidents_share
-
-          @log << "#{new_owner.name} becomes the president of #{bundle.corporation.name}"
-          bundle.corporation.owner = new_owner
-        end
-
         def mergeable?(corp)
           (!historical?(corp) || (@phase.name.to_i >= 4)) && operated?(corp) && !frozen?(corp) && !corp.closed?
         end
@@ -1285,12 +1276,7 @@ module Engine
 
             bundle = ShareBundle.new(Array(shares[corp]))
             @log << "Moving #{bundle.percent}% of shares of #{corp.name} from #{from.name} to #{target.name} treasury"
-            if bundle.presidents_share
-              # share_pool doesn't like moving a pres cert from one entity to another
-              asset_transfer_shares(bundle, target)
-            else
-              @share_pool.transfer_shares(bundle, target, allow_president_change: true)
-            end
+            @share_pool.transfer_shares(bundle, target, allow_president_change: true)
           end
 
           # cash
@@ -2038,8 +2024,13 @@ module Engine
         def secession_move_treasury_shares(old, newa, newb)
           tshares = old.corporate_shares.sort_by(&:price).reverse
           tshares.each_with_index do |share, i|
-            @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true) if i.even?
-            @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true) if i.odd?
+            if i.even?
+              @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newa.name} treasury"
+              @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true)
+            else
+              @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newb.name} treasury"
+              @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true)
+            end
           end
         end
 
