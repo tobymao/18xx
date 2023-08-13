@@ -38,7 +38,7 @@ module Engine
         B_HEXES = %w[I3 I13].freeze
 
         DOUBLE_TOWN_TILES = %w[1 55 56 69].freeze
-        DOUBLE_STLOT_GREEN_CITIES = %w[14 15]
+        DOUBLE_SLOT_GREEN_CITIES = %w[14 15].freeze
 
         MARKET = [
           ['', '', '', '', '130', '150', '170', '190', '210', '230', '255', '285', '315', '350', '385', '420'],
@@ -323,7 +323,7 @@ module Engine
           return to.name == '204' if from.hex.tile.name == '69'
 
           # double slot green cities don't upgrade
-          return false if DOUBLE_STLOT_GREEN_CITIES.include?(from.hex.tile.name)
+          return false if DOUBLE_SLOT_GREEN_CITIES.include?(from.hex.tile.name)
 
           super
         end
