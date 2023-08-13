@@ -37,6 +37,9 @@ module Engine
         A_HEXES = %w[B2 B14 B22].freeze
         B_HEXES = %w[I3 I13].freeze
 
+        DOUBLE_TOWN_TILES = %w[1 55 56 69].freeze
+        DOUBLE_STLOT_GREEN_CITIES = %w[14 15]
+
         MARKET = [
           ['', '', '', '', '130', '150', '170', '190', '210', '230', '255', '285', '315', '350', '385', '420'],
           ['', '', '98', '108', '120', '135', '150', '170', '190', '210', '235', '260', '285', '315', '350', '385'],
@@ -311,6 +314,18 @@ module Engine
         # Cannot build in E9 before Phase 5
         def can_build_in_e9?
           ['5', '5+5', '6E', '6+6'].include?(@phase.current[:name])
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # yellow double towns upgrade to single green towns
+          return to.name == '88' if %w[1 55].include?(from.hex.tile.name)
+          return to.name == '87' if from.hex.tile.name == '56'
+          return to.name == '204' if from.hex.tile.name == '69'
+
+          # double slot green cities don't upgrade
+          return false if DOUBLE_STLOT_GREEN_CITIES.include?(from.hex.tile.name)
+
+          super
         end
 
         def action_processed(action)
