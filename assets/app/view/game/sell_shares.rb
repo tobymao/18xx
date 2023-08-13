@@ -14,7 +14,13 @@ module View
       def render
         step = @game.round.active_step
 
-        buttons = @game.sellable_bundles(@player, @corporation).map do |bundle|
+        bundles = if step.respond_to?(:sellable_bundles)
+                    step.sellable_bundles(@player, @corporation)
+                  else
+                    @game.sellable_bundles(@player, @corporation)
+                  end
+
+        buttons = bundles.map do |bundle|
           sell = lambda do
             process_action(@action.new(
               @player,

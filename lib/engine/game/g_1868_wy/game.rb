@@ -63,7 +63,6 @@ module Engine
         BANK_CASH = 99_999
         STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440 }.freeze
         CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12 }.freeze
-        SELL_AFTER = :any_time
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
         HOME_TOKEN_TIMING = :par
@@ -611,12 +610,9 @@ module Engine
 
           hex_ids.each do |hex_id|
             hex = hex_by_id(hex_id)
-            hex.tile.icons.find.with_index do |icon, index|
-              if icon.name == 'uranium_early'
-                hex.tile.icons[index] =
-                  Part::Icon.new('1868_wy/uranium', nil, true, false, false, loc: icon.loc)
-              end
-            end
+            index = hex.tile.icons.rindex { |icon| icon&.name == 'uranium_early' }
+            icon = hex.tile.icons[index]
+            hex.tile.icons[index] = Part::Icon.new('1868_wy/uranium', nil, true, false, false, loc: icon.loc)
             increment_development_token_count(hex)
           end
         end
