@@ -385,5 +385,18 @@ module Engine
         end
       end
     end
+
+    describe '1822NRS' do
+      describe 128_129 do
+        it 'ability_combo_entities should not throw an error when one of the combo entities was removed during setup' do
+          # in https://github.com/tobymao/18xx/issues/9309,
+          # ability_combo_entities threw an error instead of successfully
+          # returning because P10 is removed in NRS setup
+          game = game_at_action(game_file, 495)
+          entity = game.company_by_id('P12')
+          expect(game.ability_combo_entities(entity)).to eq([])
+        end
+      end
+    end
   end
 end

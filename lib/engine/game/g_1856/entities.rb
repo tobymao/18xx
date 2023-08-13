@@ -245,12 +245,12 @@ module Engine
             abilities: [
               {
                 type: 'train_buy',
-                description: 'Inter train buy/sell at face value',
+                description: 'Inter-corporation train buy/sell at face value only',
                 face_value: true,
               },
               {
                 type: 'train_limit',
-                increase: 99,
+                increase: 1,
                 description: '3 train limit',
               },
               {

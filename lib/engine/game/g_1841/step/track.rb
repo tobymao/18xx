@@ -56,10 +56,11 @@ module Engine
           def find_railhead(entity, railheads, old_tile, new_tile)
             return nil if !railheads || railheads.empty?
 
-            graph = @game.graph_for_entity(entity)
+            graph = @game.graph # ignore borders for these checks
+            graph.clear
             old_paths = old_tile.paths # will this work if old_tile has been reusused already?
             new_tile.paths.each do |np|
-              next unless graph.connected_paths(entity)[np]
+              next if !old_paths.empty? && !graph.connected_paths(entity)[np]
               next if old_paths.find { |path| np <= path }
 
               railheads.each do |t|
