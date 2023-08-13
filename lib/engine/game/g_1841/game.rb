@@ -1172,6 +1172,15 @@ module Engine
           @share_pool.transfer_shares(share.to_bundle, new_owner, allow_president_change: false)
         end
 
+        # no payment, only for asset movement
+        def asset_transfer_shares(bundle, new_owner)
+          @share_pool.transfer_shares(bundle, new_owner, allow_president_change: false)
+          return unless bundle.presidents_share
+
+          @log << "#{new_owner.name} becomes the president of #{bundle.corporation.name}"
+          bundle.corporation.owner = new_owner
+        end
+
         def mergeable?(corp)
           (!historical?(corp) || (@phase.name.to_i >= 4)) && operated?(corp) && !frozen?(corp) && !corp.closed?
         end
@@ -1274,9 +1283,14 @@ module Engine
             next if corp == from
             next if shares[corp].empty?
 
-            @log << "Moving #{shares[corp].size} share(s) of #{corp.name} from #{from.name} to #{target.name} treasury"
             bundle = ShareBundle.new(Array(shares[corp]))
-            @share_pool.transfer_shares(bundle, target, allow_president_change: true)
+            @log << "Moving #{bundle.percent}% of shares of #{corp.name} from #{from.name} to #{target.name} treasury"
+            if bundle.presidents_share
+              # share_pool doesn't like moving a pres cert from one entity to another
+              asset_transfer_shares(bundle, target)
+            else
+              @share_pool.transfer_shares(bundle, target, allow_president_change: true)
+            end
           end
 
           # cash
