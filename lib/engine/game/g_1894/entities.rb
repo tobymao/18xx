@@ -6,8 +6,8 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Ligne Longwy-Villerupt-Micheville',
-            sym: 'LVM',
+            name: 'Ligne de Reims à Charleville',
+            sym: 'LRC',
             value: 20,
             revenue: 5,
             desc: 'Once per game the owning corporation may pay 60 F to lay a yellow track.'\
