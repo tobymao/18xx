@@ -1274,8 +1274,8 @@ module Engine
             next if corp == from
             next if shares[corp].empty?
 
-            @log << "Moving #{shares[corp].size} share(s) of #{corp.name} from #{from.name} to #{target.name} treasury"
             bundle = ShareBundle.new(Array(shares[corp]))
+            @log << "Moving #{bundle.percent}% of shares of #{corp.name} from #{from.name} to #{target.name} treasury"
             @share_pool.transfer_shares(bundle, target, allow_president_change: true)
           end
 
@@ -2024,8 +2024,13 @@ module Engine
         def secession_move_treasury_shares(old, newa, newb)
           tshares = old.corporate_shares.sort_by(&:price).reverse
           tshares.each_with_index do |share, i|
-            @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true) if i.even?
-            @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true) if i.odd?
+            if i.even?
+              @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newa.name} treasury"
+              @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true)
+            else
+              @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newb.name} treasury"
+              @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true)
+            end
           end
         end
 
