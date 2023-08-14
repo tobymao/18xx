@@ -300,6 +300,7 @@ module Engine
         XFORM_REQ_TOKEN_COST = 50
         XFORM_OPT_TOKEN_COST = 100
         SECESSION_OPT_TOKEN_COST = 50
+        RIGHTMOST_MINOR_COLUMN = 10
 
         def init_graph
           Graph.new(self, check_tokens: true)
@@ -1050,7 +1051,7 @@ module Engine
         end
 
         def separate_treasury?
-          true
+          false
         end
 
         def player_sort(entities)
@@ -1184,7 +1185,7 @@ module Engine
         def find_rightmost_share_price(value)
           market_best_col = -1
           market_best = nil
-          @stock_market.market.reverse_each do |row|
+          @stock_market.market.each do |row|
             row_col = 0
             row_best = row.first
             row.each_with_index do |sp, col|
@@ -2034,6 +2035,29 @@ module Engine
           end
         end
 
+        def major_only_price?(share_price)
+          share_price.coordinates[1] > RIGHTMOST_MINOR_COLUMN
+        end
+
+        def secession_set_minor_prices(old, newa, newb)
+          minor_price = @stock_market.market[old.share_price.coordinates[0]][RIGHTMOST_MINOR_COLUMN]
+
+          newa.share_price = minor_price
+          newa.par_price = minor_price
+          newa.original_par_price = minor_price
+
+          newb.share_price = minor_price
+          newb.par_price = minor_price
+          newb.original_par_price = minor_price
+
+          @log << "New price for #{newa.name} and #{newb.name} will be #{format_currency(minor_price.price)}"
+
+          old.share_price.corporations.delete(old)
+          minor_price.corporations << newa
+          minor_price.corporations << newb
+          old.share_price = nil
+        end
+
         # for version 1, old = IRSFF, newa = SFV (minor), newb = SFL (minor)
         # for version 2, old = IRSFF, newa = SB (major), newb = SFL (major)
         def secession_start(old, newa, newb)
@@ -2043,7 +2067,11 @@ module Engine
           @secession_state = :exchange_pairs
           @secession_decider = old.player || @round.current_entity.player # in case IRSFF is frozen
 
-          secession_replace_price_tokens(old, newa, newb)
+          if version == 1 && major_only_price?(old.share_price)
+            secession_set_minor_prices(old, newa, newb)
+          else
+            secession_replace_price_tokens(old, newa, newb)
+          end
           newa.ipoed = true
           newa.floated = true
           newb.ipoed = true
