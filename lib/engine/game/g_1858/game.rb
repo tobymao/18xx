@@ -50,19 +50,6 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
 
-        def init_optional_rules(optional_rules)
-          rules = super
-
-          # Quick start variant doesn't work for two players.
-          rules -= [:quick_start] if two_player?
-
-          # The alternate set of private packets can only be used with the
-          # quick start variant.
-          rules -= [:set_b] unless rules.include?(:quick_start)
-
-          rules
-        end
-
         def corporation_opts
           two_player? ? { max_ownership_percent: 70 } : {}
         end
@@ -78,11 +65,11 @@ module Engine
         end
 
         def option_quick_start?
-          optional_rules.include?(:quick_start)
+          optional_rules.include?(:quick_start_a) || optional_rules.include?(:quick_start_b)
         end
 
         def option_quick_start_packets
-          if optional_rules.include?(:set_b)
+          if optional_rules.include?(:quick_start_b)
             QUICK_START_PACKETS_B
           else
             QUICK_START_PACKETS_A
