@@ -12,6 +12,10 @@ module Engine
 
             super
           end
+
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            super unless @game.class::DOUBLE_TOWN_TILES.include?(old_tile.name)
+          end
         end
       end
     end
