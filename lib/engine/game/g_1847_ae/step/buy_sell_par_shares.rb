@@ -46,7 +46,7 @@ module Engine
             return false if exchange && !@game.can_corporation_have_investor_shares_exchanged?(corporation)
 
             corporation.holding_ok?(entity, bundle.common_percent) &&
-              (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity))
+              (exchange || @game.num_certs(entity) < @game.cert_limit(entity))
           end
 
           def can_buy_any_from_player?(entity)
@@ -74,10 +74,10 @@ module Engine
             price = nationalization_price(bundle.price)
             owner = bundle.owner
             corporation = bundle.corporation
+
             raise GameError, 'Cannot nationalize this corporation' unless can_nationalize?(player, corporation)
             raise GameError, 'Not enough cash for nationalization' unless player.cash >= price
 
-            # can't use share_pool.buy_shares since it uses bundle.share_price
             @log << "-- Nationalization: #{player.name} buys a #{bundle.percent}% share"\
                     " of #{corporation.name} from #{owner.name} for #{@game.format_currency(price)} --"
 
