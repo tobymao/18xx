@@ -10,7 +10,7 @@ module Engine
             sym: 'P1',
             desc: 'MAJOR/MINOR, Phase 1. Permanent L-train',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -19,7 +19,7 @@ module Engine
             sym: 'P2',
             desc: 'MAJOR, Phase 2. Permanent 2-train',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -28,7 +28,7 @@ module Engine
             sym: 'P3',
             desc: 'MAJOR, Phase 2. Permanent 2-train',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -39,7 +39,7 @@ module Engine
                   ' It converts the train into a + train. Does not count against train limit and does not count '\
                   'as a train for the purposes of train ownership. Can’t be sold to another company. Does not close.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -50,7 +50,7 @@ module Engine
                   ' It converts the train into a + train. Does not count against train limit and does not count '\
                   'as a train for the purposes of train ownership. Can’t be sold to another company. Does not close.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -60,7 +60,7 @@ module Engine
             desc: 'MAJOR/MINOR, Phase 3. Close this company to buy a rusted train for full price '\
                   '(purchased train becomes permanent and is not a special train)',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -73,7 +73,7 @@ module Engine
                   'All other normal track laying restrictions apply. Once acquired, the private company pays '\
                   'its revenue to the owning company until the power is exercised and the company closes.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -86,7 +86,7 @@ module Engine
                   'Once the owning company reserves tiles, it may not place any other tiles '\
                   'until those tiles have been placed, even if it becomes impossible to place the reserved tiles.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -100,7 +100,7 @@ module Engine
                   'All other normal track laying restrictions apply. Once acquired, the private company '\
                   'pays its revenue to the owning company until the power is exercised and the company is closed.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -113,7 +113,7 @@ module Engine
                   'The company immediately receives a bonus equal to A5x the number of hexes between '\
                   'this game reserve and the preprinted game reserve (excluding the reserve hexes).',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -123,7 +123,7 @@ module Engine
             desc: 'MAJOR/MINOR, Phase 3. After the owning company lays a yellow tile in a mountain hex, '\
                   'it earns A50 into its treasury. The private company immediately closes.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -134,7 +134,7 @@ module Engine
                   'with desert terrain as their normal tile laying step at normal cost. '\
                   'Using this ability closes the private company.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -145,7 +145,7 @@ module Engine
                   'token area of its charter to the available token area, or vice versa. '\
                   'This company closes when its power is exercised.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -157,7 +157,7 @@ module Engine
                   'The gold mine token occupies a city slot and blocks routes through that city '\
                   'if the city is otherwise full.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -170,7 +170,7 @@ module Engine
                   'the coffee plantation token is placed on it and prevents upgrading this tile. '\
                   'All routes that use this tile earn an extra A20.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -184,7 +184,7 @@ module Engine
                   'If not acquired beforehand, this company closes at the start of Phase 6 and all treasury credits '\
                   'are returned to the bank.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -195,7 +195,7 @@ module Engine
                   'it owns for the current market value. The share is moved to the bank pool. This does not count '\
                   'as a share issuance and does not affect the stock price.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
@@ -207,7 +207,7 @@ module Engine
                   'each of the game reserves. Does not count against train limit and does not count as a train '\
                   'for the purposes of train ownership. Can’t be sold to another company. Does not close.',
             value: 0,
-            revenue: 0,
+            revenue: 10,
             abilities: [],
             color: nil,
           },
