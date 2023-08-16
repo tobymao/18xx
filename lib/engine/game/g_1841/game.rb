@@ -300,6 +300,7 @@ module Engine
         XFORM_REQ_TOKEN_COST = 50
         XFORM_OPT_TOKEN_COST = 100
         SECESSION_OPT_TOKEN_COST = 50
+        RIGHTMOST_MINOR_COLUMN = 10
 
         def init_graph
           Graph.new(self, check_tokens: true)
@@ -1050,7 +1051,7 @@ module Engine
         end
 
         def separate_treasury?
-          true
+          false
         end
 
         def player_sort(entities)
@@ -1184,7 +1185,7 @@ module Engine
         def find_rightmost_share_price(value)
           market_best_col = -1
           market_best = nil
-          @stock_market.market.reverse_each do |row|
+          @stock_market.market.each do |row|
             row_col = 0
             row_best = row.first
             row.each_with_index do |sp, col|
@@ -1274,8 +1275,8 @@ module Engine
             next if corp == from
             next if shares[corp].empty?
 
-            @log << "Moving #{shares[corp].size} share(s) of #{corp.name} from #{from.name} to #{target.name} treasury"
             bundle = ShareBundle.new(Array(shares[corp]))
+            @log << "Moving #{bundle.percent}% of shares of #{corp.name} from #{from.name} to #{target.name} treasury"
             @share_pool.transfer_shares(bundle, target, allow_president_change: true)
           end
 
@@ -1301,7 +1302,7 @@ module Engine
         # of merging corp then to any controlled corps for that person, then to the next person, and so on
         def merger_share_holder_list(corpa, corpb, percent)
           sh_list = []
-          priority = @merger_tuscan ? @tuscan_merge_decider : corpa.player
+          priority = @merger_decider
           @players.rotate(@players.index(priority)).each do |p|
             sh_list << p if total_percent(p, corpa, corpb) >= percent
             controlled_corporations(p).each do |c|
@@ -1538,22 +1539,21 @@ module Engine
               new_share = @merger_target.shares_of(@merger_target).reject(&:president).first
               next_share = @merger_target.shares_of(@merger_target).reject(&:president)[1]
               simple_transfer_share(old_share, old_share.corporation)
+              old_corp = old_share.corporation
 
-              if pres_share
-                raise GameError, 'First share was not a 40% share' if old_share.percent != 40
-
-                @log << "#{entity.name} exchanges president share for president share of #{@merger_target.name}"
+              if pres_share && old_share.percent > 20
+                @log << "#{entity.name} exchanges 40% share of #{old_corp.name} for president share of #{@merger_target.name}"
                 @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
               elsif old_share.percent > 20
                 raise GameError, 'Not enough shares' if !new_share && !next_share
 
-                @log << "#{entity.name} exchanges president share for 2 shares of #{@merger_target.name}"
+                @log << "#{entity.name} exchanges 40% share of #{old_corp.name} for 2 shares of #{@merger_target.name}"
                 @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
                 @share_pool.transfer_shares(next_share.to_bundle, entity, allow_president_change: true)
               else
                 raise GameError, 'Not enough shares' unless new_share
 
-                @log << "#{entity.name} exchanges 20% of old shares for a shares of #{@merger_target.name}"
+                @log << "#{entity.name} exchanges 20% share of #{old_corp.name} for a share of #{@merger_target.name}"
                 @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
               end
             end
@@ -1611,7 +1611,7 @@ module Engine
           @log << "#{@merger_corpa.name} and #{@merger_corpb.name} both have tokens in #{oo_hex.id}. Must remove one."
           @merger_dup_tokens += 1
           @round.pending_removals << {
-            entity: @merger_decider,
+            entity: @merger_target.player ? @merger_target : @merger_decider,
             hexes: [oo_hex],
             corporations: [@merger_corpa, @merger_corpb],
             min: 1,
@@ -1670,7 +1670,7 @@ module Engine
                         "#{@merger_corpa.name} and/or #{@merger_corpb.name} from map"
                     end
             @round.pending_removals << {
-              entity: @merger_decider,
+              entity: @merger_target.player ? @merger_target : @merger_decider,
               hexes: hexes,
               corporations: [@merger_corpa, @merger_corpb],
               min: min_to_remove,
@@ -1921,7 +1921,7 @@ module Engine
           end
 
           @round.buy_tokens << {
-            entity: @transform_tuscan ? @tuscan_merge_decider : @transform_target,
+            entity: @transform_tuscan && !@transform_target.player ? @tuscan_merge_decider : @transform_target,
             type: :transform,
             first_price: first_price,
             price: XFORM_OPT_TOKEN_COST,
@@ -2024,9 +2024,37 @@ module Engine
         def secession_move_treasury_shares(old, newa, newb)
           tshares = old.corporate_shares.sort_by(&:price).reverse
           tshares.each_with_index do |share, i|
-            @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true) if i.even?
-            @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true) if i.odd?
+            if i.even?
+              @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newa.name} treasury"
+              @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true)
+            else
+              @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newb.name} treasury"
+              @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true)
+            end
           end
+        end
+
+        def major_only_price?(share_price)
+          share_price.coordinates[1] > RIGHTMOST_MINOR_COLUMN
+        end
+
+        def secession_set_minor_prices(old, newa, newb)
+          minor_price = @stock_market.market[old.share_price.coordinates[0]][RIGHTMOST_MINOR_COLUMN]
+
+          newa.share_price = minor_price
+          newa.par_price = minor_price
+          newa.original_par_price = minor_price
+
+          newb.share_price = minor_price
+          newb.par_price = minor_price
+          newb.original_par_price = minor_price
+
+          @log << "New price for #{newa.name} and #{newb.name} will be #{format_currency(minor_price.price)}"
+
+          old.share_price.corporations.delete(old)
+          minor_price.corporations << newa
+          minor_price.corporations << newb
+          old.share_price = nil
         end
 
         # for version 1, old = IRSFF, newa = SFV (minor), newb = SFL (minor)
@@ -2038,7 +2066,11 @@ module Engine
           @secession_state = :exchange_pairs
           @secession_decider = old.player || @round.current_entity.player # in case IRSFF is frozen
 
-          secession_replace_price_tokens(old, newa, newb)
+          if version == 1 && major_only_price?(old.share_price)
+            secession_set_minor_prices(old, newa, newb)
+          else
+            secession_replace_price_tokens(old, newa, newb)
+          end
           newa.ipoed = true
           newa.floated = true
           newb.ipoed = true

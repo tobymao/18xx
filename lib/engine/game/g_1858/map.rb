@@ -466,32 +466,39 @@ module Engine
             # City hexes
             %w[C2] =>
                     'city=revenue:0;' \
-                    'path=track:future,a:0,b:_0',
+                    'path=track:future,a:0,b:_0;' \
+                    'icon=image:1858/SC,sticky:1;',
             %w[H19] =>
                     'city=revenue:0',
             %w[B5] =>
                     'city=revenue:0;' \
                     'path=track:future,a:4,b:_0;' \
+                    'icon=image:1858/OV,sticky:1;' \
                     'border=type:province,edge:0;',
             %w[I2] =>
                     'city=revenue:0;' \
+                    'icon=image:1858/CB,sticky:1;' \
                     'border=type:province,edge:1',
             %w[G8] =>
                     'city=revenue:0;' \
                     'path=track:future,a:0,b:_0;' \
+                    'icon=image:1858/MV,sticky:1;' \
                     'border=type:province,edge:1;' \
                     'border=type:province,edge:2',
             %w[B9] =>
                     'city=revenue:0;label=Y;' \
                     'future_label=label:P,color:brown;' \
                     'path=track:future,a:0,b:_0;' \
+                    'icon=image:1858/PL,sticky:1;' \
                     'upgrade=cost:20,terrain:water;',
             %w[G20] =>
                     'city=revenue:0;label=Y;' \
                     'path=track:future,a:3,b:_0;' \
+                    'icon=image:1858/CM,sticky:1;' \
                     'upgrade=cost:20,terrain:water',
             %w[L13] =>
                     'city=revenue:0;label=Y;' \
+                    'icon=image:1858/VJ,sticky:1;' \
                     'upgrade=cost:20,terrain:water;',
             %w[E18] =>
                     'city=revenue:0;label=Y;' \
@@ -505,6 +512,7 @@ module Engine
             %w[E20] =>
                     'city=revenue:0;' \
                     'path=track:future,a:3,b:_0;' \
+                    'icon=image:1858/SJC,sticky:1;' \
                     'upgrade=cost:20,terrain:water;',
             %w[G18] =>
                     'city=revenue:0;' \
@@ -516,10 +524,12 @@ module Engine
             %w[K18] =>
                     'city=revenue:0;' \
                     'path=track:future,a:_0,b:5;' \
+                    'icon=image:1858/MC,sticky:1;' \
                     'upgrade=cost:20,terrain:water;',
             %w[H3] =>
                     'city=revenue:0;' \
                     'path=track:future,a:1,b:_0;' \
+                    'icon=image:1858/AS,sticky:1;' \
                     'upgrade=cost:40,terrain:mountain;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:1;' \
@@ -527,7 +537,8 @@ module Engine
                     'border=type:province,edge:4;' \
                     'border=type:province,edge:5',
             %w[O8] =>
-                    'city=revenue:0;label=B;',
+                    'city=revenue:0;label=B;' \
+                    'icon=image:1858/BM,sticky:1;',
           },
           yellow: {
             %w[L7] =>
@@ -550,6 +561,7 @@ module Engine
           green: {
             %w[A14] =>
                     'city=revenue:40,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=L;' \
+                    'icon=image:1858/LC,sticky:1;' \
                     'border=type:impassable,edge:5',
           },
           red: {

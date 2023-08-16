@@ -179,6 +179,15 @@ module Engine
             token.price = token_cost(entity, city)
           end
 
+          def process_place_token(action)
+            # token_cost_override! is only called from the game view. When the
+            # game is being loaded we need to restore the saved token cost from
+            # the action, otherwise the default cost of Pt20 for a token will
+            # be used.
+            action.token.price = action.cost
+            super
+          end
+
           def borders_crossed(hex1, hex2)
             DISTANCES[hex1.coordinates][hex2.coordinates]
           end

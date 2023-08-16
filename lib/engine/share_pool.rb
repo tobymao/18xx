@@ -264,6 +264,10 @@ module Engine
       corporation.owner = president
       @log << "#{president.name} becomes the president of #{corporation.name}"
 
+      # skip the president's share swap if the new share owner is becoming president and
+      # the old owner is the outgoing president and the full president's cert was just transfered
+      return if to_entity == president && previous_president == owner && bundle.presidents_share && !bundle.partial?
+
       # skip the president's share swap if the initiator is already the president
       # or there was no previous president. this is because there is no one to swap with
       if owner == corporation &&
