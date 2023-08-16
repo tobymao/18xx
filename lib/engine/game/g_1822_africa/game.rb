@@ -35,6 +35,11 @@ module Engine
           %w[40 50p 60xp 70xp 80xp 90 100 110 120 135 150 165e],
         ].freeze
 
+        STARTING_COMPANIES = %w[].freeze
+
+        STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12
+          NAR WAR EAR CAR SAR].freeze
+
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[].freeze
