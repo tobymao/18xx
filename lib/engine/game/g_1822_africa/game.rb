@@ -311,6 +311,36 @@ module Engine
             corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
           end
         end
+
+        def next_round!
+          if @round == G1822::Round::Choices && @round.round_num == 1
+            @round = new_stock_round(@round.round_num + 1)
+          else
+            super
+          end
+        end
+
+        def new_stock_round(round_num = 1)
+          # if round_num == 2
+            @round_counter += 1
+          # end
+
+          @log << "-- #{round_description('Stock', round_num)} --"
+          stock_round
+        end
+
+        def round_description(name, round_number = 1)
+          description = super
+
+          description += ".#{round_number}" if name == 'Stock' && round_number != nil
+
+          description.strip
+        end
+
+        def custom_end_game_reached?
+          # End if bid boxes cannot be refilled AFTER SR
+        end
+
         # Temporary stub
         def setup_exchange_tokens; end
 
