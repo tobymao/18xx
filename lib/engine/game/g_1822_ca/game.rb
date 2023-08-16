@@ -263,6 +263,28 @@ module Engine
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
 
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            G1822::Step::PendingToken,
+            G1822::Step::FirstTurnHousekeeping,
+            Engine::Step::AcquireCompany,
+            G1822::Step::DiscardTrain,
+            G1822::Step::SpecialChoose,
+            G1822::Step::SpecialTrack,
+            G1822::Step::SpecialToken,
+            G1822::Step::Track,
+            G1822::Step::DestinationToken,
+            G1822::Step::Token,
+            G1822CA::Step::Route,
+            G1822::Step::Dividend,
+            G1822::Step::BuyTrain,
+            G1822::Step::MinorAcquisition,
+            G1822::Step::PendingToken,
+            G1822::Step::DiscardTrain,
+            G1822::Step::IssueShares,
+          ], round_num: round_num)
+        end
+
         def must_remove_town?(entity)
           %w[P29 P30].include?(entity.id)
         end
