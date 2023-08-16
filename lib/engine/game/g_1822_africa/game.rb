@@ -13,7 +13,7 @@ module Engine
         include G1822Africa::Entities
         include G1822Africa::Map
 
-        CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
+        CERT_LIMIT = { 2 => 16, 3 => 13, 4 => 10 }.freeze
 
         BIDDING_TOKENS = {
           '3': 6,
@@ -29,13 +29,13 @@ module Engine
           'SAR' => 2,
         }.freeze
 
-        STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
+        STARTING_CASH = { 2 => 500, 3 => 375, 4 => 300 }.freeze
 
         STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 C1 C2 C3 C4 C5
-          M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12].freeze
+                                M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12].freeze
 
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12
-          NAR WAR EAR CAR SAR].freeze
+                                   NAR WAR EAR CAR SAR].freeze
 
         CURRENCY_FORMAT_STR = 'A%s'
 
@@ -236,7 +236,7 @@ module Engine
           @companies.clear
           @companies.concat(minors)
           @companies.concat(concessions)
-          @companies.concat(privates.sort_by!{ rand }.take(10))
+          @companies.concat(privates.sort_by! { rand }.take(10))
 
           # Randomize from preset seed to get same order
           @companies.sort_by! { rand }
@@ -321,9 +321,7 @@ module Engine
         end
 
         def new_stock_round(round_num = 1)
-          # if round_num == 2
-            @round_counter += 1
-          # end
+          @round_counter += 1 if round_num == 2
 
           @log << "-- #{round_description('Stock', round_num)} --"
           stock_round
@@ -332,7 +330,7 @@ module Engine
         def round_description(name, round_number = 1)
           description = super
 
-          description += ".#{round_number}" if name == 'Stock' && round_number != nil
+          description += ".#{round_number}" if name == 'Stock' && !round_number.nil?
 
           description.strip
         end
