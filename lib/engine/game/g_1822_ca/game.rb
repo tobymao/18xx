@@ -270,9 +270,9 @@ module Engine
             Engine::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
-            G1822::Step::SpecialTrack,
+            G1822CA::Step::SpecialTrack,
             G1822::Step::SpecialToken,
-            G1822::Step::Track,
+            G1822CA::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
             G1822CA::Step::Route,
@@ -287,6 +287,12 @@ module Engine
 
         def must_remove_town?(entity)
           %w[P29 P30].include?(entity.id)
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return %w[5 6 57].include?(to.name) if from.name == 'AG13' && from.color == :white
+
+          super
         end
       end
     end
