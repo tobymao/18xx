@@ -51,6 +51,13 @@ module Engine
             player.cash
           end
 
+          def active_entities
+            return super unless @auctioning
+
+            winning_bid = highest_bid(@auctioning)
+            [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
+          end
+
           def add_bid(bid)
             super(bid)
 
