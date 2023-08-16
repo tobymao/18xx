@@ -15,7 +15,7 @@ module Engine
             # nationalization - must own 70% of the corporation and pay 150% of CMV
             if bundle.owner.player?
               return false unless can_nationalize?(entity, bundle.corporation)
-              
+
               return entity.cash >= nationalization_price(bundle.price)
             end
 
@@ -43,8 +43,8 @@ module Engine
 
             corporation = bundle.corporation
 
-            return false if exchange && !@game.can_corporation_have_investor_shares_exchanged?(corporation)    
-    
+            return false if exchange && !@game.can_corporation_have_investor_shares_exchanged?(corporation)
+
             corporation.holding_ok?(entity, bundle.common_percent) &&
               (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity))
           end
@@ -52,17 +52,17 @@ module Engine
           def can_buy_any_from_player?(entity)
             return false if bought?
 
-            a = @game.corporations.any? { |c| can_nationalize?(entity, c) && entity.cash >= nationalization_price(c.share_price.price) }
-
-            return a
+            @game.corporations.select(&:floated?).any? do |corporation|
+              can_nationalize?(entity, corporation) && entity.cash >= nationalization_price(corporation.share_price.price)
+            end
           end
-          
+
           def can_nationalize?(player, corporation)
-            return player.num_shares_of(corporation) >= 4
+            player.num_shares_of(corporation) >= 7
           end
 
           def nationalization_price(price)
-            return (price * 1.5).ceil
+            (price * 1.5).ceil
           end
 
           def process_buy_shares(action)
