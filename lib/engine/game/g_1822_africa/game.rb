@@ -21,7 +21,13 @@ module Engine
           '5': 4,
         }.freeze
 
-        EXCHANGE_TOKENS = {}.freeze
+        EXCHANGE_TOKENS = {
+          'NAR' => 2,
+          'WAR' => 2,
+          'EAR' => 2,
+          'CAR' => 2,
+          'SAR' => 2,
+        }.freeze
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
 
@@ -41,6 +47,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
+        GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
+
         PRIVATE_TRAINS = %w[].freeze
         EXTRA_TRAINS = %w[].freeze
         EXTRA_TRAIN_PERMANENTS = %w[].freeze
@@ -112,6 +120,112 @@ module Engine
           'M11' => '11',
           'M12' => '12',
         }.freeze
+
+        EVENTS_TEXT = {
+          'close_concessions' =>
+            ['Concessions close', 'All concessions close without compensation, major companies float at 50%'],
+          'full_capitalisation' =>
+            ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
+        }.freeze
+
+        TRAINS = [
+          {
+            name: 'L',
+            distance: [
+              {
+                'nodes' => ['city'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+            ],
+            num: 10,
+            price: 50,
+            rusts_on: '3',
+            variants: [
+              {
+                name: '2',
+                distance: 2,
+                price: 100,
+                rusts_on: '4',
+                available_on: '1',
+              },
+            ],
+          },
+          {
+            name: '3',
+            distance: 3,
+            num: 5,
+            price: 160,
+            rusts_on: '6',
+          },
+          {
+            name: '5',
+            distance: 5,
+            num: 99,
+            price: 350,
+            events: [
+              {
+                'type' => 'close_concessions',
+              },
+            ],
+          },
+          {
+            name: '6',
+            distance: 6,
+            num: 3,
+            price: 400,
+            events: [
+              {
+                'type' => 'full_capitalisation',
+              },
+            ],
+          },
+          {
+            name: '2P',
+            distance: 2,
+            num: 2,
+            price: 0,
+          },
+          {
+            name: 'LP',
+            distance: [
+              {
+                'nodes' => ['city'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+            ],
+            num: 1,
+            price: 0,
+          },
+          {
+            name: 'P+',
+            distance: [
+              {
+                'nodes' => ['city'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+            ],
+            num: 2,
+            price: 0,
+          },
+        ].freeze
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
         def setup_companies
@@ -204,6 +318,20 @@ module Engine
         def company_tax_haven_bundle(choice); end
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price, < 2x share price ', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Minor company dividend > 0', '1 →'],
+            ['Each share sold (if sold by director)', '1 ←'],
+            ['One or more shares sold (if sold by non-director)', '1 ←'],
+            ['Corporation sold out at end of SR', '1 →'],
+          ]
+        end
       end
     end
   end
