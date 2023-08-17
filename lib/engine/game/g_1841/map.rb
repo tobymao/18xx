@@ -189,7 +189,7 @@ module Engine
             C7: 'Lugano',
             E7: 'Busto Arsizio',
             M7: 'Genova',
-            D8: 'Cosmo',
+            D8: 'Como',
             F8: 'Milano',
             H8: 'Pavia',
             E9: 'Bergamo',
