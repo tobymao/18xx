@@ -408,7 +408,7 @@ module Engine
 
           # any? vs. find ???
           connected = corporations.find do |corp|
-            corp.tokens.select(&:used).map(&:city).find do |city|
+            railheads(corp).map(&:city).find do |city|
               nodes = @graph.connected_nodes_by_token(corp, city)
               nodes.include?(milano) && nodes.include?(venezia)
             end
@@ -1584,6 +1584,10 @@ module Engine
           update_frozen!
           if !@merger_tuscan && circular_corporations.any? { |c| !old_circular.include?(c) }
             raise GameError, 'Illegal circular ownership chain is created by this merger and exchange. Undo required.'
+          end
+
+          if !@merger_tuscan && frozen?(@merger_target)
+            raise GameError, 'Cannot complete this merger without a president. Undo required.'
           end
 
           @merger_state = :select_tokens
