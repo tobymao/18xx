@@ -128,6 +128,58 @@ module Engine
             ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
         }.freeze
 
+        PHASES = [
+          {
+            name: '1',
+            on: '',
+            train_limit: { minor: 2, major: 4 },
+            tiles: [:yellow],
+            status: ['minor_float_phase1'],
+            operating_rounds: 1,
+          },
+          {
+            name: '2',
+            on: %w[2 3],
+            train_limit: { minor: 2, major: 4 },
+            tiles: [:yellow],
+            status: %w[can_convert_concessions minor_float_phase2],
+            operating_rounds: 2,
+          },
+          {
+            name: '3',
+            on: '3',
+            train_limit: { minor: 2, major: 4 },
+            tiles: %i[yellow green],
+            status: %w[can_buy_trains can_convert_concessions minor_float_phase3on],
+            operating_rounds: 2,
+          },
+          {
+            name: '5',
+            on: '5',
+            train_limit: { minor: 1, major: 2 },
+            tiles: %i[yellow green brown],
+            status: %w[can_buy_trains
+                       can_acquire_minor_bidbox
+                       can_par
+                       minors_green_upgrade
+                       minor_float_phase3on],
+            operating_rounds: 2,
+          },
+          {
+            name: '6',
+            on: '6',
+            train_limit: { minor: 1, major: 2 },
+            tiles: %i[yellow green brown],
+            status: %w[can_buy_trains
+                       can_acquire_minor_bidbox
+                       can_par
+                       full_capitalisation
+                       minors_green_upgrade
+                       minor_float_phase3on],
+            operating_rounds: 2,
+          },
+        ].freeze
+
         TRAINS = [
           {
             name: 'L',
@@ -164,9 +216,9 @@ module Engine
             rusts_on: '6',
           },
           {
-            name: '5',
+            name: '5/E',
             distance: 5,
-            num: 99,
+            num: 3,
             price: 350,
             events: [
               {
@@ -175,9 +227,9 @@ module Engine
             ],
           },
           {
-            name: '6',
+            name: '6/E',
             distance: 6,
-            num: 3,
+            num: 99,
             price: 400,
             events: [
               {
@@ -310,6 +362,28 @@ module Engine
           @bidbox_minors_cache.each do |company_id|
             corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
           end
+        end
+
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            G1822::Step::PendingToken,
+            G1822::Step::FirstTurnHousekeeping,
+            Engine::Step::AcquireCompany,
+            G1822::Step::DiscardTrain,
+            G1822::Step::SpecialChoose,
+            G1822::Step::SpecialTrack,
+            G1822::Step::SpecialToken,
+            G1822::Step::Track,
+            G1822::Step::DestinationToken,
+            G1822::Step::Token,
+            G1822::Step::Route,
+            G1822Africa::Step::Dividend,
+            G1822::Step::BuyTrain,
+            G1822::Step::MinorAcquisition,
+            G1822::Step::PendingToken,
+            G1822::Step::DiscardTrain,
+            G1822::Step::IssueShares,
+          ], round_num: round_num)
         end
 
         def next_round!
