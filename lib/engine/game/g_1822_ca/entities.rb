@@ -359,7 +359,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P22-NM (National Mail Contract)',
+            name: 'P22-LM (Large Mail Contract)',
             sym: 'P22',
             value: 0,
             revenue: 10,
@@ -373,7 +373,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P23-NM (National Mail Contract)',
+            name: 'P23-LM (Large Mail Contract)',
             sym: 'P23',
             value: 0,
             revenue: 10,
@@ -387,22 +387,22 @@ module Engine
             color: nil,
           },
           {
-            name: 'P24-RM (Regional Mail Contract)',
+            name: 'P24-SM (Small Mail Contract)',
             sym: 'P24',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Samll mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
+            desc: 'MAJOR, Phase 3. Small Mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
                   '/$40 (grey) to the treasury of the company. The company must operate a train to claim the mail '\
                   'income. Does not close.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P25-RM (Regional Mail Contract)',
+            name: 'P25-SM (Small Mail Contract)',
             sym: 'P25',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Samll mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
+            desc: 'MAJOR, Phase 3. Small Mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
                   '/$40 (grey) to the treasury of the company. The company must operate a train to claim the mail '\
                   'income. Does not close.',
             abilities: [],
