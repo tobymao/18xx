@@ -53,11 +53,12 @@ module Engine
           custom: 'Cannot refill bid boxes'
         )
 
-        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5].freeze
         EXTRA_TRAINS = %w[2P P+ LP].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5].freeze
         PRIVATE_MAIL_CONTRACTS = [].freeze # Stub
         PRIVATE_PHASE_REVENUE = %w[P16].freeze
+        PRIVATE_REMOVE_REVENUE = %w[P13].freeze
 
         BIDDING_BOX_START_PRIVATE = nil
         BIDDING_BOX_START_MINOR = nil
@@ -82,7 +83,7 @@ module Engine
         COMPANY_LSR = nil
         COMPANY_OSTH = nil
         COMPANY_LUR = nil
-        COMPANY_CHPR = nil
+        COMPANY_CHPR = 'P13'
         COMPANY_5X_REVENUE = nil
         COMPANY_HSBC = nil
 
@@ -333,6 +334,14 @@ module Engine
                           end
             c.max_price = 10_000
           end
+
+          # Setup company abilities
+          @company_trains = {}
+          @company_trains['P1'] = find_and_remove_train_by_id('LP-0', buyable: false)
+          @company_trains['P2'] = find_and_remove_train_by_id('2P-0', buyable: false)
+          @company_trains['P3'] = find_and_remove_train_by_id('2P-1', buyable: false)
+          @company_trains['P4'] = find_and_remove_train_by_id('P+-0', buyable: false)
+          @company_trains['P5'] = find_and_remove_train_by_id('P+-1', buyable: false)
         end
 
         def reorder_companies_on_concession
