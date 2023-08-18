@@ -26,7 +26,7 @@ module Engine
             minor_count = 0
             remove_l_count = 0
             remove_minor = nil
-            remove_concession = nil
+            concession_to_remove = nil
 
             minors, companies = @game.bidbox.partition { |c| @game.is_minor?(c) }
 
@@ -35,7 +35,7 @@ module Engine
                 buy_company(bid)
               else
                 company.owner = nil
-                remove_concession = company if index == 0 && @game.is_concession?(company)
+                concession_to_remove = company if index == 0 && @game.is_concession?(company)
               end
             end
 
@@ -64,10 +64,16 @@ module Engine
             # Remove all if nothing was purchased, or just concession from first bidbox
             if @game.nothing_sold_in_sr?
               @game.bidbox.each do |company|
-                close_company(company)
+                if @game.is_concession?(company)
+                  remove_concession(company)
+                elsif @game.is_minor?(company)
+                  remove_minor(company)
+                elsif @game.is_private?(company)
+                  remove_private(company)
+                end
               end
-            elsif remove_concession
-              close_company(remove_concession)
+            elsif concession_to_remove
+              remove_concession(concession_to_remove)
             end
 
             # Refill the bidbox
@@ -79,22 +85,34 @@ module Engine
             # Should sold out corps move right?
           end
 
+          def remove_private(company)
+            @game.log << "No bids on private #{company.id}, it will be removed from the game"
+
+            close_company(company)
+          end
+
+          def remove_minor(company)
+            @game.log << "No bids on minor #{company.id}, it will be removed from the game"
+
+            minor = @game.find_corporation(company)
+            @game.close_corporation(minor)
+
+            # The `close_company(company)` method is closing the specified company. It marks the company as closed and
+            # removes it from the game by deleting it from the list of companies.
+            close_company(company)
+          end
+
+          def remove_concession(company)
+            @game.log << "No bids on concession #{company.id}, it will be removed from the game"
+
+            corporation_id = company.name[-3..-1]
+            corporation = @game.corporation_by_id(corporation_id)
+            @game.close_corporation(corporation)
+
+            close_company(company)
+          end
+
           def close_company(company)
-            company_type = if @game.is_minor?(company)
-                              'minor'
-                            elsif @game.is_concession?(company)
-                              'concession'
-                            else
-                              'company'
-                            end
-
-            @game.log << "No bids on #{company_type} #{company.id}, it will close"
-
-            unless @game.is_private?(company)
-              corporation = @game.find_corporation(company)
-              @game.close_corporation(corporation)
-            end
-
             company.close!
             @game.companies.delete(company)
           end
