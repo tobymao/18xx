@@ -1570,13 +1570,14 @@ module Engine
             raise GameError, 'Cannot complete this merger without a president. Undo required.' unless @merger_tuscan
 
             # tuscan merge
+            @log << "No one has become president of #{@merger_target.name}"
             # put president share in pool in exchange for 0, 1, or 2 shares there
             pool_shares = @share_pool.shares_of(@merger_target).take(2)
             @log << "Moving #{pool_shares.size} #{@merger_target.name} shares from Market to IPO"
             pool_shares.each do |s|
-              @share_pool.transfer_shares(s.to_bundle, entity, allow_president_change: true)
+              @share_pool.transfer_shares(s.to_bundle, @merger_target, allow_president_change: false)
             end
-            @log << "Moving #{@merger_target.name} president's share to IPO to Market"
+            @log << "Moving #{@merger_target.name} president's share from IPO to Market"
             @share_pool.transfer_shares(pres_share.to_bundle, @share_pool, allow_president_change: true)
             update_frozen!
           end
@@ -1614,6 +1615,9 @@ module Engine
           return merger_tokens_finish unless oo_hex
 
           @log << "#{@merger_corpa.name} and #{@merger_corpb.name} both have tokens in #{oo_hex.id}. Must remove one."
+          unless @merger_target.player
+            @log << "-- The rules do not say how to handle this. #{@merger_decider.name} will decide. --"
+          end
           @merger_dup_tokens += 1
           @round.pending_removals << {
             entity: @merger_target.player ? @merger_target : @merger_decider,
@@ -1651,6 +1655,23 @@ module Engine
             map_token_cnt -= kept
             max_to_remove = map_token_cnt
             min_to_remove = [map_token_cnt - (5 - kept), 0].max
+
+            unless @merger_target.player
+              # SFLi is frozen - rules stipulate how this is handled
+              hexes_to_remove = hexes
+              @log << "#{@merger_target.name} tokens are removed/replaced automatically:"
+              if keep_hexes.empty?
+                # Neither Pisa or Firenze have a token - keep the first city alphabetically
+                keep = hexes.reject { |hex| hex.tile.cities[0].pass? }.min_by(&:location_name)
+                hexes_to_remove -= [keep]
+              end
+              hexes_to_remove.each do |hex|
+                token = (@merger_corpa.tokens + @merger_corpb.tokens).select(&:used).find { |t| t.city.hex == hex }
+                @log << "Removing #{token.corporation.name} token in #{hex.id} (#{hex.location_name})"
+                token.destroy!
+              end
+              return merger_finish
+            end
           else
             total_token_cnt = @merger_corpa.tokens.size + @merger_corpb.tokens.size - @merger_dup_tokens
             @merger_token_cnt = [total_token_cnt, 5].min
@@ -1691,7 +1712,7 @@ module Engine
         def swap_token(target, old_corp, old_token)
           new_token = target.next_token
           city = old_token.city
-          @log << "Replaced #{old_corp.name} token in #{city.hex.id} with #{target.name} token"
+          @log << "Replaced #{old_corp.name} token in #{city.hex.id} (#{city.hex.location_name}) with #{target.name} token"
           new_token.place(city)
           city.tokens[city.tokens.find_index(old_token)] = new_token
           old_corp.tokens.delete(old_token)
