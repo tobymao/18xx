@@ -366,6 +366,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+        def init_stock_market
+          G1822Africa::StockMarket.new(game_market)
+        end
+
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
