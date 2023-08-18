@@ -349,7 +349,7 @@ module Engine
 
           unowned_head = head.filter { |c| !c.owner || c.owner == @bank }
 
-          @log << "Reordering to make sure concession is available for auction: "\
+          @log << "Reordering items to make sure concession is available for auction: "\
             "#{unowned_head.map(&:id).join(', ')} moved to the end of the timeline"
         end
 
@@ -489,7 +489,7 @@ module Engine
         end
 
         def compute_game_end
-          return %i[custom full_or] if bidbox.empty?
+          return %i[custom full_or] if bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
           return %i[stock_market current_or] if @stock_market.max_reached?
         end
 

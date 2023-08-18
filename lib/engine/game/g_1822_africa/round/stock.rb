@@ -82,7 +82,16 @@ module Engine
             # Increase player loans with 50% interest
             @game.add_interest_player_loans!
 
-            # Should sold out corps move right?
+            # Move sold out corps stock value right
+            corporations_to_move_price.sort.each do |corp|
+              next unless corp.share_price
+
+              old_price = corp.share_price
+
+              sold_out_stock_movement(corp) if sold_out?(corp) && @game.sold_out_increase?(corp)
+
+              @game.log_share_price(corp, old_price)
+            end
           end
 
           def remove_private(company)
@@ -97,17 +106,11 @@ module Engine
             minor = @game.find_corporation(company)
             @game.close_corporation(minor)
 
-            # The `close_company(company)` method is closing the specified company. It marks the company as closed and
-            # removes it from the game by deleting it from the list of companies.
             close_company(company)
           end
 
           def remove_concession(company)
             @game.log << "No bids on concession #{company.id}, it will be removed from the game"
-
-            corporation_id = company.name[-3..-1]
-            corporation = @game.corporation_by_id(corporation_id)
-            @game.close_corporation(corporation)
 
             close_company(company)
           end
@@ -115,6 +118,10 @@ module Engine
           def close_company(company)
             company.close!
             @game.companies.delete(company)
+          end
+
+          def sold_out_stock_movement(corp)
+            @game.stock_market.move_right(corp)
           end
         end
       end
