@@ -358,8 +358,8 @@ module Engine
 
           unowned_head = head.filter { |c| !c.owner || c.owner == @bank }
 
-          @log << "Reordering items to make sure concession is available for auction: "\
-            "#{unowned_head.map(&:id).join(', ')} moved to the end of the timeline"
+          @log << 'Reordering items to make sure concession is available for auction: '\
+                  "#{unowned_head.map(&:id).join(', ')} moved to the end of the timeline"
         end
 
         def setup_bidboxes
@@ -432,7 +432,7 @@ module Engine
             G1822::Step::Route,
             G1822Africa::Step::Dividend,
             G1822::Step::BuyTrain,
-            G1822::Step::MinorAcquisition,
+            G1822Africa::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
             G1822::Step::IssueShares,
