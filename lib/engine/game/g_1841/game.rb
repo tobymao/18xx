@@ -629,7 +629,8 @@ module Engine
             next if hex.tile.borders.any? { |b| b.edge == e && ((b.type == :impassable) || (b.type == :province)) }
 
             neighbor = hex_neighbor(hex, e)
-            neighbor && !neighbor.tile.preprinted
+            np_edge = hex.invert(e)
+            neighbor && !neighbor.tile.preprinted && neighbor.tile.exits.include?(np_edge)
           end
         end
 
@@ -2497,6 +2498,13 @@ module Engine
             (!in_full_chain?(active, corp) && (!historical?(corp) || @phase.name.to_i >= 4))
         end
 
+        # can sell a partial share of a president's share if another entity can become pres OR
+        # there is at least one share in the market
+        def can_sell_partial?(owner, corp)
+          (corp.player_share_holders.reject { |s_h, _| s_h == owner }.values.max || 0) > 10 ||
+            !@share_pool.shares_of(corp).empty?
+        end
+
         def corp_minimum_to_retain(owner, corp, active)
           return 0 if can_dump?(owner, corp, active)
           return 0 if historical?(corp)
@@ -2508,6 +2516,7 @@ module Engine
           owner = bundle.owner
           corp = bundle.corporation
 
+          return false if bundle.partial? && !can_sell_partial?(owner, corp)
           return true if can_dump?(owner, corp, active)
 
           corp_minimum_to_retain(owner, corp, active) <= bundle.percent &&
