@@ -13,12 +13,12 @@ module Engine
         include G1822Africa::Entities
         include G1822Africa::Map
 
-        CERT_LIMIT = { 2 => 16, 3 => 13, 4 => 10 }.freeze
+        CERT_LIMIT = { 2 => 99, 3 => 99, 4 => 99 }.freeze
 
         BIDDING_TOKENS = {
-          '3': 6,
-          '4': 5,
-          '5': 4,
+          '2': 3,
+          '3': 3,
+          '4': 3,
         }.freeze
 
         EXCHANGE_TOKENS = {
@@ -42,25 +42,44 @@ module Engine
         BANK_CASH = 99_999
 
         MARKET = [
-          %w[40 50p 60xp 70xp 80xp 90 100 110 120 135 150 165e],
+          %w[40 50p 60xp 70xp 80xp 90m 100 110 120 135 150 165e],
         ].freeze
 
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
 
-        PRIVATE_TRAINS = %w[].freeze
-        EXTRA_TRAINS = %w[].freeze
-        EXTRA_TRAIN_PERMANENTS = %w[].freeze
-        PRIVATE_MAIL_CONTRACTS = %w[].freeze
-        PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5].freeze
+        EXTRA_TRAINS = %w[2P P+ LP].freeze
+        EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
+        PRIVATE_MAIL_CONTRACTS = [].freeze # Stub
+        PRIVATE_PHASE_REVENUE = %w[P16].freeze
 
-        LOCAL_TRAIN_CAN_CARRY_MAIL = true
+        BIDDING_BOX_START_PRIVATE = nil
+        BIDDING_BOX_START_MINOR = nil
+        DOUBLE_HEX = [].freeze
 
-        # Don't run 1822 specific code for the LCDR
-        COMPANY_LCDR = nil
+        COMPANY_10X_REVENUE = 'P16'
 
+        MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
+
+
+        # Disable 1822-specific rules
+        COMPANY_MTONR = 'P2'
+        COMPANY_LCDR = 'P5'
+        COMPANY_EGR = 'P8'
+        COMPANY_DOUBLE_CASH = 'P9'
+        COMPANY_DOUBLE_CASH_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
+        COMPANY_GSWR = nil
+        COMPANY_GSWR_DISCOUNT = nil
+        COMPANY_BER = nil
+        COMPANY_LSR = nil
+        COMPANY_OSTH = nil
+        COMPANY_LUR = nil
+        COMPANY_CHPR = nil
+        COMPANY_5X_REVENUE = nil
+        COMPANY_HSBC = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major minor], phase: 1 },
@@ -127,6 +146,8 @@ module Engine
           'full_capitalisation' =>
             ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
         }.freeze
+
+        MARKET_TEXT = G1822::Game::MARKET_TEXT.merge(max_price: 'Maximum price for a minor').freeze
 
         PHASES = [
           {
@@ -279,7 +300,8 @@ module Engine
           },
         ].freeze
 
-        # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
+        UPGRADE_COST_L_TO_2 = 50
+
         def setup_companies
           minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
           concessions = @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
@@ -364,12 +386,12 @@ module Engine
           end
         end
 
-        def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
         def init_stock_market
           G1822Africa::StockMarket.new(game_market)
         end
 
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
