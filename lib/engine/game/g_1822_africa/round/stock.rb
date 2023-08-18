@@ -22,20 +22,20 @@ module Engine
           end
 
           def finish_round
-            return @game.end_game! if @game.nothing_sold_in_sr?
-
             float_minors = []
             minor_count = 0
             remove_l_count = 0
             remove_minor = nil
+            remove_concession = nil
 
-            minors, companies = @game.bidbox.partition { |c| c.id[0] == @game.class::COMPANY_MINOR_PREFIX }
+            minors, companies = @game.bidbox.partition { |c| @game.is_minor?(c) }
 
-            companies.each do |company|
+            companies.each_with_index do |company, index|
               if (bid = highest_bid(company))
                 buy_company(bid)
               else
                 company.owner = nil
+                remove_concession = company if index == 0 && @game.is_concession?(company)
               end
             end
 
@@ -61,13 +61,42 @@ module Engine
             remove_l_trains(remove_l_count) if remove_l_count.positive? && @game.depot.upcoming.first.name == 'L'
             remove_minor_and_first_train(remove_minor) if remove_minor
 
+            # Remove all if nothing was purchased, or just concession from first bidbox
+            if @game.nothing_sold_in_sr?
+              @game.bidbox.each do |company|
+                close_company(company)
+              end
+            elsif remove_concession
+              close_company(remove_concession)
+            end
+
             # Refill the bidbox
             @game.bidbox_refill!
 
             # Increase player loans with 50% interest
             @game.add_interest_player_loans!
 
-            super
+            # Should sold out corps move right?
+          end
+
+          def close_company(company)
+            company_type = if @game.is_minor?(company)
+                              'minor'
+                            elsif @game.is_concession?(company)
+                              'concession'
+                            else
+                              'company'
+                            end
+
+            @game.log << "No bids on #{company_type} #{company.id}, it will close"
+
+            unless @game.is_private?(company)
+              corporation = @game.find_corporation(company)
+              @game.close_corporation(corporation)
+            end
+
+            company.close!
+            @game.companies.delete(company)
           end
         end
       end

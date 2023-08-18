@@ -306,9 +306,9 @@ module Engine
         @bidbox_cache = []
 
         def setup_companies
-          minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
-          concessions = @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
-          privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
+          minors = @companies.select { |c| is_minor?(c) }
+          concessions = @companies.select { |c| is_concession?(c) }
+          privates = @companies.select { |c| is_private?(c) }
 
           @companies.clear
           @companies.concat(minors)
@@ -331,9 +331,10 @@ module Engine
         end
 
         def reorder_companies_on_concession
-          next_concession = bank_companies.find { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
+          next_concession = bank_companies.find { |c| is_concession?(c) }
           next_concession_index = @companies.index(next_concession)
 
+          # Only reorder if next concession is not the first company
           return if bank_companies.index(next_concession).zero?
 
           head = @companies[0...next_concession_index]
@@ -387,7 +388,7 @@ module Engine
         def bidbox_refill!
           @bidbox_cache = bank_companies
                                         .first(self.class::BIDDING_BOX_MINOR_COUNT)
-                                        .select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
+                                        .select { |c| is_minor?(c) }
                                         .map(&:id)
 
           # Set the reservation color of all the minors in the bid boxes
@@ -469,8 +470,20 @@ module Engine
           stock_round
         end
 
+        def is_concession?(company)
+          company.id[0] == self.class::COMPANY_CONCESSION_PREFIX
+        end
+
+        def is_minor?(company)
+          company.id[0] == self.class::COMPANY_MINOR_PREFIX
+        end
+
+        def is_private?(company)
+          company.id[0] == self.class::COMPANY_PRIVATE_PREFIX
+        end
+
         def custom_end_game_reached?
-          # End if bid boxes cannot be refilled AFTER SR
+          bidbox.empty?
         end
 
         # Temporary stub
