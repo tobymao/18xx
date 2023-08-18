@@ -64,6 +64,7 @@ module Engine
         MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
 
+        STOCK_ROUND_NAME = 'Stock'
 
         # Disable 1822-specific rules
         COMPANY_MTONR = 'P2'
@@ -177,7 +178,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { minor: 1, major: 2 },
+            train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green brown],
             status: %w[can_buy_trains
                        can_acquire_minor_bidbox
@@ -302,6 +303,8 @@ module Engine
 
         UPGRADE_COST_L_TO_2 = 50
 
+        @bidbox_cache = []
+
         def setup_companies
           minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
           concessions = @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
@@ -325,36 +328,39 @@ module Engine
                           end
             c.max_price = 10_000
           end
+        end
 
-          @companies = put_concession_to_front(@companies)
+        def reorder_companies_on_concession
+          next_concession = bank_companies.find { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
+          next_concession_index = @companies.index(next_concession)
+
+          return if bank_companies.index(next_concession).zero?
+
+          head = @companies[0...next_concession_index]
+          tail = @companies[next_concession_index..-1]
+
+          @companies = tail + head
+
+          unowned_head = head.filter { |c| !c.owner || c.owner == @bank }
+
+          @log << "Reordering to make sure concession is available for auction: "\
+            "#{unowned_head.map(&:id).join(', ')} moved to the end of the timeline"
         end
 
         def setup_bidboxes
+          # Put the concessions to the front of the bidbox in first SR set
+          reorder_companies_on_concession if @turn == 1
+
           # Set the owner to bank for the companies up for auction this stockround
-          bidbox_minors_refill!
-          bidbox_minors.each do |minor|
+          bidbox_refill!
+          bidbox.each do |minor|
             minor.owner = @bank
           end
-
-          # Reset the choice for P9-M&GNR
-          @double_cash_choice = nil
         end
 
-        def put_concession_to_front(companies)
-          first_concession_index = companies.find_index { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
-
-          head = companies[0...first_concession_index]
-          tail = companies[first_concession_index..-1]
-
-          tail + head
-        end
-
-        def bidbox_minors
+        def bidbox
           bank_companies.first(self.class::BIDDING_BOX_MINOR_COUNT)
         end
-
-        def bidbox_concessions = []
-        def bidbox_privates = []
 
         def bank_companies
           @companies.select do |c|
@@ -366,7 +372,7 @@ module Engine
           timeline = []
 
           companies = bank_companies.map do |company|
-            "#{self.class::COMPANY_SHORT_NAMES[company.id]}#{'*' if bidbox_minors.any? { |c| c == company }}"
+            "#{self.class::COMPANY_SHORT_NAMES[company.id]}#{'*' if bidbox.any? { |c| c == company }}"
           end
 
           timeline << companies.join(', ') unless companies.empty?
@@ -374,14 +380,18 @@ module Engine
           timeline
         end
 
-        def bidbox_minors_refill!
-          @bidbox_minors_cache = bank_companies
-                                   .first(self.class::BIDDING_BOX_MINOR_COUNT)
-                                   .select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
-                                   .map(&:id)
+        def unowned_purchasable_companies(_entity)
+          bank_companies
+        end
+
+        def bidbox_refill!
+          @bidbox_cache = bank_companies
+                                        .first(self.class::BIDDING_BOX_MINOR_COUNT)
+                                        .select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
+                                        .map(&:id)
 
           # Set the reservation color of all the minors in the bid boxes
-          @bidbox_minors_cache.each do |company_id|
+          @bidbox_cache.each do |company_id|
             corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
           end
         end
@@ -412,12 +422,44 @@ module Engine
           ], round_num: round_num)
         end
 
+        def stock_round(round_num)
+          G1822Africa::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1822::Step::BuySellParShares,
+          ], round_num: round_num)
+        end
+
+        def total_rounds(name)
+          @operating_rounds if name == self.class::OPERATING_ROUND_NAME
+          2 if name == self.class::STOCK_ROUND_NAME
+        end
+
         def next_round!
-          if @round == G1822::Round::Choices && @round.round_num == 1
-            @round = new_stock_round(@round.round_num + 1)
-          else
-            super
-          end
+          @round =
+            case @round
+            when Engine::Round::Stock
+              if @round.round_num == 1
+                new_stock_round(@round.round_num + 1)
+              else
+                @operating_rounds = @phase.operating_rounds
+                reorder_players
+                new_operating_round
+              end
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
         end
 
         def new_stock_round(round_num = 1)
@@ -425,14 +467,6 @@ module Engine
 
           @log << "-- #{round_description('Stock', round_num)} --"
           stock_round
-        end
-
-        def round_description(name, round_number = 1)
-          description = super
-
-          description += ".#{round_number}" if name == 'Stock' && !round_number.nil?
-
-          description.strip
         end
 
         def custom_end_game_reached?
@@ -443,6 +477,9 @@ module Engine
         def setup_exchange_tokens; end
 
         # Stubbed out because this game doesn't it, but base 22 does
+        def bidbox_minors = []
+        def bidbox_concessions = []
+        def bidbox_privates = []
         def company_tax_haven_bundle(choice); end
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
