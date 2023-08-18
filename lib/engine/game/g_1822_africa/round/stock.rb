@@ -28,14 +28,14 @@ module Engine
             remove_minor = nil
             concession_to_remove = nil
 
-            minors, companies = @game.bidbox.partition { |c| @game.is_minor?(c) }
+            minors, companies = @game.bidbox.partition { |c| @game.minor?(c) }
 
             companies.each_with_index do |company, index|
               if (bid = highest_bid(company))
                 buy_company(bid)
               else
                 company.owner = nil
-                concession_to_remove = company if index == 0 && @game.is_concession?(company)
+                concession_to_remove = company if index.zero? && @game.concession?(company)
               end
             end
 
@@ -64,11 +64,11 @@ module Engine
             # Remove all if nothing was purchased, or just concession from first bidbox
             if @game.nothing_sold_in_sr?
               @game.bidbox.each do |company|
-                if @game.is_concession?(company)
+                if @game.concession?(company)
                   remove_concession(company)
-                elsif @game.is_minor?(company)
+                elsif @game.minor?(company)
                   remove_minor(company)
-                elsif @game.is_private?(company)
+                elsif @game.private?(company)
                   remove_private(company)
                 end
               end

@@ -312,9 +312,9 @@ module Engine
         @bidbox_companies_size = false
 
         def setup_companies
-          minors = @companies.select { |c| is_minor?(c) }
-          concessions = @companies.select { |c| is_concession?(c) }
-          privates = @companies.select { |c| is_private?(c) }
+          minors = @companies.select { |c| minor?(c) }
+          concessions = @companies.select { |c| concession?(c) }
+          privates = @companies.select { |c| private?(c) }
 
           @companies.clear
           @companies.concat(minors)
@@ -345,7 +345,7 @@ module Engine
         end
 
         def reorder_companies_on_concession
-          next_concession = bank_companies.find { |c| is_concession?(c) }
+          next_concession = bank_companies.find { |c| concession?(c) }
           next_concession_index = @companies.index(next_concession)
 
           # Only reorder if next concession is not the first company
@@ -402,7 +402,7 @@ module Engine
         def bidbox_refill!
           @bidbox_cache = bank_companies
                                         .first(self.class::BIDDING_BOX_MINOR_COUNT)
-                                        .select { |c| is_minor?(c) }
+                                        .select { |c| minor?(c) }
                                         .map(&:id)
 
           # Set the reservation color of all the minors in the bid boxes
@@ -485,15 +485,15 @@ module Engine
           stock_round(round_num)
         end
 
-        def is_concession?(company)
+        def concession?(company)
           company.id[0] == self.class::COMPANY_CONCESSION_PREFIX
         end
 
-        def is_minor?(company)
+        def minor?(company)
           company.id[0] == self.class::COMPANY_MINOR_PREFIX
         end
 
-        def is_private?(company)
+        def private?(company)
           company.id[0] == self.class::COMPANY_PRIVATE_PREFIX
         end
 
