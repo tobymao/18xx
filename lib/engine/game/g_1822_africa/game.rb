@@ -47,7 +47,11 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
+
         GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Cannot refill bid boxes'
+        )
 
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5].freeze
         EXTRA_TRAINS = %w[2P P+ LP].freeze
@@ -177,7 +181,7 @@ module Engine
           },
           {
             name: '5',
-            on: '5',
+            on: '5/E',
             train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green brown],
             status: %w[can_buy_trains
@@ -189,7 +193,7 @@ module Engine
           },
           {
             name: '6',
-            on: '6',
+            on: '6/E',
             train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown],
             status: %w[can_buy_trains
@@ -225,7 +229,7 @@ module Engine
                 name: '2',
                 distance: 2,
                 price: 100,
-                rusts_on: '4',
+                rusts_on: '5/E',
                 available_on: '1',
               },
             ],
@@ -235,7 +239,7 @@ module Engine
             distance: 3,
             num: 5,
             price: 160,
-            rusts_on: '6',
+            rusts_on: '6/E',
           },
           {
             name: '5/E',
@@ -304,6 +308,7 @@ module Engine
         UPGRADE_COST_L_TO_2 = 50
 
         @bidbox_cache = []
+        @bidbox_companies_size = false
 
         def setup_companies
           minors = @companies.select { |c| is_minor?(c) }
@@ -395,10 +400,12 @@ module Engine
           @bidbox_cache.each do |company_id|
             corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
           end
+
+          @bidbox_companies_size = bidbox.length
         end
 
         def init_stock_market
-          G1822Africa::StockMarket.new(game_market)
+          G1822Africa::StockMarket.new(game_market, [])
         end
 
         def operating_round(round_num)
@@ -423,7 +430,7 @@ module Engine
           ], round_num: round_num)
         end
 
-        def stock_round(round_num)
+        def stock_round(round_num = 1)
           G1822Africa::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1822::Step::BuySellParShares,
@@ -464,10 +471,9 @@ module Engine
         end
 
         def new_stock_round(round_num = 1)
-          @round_counter += 1 if round_num == 2
-
           @log << "-- #{round_description('Stock', round_num)} --"
-          stock_round
+          @round_counter += 1
+          stock_round(round_num)
         end
 
         def is_concession?(company)
@@ -482,8 +488,9 @@ module Engine
           company.id[0] == self.class::COMPANY_PRIVATE_PREFIX
         end
 
-        def custom_end_game_reached?
-          bidbox.empty?
+        def compute_game_end
+          return %i[custom full_or] if bidbox.empty?
+          return %i[stock_market current_or] if @stock_market.max_reached?
         end
 
         # Temporary stub
