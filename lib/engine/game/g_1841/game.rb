@@ -1913,8 +1913,8 @@ module Engine
         def transform_2nd_offer
           # offer a share to all current player shareholders
           @transform_state = :offer2
-          @share_offer_list = active_share_holder_list(@share_offer_corp.player, @share_offer_corp, include_corporations: false)
-          @log << 'Second round of share purchase (players only)'
+          @share_offer_list = @players.rotate(@players.index(@share_offer_corp.player)).reject(&:bankrupt)
+          @log << 'Second round of share purchase (all players)'
           share_offer_next
         end
 
