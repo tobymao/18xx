@@ -10,12 +10,15 @@ module Engine
         class MinorAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
           ACTIONS = %w[bid pass].freeze
+          MIN_PRICE = 100
 
           def actions(entity)
             return [] unless entity == current_entity
             return [] if @minors.empty?
+            return %w[bid pass] if @auctioning
+            return %w[par] if discount_mode?
 
-            ACTIONS
+            %w[bid]
           end
 
           def setup
@@ -39,17 +42,29 @@ module Engine
           end
 
           def ipo_type(_corporation)
-            :bid
+            discount_mode? ? :par : :bid
+          end
+
+          def get_par_prices(_entity, _corporation)
+            # This only gets called once everyone has less than 100F, and the
+            # remaining minor companies are being purchased.
+            [par_price(MIN_PRICE)]
           end
 
           def min_bid(minor)
-            return 100 unless @auctioning
+            return MIN_PRICE unless @auctioning
 
             highest_bid(minor).price + @game.class::MIN_BID_INCREMENT
           end
 
           def max_bid(player, _minor)
             player.cash
+          end
+
+          # If everyone has less than 100F then the auction ends and instead
+          # the remaining minors are sold off one-by-one.
+          def discount_mode?
+            @game.players.all? { |player| player.cash < MIN_PRICE }
           end
 
           def active_entities
@@ -67,14 +82,31 @@ module Engine
                     "for #{bid.corporation.name}"
           end
 
-          def win_bid(winner, minor)
-            player = winner.entity
-            price = winner.price
-            player.spend(price, @game.bank)
+          def win_bid(bid, minor)
+            player = bid.entity
+            price = bid.price
             @log << "#{player.name} wins the auction for #{minor.name} " \
                     "with a bid of #{@game.format_currency(price)}"
-
             purchase_minor(minor, player, price)
+          end
+
+          def post_win_bid(_bid, _minor)
+            next_entity!
+          end
+
+          def next_entity!
+            if discount_mode?
+              # Go to the player with the most cash. If there is a tie then
+              # choose the one who is next in table order.
+              @round.goto_entity!(entities.rotate(entity_index + 1).max_by(&:cash))
+            else
+              # Go to the next player in table order after the player who
+              # started the current auction. Skip anyone who does not have
+              # enough cash to start another auction.
+              @round.next_entity_index!
+              entity = entities[entity_index]
+              next_entity! if entity.cash < MIN_PRICE
+            end
           end
 
           def process_bid(action)
@@ -84,41 +116,47 @@ module Engine
               add_bid(action)
             else
               selection_bid(action)
-              next_entity! if @auctioning
             end
           end
 
           def process_pass(action)
             entity = action.entity
+            pass_auction(entity)
+            resolve_bids
+          end
 
-            if @auctioning
-              pass_auction(entity)
-              resolve_bids
-            else
-              # raise GameError, 'Not allowed to pass selecting a minor'
-              @log << "#{entity.name} passes bidding"
-              entity.pass!
-              all_passed! if entities.all?(&:passed?)
-            end
+          def process_par(action)
+            player = action.entity
+            minor = action.corporation
+            price = player.cash
+            @log << "#{player.name} purchases #{minor.name} " \
+                    "for #{@game.format_currency(price)}"
+            purchase_minor(minor, player, price)
             next_entity!
           end
 
-          def next_entity!
-            @round.next_entity_index!
-            entity = entities[entity_index]
-            next_entity! if entity&.passed?
+          def purchase_minor(minor, player, price)
+            player.spend(price, @game.bank) if price.positive?
+            share_price = par_price(price)
+            @game.stock_market.set_par(minor, share_price)
+            @game.bank.spend(share_price.price * 2, minor)
+            @game.share_pool.buy_shares(player,
+                                        minor.presidents_share.to_bundle,
+                                        exchange: :free,
+                                        silent: true)
+            @game.after_par(minor)
+
+            @minors.delete(minor)
+            @round.minor_floated = minor
+            @round.num_laid_track = 0
+            @round.laid_hexes.clear
           end
 
-          def purchase_minor(minor, player, price)
-            price = 100 if price < 100
-
-            par_price = @game.stock_market.par_prices.find do |pp|
-              pp.types.include?(:par_1) && (pp.price * 2 <= price)
+          def par_price(price)
+            cert_cost = [price, MIN_PRICE].max
+            @game.stock_market.par_prices.find do |pp|
+              pp.types.include?(:par_1) && (pp.price * 2 <= cert_cost)
             end
-            @game.stock_market.set_par(minor, par_price)
-            @game.bank.spend(par_price.price * 2, minor)
-            @game.share_pool.transfer_shares(minor.shares.first.to_bundle, player)
-            @game.after_par(minor)
           end
         end
       end
