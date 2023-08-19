@@ -313,16 +313,20 @@ module Engine
           },
         ].freeze
 
+        def game_companies
+          # The Guillaume-Luxembourg is only used in four-player games.
+          return [] unless @players.size == 4
+
+          super
+        end
+
         def reservation_corporations
           corporations.select { |c| c.type == :minor }
         end
 
-        def all_corporations
-          minors + corporations
-        end
-
         def sorted_corporations
-          minors.sort + corporations.sort
+          minors, majors = corporations.partition { |corp| corp.type == :minor }
+          minors.sort + majors.sort
         end
       end
     end
