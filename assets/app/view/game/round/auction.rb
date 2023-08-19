@@ -46,6 +46,7 @@ module View
               *render_minors,
               *render_corporations,
               render_par_corporations,
+              render_tracking_corporations,
               render_players,
               render_map,
               render_stock_market,
@@ -357,6 +358,25 @@ module View
           h(:div, props, corporations)
         end
 
+        def render_tracking_corporations
+          return nil unless @current_actions.include?('lay_tile')
+
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          corporations = []
+          @step.available.each do |corporation|
+            children = []
+            children << h(Corporation, corporation: corporation)
+            corporations << h(:div, props, children)
+          end
+          h(:div, props, corporations)
+        end
+
         def render_ipo_input
           type = @step.respond_to?(:ipo_type) ? @step.ipo_type(@selected_corporation) : :par
           case type
@@ -483,7 +503,11 @@ module View
           show = @step.available.any?(&:minor?) || (@step.respond_to?(:show_map) && @step.show_map)
           return nil unless show
 
-          h(Game::Map, game: @game, opacity: 1.0)
+          if @current_actions.include?('lay_tile')
+            h(Game::Map, game: @game)
+          else
+            h(Game::Map, game: @game, opacity: 1.0)
+          end
         end
 
         def render_stock_market

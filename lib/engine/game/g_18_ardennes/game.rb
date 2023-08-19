@@ -27,6 +27,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
+            G18Ardennes::Step::HomeHexTile,
             G18Ardennes::Step::MinorAuction,
           ])
         end
