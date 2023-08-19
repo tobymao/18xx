@@ -114,6 +114,11 @@ module Engine
           'M30' => '30',
         }.freeze
 
+        MAJOR_TILE_LAYS = [
+          { lay: true, upgrade: true, cannot_reuse_same_hex: true },
+          { lay: :not_if_upgraded, upgrade: false, cannot_reuse_same_hex: true },
+        ].freeze
+
         CURRENCY_FORMAT_STR = '$%s'
 
         EXCHANGE_TOKENS = {
@@ -282,7 +287,8 @@ module Engine
             G1822CA::Step::Route,
             G1822::Step::Dividend,
             G1822::Step::BuyTrain,
-            G1822::Step::MinorAcquisition,
+            G1822CA::Step::MinorAcquisition,
+            G1822CA::Step::AcquisitionTrack,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
             G1822::Step::IssueShares,

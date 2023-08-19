@@ -33,7 +33,7 @@ module Engine
 
       def get_tile_lay(entity)
         corporation = get_tile_lay_corporation(entity)
-        action = @game.tile_lays(corporation)[@round.num_laid_track]&.clone
+        action = @game.tile_lays(corporation)[tile_lay_index]&.clone
         return unless action
 
         action[:lay] = !@round.upgraded_track if action[:lay] == :not_if_upgraded
@@ -42,6 +42,10 @@ module Engine
         action[:upgrade_cost] = action[:upgrade_cost] || action[:cost]
         action[:cannot_reuse_same_hex] = action[:cannot_reuse_same_hex] || false
         action
+      end
+
+      def tile_lay_index
+        @round.num_laid_track
       end
 
       def get_tile_lay_corporation(entity)
