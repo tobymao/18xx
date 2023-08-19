@@ -20,9 +20,20 @@ module Engine
         BIDDING_BOX_START_PRIVATE = 'P1'
 
         PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
+
+        COMPANY_MTONR = nil # Remove Town; two companies instead of one here
+        COMPANY_LCDR = nil # English Channel
+        COMPANY_EGR = nil # Hill Discount
         COMPANY_DOUBLE_CASH = 'P7'
+        COMPANY_GSWR = nil # River Discount
+        COMPANY_BER = 'P12' # Advanced Tile Lay
+        COMPANY_LSR = 'P21' # Extra Tile Lay
         COMPANY_10X_REVENUE = 'P8'
+        COMPANY_OSTH = 'P11' # Tax Haven
+        COMPANY_LUR = nil # Move Card
+        COMPANY_CHPR = 'P28' # Station Swap
         COMPANY_5X_REVENUE = 'P9'
+        COMPANY_HSBC = nil # Grimsby/Hull Bridge
 
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
 
@@ -251,6 +262,38 @@ module Engine
         def company_tax_haven_bundle(choice); end
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
+
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            G1822::Step::PendingToken,
+            G1822::Step::FirstTurnHousekeeping,
+            Engine::Step::AcquireCompany,
+            G1822::Step::DiscardTrain,
+            G1822::Step::SpecialChoose,
+            G1822CA::Step::SpecialTrack,
+            G1822::Step::SpecialToken,
+            G1822CA::Step::Track,
+            G1822::Step::DestinationToken,
+            G1822::Step::Token,
+            G1822CA::Step::Route,
+            G1822::Step::Dividend,
+            G1822::Step::BuyTrain,
+            G1822::Step::MinorAcquisition,
+            G1822::Step::PendingToken,
+            G1822::Step::DiscardTrain,
+            G1822::Step::IssueShares,
+          ], round_num: round_num)
+        end
+
+        def must_remove_town?(entity)
+          %w[P29 P30].include?(entity.id)
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return %w[5 6 57].include?(to.name) if from.name == 'AG13' && from.color == :white
+
+          super
+        end
       end
     end
   end
