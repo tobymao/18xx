@@ -31,6 +31,16 @@ module Engine
             G18Ardennes::Step::MinorAuction,
           ])
         end
+
+        def route_distance_str(route)
+          towns = route.visited_stops.count(&:town?)
+          cities = route_distance(route) - towns
+          if route.train.name != '5D' && towns.positive?
+            "#{cities}+#{towns}"
+          else
+            cities.to_s
+          end
+        end
       end
     end
   end
