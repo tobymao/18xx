@@ -139,7 +139,7 @@ module Engine
 
       def start_auction(bid)
         @auctioning = bid.company
-        @log << "#{@auctioning.name} goes up for auction"
+        @log << "-- #{bid.entity.name} nominates #{@auctioning.name} for auction --"
         add_bid(bid)
         starter = bid.entity
         start_price = bid.price
