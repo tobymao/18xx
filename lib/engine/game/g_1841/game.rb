@@ -2495,7 +2495,7 @@ module Engine
           diff = total_cost - corp.cash
           return unless diff.positive?
 
-          num_shares = (2.0 * (diff / corp.share_price.price)).ceil
+          num_shares = ((2.0 * diff) / corp.share_price.price).ceil
           raise GameError, 'Assumption about starting token EMR is wrong' if num_shares > corp.shares_of(corp).size
 
           bundle = ShareBundle.new(corp.shares_of(corp).take(num_shares))
