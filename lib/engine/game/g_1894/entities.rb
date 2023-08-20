@@ -195,7 +195,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Receives subsidy equal to its par price',
+                description: 'Capitalized at 110%',
                 desc_detail: 'Upon being parred Ouest receives a subsidy equal to its par price '\
                              'paid by the bank into its treasury.',
                 remove: 'par',
