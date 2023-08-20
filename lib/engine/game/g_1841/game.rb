@@ -1632,7 +1632,6 @@ module Engine
         end
 
         def merger_tokens_finish
-          @merger_keep_hexes = []
           if @merger_tuscan && @tuscan_merge_ssfl
             # Tuscan Merge: first merge (of minors)
             # - just replace tokens and bring total to four
@@ -1719,9 +1718,6 @@ module Engine
         end
 
         def merger_finish
-          hexes = (@merger_corpa.tokens.select(&:used) + @merger_corpb.tokens.select(&:used)).map { |t| t.city.hex }
-          raise GameError, 'Must leave token in Pisa and/or Firenze' unless @merger_keep_hexes.all? { |h| hexes.include(h) }
-
           # create new tokens if needed
           (@merger_token_cnt - 2).times { @merger_target.tokens << Token.new(@merger_target, price: 0) } if @merger_token_cnt > 2
 

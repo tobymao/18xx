@@ -88,7 +88,8 @@ module Engine
             raise GameError, "Cannot remove #{token.corporation.name} token" unless can_replace_token?(entity, token)
 
             city_tokens = pending_corporations.first.tokens.select { |t| t.used && t.city.city? && !t.city.pass? }
-            city_tokens << pending_corporations.last.tokens.select { |t| t.used && t.city.city? && !t.city.pass? }
+            city_tokens.concat(pending_corporations.last.tokens.select { |t| t.used && t.city.city? && !t.city.pass? })
+            city_tokens.compact!
 
             raise GameError, 'Cannot remove last non-pass token' if city_tokens.one? && token == city_tokens[0]
 
