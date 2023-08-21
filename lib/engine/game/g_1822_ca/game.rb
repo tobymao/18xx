@@ -213,6 +213,8 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
 
+        attr_accessor :sawmill_bonus, :sawmill_hex, :sawmill_owner
+
         def setup_game_specific
           # Initialize the stock round choice for P7-Double Cash
           @double_cash_choice = nil
@@ -222,6 +224,11 @@ module Engine
 
           # Initialize the extra city which minor 14 (actually 13 in 22CA) might add
           @minor_14_city_exit = nil
+
+          # P13 Sawmill Bonus
+          @sawmill_bonus = 0
+          @sawmill_hex = nil
+          @sawmill_owner = nil
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
@@ -285,6 +292,7 @@ module Engine
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
+            G1822CA::Step::AssignSawmill,
             G1822::Step::SpecialChoose,
             G1822CA::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -336,6 +344,29 @@ module Engine
             else
               0
             end
+        end
+
+        def revenue_str(route)
+          super + revenue_sawmill(route, route.stops)[:description]
+        end
+
+        def revenue_sawmill(route, stops)
+          no_bonus = { description: '', revenue: 0 }
+          return no_bonus if @sawmill_hex.nil?
+          return no_bonus unless receives_sawmill_bonus?(route.train.owner)
+          return no_bonus unless stops.any? { |s| s.hex == @sawmill_hex }
+
+          { description: ' + Sawmill Bonus', revenue: @sawmill_bonus }
+        end
+
+        def receives_sawmill_bonus?(entity)
+          entity.type == :major && (@sawmill_owner.nil? || @sawmill_owner == entity)
+        end
+
+        def assignment_tokens(assignment, _simple_logos = false)
+          return unless assignment == 'P13'
+
+          @sawmill_owner.nil? ? '/icons/1822_ca/sawmill_open.svg' : '/icons/1822_ca/sawmill_closed.svg'
         end
       end
     end

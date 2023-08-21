@@ -198,7 +198,20 @@ module Engine
                   'Destination runs and E-trains both double the value of this token. A company may only include the '\
                   'token bonus to the run of one train per operating round. A town with a sawmill may not be removed '\
                   'by P29 or P30.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[A7 A9 AA15 AA9 AB22 AD18 AD20 AE17 AF16 AG13 AG3
+                          AG9 AH10 AH12 AK3 AK5 AL2 AM5 AM9 AO9 AP6 C9
+                          D10 D12 D14 D16 F10 F8 G11 G13 G15 G17 H16 H8 I11 I15
+                          I17 J12 J16 K11 K13 K15 K17 K9 L10 L16 L8 M17 M9 N6
+                          O15 O9 P14 Q7 R16 S15 U11 V18 W9 X12 Y17 Z10 Z26],
+                count: 1,
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
