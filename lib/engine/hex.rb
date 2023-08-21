@@ -111,38 +111,7 @@ module Engine
     def lay(tile)
       # key: city on @tile (AKA old_city)
       # values: city on tile (AKA new_city)
-      #
-      # map old cities to new based on edges they are connected to
-      city_map =
-        # if @tile is blank, map cities by index
-        if @tile.cities.flat_map(&:exits).empty? && (@tile.cities.size == tile.cities.size)
-          @tile.cities.zip(tile.cities).to_h
-        # if @tile is not blank, ensure connectivity is maintained
-        else
-          @tile.cities.to_h do |old_city|
-            new_city = tile.cities.find do |city|
-              # we want old_edges to be subset of new_edges
-              # without the any? check, first city will always match
-              !old_city.exits.empty? && (old_city.exits - city.exits).empty?
-            end
-
-            [old_city, new_city]
-          end
-        end
-
-      # When downgrading from yellow to no-exit tiles, assume it's the same index
-      # Also, when upgrading a no-exit city, assume it's the same index if possible, otherwise
-      # pick first available city
-      new_cities = city_map.values.compact
-      @tile.cities.each_with_index do |old_city, index|
-        next if city_map[old_city]
-
-        new_city = tile.cities[index]
-        new_city = tile.cities.find { |city| !new_cities.include?(city) } if new_cities.include?(new_city)
-
-        city_map[old_city] = new_city
-        new_cities << new_city
-      end
+      city_map = city_map_for(tile)
 
       # when upgrading, preserve reservations on previous tile
       city_map.each do |old_city, new_city|
@@ -273,6 +242,45 @@ module Engine
     def remove_token(token)
       @tile.icons.delete(@tile.icons.find { |icon| icon.name == token.corporation.id })
       @tokens.delete(token)
+    end
+
+    # key: city on @tile (AKA old_city)
+    # values: city on tile (AKA new_city)
+    #
+    # map old cities to new based on edges they are connected to
+    def city_map_for(tile)
+      # if @tile is blank, map cities by index
+      city_map =
+        if @tile.cities.flat_map(&:exits).empty? && (@tile.cities.size == tile.cities.size)
+          @tile.cities.zip(tile.cities).to_h
+        # if @tile is not blank, ensure connectivity is maintained
+        else
+          @tile.cities.to_h do |old_city|
+            new_city = tile.cities.find do |city|
+              # we want old_edges to be subset of new_edges
+              # without the any? check, first city will always match
+              !old_city.exits.empty? && (old_city.exits - city.exits).empty?
+            end
+
+            [old_city, new_city]
+          end
+        end
+
+      # When downgrading from yellow to no-exit tiles, assume it's the same index
+      # Also, when upgrading a no-exit city, assume it's the same index if possible, otherwise
+      # pick first available city
+      new_cities = city_map.values.compact
+      @tile.cities.each_with_index do |old_city, index|
+        next if city_map[old_city]
+
+        new_city = tile.cities[index]
+        new_city = tile.cities.find { |city| !new_cities.include?(city) } if new_cities.include?(new_city)
+
+        city_map[old_city] = new_city
+        new_cities << new_city
+      end
+
+      city_map
     end
 
     def inspect
