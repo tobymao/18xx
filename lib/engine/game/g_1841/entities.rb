@@ -20,7 +20,7 @@ module Engine
           ]
           unless lite?
             companies << {
-              name: '2 Società della Drada Ferrata da Lucca a Pistoia',
+              name: '2 Società della Strada Ferrata da Lucca a Pistoia',
               sym: 'SFLP',
               value: 50,
               revenue: 0,
@@ -38,7 +38,7 @@ module Engine
           }
           unless lite?
             companies << {
-              name: '4 Società per la Strada Ferrata Maria Autonia',
+              name: '4 Società per la Strada Ferrata Maria Antonia',
               sym: 'SFMA',
               value: 50,
               revenue: 0,
