@@ -7,6 +7,11 @@ module Engine
     module G1822Africa
       module Round
         class Stock < G1822::Round::Stock
+          def setup
+            @game.reset_sold_in_sr!
+            super
+          end
+
           def update_stored_winning_bids(entity)
             winning_bids = []
             check_winning = lambda { |bid_target|
@@ -63,17 +68,10 @@ module Engine
 
             # Remove all if nothing was purchased, or just concession from first bidbox
             if @game.nothing_sold_in_sr?
-              @game.bidbox.each do |company|
-                if @game.concession?(company)
-                  remove_concession(company)
-                elsif @game.minor?(company)
-                  remove_minor(company)
-                elsif @game.private?(company)
-                  remove_private(company)
-                end
-              end
+              clear_bidboxes
             elsif concession_to_remove
-              remove_concession(concession_to_remove)
+              @game.log << "No bids on concession #{concession_to_remove.id}, it will be removed from the game"
+              close_company(concession_to_remove)
             end
 
             # Refill the bidbox
@@ -94,25 +92,18 @@ module Engine
             end
           end
 
-          def remove_private(company)
-            @game.log << "No bids on private #{company.id}, it will be removed from the game"
+          def clear_bidboxes
+            @game.log << 'No bids were made, items in all bid boxes will be removed from the game'
 
-            close_company(company)
-          end
+            @game.bidbox.each do |company|
+              @game.log << "#{company.name} is removed from the game"
+              if @game.minor?(company)
+                minor = @game.find_corporation(company)
+                @game.close_corporation(minor)
+              end
 
-          def remove_minor(company)
-            @game.log << "No bids on minor #{company.id}, it will be removed from the game"
-
-            minor = @game.find_corporation(company)
-            @game.close_corporation(minor)
-
-            close_company(company)
-          end
-
-          def remove_concession(company)
-            @game.log << "No bids on concession #{company.id}, it will be removed from the game"
-
-            close_company(company)
+              close_company(company)
+            end
           end
 
           def close_company(company)

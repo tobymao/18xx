@@ -507,8 +507,9 @@ module Engine
           return %i[stock_market current_or] if @stock_market.max_reached?
         end
 
-        # Temporary stub
-        def setup_exchange_tokens; end
+        def reset_sold_in_sr!
+          @nothing_sold_in_sr = true
+        end
 
         # Stubbed out because this game doesn't use it, but base 22 does
         def bidbox_minors = []
