@@ -10,6 +10,7 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :alpha
+        PROTOTYPE = true
         DEPENDS_ON = '1822'
 
         GAME_DESIGNER = 'Scott Petersen'

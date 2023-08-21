@@ -88,7 +88,7 @@ module Engine
 
               old_price = corp.share_price
 
-              sold_out_stock_movement(corp) if sold_out?(corp) && @game.sold_out_increase?(corp)
+              sold_out_stock_movement(corp) if sold_out?(corp)
 
               @game.log_share_price(corp, old_price)
             end

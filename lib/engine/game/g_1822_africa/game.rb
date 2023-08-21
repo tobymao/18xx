@@ -70,6 +70,7 @@ module Engine
         BIDDING_BOX_MINOR_COUNT = 3
 
         STOCK_ROUND_NAME = 'Stock'
+        STOCK_ROUND_COUNT = 2
 
         # Disable 1822-specific rules
         COMPANY_MTONR = 'P2'
@@ -356,7 +357,7 @@ module Engine
 
           @companies = tail + head
 
-          unowned_head = head.filter { |c| !c.owner || c.owner == @bank }
+          unowned_head = head.select { |c| !c.owner || c.owner == @bank }
 
           @log << 'Reordering items to make sure concession is available for auction: '\
                   "#{unowned_head.map(&:id).join(', ')} moved to the end of the timeline"
@@ -430,7 +431,7 @@ module Engine
             G1822::Step::DestinationToken,
             G1822::Step::Token,
             G1822::Step::Route,
-            G1822Africa::Step::Dividend,
+            G1822::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822Africa::Step::MinorAcquisition,
             G1822::Step::PendingToken,
@@ -447,8 +448,12 @@ module Engine
         end
 
         def total_rounds(name)
-          @operating_rounds if name == self.class::OPERATING_ROUND_NAME
-          2 if name == self.class::STOCK_ROUND_NAME
+          case name
+          when self.class::OPERATING_ROUND_NAME
+            @operating_rounds
+          when self.class::STOCK_ROUND_NAME
+            self.class::STOCK_ROUND_COUNT
+          end
         end
 
         def next_round!
@@ -505,7 +510,7 @@ module Engine
         # Temporary stub
         def setup_exchange_tokens; end
 
-        # Stubbed out because this game doesn't it, but base 22 does
+        # Stubbed out because this game doesn't use it, but base 22 does
         def bidbox_minors = []
         def bidbox_concessions = []
         def bidbox_privates = []
