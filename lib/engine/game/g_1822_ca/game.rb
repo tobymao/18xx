@@ -37,6 +37,7 @@ module Engine
         COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P19 P20 P21]).freeze
 
         PRIVATE_MAIL_CONTRACTS = %w[P22 P23].freeze
+        PRIVATE_SMALL_MAIL_CONTRACTS = %w[P24 P25].freeze
         PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
         PRIVATE_REMOVE_REVENUE = %w[P1 P5 P6 P7 P14 P15 P16 P17 P18 P22 P23 P24 P25 P26 P27 P28].freeze
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
@@ -63,10 +64,10 @@ module Engine
           'P19' => 'P19 (Crowsnest Pass)',
           'P20' => 'P20 (Yellowhead Pass)',
           'P21' => 'P21 (National Dream)',
-          'P22' => 'P22 (National Mail Contract)',
-          'P23' => 'P23 (National Mail Contract)',
-          'P24' => 'P24 (Regional Mail Contract)',
-          'P25' => 'P25 (Regional Mail Contract)',
+          'P22' => 'P22 (Large Mail Contract)',
+          'P23' => 'P23 (Large Mail Contract)',
+          'P24' => 'P24 (Small Mail Contract)',
+          'P25' => 'P25 (Small Mail Contract)',
           'P26' => 'P26 (Grain Train)',
           'P27' => 'P27 (Grain Train)',
           'P28' => 'P28 (Station Swap)',
@@ -210,6 +211,12 @@ module Engine
         def setup_game_specific
           # Initialize the stock round choice for P7-Double Cash
           @double_cash_choice = nil
+
+          # Initialize a dummy player for Tax haven to hold the share and the cash it generates
+          @tax_haven = Engine::Player.new(-1, 'Tax Haven')
+
+          # Initialize the extra city which minor 14 (actually 13 in 22CA) might add
+          @minor_14_city_exit = nil
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
@@ -301,6 +308,28 @@ module Engine
 
         def company_ability_extra_track?(company)
           self.class::COMPANIES_EXTRA_TRACK_LAYS.include?(company.id)
+        end
+
+        def routes_subsidy(routes)
+          super + small_mail_contract_subsidy(routes)
+        end
+
+        def small_mail_contract_subsidy(routes)
+          return 0 if routes.empty?
+
+          entity = routes.first.train.owner
+          contract_count = entity.companies.count { |c| self.class::PRIVATE_SMALL_MAIL_CONTRACTS.include?(c.id) }
+          contract_count *
+            case @phase.name.to_i
+            when (3..4)
+              20
+            when (5..6)
+              30
+            when 7
+              40
+            else
+              0
+            end
         end
       end
     end
