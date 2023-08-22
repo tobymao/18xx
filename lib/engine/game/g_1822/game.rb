@@ -33,11 +33,11 @@ module Engine
 
         BANK_CASH = 12_000
 
-        CERT_LIMIT = { 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
+        CERT_LIMIT = { 2 => 40, 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
 
         EBUY_OTHER_VALUE = false
 
-        STARTING_CASH = { 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
+        STARTING_CASH = { 2 => 1000, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :incremental
 

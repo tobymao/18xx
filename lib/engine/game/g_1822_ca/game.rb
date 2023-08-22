@@ -211,7 +211,6 @@ module Engine
                                    CNoR CPR GNWR GT GTP GWR ICR NTR PGE QMOO].freeze
 
         MUST_SELL_IN_BLOCKS = true
-        SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
 
         attr_accessor :sawmill_bonus, :sawmill_hex, :sawmill_owner
 
@@ -281,7 +280,7 @@ module Engine
           @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
         end
 
-        # Stubbed out because this game doesn't it, but base 22 does
+        # Stubbed out because this game doesn't use it, but base 22 does
         def company_tax_haven_bundle(choice); end
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
@@ -322,6 +321,10 @@ module Engine
 
         def company_ability_extra_track?(company)
           self.class::COMPANIES_EXTRA_TRACK_LAYS.include?(company.id)
+        end
+
+        def sell_movement
+          @sell_movement ||= @players.size == 2 ? :left_share_pres : :left_per_10_if_pres_else_left_one
         end
 
         def routes_subsidy(routes)
