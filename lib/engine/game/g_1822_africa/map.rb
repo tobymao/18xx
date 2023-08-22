@@ -32,13 +32,11 @@ module Engine
           '207' => 2,
           '208' => 1,
           '619' => 6,
-          '622' => 1,
           '63' => 8,
           '448' => 'unlimited',
           '544' => 6,
           '545' => 6,
           '546' => 8,
-          '611' => 4,
           '768' =>
             {
               'count' => 4,
@@ -60,13 +58,17 @@ module Engine
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             },
-          'X5' =>
+          'X1' =>
             {
-              'count' => 3,
+              'count' => 2,
               'color' => 'brown',
-              'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                'path=a:4,b:_0;label=Y',
+              'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=Y',
+            },
+          'X2' =>
+            {
+              'count' => 1,
+              'color' => 'brown',
+              'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
             },
         }.freeze
 
@@ -77,12 +79,12 @@ module Engine
           'B2' => 'Casablanca',
           'B10' => 'Abidjan',
           'C9' => 'Lagos',
-          'D2' => 'Algeris',
-          'D4' => 'Tammanrasset',
+          'D2' => 'Algiers',
+          'D4' => 'Tamanrasset',
           'D8' => 'Kano',
           'D10' => 'Libreville',
           'E1' => 'Tunis',
-          'E9' => 'Yaounde',
+          'E9' => 'Yaoundé',
           'E11' => 'Kinshasa',
           'E13' => 'Luanda',
           'E15' => 'Windhoek',
@@ -90,7 +92,7 @@ module Engine
           'G3' => 'Cairo',
           'G7' => 'Khartoum',
           'G9' => 'Kampala',
-          'G17' => 'Yohannesburg',
+          'G17' => 'Johannesburg',
           'H8' => 'Addis Ababa',
           'H10' => 'Nairobi',
           'H12' => 'Dar es Salaam',
@@ -133,6 +135,8 @@ module Engine
             ['E19'] => 'junction;path=a:4,b:_0,terminal:1',
             ['G1'] => 'junction;path=a:0,b:_0,terminal:1',
             ['J8'] => 'junction;path=a:2,b:_0,terminal:1',
+            ['D0'] => 'junction;path=a:0,b:_0,terminal:1',
+            ['D12'] => 'junction;path=a:4,b:_0,terminal:1',
           },
         }.freeze
       end
