@@ -60,6 +60,8 @@ module Engine
               float_minor(arr[0])
             end
 
+            current_bidbox_items = @game.bidbox
+
             # Every minor with no bids will export a L/2 train. If no bid on first minors an additional
             # train will be exported, additionally the minor is also removed from the game.
             # This will procced the whole game
@@ -68,7 +70,7 @@ module Engine
 
             # Remove all if nothing was purchased, or just concession from first bidbox
             if @game.nothing_sold_in_sr?
-              clear_bidboxes
+              clear_bidboxes(current_bidbox_items)
             elsif concession_to_remove
               @game.log << "No bids on concession #{concession_to_remove.id}, it will be removed from the game"
               close_company(concession_to_remove)
@@ -92,11 +94,12 @@ module Engine
             end
           end
 
-          def clear_bidboxes
+          def clear_bidboxes(bidbox_items)
             @game.log << 'No bids were made, items in all bid boxes will be removed from the game'
 
-            @game.bidbox.each do |company|
+            bidbox_items.each do |company|
               @game.log << "#{company.name} is removed from the game"
+
               if @game.minor?(company)
                 minor = @game.find_corporation(company)
                 @game.close_corporation(minor)
