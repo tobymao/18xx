@@ -348,13 +348,13 @@ module Engine
         end
 
         def reorder_on_concession(companies)
-          concession_index = companies.find_index { |c| concession?(c) }
+          index = companies.find_index { |c| concession?(c) }
 
           # Only reorder if next concession is not the first company
-          return companies if concession_index.zero?
+          return companies if index.zero?
 
-          head = companies[0..concession_index - 1]
-          tail = companies[concession_index..-1]
+          head = companies[0..index - 1]
+          tail = companies[index..-1]
 
           tail + head
         end
