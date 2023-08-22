@@ -399,7 +399,7 @@ module Engine
           @players.rotate!(@round.entity_index)
         end
 
-        def assignment_tokens(assignment)
+        def assignment_tokens(assignment, _simple_logos = false)
           return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
 
           super

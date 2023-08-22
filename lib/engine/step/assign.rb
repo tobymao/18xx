@@ -26,7 +26,7 @@ module Engine
             raise GameError, "Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found"
           end
 
-          assignable_hexes = ability.hexes.map { |h| @game.hex_by_id(h) }
+          assignable_hexes = ability.hexes.map { |h| @game.hex_by_id(h) }.compact
           Assignable.remove_from_all!(assignable_hexes, company.id) do |unassigned|
             @log << "#{company.name} is unassigned from #{unassigned.name}"
           end
