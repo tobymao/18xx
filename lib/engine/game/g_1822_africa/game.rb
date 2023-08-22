@@ -13,12 +13,12 @@ module Engine
         include G1822Africa::Entities
         include G1822Africa::Map
 
-        CERT_LIMIT = { 2 => 16, 3 => 13, 4 => 10 }.freeze
+        CERT_LIMIT = { 2 => 99, 3 => 99, 4 => 99 }.freeze
 
         BIDDING_TOKENS = {
-          '3': 6,
-          '4': 5,
-          '5': 4,
+          '2': 3,
+          '3': 3,
+          '4': 3,
         }.freeze
 
         EXCHANGE_TOKENS = {
@@ -42,25 +42,51 @@ module Engine
         BANK_CASH = 99_999
 
         MARKET = [
-          %w[40 50p 60xp 70xp 80xp 90 100 110 120 135 150 165e],
+          %w[40 50p 60xp 70xp 80xp 90m 100 110 120 135 150 165e],
         ].freeze
 
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
+
         GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Cannot refill bid boxes'
+        )
 
-        PRIVATE_TRAINS = %w[].freeze
-        EXTRA_TRAINS = %w[].freeze
-        EXTRA_TRAIN_PERMANENTS = %w[].freeze
-        PRIVATE_MAIL_CONTRACTS = %w[].freeze
-        PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
+        EXTRA_TRAINS = %w[2P P+ LP].freeze
+        EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5].freeze
+        PRIVATE_MAIL_CONTRACTS = [].freeze # Stub
+        PRIVATE_PHASE_REVENUE = %w[P16].freeze
+        PRIVATE_REMOVE_REVENUE = %w[P13].freeze
 
-        LOCAL_TRAIN_CAN_CARRY_MAIL = true
+        BIDDING_BOX_START_PRIVATE = nil
+        BIDDING_BOX_START_MINOR = nil
+        DOUBLE_HEX = [].freeze
 
-        # Don't run 1822 specific code for the LCDR
-        COMPANY_LCDR = nil
+        COMPANY_10X_REVENUE = 'P16'
 
+        MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
+
+        STOCK_ROUND_NAME = 'Stock'
+        STOCK_ROUND_COUNT = 2
+
+        # Disable 1822-specific rules
+        COMPANY_MTONR = 'P2'
+        COMPANY_LCDR = 'P5'
+        COMPANY_EGR = 'P8'
+        COMPANY_DOUBLE_CASH = 'P9'
+        COMPANY_DOUBLE_CASH_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
+        COMPANY_GSWR = nil
+        COMPANY_GSWR_DISCOUNT = nil
+        COMPANY_BER = nil
+        COMPANY_LSR = nil
+        COMPANY_OSTH = nil
+        COMPANY_LUR = nil
+        COMPANY_CHPR = 'P13'
+        COMPANY_5X_REVENUE = nil
+        COMPANY_HSBC = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major minor], phase: 1 },
@@ -128,6 +154,60 @@ module Engine
             ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
         }.freeze
 
+        MARKET_TEXT = G1822::Game::MARKET_TEXT.merge(max_price: 'Maximum price for a minor').freeze
+
+        PHASES = [
+          {
+            name: '1',
+            on: '',
+            train_limit: { minor: 2, major: 4 },
+            tiles: [:yellow],
+            status: ['minor_float_phase1'],
+            operating_rounds: 1,
+          },
+          {
+            name: '2',
+            on: %w[2 3],
+            train_limit: { minor: 2, major: 4 },
+            tiles: [:yellow],
+            status: %w[can_convert_concessions minor_float_phase2],
+            operating_rounds: 2,
+          },
+          {
+            name: '3',
+            on: '3',
+            train_limit: { minor: 2, major: 4 },
+            tiles: %i[yellow green],
+            status: %w[can_buy_trains can_convert_concessions minor_float_phase3on],
+            operating_rounds: 2,
+          },
+          {
+            name: '5',
+            on: '5/E',
+            train_limit: { minor: 1, major: 3 },
+            tiles: %i[yellow green brown],
+            status: %w[can_buy_trains
+                       can_acquire_minor_bidbox
+                       can_par
+                       minors_green_upgrade
+                       minor_float_phase3on],
+            operating_rounds: 2,
+          },
+          {
+            name: '6',
+            on: '6/E',
+            train_limit: { minor: 1, major: 2 },
+            tiles: %i[yellow green brown],
+            status: %w[can_buy_trains
+                       can_acquire_minor_bidbox
+                       can_par
+                       full_capitalisation
+                       minors_green_upgrade
+                       minor_float_phase3on],
+            operating_rounds: 2,
+          },
+        ].freeze
+
         TRAINS = [
           {
             name: 'L',
@@ -151,7 +231,7 @@ module Engine
                 name: '2',
                 distance: 2,
                 price: 100,
-                rusts_on: '4',
+                rusts_on: '5/E',
                 available_on: '1',
               },
             ],
@@ -161,12 +241,12 @@ module Engine
             distance: 3,
             num: 5,
             price: 160,
-            rusts_on: '6',
+            rusts_on: '6/E',
           },
           {
-            name: '5',
+            name: '5/E',
             distance: 5,
-            num: 99,
+            num: 3,
             price: 350,
             events: [
               {
@@ -175,9 +255,9 @@ module Engine
             ],
           },
           {
-            name: '6',
+            name: '6/E',
             distance: 6,
-            num: 3,
+            num: 99,
             price: 400,
             events: [
               {
@@ -227,11 +307,15 @@ module Engine
           },
         ].freeze
 
-        # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
+        UPGRADE_COST_L_TO_2 = 50
+
+        @bidbox_cache = []
+        @bidbox_companies_size = false
+
         def setup_companies
-          minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
-          concessions = @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
-          privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
+          minors = @companies.select { |c| minor?(c) }
+          concessions = @companies.select { |c| concession?(c) }
+          privates = @companies.select { |c| private?(c) }
 
           @companies.clear
           @companies.concat(minors)
@@ -252,35 +336,47 @@ module Engine
             c.max_price = 10_000
           end
 
-          @companies = put_concession_to_front(@companies)
+          # Setup company abilities
+          @company_trains = {}
+          @company_trains['P1'] = find_and_remove_train_by_id('LP-0', buyable: false)
+          @company_trains['P2'] = find_and_remove_train_by_id('2P-0', buyable: false)
+          @company_trains['P3'] = find_and_remove_train_by_id('2P-1', buyable: false)
+          @company_trains['P4'] = find_and_remove_train_by_id('P+-0', buyable: false)
+          @company_trains['P5'] = find_and_remove_train_by_id('P+-1', buyable: false)
+        end
+
+        def reorder_companies_on_concession
+          next_concession = bank_companies.find { |c| concession?(c) }
+          next_concession_index = @companies.index(next_concession)
+
+          # Only reorder if next concession is not the first company
+          return if bank_companies.index(next_concession).zero?
+
+          head = @companies[0...next_concession_index]
+          tail = @companies[next_concession_index..-1]
+
+          @companies = tail + head
+
+          unowned_head = head.select { |c| !c.owner || c.owner == @bank }
+
+          @log << 'Reordering items to make sure concession is available for auction: '\
+                  "#{unowned_head.map(&:id).join(', ')} moved to the end of the timeline"
         end
 
         def setup_bidboxes
+          # Put the concessions to the front of the bidbox in first SR set
+          reorder_companies_on_concession if @turn == 1
+
           # Set the owner to bank for the companies up for auction this stockround
-          bidbox_minors_refill!
-          bidbox_minors.each do |minor|
+          bidbox_refill!
+          bidbox.each do |minor|
             minor.owner = @bank
           end
-
-          # Reset the choice for P9-M&GNR
-          @double_cash_choice = nil
         end
 
-        def put_concession_to_front(companies)
-          first_concession_index = companies.find_index { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
-
-          head = companies[0...first_concession_index]
-          tail = companies[first_concession_index..-1]
-
-          tail + head
-        end
-
-        def bidbox_minors
+        def bidbox
           bank_companies.first(self.class::BIDDING_BOX_MINOR_COUNT)
         end
-
-        def bidbox_concessions = []
-        def bidbox_privates = []
 
         def bank_companies
           @companies.select do |c|
@@ -292,7 +388,7 @@ module Engine
           timeline = []
 
           companies = bank_companies.map do |company|
-            "#{self.class::COMPANY_SHORT_NAMES[company.id]}#{'*' if bidbox_minors.any? { |c| c == company }}"
+            "#{self.class::COMPANY_SHORT_NAMES[company.id]}#{'*' if bidbox.any? { |c| c == company }}"
           end
 
           timeline << companies.join(', ') unless companies.empty?
@@ -300,49 +396,125 @@ module Engine
           timeline
         end
 
-        def bidbox_minors_refill!
-          @bidbox_minors_cache = bank_companies
-                                   .first(self.class::BIDDING_BOX_MINOR_COUNT)
-                                   .select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
-                                   .map(&:id)
+        def unowned_purchasable_companies(_entity)
+          bank_companies
+        end
+
+        def bidbox_refill!
+          @bidbox_cache = bank_companies
+                                        .first(self.class::BIDDING_BOX_MINOR_COUNT)
+                                        .select { |c| minor?(c) }
+                                        .map(&:id)
 
           # Set the reservation color of all the minors in the bid boxes
-          @bidbox_minors_cache.each do |company_id|
+          @bidbox_cache.each do |company_id|
             corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
+          end
+
+          @bidbox_companies_size = bidbox.length
+        end
+
+        def init_stock_market
+          G1822Africa::StockMarket.new(game_market, [])
+        end
+
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            G1822::Step::PendingToken,
+            G1822::Step::FirstTurnHousekeeping,
+            Engine::Step::AcquireCompany,
+            G1822::Step::DiscardTrain,
+            G1822::Step::SpecialChoose,
+            G1822::Step::SpecialTrack,
+            G1822::Step::SpecialToken,
+            G1822::Step::Track,
+            G1822::Step::DestinationToken,
+            G1822::Step::Token,
+            G1822::Step::Route,
+            G1822::Step::Dividend,
+            G1822::Step::BuyTrain,
+            G1822Africa::Step::MinorAcquisition,
+            G1822::Step::PendingToken,
+            G1822::Step::DiscardTrain,
+            G1822::Step::IssueShares,
+          ], round_num: round_num)
+        end
+
+        def stock_round(round_num = 1)
+          G1822Africa::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1822::Step::BuySellParShares,
+          ], round_num: round_num)
+        end
+
+        def total_rounds(name)
+          case name
+          when self.class::OPERATING_ROUND_NAME
+            @operating_rounds
+          when self.class::STOCK_ROUND_NAME
+            self.class::STOCK_ROUND_COUNT
           end
         end
 
         def next_round!
-          if @round == G1822::Round::Choices && @round.round_num == 1
-            @round = new_stock_round(@round.round_num + 1)
-          else
-            super
-          end
+          @round =
+            case @round
+            when Engine::Round::Stock
+              if @round.round_num == 1
+                new_stock_round(@round.round_num + 1)
+              else
+                @operating_rounds = @phase.operating_rounds
+                reorder_players
+                new_operating_round
+              end
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
         end
 
         def new_stock_round(round_num = 1)
-          @round_counter += 1 if round_num == 2
-
           @log << "-- #{round_description('Stock', round_num)} --"
-          stock_round
+          @round_counter += 1
+          stock_round(round_num)
         end
 
-        def round_description(name, round_number = 1)
-          description = super
-
-          description += ".#{round_number}" if name == 'Stock' && !round_number.nil?
-
-          description.strip
+        def concession?(company)
+          company.id[0] == self.class::COMPANY_CONCESSION_PREFIX
         end
 
-        def custom_end_game_reached?
-          # End if bid boxes cannot be refilled AFTER SR
+        def minor?(company)
+          company.id[0] == self.class::COMPANY_MINOR_PREFIX
         end
 
-        # Temporary stub
-        def setup_exchange_tokens; end
+        def private?(company)
+          company.id[0] == self.class::COMPANY_PRIVATE_PREFIX
+        end
 
-        # Stubbed out because this game doesn't it, but base 22 does
+        def compute_game_end
+          return %i[custom full_or] if bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
+          return %i[stock_market current_or] if @stock_market.max_reached?
+        end
+
+        def reset_sold_in_sr!
+          @nothing_sold_in_sr = true
+        end
+
+        # Stubbed out because this game doesn't use it, but base 22 does
+        def bidbox_minors = []
+        def bidbox_concessions = []
+        def bidbox_privates = []
         def company_tax_haven_bundle(choice); end
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
