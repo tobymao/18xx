@@ -55,9 +55,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P6 (Recycled train)',
+            name: 'P6 (Recycled train) [N/A]',
             sym: 'P6',
-            desc: 'MAJOR/MINOR, Phase 3. Close this company to buy a rusted train for full price '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR/MINOR, Phase 3. Close this company to buy a rusted train for full price '\
                   '(purchased train becomes permanent and is not a special train)',
             value: 0,
             revenue: 10,
@@ -93,9 +94,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P8 (Reserve Three Tiles)',
+            name: 'P8 (Reserve Three Tiles) [N/A]',
             sym: 'P8',
-            desc: 'MAJOR/MINOR, Phase 1. Upon acquisition, owning company must reserve three tiles from the stock '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR/MINOR, Phase 1. Upon acquisition, owning company must reserve three tiles from the stock '\
                   'of unplayed tiles for future placement. No other company may use these tiles held in reserve. '\
                   'The revenue of this private company changes to A5x the number of tiles it holds. '\
                   'Once the owning company reserves tiles, it may not place any other tiles '\
@@ -132,9 +134,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P10 (Game Reserve)',
+            name: 'P10 (Game Reserve) [N/A]',
             sym: 'P10',
-            desc: 'MAJOR/MINOR, Phase 3. When this company is acquired, the owning company must place '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR/MINOR, Phase 3. When this company is acquired, the owning company must place '\
                   'the striped Game Reserve tile on any empty (and non-desert) hex. '\
                   'Placement must not run track into an unplayable hex edge. This hex becomes a game reserve. '\
                   'The company immediately receives a bonus equal to A5x the number of hexes between '\
@@ -145,9 +148,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P11 (Mountain Rebate)',
+            name: 'P11 (Mountain Rebate) [N/A]',
             sym: 'P11',
-            desc: 'MAJOR/MINOR, Phase 3. After the owning company lays a yellow tile in a mountain hex, '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR/MINOR, Phase 3. After the owning company lays a yellow tile in a mountain hex, '\
                   'it earns A50 into its treasury. The private company immediately closes.',
             value: 0,
             revenue: 10,
@@ -155,9 +159,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P12 (Fast Sahara Building)',
+            name: 'P12 (Fast Sahara Building) [N/A]',
             sym: 'P12',
-            desc: 'MAJOR/MINOR, Phase 1. The owning company may place any amount of tiles in the hexes marked '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR/MINOR, Phase 1. The owning company may place any amount of tiles in the hexes marked '\
                   'with desert terrain as their normal tile laying step at normal cost. '\
                   'Using this ability closes the private company.',
             value: 0,
@@ -166,9 +171,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P13 (Station Swap)',
+            name: 'P13 (Station Swap) [N/A]',
             sym: 'P13',
-            desc: 'MAJOR, Phase 5. Station Marker Swap. Allows the owning company to move a token from the exchange '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR, Phase 5. Station Marker Swap. Allows the owning company to move a token from the exchange '\
                   'token area of its charter to the available token area, or vice versa. '\
                   'This company closes when its power is exercised.',
             value: 0,
@@ -177,9 +183,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P14 (Gold Mine)',
+            name: 'P14 (Gold Mine) [N/A]',
             sym: 'P14',
-            desc: 'MAJOR, Phase 3. Owning company close this company to place the +20 gold mine token in any city '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR, Phase 3. Owning company close this company to place the +20 gold mine token in any city '\
                   'with an open city slot. This token adds 20 to the value of that city for all corporations. '\
                   'The gold mine token occupies a city slot and blocks routes through that city '\
                   'if the city is otherwise full.',
@@ -189,9 +196,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P15 (Coffee Plantation)',
+            name: 'P15 (Coffee Plantation) [N/A]',
             sym: 'P15',
-            desc: 'MAJOR/MINOR, Phase 1. Owning company may close this private company to place the coffee '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR/MINOR, Phase 1. Owning company may close this private company to place the coffee '\
                   'plantation token on any hex with mountainous terrain and no tile. '\
                   'The company immediately receives into its treasury A30. When a tile is placed in that hex, '\
                   'the coffee plantation token is placed on it and prevents upgrading this tile. '\
@@ -216,9 +224,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P17 (Bank Share Buy)',
+            name: 'P17 (Bank Share Buy) [N/A]',
             sym: 'P17',
-            desc: 'MAJOR, Phase 2. Owning company may close this private company for the bank to purchase a share '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR, Phase 2. Owning company may close this private company for the bank to purchase a share '\
                   'it owns for the current market value. The share is moved to the bank pool. This does not count '\
                   'as a share issuance and does not affect the stock price.',
             value: 0,
@@ -227,9 +236,10 @@ module Engine
             color: nil,
           },
           {
-            name: 'P18 (Safari Bonus)',
+            name: 'P18 (Safari Bonus) [N/A]',
             sym: 'P18',
-            desc: 'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the company. '\
+            desc: '[NOT YET FUNCTIONAL] '\
+                  'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the company. '\
                   'It converts the train into a safari train that counts an extra 20 to the earnings for reaching '\
                   'each of the game reserves. Does not count against train limit and does not count as a train '\
                   'for the purposes of train ownership. Can’t be sold to another company. Does not close.',
@@ -652,7 +662,7 @@ module Engine
           },
           {
             sym: 'NAR',
-            name: 'NAR',
+            name: 'North African Railway',
             logo: '1822_africa/NAR',
             tokens: [0, 50],
             type: 'major',
@@ -667,7 +677,7 @@ module Engine
           },
           {
             sym: 'WAR',
-            name: 'WAR',
+            name: 'West African Railway',
             logo: '1822_africa/WAR',
             tokens: [0, 50],
             type: 'major',
@@ -675,14 +685,14 @@ module Engine
             always_market_price: true,
             coordinates: 'A7',
             color: '#CD2226',
-            text_color: 'black',
+            text_color: 'white',
             reservation_color: nil,
             destination_coordinates: 'G7',
             destination_icon: '1822_africa/WAR_DEST',
           },
           {
             sym: 'EAR',
-            name: 'EAR',
+            name: 'East African Railway',
             logo: '1822_africa/EAR',
             tokens: [0, 50],
             type: 'major',
@@ -697,29 +707,29 @@ module Engine
           },
           {
             sym: 'CAR',
-            name: 'CAR',
+            name: 'Central African Railway',
             logo: '1822_africa/CAR',
             tokens: [0, 50],
             type: 'major',
             float_percent: 20,
             always_market_price: true,
             coordinates: 'E9',
-            color: '#3C662A',
-            text_color: 'black',
+            color: '#12853F',
+            text_color: 'white',
             reservation_color: nil,
             destination_coordinates: 'D2',
             destination_icon: '1822_africa/CAR_DEST',
           },
           {
             sym: 'SAR',
-            name: 'SAR',
+            name: 'South African Railway',
             logo: '1822_africa/SAR',
             tokens: [0, 50],
             type: 'major',
             float_percent: 20,
             always_market_price: true,
             coordinates: 'F18',
-            color: '#202062',
+            color: '#007ba7',
             text_color: 'white',
             reservation_color: nil,
             destination_coordinates: 'H10',
