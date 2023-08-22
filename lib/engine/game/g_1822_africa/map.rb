@@ -70,6 +70,14 @@ module Engine
               'color' => 'brown',
               'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
             },
+          'GR1' =>
+            {
+              'count' => 1,
+              'color' => 'purple',
+              'code' => 'offboard=revenue:20,visit_cost:0;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;'\
+                        'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;path=a:5,b:_0,terminal:1;'\
+                        'icon=image:1822_africa/elephant',
+            },
         }.freeze
 
         LOCATION_NAMES = {
@@ -126,8 +134,9 @@ module Engine
                        'path=a:0,b:_0;path=a:2,b:_0',
           },
           purple: {
-            ['G13'] => 'offboard=revenue:20;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;'\
-                       'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
+            ['G13'] => 'offboard=revenue:20,visit_cost:0;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;'\
+                       'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;path=a:5,b:_0,terminal:1;'\
+                       'icon=image:1822_africa/elephant',
           },
           blue: {
             ['A3'] => 'junction;path=a:4,b:_0,terminal:1',
