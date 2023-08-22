@@ -65,6 +65,7 @@ module Engine
         DOUBLE_HEX = [].freeze
 
         COMPANY_10X_REVENUE = 'P16'
+        COMPANY_REMOVE_TOWN = 'P9'
 
         MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
@@ -73,18 +74,16 @@ module Engine
         STOCK_ROUND_COUNT = 2
 
         # Disable 1822-specific rules
-        COMPANY_MTONR = 'P2'
-        COMPANY_LCDR = 'P5'
-        COMPANY_EGR = 'P8'
-        COMPANY_DOUBLE_CASH = 'P9'
-        COMPANY_DOUBLE_CASH_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
+        COMPANY_LCDR = nil
+        COMPANY_EGR = nil
+        COMPANY_DOUBLE_CASH = nil
         COMPANY_GSWR = nil
         COMPANY_GSWR_DISCOUNT = nil
         COMPANY_BER = nil
         COMPANY_LSR = nil
         COMPANY_OSTH = nil
         COMPANY_LUR = nil
-        COMPANY_CHPR = 'P13'
+        COMPANY_CHPR = nil
         COMPANY_5X_REVENUE = nil
         COMPANY_HSBC = nil
 
@@ -509,6 +508,10 @@ module Engine
 
         def reset_sold_in_sr!
           @nothing_sold_in_sr = true
+        end
+
+        def must_remove_town?(entity)
+          entity.id == self.class::COMPANY_REMOVE_TOWN
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does
