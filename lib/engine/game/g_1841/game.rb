@@ -1066,7 +1066,7 @@ module Engine
 
         # for 1841, this means frozen
         def receivership_corporations
-          frozen_corporations
+          @corporations.select { |c| c.owner && !c.player }
         end
 
         def status_str(corp)
@@ -1775,7 +1775,17 @@ module Engine
         end
 
         def transform_shares(corp, target)
-          possible_shareholders = @players + @corporations + [@share_pool]
+          possible_shareholders = @players.rotate(@players.index(corp.player)) + @corporations + [@share_pool]
+
+          pres = corp.owner
+          old_pres = pres.shares_of(corp).find(&:president)
+          raise GameError, 'Cannot find old president share' unless old_pres
+
+          pres_share = target.shares_of(target).find(&:president)
+          @log << "#{pres.name} swaps president share of #{corp.name} for #{target.name}"
+          simple_transfer_share(old_pres, corp)
+          @share_pool.transfer_shares(pres_share.to_bundle, pres, allow_president_change: true)
+
           possible_shareholders.each do |sh|
             next if sh == corp
 
@@ -1783,15 +1793,9 @@ module Engine
             shares.each do |s|
               simple_transfer_share(s, corp)
 
-              new_share = if s.percent == 40
-                            target.shares_of(target).find(&:president)
-                          else
-                            target.shares_of(target).reject(&:president).first
-                          end
-              pres = s.percent == 40 ? 'president' : 'normal'
-              raise GameError, "No #{pres} share to tranfer" unless new_share
+              new_share = target.shares_of(target).first
 
-              @log << "#{sh.name} swaps #{pres} share of #{corp.name} for #{target.name}"
+              @log << "#{sh.name} swaps share of #{corp.name} for #{target.name}"
               @share_pool.transfer_shares(new_share.to_bundle, sh, allow_president_change: true)
             end
           end
