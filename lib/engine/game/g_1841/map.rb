@@ -217,7 +217,7 @@ module Engine
             O17: 'Adriatic Coast',
           }
 
-          location_names[:O5] = 'Albena' if version == 2
+          location_names[:O5] = 'Albenga' if version == 2
 
           unless lite?
             location_names.merge!(
