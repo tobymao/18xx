@@ -352,7 +352,7 @@ module Engine
 
         def revenue_sawmill(route, stops)
           no_bonus = { description: '', revenue: 0 }
-          return no_bonus if @sawmill_hex.nil?
+          return no_bonus unless @sawmill_hex
           return no_bonus unless receives_sawmill_bonus?(route.train.owner)
           return no_bonus unless stops.any? { |s| s.hex == @sawmill_hex }
 
@@ -360,13 +360,17 @@ module Engine
         end
 
         def receives_sawmill_bonus?(entity)
-          entity.type == :major && (@sawmill_owner.nil? || @sawmill_owner == entity)
+          return false if entity.type != :major
+          return @sawmill_owner == entity if @sawmill_owner
+
+          true
         end
 
         def assignment_tokens(assignment, _simple_logos = false)
           return unless assignment == 'P13'
 
-          @sawmill_owner.nil? ? '/icons/1822_ca/sawmill_open.svg' : '/icons/1822_ca/sawmill_closed.svg'
+          token_type = @sawmill_owner ? 'closed' : 'open'
+          "/icons/1822_ca/sawmill_#{token_type}.svg"
         end
       end
     end
