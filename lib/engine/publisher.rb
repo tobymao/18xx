@@ -46,6 +46,11 @@ module Engine
         name: 'Mayfair Games',
         url: 'https://boardgamegeek.com/boardgamepublisher/10/mayfair-games',
       },
+      mercury: {
+        name: 'Mercury Games',
+        url: 'https://www.mercurygames.com/',
+        hidden: true,
+      },
       oo_games: {
         name: 'Double-O Games',
         url: 'http://ohley.de/english/',

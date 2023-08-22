@@ -10,11 +10,12 @@ module Engine
     include Entity
     include ShareHolder
 
-    def initialize(game, allow_president_sale: false)
+    def initialize(game, allow_president_sale: false, no_rebundle_president_buy: false)
       @game = game
       @bank = game.bank
       @log = game.log
       @allow_president_sale = allow_president_sale
+      @no_rebundle_president_buy = no_rebundle_president_buy
     end
 
     def name
@@ -32,7 +33,7 @@ module Engine
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
                    allow_president_change: true, silent: nil, borrow_from: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
-      if @allow_president_sale && bundle.presidents_share && bundle.owner == self
+      if @allow_president_sale && !@no_rebundle_president_buy && bundle.presidents_share && bundle.owner == self
         bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
       end
 
@@ -262,6 +263,10 @@ module Engine
 
       corporation.owner = president
       @log << "#{president.name} becomes the president of #{corporation.name}"
+
+      # skip the president's share swap if the new share owner is becoming president and
+      # the old owner is the outgoing president and the full president's cert was just transfered
+      return if to_entity == president && previous_president == owner && bundle.presidents_share && !bundle.partial?
 
       # skip the president's share swap if the initiator is already the president
       # or there was no previous president. this is because there is no one to swap with

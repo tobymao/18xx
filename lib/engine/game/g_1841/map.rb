@@ -189,7 +189,7 @@ module Engine
             C7: 'Lugano',
             E7: 'Busto Arsizio',
             M7: 'Genova',
-            D8: 'Cosmo',
+            D8: 'Como',
             F8: 'Milano',
             H8: 'Pavia',
             E9: 'Bergamo',
@@ -217,7 +217,7 @@ module Engine
             O17: 'Adriatic Coast',
           }
 
-          location_names[:O5] = 'Albena' if version == 2
+          location_names[:O5] = 'Albenga' if version == 2
 
           unless lite?
             location_names.merge!(

@@ -19,11 +19,27 @@ module Engine
         BIDDING_BOX_START_CONCESSION = 'C2'
         BIDDING_BOX_START_PRIVATE = 'P1'
 
-        PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
+        COMPANY_MTONR = nil # Remove Town; two companies instead of one here
+        COMPANY_LCDR = nil # English Channel
+        COMPANY_EGR = nil # Hill Discount
         COMPANY_DOUBLE_CASH = 'P7'
+        COMPANY_GSWR = nil # River Discount
+        COMPANY_BER = 'P12' # Advanced Tile Lay
+        COMPANY_LSR = 'P21' # Extra Tile Lay
         COMPANY_10X_REVENUE = 'P8'
+        COMPANY_OSTH = 'P11' # Tax Haven
+        COMPANY_LUR = nil # Move Card
+        COMPANY_CHPR = 'P28' # Station Swap
         COMPANY_5X_REVENUE = 'P9'
+        COMPANY_HSBC = nil # Grimsby/Hull Bridge
 
+        COMPANIES_BIG_CITY_UPGRADES = %w[P14 P15 P16 P17 P18].freeze
+        COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P19 P20 P21]).freeze
+
+        PRIVATE_MAIL_CONTRACTS = %w[P22 P23].freeze
+        PRIVATE_SMALL_MAIL_CONTRACTS = %w[P24 P25].freeze
+        PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
+        PRIVATE_REMOVE_REVENUE = %w[P1 P5 P6 P7 P14 P15 P16 P17 P18 P22 P23 P24 P25 P26 P27 P28].freeze
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
 
         COMPANY_SHORT_NAMES = {
@@ -48,10 +64,10 @@ module Engine
           'P19' => 'P19 (Crowsnest Pass)',
           'P20' => 'P20 (Yellowhead Pass)',
           'P21' => 'P21 (National Dream)',
-          'P22' => 'P22 (National Mail Contract)',
-          'P23' => 'P23 (National Mail Contract)',
-          'P24' => 'P24 (Regional Mail Contract)',
-          'P25' => 'P25 (Regional Mail Contract)',
+          'P22' => 'P22 (Large Mail Contract)',
+          'P23' => 'P23 (Large Mail Contract)',
+          'P24' => 'P24 (Small Mail Contract)',
+          'P25' => 'P25 (Small Mail Contract)',
           'P26' => 'P26 (Grain Train)',
           'P27' => 'P27 (Grain Train)',
           'P28' => 'P28 (Station Swap)',
@@ -98,6 +114,11 @@ module Engine
           'M29' => '29',
           'M30' => '30',
         }.freeze
+
+        MAJOR_TILE_LAYS = [
+          { lay: true, upgrade: true, cannot_reuse_same_hex: true },
+          { lay: :not_if_upgraded, upgrade: false, cannot_reuse_same_hex: true },
+        ].freeze
 
         CURRENCY_FORMAT_STR = '$%s'
 
@@ -190,11 +211,23 @@ module Engine
                                    CNoR CPR GNWR GT GTP GWR ICR NTR PGE QMOO].freeze
 
         MUST_SELL_IN_BLOCKS = true
-        SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
+
+        attr_accessor :sawmill_bonus, :sawmill_hex, :sawmill_owner
 
         def setup_game_specific
           # Initialize the stock round choice for P7-Double Cash
           @double_cash_choice = nil
+
+          # Initialize a dummy player for Tax haven to hold the share and the cash it generates
+          @tax_haven = Engine::Player.new(-1, 'Tax Haven')
+
+          # Initialize the extra city which minor 14 (actually 13 in 22CA) might add
+          @minor_14_city_exit = nil
+
+          # P13 Sawmill Bonus
+          @sawmill_bonus = 0
+          @sawmill_hex = nil
+          @sawmill_owner = nil
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
@@ -247,10 +280,101 @@ module Engine
           @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
         end
 
-        # Stubbed out because this game doesn't it, but base 22 does
+        # Stubbed out because this game doesn't use it, but base 22 does
         def company_tax_haven_bundle(choice); end
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
+
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            G1822::Step::PendingToken,
+            G1822::Step::FirstTurnHousekeeping,
+            Engine::Step::AcquireCompany,
+            G1822::Step::DiscardTrain,
+            G1822CA::Step::AssignSawmill,
+            G1822::Step::SpecialChoose,
+            G1822CA::Step::SpecialTrack,
+            G1822::Step::SpecialToken,
+            G1822CA::Step::Track,
+            G1822::Step::DestinationToken,
+            G1822::Step::Token,
+            G1822CA::Step::Route,
+            G1822::Step::Dividend,
+            G1822::Step::BuyTrain,
+            G1822CA::Step::MinorAcquisition,
+            G1822CA::Step::AcquisitionTrack,
+            G1822::Step::PendingToken,
+            G1822::Step::DiscardTrain,
+            G1822::Step::IssueShares,
+          ], round_num: round_num)
+        end
+
+        def must_remove_town?(entity)
+          %w[P29 P30].include?(entity.id)
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return %w[5 6 57].include?(to.name) if from.name == 'AG13' && from.color == :white
+
+          super
+        end
+
+        def company_ability_extra_track?(company)
+          self.class::COMPANIES_EXTRA_TRACK_LAYS.include?(company.id)
+        end
+
+        def sell_movement
+          @sell_movement ||= @players.size == 2 ? :left_share_pres : :left_per_10_if_pres_else_left_one
+        end
+
+        def routes_subsidy(routes)
+          super + small_mail_contract_subsidy(routes)
+        end
+
+        def small_mail_contract_subsidy(routes)
+          return 0 if routes.empty?
+
+          entity = routes.first.train.owner
+          contract_count = entity.companies.count { |c| self.class::PRIVATE_SMALL_MAIL_CONTRACTS.include?(c.id) }
+          contract_count *
+            case @phase.name.to_i
+            when (3..4)
+              20
+            when (5..6)
+              30
+            when 7
+              40
+            else
+              0
+            end
+        end
+
+        def revenue_str(route)
+          super + revenue_sawmill(route, route.stops)[:description]
+        end
+
+        def revenue_sawmill(route, stops)
+          no_bonus = { description: '', revenue: 0 }
+          return no_bonus unless @sawmill_hex
+          return no_bonus unless receives_sawmill_bonus?(route.train.owner)
+          return no_bonus unless stops.any? { |s| s.hex == @sawmill_hex }
+
+          { description: ' + Sawmill Bonus', revenue: @sawmill_bonus }
+        end
+
+        def receives_sawmill_bonus?(entity)
+          return false if entity.type != :major
+          return @sawmill_owner == entity if @sawmill_owner
+
+          true
+        end
+
+        def assignment_tokens(assignment, _simple_logos = false)
+          return unless assignment == 'P13'
+
+          token_type = @sawmill_owner ? 'closed' : 'open'
+          "/icons/1822_ca/sawmill_#{token_type}.svg"
+        end
       end
     end
   end

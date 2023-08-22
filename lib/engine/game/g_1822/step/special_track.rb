@@ -70,7 +70,7 @@ module Engine
 
               next unless ability_.type == :tile_lay
 
-              if ability_.count <= 0 && ability_.closed_when_used_up
+              if ability_.closed_when_used_up && ability_.count <= 0
                 @log << "#{ability_.owner.name} closes"
                 ability_.owner.close!
               end
@@ -272,7 +272,7 @@ module Engine
           end
 
           def hex_neighbors(entity, hex)
-            @game.graph_for_entity(entity).connected_hexes(entity)[hex]
+            @game.graph_for_entity(entity).connected_hexes(entity)[hex] || []
           end
 
           # Extra Tile Lay abilities need to be used either entirely before

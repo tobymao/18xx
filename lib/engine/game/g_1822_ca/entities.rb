@@ -198,7 +198,20 @@ module Engine
                   'Destination runs and E-trains both double the value of this token. A company may only include the '\
                   'token bonus to the run of one train per operating round. A town with a sawmill may not be removed '\
                   'by P29 or P30.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[A7 A9 AA15 AA9 AB22 AD18 AD20 AE17 AF16 AG13 AG3
+                          AG9 AH10 AH12 AK3 AK5 AL2 AM5 AM9 AO9 AP6 C9
+                          D10 D12 D14 D16 F10 F8 G11 G13 G15 G17 H16 H8 I11 I15
+                          I17 J12 J16 K11 K13 K15 K17 K9 L10 L16 L8 M17 M9 N6
+                          O15 O9 P14 Q7 R16 S15 U11 V18 W9 X12 Y17 Z10 Z26],
+                count: 1,
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -210,7 +223,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AC21],
+                tiles: %w[T1 T2 T3 T4 T5 T6 T7],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -222,7 +247,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AE15],
+                tiles: %w[O1 O2 O3 O4 O5 O6 O7 O8],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -234,7 +271,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AF12],
+                tiles: %w[M1 M2 M3 M4 M5 M6 M7],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -246,7 +295,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AH8],
+                tiles: %w[Q1 Q2 Q3 Q4 Q5 Q6 Q7 Q8],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -258,7 +319,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[N16],
+                tiles: %w[W1 W2 W3 W4 W5 W6 W7],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -299,7 +372,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P22-NM (National Mail Contract)',
+            name: 'P22-LM (Large Mail Contract)',
             sym: 'P22',
             value: 0,
             revenue: 10,
@@ -313,7 +386,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P23-NM (National Mail Contract)',
+            name: 'P23-LM (Large Mail Contract)',
             sym: 'P23',
             value: 0,
             revenue: 10,
@@ -327,22 +400,22 @@ module Engine
             color: nil,
           },
           {
-            name: 'P24-RM (Regional Mail Contract)',
+            name: 'P24-SM (Small Mail Contract)',
             sym: 'P24',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Samll mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
+            desc: 'MAJOR, Phase 3. Small Mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
                   '/$40 (grey) to the treasury of the company. The company must operate a train to claim the mail '\
                   'income. Does not close.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P25-RM (Regional Mail Contract)',
+            name: 'P25-SM (Small Mail Contract)',
             sym: 'P25',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Samll mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
+            desc: 'MAJOR, Phase 3. Small Mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
                   '/$40 (grey) to the treasury of the company. The company must operate a train to claim the mail '\
                   'income. Does not close.',
             abilities: [],

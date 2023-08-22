@@ -175,8 +175,10 @@ module Engine
       # down_block -- down one row per block
       # left_share -- left one column per share
       # left_share_pres -- left one column per share if president
-      # left_block_pres -- left one column per block if president
       # left_block -- one row per block
+      # down_block_pres -- down one row per block if president
+      # left_block_pres -- left one column per block if president
+      # left_per_10_if_pres_else_left_one -- left_share_pres + left_block
       # none -- don't drop price
       SELL_MOVEMENT = :down_share
 
@@ -1120,7 +1122,7 @@ module Engine
         end
       end
 
-      def can_buy_presidents_share_directly_from_market?
+      def can_buy_presidents_share_directly_from_market?(_corporation)
         false
       end
 
@@ -1143,12 +1145,16 @@ module Engine
         self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
+      def sell_movement
+        self.class::SELL_MOVEMENT
+      end
+
       def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
         corporation = bundle.corporation
         old_price = corporation.share_price
         was_president = corporation.president?(bundle.owner)
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-        case movement || self.class::SELL_MOVEMENT
+        case movement || sell_movement
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
@@ -1179,7 +1185,7 @@ module Engine
         else
           raise NotImplementedError
         end
-        log_share_price(corporation, old_price) if self.class::SELL_MOVEMENT != :none
+        log_share_price(corporation, old_price) if sell_movement != :none
       end
 
       def sold_out_increase?(_corporation)
@@ -1226,6 +1232,12 @@ module Engine
       # player that needs to consent to this action. Returning nil or false
       # means that consent is not required.
       def consenter_for_buy_shares(_entity, _bundle); end
+
+      # A hook to allow a game to request a consent check for a choose action.
+      # If consent is needed then this method should return the player that
+      # needs to consent to this action. Returning nil or false means that
+      # consent is not required.
+      def consenter_for_choice(_entity, _choice, _label); end
 
       def can_run_route?(entity)
         graph_for_entity(entity).route_info(entity)&.dig(:route_available)
@@ -1936,7 +1948,7 @@ module Engine
 
         Array(abilities(entity, :tile_lay)).each_with_object([]) do |ability, companies|
           ability.combo_entities.each do |id|
-            company = company_by_id(id)
+            next unless (company = company_by_id(id))
             next unless company.owner == entity.corporation
             next unless abilities(company, :tile_lay)
 

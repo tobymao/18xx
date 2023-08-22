@@ -79,7 +79,10 @@ module Engine
 
           payouts = {}
 
-          payout = union_pacific.num_treasury_shares * per_share
+          num_shares = union_pacific.num_treasury_shares
+          num_shares -= 2 if (union_pacific == up_double_share.owner) &&
+                             ames_bros.owner&.player?
+          payout = num_shares * per_share
           payouts[union_pacific] = payout
           @bank.spend(payout, union_pacific) if payout.positive?
           @cm_cumulative[union_pacific.id] += payout
@@ -98,8 +101,6 @@ module Engine
 
           @log << "Crédit Mobilier pays out to UP shareholders for building on #{hex.name}: "\
                   "#{format_currency(per_share * 10)} = #{format_currency(per_share)} per share (#{receivers})"
-          log_cumulative
-          # @log << "Crédit Mobilier pending: #{@cm_pending}"
         end
 
         def log_cumulative

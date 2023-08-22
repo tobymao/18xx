@@ -217,14 +217,14 @@ module Engine
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
-            ['Dividend < 1/2 stock value', '1 ←'],
-            ['Dividend > 1/2 stock value and < stock value', 'none'],
-            ['Dividend ≥ stock value', '1 →'],
-            ['Dividend ≥ 2× stock value', '2 →'],
-            ['Dividend ≥ 3× stock value and stock value is at least 165', '3 →'],
+            ['Dividend < 1/2 stock price', '1 ←'],
+            ['Dividend ≥ 1/2 stock price but < stock price', 'none'],
+            ['Dividend ≥ stock price', '1 →'],
+            ['Dividend ≥ 2X stock price', '2 →'],
+            ['Dividend ≥ 3X stock price and stock price ≥ 165', '3 →'],
             ['Corporation director sells any number of shares', '1 ←'],
-            ['Corporation has any shares in market at end of SR', '1 ←'],
-            ['Corporation is sold out at end of SR', '1 →'],
+            ['Corporation has any shares in the Market at end of an SR', '1 ←'],
+            ['Corporation is sold out at end of an SR', '1 →'],
           ]
         end
 
