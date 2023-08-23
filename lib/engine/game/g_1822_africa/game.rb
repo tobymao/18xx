@@ -82,6 +82,8 @@ module Engine
         COMPANY_CHPR = nil
         COMPANY_5X_REVENUE = nil
         COMPANY_HSBC = nil
+        FRANCE_HEX = nil
+        ENGLISH_CHANNEL_HEX = nil
         BIDDING_BOX_START_PRIVATE = nil
         BIDDING_BOX_START_MINOR = nil
         DOUBLE_HEX = [].freeze
@@ -508,6 +510,19 @@ module Engine
           entity.id == self.class::COMPANY_REMOVE_TOWN
         end
 
+        def train_help(entity, runnable_trains, _routes)
+          help = super
+
+          hybrid_trains = runnable_trains.any? { |t| can_be_express?(t) }
+
+          if hybrid_trains
+            help << '5/E and 6/E trains can run either as usual, or as Express. '\
+                    "Express trains run unlimited distance, only count cities that have a #{entity.name} token "\
+                    'and double the revenue.'
+          end
+
+          help
+        end
         # Stubbed out because this game doesn't use it, but base 22 does
         def bidbox_minors = []
         def bidbox_concessions = []
