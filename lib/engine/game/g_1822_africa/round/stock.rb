@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1822Africa
       module Round
-        class Stock < G1822::Round::Stock
+        class Stock < Engine::Game::G1822::Round::Stock
           def setup
             @game.reset_sold_in_sr!
             super
