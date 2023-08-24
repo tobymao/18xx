@@ -60,11 +60,8 @@ module Engine
         PRIVATE_PHASE_REVENUE = %w[P16].freeze
         PRIVATE_REMOVE_REVENUE = %w[P13].freeze
 
-        BIDDING_BOX_START_PRIVATE = nil
-        BIDDING_BOX_START_MINOR = nil
-        DOUBLE_HEX = [].freeze
-
         COMPANY_10X_REVENUE = 'P16'
+        COMPANY_REMOVE_TOWN = 'P9'
 
         MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
@@ -73,20 +70,21 @@ module Engine
         STOCK_ROUND_COUNT = 2
 
         # Disable 1822-specific rules
-        COMPANY_MTONR = 'P2'
-        COMPANY_LCDR = 'P5'
-        COMPANY_EGR = 'P8'
-        COMPANY_DOUBLE_CASH = 'P9'
-        COMPANY_DOUBLE_CASH_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
+        COMPANY_LCDR = nil
+        COMPANY_EGR = nil
+        COMPANY_DOUBLE_CASH = nil
         COMPANY_GSWR = nil
         COMPANY_GSWR_DISCOUNT = nil
         COMPANY_BER = nil
         COMPANY_LSR = nil
         COMPANY_OSTH = nil
         COMPANY_LUR = nil
-        COMPANY_CHPR = 'P13'
+        COMPANY_CHPR = nil
         COMPANY_5X_REVENUE = nil
         COMPANY_HSBC = nil
+        BIDDING_BOX_START_PRIVATE = nil
+        BIDDING_BOX_START_MINOR = nil
+        DOUBLE_HEX = [].freeze
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major minor], phase: 1 },
@@ -307,7 +305,7 @@ module Engine
           },
         ].freeze
 
-        UPGRADE_COST_L_TO_2 = 50
+        UPGRADE_COST_L_TO_2 = 70
 
         @bidbox_cache = []
         @bidbox_companies_size = false
@@ -324,6 +322,10 @@ module Engine
 
           # Randomize from preset seed to get same order
           @companies.sort_by! { rand }
+
+          # Put closest concessions to slots 1 and 4 of timeline
+          reordered_companies = reorder_on_concession(@companies)
+          @companies = reordered_companies[0..2] + reorder_on_concession(reordered_companies[3..-1])
 
           # Set the min bid on the Concessions and Minors
           @companies.each do |c|
@@ -345,28 +347,19 @@ module Engine
           @company_trains['P5'] = find_and_remove_train_by_id('P+-1', buyable: false)
         end
 
-        def reorder_companies_on_concession
-          next_concession = bank_companies.find { |c| concession?(c) }
-          next_concession_index = @companies.index(next_concession)
+        def reorder_on_concession(companies)
+          index = companies.find_index { |c| concession?(c) }
 
           # Only reorder if next concession is not the first company
-          return if bank_companies.index(next_concession).zero?
+          return companies if index.zero?
 
-          head = @companies[0...next_concession_index]
-          tail = @companies[next_concession_index..-1]
+          head = companies[0..index - 1]
+          tail = companies[index..-1]
 
-          @companies = tail + head
-
-          unowned_head = head.select { |c| !c.owner || c.owner == @bank }
-
-          @log << 'Reordering items to make sure concession is available for auction: '\
-                  "#{unowned_head.map(&:id).join(', ')} moved to the end of the timeline"
+          tail + head
         end
 
         def setup_bidboxes
-          # Put the concessions to the front of the bidbox in first SR set
-          reorder_companies_on_concession if @turn == 1
-
           # Set the owner to bank for the companies up for auction this stockround
           bidbox_refill!
           bidbox.each do |minor|
@@ -509,6 +502,10 @@ module Engine
 
         def reset_sold_in_sr!
           @nothing_sold_in_sr = true
+        end
+
+        def must_remove_town?(entity)
+          entity.id == self.class::COMPANY_REMOVE_TOWN
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does
