@@ -28,7 +28,7 @@ module Engine
           end
 
           def description
-            return "Minor #{@auctioning.id} auction" if @auctioning
+            return "#{minor_name(@auctioning)} auction" if @auctioning
 
             'Select minor company to auction'
           end
@@ -41,8 +41,22 @@ module Engine
             @minors
           end
 
+          def may_purchase?(_company)
+            # The Guillaume-Luxembourg is auctioned in the initial round, not
+            # purchased.
+            false
+          end
+
           def ipo_type(_corporation)
             discount_mode? ? :par : :bid
+          end
+
+          def bid_target(bid)
+            bid.corporation || bid.company
+          end
+
+          def minor_name(minor)
+            "#{minor.corporation? ? 'Minor ' : ''}#{minor.name}"
           end
 
           def get_par_prices(_entity, _corporation)
@@ -79,13 +93,14 @@ module Engine
 
             @log << "#{bid.entity.name} bids " \
                     "#{@game.format_currency(bid.price)} " \
-                    "for #{bid.corporation.name}"
+                    "for #{minor_name(bid_target(bid))}"
           end
 
           def win_bid(bid, minor)
             player = bid.entity
             price = bid.price
-            @log << "#{player.name} wins the auction for #{minor.name} " \
+            @log << "#{player.name} wins the auction for " \
+                    "#{minor_name(bid_target(bid))} " \
                     "with a bid of #{@game.format_currency(price)}"
             purchase_minor(minor, player, price)
           end
@@ -137,19 +152,26 @@ module Engine
 
           def purchase_minor(minor, player, price)
             player.spend(price, @game.bank) if price.positive?
-            share_price = par_price(price)
-            @game.stock_market.set_par(minor, share_price)
-            @game.bank.spend(share_price.price * 2, minor)
-            @game.share_pool.buy_shares(player,
-                                        minor.presidents_share.to_bundle,
-                                        exchange: :free,
-                                        silent: true)
-            @game.after_par(minor)
 
             @minors.delete(minor)
-            @round.minor_floated = minor
-            @round.num_laid_track = 0
-            @round.laid_hexes.clear
+            if minor.corporation?
+              share_price = par_price(price)
+              @game.stock_market.set_par(minor, share_price)
+              @game.bank.spend(share_price.price * 2, minor)
+              @game.share_pool.buy_shares(player,
+                                          minor.presidents_share.to_bundle,
+                                          exchange: :free,
+                                          silent: true)
+              @game.after_par(minor)
+
+              @round.minor_floated = minor
+              @round.num_laid_track = 0
+              @round.laid_hexes.clear
+            else
+              # Guillaume-Luxembourg has been bought
+              minor.owner = player
+              player.companies << minor
+            end
           end
 
           def par_price(price)
