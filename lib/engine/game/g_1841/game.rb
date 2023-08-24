@@ -2827,6 +2827,12 @@ module Engine
           end
           value
         end
+
+        def priority_deal_player
+          return @players.reject(&:bankrupt)[0] if @round.is_a?(Round::Operating)
+
+          super
+        end
       end
     end
   end
