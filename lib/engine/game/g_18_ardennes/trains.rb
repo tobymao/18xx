@@ -23,7 +23,6 @@ module Engine
             on: '4',
             train_limit: { minor: 2, '5-share': 3, '10-share': 3 },
             tiles: %i[yellow green],
-            status: %w[green_privates narrow_gauge],
             operating_rounds: 2,
           },
           {
@@ -53,7 +52,7 @@ module Engine
           },
           {
             name: '3',
-            num: 15,
+            num: 7,
             rusts_on: '6',
             distance: [{ 'nodes' => %w[city], 'pay' => 3, 'visit' => 3 },
                        { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
@@ -61,14 +60,14 @@ module Engine
           },
           {
             name: '4',
-            num: 15,
+            num: 4,
             distance: [{ 'nodes' => %w[city], 'pay' => 4, 'visit' => 4 },
                        { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
             price: 400,
           },
           {
             name: '5',
-            num: 15,
+            num: 3,
             distance: [{ 'nodes' => %w[city], 'pay' => 5, 'visit' => 5 },
                        { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
             price: 500,
