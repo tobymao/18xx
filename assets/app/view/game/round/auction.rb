@@ -46,7 +46,7 @@ module View
               *render_minors,
               *render_corporations,
               render_par_corporations,
-              render_tracking_corporations,
+              render_tile_laying_corporations,
               render_players,
               render_map,
               render_stock_market,
@@ -358,7 +358,7 @@ module View
           h(:div, props, corporations)
         end
 
-        def render_tracking_corporations
+        def render_tile_laying_corporations
           return nil unless @current_actions.include?('lay_tile')
 
           props = {
@@ -498,16 +498,16 @@ module View
           store(:selected_company, nil, skip: true)
         end
 
-        # show the map if there are minors to pick from
+        # show the map if there are minors to pick from or a tile is to be laid
         def render_map
-          show = @step.available.any?(&:minor?) || (@step.respond_to?(:show_map) && @step.show_map)
+          show = @step.available.any?(&:minor?) ||
+                 @current_actions.include?('lay_tile') ||
+                 (@step.respond_to?(:show_map) && @step.show_map)
           return nil unless show
 
-          if @current_actions.include?('lay_tile')
-            h(Game::Map, game: @game)
-          else
-            h(Game::Map, game: @game, opacity: 1.0)
-          end
+          opts = {}
+          opts[:opacity] = 1.0 unless @current_actions.include?('lay_tile')
+          h(Game::Map, game: @game, **opts)
         end
 
         def render_stock_market
