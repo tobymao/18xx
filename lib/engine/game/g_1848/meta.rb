@@ -14,7 +14,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1848'
         GAME_LOCATION = 'Australia'
         GAME_PUBLISHER = %i[gmt_games oo_games].freeze
-        GAME_RULES_URL = 'https://gmtwebsiteassets.s3-us-west-2.amazonaws.com/1848/1848-RULES-11a.pdf'
+        GAME_RULES_URL = 'https://gmtwebsiteassets.s3.us-west-2.amazonaws.com/1848/1848-RULES-FINAL.pdf'
 
         PLAYER_RANGE = [3, 6].freeze
       end
