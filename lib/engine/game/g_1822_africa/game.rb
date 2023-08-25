@@ -429,7 +429,7 @@ module Engine
             G1822Africa::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
-            G1822::Step::IssueShares,
+            G1822Africa::Step::IssueShares,
           ], round_num: round_num)
         end
 
