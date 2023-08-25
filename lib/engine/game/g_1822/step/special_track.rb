@@ -272,7 +272,7 @@ module Engine
           end
 
           def hex_neighbors(entity, hex)
-            @game.graph_for_entity(entity).connected_hexes(entity)[hex] || []
+            @game.graph_for_entity(entity).connected_hexes(entity)[hex]
           end
 
           # Extra Tile Lay abilities need to be used either entirely before
