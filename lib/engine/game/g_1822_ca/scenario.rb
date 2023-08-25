@@ -9,6 +9,8 @@ module Engine
 
         UPGRADE_COST_L_TO_2_PHASE_2 = 70
 
+        GAME_END_ON_NOTHING_SOLD_IN_SR1 = false
+
         MARKET = [
           %w[5y 10y 15y 20y 25y 30y 35y 40y 45y 50p 60xp 70xp 80xp 90xp 100xp 110 120 135 150 165 180 200 220
              245 270 300 330 360 400 450 500e 550e 600e],
@@ -176,6 +178,10 @@ module Engine
               **corporation.merge(opts),
             )
           end.compact
+        end
+
+        def game_end_check
+          @game_end_reason ||= compute_game_end
         end
       end
     end
