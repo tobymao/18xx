@@ -36,10 +36,6 @@ module Engine
             true
           end
 
-          def show_map
-            true
-          end
-
           def current_entity
             pending_entity
           end

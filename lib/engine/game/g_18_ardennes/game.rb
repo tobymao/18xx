@@ -35,7 +35,7 @@ module Engine
         def route_distance_str(route)
           towns = route.visited_stops.count(&:town?)
           cities = route_distance(route) - towns
-          if route.train.name != '5D' && towns.positive?
+          if towns.positive? && route.train.name != '5D'
             "#{cities}+#{towns}"
           else
             cities.to_s

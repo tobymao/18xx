@@ -9,7 +9,6 @@ module Engine
       module Step
         class MinorAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
-          ACTIONS = %w[bid pass].freeze
           MIN_PRICE = 100
 
           def actions(entity)
