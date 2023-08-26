@@ -260,7 +260,7 @@ module Engine
             logo: '1847_ae/Saar',
             simple_logo: '1847_ae/Saar',
             tokens: [0, 60, 80, 100],
-            float_percent: 30,
+            float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'H6',
             required_par_price: 84,
@@ -268,6 +268,7 @@ module Engine
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             second_share_double: false,
             last_share_double: true,
+            float_includes_reserved: true,
             color: '#ff4040',
             abilities: [
               {
@@ -283,7 +284,7 @@ module Engine
             logo: '1847_ae/HLB',
             simple_logo: '1847_ae/HLB',
             tokens: [0, 0, 80, 100],
-            float_percent: 40,
+            float_percent: 50,
             max_ownership_percent: 100,
             coordinates: %w[D18 C21],
             required_par_price: 80,
@@ -291,6 +292,7 @@ module Engine
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             second_share_double: false,
             last_share_double: true,
+            float_includes_reserved: true,
             color: '#dda0dd',
             abilities: [
               {
