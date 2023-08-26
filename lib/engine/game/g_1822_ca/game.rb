@@ -375,6 +375,15 @@ module Engine
           token_type = @sawmill_owner ? 'closed' : 'open'
           "/icons/1822_ca/sawmill_#{token_type}.svg"
         end
+
+        def game_end_check
+          @game_end_reason ||=
+            begin
+              reason = compute_game_end
+              @operating_rounds += 1 if reason == %i[bank full_or]
+              reason
+            end
+        end
       end
     end
   end
