@@ -181,7 +181,19 @@ module Engine
                   'normal track lay action. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company closes. May be used in conjunction with '\
                   'P29 and/or P30 as part of the same tile placement step.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[80 81 82 83 544 545 546 60 169 141 142 143 144 767 768 769],
+                combo_entities: %w[P29 P30],
+              },
+            ],
             color: nil,
           },
           {
@@ -396,7 +408,34 @@ module Engine
                   'the three extra yellow tile lays may be done in any order. These lays are exempt from terrain '\
                   'fees, but may not be used to build on hexes with mountainous terrain ($120) or in Montreal, '\
                   'Ottawa, Quebec, Toronto or Winnipeg.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                must_lay_together: false,
+                count: 3,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: %w[A9 B10 B12 B14 B6 B8 C11 C13 C7 C9 D10 D12 D14 D16 D6
+                          D8 E15 E7 E9 F10 F12 F6 F8 G11 G13 G17 G7 G9 H10 H12 H14 H16 H6
+                          H8 I11 I13 I15 I17 I7 I9 J10 J12 J14 J16 J6 J8 K11 K13 K17 K7 K9
+                          L10 L12 L14 L16 L6 L8 M11 M13 M15 M17 M7 M9 N10 N12 N14 N18 N6
+                          N8 O11 O13 O15 O17 O7 O9 P10 P12 P14 P16 P8 Q11 Q13 Q15 Q17 Q7
+                          Q9 R10 R12 R14 R8 S11 S13 S15 S9 U11 U13 U15 U17 U9 V10 V12 V14
+                          V16 V8 W11 W13 W15 W17 W19 W7 W9 X10 X12 X14 X16 X18 X8 Y11 Y13
+                          Y17 Y7 Y9 Z10 Z12 Z14 Z16 Z18 Z22 Z24 Z26 Z28 Z8 AA11 AA13 AA15
+                          AA17 AA19 AA21 AA23 AA27 AA7 AA9 AB10 AB12 AB14 AB16 AB18 AB20
+                          AB22 AB24 AB8 AC11 AC13 AC15 AC17 AC19 AC7 AC9 AD10 AD12 AD14
+                          AD16 AD18 AD20 AD8 AE11 AE13 AE17 AE19 AE7 AE9 AF10 AF14 AF16
+                          AF6 AF8 AG11 AG13 AG15 AG3 AG5 AG7 AG9 AH10 AH12 AH14 AH2 AH4
+                          AH6 AI11 AI13 AI3 AI5 AI7 AI9 AJ10 AJ12 AJ2 AJ4 AJ6 AJ8 AK11 AK3
+                          AK5 AK7 AK9 AL10 AL2 AL4 AL6 AL8 AM3 AM5 AM7 AM9 AN2 AN4 AN6 AO3
+                          AO5 AO7 AO9 AP2 AP6 AP8],
+                tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69 201 202 621 630 631 632 633],
+                free: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -504,7 +543,20 @@ module Engine
                   'acquired, the private company pays its revenue to the owning company until the power is exercised '\
                   'and the company is closed. May be used in conjunction with P12 and/or P30 as part of the same tile '\
                   'placement step. May not be used to remove a town with a sawmill token (P13).',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
+                combo_entities: %w[P12],
+              },
+
+            ],
             color: nil,
           },
           {
@@ -519,7 +571,20 @@ module Engine
                   'acquired, the private company pays its revenue to the owning company until the power is exercised '\
                   'and the company is closed. May be used in conjunction with P12 and/or P30 as part of the same tile '\
                   'placement step. May not be used to remove a town with a sawmill token (P13).',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
+                combo_entities: %w[P12],
+              },
+
+            ],
             color: nil,
           },
           {
