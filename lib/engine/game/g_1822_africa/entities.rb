@@ -10,7 +10,7 @@ module Engine
             sym: 'P1',
             desc: 'MAJOR/MINOR, Phase 1. Permanent L-train',
             value: 0,
-            revenue: 10,
+            revenue: 0,
             abilities: [],
             color: nil,
           },
@@ -19,7 +19,7 @@ module Engine
             sym: 'P2',
             desc: 'MAJOR, Phase 2. Permanent 2-train',
             value: 0,
-            revenue: 10,
+            revenue: 0,
             abilities: [],
             color: nil,
           },
@@ -28,7 +28,7 @@ module Engine
             sym: 'P3',
             desc: 'MAJOR, Phase 2. Permanent 2-train',
             value: 0,
-            revenue: 10,
+            revenue: 0,
             abilities: [],
             color: nil,
           },
@@ -37,7 +37,7 @@ module Engine
             sym: 'P4',
             desc: 'MAJOR/MINOR, Phase 3. A "Pullman" carriage that can be added to another train owned by the company.'\
                   ' It converts the train into a + train. Does not count against train limit and does not count '\
-                  'as a train for the purposes of train ownership. Can’t be sold to another company. Does not close.',
+                  'as a train for the purposes of train ownership. Can’t be sold to another company.',
             value: 0,
             revenue: 10,
             abilities: [],
@@ -48,7 +48,7 @@ module Engine
             sym: 'P5',
             desc: 'MAJOR/MINOR, Phase 3. A "Pullman" carriage that can be added to another train owned by the company.'\
                   ' It converts the train into a + train. Does not count against train limit and does not count '\
-                  'as a train for the purposes of train ownership. Can’t be sold to another company. Does not close.',
+                  'as a train for the purposes of train ownership. Can’t be sold to another company.',
             value: 0,
             revenue: 10,
             abilities: [],
@@ -219,7 +219,7 @@ module Engine
                   'If not acquired beforehand, this company closes at the start of Phase 6 and all treasury credits '\
                   'are returned to the bank.',
             value: 0,
-            revenue: 10,
+            revenue: 0,
             abilities: [],
             color: nil,
           },
@@ -242,7 +242,7 @@ module Engine
                   'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the company. '\
                   'It converts the train into a safari train that counts an extra 20 to the earnings for reaching '\
                   'each of the game reserves. Does not count against train limit and does not count as a train '\
-                  'for the purposes of train ownership. Can’t be sold to another company. Does not close.',
+                  'for the purposes of train ownership. Can’t be sold to another company.',
             value: 0,
             revenue: 10,
             abilities: [],
