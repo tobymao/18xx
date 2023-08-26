@@ -274,8 +274,9 @@ module Engine
         REGULAR_CORPORATIONS = FRENCH_REGULAR_CORPORATIONS + BELGIAN_REGULAR_CORPORATIONS
         FRENCH_LATE_CORPORATIONS = %w[LF].freeze
         BELGIAN_LATE_CORPORATIONS = %w[LB].freeze
+        #CORPORATIONS_CAPITALIZED_AT_110_PCT = %w[Ouest Est]
 
-        DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
+        #DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
 
         def stock_round
           G1894::Round::Stock.new(self, [
@@ -367,15 +368,15 @@ module Engine
           #adjust_companies
           remove_extra_french_major_shareholding_companies
 
-          @corporations.each do |corporation|
-            next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
+          # @corporations.each do |corporation|
+          #   next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
 
-            dest_abilities.each do |ability|
-              ability.hexes.each do |id|
-                hex_by_id(id).assign!(corporation)
-              end
-            end
-          end
+          #   dest_abilities.each do |ability|
+          #     ability.hexes.each do |id|
+          #       hex_by_id(id).assign!(corporation)
+          #     end
+          #   end
+          # end
 
           @players.each do |player|
             share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, player)
@@ -492,13 +493,14 @@ module Engine
           super
 
           case action
-          when Action::Par
-            if action.corporation == ouest
-              ouest.remove_ability_when(:par)
-              subsidy = ouest.par_price&.price
-              @bank.spend(subsidy, ouest)
-              @log << "#{ouest.name} receives a #{format_currency(subsidy)} subsidy"
-            end
+          # when Action::Par
+          #   if CORPORATION_CAPITALIZED_AT_110_PCT.include?(action.corporation.id)
+          #     corporation = action.corporation
+          #     corporation.remove_ability_when(:par)
+          #     subsidy = corporation.par_price&.price
+          #     @bank.spend(subsidy, corporation)
+          #     @log << "#{corporation.name} receives a #{format_currency(subsidy)} subsidy"
+          #   end
 
           when Action::PlaceToken
             # Mark the corporation that has London bonus
