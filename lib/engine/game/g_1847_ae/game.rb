@@ -30,6 +30,8 @@ module Engine
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 9 }.freeze
         STARTING_CASH = { 3 => 500, 4 => 390, 5 => 320 }.freeze
 
+        COMPANIES_PURCHASABLE_BY_CORPORATIONS = %w[R K W H].freeze
+
         LAST_TRANCH_CORPORATIONS = %w[NDB M N RNB].freeze
 
         COAL_HEXES = %w[G7 H6].freeze
@@ -326,6 +328,15 @@ module Engine
           return false if DOUBLE_SLOT_GREEN_CITIES.include?(from.hex.tile.name)
 
           super
+        end
+
+        def purchasable_companies(entity = nil)
+          return super unless entity&.corporation?
+
+          @companies.select do |company|
+            company.owner&.player? && entity != company.owner && !abilities(company, :no_buy) &&
+            COMPANIES_PURCHASABLE_BY_CORPORATIONS.include?(company.id)
+          end
         end
 
         def action_processed(action)

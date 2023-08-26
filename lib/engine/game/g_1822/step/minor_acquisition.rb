@@ -215,13 +215,18 @@ module Engine
             else
               if !@selected_minor.owner || @selected_minor.owner == @bank
                 acquire_bank_minor(action.entity, action.choice)
+                after_acquire_bank_minor(action.entity)
               else
                 acquire_entity_minor(action.entity, action.choice)
+                after_acquire_entity_minor(action.entity)
               end
               @acquire_state = :select_minor
               pass!
             end
           end
+
+          def after_acquire_bank_minor(entity); end
+          def after_acquire_entity_minor(entity); end
 
           def entity_connects?(entity, minor)
             if (!minor.owner || minor.owner == @bank) && minor.id == @game.class::MINOR_14_ID

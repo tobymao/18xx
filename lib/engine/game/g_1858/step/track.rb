@@ -15,7 +15,7 @@ module Engine
 
           def auto_actions(entity)
             return unless entity.minor?
-            return if can_lay_tile?(entity)
+            return if can_lay_tile?(entity, check_graph: true)
 
             [Engine::Action::Pass.new(entity)]
           end
@@ -55,7 +55,11 @@ module Engine
             entity = action.entity
             spender = entity.minor? ? entity.owner : nil
             lay_tile_action(action, spender: spender)
-            pass! unless can_lay_tile?(entity)
+            # Automatically pass if another tile cannot be placed. Do not check
+            # whether there are any legal tile placements as this slows down
+            # loading games (Graph.compute would be called), just whether the
+            # current operator has another tile placement available.
+            pass! unless can_lay_tile?(entity, check_graph: false)
           end
 
           def potential_tiles(entity, hex)
@@ -66,11 +70,12 @@ module Engine
             tiles.reject { |tile| tile.paths.map(&:track).include?(:narrow) }
           end
 
-          def can_lay_tile?(entity)
+          def can_lay_tile?(entity, check_graph: true)
             # Don't check whether the company has enough cash to pay for the tile
             # lay as this can be paid by the company president.
             action = get_tile_lay(entity)
             return false unless action
+            return true unless check_graph
 
             # Check whether there are any hexes where track can be laid. After a
             # couple of operating rounds many of the private railway companies

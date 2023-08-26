@@ -408,7 +408,7 @@ module Engine
 
           # any? vs. find ???
           connected = corporations.find do |corp|
-            corp.tokens.select(&:used).map(&:city).find do |city|
+            railheads(corp).map(&:city).find do |city|
               nodes = @graph.connected_nodes_by_token(corp, city)
               nodes.include?(milano) && nodes.include?(venezia)
             end
@@ -629,7 +629,8 @@ module Engine
             next if hex.tile.borders.any? { |b| b.edge == e && ((b.type == :impassable) || (b.type == :province)) }
 
             neighbor = hex_neighbor(hex, e)
-            neighbor && !neighbor.tile.preprinted
+            np_edge = hex.invert(e)
+            neighbor && !neighbor.tile.preprinted && neighbor.tile.exits.include?(np_edge)
           end
         end
 
@@ -1065,7 +1066,7 @@ module Engine
 
         # for 1841, this means frozen
         def receivership_corporations
-          frozen_corporations
+          @corporations.select { |c| c.owner && !c.player }
         end
 
         def status_str(corp)
@@ -1569,13 +1570,14 @@ module Engine
             raise GameError, 'Cannot complete this merger without a president. Undo required.' unless @merger_tuscan
 
             # tuscan merge
+            @log << "No one has become president of #{@merger_target.name}"
             # put president share in pool in exchange for 0, 1, or 2 shares there
             pool_shares = @share_pool.shares_of(@merger_target).take(2)
             @log << "Moving #{pool_shares.size} #{@merger_target.name} shares from Market to IPO"
             pool_shares.each do |s|
-              @share_pool.transfer_shares(s.to_bundle, entity, allow_president_change: true)
+              @share_pool.transfer_shares(s.to_bundle, @merger_target, allow_president_change: false)
             end
-            @log << "Moving #{@merger_target.name} president's share to IPO to Market"
+            @log << "Moving #{@merger_target.name} president's share from IPO to Market"
             @share_pool.transfer_shares(pres_share.to_bundle, @share_pool, allow_president_change: true)
             update_frozen!
           end
@@ -1584,6 +1586,10 @@ module Engine
           update_frozen!
           if !@merger_tuscan && circular_corporations.any? { |c| !old_circular.include?(c) }
             raise GameError, 'Illegal circular ownership chain is created by this merger and exchange. Undo required.'
+          end
+
+          if !@merger_tuscan && frozen?(@merger_target)
+            raise GameError, 'Cannot complete this merger without a president. Undo required.'
           end
 
           @merger_state = :select_tokens
@@ -1609,6 +1615,9 @@ module Engine
           return merger_tokens_finish unless oo_hex
 
           @log << "#{@merger_corpa.name} and #{@merger_corpb.name} both have tokens in #{oo_hex.id}. Must remove one."
+          unless @merger_target.player
+            @log << "-- The rules do not say how to handle this. #{@merger_decider.name} will decide. --"
+          end
           @merger_dup_tokens += 1
           @round.pending_removals << {
             entity: @merger_target.player ? @merger_target : @merger_decider,
@@ -1623,7 +1632,6 @@ module Engine
         end
 
         def merger_tokens_finish
-          @merger_keep_hexes = []
           if @merger_tuscan && @tuscan_merge_ssfl
             # Tuscan Merge: first merge (of minors)
             # - just replace tokens and bring total to four
@@ -1646,6 +1654,23 @@ module Engine
             map_token_cnt -= kept
             max_to_remove = map_token_cnt
             min_to_remove = [map_token_cnt - (5 - kept), 0].max
+
+            unless @merger_target.player
+              # SFLi is frozen - rules stipulate how this is handled
+              hexes_to_remove = hexes
+              @log << "#{@merger_target.name} tokens are removed/replaced automatically:"
+              if keep_hexes.empty?
+                # Neither Pisa or Firenze have a token - keep the first city alphabetically
+                keep = hexes.reject { |hex| hex.tile.cities[0].pass? }.min_by(&:location_name)
+                hexes_to_remove -= [keep]
+              end
+              hexes_to_remove.each do |hex|
+                token = (@merger_corpa.tokens + @merger_corpb.tokens).select(&:used).find { |t| t.city.hex == hex }
+                @log << "Removing #{token.corporation.name} token in #{hex.id} (#{hex.location_name})"
+                token.destroy!
+              end
+              return merger_finish
+            end
           else
             total_token_cnt = @merger_corpa.tokens.size + @merger_corpb.tokens.size - @merger_dup_tokens
             @merger_token_cnt = [total_token_cnt, 5].min
@@ -1686,16 +1711,13 @@ module Engine
         def swap_token(target, old_corp, old_token)
           new_token = target.next_token
           city = old_token.city
-          @log << "Replaced #{old_corp.name} token in #{city.hex.id} with #{target.name} token"
+          @log << "Replaced #{old_corp.name} token in #{city.hex.id} (#{city.hex.location_name}) with #{target.name} token"
           new_token.place(city)
           city.tokens[city.tokens.find_index(old_token)] = new_token
           old_corp.tokens.delete(old_token)
         end
 
         def merger_finish
-          hexes = (@merger_corpa.tokens.select(&:used) + @merger_corpb.tokens.select(&:used)).map { |t| t.city.hex }
-          raise GameError, 'Must leave token in Pisa and/or Firenze' unless @merger_keep_hexes.all? { |h| hexes.include(h) }
-
           # create new tokens if needed
           (@merger_token_cnt - 2).times { @merger_target.tokens << Token.new(@merger_target, price: 0) } if @merger_token_cnt > 2
 
@@ -1753,7 +1775,17 @@ module Engine
         end
 
         def transform_shares(corp, target)
-          possible_shareholders = @players + @corporations + [@share_pool]
+          possible_shareholders = @players.rotate(@players.index(corp.player)) + @corporations + [@share_pool]
+
+          pres = corp.owner
+          old_pres = pres.shares_of(corp).find(&:president)
+          raise GameError, 'Cannot find old president share' unless old_pres
+
+          pres_share = target.shares_of(target).find(&:president)
+          @log << "#{pres.name} swaps president share of #{corp.name} for #{target.name}"
+          simple_transfer_share(old_pres, corp)
+          @share_pool.transfer_shares(pres_share.to_bundle, pres, allow_president_change: true)
+
           possible_shareholders.each do |sh|
             next if sh == corp
 
@@ -1761,15 +1793,9 @@ module Engine
             shares.each do |s|
               simple_transfer_share(s, corp)
 
-              new_share = if s.percent == 40
-                            target.shares_of(target).find(&:president)
-                          else
-                            target.shares_of(target).reject(&:president).first
-                          end
-              pres = s.percent == 40 ? 'president' : 'normal'
-              raise GameError, "No #{pres} share to tranfer" unless new_share
+              new_share = target.shares_of(target).first
 
-              @log << "#{sh.name} swaps #{pres} share of #{corp.name} for #{target.name}"
+              @log << "#{sh.name} swaps share of #{corp.name} for #{target.name}"
               @share_pool.transfer_shares(new_share.to_bundle, sh, allow_president_change: true)
             end
           end
@@ -1887,8 +1913,8 @@ module Engine
         def transform_2nd_offer
           # offer a share to all current player shareholders
           @transform_state = :offer2
-          @share_offer_list = active_share_holder_list(@share_offer_corp.player, @share_offer_corp, include_corporations: false)
-          @log << 'Second round of share purchase (players only)'
+          @share_offer_list = @players.rotate(@players.index(@share_offer_corp.player)).reject(&:bankrupt)
+          @log << 'Second round of share purchase (all players)'
           share_offer_next
         end
 
@@ -2473,7 +2499,7 @@ module Engine
           diff = total_cost - corp.cash
           return unless diff.positive?
 
-          num_shares = (2.0 * (diff / corp.share_price.price)).ceil
+          num_shares = ((2.0 * diff) / corp.share_price.price).ceil
           raise GameError, 'Assumption about starting token EMR is wrong' if num_shares > corp.shares_of(corp).size
 
           bundle = ShareBundle.new(corp.shares_of(corp).take(num_shares))
@@ -2493,6 +2519,13 @@ module Engine
             (!in_full_chain?(active, corp) && (!historical?(corp) || @phase.name.to_i >= 4))
         end
 
+        # can sell a partial share of a president's share if another entity can become pres OR
+        # there is at least one share in the market
+        def can_sell_partial?(owner, corp)
+          (corp.player_share_holders.reject { |s_h, _| s_h == owner }.values.max || 0) > 10 ||
+            !@share_pool.shares_of(corp).empty?
+        end
+
         def corp_minimum_to_retain(owner, corp, active)
           return 0 if can_dump?(owner, corp, active)
           return 0 if historical?(corp)
@@ -2504,6 +2537,7 @@ module Engine
           owner = bundle.owner
           corp = bundle.corporation
 
+          return false if bundle.partial? && !can_sell_partial?(owner, corp)
           return true if can_dump?(owner, corp, active)
 
           corp_minimum_to_retain(owner, corp, active) <= bundle.percent &&
@@ -2792,6 +2826,12 @@ module Engine
             (value_for_sellable(player, corporation) / 2.0).to_i
           end
           value
+        end
+
+        def priority_deal_player
+          return @players.reject(&:bankrupt)[0] if @round.is_a?(Round::Operating)
+
+          super
         end
       end
     end

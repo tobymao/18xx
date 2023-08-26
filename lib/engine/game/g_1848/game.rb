@@ -165,6 +165,12 @@ module Engine
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or, custom: :full_or }.freeze
 
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
+          bank: 'Bank Broken',
+          stock_market: 'Corporation hit max stock value or Bank of England has given 16 or more loans',
+          custom: 'Fifth corporation is in receivership',
+        }.freeze
+
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
                   {
                     name: '3',
