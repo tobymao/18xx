@@ -37,10 +37,10 @@ module Engine
             end
 
             @game.share_pool.buy_shares(player, bundle, exchange: :free)
-            if treasury_share
-              acquire_private(corporation, minor)
-              claim_token(corporation, minor)
-            end
+            return unless treasury_share
+
+            acquire_private(corporation, minor)
+            claim_token(corporation, minor)
           end
 
           def claim_token(corporation, minor)

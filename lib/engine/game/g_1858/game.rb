@@ -209,6 +209,7 @@ module Engine
 
         def closure_round(round_num)
           G1858::Round::Closure.new(self, [
+            G1858::Step::ExchangeApproval,
             G1858::Step::HomeToken,
             G1858::Step::PrivateClosure,
           ], round_num: round_num)
@@ -329,17 +330,6 @@ module Engine
           return unless bundle.shares.first.owner.corporation?
 
           bundle.corporation.owner
-        end
-
-        # Consent for a share exchange in the private closure round is needed
-        # if the corporation whose share is being taken is not run by the same
-        # player as the private railway company being exchanged, and the share
-        # is from the corporation's treasury.
-        def consenter_for_choice(minor, choice, _label)
-          return if choice['from'] == 'market'
-
-          corporation = @corporations.find { |c| c.id == choice['corporation'] }
-          corporation.owner unless corporation.owner == minor.owner
         end
 
         def tile_lays(entity)
