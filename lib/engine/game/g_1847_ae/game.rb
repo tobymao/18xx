@@ -15,7 +15,7 @@ module Engine
         include Map
         include Entities
 
-        attr_accessor :draft_finished
+        attr_accessor :draft_finished, :must_exchange_investor_companies
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
@@ -31,6 +31,7 @@ module Engine
         STARTING_CASH = { 3 => 500, 4 => 390, 5 => 320 }.freeze
 
         COMPANIES_PURCHASABLE_BY_CORPORATIONS = %w[R K W H].freeze
+        INVESTOR_COMPANIES = %w[MNR SCR VIW].freeze
 
         LAST_TRANCH_CORPORATIONS = %w[NDB M N RNB].freeze
 
@@ -135,7 +136,15 @@ module Engine
                     price: 500,
                     num: 1,
                   },
-                  { name: '5', distance: 5, price: 450, num: 2 },
+                  {
+                    name: '5',
+                    distance: 5,
+                    price: 450,
+                    num: 2,
+                    events: [
+                      { 'type' => 'must_exchange_investor_companies' },
+                    ],
+                  },
                   {
                     name: '5+5',
                     distance: [{ 'nodes' => ['town'], 'pay' => 5, 'visit' => 5 },
@@ -165,6 +174,10 @@ module Engine
           'two_yellow_tracks' => ['Two yellow tracks', 'A corporation may lay two yellow tracks']
         ).freeze
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'must_exchange_investor_companies' => ['Must exchange Investor companies', 'Must exchange Investor companies for the associated Investor shares in the next Stock Round'],
+        ).freeze
+
         LAYOUT = :pointy
 
         def init_round
@@ -180,7 +193,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1847AE::Round::Stock.new(self, [
             G1847AE::Step::Exchange,
             G1847AE::Step::BuySellParShares,
           ])
@@ -243,6 +256,26 @@ module Engine
           'Investor'
         end
 
+        def event_must_exchange_investor_companies!
+          @log << "-- At the beginning of the next Stock Round players must exchange their remaining Investor companies for the associated Investor shares --"
+
+          @must_exchange_investor_companies = true
+        end
+
+        def exchange_all_investor_companies!
+          INVESTOR_COMPANIES.map { |id| company_by_id(id) }.reject(&:closed?).each do |company|
+            corporation = corporation_by_id(company.abilities.first.corporations.first)
+            share = corporation.reserved_shares.first
+            share_pool.buy_shares(company.owner,
+                                  share.to_bundle,
+                                  exchange: company)
+            share.buyable = true
+            company.close!
+          end
+
+          @must_exchange_investor_companies = false
+        end
+
         def init_corporations(stock_market)
           self.class::CORPORATIONS.map do |corporation|
             par_price = stock_market.par_prices.find { |p| p.price == corporation[:required_par_price] }
@@ -271,6 +304,7 @@ module Engine
           @bank.spend(hlb.par_price.price * 1, hlb)
 
           @draft_finished = false
+          @must_exchange_investor_companies = false
         end
 
         def after_buy_company(player, company, _price)
