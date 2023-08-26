@@ -10,7 +10,7 @@ module Engine
         def game_companies
           companies = [
             {
-              name: 'Società della Strada di Ferro da Napoli a Nocera e Castellamunare',
+              name: '1 Società della Strada di Ferro da Napoli a Nocera e Castellamunare',
               sym: 'Bayard',
               value: 50,
               revenue: 20,
@@ -20,7 +20,7 @@ module Engine
           ]
           unless lite?
             companies << {
-              name: 'Società della Drada Ferrata da Lucca a Pistoia',
+              name: '2 Società della Strada Ferrata da Lucca a Pistoia',
               sym: 'SFLP',
               value: 50,
               revenue: 0,
@@ -29,7 +29,7 @@ module Engine
             }
           end
           companies << {
-            name: 'Strada di Ferro da Torino a Cuneo',
+            name: '3 Strada di Ferro da Torino a Cuneo',
             sym: 'SFTC',
             value: 50,
             revenue: 0,
@@ -38,7 +38,7 @@ module Engine
           }
           unless lite?
             companies << {
-              name: 'Società per la Strada Ferrata Maria Autonia',
+              name: '4 Società per la Strada Ferrata Maria Antonia',
               sym: 'SFMA',
               value: 50,
               revenue: 0,
@@ -47,7 +47,7 @@ module Engine
             }
           end
           companies << {
-            name: 'Strada di Ferro da Torina a Novara',
+            name: '5 Strada di Ferro da Torino a Novara',
             sym: 'SFTN',
             value: 50,
             revenue: 0,
@@ -56,7 +56,7 @@ module Engine
           }
           unless lite?
             companies << {
-              name: 'Società per la Strada Ferrata Leopolda',
+              name: '6 Società per la Strada Ferrata Leopolda',
               sym: 'SSFL',
               value: 50,
               revenue: 0,
@@ -65,7 +65,7 @@ module Engine
             }
           end
           companies << {
-            name: 'Strada Ferrata da Torino a Genova',
+            name: '7 Strada Ferrata da Torino a Genova',
             sym: 'SFTG',
             value: 50,
             revenue: 0,
@@ -73,7 +73,7 @@ module Engine
             corporation: 'SFTG',
           }
           companies << {
-            name: 'Imperial Regia Strada Ferrata Ferdinandea',
+            name: '8 Imperial Regia Strada Ferrata Ferdinandea',
             sym: 'IRSFF',
             value: 50,
             revenue: 0,
@@ -164,7 +164,7 @@ module Engine
           }
           corporations << {
             sym: 'SFTG',
-            name: 'Strada Ferrata da Torina a Genova',
+            name: 'Strada Ferrata da Torino a Genova',
             logo: '1841/SFTG',
             simple_logo: '1841/SFTG.alt',
             coordinates: %w[H4 J6],
@@ -182,7 +182,7 @@ module Engine
           }
           corporations << {
             sym: 'SFTN',
-            name: 'Strada di Ferro da Torina a Novara',
+            name: 'Strada di Ferro da Torino a Novara',
             logo: '1841/SFTN',
             simple_logo: '1841/SFTN.alt',
             coordinates: 'H4',

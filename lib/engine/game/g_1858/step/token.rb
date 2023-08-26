@@ -143,6 +143,15 @@ module Engine
             entity.tokens_by_type
           end
 
+          def auto_actions(entity)
+            return if entity.minor?
+            return if (@game.graph_broad.can_token?(entity) ||
+                       @game.graph_metre.can_token?(entity)) &&
+                      (min_token_price(entity) <= buying_power(entity))
+
+            [Engine::Action::Pass.new(entity)]
+          end
+
           # Finds all the cities that a corporation could place a token in.
           # Does not consider whether the corporation can afford to place the token.
           def tokenable_cities(corporation)
@@ -157,11 +166,14 @@ module Engine
           end
 
           def can_place_token?(entity)
+            # Don't check for any legal token placements here, or whether the
+            # corporation can afford the actual token cost here. This would
+            # require the game graph to be consulted, which slows down game
+            # loading. Instead auto_actions are used to pass token placement
+            # if no token can be placed.
             current_entity == entity &&
               !@round.tokened &&
-              !available_tokens(entity).empty? &&
-              (@game.graph_broad.can_token?(entity) || @game.graph_metre.can_token?(entity)) &&
-              (min_token_price(entity) <= buying_power(entity))
+              !available_tokens(entity).empty?
           end
 
           # Calculate the token cost from the number of provincial borders

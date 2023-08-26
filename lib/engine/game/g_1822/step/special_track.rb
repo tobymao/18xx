@@ -70,7 +70,7 @@ module Engine
 
               next unless ability_.type == :tile_lay
 
-              if ability_.count <= 0 && ability_.closed_when_used_up
+              if ability_.closed_when_used_up && ability_.count <= 0
                 @log << "#{ability_.owner.name} closes"
                 ability_.owner.close!
               end

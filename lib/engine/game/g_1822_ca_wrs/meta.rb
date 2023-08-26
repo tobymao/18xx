@@ -18,6 +18,10 @@ module Engine
         GAME_TITLE = '1822CA WRS'
         GAME_DISPLAY_TITLE = '1822CA: Western Regional Scenario'
         GAME_LOCATION = 'Western Canada'
+        GAME_RULES_URL = {
+          'Rules' => 'https://boardgamegeek.com/filepage/238950/1822ca-rules',
+          '2-player Scenarios' => 'https://boardgamegeek.com/thread/2591186/1822ca-2-player-scenarios',
+        }.freeze
 
         PLAYER_RANGE = [2, 5].freeze
       end
