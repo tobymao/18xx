@@ -305,7 +305,7 @@ module Engine
             G1822CA::Step::AcquisitionTrack,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
-            G1822::Step::IssueShares,
+            G1822CA::Step::IssueShares,
           ], round_num: round_num)
         end
 
