@@ -175,7 +175,9 @@ module Engine
         ).freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'must_exchange_investor_companies' => ['Must exchange Investor companies', 'Must exchange Investor companies for the associated Investor shares in the next Stock Round'],
+          'must_exchange_investor_companies' => ['Must exchange Investor companies',
+                                                 'Must exchange Investor companies for the associated Investor shares'\
+                                                 ' in the next Stock Round'],
         ).freeze
 
         LAYOUT = :pointy
@@ -257,7 +259,8 @@ module Engine
         end
 
         def event_must_exchange_investor_companies!
-          @log << "-- At the beginning of the next Stock Round players must exchange their remaining Investor companies for the associated Investor shares --"
+          @log << '-- At the beginning of the next Stock Round players must exchange their remaining'\
+                  ' Investor companies for the associated Investor shares --'
 
           @must_exchange_investor_companies = true
         end
