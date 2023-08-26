@@ -258,27 +258,6 @@ module Engine
           'Investor'
         end
 
-        def event_must_exchange_investor_companies!
-          @log << '-- At the beginning of the next Stock Round players must exchange their remaining'\
-                  ' Investor companies for the associated Investor shares --'
-
-          @must_exchange_investor_companies = true
-        end
-
-        def exchange_all_investor_companies!
-          INVESTOR_COMPANIES.map { |id| company_by_id(id) }.reject(&:closed?).each do |company|
-            corporation = corporation_by_id(company.abilities.first.corporations.first)
-            share = corporation.reserved_shares.first
-            share_pool.buy_shares(company.owner,
-                                  share.to_bundle,
-                                  exchange: company)
-            share.buyable = true
-            company.close!
-          end
-
-          @must_exchange_investor_companies = false
-        end
-
         def init_corporations(stock_market)
           self.class::CORPORATIONS.map do |corporation|
             par_price = stock_market.par_prices.find { |p| p.price == corporation[:required_par_price] }
@@ -326,6 +305,27 @@ module Engine
           return false unless ['3+3', '4', '4+4'].include?(@phase.current[:name])
 
           corporation.floated
+        end
+
+        def event_must_exchange_investor_companies!
+          @log << '-- At the beginning of the next Stock Round players must exchange their remaining'\
+                  ' Investor companies for the associated Investor shares --'
+
+          @must_exchange_investor_companies = true
+        end
+
+        def exchange_all_investor_companies!
+          INVESTOR_COMPANIES.map { |id| company_by_id(id) }.reject(&:closed?).each do |company|
+            corporation = corporation_by_id(company.abilities.first.corporations.first)
+            share = corporation.reserved_shares.first
+            share_pool.buy_shares(company.owner,
+                                  share.to_bundle,
+                                  exchange: company)
+            share.buyable = true
+            company.close!
+          end
+
+          @must_exchange_investor_companies = false
         end
 
         def place_home_token(corporation)
