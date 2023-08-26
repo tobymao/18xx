@@ -108,7 +108,7 @@ class Api
                   game: game,
                   user: user,
                   action_id: action['id'],
-                  action: action,
+                  action: action.dup,
                 )
 
                 acting = set_game_state(game, engine, users) - prev
