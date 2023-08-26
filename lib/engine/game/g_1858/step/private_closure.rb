@@ -82,19 +82,17 @@ module Engine
 
           def process_choose(action)
             choice = action.choice
-            corporation = @game.corporations.find { |c| c.id == choice['corporation'] }
+            corporation = @game.corporation_by_id(choice['corporation'])
             share_location = choice['from']
             minor = action.entity
             company = @game.private_company(minor)
             player = company.owner
 
             share = share_chosen(corporation, share_location)
-            exchange_for_share(share, corporation, minor, player)
+            treasury_share = (share_location == 'treasury')
+            exchange_for_share(share, corporation, minor, player, treasury_share)
 
-            if share_location == 'treasury'
-              acquire_private(corporation, minor)
-              claim_token(corporation, minor)
-            else
+            unless treasury_share
               company.owner = @game.bank
               player.companies.delete(company)
             end

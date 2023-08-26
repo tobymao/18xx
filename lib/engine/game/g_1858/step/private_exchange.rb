@@ -31,12 +31,16 @@ module Engine
             company.add_ability(blocker)
           end
 
-          def exchange_for_share(bundle, corporation, minor, player)
+          def exchange_for_share(bundle, corporation, minor, player, treasury_share)
             if !@game.loading && !@game.corporation_private_connected?(corporation, minor)
               raise GameError, "#{minor.name} is not connected to #{corporation.full_name}"
             end
 
             @game.share_pool.buy_shares(player, bundle, exchange: :free)
+            if treasury_share
+              acquire_private(corporation, minor)
+              claim_token(corporation, minor)
+            end
           end
 
           def claim_token(corporation, minor)
