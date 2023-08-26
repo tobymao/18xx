@@ -15,6 +15,14 @@ module Engine
 
             super
           end
+
+          def process_lay_tile(action)
+            super
+
+            # cannot lay a second yellow after using one of the P19-P20 Mountain
+            # Pass privates
+            @round.num_laid_track += 1 if @game.class::MOUNTAIN_PASS_COMPANIES.include?(action.entity.id)
+          end
         end
       end
     end

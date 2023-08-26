@@ -343,7 +343,21 @@ module Engine
                   'Pass (CP) and ignore the terrain fee. This tile placement counts as the company’s full track '\
                   'laying step. Closed when used. The CP hex is not reserved; any company may pay to lay a tile '\
                   'there irrespective of the ownership of P19.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[F16],
+                tiles: %w[7 8 9],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count: 1,
+                reachable: true,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -355,7 +369,21 @@ module Engine
                   'Pass (YP) and ignore the terrain fee. This tile placement counts as the company’s full track '\
                   'laying step. Closed when used. The YP hex is not reserved; any company may pay to lay a tile '\
                   'there irrespective of the ownership of P20.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[E11],
+                tiles: %w[7 8 9],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count: 1,
+                reachable: true,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {

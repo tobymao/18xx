@@ -42,6 +42,11 @@ module Engine
         PRIVATE_REMOVE_REVENUE = %w[P1 P5 P6 P7 P14 P15 P16 P17 P18 P22 P23 P24 P25 P26 P27 P28].freeze
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
 
+        MOUNTAIN_PASS_HEXES = %w[E11 F16].freeze
+        MOUNTAIN_PASS_TILES = %w[7 8 9].freeze
+        MOUNTAIN_PASS_COMPANIES = %w[P19 P20].freeze
+        MOUNTAIN_PASS_COMPANIES_TO_HEXES = { 'P20' => 'E11', 'P19' => 'F16' }.freeze
+
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1 (5-Train)',
           'P2' => 'P2 (Perm. L Train)',
@@ -329,6 +334,10 @@ module Engine
 
         def routes_subsidy(routes)
           super + small_mail_contract_subsidy(routes)
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          super || (MOUNTAIN_PASS_HEXES.include?(from.hex.id) && MOUNTAIN_PASS_TILES.include?(to.name))
         end
 
         def small_mail_contract_subsidy(routes)
