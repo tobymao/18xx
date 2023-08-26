@@ -1361,7 +1361,7 @@ module Engine
           h['nodes'].each { |type| type_info[type] << info }
         end
 
-        grouped = visits.group_by(&:type)
+        grouped = visits.group_by { |v| stop_type(v, train) }
 
         grouped.sort_by { |t, _| type_info[t].size }.each do |type, group|
           num = group.sum(&:visit_cost)
@@ -1416,7 +1416,7 @@ module Engine
 
             next unless stops.all? do |stop|
               row = distance.index.with_index do |h, i|
-                h['nodes'].include?(stop.type) && types_used[i] < h['pay']
+                h['nodes'].include?(stop_type(stop, train)) && types_used[i] < h['pay']
               end
 
               types_used[row] += 1 if row
@@ -1436,6 +1436,10 @@ module Engine
         end
 
         []
+      end
+
+      def stop_type(stop, _train)
+        stop.type
       end
 
       def visited_stops(route)
