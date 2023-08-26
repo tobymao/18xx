@@ -27,7 +27,6 @@ module Engine
 
           def process_assign(action)
             @sawmill_owner = action.entity.owner
-            @log << "@sawmill_owner = #{@sawmill_owner.name}, #{@sawmill_owner}"
             @sawmill_state = :assigned
             @sawmill_hex = action.target
             @game.sawmill_hex = @sawmill_hex

@@ -217,7 +217,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
-        attr_accessor :sawmill_bonus, :sawmill_hex, :sawmill_owner
+        attr_accessor :sawmill_hex, :sawmill_owner
+        attr_writer :sawmill_bonus
 
         def setup_game_specific
           # Initialize the stock round choice for P7-Double Cash
@@ -358,17 +359,44 @@ module Engine
             end
         end
 
-        def revenue_str(route)
-          super + revenue_sawmill(route, route.stops)[:description]
+        def revenue_for(route, stops)
+          revenue = super
+
+          sawmill_bonus = sawmill_bonus(route.routes)
+          revenue += sawmill_bonus[:revenue] if sawmill_bonus && sawmill_bonus[:route] == route
+
+          revenue
         end
 
-        def revenue_sawmill(route, stops)
-          no_bonus = { description: '', revenue: 0 }
-          return no_bonus unless @sawmill_hex
-          return no_bonus unless receives_sawmill_bonus?(route.train.owner)
-          return no_bonus unless stops.any? { |s| s.hex == @sawmill_hex }
+        def revenue_str(route)
+          str = super
 
-          { description: ' + Sawmill Bonus', revenue: @sawmill_bonus }
+          sawmill_bonus = sawmill_bonus(route.routes)
+          str += " + Sawmill ($#{sawmill_bonus[:revenue]})" if sawmill_bonus && sawmill_bonus[:route] == route
+
+          str
+        end
+
+        def sawmill_bonus(routes)
+          return if routes.empty?
+          return unless @sawmill_hex
+          return unless receives_sawmill_bonus?(routes[0].train.owner)
+
+          sawmill_bonuses = routes.map { |r| calculate_sawmill_bonus(r) }.compact
+          sawmill_bonuses.sort_by { |v| v[:revenue] }.reverse&.first
+        end
+
+        def calculate_sawmill_bonus(route)
+          return unless (sawmill_stop = route.stops.find { |s| s.hex == @sawmill_hex })
+
+          entity = route.train.owner
+          sawmill_dest = sawmill_stop.city? &&
+                         sawmill_stop.tokens.find { |t| t.type == :destination && t.corporation == entity } &&
+                         (dest = destination_bonus(route.routes)) &&
+                         dest[:route] == route
+          multiplier = sawmill_dest ? 2 : 1
+
+          { route: route, revenue: @sawmill_bonus * multiplier }
         end
 
         def receives_sawmill_bonus?(entity)
