@@ -352,11 +352,16 @@ module Engine
         end
 
         def select_track_graph
-          @selected_graph = if @phase.name == '2'
+          old_graph = @selected_graph
+          @selected_graph = if @phase.name.to_i == 2
                               @region_graph
                             else
                               @graph
                             end
+          return if old_graph == @selected_graph
+
+          @region_graph.clear
+          @graph.clear
         end
 
         def select_token_graph
@@ -1684,6 +1689,11 @@ module Engine
 
             min_to_remove = map_token_cnt - max_placed
             max_to_remove = map_token_cnt - min_placed
+
+            @log << "#{@merger_target.name} will have #{total_token_cnt} tokens."\
+                    " Up to #{max_unplaced} tokens can be on the charter."
+            @log << "Any token of #{@merger_corpa.name} or #{@merger_corpb.name} left on the map will be"\
+                    " automatically replaced by a token of #{@merger_target.name}"
           end
 
           if max_to_remove.positive?
@@ -1768,6 +1778,9 @@ module Engine
 
           # re-sort shares
           corporation.shares_by_corporation[corporation].sort_by!(&:id)
+
+          # forget about routes
+          @graph.clear_graph_for(corporation)
         end
 
         def transformable?(corp)
@@ -2736,7 +2749,7 @@ module Engine
             custom: custom_end_game_reached?,
           }.select { |_, t| t }
 
-          %i[immediate current_round current_or full_or one_more_full_or_set current_turn].each do |after|
+          %i[immediate current_turn current_round current_or full_or one_more_full_or_set].each do |after|
             triggers.keys.each do |reason|
               if game_end_check_values[reason] == after
                 @final_turn ||= @turn + 1 if after == :one_more_full_or_set
