@@ -1614,7 +1614,7 @@ module Engine
           },
           {
             sym: 'GTP',
-            name: 'Caledonian Railway',
+            name: 'Grand Trunk Pacific Railway',
             logo: '1822_ca/GTP',
             tokens: [0, 100],
             type: 'major',
