@@ -581,6 +581,7 @@ module Engine
                       express_revenue = revenue_for_express(route, stops)
 
                       return express_revenue if train_over_distance?(route)
+                      return super unless includes_two_tokens?(route)
 
                       [super, express_revenue].max
                     end
@@ -607,6 +608,7 @@ module Engine
 
         def runs_as_express?(route)
           return false unless can_be_express?(route.train)
+          return false unless includes_two_tokens?(route)
           return true if train_over_distance?(route)
 
           stops = route.stops
@@ -640,6 +642,16 @@ module Engine
           route_distance = visits.sum(&:visit_cost)
 
           route_distance > train_distance
+        end
+
+        def includes_two_tokens?(route)
+          entity = route.train.owner
+
+          tokened_stops = route.stops.count do |stop|
+            stop.city? && stop.tokened_by?(entity)
+          end
+
+          tokened_stops > 1
         end
 
         def route_train_type(route)
