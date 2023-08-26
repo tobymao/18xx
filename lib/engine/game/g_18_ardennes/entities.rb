@@ -30,7 +30,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'A8',
+            coordinates: 'B8',
             city: 0,
           },
           {
@@ -45,7 +45,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'A8',
+            coordinates: 'B8',
             city: 1,
           },
           {
@@ -60,7 +60,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'D15',
+            coordinates: 'E15',
           },
           {
             sym: '4',
@@ -74,7 +74,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'F25',
+            coordinates: 'G25',
           },
           {
             sym: '5',
@@ -88,7 +88,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'I24',
+            coordinates: 'J24',
           },
           {
             sym: '6',
@@ -102,7 +102,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'G6',
+            coordinates: 'H6',
           },
           {
             sym: '7',
@@ -116,7 +116,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'H21',
+            coordinates: 'I21',
           },
           {
             sym: '8',
@@ -130,7 +130,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'L7',
+            coordinates: 'M7',
             city: 0,
           },
           {
@@ -145,7 +145,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'L7',
+            coordinates: 'M7',
             city: 1,
           },
           {
@@ -160,7 +160,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'C18',
+            coordinates: 'D18',
           },
           {
             sym: '11',
@@ -174,7 +174,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'A16',
+            coordinates: 'B16',
           },
           {
             sym: '12',
@@ -188,7 +188,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'J11',
+            coordinates: 'K11',
           },
           {
             sym: '13',
@@ -202,7 +202,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'D9',
+            coordinates: 'E9',
           },
           {
             sym: '14',
@@ -216,7 +216,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'E10',
+            coordinates: 'F10',
           },
           {
             sym: '15',
@@ -230,7 +230,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             hide_shares: true,
-            coordinates: 'D25',
+            coordinates: 'E25',
             city: 1,
           },
           {
