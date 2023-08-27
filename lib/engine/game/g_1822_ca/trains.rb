@@ -3,19 +3,7 @@
 module Engine
   module Game
     module G1822CA
-      module Scenario
-        CERT_LIMIT = { 2 => 27, 3 => 17, 4 => 13, 5 => 10 }.freeze
-        STARTING_CASH = { 2 => 750, 3 => 500, 4 => 375, 5 => 300 }.freeze
-
-        UPGRADE_COST_L_TO_2_PHASE_2 = 70
-
-        GAME_END_ON_NOTHING_SOLD_IN_SR1 = false
-
-        MARKET = [
-          %w[5y 10y 15y 20y 25y 30y 35y 40y 45y 50p 60xp 70xp 80xp 90xp 100xp 110 120 135 150 165 180 200 220
-             245 270 300 330 360 400 450 500e 550e 600e],
-        ].freeze
-
+      module Trains
         TRAINS = [
           {
             name: 'L',
@@ -31,8 +19,8 @@ module Engine
                 'visit' => 1,
               },
             ],
-            num: 14,
-            price: 50,
+            num: 22,
+            price: 60,
             rusts_on: '3',
             variants: [
               {
@@ -47,21 +35,24 @@ module Engine
           {
             name: '3',
             distance: 3,
-            num: 6,
+            num: 9,
             price: 200,
             rusts_on: '6',
+            events: [
+              'type' => 'open_detroit_duluth',
+            ],
           },
           {
             name: '4',
             distance: 4,
-            num: 4,
+            num: 6,
             price: 300,
             rusts_on: '7',
           },
           {
             name: '5',
             distance: 5,
-            num: 2,
+            num: 3,
             price: 500,
             events: [
               {
@@ -145,47 +136,19 @@ module Engine
             num: 2,
             price: 0,
           },
+          {
+            name: 'G',
+            distance: [
+              {
+                'nodes' => ['grain_elevator'],
+                'pay' => 12,
+                'visit' => 12,
+              },
+            ],
+            num: 2,
+            price: 0,
+          },
         ].freeze
-
-        def discountable_trains_for(corporation)
-          discount_info = []
-
-          upgrade_cost = if @phase.name.to_i < 2
-                           self.class::UPGRADE_COST_L_TO_2
-                         else
-                           self.class::UPGRADE_COST_L_TO_2_PHASE_2
-                         end
-          corporation.trains.select { |t| t.name == 'L' }.each do |train|
-            discount_info << [train, train, '2', upgrade_cost]
-          end
-          discount_info
-        end
-
-        def starting_companies
-          return self.class::STARTING_COMPANIES_TWOPLAYER if @players.size == 2
-
-          self.class::STARTING_COMPANIES
-        end
-
-        def init_corporations(stock_market)
-          game_corporations.map do |corporation|
-            next unless self.class::STARTING_CORPORATIONS.include?(corporation[:sym])
-
-            opts = self.class::STARTING_CORPORATIONS_OVERRIDE[corporation[:sym]] || {}
-            Corporation.new(
-              min_price: stock_market.par_prices.map(&:price).min,
-              capitalization: self.class::CAPITALIZATION,
-              **corporation.merge(opts),
-            )
-          end.compact
-        end
-
-        def game_end_check
-          @game_end_reason ||= compute_game_end
-        end
-
-        def block_detroit_duluth; end
-        def event_open_detroit_duluth!; end
       end
     end
   end
