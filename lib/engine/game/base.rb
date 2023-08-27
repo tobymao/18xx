@@ -1501,7 +1501,7 @@ module Engine
 
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
-        # If a corp has laid it's first token assume it's their home token
+        # If a corp has laid its first token assume its their home token
         return if corporation.tokens.first&.used
 
         hex = hex_by_id(corporation.coordinates)

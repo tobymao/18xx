@@ -482,6 +482,7 @@ module Engine
 
         MINOR_14_ID = '14'
         MINOR_14_HOME_HEX = 'M38'
+        PENDING_HOME_TOKENERS = [MINOR_14_ID].freeze
 
         PLUS_EXPANSION_BIDBOX_1 = %w[P1 P3 P4 P13 P14 P19].freeze
         PLUS_EXPANSION_BIDBOX_2 = %w[P2 P5 P8 P10 P11 P12 P21].freeze

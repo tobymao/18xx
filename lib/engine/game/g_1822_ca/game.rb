@@ -33,6 +33,8 @@ module Engine
         COMPANY_5X_REVENUE = 'P9'
         COMPANY_HSBC = nil # Grimsby/Hull Bridge
 
+        COMPANY_WINNIPEG_TOKEN = 'P10'
+
         COMPANIES_BIG_CITY_UPGRADES = %w[P14 P15 P16 P17 P18].freeze
         COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P19 P20 P21]).freeze
 
@@ -156,6 +158,7 @@ module Engine
 
         MINOR_14_ID = '13'
         MINOR_14_HOME_HEX = 'AC21'
+        PENDING_HOME_TOKENERS = [MINOR_14_ID, 'QMOO'].freeze
 
         TWO_HOME_CORPORATION = 'CPR'
 
@@ -332,7 +335,7 @@ module Engine
             G1822CA::Step::AssignSawmill,
             G1822::Step::SpecialChoose,
             G1822CA::Step::SpecialTrack,
-            G1822::Step::SpecialToken,
+            G1822CA::Step::SpecialToken,
             G1822CA::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
