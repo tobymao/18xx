@@ -64,6 +64,7 @@ module Engine
 
         COMPANY_10X_REVENUE = 'P16'
         COMPANY_REMOVE_TOWN = 'P9'
+        COMPANY_EXTRA_TILE_LAYS = 'P12'
 
         MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
@@ -666,6 +667,10 @@ module Engine
 
         def can_be_express?(train)
           train.name[-1] == 'E'
+        end
+
+        def company_ability_extra_track?(company)
+          company.id == self.class::COMPANY_EXTRA_TILE_LAYS
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does
