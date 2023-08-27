@@ -49,6 +49,9 @@ module Engine
         MOUNTAIN_PASS_COMPANIES = %w[P19 P20].freeze
         MOUNTAIN_PASS_COMPANIES_TO_HEXES = { 'P20' => 'E11', 'P19' => 'F16' }.freeze
 
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[unlabeled_cities].freeze
+        TRACK_RESTRICTION = :permissive
+
         EXTRA_TRAINS = (G1822::Game::EXTRA_TRAINS + %w[G]).freeze
         EXTRA_TRAIN_GRAIN = 'G'
 
@@ -159,6 +162,8 @@ module Engine
         MINOR_14_ID = '13'
         MINOR_14_HOME_HEX = 'AC21'
         PENDING_HOME_TOKENERS = [MINOR_14_ID, 'QMOO'].freeze
+
+        MULTIPLE_TOKENS_ON_SAME_HEX_ALLOWED = true
 
         TWO_HOME_CORPORATION = 'CPR'
 
@@ -335,7 +340,7 @@ module Engine
             G1822CA::Step::SpecialToken,
             G1822CA::Step::Track,
             G1822::Step::DestinationToken,
-            G1822::Step::Token,
+            G1822CA::Step::Token,
             G1822CA::Step::Route,
             G1822::Step::Dividend,
             G1822::Step::BuyTrain,

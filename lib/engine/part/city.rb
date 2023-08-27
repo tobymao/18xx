@@ -80,7 +80,7 @@ module Engine
       end
 
       def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type, cheater: false,
-                     extra_slot: false, spender: nil)
+                     extra_slot: false, spender: nil, same_hex_allowed: false)
         tokens = Array(tokens)
         @error = :generic
         if !extra_slot && tokens.empty?
@@ -97,7 +97,7 @@ module Engine
             @error = :no_money
             next false
           end
-          if @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
+          if !same_hex_allowed && @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
             @error = :existing_token
             next false
           end
@@ -127,10 +127,16 @@ module Engine
       end
 
       def place_token(corporation, token, free: false, check_tokenable: true, cheater: false,
-                      extra_slot: false, spender: nil)
+                      extra_slot: false, spender: nil, same_hex_allowed: false)
         if check_tokenable && !tokenable?(
-            corporation, free: free, tokens: token, cheater: cheater, extra_slot: extra_slot, spender: spender
-          )
+             corporation,
+             free: free,
+             tokens: token,
+             cheater: cheater,
+             extra_slot: extra_slot,
+             spender: spender,
+             same_hex_allowed: same_hex_allowed
+           )
 
           case @error
           when :no_tokens
