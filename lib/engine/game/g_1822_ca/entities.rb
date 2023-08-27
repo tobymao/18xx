@@ -144,7 +144,24 @@ module Engine
                   'Station slots. Pays company $10 until used. The company does not need to be able to trace a route '\
                   'to Winnipeg to use this property (i.e. any company can use this power to place a token in the '\
                   'Winnipeg hex).',
-            abilities: [],
+            abilities: [
+              {
+                type: 'token',
+                check_tokenable: false,
+                closed_when_used_up: true,
+                connected: false,
+                count: 1,
+                extra_action: true,
+                extra_slot: true,
+                from_owner: false,
+                hexes: ['N16'],
+                owner_type: 'corporation',
+                price: 0,
+                special_only: true,
+                teleport_price: 0,
+                when: 'owning_corp_or_turn',
+              },
+            ],
             color: nil,
           },
           {
@@ -417,6 +434,9 @@ module Engine
                 count: 3,
                 reachable: true,
                 closed_when_used_up: true,
+                special: false,
+                free: true,
+                tiles: [],
                 hexes: %w[A9 B10 B12 B14 B6 B8 C11 C13 C7 C9 D10 D12 D14 D16 D6
                           D8 E15 E7 E9 F10 F12 F6 F8 G11 G13 G17 G7 G9 H10 H12 H14 H16 H6
                           H8 I11 I13 I15 I17 I7 I9 J10 J12 J14 J16 J6 J8 K11 K13 K17 K7 K9
@@ -432,8 +452,6 @@ module Engine
                           AH6 AI11 AI13 AI3 AI5 AI7 AI9 AJ10 AJ12 AJ2 AJ4 AJ6 AJ8 AK11 AK3
                           AK5 AK7 AK9 AL10 AL2 AL4 AL6 AL8 AM3 AM5 AM7 AM9 AN2 AN4 AN6 AO3
                           AO5 AO7 AO9 AP2 AP6 AP8],
-                tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69 201 202 621 630 631 632 633],
-                free: true,
               },
             ],
             color: nil,
@@ -1693,7 +1711,6 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             coordinates: 'AH8',
-            city: 1,
             color: '#7f3881',
             reservation_color: nil,
             destination_coordinates: 'AA15',
