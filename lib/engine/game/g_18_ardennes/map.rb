@@ -63,8 +63,8 @@ module Engine
             # Plain track hexes
             %w[
               B14 C17 D10 D16 D20 D22 E11 E17 F8 F12 F22 F24 F26 G5 G7
-              G9 H4 I3 I9 I11 I15 I17 I19 I23 I25 I27 J2 J4 J6 J10 J12 J14 J16 J20
-              J26 K3 K7 K9 K13 K15 K17 K21 K25 L4 L10 L12 L14 L16 L18 L20
+              G9 H4 I3 I9 I11 I15 I17 I19 I23 I25 I27 J2 J4 J6 J10 J14 J16 J20
+              J26 K3 K7 K13 K15 K17 K21 K25 L4 L10 L12 L14 L16 L18 L20
               M11 M15 M17 M19 M21 M25
             ] => '',
             %w[C9 C11 C13] =>
@@ -73,13 +73,13 @@ module Engine
                     'upgrade=cost:40,terrain:water;',
             %w[F16 F18 F20 G13 G15 G17 G21 G23 H12 H14 H16 H20 H22 H24 J22 K23 L24] =>
                     'upgrade=cost:40,terrain:mountain;',
-            %w[L8] =>
+            %w[L8 J12] =>
                     'stub=edge:0;',
             %w[B10 M9] =>
                     'stub=edge:1;',
             %w[C15] =>
                     'stub=edge:3;',
-            %w[M5] =>
+            %w[K9 M5] =>
                     'stub=edge:4;',
             %w[L6] =>
                     'stub=edge:5;',

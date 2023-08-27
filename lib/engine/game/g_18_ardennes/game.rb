@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../base'
+require_relative '../stubs_are_restricted'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'market'
@@ -13,6 +14,7 @@ module Engine
     module G18Ardennes
       class Game < Game::Base
         include_meta(G18Ardennes::Meta)
+        include StubsAreRestricted
         include Entities
         include Map
         include Market
