@@ -151,14 +151,17 @@ module Engine
             end
 
             bundle = @game.company_tax_haven_bundle(action.choice)
-            entity = action.entity.owner
-            if available_cash(entity) < bundle.price || @round.players_sold[entity][bundle.corporation]
+            player = action.entity.owner
+            spender = @game.tax_haven_spender(action.entity)
+            if available_cash(spender) < bundle.price || @round.players_sold[player][bundle.corporation] || @round.tax_haven_bought
               raise GameError, "Can't buy a share of #{bundle&.corporation&.name}"
             end
 
+            @round.tax_haven_bought = true
+
             @game.company_made_choice(action.entity, action.choice, :stock_round)
             track_action(action, action.entity)
-            log_pass(entity)
+            log_pass(player)
             pass!
           end
 
@@ -270,6 +273,14 @@ module Engine
 
             log_pass(entity)
             pass!
+          end
+
+          def round_state
+            super.merge(
+              {
+                tax_haven_bought: false,
+              }
+            )
           end
         end
       end

@@ -227,6 +227,8 @@ module Engine
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
                                    CNoR CPR GNWR GT GTP GWR ICR NTR PGE QMOO].freeze
 
+        TAX_HAVEN_MULTIPLE = true
+
         MUST_SELL_IN_BLOCKS = true
 
         TRAINS = (G1822::Game::TRAINS + [
@@ -320,11 +322,6 @@ module Engine
           @company_trains['P26'] = find_and_remove_train_by_id('G-0', buyable: false)
           @company_trains['P27'] = find_and_remove_train_by_id('G-1', buyable: false)
         end
-
-        # Stubbed out because this game doesn't use it, but base 22 does
-        def company_tax_haven_bundle(choice); end
-        def company_tax_haven_payout(entity, per_share); end
-        def num_certs_modification(_entity) = 0
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [

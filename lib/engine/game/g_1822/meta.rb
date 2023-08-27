@@ -40,6 +40,11 @@ module Engine
             desc: '6 more minors and 3 more privates. The privates are categorized into blue (bidbox 1), '\
                   'dark grey (bidbox 2) and gold (bidbox 3) stacks.',
           },
+          {
+            sym: :tax_haven_multiple,
+            short_name: 'Tax Haven Variant',
+            desc: 'P16 (Tax Haven) can use the cash it accumulates to buy 1 share per SR. Cannot own multiple shares of one corporation.',
+          },
         ].freeze
       end
     end
