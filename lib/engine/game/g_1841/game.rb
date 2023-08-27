@@ -377,10 +377,8 @@ module Engine
           @border_paths = nil
         end
 
-        def clear_token_graph_for_entity(_entity)
-          @graph.clear
-          @region_graph.clear
-          @border_paths = nil
+        def clear_token_graph_for_entity(entity)
+          clear_graph_for_entity(entity)
         end
 
         def event_phase4_regions!
