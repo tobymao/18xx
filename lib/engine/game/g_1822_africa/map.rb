@@ -112,12 +112,12 @@ module Engine
           white: {
             %w[B4 B8 E3 E17 F2 F4 F8 F10 F12 F14 F16 G5 H6 H16 I9] => '',
             %w[B6 C3 C5 C7 D6 E5 E7 F6] => 'upgrade=cost:20,terrain:desert',
-            %w[G11 G15 H14] => 'upgrade=cost:20,terrain:hill',
+            %w[G11 G15 H14] => 'upgrade=cost:20,terrain:mountain',
             %w[A5 A9 D10 E15 G9 I11] => 'town=revenue:0',
             %w[B2 B10 D2 E9 F18 H8 I7] => 'city=revenue:20',
             %w[D4 D8] => 'town=revenue:0;upgrade=cost:20,terrain:desert',
             ['G7'] => 'city=revenue:20;upgrade=cost:20,terrain:desert',
-            ['H10'] => 'city=revenue:20;upgrade=cost:20,terrain:hill',
+            ['H10'] => 'city=revenue:20;upgrade=cost:20,terrain:mountain',
           },
           yellow: {
             %w[E11 E13] => 'city=revenue:20,slots:1;path=a:0,b:_0;path=a:3,b:_0',

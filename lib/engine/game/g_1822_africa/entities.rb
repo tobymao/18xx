@@ -88,7 +88,7 @@ module Engine
                 hexes: [],
                 tiles: [],
                 consume_tile_lay: false,
-                combo_entities: %w[P9],
+                combo_entities: %w[P9 P11],
               },
             ],
             color: nil,
@@ -128,7 +128,7 @@ module Engine
                 closed_when_used_up: true,
                 hexes: [],
                 tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
-                combo_entities: %w[P7],
+                combo_entities: %w[P7 P11],
               },
             ],
             color: nil,
@@ -148,14 +148,32 @@ module Engine
             color: nil,
           },
           {
-            name: 'P11 (Mountain Rebate) [N/A]',
+            name: 'P11 (Mountain Rebate)',
             sym: 'P11',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 3. After the owning company lays a yellow tile in a mountain hex, '\
-                  'it earns A50 into its treasury. The private company immediately closes.',
+            desc: 'MAJOR/MINOR, Phase 3. The owning company may close this company when it lays a yellow tile '\
+                  'in a mountain hex to earn A50 into its treasury.',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: %w[G11 G15 H10 H14],
+                tiles: [],
+                combo_entities: %w[P7 P9],
+              },
+              {
+                type: 'tile_income',
+                terrain: 'mountain',
+                income: 50,
+                owner_type: 'corporation',
+                owner_only: true,
+              }
+            ],
             color: nil,
           },
           {
