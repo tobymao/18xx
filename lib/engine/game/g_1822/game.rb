@@ -1609,10 +1609,11 @@ module Engine
 
           if spender == @tax_haven
             from = choice.split('_')[1] == 'ipo' ? 'Treasury' : 'market'
-            @log << "Tax Haven (#{company.owner.name}) buys a 10% share of #{corporation.name} from the #{from} for #{format_currency(bundle.price)}"
+            @log << "Tax Haven (#{company.owner.name}) buys a 10% share of #{corporation.name} "\
+                    "from the #{from} for #{format_currency(bundle.price)}"
           else
-            @log << "#{spender.name} spends #{format_currency(bundle.price)} and Tax Haven gains a share of "\
-                    "#{corporation.name}."
+            @log << "#{spender.name} spends #{format_currency(bundle.price)} and Tax Haven gains "\
+                    "a share of #{corporation.name}."
           end
           float_corporation(corporation) if corporation.floatable && floated != corporation.floated?
         end

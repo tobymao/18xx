@@ -10,6 +10,14 @@ module Engine
         class BuySellParShares < Engine::Step::BuySellParShares
           include BidboxAuction
 
+          def round_state
+            super.merge(
+              {
+                tax_haven_bought: false,
+              }
+            )
+          end
+
           def actions(entity)
             return ['choose_ability'] unless choices_ability(entity).empty?
             return [] unless entity == current_entity
@@ -153,7 +161,9 @@ module Engine
             bundle = @game.company_tax_haven_bundle(action.choice)
             player = action.entity.owner
             spender = @game.tax_haven_spender(action.entity)
-            if available_cash(spender) < bundle.price || @round.players_sold[player][bundle.corporation] || @round.tax_haven_bought
+            if available_cash(spender) < bundle.price ||
+               @round.players_sold[player][bundle.corporation] ||
+               @round.tax_haven_bought
               raise GameError, "Can't buy a share of #{bundle&.corporation&.name}"
             end
 
@@ -273,14 +283,6 @@ module Engine
 
             log_pass(entity)
             pass!
-          end
-
-          def round_state
-            super.merge(
-              {
-                tax_haven_bought: false,
-              }
-            )
           end
         end
       end

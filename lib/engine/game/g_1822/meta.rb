@@ -43,7 +43,8 @@ module Engine
           {
             sym: :tax_haven_multiple,
             short_name: 'Tax Haven Variant',
-            desc: 'P16 (Tax Haven) can use the cash it accumulates to buy 1 share per SR. Cannot own multiple shares of one corporation.',
+            desc: 'P16 (Tax Haven) can use the cash it accumulates to buy 1 share per SR. Cannot '\
+                  'own multiple shares of one corporation.',
           },
         ].freeze
       end
