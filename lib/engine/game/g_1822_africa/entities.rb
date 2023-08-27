@@ -172,20 +172,36 @@ module Engine
                 income: 50,
                 owner_type: 'corporation',
                 owner_only: true,
-              }
+              },
             ],
             color: nil,
           },
           {
-            name: 'P12 (Fast Sahara Building) [N/A]',
+            name: 'P12 (Fast Sahara Building)',
             sym: 'P12',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 1. The owning company may place any amount of tiles in the hexes marked '\
+            desc: 'MAJOR/MINOR, Phase 1. The owning company may place any amount of yellow tiles in the hexes marked '\
                   'with desert terrain as their normal tile laying step at normal cost. '\
                   'Using this ability closes the private company.',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: %w[B6 C3 C5 C7 D4 D6 D8 E5 E7 F6 G7],
+                tiles: [],
+                owner_type: 'corporation',
+                when: 'special_track',
+                must_lay_together: true,
+                lay_count: 11,
+                upgrade_count: 0,
+                reachable: true,
+                special: false,
+                connect: false,
+                closed_when_used_up: true,
+                consume_tile_lay: true,
+                combo_entities: %w[P7 P9 P11],
+              },
+            ],
             color: nil,
           },
           {
