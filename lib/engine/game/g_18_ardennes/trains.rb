@@ -60,7 +60,7 @@ module Engine
           },
           {
             name: '4',
-            num: 4,
+            num: 5,
             distance: [{ 'nodes' => %w[city], 'pay' => 4, 'visit' => 4 },
                        { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
             price: 400,
