@@ -24,6 +24,26 @@ module Engine
           'PGE' => 3,
         }.freeze
 
+        TRAINS = (G1822CA::Scenario::TRAINS + [
+          {
+            name: 'G',
+            distance: [
+              {
+                'nodes' => ['city'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+            ],
+            num: 2,
+            price: 0,
+          },
+        ]).freeze
+
         def init_companies(players)
           game_companies.map do |company|
             next if players.size < (company[:min_players] || 0)

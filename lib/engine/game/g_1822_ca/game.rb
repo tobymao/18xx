@@ -40,12 +40,21 @@ module Engine
         PRIVATE_SMALL_MAIL_CONTRACTS = %w[P24 P25].freeze
         PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
         PRIVATE_REMOVE_REVENUE = %w[P1 P5 P6 P7 P14 P15 P16 P17 P18 P22 P23 P24 P25 P26 P27 P28].freeze
-        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6 P26 P27].freeze
 
         MOUNTAIN_PASS_HEXES = %w[E11 F16].freeze
         MOUNTAIN_PASS_TILES = %w[7 8 9].freeze
         MOUNTAIN_PASS_COMPANIES = %w[P19 P20].freeze
         MOUNTAIN_PASS_COMPANIES_TO_HEXES = { 'P20' => 'E11', 'P19' => 'F16' }.freeze
+
+        EXTRA_TRAINS = (G1822::Game::EXTRA_TRAINS + %w[G]).freeze
+        EXTRA_TRAIN_GRAIN = 'G'
+
+        GRAIN_ELEVATORS = %w[G13 H16 I11 I15 I17 J16 K13 K17 L16 M17].freeze
+        GRAIN_ELEVATOR_TYPE = 'grain_elevator'.freeze
+        GRAIN_ELEVATOR_COUNT = 12
+        WEST_PORTS = %w[A7 C15].freeze
+        EAST_PORTS = %w[N6 R16].freeze
 
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1 (5-Train)',
@@ -217,7 +226,27 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
-        attr_accessor :sawmill_hex, :sawmill_owner
+        TRAINS = (G1822::Game::TRAINS + [
+          {
+            name: 'G',
+            distance: [
+              {
+                'nodes' => ['city'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 99,
+                'visit' => 99,
+              },
+            ],
+            num: 2,
+            price: 0,
+          },
+        ]).freeze
+
+        attr_accessor :sawmill_hex, :sawmill_owner, :train_with_grain, :train_with_pullman
         attr_writer :sawmill_bonus
 
         def setup_game_specific
@@ -281,9 +310,12 @@ module Engine
           @company_trains['P3'] = find_and_remove_train_by_id('2P-0', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
+          @company_trains['P1'].name = '5'
           @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
           @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
+          @company_trains['P26'] = find_and_remove_train_by_id('G-0', buyable: false)
+          @company_trains['P27'] = find_and_remove_train_by_id('G-1', buyable: false)
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does
@@ -296,7 +328,7 @@ module Engine
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
+            G1822CA::Step::DiscardTrain,
             G1822CA::Step::AssignSawmill,
             G1822::Step::SpecialChoose,
             G1822CA::Step::SpecialTrack,
@@ -310,7 +342,7 @@ module Engine
             G1822CA::Step::MinorAcquisition,
             G1822CA::Step::AcquisitionTrack,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
+            G1822CA::Step::DiscardTrain,
             G1822CA::Step::IssueShares,
           ], round_num: round_num)
         end
@@ -365,6 +397,8 @@ module Engine
           sawmill_bonus = sawmill_bonus(route.routes)
           revenue += sawmill_bonus[:revenue] if sawmill_bonus && sawmill_bonus[:route] == route
 
+          revenue += grain_and_port_bonus(route.train, stops)[:revenue]
+
           revenue
         end
 
@@ -373,6 +407,8 @@ module Engine
 
           sawmill_bonus = sawmill_bonus(route.routes)
           str += " + Sawmill ($#{sawmill_bonus[:revenue]})" if sawmill_bonus && sawmill_bonus[:route] == route
+
+          str += grain_and_port_bonus(route.train, route.stops)[:description]
 
           str
         end
@@ -420,6 +456,108 @@ module Engine
               @operating_rounds += 1 if reason == %i[bank full_or]
               reason
             end
+        end
+
+        def grain_train?(train)
+          train.name == self.class::EXTRA_TRAIN_GRAIN
+        end
+
+        def grain_train_count(corporation)
+          corporation.trains.count { |train| grain_train?(train) }
+        end
+
+        def crowded_corp?(corp)
+          crowded = super
+          crowded |= grain_train_count(corp) > 1
+          crowded
+        end
+
+        def remove_discarded_train?(train)
+          super || grain_train?(train)
+        end
+
+        def route_trains(entity)
+          super.reject { |t| grain_train?(t) }
+        end
+
+        def check_distance(route, visits, train = nil)
+          raise GameError, 'Cannot run Grain train' if grain_train?(train || route.train)
+
+          super
+        end
+
+        def stop_type(stop, train)
+          return super unless train == @train_with_grain
+
+          if GRAIN_ELEVATORS.include?(stop.hex.id)
+            GRAIN_ELEVATOR_TYPE
+          else
+            stop.type
+          end
+        end
+
+        def grain_and_port_bonus(train, stops)
+          no_bonus = { revenue: 0, description: '' }
+          return no_bonus if train.owner.type == :minor
+          return no_bonus if train == @train_with_pullman || train.name == self.class::E_TRAIN
+
+          grain_elevators = 0
+          east_ports = 0
+          west_ports = 0
+          stops.each do |stop|
+            grain_elevators += 1 if GRAIN_ELEVATORS.include?(stop.hex.id)
+            east_ports |= 1 if EAST_PORTS.include?(stop.hex.id)
+            west_ports |= 1 if WEST_PORTS.include?(stop.hex.id)
+          end
+
+          return no_bonus unless grain_elevators.positive?
+
+          ports = east_ports + west_ports
+
+          description = ''
+          if train == @train_with_grain
+            port_bonus = 20 * ports
+            description += " + Port#{ports == 1 ? '' : 's'} ($#{port_bonus})" if port_bonus.positive?
+            { revenue: port_bonus, description: description }
+          else
+            grain_bonus = 10 * grain_elevators
+            description += " + Grain ($#{grain_bonus})"
+
+            port_bonus = 10 * ports
+            description += " + Port#{ports == 1 ? '' : 's'} ($#{port_bonus})" if port_bonus.positive?
+
+            { revenue: grain_bonus + port_bonus, description: description }
+          end
+        end
+
+        def route_distance_str(route)
+          train = route.train
+          return super unless [@train_with_pullman, @train_with_grain].include?(train)
+
+          counts = route.visited_stops.each_with_object(Hash.new(0)) do |stop, c|
+            c[stop_type(stop, train)] += 1
+          end
+
+          case train
+          when @train_with_pullman
+            towns = counts['town']
+            cities = counts['city'] + counts['offboard']
+            towns.positive? ? "#{cities}+#{towns}" : cities.to_s
+          when @train_with_grain
+            grain_elevators = counts['grain_elevator']
+            return cities.to_s unless grain_elevators.positive?
+
+            if train.name[0] == 'L'
+              cities = counts['city'] + counts['offboard']
+              towns = counts['town']
+              towns.positive? ? "#{cities}+#{towns}+#{grain_elevators}G" : "#{cities}+#{grain_elevators}G"
+            else
+              cities = counts['city'] + counts['offboard'] + counts['town']
+              "#{cities}+#{grain_elevators}G"
+            end
+          else
+            ''
+          end
         end
       end
     end

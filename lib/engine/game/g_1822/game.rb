@@ -680,13 +680,15 @@ module Engine
         end
 
         def crowded_corps
-          @crowded_corps ||= corporations.select do |c|
-            trains = c.trains.count { |t| !extra_train?(t) }
-            crowded = trains > train_limit(c)
-            crowded |= extra_train_permanent_count(c) > 1
-            crowded |= pullman_train_count(c) > 1
-            crowded
-          end
+          @crowded_corps ||= corporations.select { |c| crowded_corp?(c) }
+        end
+
+        def crowded_corp?(corp)
+          trains = corp.trains.count { |t| !extra_train?(t) }
+          crowded = trains > train_limit(corp)
+          crowded |= extra_train_permanent_count(corp) > 1
+          crowded |= pullman_train_count(corp) > 1
+          crowded
         end
 
         def discountable_trains_for(corporation)
@@ -1926,6 +1928,8 @@ module Engine
 
         def find_and_remove_train_by_id(train_id, buyable: true)
           train = train_by_id(train_id)
+          return unless train
+
           @depot.remove_train(train)
           train.buyable = buyable
           train.reserved = true
