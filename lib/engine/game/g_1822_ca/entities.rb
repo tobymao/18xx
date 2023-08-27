@@ -209,6 +209,7 @@ module Engine
                 hexes: [],
                 tiles: %w[80 81 82 83 544 545 546 60 169 141 142 143 144 767 768 769],
                 combo_entities: %w[P29 P30],
+                consume_tile_lay: true,
               },
             ],
             color: nil,
@@ -572,6 +573,7 @@ module Engine
                 hexes: [],
                 tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
                 combo_entities: %w[P12],
+                consume_tile_lay: true,
               },
 
             ],
@@ -600,6 +602,7 @@ module Engine
                 hexes: [],
                 tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
                 combo_entities: %w[P12],
+                consume_tile_lay: true,
               },
 
             ],
