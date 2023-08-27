@@ -673,6 +673,18 @@ module Engine
           company.id == self.class::COMPANY_EXTRA_TILE_LAYS
         end
 
+        # This game has two back-to-back SRs so we need to manually disable auto-pass on round end
+        def check_programmed_actions
+          @programmed_actions.each do |entity, action_list|
+            action_list.reject! do |action|
+              if action&.disable?(self) || action.instance_of?(Engine::Action::ProgramSharePass)
+                player_log(entity, "Programmed action '#{action}' removed due to round change")
+                true
+              end
+            end
+          end
+        end
+
         # Stubbed out because this game doesn't use it, but base 22 does
         def bidbox_minors = []
         def bidbox_concessions = []
