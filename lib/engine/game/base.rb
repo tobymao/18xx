@@ -278,6 +278,9 @@ module Engine
       # for track and/or cities?
       # :cities for cities, as in  #611 and #63 in 1822
       # :track  for track, as in 18USA
+      # :unlabeled_cities for cities with no special label on their hex; the
+      #     labeled cities in 1822CA don't always add track in all possible
+      #     upgrades
       TILE_UPGRADES_MUST_USE_MAX_EXITS = [].freeze
 
       TILE_COST = 0

@@ -379,7 +379,10 @@ module Engine
         end.compact
 
         if (!hex.tile.cities.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:cities)) ||
-          (hex.tile.cities.empty? && hex.tile.towns.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:track))
+           (!hex.tile.cities.empty? &&
+            hex.tile.labels.empty? &&
+            @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:unlabeled_cities)) ||
+           (hex.tile.cities.empty? && hex.tile.towns.empty? && @game.class::TILE_UPGRADES_MUST_USE_MAX_EXITS.include?(:track))
           max_exits(tiles)
         else
           tiles
