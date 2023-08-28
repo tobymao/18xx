@@ -352,16 +352,11 @@ module Engine
         end
 
         def select_track_graph
-          old_graph = @selected_graph
           @selected_graph = if @phase.name.to_i == 2
                               @region_graph
                             else
                               @graph
                             end
-          return if old_graph == @selected_graph
-
-          @region_graph.clear
-          @graph.clear
         end
 
         def select_token_graph
@@ -376,16 +371,14 @@ module Engine
           @region_graph
         end
 
-        def clear_graph_for_entity(entity)
-          super
-          token_graph_for_entity(entity).clear
+        def clear_graph_for_entity(_entity)
+          @graph.clear
+          @region_graph.clear
           @border_paths = nil
         end
 
         def clear_token_graph_for_entity(entity)
-          super
-          graph_for_entity(entity).clear
-          @border_paths = nil
+          clear_graph_for_entity(entity)
         end
 
         def event_phase4_regions!

@@ -10,7 +10,7 @@ module Engine
             sym: 'P1',
             desc: 'MAJOR/MINOR, Phase 1. Permanent L-train',
             value: 0,
-            revenue: 10,
+            revenue: 0,
             abilities: [],
             color: nil,
           },
@@ -19,7 +19,7 @@ module Engine
             sym: 'P2',
             desc: 'MAJOR, Phase 2. Permanent 2-train',
             value: 0,
-            revenue: 10,
+            revenue: 0,
             abilities: [],
             color: nil,
           },
@@ -28,7 +28,7 @@ module Engine
             sym: 'P3',
             desc: 'MAJOR, Phase 2. Permanent 2-train',
             value: 0,
-            revenue: 10,
+            revenue: 0,
             abilities: [],
             color: nil,
           },
@@ -37,7 +37,7 @@ module Engine
             sym: 'P4',
             desc: 'MAJOR/MINOR, Phase 3. A "Pullman" carriage that can be added to another train owned by the company.'\
                   ' It converts the train into a + train. Does not count against train limit and does not count '\
-                  'as a train for the purposes of train ownership. Can’t be sold to another company. Does not close.',
+                  'as a train for the purposes of train ownership. Can’t be sold to another company.',
             value: 0,
             revenue: 10,
             abilities: [],
@@ -48,7 +48,7 @@ module Engine
             sym: 'P5',
             desc: 'MAJOR/MINOR, Phase 3. A "Pullman" carriage that can be added to another train owned by the company.'\
                   ' It converts the train into a + train. Does not count against train limit and does not count '\
-                  'as a train for the purposes of train ownership. Can’t be sold to another company. Does not close.',
+                  'as a train for the purposes of train ownership. Can’t be sold to another company.',
             value: 0,
             revenue: 10,
             abilities: [],
@@ -88,7 +88,7 @@ module Engine
                 hexes: [],
                 tiles: [],
                 consume_tile_lay: false,
-                combo_entities: %w[P9],
+                combo_entities: %w[P9 P11],
               },
             ],
             color: nil,
@@ -128,7 +128,7 @@ module Engine
                 closed_when_used_up: true,
                 hexes: [],
                 tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
-                combo_entities: %w[P7],
+                combo_entities: %w[P7 P11],
               },
             ],
             color: nil,
@@ -148,26 +148,60 @@ module Engine
             color: nil,
           },
           {
-            name: 'P11 (Mountain Rebate) [N/A]',
+            name: 'P11 (Mountain Rebate)',
             sym: 'P11',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 3. After the owning company lays a yellow tile in a mountain hex, '\
-                  'it earns A50 into its treasury. The private company immediately closes.',
+            desc: 'MAJOR/MINOR, Phase 3. The owning company may close this company when it lays a yellow tile '\
+                  'in a mountain hex to earn A50 into its treasury.',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: %w[G11 G15 H10 H14],
+                tiles: [],
+                combo_entities: %w[P7 P9],
+              },
+              {
+                type: 'tile_income',
+                terrain: 'mountain',
+                income: 50,
+                owner_type: 'corporation',
+                owner_only: true,
+              },
+            ],
             color: nil,
           },
           {
-            name: 'P12 (Fast Sahara Building) [N/A]',
+            name: 'P12 (Fast Sahara Building)',
             sym: 'P12',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 1. The owning company may place any amount of tiles in the hexes marked '\
+            desc: 'MAJOR/MINOR, Phase 1. The owning company may place any amount of yellow tiles in the hexes marked '\
                   'with desert terrain as their normal tile laying step at normal cost. '\
                   'Using this ability closes the private company.',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: %w[B6 C3 C5 C7 D4 D6 D8 E5 E7 F6 G7],
+                tiles: [],
+                owner_type: 'corporation',
+                when: 'special_track',
+                must_lay_together: true,
+                lay_count: 11,
+                upgrade_count: 0,
+                reachable: true,
+                special: false,
+                connect: false,
+                closed_when_used_up: true,
+                consume_tile_lay: true,
+                combo_entities: %w[P7 P9 P11],
+              },
+            ],
             color: nil,
           },
           {
@@ -219,7 +253,7 @@ module Engine
                   'If not acquired beforehand, this company closes at the start of Phase 6 and all treasury credits '\
                   'are returned to the bank.',
             value: 0,
-            revenue: 10,
+            revenue: 0,
             abilities: [],
             color: nil,
           },
@@ -242,7 +276,7 @@ module Engine
                   'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the company. '\
                   'It converts the train into a safari train that counts an extra 20 to the earnings for reaching '\
                   'each of the game reserves. Does not count against train limit and does not count as a train '\
-                  'for the purposes of train ownership. Can’t be sold to another company. Does not close.',
+                  'for the purposes of train ownership. Can’t be sold to another company.',
             value: 0,
             revenue: 10,
             abilities: [],

@@ -11,14 +11,22 @@ module Engine
             return [] if !entity.operator? || @game.route_trains(entity).empty? || !@game.can_run_route?(entity)
             return [] if entity.corporation? && entity.type == :minor && only_e_train?(entity)
 
-            @pullman_train ||= nil
             actions = ACTIONS.dup
-            actions << 'choose' if !@pullman_train && find_pullman_train(entity) && !pullman_train_choices(entity).empty?
+            actions << 'choose' if choosing?(entity)
             actions
           end
 
+          def choosing?(entity)
+            choosing_pullman?(entity)
+          end
+
+          def choosing_pullman?(entity)
+            @pullman_train ||= nil
+            !@pullman_train && find_pullman_train(entity) && !pullman_train_choices(entity).empty?
+          end
+
           def attach_pullman
-            @orginal_train = @pullman_train.dup
+            @pullman_original_train = @pullman_train.dup
             distance = train_city_distance(@pullman_train)
             @pullman_train.name += '+'
             @pullman_train.distance = [
@@ -36,7 +44,7 @@ module Engine
           end
 
           def choice_name
-            'Choose which train you want to attach your pullman carriage train'
+            'Attach pullman (P+) to a train'
           end
 
           def choices
@@ -48,10 +56,10 @@ module Engine
           end
 
           def detach_pullman
-            @pullman_train.name = @orginal_train.name
-            @pullman_train.distance = @orginal_train.distance
+            @pullman_train.name = @pullman_original_train.name
+            @pullman_train.distance = @pullman_original_train.distance
 
-            @orginal_train = nil
+            @pullman_original_train = nil
             @pullman_train = nil
           end
 
@@ -72,7 +80,7 @@ module Engine
           def process_choose(action)
             entity = action.entity
             @pullman_train = pullman_train_choices(entity)[action.choice.to_i]
-            @log << "#{entity.id} chooses to attach the pullman to the #{@pullman_train.name} train"
+            @log << "#{entity.id} attaches the pullman to a #{@pullman_train.name} train"
 
             attach_pullman
           end
