@@ -436,6 +436,19 @@ module Engine
                 'city=revenue:70,slots:6;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=W;',
             },
+          # tiles for the Duluth-Detroit connection
+          'DD-Q19' => {
+            'hidden' => 1,
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'path=a:2,b:5',
+          },
+          'DD-Y27' => {
+            'hidden' => 1,
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'path=a:0,b:2',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -748,12 +761,12 @@ module Engine
             ['P18'] =>
               'city=revenue:yellow_20|green_30|brown_40|gray_40,slots:3;'\
               'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            %w[Q19] => 'city=revenue:0,visit_cost:99;path=a:2,b:_0;path=a:5,b:_0',
+            %w[R20 S21 T22 U23 V24 W25 X26] =>
+              'path=a:2,b:5',
             %w[T10 T12 T14] =>
               'junction;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            %w[Q19 R20 S21 T22 U23 V24 W25 X26] =>
-              'path=a:2,b:5',
-            ['Y27'] =>
-              'path=a:0,b:2',
+            %w[Y27] => 'city=revenue:0,visit_cost:99,loc:0;path=a:0,b:_0;path=a:2,b:_0',
             ['Y29'] =>
               'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;'\
               'path=a:3,b:_0;path=a:4,b:_0,lanes:2',

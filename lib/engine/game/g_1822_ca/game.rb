@@ -4,6 +4,7 @@ require_relative '../g_1822/game'
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'trains'
 
 module Engine
   module Game
@@ -12,6 +13,7 @@ module Engine
         include_meta(G1822CA::Meta)
         include G1822CA::Entities
         include G1822CA::Map
+        include G1822CA::Trains
 
         DOUBLE_HEX = %w[G13 I15 AB22 AG13 AH10].freeze
 
@@ -60,6 +62,8 @@ module Engine
         GRAIN_ELEVATOR_COUNT = 12
         WEST_PORTS = %w[A7 C15].freeze
         EAST_PORTS = %w[N6 R16].freeze
+
+        DETROIT_TO_DULUTH_HEXES = %w[Q19 Y27].freeze
 
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1 (5-Train)',
@@ -236,25 +240,10 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
-        TRAINS = (G1822::Game::TRAINS + [
-          {
-            name: 'G',
-            distance: [
-              {
-                'nodes' => ['city'],
-                'pay' => 99,
-                'visit' => 99,
-              },
-              {
-                'nodes' => ['town'],
-                'pay' => 99,
-                'visit' => 99,
-              },
-            ],
-            num: 2,
-            price: 0,
-          },
-        ]).freeze
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'open_detroit_duluth' => ['Open Detroit-Duluth',
+                                    'Phase 3: the connection between Detroit (Y29) and Duluth (P18) opens'],
+        )
 
         attr_accessor :sawmill_hex, :sawmill_owner, :train_with_grain, :train_with_pullman
         attr_writer :sawmill_bonus
@@ -273,6 +262,8 @@ module Engine
           @sawmill_bonus = 0
           @sawmill_hex = nil
           @sawmill_owner = nil
+
+          block_detroit_duluth
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
@@ -563,6 +554,34 @@ module Engine
           else
             ''
           end
+        end
+
+        def block_detroit_duluth
+          corp = @detroit_duluth_blocker = Corporation.new(
+            sym: 'DD',
+            name: 'Detroit-Duluth blocker',
+            logo: '1822_ca/no_yellow',
+            simple_logo: '1822_ca/no_yellow',
+            tokens: [0, 0],
+          )
+          corp.owner = @bank
+          DETROIT_TO_DULUTH_HEXES.each do |hex_id|
+            hex_by_id(hex_id).tile.cities[0].place_token(corp, corp.next_token)
+          end
+        end
+
+        def event_open_detroit_duluth!
+          @log << '-- Event: the southern route connecting Detroit (Y29) and Duluth (P18) is now open --'
+
+          @detroit_duluth_blocker.tokens.compact.each(&:destroy!)
+          @detroit_duluth_blocker.close!
+
+          DETROIT_TO_DULUTH_HEXES.each do |hex_id|
+            hex = hex_by_id(hex_id)
+            tile = tile_by_id("DD-#{hex_id}-0")
+            hex.lay(tile)
+          end
+          @graph.clear
         end
       end
     end
