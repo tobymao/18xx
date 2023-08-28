@@ -17,8 +17,8 @@ module Engine
 
         BIDDING_TOKENS = {
           '2': 3,
-          '3': 3,
-          '4': 3,
+          '3': 2,
+          '4': 2,
         }.freeze
 
         EXCHANGE_TOKENS = {
@@ -64,6 +64,7 @@ module Engine
 
         COMPANY_10X_REVENUE = 'P16'
         COMPANY_REMOVE_TOWN = 'P9'
+        COMPANY_EXTRA_TILE_LAYS = 'P12'
 
         MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
@@ -575,20 +576,24 @@ module Engine
 
         # This repeats the logic from the base game, but with changes to how */E trains are calculated
         def revenue_for(route, stops)
-          revenue = if route_train_type(route) == :normal
-                      super
-                    else
-                      express_revenue = revenue_for_express(route, stops)
+          revenue = super
+          revenue += destination_bonus_for(route)
 
-                      return express_revenue if train_over_distance?(route)
+          return revenue unless can_be_express?(route.train)
+          return revenue unless includes_two_tokens?(route)
 
-                      [super, express_revenue].max
-                    end
+          express_revenue = revenue_for_express(route, stops)
+          express_revenue += destination_bonus_for(route) * self.class::EXPRESS_TRAIN_MULTIPLIER
 
+          [revenue, express_revenue].max
+        end
+
+        def destination_bonus_for(route)
           destination_bonus = destination_bonus(route.routes)
-          revenue += destination_bonus[:revenue] if destination_bonus && destination_bonus[:route] == route
 
-          revenue
+          return destination_bonus[:revenue] if destination_bonus && destination_bonus[:route] == route
+
+          0
         end
 
         def revenue_for_express(route, stops)
@@ -607,6 +612,7 @@ module Engine
 
         def runs_as_express?(route)
           return false unless can_be_express?(route.train)
+          return false unless includes_two_tokens?(route)
           return true if train_over_distance?(route)
 
           stops = route.stops
@@ -642,6 +648,16 @@ module Engine
           route_distance > train_distance
         end
 
+        def includes_two_tokens?(route)
+          entity = route.train.owner
+
+          tokened_stops = route.stops.count do |stop|
+            stop.city? && stop.tokened_by?(entity)
+          end
+
+          tokened_stops > 1
+        end
+
         def route_train_type(route)
           return :normal unless can_be_express?(route.train)
           return :express if runs_as_express?(route)
@@ -651,6 +667,22 @@ module Engine
 
         def can_be_express?(train)
           train.name[-1] == 'E'
+        end
+
+        def company_ability_extra_track?(company)
+          company.id == self.class::COMPANY_EXTRA_TILE_LAYS
+        end
+
+        # This game has two back-to-back SRs so we need to manually disable auto-pass on round end
+        def check_programmed_actions
+          @programmed_actions.each do |entity, action_list|
+            action_list.reject! do |action|
+              if action&.disable?(self) || action.instance_of?(Engine::Action::ProgramSharePass)
+                player_log(entity, "Programmed action '#{action}' removed due to round change")
+                true
+              end
+            end
+          end
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does

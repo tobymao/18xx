@@ -4,6 +4,7 @@ require_relative '../g_1822/game'
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'trains'
 
 module Engine
   module Game
@@ -12,6 +13,7 @@ module Engine
         include_meta(G1822CA::Meta)
         include G1822CA::Entities
         include G1822CA::Map
+        include G1822CA::Trains
 
         DOUBLE_HEX = %w[G13 I15 AB22 AG13 AH10].freeze
 
@@ -33,6 +35,8 @@ module Engine
         COMPANY_5X_REVENUE = 'P9'
         COMPANY_HSBC = nil # Grimsby/Hull Bridge
 
+        COMPANY_WINNIPEG_TOKEN = 'P10'
+
         COMPANIES_BIG_CITY_UPGRADES = %w[P14 P15 P16 P17 P18].freeze
         COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P19 P20 P21]).freeze
 
@@ -40,12 +44,26 @@ module Engine
         PRIVATE_SMALL_MAIL_CONTRACTS = %w[P24 P25].freeze
         PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
         PRIVATE_REMOVE_REVENUE = %w[P1 P5 P6 P7 P14 P15 P16 P17 P18 P22 P23 P24 P25 P26 P27 P28].freeze
-        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6 P26 P27].freeze
 
         MOUNTAIN_PASS_HEXES = %w[E11 F16].freeze
         MOUNTAIN_PASS_TILES = %w[7 8 9].freeze
         MOUNTAIN_PASS_COMPANIES = %w[P19 P20].freeze
         MOUNTAIN_PASS_COMPANIES_TO_HEXES = { 'P20' => 'E11', 'P19' => 'F16' }.freeze
+
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[unlabeled_cities].freeze
+        TRACK_RESTRICTION = :permissive
+
+        EXTRA_TRAINS = (G1822::Game::EXTRA_TRAINS + %w[G]).freeze
+        EXTRA_TRAIN_GRAIN = 'G'
+
+        GRAIN_ELEVATORS = %w[G13 H16 I11 I15 I17 J16 K13 K17 L16 M17].freeze
+        GRAIN_ELEVATOR_TYPE = 'grain_elevator'.freeze
+        GRAIN_ELEVATOR_COUNT = 12
+        WEST_PORTS = %w[A7 C15].freeze
+        EAST_PORTS = %w[N6 R16].freeze
+
+        DETROIT_TO_DULUTH_HEXES = %w[Q19 Y27].freeze
 
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1 (5-Train)',
@@ -147,6 +165,9 @@ module Engine
 
         MINOR_14_ID = '13'
         MINOR_14_HOME_HEX = 'AC21'
+        PENDING_HOME_TOKENERS = [MINOR_14_ID, 'QMOO'].freeze
+
+        MULTIPLE_TOKENS_ON_SAME_HEX_ALLOWED = true
 
         TWO_HOME_CORPORATION = 'CPR'
 
@@ -215,9 +236,16 @@ module Engine
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
                                    CNoR CPR GNWR GT GTP GWR ICR NTR PGE QMOO].freeze
 
+        TAX_HAVEN_MULTIPLE = true
+
         MUST_SELL_IN_BLOCKS = true
 
-        attr_accessor :sawmill_hex, :sawmill_owner
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'open_detroit_duluth' => ['Open Detroit-Duluth',
+                                    'Phase 3: the connection between Detroit (Y29) and Duluth (P18) opens'],
+        )
+
+        attr_accessor :sawmill_hex, :sawmill_owner, :train_with_grain, :train_with_pullman
         attr_writer :sawmill_bonus
 
         def setup_game_specific
@@ -234,6 +262,8 @@ module Engine
           @sawmill_bonus = 0
           @sawmill_hex = nil
           @sawmill_owner = nil
+
+          block_detroit_duluth
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
@@ -281,36 +311,34 @@ module Engine
           @company_trains['P3'] = find_and_remove_train_by_id('2P-0', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
+          @company_trains['P1'].name = '5'
           @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
           @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
+          @company_trains['P26'] = find_and_remove_train_by_id('G-0', buyable: false)
+          @company_trains['P27'] = find_and_remove_train_by_id('G-1', buyable: false)
         end
-
-        # Stubbed out because this game doesn't use it, but base 22 does
-        def company_tax_haven_bundle(choice); end
-        def company_tax_haven_payout(entity, per_share); end
-        def num_certs_modification(_entity) = 0
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
+            G1822CA::Step::DiscardTrain,
             G1822CA::Step::AssignSawmill,
             G1822::Step::SpecialChoose,
             G1822CA::Step::SpecialTrack,
-            G1822::Step::SpecialToken,
+            G1822CA::Step::SpecialToken,
             G1822CA::Step::Track,
             G1822::Step::DestinationToken,
-            G1822::Step::Token,
+            G1822CA::Step::Token,
             G1822CA::Step::Route,
             G1822::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822CA::Step::MinorAcquisition,
             G1822CA::Step::AcquisitionTrack,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
+            G1822CA::Step::DiscardTrain,
             G1822CA::Step::IssueShares,
           ], round_num: round_num)
         end
@@ -365,6 +393,8 @@ module Engine
           sawmill_bonus = sawmill_bonus(route.routes)
           revenue += sawmill_bonus[:revenue] if sawmill_bonus && sawmill_bonus[:route] == route
 
+          revenue += grain_and_port_bonus(route.train, stops)[:revenue]
+
           revenue
         end
 
@@ -373,6 +403,8 @@ module Engine
 
           sawmill_bonus = sawmill_bonus(route.routes)
           str += " + Sawmill ($#{sawmill_bonus[:revenue]})" if sawmill_bonus && sawmill_bonus[:route] == route
+
+          str += grain_and_port_bonus(route.train, route.stops)[:description]
 
           str
         end
@@ -420,6 +452,136 @@ module Engine
               @operating_rounds += 1 if reason == %i[bank full_or]
               reason
             end
+        end
+
+        def grain_train?(train)
+          train.name == self.class::EXTRA_TRAIN_GRAIN
+        end
+
+        def grain_train_count(corporation)
+          corporation.trains.count { |train| grain_train?(train) }
+        end
+
+        def crowded_corp?(corp)
+          crowded = super
+          crowded |= grain_train_count(corp) > 1
+          crowded
+        end
+
+        def remove_discarded_train?(train)
+          super || grain_train?(train)
+        end
+
+        def route_trains(entity)
+          super.reject { |t| grain_train?(t) }
+        end
+
+        def check_distance(route, visits, train = nil)
+          raise GameError, 'Cannot run Grain train' if grain_train?(train || route.train)
+
+          super
+        end
+
+        def stop_type(stop, train)
+          return super unless train == @train_with_grain
+
+          if GRAIN_ELEVATORS.include?(stop.hex.id)
+            GRAIN_ELEVATOR_TYPE
+          else
+            stop.type
+          end
+        end
+
+        def grain_and_port_bonus(train, stops)
+          no_bonus = { revenue: 0, description: '' }
+          return no_bonus if train.owner.type == :minor
+          return no_bonus if train == @train_with_pullman || train.name == self.class::E_TRAIN
+
+          grain_elevators = 0
+          east_ports = 0
+          west_ports = 0
+          stops.each do |stop|
+            grain_elevators += 1 if GRAIN_ELEVATORS.include?(stop.hex.id)
+            east_ports |= 1 if EAST_PORTS.include?(stop.hex.id)
+            west_ports |= 1 if WEST_PORTS.include?(stop.hex.id)
+          end
+
+          return no_bonus unless grain_elevators.positive?
+
+          ports = east_ports + west_ports
+
+          description = ''
+          if train == @train_with_grain
+            port_bonus = 20 * ports
+            description += " + Port#{ports == 1 ? '' : 's'} ($#{port_bonus})" if port_bonus.positive?
+            { revenue: port_bonus, description: description }
+          else
+            grain_bonus = 10 * grain_elevators
+            description += " + Grain ($#{grain_bonus})"
+
+            port_bonus = 10 * ports
+            description += " + Port#{ports == 1 ? '' : 's'} ($#{port_bonus})" if port_bonus.positive?
+
+            { revenue: grain_bonus + port_bonus, description: description }
+          end
+        end
+
+        def route_distance_str(route)
+          train = route.train
+          return super unless [@train_with_pullman, @train_with_grain].include?(train)
+
+          counts = route.visited_stops.each_with_object(Hash.new(0)) do |stop, c|
+            c[stop_type(stop, train)] += 1
+          end
+
+          case train
+          when @train_with_pullman
+            towns = counts['town']
+            cities = counts['city'] + counts['offboard']
+            towns.positive? ? "#{cities}+#{towns}" : cities.to_s
+          when @train_with_grain
+            grain_elevators = counts['grain_elevator']
+            return cities.to_s unless grain_elevators.positive?
+
+            if train.name[0] == 'L'
+              cities = counts['city'] + counts['offboard']
+              towns = counts['town']
+              towns.positive? ? "#{cities}+#{towns}+#{grain_elevators}G" : "#{cities}+#{grain_elevators}G"
+            else
+              cities = counts['city'] + counts['offboard'] + counts['town']
+              "#{cities}+#{grain_elevators}G"
+            end
+          else
+            ''
+          end
+        end
+
+        def block_detroit_duluth
+          corp = @detroit_duluth_blocker = Corporation.new(
+            sym: 'DD',
+            name: 'Detroit-Duluth blocker',
+            logo: '1822_ca/no_yellow',
+            simple_logo: '1822_ca/no_yellow',
+            tokens: [0, 0],
+          )
+          corp.owner = @bank
+          DETROIT_TO_DULUTH_HEXES.each do |hex_id|
+            hex_by_id(hex_id).tile.cities[0].place_token(corp, corp.next_token)
+          end
+        end
+
+        def event_open_detroit_duluth!
+          @log << '-- Event: the southern route connecting Detroit (Y29) and Duluth (P18) is now open --'
+
+          @detroit_duluth_blocker.tokens.compact.each(&:destroy!)
+          @detroit_duluth_blocker.close!
+
+          DETROIT_TO_DULUTH_HEXES.each do |hex_id|
+            hex = hex_by_id(hex_id)
+            tile = tile_by_id("DD-#{hex_id}-0")
+            hex.lay(tile)
+          end
+          @graph.clear
         end
       end
     end

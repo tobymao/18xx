@@ -278,6 +278,9 @@ module Engine
       # for track and/or cities?
       # :cities for cities, as in  #611 and #63 in 1822
       # :track  for track, as in 18USA
+      # :unlabeled_cities for cities with no special label on their hex; the
+      #     labeled cities in 1822CA don't always add track in all possible
+      #     upgrades
       TILE_UPGRADES_MUST_USE_MAX_EXITS = [].freeze
 
       TILE_COST = 0
@@ -1361,7 +1364,7 @@ module Engine
           h['nodes'].each { |type| type_info[type] << info }
         end
 
-        grouped = visits.group_by(&:type)
+        grouped = visits.group_by { |v| stop_type(v, train) }
 
         grouped.sort_by { |t, _| type_info[t].size }.each do |type, group|
           num = group.sum(&:visit_cost)
@@ -1416,7 +1419,7 @@ module Engine
 
             next unless stops.all? do |stop|
               row = distance.index.with_index do |h, i|
-                h['nodes'].include?(stop.type) && types_used[i] < h['pay']
+                h['nodes'].include?(stop_type(stop, train)) && types_used[i] < h['pay']
               end
 
               types_used[row] += 1 if row
@@ -1436,6 +1439,10 @@ module Engine
         end
 
         []
+      end
+
+      def stop_type(stop, _train)
+        stop.type
       end
 
       def visited_stops(route)
@@ -1497,7 +1504,7 @@ module Engine
 
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
-        # If a corp has laid it's first token assume it's their home token
+        # If a corp has laid its first token assume its their home token
         return if corporation.tokens.first&.used
 
         hex = hex_by_id(corporation.coordinates)

@@ -31,6 +31,12 @@ module Engine
             # Pass privates
             @round.num_laid_track += 1 if @game.class::MOUNTAIN_PASS_COMPANIES.include?(action.entity.id)
           end
+
+          # P21 3-Tile Grant does not need to be consecutive
+          # https://boardgamegeek.com/thread/2449433/article/35135037#35135037
+          def handle_extra_tile_lay_company(ability, entity)
+            super unless entity.id == @game.class::COMPANY_LSR
+          end
         end
       end
     end
