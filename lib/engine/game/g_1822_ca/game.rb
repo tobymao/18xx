@@ -330,7 +330,7 @@ module Engine
             G1822CA::Step::SpecialTrack,
             G1822CA::Step::SpecialToken,
             G1822CA::Step::Track,
-            G1822::Step::DestinationToken,
+            G1822CA::Step::DestinationToken,
             G1822CA::Step::Token,
             G1822CA::Step::Route,
             G1822::Step::Dividend,
@@ -582,6 +582,37 @@ module Engine
             hex.lay(tile)
           end
           @graph.clear
+        end
+
+        # - usually returns a single city
+        # - returns an Array of cities if entity is ICR and Quebec has multiple
+        #   cities with paths
+        def destination_city(hex, entity)
+          return hex.tile.cities[0] unless (exits = entity.destination_exits)
+
+          cities = exits.each_with_object([]) do |exit, cities_|
+            hex.paths[exit].each do |path|
+              next unless (city = path.city)
+
+              cities_ << city unless cities.include?(city)
+            end
+          end
+          cities.one? ? cities[0] : cities
+        end
+
+        def destination_description(corporation)
+          return super unless (exits = corporation.destination_exits)
+
+          dest_hex = hex_by_id(corporation.destination_coordinates)
+          which =
+            if exits.size == 6
+              'Any '
+            elsif exits.one?
+              %w[S SW NW N NE SE][exits[0]] + ' '
+            else
+              ''
+            end
+          "Destination: #{which}#{dest_hex.location_name} (#{dest_hex.name})"
         end
       end
     end
