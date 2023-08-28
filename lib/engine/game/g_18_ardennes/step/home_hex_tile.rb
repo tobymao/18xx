@@ -44,6 +44,10 @@ module Engine
             @round.minor_floated
           end
 
+          def active_entities
+            [pending_entity.owner]
+          end
+
           def available
             [pending_entity]
           end
