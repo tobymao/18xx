@@ -13,11 +13,17 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
+            # Nothing left to buy, auction is over.
             return [] if @minors.empty?
+            # Something is currently being auctioned.
             return %w[bid pass] if @auctioning
-            return %w[par] if discount_mode?
+            # Picking a new minor to auction.
+            return %w[bid] unless discount_mode?
+            # Everyone has <100F, GL is not available.
+            return %w[par] if @minors.none?(&:company?)
 
-            %w[bid]
+            # Everyone has <100F, GL is available.
+            %w[par bid]
           end
 
           def setup
@@ -42,8 +48,8 @@ module Engine
 
           def may_purchase?(_company)
             # The Guillaume-Luxembourg is auctioned in the initial round, not
-            # purchased.
-            false
+            # purchased, unless everyone has less than 100F.
+            discount_mode?
           end
 
           def ipo_type(_corporation)
@@ -65,9 +71,10 @@ module Engine
           end
 
           def min_bid(minor)
-            return MIN_PRICE unless @auctioning
+            return highest_bid(minor).price + @game.class::MIN_BID_INCREMENT if @auctioning
+            return MIN_PRICE unless discount_mode?
 
-            highest_bid(minor).price + @game.class::MIN_BID_INCREMENT
+            @game.players.map(&:cash).max
           end
 
           def max_bid(player, _minor)
@@ -126,7 +133,10 @@ module Engine
           def process_bid(action)
             action.entity.unpass!
 
-            if @auctioning
+            if discount_mode?
+              # GL has been purchased
+              process_purchase(action)
+            elsif @auctioning
               add_bid(action)
             else
               selection_bid(action)
@@ -140,8 +150,16 @@ module Engine
           end
 
           def process_par(action)
+            process_purchase(action)
+          end
+
+          # A minor has been purchased for less than 100F at the end of the
+          # auction round. This can happen in two ways:
+          # 1. A `par` action for purchasing one of the M1–M15 minors.
+          # 2. A `bid` action for purchasing the Guillaume-Luxembourg.
+          def process_purchase(action)
             player = action.entity
-            minor = action.corporation
+            minor = action.corporation || action.company
             price = player.cash
             @log << "#{player.name} purchases #{minor.name} " \
                     "for #{@game.format_currency(price)}"
