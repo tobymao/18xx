@@ -80,8 +80,7 @@ module Engine
 
           def can_buy_restored2?(entity)
             @game.phase.available?(restored2_train&.available_on) &&
-            !owns_restored2?(entity) &&
-            @corporations_sold.empty?
+            !owns_restored2?(entity)
           end
 
           def can_buy_restored2_from_depot?(entity)
