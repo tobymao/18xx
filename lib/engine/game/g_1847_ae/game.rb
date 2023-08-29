@@ -126,7 +126,7 @@ module Engine
                                { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
                     price: 300,
                     rusts_on: '5+5',
-                    num: 3,
+                    num: 2,
                   },
                   {
                     name: '4',
