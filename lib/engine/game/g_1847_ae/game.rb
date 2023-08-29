@@ -128,7 +128,7 @@ module Engine
                     rusts_on: '5+5',
                     num: 3,
                   },
-                  { 
+                  {
                     name: '4',
                     distance: 4,
                     price: 300,
@@ -184,7 +184,9 @@ module Engine
         ).freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'yellow_tracks_not_restricted' => ['Yellow tracks not restricted', 'From now on, corporations may lay yellow tracks in any hexes they can reach, not only in hexes of a given color'],
+          'yellow_tracks_not_restricted' => ['Yellow tracks not restricted',
+                                             'From now on, corporations may lay yellow tracks in any hexes they can reach,'\
+                                             ' not only in hexes of a given color'],
           'must_exchange_investor_companies' => ['Must exchange Investor companies',
                                                  'Must exchange Investor companies for the associated Investor shares'\
                                                  ' in the next Stock Round'],

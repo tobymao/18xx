@@ -10,9 +10,7 @@ module Engine
           def available_hex(entity, hex)
             return nil if (hex.id == 'E9') && !@game.can_build_in_e9?
 
-            if @game.yellow_tracks_restricted
-              return nil unless hex.tile.icons.any? { |i| i.name == entity.hex_color }
-            end
+            return nil if @game.yellow_tracks_restricted && hex.tile.icons.none? { |i| i.name == entity.hex_color }
 
             super
           end
