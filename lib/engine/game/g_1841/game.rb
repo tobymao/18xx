@@ -1222,7 +1222,7 @@ module Engine
           end
 
           # minor
-          [find_rightmost_share_price(((corpa.share_price.price + corpb.share_price.price) / 2.0).to_i)]
+          [find_rightmost_share_price((corpa.share_price.price + corpb.share_price.price) / 2.0)]
         end
 
         def merger_start(corpa, corpb, target, tuscan_merge: false)
