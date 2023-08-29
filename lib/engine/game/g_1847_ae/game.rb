@@ -15,7 +15,7 @@ module Engine
         include Map
         include Entities
 
-        attr_accessor :draft_finished, :must_exchange_investor_companies
+        attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
@@ -128,7 +128,16 @@ module Engine
                     rusts_on: '5+5',
                     num: 2,
                   },
-                  { name: '4', distance: 4, price: 300, rusts_on: '6+6', num: 2 },
+                  {
+                    name: '4',
+                    distance: 4,
+                    price: 300,
+                    rusts_on: '6+6',
+                    num: 2,
+                    events: [
+                      { 'type' => 'yellow_tracks_not_restricted' },
+                    ],
+                  },
                   {
                     name: '4+4',
                     distance: [{ 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 },
@@ -141,9 +150,6 @@ module Engine
                     distance: 5,
                     price: 450,
                     num: 2,
-                    events: [
-                      { 'type' => 'must_exchange_investor_companies' },
-                    ],
                   },
                   {
                     name: '5+5',
@@ -151,6 +157,9 @@ module Engine
                                { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
                     price: 550,
                     num: 1,
+                    events: [
+                      { 'type' => 'must_exchange_investor_companies' },
+                    ],
                   },
                   {
                     name: '6E',
@@ -175,6 +184,9 @@ module Engine
         ).freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'yellow_tracks_not_restricted' => ['Yellow tracks not restricted',
+                                             'From now on, corporations may lay yellow tracks in any hexes they can reach,'\
+                                             ' not only in hexes of a given color'],
           'must_exchange_investor_companies' => ['Must exchange Investor companies',
                                                  'Must exchange Investor companies for the associated Investor shares'\
                                                  ' in the next Stock Round'],
@@ -286,6 +298,7 @@ module Engine
           @bank.spend(hlb.par_price.price * 1, hlb)
 
           @draft_finished = false
+          @yellow_tracks_restricted = true
           @must_exchange_investor_companies = false
         end
 
@@ -312,6 +325,18 @@ module Engine
                   ' Investor companies for the associated Investor shares --'
 
           @must_exchange_investor_companies = true
+        end
+
+        def event_yellow_tracks_not_restricted!
+          colors = %w[pink blue green]
+          @hexes.each do |hex|
+            hex.tile.icons.reject! { |i| colors.include?(i.name) }
+          end
+
+          @log << '-- From now on, corporations may lay yellow tracks in any hexes they can reach, not'\
+                  ' only in hexes of a given color Investor companies for the associated Investor shares --'
+
+          @yellow_tracks_restricted = false
         end
 
         def exchange_all_investor_companies!
