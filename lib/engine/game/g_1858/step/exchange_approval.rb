@@ -10,6 +10,16 @@ module Engine
         class ExchangeApproval < Engine::Step::Base
           include PrivateExchange
 
+          def round_state
+            super.merge(
+              {
+                minor: nil,
+                approvals: {},
+                pending_approval: nil,
+              }
+            )
+          end
+
           def actions(entity)
             return [] unless entity == corporation
 
@@ -40,16 +50,28 @@ module Engine
             minor.owner
           end
 
+          def in_pcr?
+            @game.private_closure_round == :in_progress
+          end
+
           def pending_approval
             @round.pending_approval
           end
 
           def description
-            'xyzzy'
+            'Approve or deny exchange request'
           end
 
           def choice_name
             "Allow #{requester.name} to exchange #{minor.id} for a treasury share"
+          end
+
+          def choice_available?(entity)
+            entity == corporation
+          end
+
+          def ipo_type(_entity)
+            nil
           end
 
           def choices
@@ -61,18 +83,20 @@ module Engine
 
           def process_choose(action)
             approved = (action.choice == 'approve')
-            verb = approved ? 'approved' : 'denied'
-            msg = "• #{verb} #{requester.name}’s request to exchange " \
-                  "#{minor.name} for a #{corporation.id} treasury share."
-            @round.process_action(Engine::Action::Log.new(approver, message: msg))
-
+            log_response(corporation, minor, approved)
             if approved
               share = corporation.shares.first
               exchange_for_share(share, corporation, minor, minor.owner, true)
-              @game.close_private(minor)
-            else
+              if in_pcr?
+                @game.close_private(minor)
+              else
+                # Need to add an action to the action log, but this can't be a
+                # buy shares action as that would end the current player's turn.
+                @round.current_actions << Engine::Action::Base.new(minor)
+              end
+            elsif in_pcr?
               @round.approvals[corporation] = :denied
-              if corporation.num_market_shares.positive?
+              if corporation.num_market_shares.positive? && in_pcr?
                 @game.log << "#{minor.name} may now be exchanged for a " \
                              "#{corporation.id} market share."
               end

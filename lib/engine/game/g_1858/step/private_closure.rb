@@ -10,16 +10,6 @@ module Engine
         class PrivateClosure < Engine::Step::Base
           include PrivateExchange
 
-          def round_state
-            super.merge(
-              {
-                minor: nil,
-                approvals: {},
-                pending_approval: nil,
-              }
-            )
-          end
-
           def setup
             minor = current_entity
             @round.minor = minor
@@ -137,12 +127,8 @@ module Engine
 
             if share_location == 'treasury' &&
                 @round.approvals[corporation] != :approved
-              approver = corporation.owner
-              msg = "• requested #{approver.name}’s permission to " \
-                    "exchange #{minor.name} for a #{corporation.id} " \
-                    'treasury share.'
-              @round.process_action(Engine::Action::Log.new(player, message: msg))
-              @round.pending_approval = @game.corporation_by_id(choice['corporation'])
+              log_request(corporation, minor)
+              @round.pending_approval = corporation
             else
               share = share_chosen(corporation, share_location)
               treasury_share = (share_location == 'treasury')

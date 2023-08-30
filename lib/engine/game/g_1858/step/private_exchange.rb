@@ -72,6 +72,24 @@ module Engine
               corporation.add_ability(reservation)
             end
           end
+
+          def log_request(corporation, minor)
+            requester = minor.owner
+            approver = corporation.owner
+            msg = "• requested #{approver.name}’s permission to " \
+                  "exchange #{minor.name} for a #{corporation.id} " \
+                  'treasury share.'
+            @round.process_action(Engine::Action::Log.new(requester, message: msg))
+          end
+
+          def log_response(corporation, minor, approved)
+            requester = minor.owner
+            approver = corporation.owner
+            verb = approved ? 'approved' : 'denied'
+            msg = "• #{verb} #{requester.name}’s request to exchange " \
+                  "#{minor.name} for a #{corporation.id} treasury share."
+            @round.process_action(Engine::Action::Log.new(approver, message: msg))
+          end
         end
       end
     end

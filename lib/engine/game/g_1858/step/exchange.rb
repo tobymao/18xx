@@ -32,11 +32,15 @@ module Engine
             if bundle.percent == 40
               exchange_for_presidency(bundle, corporation, minor, player)
               @round.current_actions << action
-            else
+            elsif corporation.owner == minor.owner
               exchange_for_share(bundle, corporation, minor, player, true)
               # Need to add an action to the action log, but this can't be a
               # buy shares action as that would end the current player's turn.
               @round.current_actions << Engine::Action::Base.new(minor)
+            else
+              log_request(corporation, minor)
+              @round.pending_approval = corporation
+              @round.minor = minor
             end
           end
 
