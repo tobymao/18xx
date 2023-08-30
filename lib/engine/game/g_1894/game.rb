@@ -102,6 +102,18 @@ module Engine
           %w[10o 20o 30o 40o 50o],
         ].freeze
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['N shares sold', 'N ↓'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+            ['Corporation sold out at end of SR and president + treasury at least 80%', '1 additional ↑'],
+            ['Corporation sold out at end of SR and the stock price in gray area', '1 additional ↑'],
+          ]
+        end
+
         PHASES = [{ name: 'Yellow', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
                   {
                     name: 'Green',
