@@ -53,6 +53,16 @@ module Engine
           %w[50 66p 76 84 90],
         ].freeze
 
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['Any number of shares sold', '1 ↓'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+          ]
+        end
+
         PHASES = [
           {
             name: '3',
@@ -135,6 +145,7 @@ module Engine
                     rusts_on: '6+6',
                     num: 2,
                     events: [
+                      { 'type' => 'only_one_yellow' },
                       { 'type' => 'yellow_tracks_not_restricted' },
                     ],
                   },
@@ -184,6 +195,8 @@ module Engine
         ).freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'only_one_yellow' => ['Only one yellow track',
+                                'From now on, corporations may only lay one yellow track except for their very first operation'],
           'yellow_tracks_not_restricted' => ['Yellow tracks not restricted',
                                              'From now on, corporations may lay yellow tracks in any hexes they can reach,'\
                                              ' not only in hexes of a given color'],
@@ -191,6 +204,9 @@ module Engine
                                                  'Must exchange Investor companies for the associated Investor shares'\
                                                  ' in the next Stock Round'],
         ).freeze
+
+        YELLOW_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
+        TWO_YELLOW = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
 
         LAYOUT = :pointy
 
@@ -298,6 +314,7 @@ module Engine
           @bank.spend(hlb.par_price.price * 1, hlb)
 
           @draft_finished = false
+          @extra_tile_lay = true
           @yellow_tracks_restricted = true
           @must_exchange_investor_companies = false
         end
@@ -314,6 +331,10 @@ module Engine
           company.close! if company.id == 'PLP'
         end
 
+        def tile_lays(_entity)
+          @extra_tile_lay ? TWO_YELLOW : YELLOW_OR_UPGRADE
+        end
+
         def can_corporation_have_investor_shares_exchanged?(corporation)
           return false unless ['3+3', '4', '4+4'].include?(@phase.current[:name])
 
@@ -327,6 +348,11 @@ module Engine
           @must_exchange_investor_companies = true
         end
 
+        def event_only_one_yellow!
+          @log << '-- From now on, corporations may only lay one yellow track except for their very first operation'
+          @extra_tile_lay = false
+        end
+
         def event_yellow_tracks_not_restricted!
           colors = %w[pink blue green]
           @hexes.each do |hex|
@@ -335,7 +361,6 @@ module Engine
 
           @log << '-- From now on, corporations may lay yellow tracks in any hexes they can reach, not'\
                   ' only in hexes of a given color Investor companies for the associated Investor shares --'
-
           @yellow_tracks_restricted = false
         end
 
@@ -381,12 +406,12 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # yellow double towns upgrade to single green towns
+          # Yellow double towns upgrade to single green towns
           return to.name == '88' if %w[1 55].include?(from.hex.tile.name)
           return to.name == '87' if from.hex.tile.name == '56'
           return to.name == '204' if from.hex.tile.name == '69'
 
-          # double slot green cities don't upgrade
+          # Double slot green cities don't upgrade
           return false if DOUBLE_SLOT_GREEN_CITIES.include?(from.hex.tile.name)
 
           super
@@ -419,7 +444,7 @@ module Engine
         end
 
         def coal_bonus(train, stops)
-          # coal hex to Z hex, not if 6E train
+          # Coal hex to Z hex, not if 6E train
           return 0 if train.name == '6E'
           return 0 unless stops.any? { |s| COAL_HEXES.include?(s.hex.id) }
           return 0 unless stops.any? { |s| Z_HEXES.include?(s.hex.id) }
