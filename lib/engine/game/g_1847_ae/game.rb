@@ -207,6 +207,10 @@ module Engine
 
         YELLOW_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
         TWO_YELLOW = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
+        TWO_YELLOW_OR_YELLOW_AND_UPGRADE = [
+          { lay: true, upgrade: true },
+          { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
+        ].freeze
 
         LAYOUT = :pointy
 
@@ -314,9 +318,26 @@ module Engine
           @bank.spend(hlb.par_price.price * 1, hlb)
 
           @draft_finished = false
+          @recently_floated = []
           @extra_tile_lay = true
           @yellow_tracks_restricted = true
           @must_exchange_investor_companies = false
+        end
+
+        def float_corporation(corporation)
+          @recently_floated << corporation
+
+          super
+        end
+
+        def tile_lays(entity)
+          return TWO_YELLOW_OR_YELLOW_AND_UPGRADE if @recently_floated.include?(entity)
+
+          @extra_tile_lay ? TWO_YELLOW : YELLOW_OR_UPGRADE
+        end
+
+        def or_round_finished
+          @recently_floated = []
         end
 
         def after_buy_company(player, company, _price)
@@ -329,10 +350,6 @@ module Engine
 
           # PLP company is only a temporary holder for the L presidency
           company.close! if company.id == 'PLP'
-        end
-
-        def tile_lays(_entity)
-          @extra_tile_lay ? TWO_YELLOW : YELLOW_OR_UPGRADE
         end
 
         def can_corporation_have_investor_shares_exchanged?(corporation)
