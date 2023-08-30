@@ -79,8 +79,8 @@ module Engine
             # Refill the bidbox
             @game.bidbox_refill!
 
-            # Increase player loans with 50% interest
-            @game.add_interest_player_loans!
+            # Increase player loans with 50% interest in SR x.2
+            @game.add_interest_player_loans! if round_num == 2
 
             # Move sold out corps stock value right
             corporations_to_move_price.sort.each do |corp|
