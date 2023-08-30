@@ -175,8 +175,10 @@ module Engine
       # down_block -- down one row per block
       # left_share -- left one column per share
       # left_share_pres -- left one column per share if president
-      # left_block_pres -- left one column per block if president
       # left_block -- one row per block
+      # down_block_pres -- down one row per block if president
+      # left_block_pres -- left one column per block if president
+      # left_per_10_if_pres_else_left_one -- left_share_pres + left_block
       # none -- don't drop price
       SELL_MOVEMENT = :down_share
 
@@ -276,6 +278,9 @@ module Engine
       # for track and/or cities?
       # :cities for cities, as in  #611 and #63 in 1822
       # :track  for track, as in 18USA
+      # :unlabeled_cities for cities with no special label on their hex; the
+      #     labeled cities in 1822CA don't always add track in all possible
+      #     upgrades
       TILE_UPGRADES_MUST_USE_MAX_EXITS = [].freeze
 
       TILE_COST = 0
@@ -1120,7 +1125,7 @@ module Engine
         end
       end
 
-      def can_buy_presidents_share_directly_from_market?
+      def can_buy_presidents_share_directly_from_market?(_corporation)
         false
       end
 
@@ -1143,12 +1148,16 @@ module Engine
         self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
+      def sell_movement
+        self.class::SELL_MOVEMENT
+      end
+
       def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
         corporation = bundle.corporation
         old_price = corporation.share_price
         was_president = corporation.president?(bundle.owner)
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-        case movement || self.class::SELL_MOVEMENT
+        case movement || sell_movement
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
@@ -1179,7 +1188,7 @@ module Engine
         else
           raise NotImplementedError
         end
-        log_share_price(corporation, old_price) if self.class::SELL_MOVEMENT != :none
+        log_share_price(corporation, old_price) if sell_movement != :none
       end
 
       def sold_out_increase?(_corporation)
@@ -1226,6 +1235,12 @@ module Engine
       # player that needs to consent to this action. Returning nil or false
       # means that consent is not required.
       def consenter_for_buy_shares(_entity, _bundle); end
+
+      # A hook to allow a game to request a consent check for a choose action.
+      # If consent is needed then this method should return the player that
+      # needs to consent to this action. Returning nil or false means that
+      # consent is not required.
+      def consenter_for_choice(_entity, _choice, _label); end
 
       def can_run_route?(entity)
         graph_for_entity(entity).route_info(entity)&.dig(:route_available)
@@ -1349,7 +1364,7 @@ module Engine
           h['nodes'].each { |type| type_info[type] << info }
         end
 
-        grouped = visits.group_by(&:type)
+        grouped = visits.group_by { |v| stop_type(v, train) }
 
         grouped.sort_by { |t, _| type_info[t].size }.each do |type, group|
           num = group.sum(&:visit_cost)
@@ -1404,7 +1419,7 @@ module Engine
 
             next unless stops.all? do |stop|
               row = distance.index.with_index do |h, i|
-                h['nodes'].include?(stop.type) && types_used[i] < h['pay']
+                h['nodes'].include?(stop_type(stop, train)) && types_used[i] < h['pay']
               end
 
               types_used[row] += 1 if row
@@ -1424,6 +1439,10 @@ module Engine
         end
 
         []
+      end
+
+      def stop_type(stop, _train)
+        stop.type
       end
 
       def visited_stops(route)
@@ -1485,7 +1504,7 @@ module Engine
 
       def place_home_token(corporation)
         return unless corporation.next_token # 1882
-        # If a corp has laid it's first token assume it's their home token
+        # If a corp has laid its first token assume its their home token
         return if corporation.tokens.first&.used
 
         hex = hex_by_id(corporation.coordinates)
@@ -1936,7 +1955,7 @@ module Engine
 
         Array(abilities(entity, :tile_lay)).each_with_object([]) do |ability, companies|
           ability.combo_entities.each do |id|
-            company = company_by_id(id)
+            next unless (company = company_by_id(id))
             next unless company.owner == entity.corporation
             next unless abilities(company, :tile_lay)
 

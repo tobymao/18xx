@@ -23,9 +23,8 @@ module Engine
             # Exchanging a private company for a share certificate from the
             # company treasury is also a sell action, but this is handled
             # through the companies' abilities rather than these actions.
-            # Converting a corporation from 5 to 10 shares is also a sell
-            # action. This is handled in corporation_actions.
             actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'convert' if can_convert_any?(entity)
 
             # Buy actions.
             # Starting a public company by exchanging a private company for the
@@ -85,6 +84,16 @@ module Engine
             true # Show bank owned private companies before public companies
           end
 
+          def visible_corporations
+            # Don't show public companies in the first stock round, only the
+            # private railway companies can be purchased.
+            if @game.turn == 1
+              @game.sorted_corporations.select { |c| c.type == :minor }
+            else
+              @game.sorted_corporations.reject(&:closed?)
+            end
+          end
+
           def process_par(action)
             super
             pass!
@@ -99,6 +108,10 @@ module Engine
           def can_convert?(corporation)
             (corporation.owner == current_entity) && (corporation.type == :'5-share') &&
               corporation.floated? && !bought?
+          end
+
+          def can_convert_any?(_entity)
+            @game.corporations.any? { |corporation| can_convert?(corporation) }
           end
 
           def can_gain?(entity, share, exchange: false)

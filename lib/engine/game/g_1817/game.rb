@@ -998,7 +998,7 @@ module Engine
               @stock_prices_start_merger = @corporations.to_h { |corp| [corp, corp.share_price] }
               @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
               G1817::Round::Merger.new(self, [
-                Engine::Step::ReduceTokens,
+                G1817::Step::ReduceTokens,
                 Engine::Step::DiscardTrain,
                 G1817::Step::PostConversion,
                 G1817::Step::PostConversionLoans,
@@ -1007,7 +1007,7 @@ module Engine
             when G1817::Round::Merger
               @log << "-- #{round_description('Acquisition', @round.round_num)} --"
               G1817::Round::Acquisition.new(self, [
-                Engine::Step::ReduceTokens,
+                G1817::Step::ReduceTokens,
                 G1817::Step::Bankrupt,
                 G1817::Step::CashCrisis,
                 Engine::Step::DiscardTrain,

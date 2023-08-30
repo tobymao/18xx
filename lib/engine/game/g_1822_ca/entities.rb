@@ -144,7 +144,24 @@ module Engine
                   'Station slots. Pays company $10 until used. The company does not need to be able to trace a route '\
                   'to Winnipeg to use this property (i.e. any company can use this power to place a token in the '\
                   'Winnipeg hex).',
-            abilities: [],
+            abilities: [
+              {
+                type: 'token',
+                check_tokenable: false,
+                closed_when_used_up: true,
+                connected: false,
+                count: 1,
+                extra_action: true,
+                extra_slot: true,
+                from_owner: false,
+                hexes: ['N16'],
+                owner_type: 'corporation',
+                price: 0,
+                special_only: true,
+                teleport_price: 0,
+                when: 'owning_corp_or_turn',
+              },
+            ],
             color: nil,
           },
           {
@@ -181,7 +198,20 @@ module Engine
                   'normal track lay action. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company closes. May be used in conjunction with '\
                   'P29 and/or P30 as part of the same tile placement step.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[80 81 82 83 544 545 546 60 169 141 142 143 144 767 768 769],
+                combo_entities: %w[P29 P30],
+                consume_tile_lay: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -198,7 +228,20 @@ module Engine
                   'Destination runs and E-trains both double the value of this token. A company may only include the '\
                   'token bonus to the run of one train per operating round. A town with a sawmill may not be removed '\
                   'by P29 or P30.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[A7 A9 AA15 AA9 AB22 AD18 AD20 AE17 AF16 AG13 AG3
+                          AG9 AH10 AH12 AK3 AK5 AL2 AM5 AM9 AO9 AP6 C9
+                          D10 D12 D14 D16 F10 F8 G11 G13 G15 G17 H16 H8 I11 I15
+                          I17 J12 J16 K11 K13 K15 K17 K9 L10 L16 L8 M17 M9 N6
+                          O15 O9 P14 Q7 R16 S15 U11 V18 W9 X12 Y17 Z10 Z26],
+                count: 1,
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -210,7 +253,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AC21],
+                tiles: %w[T1 T2 T3 T4 T5 T6 T7],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -222,7 +277,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AE15],
+                tiles: %w[O1 O2 O3 O4 O5 O6 O7 O8],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -234,7 +301,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AF12],
+                tiles: %w[M1 M2 M3 M4 M5 M6 M7],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -246,7 +325,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[AH8],
+                tiles: %w[Q1 Q2 Q3 Q4 Q5 Q6 Q7 Q8],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -258,7 +349,19 @@ module Engine
                   'tile placement. This tile placement is in addition to the company’s normal tile placement(s), but '\
                   'happens during the company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to exercise the private company.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[N16],
+                tiles: %w[W1 W2 W3 W4 W5 W6 W7],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count_per_or: 1,
+                reachable: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -270,7 +373,21 @@ module Engine
                   'Pass (CP) and ignore the terrain fee. This tile placement counts as the company’s full track '\
                   'laying step. Closed when used. The CP hex is not reserved; any company may pay to lay a tile '\
                   'there irrespective of the ownership of P19.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[F16],
+                tiles: %w[7 8 9],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count: 1,
+                reachable: true,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -282,7 +399,21 @@ module Engine
                   'Pass (YP) and ignore the terrain fee. This tile placement counts as the company’s full track '\
                   'laying step. Closed when used. The YP hex is not reserved; any company may pay to lay a tile '\
                   'there irrespective of the ownership of P20.',
-            abilities: [],
+            abilities: [
+              {
+                hexes: %w[E11],
+                tiles: %w[7 8 9],
+                type: 'tile_lay',
+                when: %w[track special_track],
+                owner_type: 'corporation',
+                free: true,
+                special: false,
+                count: 1,
+                reachable: true,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
@@ -295,11 +426,39 @@ module Engine
                   'the three extra yellow tile lays may be done in any order. These lays are exempt from terrain '\
                   'fees, but may not be used to build on hexes with mountainous terrain ($120) or in Montreal, '\
                   'Ottawa, Quebec, Toronto or Winnipeg.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                must_lay_together: false,
+                count: 3,
+                reachable: true,
+                closed_when_used_up: true,
+                special: false,
+                free: true,
+                tiles: [],
+                hexes: %w[A9 B10 B12 B14 B6 B8 C11 C13 C7 C9 D10 D12 D14 D16 D6
+                          D8 E15 E7 E9 F10 F12 F6 F8 G11 G13 G17 G7 G9 H10 H12 H14 H16 H6
+                          H8 I11 I13 I15 I17 I7 I9 J10 J12 J14 J16 J6 J8 K11 K13 K17 K7 K9
+                          L10 L12 L14 L16 L6 L8 M11 M13 M15 M17 M7 M9 N10 N12 N14 N18 N6
+                          N8 O11 O13 O15 O17 O7 O9 P10 P12 P14 P16 P8 Q11 Q13 Q15 Q17 Q7
+                          Q9 R10 R12 R14 R8 S11 S13 S15 S9 U11 U13 U15 U17 U9 V10 V12 V14
+                          V16 V8 W11 W13 W15 W17 W19 W7 W9 X10 X12 X14 X16 X18 X8 Y11 Y13
+                          Y17 Y7 Y9 Z10 Z12 Z14 Z16 Z18 Z22 Z24 Z26 Z28 Z8 AA11 AA13 AA15
+                          AA17 AA19 AA21 AA23 AA27 AA7 AA9 AB10 AB12 AB14 AB16 AB18 AB20
+                          AB22 AB24 AB8 AC11 AC13 AC15 AC17 AC19 AC7 AC9 AD10 AD12 AD14
+                          AD16 AD18 AD20 AD8 AE11 AE13 AE17 AE19 AE7 AE9 AF10 AF14 AF16
+                          AF6 AF8 AG11 AG13 AG15 AG3 AG5 AG7 AG9 AH10 AH12 AH14 AH2 AH4
+                          AH6 AI11 AI13 AI3 AI5 AI7 AI9 AJ10 AJ12 AJ2 AJ4 AJ6 AJ8 AK11 AK3
+                          AK5 AK7 AK9 AL10 AL2 AL4 AL6 AL8 AM3 AM5 AM7 AM9 AN2 AN4 AN6 AO3
+                          AO5 AO7 AO9 AP2 AP6 AP8],
+              },
+            ],
             color: nil,
           },
           {
-            name: 'P22-NM (National Mail Contract)',
+            name: 'P22-LM (Large Mail Contract)',
             sym: 'P22',
             value: 0,
             revenue: 10,
@@ -313,7 +472,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P23-NM (National Mail Contract)',
+            name: 'P23-LM (Large Mail Contract)',
             sym: 'P23',
             value: 0,
             revenue: 10,
@@ -327,22 +486,22 @@ module Engine
             color: nil,
           },
           {
-            name: 'P24-RM (Regional Mail Contract)',
+            name: 'P24-SM (Small Mail Contract)',
             sym: 'P24',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Samll mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
+            desc: 'MAJOR, Phase 3. Small Mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
                   '/$40 (grey) to the treasury of the company. The company must operate a train to claim the mail '\
                   'income. Does not close.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P25-RM (Regional Mail Contract)',
+            name: 'P25-SM (Small Mail Contract)',
             sym: 'P25',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Samll mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
+            desc: 'MAJOR, Phase 3. Small Mail Contract. Pay phase-based rate of $10 (yellow)/$20 (green)/$30 (brown)'\
                   '/$40 (grey) to the treasury of the company. The company must operate a train to claim the mail '\
                   'income. Does not close.',
             abilities: [],
@@ -403,7 +562,21 @@ module Engine
                   'acquired, the private company pays its revenue to the owning company until the power is exercised '\
                   'and the company is closed. May be used in conjunction with P12 and/or P30 as part of the same tile '\
                   'placement step. May not be used to remove a town with a sawmill token (P13).',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
+                combo_entities: %w[P12],
+                consume_tile_lay: true,
+              },
+
+            ],
             color: nil,
           },
           {
@@ -418,7 +591,21 @@ module Engine
                   'acquired, the private company pays its revenue to the owning company until the power is exercised '\
                   'and the company is closed. May be used in conjunction with P12 and/or P30 as part of the same tile '\
                   'placement step. May not be used to remove a town with a sawmill token (P13).',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
+                combo_entities: %w[P12],
+                consume_tile_lay: true,
+              },
+
+            ],
             color: nil,
           },
           {
@@ -1448,7 +1635,7 @@ module Engine
           },
           {
             sym: 'GTP',
-            name: 'Caledonian Railway',
+            name: 'Grand Trunk Pacific Railway',
             logo: '1822_ca/GTP',
             tokens: [0, 100],
             type: 'major',
@@ -1527,7 +1714,6 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             coordinates: 'AH8',
-            city: 1,
             color: '#7f3881',
             reservation_color: nil,
             destination_coordinates: 'AA15',

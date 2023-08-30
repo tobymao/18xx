@@ -186,14 +186,13 @@ module Engine
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
                   'May not be sold to a corporation. ',
             sym: 'MNR',
-            abilities: [{ type: 'no_buy' },
-                        {
-                          type: 'exchange',
-                          corporations: ['HLB'],
-                          owner_type: 'player',
-                          when: 'owning_player_sr_turn',
-                          from: %w[reserved],
-                        }],
+            abilities: [{
+              type: 'exchange',
+              corporations: ['HLB'],
+              owner_type: 'player',
+              when: 'owning_player_sr_turn',
+              from: %w[reserved],
+            }],
           },
           {
             name: 'Saarland Coal Mines',
@@ -204,14 +203,13 @@ module Engine
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
                   'May not be sold to a corporation. ',
             sym: 'SCR',
-            abilities: [{ type: 'no_buy' },
-                        {
-                          type: 'exchange',
-                          corporations: ['Saar'],
-                          owner_type: 'player',
-                          when: 'owning_player_sr_turn',
-                          from: %w[reserved],
-                        }],
+            abilities: [{
+              type: 'exchange',
+              corporations: ['Saar'],
+              owner_type: 'player',
+              when: 'owning_player_sr_turn',
+              from: %w[reserved],
+            }],
           },
           {
             name: 'Völklinger Iron Works',
@@ -222,14 +220,13 @@ module Engine
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
                   'May not be sold to a corporation. ',
             sym: 'VIW',
-            abilities: [{ type: 'no_buy' },
-                        {
-                          type: 'exchange',
-                          corporations: ['Saar'],
-                          owner_type: 'player',
-                          when: 'owning_player_sr_turn',
-                          from: %w[reserved],
-                        }],
+            abilities: [{
+              type: 'exchange',
+              corporations: ['Saar'],
+              owner_type: 'player',
+              when: 'owning_player_sr_turn',
+              from: %w[reserved],
+            }],
           },
         ].freeze
 
@@ -263,7 +260,7 @@ module Engine
             logo: '1847_ae/Saar',
             simple_logo: '1847_ae/Saar',
             tokens: [0, 60, 80, 100],
-            float_percent: 30,
+            float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'H6',
             required_par_price: 84,
@@ -271,6 +268,7 @@ module Engine
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             second_share_double: false,
             last_share_double: true,
+            float_includes_reserved: true,
             color: '#ff4040',
             abilities: [
               {
@@ -286,7 +284,7 @@ module Engine
             logo: '1847_ae/HLB',
             simple_logo: '1847_ae/HLB',
             tokens: [0, 0, 80, 100],
-            float_percent: 40,
+            float_percent: 50,
             max_ownership_percent: 100,
             coordinates: %w[D18 C21],
             required_par_price: 80,
@@ -294,6 +292,7 @@ module Engine
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             second_share_double: false,
             last_share_double: true,
+            float_includes_reserved: true,
             color: '#dda0dd',
             abilities: [
               {

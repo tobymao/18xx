@@ -15,7 +15,7 @@ module Engine
         include Map
         include Entities
 
-        attr_accessor :draft_finished
+        attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
@@ -30,12 +30,18 @@ module Engine
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 9 }.freeze
         STARTING_CASH = { 3 => 500, 4 => 390, 5 => 320 }.freeze
 
+        COMPANIES_PURCHASABLE_BY_CORPORATIONS = %w[R K W H].freeze
+        INVESTOR_COMPANIES = %w[MNR SCR VIW].freeze
+
         LAST_TRANCH_CORPORATIONS = %w[NDB M N RNB].freeze
 
         COAL_HEXES = %w[G7 H6].freeze
         Z_HEXES = %w[G21 I21].freeze
         A_HEXES = %w[B2 B14 B22].freeze
         B_HEXES = %w[I3 I13].freeze
+
+        DOUBLE_TOWN_TILES = %w[1 55 56 69].freeze
+        DOUBLE_SLOT_GREEN_CITIES = %w[14 15].freeze
 
         MARKET = [
           ['', '', '', '', '130', '150', '170', '190', '210', '230', '255', '285', '315', '350', '385', '420'],
@@ -122,7 +128,16 @@ module Engine
                     rusts_on: '5+5',
                     num: 2,
                   },
-                  { name: '4', distance: 4, price: 300, rusts_on: '6+6', num: 2 },
+                  {
+                    name: '4',
+                    distance: 4,
+                    price: 300,
+                    rusts_on: '6+6',
+                    num: 2,
+                    events: [
+                      { 'type' => 'yellow_tracks_not_restricted' },
+                    ],
+                  },
                   {
                     name: '4+4',
                     distance: [{ 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 },
@@ -130,13 +145,21 @@ module Engine
                     price: 500,
                     num: 1,
                   },
-                  { name: '5', distance: 5, price: 450, num: 2 },
+                  {
+                    name: '5',
+                    distance: 5,
+                    price: 450,
+                    num: 2,
+                  },
                   {
                     name: '5+5',
                     distance: [{ 'nodes' => ['town'], 'pay' => 5, 'visit' => 5 },
                                { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
                     price: 550,
                     num: 1,
+                    events: [
+                      { 'type' => 'must_exchange_investor_companies' },
+                    ],
                   },
                   {
                     name: '6E',
@@ -160,6 +183,15 @@ module Engine
           'two_yellow_tracks' => ['Two yellow tracks', 'A corporation may lay two yellow tracks']
         ).freeze
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'yellow_tracks_not_restricted' => ['Yellow tracks not restricted',
+                                             'From now on, corporations may lay yellow tracks in any hexes they can reach,'\
+                                             ' not only in hexes of a given color'],
+          'must_exchange_investor_companies' => ['Must exchange Investor companies',
+                                                 'Must exchange Investor companies for the associated Investor shares'\
+                                                 ' in the next Stock Round'],
+        ).freeze
+
         LAYOUT = :pointy
 
         def init_round
@@ -175,7 +207,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1847AE::Round::Stock.new(self, [
             G1847AE::Step::Exchange,
             G1847AE::Step::BuySellParShares,
           ])
@@ -266,6 +298,8 @@ module Engine
           @bank.spend(hlb.par_price.price * 1, hlb)
 
           @draft_finished = false
+          @yellow_tracks_restricted = true
+          @must_exchange_investor_companies = false
         end
 
         def after_buy_company(player, company, _price)
@@ -284,6 +318,39 @@ module Engine
           return false unless ['3+3', '4', '4+4'].include?(@phase.current[:name])
 
           corporation.floated
+        end
+
+        def event_must_exchange_investor_companies!
+          @log << '-- At the beginning of the next Stock Round players must exchange their remaining'\
+                  ' Investor companies for the associated Investor shares --'
+
+          @must_exchange_investor_companies = true
+        end
+
+        def event_yellow_tracks_not_restricted!
+          colors = %w[pink blue green]
+          @hexes.each do |hex|
+            hex.tile.icons.reject! { |i| colors.include?(i.name) }
+          end
+
+          @log << '-- From now on, corporations may lay yellow tracks in any hexes they can reach, not'\
+                  ' only in hexes of a given color Investor companies for the associated Investor shares --'
+
+          @yellow_tracks_restricted = false
+        end
+
+        def exchange_all_investor_companies!
+          INVESTOR_COMPANIES.map { |id| company_by_id(id) }.reject(&:closed?).each do |company|
+            corporation = corporation_by_id(company.abilities.first.corporations.first)
+            share = corporation.reserved_shares.first
+            share_pool.buy_shares(company.owner,
+                                  share.to_bundle,
+                                  exchange: company)
+            share.buyable = true
+            company.close!
+          end
+
+          @must_exchange_investor_companies = false
         end
 
         def place_home_token(corporation)
@@ -311,6 +378,27 @@ module Engine
         # Cannot build in E9 before Phase 5
         def can_build_in_e9?
           ['5', '5+5', '6E', '6+6'].include?(@phase.current[:name])
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # yellow double towns upgrade to single green towns
+          return to.name == '88' if %w[1 55].include?(from.hex.tile.name)
+          return to.name == '87' if from.hex.tile.name == '56'
+          return to.name == '204' if from.hex.tile.name == '69'
+
+          # double slot green cities don't upgrade
+          return false if DOUBLE_SLOT_GREEN_CITIES.include?(from.hex.tile.name)
+
+          super
+        end
+
+        def purchasable_companies(entity = nil)
+          return super unless entity&.corporation?
+
+          @companies.select do |company|
+            company.owner&.player? && entity != company.owner && !abilities(company, :no_buy) &&
+            COMPANIES_PURCHASABLE_BY_CORPORATIONS.include?(company.id)
+          end
         end
 
         def action_processed(action)

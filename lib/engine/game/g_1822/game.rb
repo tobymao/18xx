@@ -33,11 +33,11 @@ module Engine
 
         BANK_CASH = 12_000
 
-        CERT_LIMIT = { 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
+        CERT_LIMIT = { 2 => 40, 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
 
         EBUY_OTHER_VALUE = false
 
-        STARTING_CASH = { 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
+        STARTING_CASH = { 2 => 1000, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :incremental
 
@@ -52,6 +52,7 @@ module Engine
         }.freeze
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
+        GAME_END_ON_NOTHING_SOLD_IN_SR1 = true
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par_1: :red,
@@ -481,6 +482,7 @@ module Engine
 
         MINOR_14_ID = '14'
         MINOR_14_HOME_HEX = 'M38'
+        PENDING_HOME_TOKENERS = [MINOR_14_ID].freeze
 
         PLUS_EXPANSION_BIDBOX_1 = %w[P1 P3 P4 P13 P14 P19].freeze
         PLUS_EXPANSION_BIDBOX_2 = %w[P2 P5 P8 P10 P11 P12 P21].freeze
@@ -527,6 +529,9 @@ module Engine
         STARTING_CORPORATIONS_PLUS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29
                                         30 LNWR GWR LBSCR SECR CR MR LYR NBR SWR NER].freeze
 
+        # can the tax haven private own multiple shares?
+        TAX_HAVEN_MULTIPLE = false
+
         TOKEN_PRICE = 100
 
         TRACK_PLAIN = %w[7 8 9 80 81 82 83 544 545 546 60 169].freeze
@@ -538,7 +543,7 @@ module Engine
 
         UPGRADE_COST_L_TO_2 = 80
 
-        attr_reader :minor_14_city_exit
+        attr_reader :minor_14_city_exit, :tax_haven
         attr_accessor :bidding_token_per_player, :player_debts
 
         def bank_sort(corporations)
@@ -663,8 +668,9 @@ module Engine
 
           if company.id == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
             company.value = @tax_haven.value
-            share = @tax_haven.shares.first
-            return "(#{share.corporation.name})"
+            cash = format_currency(@tax_haven.cash)
+            shares = @tax_haven.shares.map { |s| s.corporation.name }.join(',')
+            return "(#{cash}; #{shares})"
           end
 
           nil
@@ -679,13 +685,15 @@ module Engine
         end
 
         def crowded_corps
-          @crowded_corps ||= corporations.select do |c|
-            trains = c.trains.count { |t| !extra_train?(t) }
-            crowded = trains > train_limit(c)
-            crowded |= extra_train_permanent_count(c) > 1
-            crowded |= pullman_train_count(c) > 1
-            crowded
-          end
+          @crowded_corps ||= corporations.select { |c| crowded_corp?(c) }
+        end
+
+        def crowded_corp?(corp)
+          trains = corp.trains.count { |t| !extra_train?(t) }
+          crowded = trains > train_limit(corp)
+          crowded |= extra_train_permanent_count(corp) > 1
+          crowded |= pullman_train_count(corp) > 1
+          crowded
         end
 
         def discountable_trains_for(corporation)
@@ -1493,12 +1501,15 @@ module Engine
         end
 
         def company_choices_osth(company, time)
-          return {} if @tax_haven.value.positive? || !company.owner&.player? || time != :stock_round
+          return {} if @tax_haven.value.positive? && !company_tax_haven_can_own_multiple?
+          return {} if !company.owner&.player? || time != :stock_round || @round.tax_haven_bought
 
           choices = {}
           @corporations.select { |c| c.type == :major }.each do |corporation|
             price = corporation.share_price&.price || 0
             next unless price.positive?
+            next if @tax_haven.num_shares_of(corporation).positive?
+            next if price > tax_haven_spender(company).cash
 
             if corporation.num_ipo_shares.positive?
               choices["#{corporation.id}_ipo"] = "#{corporation.id} IPO (#{format_currency(price)})"
@@ -1588,16 +1599,29 @@ module Engine
         end
 
         def company_made_choice_osth(company, choice)
-          spender = company.owner
+          spender = tax_haven_spender(company)
           bundle = company_tax_haven_bundle(choice)
           corporation = bundle.corporation
           floated = corporation.floated?
           receiver = bundle.owner == @share_pool ? @bank : corporation
           @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: receiver,
                                                           price: bundle.price, allow_president_change: false)
-          @log << "#{spender.name} spends #{format_currency(bundle.price)} and tax haven gains a share of "\
-                  "#{corporation.name}."
+
+          if spender == @tax_haven
+            from = choice.split('_')[1] == 'ipo' ? 'Treasury' : 'market'
+            @log << "Tax Haven (#{company.owner.name}) buys a 10% share of #{corporation.name} "\
+                    "from the #{from} for #{format_currency(bundle.price)}"
+          else
+            @log << "#{spender.name} spends #{format_currency(bundle.price)} and Tax Haven gains "\
+                    "a share of #{corporation.name}."
+          end
           float_corporation(corporation) if corporation.floatable && floated != corporation.floated?
+        end
+
+        def tax_haven_spender(company)
+          return company.owner if !company_tax_haven_can_own_multiple? || @tax_haven.value.zero?
+
+          @tax_haven
         end
 
         def company_tax_haven_bundle(choice)
@@ -1615,6 +1639,10 @@ module Engine
 
           @bank.spend(amount, @tax_haven)
           @log << "#{entity.name} pays out #{format_currency(amount)} to tax haven"
+        end
+
+        def company_tax_haven_can_own_multiple?
+          self.class::TAX_HAVEN_MULTIPLE || @optional_rules&.include?(:tax_haven_multiple)
         end
 
         def destination_bonus(routes)
@@ -1925,6 +1953,8 @@ module Engine
 
         def find_and_remove_train_by_id(train_id, buyable: true)
           train = train_by_id(train_id)
+          return unless train
+
           @depot.remove_train(train)
           train.buyable = buyable
           train.reserved = true

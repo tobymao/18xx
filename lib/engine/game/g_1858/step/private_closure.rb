@@ -43,27 +43,18 @@ module Engine
           end
 
           def choices
-            choices = []
+            choices = {}
             exchange_corporations(current_entity).each do |corporation|
-              choices << choice_text(corporation, 'treasury') if corporation.num_treasury_shares.positive?
-              choices << choice_text(corporation, 'market') if corporation.num_market_shares.positive?
+              add_choice(choices, corporation, 'treasury') if corporation.num_treasury_shares.positive?
+              add_choice(choices, corporation, 'market') if corporation.num_market_shares.positive?
             end
             choices
           end
 
-          def choice_text(corporation, share_location)
-            "#{corporation.id} #{share_location} share"
-          end
-
-          # Returns a hash with two items:
-          #   corporation: the corporation object
-          #   location: a string, either 'treasury' or 'market'
-          def decode_choice(choice_text)
-            /(?<corp_id>.*) (?<location>.*) share/ =~ choice_text
-            {
-              corporation: @game.corporations.find { |corp| corp.id == corp_id },
-              location: location,
-            }
+          def add_choice(choices, corporation, location)
+            k = { 'corporation' => corporation.id, 'from' => location }
+            v = "#{corporation.id} #{location} share"
+            choices[k] = v
           end
 
           def share_chosen(corporation, share_location)
@@ -75,9 +66,9 @@ module Engine
           end
 
           def process_choose(action)
-            choice = decode_choice(action.choice)
-            corporation = choice[:corporation]
-            share_location = choice[:location]
+            choice = action.choice
+            corporation = @game.corporations.find { |c| c.id == choice['corporation'] }
+            share_location = choice['from']
             minor = action.entity
             company = @game.private_company(minor)
             player = company.owner

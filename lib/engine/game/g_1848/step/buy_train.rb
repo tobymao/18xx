@@ -15,7 +15,7 @@ module Engine
 
             if must_buy_train?(entity)
               %w[buy_train]
-            elsif can_buy_train?(entity)
+            elsif can_buy_train?(entity) || (!owns_2e?(entity) && entity.cash >= 100 && @game.can_take_loan?(entity))
               %w[buy_train pass]
             else
               []

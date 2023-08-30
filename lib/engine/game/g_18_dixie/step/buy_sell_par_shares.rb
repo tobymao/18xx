@@ -17,7 +17,14 @@ module Engine
             return %w[bid pass] if @auctioning
 
             actions = super
-            actions << 'bid' if !bought? && can_auction_any_company?(entity)
+            actions << 'bid' if can_auction_any_company?(entity)
+            if bought?
+              # cannot do another buy-like action after doing a buy-like action=
+              actions.delete('bid')
+              actions.delete('buy_company')
+              actions.delete('buy_shares')
+              actions.delete('par')
+            end
             actions << 'pass' if actions.any? && !actions.include?('pass') && !must_sell?(entity)
             actions
           end
@@ -175,7 +182,6 @@ module Engine
             company = action.company
             sym = company.sym
             @game.float_minor(sym, action.entity) unless sym[0] == 'P'
-            @round.next_entity_index!
           end
 
           def pool_shares(corporation)

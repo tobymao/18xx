@@ -497,7 +497,7 @@ module Engine
           true
         end
 
-        def can_buy_presidents_share_directly_from_market?
+        def can_buy_presidents_share_directly_from_market?(_corporation)
           true
         end
 
