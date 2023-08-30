@@ -134,17 +134,29 @@ module Engine
             color: nil,
           },
           {
-            name: 'P10 (Game Reserve) [N/A]',
+            name: 'P10 (Game Reserve)',
             sym: 'P10',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 3. When this company is acquired, the owning company must place '\
+            desc: 'MAJOR/MINOR, Phase 3. When this company is acquired, the owning company must place '\
                   'the striped Game Reserve tile on any empty (and non-desert) hex. '\
                   'Placement must not run track into an unplayable hex edge. This hex becomes a game reserve. '\
                   'The company immediately receives a bonus equal to A5x the number of hexes between '\
                   'this game reserve and the preprinted game reserve (excluding the reserve hexes).',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: %w[B4 B8 E3 E17 F2 F4 F8 F10 F12 F14 F16 G5 G11 G15 H6 H14 H16 I9],
+                tiles: ['GR'],
+                owner_type: 'corporation',
+                when: %w[sold special_track],
+                count: 1,
+                special: true,
+                blocks: true,
+                free: true,
+                closed_when_used_up: true,
+              },
+            ],
             color: nil,
           },
           {
