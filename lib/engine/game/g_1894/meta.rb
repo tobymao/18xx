@@ -13,10 +13,10 @@ module Engine
 
         GAME_DESIGNER = 'Jan Kłos'
         GAME_IMPLEMENTER = 'Jan Kłos'
-        GAME_INFO_URL = 'https://www.boardgamegeek.com/geeklist/50723/item/8626841#item8626841'
-        GAME_LOCATION = 'France and Belgium'
-        GAME_RULES_URL = ''
         GAME_TITLE = '1894'
+        GAME_LOCATION = 'France and Belgium'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1894'
+        GAME_RULES_URL = 'https://galatolol.com/1894/1894_rules.pdf'
 
         PLAYER_RANGE = [3, 4].freeze
       end

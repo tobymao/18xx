@@ -274,9 +274,6 @@ module Engine
         REGULAR_CORPORATIONS = FRENCH_REGULAR_CORPORATIONS + BELGIAN_REGULAR_CORPORATIONS
         FRENCH_LATE_CORPORATIONS = %w[LF].freeze
         BELGIAN_LATE_CORPORATIONS = %w[LB].freeze
-        #CORPORATIONS_CAPITALIZED_AT_110_PCT = %w[Ouest Est]
-
-        #DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
 
         def stock_round
           G1894::Round::Stock.new(self, [
@@ -365,18 +362,7 @@ module Engine
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
           belgian_starting_corporation = corporation_by_id('Belge')
 
-          #adjust_companies
           remove_extra_french_major_shareholding_companies
-
-          # @corporations.each do |corporation|
-          #   next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
-
-          #   dest_abilities.each do |ability|
-          #     ability.hexes.each do |id|
-          #       hex_by_id(id).assign!(corporation)
-          #     end
-          #   end
-          # end
 
           @players.each do |player|
             share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, player)
@@ -403,12 +389,6 @@ module Engine
         def init_round_finished
           @players.rotate!(@round.entity_index)
         end
-
-        # def assignment_tokens(assignment)
-        #   return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-        #   super
-        # end
 
         def init_stock_market
           StockMarket.new(self.class::MARKET, [:unlimited],
@@ -437,7 +417,7 @@ module Engine
               hex = hex_by_id(coordinate)
               tile = hex&.tile
               if tile.color != :brown
-                # don't take the token that's alerady pending
+                # Don't take the token that's alerady pending
                 token = corporation.tokens.find { |t| !t.used && !@round.pending_tokens.find { |p_t| p_t[:token] == t } }
                 tile.cities.first.place_token(corporation, token, free: true)
               else
@@ -493,15 +473,6 @@ module Engine
           super
 
           case action
-          # when Action::Par
-          #   if CORPORATION_CAPITALIZED_AT_110_PCT.include?(action.corporation.id)
-          #     corporation = action.corporation
-          #     corporation.remove_ability_when(:par)
-          #     subsidy = corporation.par_price&.price
-          #     @bank.spend(subsidy, corporation)
-          #     @log << "#{corporation.name} receives a #{format_currency(subsidy)} subsidy"
-          #   end
-
           when Action::PlaceToken
             # Mark the corporation that has London bonus
             if action.city.hex.id == LONDON_BONUS_FERRY_SUPPLY_HEX
@@ -566,7 +537,7 @@ module Engine
         end
 
         def issuable_shares(entity)
-          # if the corporation has more redeemed shares than are left in IPO
+          # If the corporation has more redeemed shares than are left in IPO
           return [] unless entity.num_ipo_reserved_shares > entity.num_ipo_shares - entity.num_ipo_reserved_shares
 
           bundle = Engine::ShareBundle.new(entity.reserved_shares)
@@ -611,7 +582,7 @@ module Engine
 
           return tile.add_reservation!(corporation, 0) if [BRUXELLES_HEX, LILLE_HEX].include?(coordinates)
 
-          # tile is brown, non-Bruxelles, non-Lille
+          # Tile is brown, non-Bruxelles, non-Lille
           if tile.cities.first.tokenable?(corporation) && !tile.cities[1].tokenable?(corporation)
             tile.add_reservation!(corporation, 0)
           elsif !tile.cities.first.tokenable?(corporation) && tile.cities[1].tokenable?
@@ -763,15 +734,6 @@ module Engine
             !@game.ferry_marker?(corporation)
           end
         end
-
-        # def adjust_companies
-        #   return unless @players.size == 4
-
-        #   company_to_remove = companies.find { |c| c.id == 'AR' }
-
-        #   company_to_remove.close!
-        #   @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
-        # end
 
         def remove_extra_french_major_shareholding_companies
           major_shareholdings = companies.find_all { |c| c.value == 180 }
