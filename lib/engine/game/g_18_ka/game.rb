@@ -801,7 +801,6 @@ module Engine
                 description: 'May borrow a train when trainless*',
               },
             ],
-            reservation_color: nil,
           },
         ].freeze
         # TODO: Make location name optional and refactor into 1856

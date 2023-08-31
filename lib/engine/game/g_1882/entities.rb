@@ -108,7 +108,6 @@ module Engine
             tokens: [],
             color: :orange,
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'CNR',
@@ -118,7 +117,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'D8',
             color: '#237333',
-            reservation_color: nil,
           },
           {
             sym: 'HBR',
@@ -129,7 +127,6 @@ module Engine
             coordinates: 'G11',
             color: :gold,
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'CPR',
@@ -139,7 +136,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'I5',
             color: '#d81e3e',
-            reservation_color: nil,
           },
           {
             sym: 'GT',
@@ -149,7 +145,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'L8',
             color: :black,
-            reservation_color: nil,
           },
           {
             sym: 'SC',
@@ -158,7 +153,6 @@ module Engine
             simple_logo: '1882/SC.alt',
             tokens: [0],
             color: '#0189d1',
-            reservation_color: nil,
           },
           {
             sym: 'QLL',
@@ -168,7 +162,6 @@ module Engine
             tokens: [0, 40],
             coordinates: 'J10',
             color: :purple,
-            reservation_color: nil,
           },
         ].freeze
       end

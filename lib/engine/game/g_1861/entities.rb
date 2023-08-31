@@ -108,7 +108,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#000080',
-            reservation_color: nil,
           },
           {
             sym: 'SW',
@@ -120,7 +119,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#d75500',
-            reservation_color: nil,
           },
           {
             sym: 'SE',
@@ -132,7 +130,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#772282',
-            reservation_color: nil,
           },
           {
             sym: 'MVR',
@@ -144,7 +141,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#808000',
-            reservation_color: nil,
           },
           {
             sym: 'MK',
@@ -156,7 +152,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#7b352a',
-            reservation_color: nil,
           },
           {
             sym: 'GRR',
@@ -168,7 +163,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#ef4223',
-            reservation_color: nil,
           },
           {
             sym: 'MKN',
@@ -180,7 +174,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#0189d1',
-            reservation_color: nil,
           },
           {
             sym: 'MKV',
@@ -192,7 +185,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'RO',
@@ -207,7 +199,6 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             color: '#009595',
-            reservation_color: nil,
           },
           {
             sym: 'KB',
@@ -223,7 +214,6 @@ module Engine
             coordinates: 'D14',
             city: 1,
             color: '#4cb5d2',
-            reservation_color: nil,
           },
           {
             sym: 'OK',
@@ -238,7 +228,6 @@ module Engine
             type: 'minor',
             coordinates: 'D20',
             color: '#0097df',
-            reservation_color: nil,
           },
           {
             sym: 'KK',
@@ -254,7 +243,6 @@ module Engine
             coordinates: 'D14',
             city: 2,
             color: '#0097df',
-            reservation_color: nil,
           },
           {
             sym: 'SPW',
@@ -270,7 +258,6 @@ module Engine
             coordinates: 'E1',
             city: 0,
             color: '#0189d1',
-            reservation_color: nil,
           },
           {
             sym: 'MB',
@@ -300,7 +287,6 @@ module Engine
             type: 'minor',
             coordinates: 'G15',
             color: '#772282',
-            reservation_color: nil,
           },
           {
             sym: 'N',
@@ -316,7 +302,6 @@ module Engine
             coordinates: 'H8',
             city: 1,
             color: '#d30869',
-            reservation_color: nil,
           },
           {
             sym: 'Y',
@@ -347,7 +332,6 @@ module Engine
             coordinates: 'H8',
             city: 0,
             color: '#d75500',
-            reservation_color: nil,
           },
           {
             sym: 'MNN',
@@ -363,7 +347,6 @@ module Engine
             coordinates: 'H8',
             city: 2,
             color: '#ef4223',
-            reservation_color: nil,
           },
           {
             sym: 'MV',
@@ -378,7 +361,6 @@ module Engine
             type: 'minor',
             coordinates: 'I13',
             color: '#b7274c',
-            reservation_color: nil,
           },
           {
             sym: 'V',
@@ -453,7 +435,6 @@ module Engine
             city: 1,
             color: '#fffdd0',
             text_color: 'black',
-            reservation_color: nil,
           },
         ].freeze
       end

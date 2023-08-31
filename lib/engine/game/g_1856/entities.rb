@@ -130,7 +130,6 @@ module Engine
             coordinates: 'J15',
             color: '#ffd9eb',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'CA',
@@ -140,7 +139,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'D17',
             color: '#f72d2d',
-            reservation_color: nil,
           },
           {
             sym: 'CPR',
@@ -150,7 +148,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'M4',
             color: '#c474bc',
-            reservation_color: nil,
           },
           {
             sym: 'CV',
@@ -161,7 +158,6 @@ module Engine
             coordinates: 'N11',
             city: 0,
             color: '#2d0047',
-            reservation_color: nil,
           },
           {
             sym: 'GT',
@@ -171,7 +167,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'P9',
             color: '#78c292',
-            reservation_color: nil,
           },
           {
             sym: 'GW',
@@ -181,7 +176,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'F15',
             color: '#6e6966',
-            reservation_color: nil,
           },
           {
             sym: 'LPS',
@@ -192,7 +186,6 @@ module Engine
             coordinates: 'C14',
             color: '#c3deeb',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'TGB',
@@ -202,7 +195,6 @@ module Engine
             tokens: [0, 40],
             coordinates: 'K8',
             color: '#c94d00',
-            reservation_color: nil,
           },
           {
             sym: 'THB',
@@ -213,7 +205,6 @@ module Engine
             coordinates: 'L15',
             color: '#ebff45',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'WR',
@@ -223,7 +214,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'O16',
             color: '#54230e',
-            reservation_color: nil,
           },
           {
             sym: 'WGB',
@@ -233,7 +223,6 @@ module Engine
             tokens: [0, 40],
             coordinates: 'J11',
             color: '#494d99',
-            reservation_color: nil,
           },
           {
             sym: 'CGR',
@@ -259,7 +248,6 @@ module Engine
                 description: 'May borrow a train when trainless*',
               },
             ],
-            reservation_color: nil,
           },
         ].freeze
       end

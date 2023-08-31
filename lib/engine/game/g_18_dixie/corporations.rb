@@ -83,7 +83,6 @@ module Engine
             coordinates: 'C17',
             city: 1,
             color: '#76a042',
-            reservation_color: nil,
           },
           {
             type: 'major',

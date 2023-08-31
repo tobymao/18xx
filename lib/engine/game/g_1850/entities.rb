@@ -156,7 +156,6 @@ module Engine
           coordinates: 'I18',
           city: 1,
           color: '#8C8C7E',
-          reservation_color: nil,
         },
         {
           float_percent: 60,
@@ -167,7 +166,6 @@ module Engine
           coordinates: 'G18',
           abilities: [{ type: 'assign_hexes', hexes: ['A2'], count: 1, cost: 50 }],
           color: '#C45114',
-          reservation_color: nil,
         },
         {
           float_percent: 60,
@@ -177,7 +175,6 @@ module Engine
           tokens: [0, 40, 100, 100],
           coordinates: 'H11',
           color: '#881319',
-          reservation_color: nil,
         },
         {
           float_percent: 60,
@@ -188,7 +185,6 @@ module Engine
           coordinates: 'D9',
           abilities: [{ type: 'assign_hexes', hexes: ['A2'], count: 1, cost: 50 }],
           color: '#6FB3C4',
-          reservation_color: nil,
         },
         {
           float_percent: 60,
@@ -199,7 +195,6 @@ module Engine
           coordinates: 'K6',
           abilities: [{ type: 'assign_hexes', hexes: ['M2'], count: 1, cost: 50 }],
           color: '#006521',
-          reservation_color: nil,
         },
         {
           float_percent: 60,
@@ -209,7 +204,6 @@ module Engine
           tokens: [0, 40, 100],
           coordinates: 'L13',
           color: '#181D62',
-          reservation_color: nil,
         },
         {
           float_percent: 60,
@@ -224,7 +218,6 @@ module Engine
                         count: 1,
                       }],
           color: '#1C1A17',
-          reservation_color: nil,
         },
         {
           float_percent: 60,
@@ -235,7 +228,6 @@ module Engine
           coordinates: 'F13',
           abilities: [{ type: 'assign_hexes', hexes: ['C20'], count: 1, cost: 50 }],
           color: '#C40017',
-          reservation_color: nil,
         },
         {
           float_percent: 60,
@@ -246,7 +238,6 @@ module Engine
           coordinates: 'I4',
           abilities: [{ type: 'assign_hexes', hexes: ['F1'], count: 1, cost: 50 }],
           color: '#B6AD14',
-          reservation_color: nil,
         },
         ].freeze
       end
