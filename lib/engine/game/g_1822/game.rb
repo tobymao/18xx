@@ -384,8 +384,6 @@ module Engine
         LONDON_HEX = 'M38'
         ENGLISH_CHANNEL_HEX = 'P43'
         FRANCE_HEX = 'Q44'
-        FRANCE_HEX_BROWN_TILE = 'offboard=revenue:yellow_0|green_60|brown_90|gray_120,visit_cost:0;'\
-                                'path=a:2,b:_0,lanes:2'
 
         COMPANY_MTONR = 'P2'
         COMPANY_LCDR = 'P5'
@@ -1310,8 +1308,6 @@ module Engine
 
           # If we upgraded the english channel to brown, upgrade france as well since we got 2 lanes to france.
           return if hex.name != self.class::ENGLISH_CHANNEL_HEX || tile.color != :brown
-
-          upgrade_france_to_brown
         end
 
         def bank_companies(prefix)
@@ -1840,12 +1836,6 @@ module Engine
 
         def train_type(train)
           train.name == 'E' ? :etrain : :normal
-        end
-
-        def upgrade_france_to_brown
-          france_tile = Engine::Tile.from_code(self.class::FRANCE_HEX, :gray, self.class::FRANCE_HEX_BROWN_TILE)
-          france_tile.location_name = 'France'
-          hex_by_id(self.class::FRANCE_HEX).tile = france_tile
         end
 
         def upgrade_minor_14_home_hex(hex)
