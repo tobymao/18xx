@@ -137,7 +137,6 @@ module Engine
             simple_logo: '1824/BK.alt',
             color: :blue,
             coordinates: 'B9',
-            reservation_color: nil,
           },
           {
             name: 'Mährisch-Schlesische Eisenbahn',
@@ -150,7 +149,6 @@ module Engine
             color: :yellow,
             text_color: 'black',
             coordinates: 'C12',
-            reservation_color: nil,
           },
           {
             name: 'Carl Ludwigs-Bahn',
@@ -162,7 +160,6 @@ module Engine
             logo: '1824/CL',
             simple_logo: '1824/CL.alt',
             coordinates: 'B23',
-            reservation_color: nil,
           },
           {
             name: 'Siebenbürgische Bahn',
@@ -175,7 +172,6 @@ module Engine
             color: :green,
             text_color: 'black',
             coordinates: 'G26',
-            reservation_color: nil,
           },
           {
             name: 'Bosnisch-Herzegowinische Landesbahn',
@@ -187,7 +183,6 @@ module Engine
             simple_logo: '1824/BH.alt',
             color: :red,
             coordinates: 'J13',
-            reservation_color: nil,
           },
           {
             name: 'Südbahn',
@@ -205,7 +200,6 @@ module Engine
             simple_logo: '1824/SD.alt',
             color: :orange,
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             name: 'Ungarische Staatsbahn',
@@ -222,7 +216,6 @@ module Engine
             logo: '1824/UG',
             simple_logo: '1824/UG.alt',
             color: :purple,
-            reservation_color: nil,
           },
           {
             name: 'k&k Staatsbahn',
@@ -239,7 +232,6 @@ module Engine
             logo: '1824/KK',
             simple_logo: '1824/KK.alt',
             color: :brown,
-            reservation_color: nil,
           },
         ].freeze
 

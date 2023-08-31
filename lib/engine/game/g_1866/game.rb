@@ -2037,7 +2037,6 @@ module Engine
             always_market_price: true,
             color: 'white',
             text_color: 'white',
-            reservation_color: nil,
             capitalization: self.class::CAPITALIZATION,
           )
           corporation.ipoed = true

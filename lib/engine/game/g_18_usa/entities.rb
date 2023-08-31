@@ -815,7 +815,6 @@ module Engine
             always_market_price: true,
             color: '#7090c9',
             text_color: 'White',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -828,7 +827,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: '#025aaa',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -842,7 +840,6 @@ module Engine
             always_market_price: true,
             color: '#ADD8E6',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -856,7 +853,6 @@ module Engine
             always_market_price: true,
             color: 'Sienna',
             text_color: 'White',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -870,7 +866,6 @@ module Engine
             always_market_price: true,
             color: 'LightSkyBlue',
             text_color: 'Black',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -883,7 +878,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: '#32763f',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -896,7 +890,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: 'Red',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -910,7 +903,6 @@ module Engine
             always_market_price: true,
             color: 'Gray',
             text_color: 'White',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -923,7 +915,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: '#018471',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -936,7 +927,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: 'Indigo',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -949,7 +939,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: '#110a0c',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -962,7 +951,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: 'DarkRed',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -975,7 +963,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: 'Black',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -989,7 +976,6 @@ module Engine
             always_market_price: true,
             color: 'YellowGreen',
             text_color: 'Black',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -1002,7 +988,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: '#f48221',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -1015,7 +1000,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: 'ForestGreen',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -1028,7 +1012,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: '#d02020',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -1041,7 +1024,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: 'Purple',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -1055,7 +1037,6 @@ module Engine
             always_market_price: true,
             color: 'Gold',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -1068,7 +1049,6 @@ module Engine
             tokens: [0],
             always_market_price: true,
             color: 'Brown',
-            reservation_color: nil,
           },
         ].freeze
       end

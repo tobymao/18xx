@@ -161,7 +161,6 @@ module Engine
                 description: 'May borrow a train when trainless*',
               },
             ],
-            reservation_color: nil,
           },
         ].freeze
       end

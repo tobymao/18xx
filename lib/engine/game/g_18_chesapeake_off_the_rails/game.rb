@@ -79,7 +79,6 @@ module Engine
             tokens: [0, 40, 60, 80],
             coordinates: 'F2',
             color: '#237333',
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -89,7 +88,6 @@ module Engine
             tokens: [0, 40, 60],
             coordinates: 'A3',
             color: :black,
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -99,7 +97,6 @@ module Engine
             tokens: [0, 40],
             coordinates: 'H4',
             color: '#d81e3e',
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -110,7 +107,6 @@ module Engine
             coordinates: 'H6',
             city: 0,
             color: '#0189d1',
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -121,7 +117,6 @@ module Engine
             coordinates: 'G13',
             color: '#a2dced',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -132,7 +127,6 @@ module Engine
             coordinates: 'J2',
             color: '#FFF500',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -142,7 +136,6 @@ module Engine
             tokens: [0, 40],
             coordinates: 'J6',
             color: '#f48221',
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -152,7 +145,6 @@ module Engine
             tokens: [0, 40, 60],
             coordinates: 'C13',
             color: '#7b352a',
-            reservation_color: nil,
           },
         ].freeze
 
