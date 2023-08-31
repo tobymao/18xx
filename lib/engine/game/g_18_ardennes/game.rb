@@ -27,6 +27,12 @@ module Engine
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
 
+        def setup
+          super
+
+          setup_tokens
+        end
+
         def new_auction_round
           Engine::Round::Auction.new(self, [
             G18Ardennes::Step::HomeHexTile,

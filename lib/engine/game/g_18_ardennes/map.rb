@@ -163,18 +163,16 @@ module Engine
                     'path=a:3,b:4;',
             %w[E5] =>
                     'city=revenue:20;' \
-                    'icon=image:port;' \
+                    'path=a:1,b:_0;' \
                     'path=a:4,b:_0;',
             %w[E7] =>
                     'path=a:1,b:3;',
             %w[F2] =>
                     'offboard=revenue:0;' \
-                    'icon=image:port;' \
                     'path=a:4,b:_0;' \
                     'path=a:5,b:_0;',
-            %w[G1] =>
+            %w[E3 G1] =>
                     'offboard=revenue:0;' \
-                    'icon=image:port;' \
                     'path=a:4,b:_0;',
             %w[I1] =>
                     'town=revenue:20;' \
@@ -198,6 +196,51 @@ module Engine
                     'path=a:4,b:_0;',
           },
         }.freeze
+
+        MINE_HEXES = %w[H10 H10 I21 I21].freeze
+        PORT_HEXES = %w[E5 F4 F4 G3 G3].freeze
+        FORT_HEXES = %w[J18 J18 K19 L22 M23].freeze
+
+        ASSIGNMENT_TOKENS = {
+          'J18' => '/logos/18_ardennes/fort.svg',
+          'K19' => '/logos/18_ardennes/fort.svg',
+          'L22' => '/logos/18_ardennes/fort.svg',
+          'M23' => '/logos/18_ardennes/fort.svg',
+          'H10' => '/logos/18_ardennes/mine.svg',
+          'I21' => '/logos/18_ardennes/mine.svg',
+          'E4' => '/logos/18_ardennes/port.svg',
+          'F4' => '/logos/18_ardennes/port.svg',
+          'G3' => '/logos/18_ardennes/port.svg',
+        }.freeze
+
+        def setup_tokens
+          @fort_corp = dummy_corp('Forts', '18_ardennes/fort', FORT_HEXES, true)
+          @mine_corp = dummy_corp('Mines', '18_ardennes/mine', MINE_HEXES, false)
+          @port_corp = dummy_corp('Ports', '18_ardennes/port', PORT_HEXES, false)
+        end
+
+        def dummy_corp(sym, logo, coords, hex_tokens)
+          corp = Corporation.new(
+            sym: sym,
+            name: sym,
+            logo: logo,
+            simple_logo: logo,
+            tokens: Array.new(coords.size, 0),
+            type: :dummy
+          )
+          corp.owner = @bank
+
+          coords.each do |coord|
+            hex = hex_by_id(coord)
+            city = hex.tile.cities.first
+            token = corp.next_token
+            if hex_tokens || !city.tokenable?(corp)
+              hex.place_token(token)
+            else
+              city.place_token(corp, token)
+            end
+          end
+        end
       end
     end
   end

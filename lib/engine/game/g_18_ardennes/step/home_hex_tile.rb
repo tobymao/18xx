@@ -63,6 +63,13 @@ module Engine
           def process_lay_tile(action)
             lay_tile_action(action)
             @round.minor_floated = nil
+
+            # M7 gets a mine token from its home hex
+            hex = action.hex
+            return if hex.tokens.empty?
+
+            action.entity.assign!(hex.coordinates)
+            hex.tokens.first.remove!
           end
         end
       end
