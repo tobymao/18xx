@@ -69,9 +69,7 @@ module View
         blocking_players = (@game.companies + @game.minors + @game.corporations).each_with_object([]) do |company, players|
           next if company.closed?
           next unless (ability = @game.abilities(company, :blocks_hexes_consent))
-          next unless @game.hex_blocked_by_ability?(@tile_selector.entity, ability, @tile_selector.hex)
-          next unless company == ability.owner
-          next if company.owner == @tile_selector.entity || company.owner == @tile_selector.entity.owner
+          next unless @game.hex_blocked_by_ability?(entity, ability, hex, tile)
 
           players << company.owner
         end
