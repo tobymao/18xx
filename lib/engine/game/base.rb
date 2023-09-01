@@ -2242,7 +2242,7 @@ module Engine
         cash = self.class::BANK_CASH
         cash = cash[players.size] if cash.is_a?(Hash)
 
-        Bank.new(cash, log: @log)
+        Bank.new(cash, log: @log, check: game_end_check_values.include?(:bank))
       end
 
       def init_cert_limit
