@@ -508,9 +508,9 @@ module Engine
           company.id[0] == self.class::COMPANY_PRIVATE_PREFIX
         end
 
-        def compute_game_end
-          return %i[custom full_or] if bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
+        def game_end_check
           return %i[stock_market current_or] if @stock_market.max_reached?
+          return %i[custom full_or] if bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
         end
 
         def reset_sold_in_sr!
