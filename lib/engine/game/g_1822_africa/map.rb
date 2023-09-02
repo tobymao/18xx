@@ -5,59 +5,30 @@ module Engine
     module G1822Africa
       module Map
         TILES = {
-          '1' => 1,
-          '2' => 1,
-          '3' => 6,
-          '4' => 6,
-          '5' => 6,
-          '6' => 8,
-          '7' => 'unlimited',
-          '8' => 'unlimited',
-          '9' => 'unlimited',
-          '55' => 1,
-          '56' => 1,
-          '57' => 6,
-          '58' => 6,
-          '69' => 1,
-          '14' => 6,
-          '15' => 6,
-          '80' => 6,
-          '81' => 6,
-          '82' => 8,
-          '83' => 8,
-          '141' => 4,
-          '142' => 4,
-          '143' => 4,
-          '144' => 4,
+          '3' => 1,
+          '4' => 2,
+          '5' => 2,
+          '6' => 4,
+          '7' => 4,
+          '8' => 12,
+          '9' => 7,
+          '57' => 4,
+          '58' => 4,
+          '14' => 2,
+          '15' => 5,
+          '80' => 1,
+          '81' => 2,
+          '82' => 2,
+          '83' => 1,
+          '141' => 1,
+          '142' => 1,
+          '143' => 1,
+          '144' => 1,
           '207' => 2,
           '208' => 1,
-          '619' => 6,
-          '63' => 8,
-          '448' => 'unlimited',
-          '544' => 6,
-          '545' => 6,
-          '546' => 8,
-          '768' =>
-            {
-              'count' => 4,
-              'color' => 'brown',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-            },
-          '767' =>
-            {
-              'count' => 4,
-              'color' => 'brown',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
-            },
-          '769' =>
-            {
-              'count' => 6,
-              'color' => 'brown',
-              'code' =>
-                'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            },
+          '619' => 1,
+          '611' => 2,
+          '448' => 5,
           'X1' =>
             {
               'count' => 2,
@@ -143,8 +114,6 @@ module Engine
             ['E19'] => 'junction;path=a:4,b:_0,terminal:1',
             ['G1'] => 'junction;path=a:0,b:_0,terminal:1',
             ['J8'] => 'junction;path=a:2,b:_0,terminal:1',
-            ['D0'] => 'junction;path=a:0,b:_0,terminal:1',
-            ['D12'] => 'junction;path=a:4,b:_0,terminal:1',
           },
         }.freeze
       end
