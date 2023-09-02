@@ -31,15 +31,10 @@ module Engine
             name: 'Locomotive Firm Krauss & Co.',
             value: 130,
             revenue: 0,
-            desc: 'Every OR, first time a train is purchased from supply, this pays revenue '\
-                  'equal to 10% of the train\'s cost and the stock price marker is moved right. '\
-                  'If no train is purchased from supply in OR, no revenue is paid and the stock '\
-                  'price marker is moved left. '\
-                  'May not be sold to a corporation. '\
-                  'May be sold to or purchased from the market. '\
-                  'Never closes.',
+            desc: 'Comes with the President\'s certificate of Locomotive Firm Krauss & Co. (LFK). '\
+                  'LFK is in fact the private company but represented by a corporation for the implementation sake.',
             sym: 'LFKC',
-            abilities: [{ type: 'no_buy' }],
+            abilities: [{ type: 'shares', shares: 'LFK_0' }],
           },
           {
             name: 'Rammelsbach',
@@ -231,6 +226,37 @@ module Engine
         ].freeze
 
         CORPORATIONS = [
+          # This corporation is in fact the Locomotive Firm Krauss & Co. private company
+          {
+            sym: 'LFK',
+            name: 'Locomotive Firm Krauss & Co.',
+            logo: '1847_ae/LFK',
+            simple_logo: '1847_ae/LFK',
+            tokens: [],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            required_par_price: 100,
+            shares: [100],
+            forced_share_percent: 100,
+            second_share_double: false,
+            last_share_double: false,
+            text_color: '#000000',
+            color: '#ffffff',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Click to see details',
+                desc_detail: 'This is the Locomotive Firm Krauss & Co. private company. '\
+                             'Every OR, first time a train is purchased from supply, this pays revenue '\
+                             'equal to 10% of the train\'s cost and the stock price marker is moved right. '\
+                             'If no train is purchased from supply in OR, no revenue is paid and the stock '\
+                             'price marker is moved left. '\
+                             'May not be sold to a corporation. '\
+                             'May be sold to or purchased from the market. '\
+                             'Never closes.',
+              },
+            ],
+          },
           {
             sym: 'L',
             name: 'Pfälzische Ludwigsbahn',

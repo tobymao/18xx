@@ -15,7 +15,7 @@ module Engine
         include Map
         include Entities
 
-        attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies
+        attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies, :train_bought_this_round
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
@@ -46,7 +46,7 @@ module Engine
         MARKET = [
           ['', '', '', '', '130', '150', '170', '190', '210', '230', '255', '285', '315', '350', '385', '420'],
           ['', '', '98', '108', '120', '135', '150', '170', '190', '210', '235', '260', '285', '315', '350', '385'],
-          %w[82 86p 92 100 110 125 140 155 170 190 210 235 260 290 320],
+          %w[82 86p 92 100p 110 125 140 155 170 190 210 235 260 290 320],
           %w[78 84p 88 94 104 112 125 140 155 170 190 215],
           %w[72 80p 86 90 96 104 115 125 140],
           %w[62 74p 82 88 92 98 105],
@@ -234,7 +234,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1847AE::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -252,6 +252,13 @@ module Engine
         end
 
         def next_round!
+          if @round.is_a?(Round::Operating) && lfk.floated? && !@train_bought_this_round
+            @log << "No train purchased from supply this round"
+            old_lfk_price = lfk.share_price
+            @stock_market.move_left(lfk)
+            log_share_price(lfk, old_lfk_price)
+          end
+
           return super if @draft_finished
 
           clear_programmed_actions
@@ -260,7 +267,7 @@ module Engine
             when G1847AE::Round::Draft
               reorder_players
               new_operating_round
-            when Engine::Round::Operating
+            when G1847AE::Round::Operating
               new_draft_round
             end
         end
@@ -275,6 +282,10 @@ module Engine
 
         def hlb
           corporation_by_id('HLB')
+        end
+
+        def lfk
+          corporation_by_id('LFK')
         end
 
         def r
@@ -303,9 +314,10 @@ module Engine
         end
 
         def setup
-          # Place stock market markers for two corporations that have their president shares drafted in initial auction
+          # Place stock market markers for corporations that have their president shares drafted in initial auction
           stock_market.set_par(l, stock_market.share_price([2, 1]))
           stock_market.set_par(saar, stock_market.share_price([3, 1]))
+          stock_market.set_par(lfk, stock_market.share_price([2, 3]))
 
           # Place L's home station in case there is a "short OR" during draft
           hex = hex_by_id(l.coordinates)
@@ -330,6 +342,11 @@ module Engine
           super
         end
 
+        def operating_order
+          # LFK is not really a corporation and does not operate
+          super.reject { |c| c == lfk }
+        end
+
         def tile_lays(entity)
           return TWO_YELLOW_OR_YELLOW_AND_UPGRADE if @recently_floated.include?(entity)
 
@@ -343,13 +360,15 @@ module Engine
         def after_buy_company(player, company, _price)
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
+              share.corporation.forced_share_percent = 100 if share.corporation.id == 'LFK'
               share_pool.buy_shares(player, share, exchange: :free)
-              @bank.spend(share.corporation.par_price.price * share.percent / 10, share.corporation)
+              @bank.spend(share.corporation.par_price.price * share.percent / 10, share.corporation) unless share.corporation.id == 'LFK'
             end
           end
 
           # PLP company is only a temporary holder for the L presidency
-          company.close! if company.id == 'PLP'
+          # LFKC company is only a temporary holder for the LFK corporation
+          company.close! if %w[PLP LFKC].include?(company.id)
         end
 
         def can_corporation_have_investor_shares_exchanged?(corporation)
