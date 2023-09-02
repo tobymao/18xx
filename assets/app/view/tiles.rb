@@ -52,7 +52,8 @@ module View
       top_text: nil,
       fixture_id: nil,
       fixture_title: nil,
-      action: nil
+      action: nil,
+      game: nil
     )
       block_props = {
         style: {
@@ -115,6 +116,7 @@ module View
                   role: :tile_page,
                   unavailable: unavailable,
                   clickable: clickable,
+                  game: game,
                 ),
               ]),
             ]),
@@ -138,7 +140,8 @@ module View
       unavailable: nil,
       clickable: false,
       extra_children_a: [],
-      extra_children_b: []
+      extra_children_b: [],
+      game: nil
     )
       block_props = {
         style: {
@@ -164,6 +167,7 @@ module View
               role: :tile_page,
               unavailable: unavailable,
               clickable: clickable,
+              game: game,
             ),
           ]),
         ])

@@ -144,6 +144,7 @@ module Engine
         ].freeze
 
         CURRENCY_FORMAT_STR = '$%s'
+        FORMAT_UPGRADES_ON_HEXES = true
 
         EXCHANGE_TOKENS = {
           'CNoR' => 3,

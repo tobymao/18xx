@@ -110,6 +110,7 @@ module Engine
       BANK_CASH = 12_000
 
       CURRENCY_FORMAT_STR = '$%s'
+      FORMAT_UPGRADES_ON_HEXES = false
 
       STARTING_CASH = {}.freeze
 
