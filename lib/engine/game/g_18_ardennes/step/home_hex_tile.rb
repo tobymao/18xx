@@ -9,11 +9,12 @@ module Engine
       module Step
         class HomeHexTile < Engine::Step::Base
           include Engine::Step::Tracker
+          ACTIONS = %w[lay_tile].freeze
 
           def actions(entity)
             return [] unless entity == pending_entity
 
-            %w[lay_tile]
+            ACTIONS
           end
 
           def round_state

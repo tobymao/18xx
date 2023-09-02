@@ -40,6 +40,18 @@ module Engine
           ])
         end
 
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            G18Ardennes::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
         def route_distance_str(route)
           towns = route.visited_stops.count(&:town?)
           cities = route_distance(route) - towns
