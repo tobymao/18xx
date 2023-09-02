@@ -91,7 +91,6 @@ module Engine
             coordinates: 'F2',
             color: :deepskyblue,
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'IOW',
@@ -103,7 +102,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'I3',
             color: '#ff0000',
-            reservation_color: nil,
           },
           {
             sym: 'IWNJ',
@@ -115,7 +113,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'G7',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             sym: 'FYN',
@@ -127,7 +124,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'B4',
             color: :green,
-            reservation_color: nil,
           },
           {
             sym: 'NGStL',
@@ -140,7 +136,6 @@ module Engine
             coordinates: 'G9',
             color: :yellow,
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'BHI&R',
@@ -152,7 +147,6 @@ module Engine
             tokens: [0, 40],
             coordinates: 'L6',
             color: :darkmagenta,
-            reservation_color: nil,
           },
           {
             sym: 'S&C',
@@ -164,7 +158,6 @@ module Engine
             tokens: [0, 40],
             coordinates: 'F12',
             color: :darkblue,
-            reservation_color: nil,
           },
           {
             sym: 'VYSC',
@@ -177,7 +170,6 @@ module Engine
             coordinates: 'E9',
             color: :yellowgreen,
             text_color: 'black',
-            reservation_color: nil,
           },
         ].freeze
       end

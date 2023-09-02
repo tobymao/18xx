@@ -576,7 +576,7 @@ module View
           },
         }
 
-        rows = @depot.upcoming.group_by(&:name).flat_map do |_, trains|
+        rows = @depot.upcoming.reject(&:reserved).group_by(&:name).flat_map do |_, trains|
           [h(:div, @game.info_train_name(trains.first)),
            h(:div, @game.info_train_price(trains.first)),
            h(:div, trains.size)]

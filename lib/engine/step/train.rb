@@ -27,11 +27,7 @@ module Engine
       end
 
       def room?(entity, _shell = nil)
-        if @game.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT
-          entity.trains
-        else
-          entity.trains.reject(&:obsolete)
-        end.size < @game.train_limit(entity)
+        @game.num_corp_trains(entity) < @game.train_limit(entity)
       end
 
       def can_entity_buy_train?(entity)

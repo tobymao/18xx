@@ -70,13 +70,12 @@ module Engine
               'color' => 'brown',
               'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
             },
-          'GR1' =>
+          'GR' =>
             {
               'count' => 1,
               'color' => 'purple',
               'code' => 'offboard=revenue:20,visit_cost:0;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;'\
-                        'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;path=a:5,b:_0,terminal:1;'\
-                        'icon=image:1822_africa/elephant',
+                        'path=a:2,b:_0,terminal:1;icon=image:1822_africa/zebra;stripes=color:white',
             },
         }.freeze
 

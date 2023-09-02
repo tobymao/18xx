@@ -15,7 +15,7 @@ module Engine
         return %w[bid pass] if @auctioning
 
         actions = super
-        actions << 'bid' if !bought? && can_bid?(entity)
+        actions << 'bid' if !bought? && can_bid_any?(entity)
         actions << 'pass' if actions.any? && !actions.include?('pass') && !must_sell?(entity)
         actions
       end

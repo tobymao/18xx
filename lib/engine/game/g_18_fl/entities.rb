@@ -110,7 +110,6 @@ module Engine
             color: :darkblue,
             type: 'five_share',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -125,7 +124,6 @@ module Engine
             text_color: 'black',
             type: 'five_share',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -140,7 +138,6 @@ module Engine
             color: '#76a042',
             type: 'five_share',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -155,7 +152,6 @@ module Engine
             color: '#f48221',
             type: 'five_share',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -169,7 +165,6 @@ module Engine
             color: :purple,
             type: 'five_share',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -183,7 +178,6 @@ module Engine
             color: '#d81e3e',
             type: 'five_share',
             always_market_price: true,
-            reservation_color: nil,
           },
         ].freeze
       end

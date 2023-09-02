@@ -247,7 +247,6 @@ module Engine
               description: 'Place one additional yellow tile for $40',
             },
           ],
-            reservation_color: nil,
           },
           {
             sym: 'B&O',
@@ -257,7 +256,6 @@ module Engine
             tokens: [0, 100, 100],
             coordinates: 'I19',
             color: '#4682B4',
-            reservation_color: nil,
           },
           {
             sym: 'C&O',
@@ -268,7 +266,6 @@ module Engine
             coordinates: 'K15',
             color: '#B0E0E6',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'CPR',
@@ -278,7 +275,6 @@ module Engine
             tokens: [0, 100, 100, 100],
             coordinates: 'A23',
             color: '#9C661F',
-            reservation_color: nil,
           },
           {
             sym: 'GT',
@@ -289,7 +285,6 @@ module Engine
             coordinates: 'D4',
             color: '#F0E68C',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'ERIE',
@@ -299,7 +294,6 @@ module Engine
             tokens: [0, 100, 100],
             coordinates: 'E15',
             color: '#B8860B',
-            reservation_color: nil,
           },
           {
             sym: 'IC',
@@ -310,7 +304,6 @@ module Engine
             coordinates: 'J6',
             color: '#9ACD32',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'MC',
@@ -321,7 +314,6 @@ module Engine
             coordinates: 'A7',
             color: '#B3B3B3',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'MP',
@@ -332,7 +324,6 @@ module Engine
             coordinates: 'I3',
             color: '#BDB76B',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'NYC',
@@ -342,7 +333,6 @@ module Engine
             tokens: [0, 100, 100],
             coordinates: 'E23',
             color: '#7F7F7F',
-            reservation_color: nil,
           },
           {
             sym: 'NKP',
@@ -353,7 +343,6 @@ module Engine
             coordinates: 'F10',
             color: '#D8BFD8',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'NYH',
@@ -371,7 +360,6 @@ module Engine
                 description: 'Place one additional yellow tile for $40',
               },
             ],
-            reservation_color: nil,
           },
           {
             sym: 'NW',
@@ -382,7 +370,6 @@ module Engine
             coordinates: 'K19',
             color: '#F08080',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'OSH',
@@ -392,7 +379,6 @@ module Engine
             tokens: [0, 100, 100, 100],
             coordinates: 'A15',
             color: '#61B329',
-            reservation_color: nil,
           },
           {
             sym: 'PRR',
@@ -402,7 +388,6 @@ module Engine
             tokens: [0, 100, 100, 100],
             coordinates: 'H16',
             color: '#FF6347',
-            reservation_color: nil,
           },
           {
             sym: 'WAB',
@@ -413,7 +398,6 @@ module Engine
             coordinates: 'H6',
             color: '#DDA0DD',
             text_color: 'black',
-            reservation_color: nil,
           },
         ].freeze
 

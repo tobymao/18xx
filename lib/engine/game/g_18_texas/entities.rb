@@ -91,7 +91,6 @@ module Engine
            coordinates: 'D9',
            color: 'darkmagenta',
            text_color: 'white',
-           reservation_color: nil,
            always_market_price: true,
          },
          {
@@ -103,7 +102,6 @@ module Engine
            coordinates: 'B11',
            color: 'green',
            text_color: 'white',
-           reservation_color: nil,
            always_market_price: true,
          },
          {
@@ -115,7 +113,6 @@ module Engine
            coordinates: 'I14',
            color: 'orange',
            text_color: 'white',
-           reservation_color: nil,
            always_market_price: true,
          },
          {
@@ -127,7 +124,6 @@ module Engine
            coordinates: 'G10',
            color: 'red',
            text_color: 'white',
-           reservation_color: nil,
            always_market_price: true,
          },
          {
@@ -139,7 +135,6 @@ module Engine
            coordinates: 'D15',
            color: 'blue',
            text_color: 'white',
-           reservation_color: nil,
            always_market_price: true,
          },
          {
@@ -151,7 +146,6 @@ module Engine
            coordinates: 'J5',
            color: 'black',
            text_color: 'white',
-           reservation_color: nil,
            always_market_price: true,
          },
        ].freeze

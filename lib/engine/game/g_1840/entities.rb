@@ -238,7 +238,6 @@ module Engine
             coordinates: 'D18',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '2',
@@ -254,7 +253,6 @@ module Engine
             coordinates: 'D18',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '3',
@@ -270,7 +268,6 @@ module Engine
             coordinates: 'E17',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '4',
@@ -286,7 +283,6 @@ module Engine
             coordinates: 'H28',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '5',
@@ -302,7 +298,6 @@ module Engine
             coordinates: 'G15',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '6',
@@ -318,7 +313,6 @@ module Engine
             coordinates: 'K27',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '7',
@@ -334,7 +328,6 @@ module Engine
             coordinates: 'F18',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '8',
@@ -350,7 +343,6 @@ module Engine
             coordinates: 'J10',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '9',
@@ -366,7 +358,6 @@ module Engine
             coordinates: 'C7',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '10',
@@ -382,7 +373,6 @@ module Engine
             coordinates: 'D4',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '11',
@@ -398,7 +388,6 @@ module Engine
             coordinates: 'B12',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '12',
@@ -414,7 +403,6 @@ module Engine
             coordinates: 'E11',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '13',
@@ -430,7 +418,6 @@ module Engine
             coordinates: 'G3',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '14',
@@ -446,7 +433,6 @@ module Engine
             coordinates: 'E3',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '15',
@@ -462,7 +448,6 @@ module Engine
             coordinates: 'J16',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '16',
@@ -478,7 +463,6 @@ module Engine
             coordinates: 'D26',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '17',
@@ -494,7 +478,6 @@ module Engine
             coordinates: 'A29',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '18',
@@ -510,7 +493,6 @@ module Engine
             coordinates: 'I21',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 50,
@@ -520,7 +502,6 @@ module Engine
             tokens: [],
             color: '#1A1A18',
             type: 'major',
-            reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
             always_market_price: true,
           },
@@ -532,7 +513,6 @@ module Engine
             tokens: [],
             color: '#AD4382',
             type: 'major',
-            reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
             always_market_price: true,
           },
@@ -544,7 +524,6 @@ module Engine
             tokens: [],
             color: '#2F2483',
             type: 'major',
-            reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
             always_market_price: true,
           },
@@ -558,7 +537,6 @@ module Engine
             color: '#FECC00',
             text_color: 'black',
             type: 'major',
-            reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
             always_market_price: true,
           },
@@ -570,7 +548,6 @@ module Engine
             tokens: [],
             color: '#00963F',
             type: 'major',
-            reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
             always_market_price: true,
           },
@@ -582,7 +559,6 @@ module Engine
             tokens: [],
             color: '#E3000F',
             type: 'major',
-            reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
             always_market_price: true,
           },
@@ -594,7 +570,6 @@ module Engine
             tokens: [0, 0, 0, 0],
             color: '#A15E48',
             type: 'city',
-            reservation_color: nil,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             always_market_price: true,
           },
@@ -607,7 +582,6 @@ module Engine
             color: '#DAB06E',
             text_color: 'black',
             type: 'city',
-            reservation_color: nil,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             always_market_price: true,
           },
@@ -620,7 +594,6 @@ module Engine
             color: '#F58220',
             text_color: 'black',
             type: 'city',
-            reservation_color: nil,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             always_market_price: true,
           },
@@ -633,7 +606,6 @@ module Engine
             color: '#FFCB1C',
             text_color: 'black',
             type: 'city',
-            reservation_color: nil,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             always_market_price: true,
           },

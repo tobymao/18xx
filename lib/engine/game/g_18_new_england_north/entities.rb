@@ -130,7 +130,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'CP',
@@ -144,7 +143,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'K&P',
@@ -173,7 +171,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'AK',
@@ -187,7 +184,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'P&R',
@@ -201,7 +197,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'RW',
@@ -215,7 +210,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'BCM',
@@ -229,7 +223,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'CC',
@@ -243,7 +236,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'PSP',
@@ -258,7 +250,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'BR',
@@ -272,7 +263,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'RB',
@@ -286,7 +276,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'PC',
@@ -301,7 +290,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
           {
             sym: 'VV',
@@ -315,7 +303,6 @@ module Engine
             shares: [100],
             type: 'minor',
             capitalization: :incremental,
-            reservation_color: nil,
           },
         ].freeze
 
