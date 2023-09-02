@@ -16,7 +16,6 @@ module Engine
             coordinates: 'F22',
             'text-color': 'white',
             color: :'#20451d',
-            reservation_color: nil,
             abilities: [{ type: 'description', description: 'Tile Lay Blocked by GV' }],
           },
           {
@@ -30,7 +29,6 @@ module Engine
             coordinates: 'C9',
             'text-color': 'white',
             color: :'#754d24',
-            reservation_color: nil,
           },
           {
             sym: 'GN',
@@ -43,7 +41,6 @@ module Engine
             city: 0,
             coordinates: 'A21',
             color: '#d81e3e',
-            reservation_color: nil,
             abilities: [{ type: 'description', description: 'Tile Lay Blocked by SOO' }],
           },
           {
@@ -57,7 +54,6 @@ module Engine
             coordinates: 'C19',
             'text-color': 'white',
             color: :'#919191',
-            reservation_color: nil,
           },
           {
             sym: 'MR',
@@ -70,7 +66,6 @@ module Engine
             coordinates: 'E9',
             'text-color': 'white',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             sym: 'CBQ',
@@ -83,7 +78,6 @@ module Engine
             coordinates: 'G15',
             text_color: 'black',
             color: '#f48221',
-            reservation_color: nil,
           },
           {
             sym: 'UP',
@@ -96,7 +90,6 @@ module Engine
             coordinates: 'H6',
             text_color: 'black',
             color: :'#ffffeb',
-            reservation_color: nil,
             abilities: [{ type: 'description', description: 'Tile Lay Blocked by GP' }],
           },
           {
@@ -110,7 +103,6 @@ module Engine
             coordinates: 'F12',
             text_color: 'white',
             color: :'#00bfff',
-            reservation_color: nil,
           },
           {
             sym: 'BAP',
@@ -123,7 +115,6 @@ module Engine
             coordinates: 'D6',
             text_color: 'black',
             color: '#FFF500',
-            reservation_color: nil,
           },
         ].freeze
       end

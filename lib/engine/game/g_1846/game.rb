@@ -268,7 +268,9 @@ module Engine
           @second_tokens_in_green = {}
 
           # When creating a game the game will not have enough to start
-          return unless @players.size.between?(*self.class::PLAYER_RANGE)
+          unless (player_count = @players.size).between?(*self.class::PLAYER_RANGE)
+            raise GameError, "#{self.class::GAME_TITLE} does not support #{player_count} players"
+          end
 
           if first_edition?
             remove_icons(self.class::BOOMTOWN_HEXES, self.class::ABILITY_ICONS['BT'])

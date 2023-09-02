@@ -70,91 +70,9 @@ module Engine
           },
         ].freeze
 
-        CORPORATIONS = [
-          {
-            float_percent: 50,
-            sym: 'PRR',
-            name: 'Pennsylvania Railroad',
-            logo: '18_chesapeake/PRR',
-            tokens: [0, 40, 60, 80],
-            coordinates: 'F2',
-            color: '#237333',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 50,
-            sym: 'PLE',
-            name: 'Pittsburgh and Lake Erie Railroad',
-            logo: '18_chesapeake/PLE',
-            tokens: [0, 40, 60],
-            coordinates: 'A3',
-            color: :black,
-            reservation_color: nil,
-          },
-          {
-            float_percent: 50,
-            sym: 'SRR',
-            name: 'Strasburg Rail Road',
-            logo: '18_chesapeake/SRR',
-            tokens: [0, 40],
-            coordinates: 'H4',
-            color: '#d81e3e',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 50,
-            sym: 'B&O',
-            name: 'Baltimore & Ohio Railroad',
-            logo: '18_chesapeake/BO',
-            tokens: [0, 40, 60],
-            coordinates: 'H6',
-            city: 0,
-            color: '#0189d1',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 50,
-            sym: 'C&O',
-            name: 'Chesapeake & Ohio Railroad',
-            logo: '18_chesapeake/CO',
-            tokens: [0, 40, 60, 80],
-            coordinates: 'G13',
-            color: '#a2dced',
-            text_color: 'black',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 50,
-            sym: 'LV',
-            name: 'Lehigh Valley Railroad',
-            logo: '18_chesapeake/LV',
-            tokens: [0, 40],
-            coordinates: 'J2',
-            color: '#FFF500',
-            text_color: 'black',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 50,
-            sym: 'C&A',
-            name: 'Camden & Amboy Railroad',
-            logo: '18_chesapeake/CA',
-            tokens: [0, 40],
-            coordinates: 'J6',
-            color: '#f48221',
-            reservation_color: nil,
-          },
-          {
-            float_percent: 50,
-            sym: 'N&W',
-            name: 'Norfolk & Western Railway',
-            logo: '18_chesapeake/NW',
-            tokens: [0, 40, 60],
-            coordinates: 'C13',
-            color: '#7b352a',
-            reservation_color: nil,
-          },
-        ].freeze
+        def corporation_opts
+          { float_percent: 50 }
+        end
 
         SELL_BUY_ORDER = :sell_buy_sell
 

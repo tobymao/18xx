@@ -180,16 +180,33 @@ module Engine
       end
 
       # return true if facing exits on adjacent tiles match up taking lanes into account
-      # TBD: support titles where lanes of different sizes can connect
       def lane_match?(lanes0, lanes1)
-        lanes0 &&
-          lanes1 &&
-          lanes1[LANE_WIDTH] == lanes0[LANE_WIDTH] &&
+        return false unless lanes0
+        return false unless lanes1
+
+        if lanes1[LANE_WIDTH] == lanes0[LANE_WIDTH]
           lanes1[LANE_INDEX] == lane_invert(lanes0)[LANE_INDEX]
+        else
+          lane_match_different_sizes?(lanes0, lanes1)
+        end
       end
 
       def lane_invert(lane)
         [lane[LANE_WIDTH], lane[LANE_WIDTH] - lane[LANE_INDEX] - 1]
+      end
+
+      # the important part of matching lanes of different sizes is to just use
+      # the larger width when doing the inverted comparison; the delta just
+      # allows the smaller-lane side to be more centered, i.e., it makes 1 lane
+      # match up with the middle of 3 lanes
+      def lane_match_different_sizes?(lanes0, lanes1)
+        lanes_a, lanes_b = [lanes0, lanes1].sort
+
+        larger_width = lanes_b[LANE_WIDTH]
+        delta = ((lanes_b[LANE_WIDTH] - lanes_a[LANE_WIDTH]) / 2).to_i
+        new_index = lanes_a[LANE_INDEX] + delta
+
+        [larger_width, new_index][LANE_INDEX] == lane_invert(lanes_b)[LANE_INDEX]
       end
 
       def path?

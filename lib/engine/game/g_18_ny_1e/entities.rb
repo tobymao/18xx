@@ -135,7 +135,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'F20',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Utica and Schenectady Railroad',
@@ -149,7 +148,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'E19',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Tonawanda Railroad',
@@ -163,7 +161,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'D8',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Syracuse and Utica Railroad',
@@ -177,7 +174,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'E15',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Auburn and Rochester Railroad',
@@ -191,7 +187,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'E11',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Attica and Buffalo Railroad',
@@ -205,7 +200,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'E3',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Schenectady and Troy Railroad',
@@ -219,7 +213,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'E21',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Rochester, Lockport, and Niagara Falls Railroad',
@@ -233,7 +226,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'D2',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Buffalo and Lockport Railroad',
@@ -247,7 +239,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'D4',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Rochester and Syracuse Railroad',
@@ -261,7 +252,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'D12',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Buffalo and Rochester Railroad',
@@ -275,7 +265,6 @@ module Engine
             max_ownership_percent: 100,
             coordinates: 'E5',
             color: '#000000',
-            reservation_color: nil,
           },
           {
             name: 'Delaware & Hudson Railroad',
@@ -288,7 +277,6 @@ module Engine
             float_percent: 20,
             coordinates: 'H14',
             color: '#2E3192',
-            reservation_color: nil,
           },
           {
             name: 'Rome, Watertown, and Ogdensburg Railroad',
@@ -301,7 +289,6 @@ module Engine
             float_percent: 20,
             coordinates: 'D14',
             color: '#07733D',
-            reservation_color: nil,
           },
           {
             name: 'New York and Harlem Railroad',
@@ -314,7 +301,6 @@ module Engine
             float_percent: 20,
             coordinates: 'J20',
             color: '#8C4776',
-            reservation_color: nil,
           },
           {
             name: 'New York, New Haven, & Hartford Railroad',
@@ -327,7 +313,6 @@ module Engine
             float_percent: 20,
             coordinates: 'I25',
             color: '#E96B21',
-            reservation_color: nil,
           },
           {
             name: 'Erie Railroad',
@@ -341,7 +326,6 @@ module Engine
             coordinates: 'E3',
             color: '#FFF200',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             name: 'Boston and Albany Railroad',
@@ -354,7 +338,6 @@ module Engine
             float_percent: 20,
             coordinates: 'F26',
             color: '#E21F27',
-            reservation_color: nil,
           },
           {
             name: 'Hudson River Railroad',
@@ -368,7 +351,6 @@ module Engine
             coordinates: 'H20',
             color: '#8DD8F8',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             name: 'New York Central Railroad',
@@ -380,7 +362,6 @@ module Engine
             always_market_price: true,
             floatable: false,
             color: '#231F20',
-            reservation_color: nil,
           },
         ].freeze
       end

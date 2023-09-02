@@ -183,7 +183,7 @@ module Engine
         }.freeze
         HEXES = {
           white: {
-            %w[A11 A13 B12 D6 D8 E7 E15 F16 H14 I17 J8 K19 K15 M19 M21 N18 L10 O7] => '',
+            %w[A11 A13 B12 D6 D8 E7 E15 F16 H14 I17 J8 K19 K15 M19 M21 L10 O7] => '',
             ['H16'] => 'border=edge:3,type:impassable',
             %w[E9 E13 G13 H10 I9 N8] => 'upgrade=cost:40,terrain:mountain',
             %w[C13 F12 G11 I15 J14 K17 M11 O3] => 'upgrade=cost:80,terrain:mountain',

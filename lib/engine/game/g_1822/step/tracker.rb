@@ -103,23 +103,7 @@ module Engine
         end
 
         def update_token!(action, entity, tile, old_tile)
-          tile.cities.each do |c|
-            present_corps = []
-            tokens_to_return = []
-            c.tokens.compact.each do |t|
-              if present_corps.include?(t.corporation)
-                tokens_to_return << t
-              else
-                present_corps << t.corporation
-              end
-            end
-            tokens_to_return.compact.each do |t|
-              corp = t.corporation
-              @log << "Extra token for #{corp.name} is returned to the charter"
-              corp.tokens << Engine::Token.new(corp, price: @game.class::TOKEN_PRICE)
-              t.destroy!
-            end
-          end
+          @game.remove_extra_tokens!(tile)
 
           super
         end

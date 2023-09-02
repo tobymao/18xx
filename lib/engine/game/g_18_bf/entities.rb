@@ -749,7 +749,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'GER',
@@ -761,7 +760,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'GNR',
@@ -773,7 +771,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'LBSC',
@@ -785,7 +782,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'LNW',
@@ -797,7 +793,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'LSW',
@@ -809,7 +804,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'LYR',
@@ -821,7 +815,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'MR',
@@ -833,7 +826,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'NBR',
@@ -845,7 +837,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'NER',
@@ -857,7 +848,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'SEC',
@@ -869,7 +859,6 @@ module Engine
             type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'GCR',
@@ -881,7 +870,6 @@ module Engine
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'GWR',
@@ -893,7 +881,6 @@ module Engine
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'LMS',
@@ -905,7 +892,6 @@ module Engine
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'LNE',
@@ -917,7 +903,6 @@ module Engine
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'SR',
@@ -929,7 +914,6 @@ module Engine
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
             color: '#3c7b5c',
-            reservation_color: nil,
           },
         ].freeze
 

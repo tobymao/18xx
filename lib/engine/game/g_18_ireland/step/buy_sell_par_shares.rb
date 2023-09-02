@@ -41,7 +41,7 @@ module Engine
             pass!
           end
 
-          def can_bid?(entity)
+          def can_bid_any?(entity)
             max_bid(entity) >= MIN_BID && !bought? && !sold? &&
             @game.corporations.any? do |c|
               @game.can_par?(c, entity) && c.type == :minor && can_buy?(entity, c.shares.first&.to_bundle)

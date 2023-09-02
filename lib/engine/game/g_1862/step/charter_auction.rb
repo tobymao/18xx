@@ -70,14 +70,14 @@ module Engine
             end
           end
 
-          def can_bid?(entity)
+          def can_bid_any?(entity)
             @game.ipoable_corporations.any? do |c|
               @game.can_par?(c, entity) && can_buy?(entity, c.ipo_shares.first&.to_bundle)
             end
           end
 
           def can_increase_bid?(entity)
-            entity.cash >= min_required(entity) && can_bid?(entity)
+            entity.cash >= min_required(entity) && can_bid_any?(entity)
           end
 
           def min_par

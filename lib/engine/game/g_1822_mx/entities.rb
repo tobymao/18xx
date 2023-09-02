@@ -769,7 +769,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '2',
@@ -786,7 +785,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '3',
@@ -803,7 +801,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '4',
@@ -820,7 +817,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '5',
@@ -837,7 +833,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '6',
@@ -854,7 +849,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '7',
@@ -871,7 +865,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '8',
@@ -888,7 +881,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '9',
@@ -905,7 +897,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '10',
@@ -922,7 +913,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '11',
@@ -939,7 +929,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '12',
@@ -956,7 +945,6 @@ module Engine
             city: 1,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '13',
@@ -973,7 +961,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '14',
@@ -990,7 +977,6 @@ module Engine
             city: 1,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['N21'], hidden: true }],
           },
           {
@@ -1008,7 +994,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['O22'], hidden: true }],
           },
           {
@@ -1026,7 +1011,6 @@ module Engine
             city: 2,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '17',
@@ -1043,7 +1027,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '18',
@@ -1060,7 +1043,6 @@ module Engine
             city: 1,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '19',
@@ -1077,7 +1059,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '20',
@@ -1094,7 +1075,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '21',
@@ -1111,7 +1091,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '22',
@@ -1128,7 +1107,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '23',
@@ -1145,7 +1123,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '24',
@@ -1162,7 +1139,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'FCM',
@@ -1175,7 +1151,6 @@ module Engine
             coordinates: 'N23',
             city: 4,
             color: '#e51c00',
-            reservation_color: nil,
             destination_coordinates: 'N27',
             destination_icon: '1822_mx/FCM_DEST',
           },
@@ -1190,7 +1165,6 @@ module Engine
             coordinates: 'N23',
             city: 2,
             color: '#000000',
-            reservation_color: nil,
             destination_coordinates: 'F21',
             destination_icon: '1822_mx/MC_DEST',
             abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M22'], hidden: true }],
@@ -1206,7 +1180,6 @@ module Engine
             coordinates: 'F15',
             color: '#ff7b93',
             text_color: 'black',
-            reservation_color: nil,
             destination_coordinates: 'H11',
             destination_icon: '1822_mx/CHP_DEST',
           },
@@ -1221,7 +1194,6 @@ module Engine
             coordinates: 'N23',
             city: 3,
             color: '#850040',
-            reservation_color: nil,
             destination_coordinates: 'G22',
             destination_icon: '1822_mx/FNM_DEST',
             abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['M24'], hidden: true }],
@@ -1236,7 +1208,6 @@ module Engine
             always_market_price: true,
             coordinates: 'F21',
             color: '#ff3600',
-            reservation_color: nil,
             destination_coordinates: 'J15',
             destination_icon: '1822_mx/MIR_DEST',
           },
@@ -1250,7 +1221,6 @@ module Engine
             always_market_price: true,
             coordinates: 'D9',
             color: '#fab506',
-            reservation_color: nil,
             destination_coordinates: 'L17',
             destination_icon: '1822_mx/FCP_DEST',
           },
@@ -1265,7 +1235,6 @@ module Engine
             coordinates: 'N23',
             city: 5,
             color: '#004c6c',
-            reservation_color: nil,
             destination_coordinates: 'N27',
             destination_icon: '1822_mx/IRM_DEST',
             abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['O24'], hidden: true }],
@@ -1280,7 +1249,6 @@ module Engine
             always_market_price: true,
             city: 5,
             color: '#525600',
-            reservation_color: nil,
           },
         ].freeze
       end

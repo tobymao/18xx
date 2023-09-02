@@ -404,7 +404,6 @@ module Engine
             simple_logo: '1893/DE.alt',
             color: :blue,
             coordinates: 'O2',
-            reservation_color: nil,
           },
           {
             name: 'Rhein-Sieg Eisenbahn',
@@ -419,7 +418,6 @@ module Engine
             color: :pink,
             text_color: 'black',
             coordinates: 'R7',
-            reservation_color: nil,
           },
           {
             name: 'Rheinbahn AG',
@@ -434,7 +432,6 @@ module Engine
             simple_logo: '1893/RAG.alt',
             text_color: 'black',
             coordinates: 'D5',
-            reservation_color: nil,
           },
           {
             name: 'AG für Verkehrswesen',
@@ -460,7 +457,6 @@ module Engine
                              'MR until Phase 5 when AGV float automatically during the first MR.',
               },
             ],
-            reservation_color: nil,
           },
           {
             name: 'Häfen und Güterverkehr Köln AG',
@@ -485,7 +481,6 @@ module Engine
                              'voting is repeated each MR until Phase 6 when HGK float automatically during the first MR.',
               },
             ],
-            reservation_color: nil,
           },
         ].freeze
 

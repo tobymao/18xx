@@ -13,7 +13,7 @@ module Engine
             return [] unless entity == current_entity
             return [] unless can_place_token?(entity)
 
-            ACTIONS
+            self.class::ACTIONS
           end
 
           def auto_actions(entity)
@@ -38,11 +38,11 @@ module Engine
           end
 
           def description
-            'Place the destination token'
+            'Place the Destination Token'
           end
 
           def pass_description
-            'Skip (Destination token)'
+            'Skip (Destination Token)'
           end
 
           def available_hex(entity, hex)
@@ -71,13 +71,14 @@ module Engine
             end
 
             @game.place_destination_token(entity, hex, token)
+            @game.remove_extra_tokens!(hex.tile)
             pass!
           end
 
           def process_pass(action)
             entity = action.entity
             if !@game.loading && destination_node_check?(entity)
-              raise GameError, "You can't skip placing your destination token when you have a connection "\
+              raise GameError, "#{entity.name} cannot skip placing its destination token when it has a connection "\
                                "to #{entity.destination_coordinates}"
             end
 

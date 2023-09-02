@@ -102,7 +102,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
             {
               type: 'exchange',
@@ -121,7 +120,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -130,8 +128,8 @@ module Engine
                 from: %w[ipo market],
               },
               {
-                type: 'blocks_hexes',
-                owner_type: nil,
+                type: 'blocks_hexes_consent',
+                owner_type: 'player',
                 hexes: ['C8'],
               },
             ],
@@ -146,7 +144,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -155,8 +152,8 @@ module Engine
                 from: %w[ipo market],
               },
               {
-                type: 'blocks_hexes',
-                owner_type: nil,
+                type: 'blocks_hexes_consent',
+                owner_type: 'player',
                 hexes: ['B11'],
               },
             ],
@@ -171,7 +168,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -191,7 +187,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -211,7 +206,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -231,7 +225,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -240,8 +233,8 @@ module Engine
                 from: %w[ipo market],
               },
               {
-                type: 'blocks_hexes',
-                owner_type: nil,
+                type: 'blocks_hexes_consent',
+                owner_type: 'player',
                 hexes: ['I6'],
               },
             ],
@@ -256,7 +249,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -276,7 +268,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -296,7 +287,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -305,8 +295,8 @@ module Engine
                 from: %w[ipo market],
               },
               {
-                type: 'blocks_hexes',
-                owner_type: nil,
+                type: 'blocks_hexes_consent',
+                owner_type: 'player',
                 hexes: %w[F19 F21],
               },
             ],
@@ -321,7 +311,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -341,7 +330,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -361,7 +349,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -381,7 +368,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',
@@ -401,7 +387,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'exchange',

@@ -136,7 +136,6 @@ module Engine
             coordinates: 'B9',
             color: '#7090c9',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -148,7 +147,6 @@ module Engine
             abilities: [{ type: 'assign_hexes', hexes: ['J3'], count: 1 }],
             coordinates: 'H17',
             color: '#111199',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -160,7 +158,6 @@ module Engine
             abilities: [{ type: 'assign_hexes', hexes: ['N17'], count: 1 }],
             coordinates: 'N1',
             color: '#f48221',
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -172,7 +169,6 @@ module Engine
             abilities: [{ type: 'assign_hexes', hexes: ['M22'], count: 1 }],
             coordinates: 'E12',
             color: '#d02020',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -184,7 +180,6 @@ module Engine
             abilities: [{ type: 'assign_hexes', hexes: ['J5'], count: 1 }],
             coordinates: 'C18',
             color: '#5b4545',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -196,7 +191,6 @@ module Engine
             abilities: [{ type: 'assign_hexes', hexes: ['N1'], count: 1 }],
             coordinates: 'B11',
             color: '#018471',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -208,7 +202,6 @@ module Engine
             abilities: [{ type: 'assign_hexes', hexes: ['A22'], count: 1 }],
             coordinates: 'K16',
             color: '#b0b030',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -221,7 +214,6 @@ module Engine
             coordinates: 'M20',
             color: '#ff4080',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -234,7 +226,6 @@ module Engine
             coordinates: 'J3',
             color: '#56ad9a',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -246,7 +237,6 @@ module Engine
             abilities: [{ type: 'assign_hexes', hexes: ['N17'], count: 1 }],
             coordinates: 'J5',
             color: '#37383a',
-            reservation_color: nil,
           },
         ].freeze
       end
