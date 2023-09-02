@@ -253,7 +253,7 @@ module Engine
 
         def next_round!
           if @round.is_a?(Round::Operating) && lfk.floated? && !@train_bought_this_round
-            @log << "No train purchased from supply this round"
+            @log << 'No train purchased from supply this round'
             old_lfk_price = lfk.share_price
             @stock_market.move_left(lfk)
             log_share_price(lfk, old_lfk_price)
@@ -360,9 +360,10 @@ module Engine
         def after_buy_company(player, company, _price)
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
-              share.corporation.forced_share_percent = 100 if share.corporation.id == 'LFK'
+              corporation = share.corporation
+              corporation.forced_share_percent = 100 if corporation == lfk
               share_pool.buy_shares(player, share, exchange: :free)
-              @bank.spend(share.corporation.par_price.price * share.percent / 10, share.corporation) unless share.corporation.id == 'LFK'
+              @bank.spend(corporation.par_price.price * share.percent / 10, corporation) unless corporation == lfk
             end
           end
 

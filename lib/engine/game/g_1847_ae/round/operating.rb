@@ -9,7 +9,7 @@ module Engine
         class Operating < Engine::Round::Operating
           def setup
             @game.train_bought_this_round = false
-            
+
             super
           end
         end
