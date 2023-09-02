@@ -56,18 +56,18 @@ module Engine
       @routes[corporation]
     end
 
-    def can_token?(corporation, cheater: false, same_hex_allowed: false)
-      tokens = cheater ? @cheater_tokens : @tokens
-      return tokens[corporation] if tokens.key?(corporation)
+    def can_token?(corporation, cheater: false, same_hex_allowed: false, tokens: corporation.tokens_by_type)
+      tokeners = cheater ? @cheater_tokens : @tokens
+      return tokeners[corporation] if tokeners.key?(corporation)
 
       compute(corporation) do |node|
-        if node.tokenable?(corporation, free: true, cheater: cheater, same_hex_allowed: same_hex_allowed)
-          tokens[corporation] = true
+        if node.tokenable?(corporation, free: true, cheater: cheater, tokens: tokens, same_hex_allowed: same_hex_allowed)
+          tokeners[corporation] = true
           break
         end
       end
-      tokens[corporation] ||= false
-      tokens[corporation]
+      tokeners[corporation] ||= false
+      tokeners[corporation]
     end
 
     def no_blocking?

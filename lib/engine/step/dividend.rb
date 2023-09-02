@@ -201,8 +201,10 @@ module Engine
       private
 
       def log_payout_shares(entity, revenue, per_share, receivers)
-        @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
-                "#{@game.format_currency(per_share)} per share (#{receivers})"
+        msg = "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
+              "#{@game.format_currency(per_share)} per share"
+        msg += " (#{receivers})" unless receivers.empty?
+        @log << msg
       end
     end
   end

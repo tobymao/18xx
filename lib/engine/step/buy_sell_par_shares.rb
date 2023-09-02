@@ -97,7 +97,7 @@ module Engine
         return false if entity == bundle.owner
 
         corporation = bundle.corporation
-        entity.cash >= modify_purchase_price(bundle) &&
+        available_cash(entity) >= modify_purchase_price(bundle) &&
           !@round.players_sold[entity][corporation] &&
           (can_buy_multiple?(entity, corporation, bundle.owner) || !bought?) &&
           can_gain?(entity, bundle)
@@ -206,6 +206,10 @@ module Engine
         end
       end
 
+      def available_cash(entity)
+        entity.cash
+      end
+
       def can_buy_multiple?(_entity, corporation, owner)
         if @game.multiple_buy_only_from_market?
           return false unless owner.share_pool?
@@ -242,7 +246,7 @@ module Engine
         bundle = min_share&.to_bundle
         return unless bundle
 
-        entity.cash >= modify_purchase_price(bundle) && can_gain?(entity, bundle)
+        available_cash(entity) >= modify_purchase_price(bundle) && can_gain?(entity, bundle)
       end
 
       def can_buy_any_from_market?(entity)
@@ -286,7 +290,7 @@ module Engine
 
       def purchasable_companies(entity)
         return [] if bought? ||
-          !entity.cash.positive? ||
+          !available_cash(entity).positive? ||
           !@game.phase ||
           !@game.phase.status.include?('can_buy_companies_from_other_players')
 
@@ -300,14 +304,14 @@ module Engine
       end
 
       def can_buy_company?(player, company)
-        @game.buyable_bank_owned_companies.include?(company) && player.cash >= company.value
+        @game.buyable_bank_owned_companies.include?(company) && available_cash(player) >= company.value
       end
 
       def get_par_prices(entity, _corp)
         @game
           .stock_market
           .par_prices
-          .select { |p| p.price * 2 <= entity.cash }
+          .select { |p| p.price * 2 <= available_cash(entity) }
       end
 
       def sell_shares(entity, shares, swap: nil)

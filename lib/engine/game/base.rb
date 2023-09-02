@@ -168,6 +168,7 @@ module Engine
       # operate         -- after operation
       # p_any_operate   -- pres any time, share holders after operation
       # any_time        -- at any time
+      # round           -- after the stock round the share was purchased in
       SELL_AFTER = :first
 
       # down_share -- down one row per share
@@ -1057,8 +1058,9 @@ module Engine
         when :p_any_operate
           corporation.operated? || corporation.president?(entity)
         when :round
-          @round.stock? &&
-            corporation.share_holders[entity] - @round.players_bought[entity][corporation] >= bundle.percent
+          (@round.stock? &&
+            corporation.share_holders[entity] - @round.players_bought[entity][corporation] >= bundle.percent) ||
+            @round.operating?
         when :any_time
           true
         else
