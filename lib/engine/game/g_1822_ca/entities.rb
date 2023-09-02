@@ -1583,6 +1583,7 @@ module Engine
             color: '#8dd8f8',
             text_color: 'black',
             destination_coordinates: 'N16',
+            destination_exits: [3],
             destination_icon: '1822_ca/GNWR_DEST',
           },
           {
@@ -1597,6 +1598,7 @@ module Engine
             city: 1,
             color: '#000000',
             destination_coordinates: 'AF12',
+            destination_exits: [0],
             destination_icon: '1822_ca/GT_DEST',
           },
           {
@@ -1638,6 +1640,7 @@ module Engine
             color: '#eee91e',
             text_color: 'black',
             destination_coordinates: 'AH8',
+            destination_exits: [0, 1, 2, 3, 4, 5],
             destination_icon: '1822_ca/ICR_DEST',
           },
           {
@@ -1651,6 +1654,7 @@ module Engine
             coordinates: 'AO3',
             color: '#9a6733',
             destination_coordinates: 'N16',
+            destination_exits: [5],
             destination_icon: '1822_ca/NTR_DEST',
           },
           {

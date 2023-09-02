@@ -1764,11 +1764,8 @@ module Engine
           end
         end
 
-        def check_destination_duplicate(entity, hex); end
-
-        def place_destination_token(entity, hex, token)
-          check_destination_duplicate(entity, hex)
-          city = hex.tile.cities.first
+        def place_destination_token(entity, hex, token, city = nil)
+          city ||= destination_city(hex, entity)
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
 
@@ -1779,6 +1776,10 @@ module Engine
           @graph.clear
 
           @log << "#{entity.name} places its destination token on #{hex.name}"
+        end
+
+        def destination_city(hex, _entity)
+          hex.tile.cities.first
         end
 
         def player_debt(player)
@@ -1939,6 +1940,30 @@ module Engine
           @nothing_sold_in_sr
         end
 
+        # remove non-destination tokens if a corporation has multiple tokens in
+        # one city
+        def remove_extra_tokens!(tile)
+          tile.cities.each do |city|
+            corp_tokens_with_count =
+              city.tokens.each_with_object(Hash.new { |h, k| h[k] = [[], 0] }) do |token, counted_tokens|
+                next unless token
+
+                counted_tokens[token.corporation][0] << token unless token.type == :destination
+                counted_tokens[token.corporation][1] += 1
+              end
+
+            corp_tokens_with_count.each do |corp, (tokens_to_remove, token_count)|
+              (token_count - 1).times do
+                @log << "Extra token for #{corp.name} is returned to their available tokens"
+                token = tokens_to_remove.pop
+                token.remove!
+                # exchange tokens have a price of 0
+                token.price = self.class::TOKEN_PRICE
+              end
+            end
+          end
+        end
+
         private
 
         def find_and_remove_train_by_id(train_id, buyable: true)
@@ -2038,7 +2063,7 @@ module Engine
             dest_hex = hex_by_id(c.destination_coordinates)
             ability = Ability::Base.new(
               type: 'base',
-              description: "Destination: #{dest_hex.location_name} (#{dest_hex.name})",
+              description: destination_description(c),
             )
             c.add_ability(ability)
 
@@ -2054,6 +2079,12 @@ module Engine
               description: 'Places destination token in its first OR'
             ))
           end
+        end
+
+        def destination_description(corporation)
+          dest_hex = hex_by_id(corporation.destination_coordinates)
+
+          "Destination: #{dest_hex.location_name} (#{dest_hex.name})"
         end
 
         def setup_exchange_tokens
