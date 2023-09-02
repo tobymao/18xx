@@ -2076,8 +2076,13 @@ module Engine
             c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
                                              simple_logo: "../#{c.destination_icon}.svg",
                                              type: :destination)
-
-            dest_hex.tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination", loc: c.destination_loc)
+            icon = Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination", owner: c, loc: c.destination_loc)
+            if c.destination_icon_in_city_slot
+              city, slot = c.destination_icon_in_city_slot
+              dest_hex.tile.cities[city].slot_icons[slot] = icon
+            else
+              dest_hex.tile.icons << icon
+            end
 
             next unless c.id == self.class::TWO_HOME_CORPORATION
 

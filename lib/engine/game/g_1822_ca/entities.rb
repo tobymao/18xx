@@ -1605,6 +1605,7 @@ module Engine
             text_color: 'black',
             destination_coordinates: 'C15',
             destination_icon: '1822_ca/CNoR_DEST',
+            destination_icon_in_city_slot: [0, 3],
           },
           {
             sym: 'CPR',
@@ -1620,6 +1621,7 @@ module Engine
             color: '#ed242a',
             destination_coordinates: 'C15',
             destination_icon: '1822_ca/CPR_DEST',
+            destination_icon_in_city_slot: [0, 2],
           },
           {
             sym: 'GNWR',
@@ -1635,6 +1637,7 @@ module Engine
             destination_coordinates: 'N16',
             destination_exits: [3],
             destination_icon: '1822_ca/GNWR_DEST',
+            destination_icon_in_city_slot: [1, 0],
           },
           {
             sym: 'GT',
@@ -1650,6 +1653,7 @@ module Engine
             destination_coordinates: 'AF12',
             destination_exits: [0],
             destination_icon: '1822_ca/GT_DEST',
+            destination_icon_in_city_slot: [0, 1],
           },
           {
             sym: 'GTP',
@@ -1693,6 +1697,7 @@ module Engine
             destination_loc: '3.5',
             destination_exits: [0, 1, 2, 3, 4, 5],
             destination_icon: '1822_ca/ICR_DEST',
+            destination_icon_in_city_slot: [2, 0],
           },
           {
             sym: 'NTR',
@@ -1707,6 +1712,7 @@ module Engine
             destination_coordinates: 'N16',
             destination_exits: [5],
             destination_icon: '1822_ca/NTR_DEST',
+            destination_icon_in_city_slot: [3, 0],
           },
           {
             sym: 'PGE',

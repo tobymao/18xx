@@ -19,8 +19,8 @@ module Engine
                                    CPR GT GWR ICR NTR QMOO].freeze
 
         STARTING_CORPORATIONS_OVERRIDE = {
-          'CPR' => { destination_coordinates: 'T12' },
-          'NTR' => { destination_coordinates: 'T14' },
+          'CPR' => { destination_coordinates: 'T12', destination_icon_in_city_slot: [0, 0] },
+          'NTR' => { destination_coordinates: 'T14', destination_icon_in_city_slot: [0, 2] },
         }.freeze
       end
     end
