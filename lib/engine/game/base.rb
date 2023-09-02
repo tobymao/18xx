@@ -1204,9 +1204,8 @@ module Engine
         return unless from != to
 
         jumps = ''
-        if steps
-          steps = share_jumps(steps)
-          jumps = " (#{steps} step#{steps == 1 ? '' : 's'})" if (steps > 1) || log_steps
+        if steps && ((steps > 1) || log_steps)
+          jumps = " (#{steps} step#{steps == 1 ? '' : 's'})"
         end
 
         r1, c1 = from.coordinates
@@ -1221,28 +1220,6 @@ module Engine
         @log << "#{entity.name}'s share price moves #{dir_str} from #{format_currency(from_price)} "\
                 "to #{format_currency(to_price)}#{jumps}"
       end
-
-      def share_jumps(steps)
-        return steps unless @stock_market.zigzag
-
-        if steps > 1
-          steps / 2
-        else
-          steps
-        end
-      end
-
-      # A hook to allow a game to request a consent check for a share exchange
-      # or purchase. If consent is needed then this method should return the
-      # player that needs to consent to this action. Returning nil or false
-      # means that consent is not required.
-      def consenter_for_buy_shares(_entity, _bundle); end
-
-      # A hook to allow a game to request a consent check for a choose action.
-      # If consent is needed then this method should return the player that
-      # needs to consent to this action. Returning nil or false means that
-      # consent is not required.
-      def consenter_for_choice(_entity, _choice, _label); end
 
       def can_run_route?(entity)
         graph_for_entity(entity).route_info(entity)&.dig(:route_available)
