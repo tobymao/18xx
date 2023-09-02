@@ -89,6 +89,13 @@ module Engine
 
             track_action(action, corporation)
           end
+
+          def can_sell?(entity, bundle)
+            # LFK corporation represents a sellable private company
+            return true if bundle.corporation == @game.lfk
+            
+            super
+          end
         end
       end
     end

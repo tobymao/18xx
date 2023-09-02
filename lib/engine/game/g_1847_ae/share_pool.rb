@@ -6,13 +6,13 @@ module Engine
       class SharePool < Engine::SharePool
         def change_president(presidents_share, swap_to, president, _previous_president)
           corporation = presidents_share.corporation
-          incoming_pres_shares = president.shares_of(corporation)
+          incoming_president_shares = president.shares_of(corporation)
 
-          single_shares = incoming_pres_shares.reject(&:double_cert)
+          single_shares = incoming_president_shares.reject(&:double_cert)
           shares_to_transfer = if single_shares.size >= 2
                                  single_shares.take(2)
                                else
-                                 [incoming_pres_shares.find(&:double_cert)]
+                                 [incoming_president_shares.find(&:double_cert)].compact!
                                end
           shares_to_transfer.each { |s| move_share(s, swap_to) }
 

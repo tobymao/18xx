@@ -20,13 +20,13 @@ module Engine
             super
 
             lfk = @game.lfk
-            return if @game.train_bought_this_round || !lfk.owned_by_player? || !from_depot
-            
-            lfk_revenue = action.train.price / 10
-            lfk_owner = lfk.owner
+            return if @game.train_bought_this_round || !lfk.floated? || !from_depot
+
             old_lfk_price = lfk.share_price
-            @game.bank.spend(lfk_revenue, lfk_owner)
-            @log << "#{lfk.name} pays #{@game.format_currency(lfk_revenue)} to #{lfk_owner.name}"
+            lfk_revenue = action.train.price / 10
+            lfk_owner = lfk.presidents_share.owner
+            @game.bank.spend(lfk_revenue, lfk_owner) if lfk_owner.player?
+            @log << "#{lfk.name} pays #{@game.format_currency(lfk_revenue)} to #{lfk_owner.name}" if lfk_owner.player?
             @game.stock_market.move_right(lfk)
             @game.log_share_price(lfk, old_lfk_price)
             @game.train_bought_this_round = true
