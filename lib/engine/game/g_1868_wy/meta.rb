@@ -26,7 +26,7 @@ module Engine
 
         OPTIONAL_RULES = [
           {
-            sym: :async,
+            sym: :async_friendly,
             short_name: 'Async-friendly Dev Rounds',
             desc: 'In Development Rounds from phase 5, players go through the Stock '\
                   'Round order once to place Coal and Oil tokens together, instead '\

@@ -331,7 +331,7 @@ module Engine
           @companies.clear
           @companies.concat(minors)
           @companies.concat(concessions)
-          @companies.concat(privates.sort_by! { rand }.take(10))
+          @companies.concat(privates.sort_by! { rand }.take(12))
 
           # Randomize from preset seed to get same order
           @companies.sort_by! { rand }
