@@ -120,6 +120,10 @@ module Engine
           def buying_power(entity)
             @game.train_buying_power(entity)
           end
+
+          def president_may_contribute?(corporation, _shell = nil)
+            must_buy_train?(corporation) && ebuy_president_can_contribute?(corporation)
+          end
         end
       end
     end
