@@ -15,7 +15,7 @@ gem 'rufus-scheduler'
 gem 'sequel'
 gem 'sequel_pg'
 gem 'sequel-pg_advisory_lock'
-gem 'snabberb'
+gem 'snabberb', git: 'https://github.com/michaeljb/snabberb.git', tag: 'v1.5.4.1-18xx-opal-1.6'
 gem 'unicorn'
 gem 'unicorn-worker-killer'
 
