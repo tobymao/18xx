@@ -44,7 +44,7 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Track,
-            Engine::Step::Token,
+            G18Ardennes::Step::Token,
             Engine::Step::Route,
             G18Ardennes::Step::Dividend,
             Engine::Step::DiscardTrain,
