@@ -597,7 +597,7 @@ module Engine
           # Tile is brown, non-Bruxelles, non-Lille
           if tile.cities.first.tokenable?(corporation) && !tile.cities[1].tokenable?(corporation)
             tile.add_reservation!(corporation, 0)
-          elsif !tile.cities.first.tokenable?(corporation) && tile.cities[1].tokenable?
+          elsif !tile.cities.first.tokenable?(corporation) && tile.cities[1].tokenable?(corporation)
             tile.add_reservation!(corporation, 1)
           else
             tile.add_reservation!(corporation, nil, false)
