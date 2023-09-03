@@ -241,6 +241,10 @@ module Engine
             end
           end
         end
+
+        def fort_hexes
+          @fort_hexes ||= FORT_HEXES.map { |coord| hex_by_id(coord) }
+        end
       end
     end
   end
