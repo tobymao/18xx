@@ -465,11 +465,25 @@ module Engine
 
         def action_processed(action)
           super
+          
+          case action
+          when Action::BuyShares
+            corporation = action.bundle.corporation
+            return unless corporation.has_ipo_description_ability
 
-          return if r.revenue == 50 || !action.is_a?(Action::LayTile) || action.hex.id != 'E9'
+            ipo_shares = corporation.num_ipo_shares - corporation.num_ipo_reserved_shares
+            return unless ipo_shares == 0
 
-          r.revenue = 50
-          @log << "Tile laid in E9 - #{r.name}'s revenue increased to 50M"
+            # Remove IPO description ability that is no longer relevant
+            ability = corporation.all_abilities.find { |a| a.description.include?('IPO:') }
+            corporation.remove_ability(ability)
+            corporation.has_ipo_description_ability = false
+          when Action::LayTile
+            return if action.hex.id != 'E9' || r.revenue == 50
+
+            r.revenue = 50
+            @log << "Tile laid in E9 - #{r.name}'s revenue increased to 50M"
+          end
         end
 
         def revenue_for(route, stops)

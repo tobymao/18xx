@@ -12,7 +12,7 @@ module Engine
           shares_to_transfer = if single_shares.size >= 2
                                  single_shares.take(2)
                                else
-                                 [incoming_president_shares.find(&:double_cert)].compact!
+                                 [incoming_president_shares.find(&:double_cert)].compact
                                end
           shares_to_transfer.each { |s| move_share(s, swap_to) }
 

@@ -240,8 +240,9 @@ module Engine
             forced_share_percent: 100,
             second_share_double: false,
             last_share_double: false,
-            text_color: '#000000',
-            color: '#ffffff',
+            text_color: 'black',
+            color: 'white',
+            has_ipo_description_ability: false,
             abilities: [
               {
                 type: 'base',
@@ -272,6 +273,7 @@ module Engine
             second_share_double: false,
             last_share_double: false,
             color: '#4682b4',
+            has_ipo_description_ability: false,
             abilities: [
               {
                 type: 'base',
@@ -296,11 +298,16 @@ module Engine
             last_share_double: true,
             float_includes_reserved: true,
             color: '#ff4040',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
                 description: 'Builds in pink hexes in yellow phase',
                 remove: '4',
+              },
+              {
+                type: 'base',
+                description: 'IPO: last cert is double',
               },
             ],
           },
@@ -320,6 +327,7 @@ module Engine
             last_share_double: true,
             float_includes_reserved: true,
             color: '#dda0dd',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -333,6 +341,10 @@ module Engine
               {
                 type: 'base',
                 description: 'Two home stations (D18 and C21)',
+              },
+              {
+                type: 'base',
+                description: 'IPO: last cert is double',
               },
             ],
             text_color: 'black',
@@ -353,6 +365,7 @@ module Engine
             required_par_price: 74,
             hex_color: 'blue',
             color: '#61b229',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -362,6 +375,10 @@ module Engine
               {
                 type: 'base',
                 description: 'May not be started until HLB floats',
+              },
+              {
+                type: 'base',
+                description: 'IPO: 2nd and last cert are double',
               },
             ],
           },
@@ -381,6 +398,7 @@ module Engine
             last_share_double: true,
             color: '#fafa37',
             text_color: 'black',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -390,6 +408,10 @@ module Engine
               {
                 type: 'base',
                 description: 'May not be started until HLB floats',
+              },
+              {
+                type: 'base',
+                description: 'IPO: last cert is double',
               },
             ],
           },
@@ -409,6 +431,7 @@ module Engine
             required_par_price: 66,
             hex_color: 'blue',
             color: '#ff9966',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -418,6 +441,10 @@ module Engine
               {
                 type: 'base',
                 description: 'May not be started until HLB floats',
+              },
+              {
+                type: 'base',
+                description: 'IPO: 2nd and last cert are double',
               },
             ],
           },
@@ -437,6 +464,7 @@ module Engine
             required_par_price: 66,
             hex_color: 'pink',
             color: '#ffc0cb',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -446,6 +474,10 @@ module Engine
               {
                 type: 'base',
                 description: 'May not be started until HLB floats',
+              },
+              {
+                type: 'base',
+                description: 'IPO: last cert is double',
               },
             ],
           },
