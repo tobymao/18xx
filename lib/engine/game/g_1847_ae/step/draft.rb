@@ -54,7 +54,7 @@ module Engine
 
             @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
-            @game.after_buy_company(player, company)
+            @game.after_buy_company(player, company, price)
           end
 
           def process_pass(action)
