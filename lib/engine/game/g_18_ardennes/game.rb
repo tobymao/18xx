@@ -51,16 +51,6 @@ module Engine
             Engine::Step::BuyTrain,
           ], round_num: round_num)
         end
-
-        def route_distance_str(route)
-          towns = route.visited_stops.count(&:town?)
-          cities = route_distance(route) - towns
-          if towns.positive? && route.train.name != '5D'
-            "#{cities}+#{towns}"
-          else
-            cities.to_s
-          end
-        end
       end
     end
   end
