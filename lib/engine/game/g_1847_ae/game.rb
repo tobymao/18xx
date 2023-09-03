@@ -465,14 +465,14 @@ module Engine
 
         def action_processed(action)
           super
-          
+
           case action
           when Action::BuyShares
             corporation = action.bundle.corporation
             return unless corporation.has_ipo_description_ability
 
             ipo_shares = corporation.num_ipo_shares - corporation.num_ipo_reserved_shares
-            return unless ipo_shares == 0
+            return unless ipo_shares.zero?
 
             # Remove IPO description ability that is no longer relevant
             ability = corporation.all_abilities.find { |a| a.description.include?('IPO:') }
