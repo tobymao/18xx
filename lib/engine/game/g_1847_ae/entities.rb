@@ -32,7 +32,7 @@ module Engine
             value: 130,
             revenue: 0,
             desc: 'Comes with the President\'s certificate of Locomotive Firm Krauss & Co. (LFK). '\
-                  'LFK is in fact the private company but represented by a corporation for the implementation sake.',
+                  'LFK is in fact the private company but it is represented by a corporation for the implementation sake.',
             sym: 'LFKC',
             abilities: [{ type: 'shares', shares: 'LFK_0' }],
           },
@@ -179,7 +179,7 @@ module Engine
             desc: 'May be exchanged for an Investor share of the Hessische Ludwigsbahn (HLB), '\
                   'instead of buying a share, during a stock round in Phase 3+3 or later. '\
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
-                  'May not be sold to a corporation. ',
+                  'May not be sold to a corporation.',
             sym: 'MNR',
             abilities: [{
               type: 'exchange',
@@ -247,8 +247,8 @@ module Engine
                 type: 'base',
                 description: 'Click to see details',
                 desc_detail: 'This is the Locomotive Firm Krauss & Co. private company. '\
-                             'Every OR, first time a train is purchased from supply, this pays revenue '\
-                             'equal to 10% of the train\'s cost and the stock price marker is moved right. '\
+                             'Every OR, first time a train is purchased from supply, this corporation pays revenue '\
+                             'equal to 10% of the train\'s cost to its president and the stock price marker is moved right. '\
                              'If no train is purchased from supply in OR, no revenue is paid and the stock '\
                              'price marker is moved left. '\
                              'May not be sold to a corporation. '\
