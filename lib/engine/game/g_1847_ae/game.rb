@@ -468,6 +468,24 @@ module Engine
           !corporation.ipoed
         end
 
+        def bundles_for_corporation(share_holder, corporation, shares: nil)
+          return [] unless corporation.ipoed
+
+          shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
+  
+          bundles = (1..shares.size).flat_map do |n|
+            shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
+          end
+
+          bundles = bundles.uniq do |b|
+            [b.shares.count { |s| s.percent == 10 },
+             b.presidents_share ? 1 : 0,
+             b.shares.find(&:double_cert) ? 1 : 0]
+          end
+  
+          bundles.sort_by(&:percent)
+        end
+
         # Cannot build in E9 before Phase 5
         def can_build_in_e9?
           ['5', '5+5', '6E', '6+6'].include?(@phase.current[:name])
