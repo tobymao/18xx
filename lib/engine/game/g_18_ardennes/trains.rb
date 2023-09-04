@@ -128,6 +128,23 @@ module Engine
             tee_bonus(route, stops)
         end
 
+        def routes_revenue(routes)
+          # FIXME: this method gets called during game load, so is the wrong
+          # place to calculate the fort bonus – this would require repeatedly
+          # computing the game graph during the loading process.
+          super + fort_bonus(routes)
+        end
+
+        def submit_revenue_str(routes, _show_subsidy)
+          total_revenue = routes_revenue(routes)
+          fort_revenue = fort_bonus(routes)
+
+          return format_revenue_currency(total_revenue) if fort_revenue.zero?
+
+          "#{format_revenue_currency(total_revenue)} " \
+            "(#{format_revenue_currency(fort_revenue)} fort bonus)"
+        end
+
         def ferry_bonus(route, stops)
           return 0 unless stops.any?(&:offboard?)
 
@@ -144,8 +161,26 @@ module Engine
           end
         end
 
-        def tee_bonus(_route, _stops)
-          0
+        def tee_bonus(route, stops)
+          north_south = stops.intersect?(north_cities) &&
+                        stops.intersect?(south_cities)
+          east_west = stops.intersect?(east_cities) &&
+                      stops.intersect?(west_cities)
+          return 0 if !north_south && !east_west
+
+          tokens = route.train.owner.placed_tokens
+                   .map(&:city).intersection(stops)
+          tokens.size * (north_south && east_west ? 60 : 30)
+        end
+
+        def fort_bonus(routes)
+          return 0 if routes.empty?
+
+          corporation = routes.first.train.owner
+          forts = fort_tokens(corporation)
+          return 0 if forts.zero?
+
+          10 * forts * fort_destinations(corporation)
         end
       end
     end

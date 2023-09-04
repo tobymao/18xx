@@ -197,9 +197,14 @@ module Engine
           },
         }.freeze
 
+        NORTH_HEXES = %w[B8 B16].freeze
+        SOUTH_HEXES = %w[M7 M27].freeze
+        EAST_HEXES = %w[D18 E25 G25 H26].freeze
+        WEST_HEXES = %w[E3 F2 G1].freeze
         MINE_HEXES = %w[H10 H10 I21 I21].freeze
         PORT_HEXES = %w[E5 F4 F4 G3 G3].freeze
         FORT_HEXES = %w[J18 J18 K19 L22 M23].freeze
+        FORT_DESTINATIONS = %w[M27 J4].freeze
 
         ASSIGNMENT_TOKENS = {
           'J18' => '/logos/18_ardennes/fort.svg',
@@ -242,8 +247,57 @@ module Engine
           end
         end
 
+        def hexes_by_id(coordinates)
+          coordinates.map { |coord| hex_by_id(coord) }
+        end
+
         def fort_hexes
-          @fort_hexes ||= FORT_HEXES.map { |coord| hex_by_id(coord) }
+          @fort_hexes ||= hexes_by_id(FORT_HEXES)
+        end
+
+        def fort_destination_hexes
+          @fort_destination_hexes ||= hexes_by_id(FORT_DESTINATIONS)
+        end
+
+        def tee_hexes(direction)
+          @tee_hexes ||= {
+            north: hexes_by_id(NORTH_HEXES),
+            south: hexes_by_id(SOUTH_HEXES),
+            east: hexes_by_id(EAST_HEXES),
+            west: hexes_by_id(WEST_HEXES),
+          }
+          @tee_hexes[direction]
+        end
+
+        def north_cities
+          tee_hexes(:north).map(&:tile).flat_map(&:cities)
+        end
+
+        def south_cities
+          tee_hexes(:south).map(&:tile).flat_map(&:cities)
+        end
+
+        def east_cities
+          tee_hexes(:east).map(&:tile).flat_map(&:cities)
+        end
+
+        def west_cities
+          tee_hexes(:west).map(&:tile).flat_map(&:cities)
+        end
+
+        # The number of fort tokens a corporation has collected.
+        def fort_tokens(corporation)
+          corporation.assignments.keys.intersection(FORT_HEXES).size
+        end
+
+        # Returns 2 if a corporation has routes to both Paris and Strasbourg,
+        # 1 if connected to just one of these, or zero if neither.
+        def fort_destinations(corporation)
+          graph_for_entity(corporation)
+            .connected_hexes(corporation)
+            .keys
+            .intersection(fort_destination_hexes)
+            .size
         end
       end
     end
