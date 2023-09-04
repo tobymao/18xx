@@ -30,6 +30,10 @@ module Engine
             pending_approval
           end
 
+          def active_entities
+            in_pcr? ? [corporation] : [approver]
+          end
+
           def current_entity
             corporation
           end
