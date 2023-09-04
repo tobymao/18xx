@@ -265,15 +265,21 @@ module Engine
             log_share_price(lfk, old_lfk_price)
           end
 
-          return super if @draft_finished
+          # Draft is Turn 0
+          if @draft_finished
+            @turn = 1
+
+            return super
+          end
 
           clear_programmed_actions
           @round =
             case @round
             when G1847AE::Round::Draft
               reorder_players
-              new_operating_round
+              new_operating_round(@draft_num)
             when G1847AE::Round::Operating
+              @draft_num = @draft_num + 1
               new_draft_round
             end
         end
@@ -319,6 +325,22 @@ module Engine
           end
         end
 
+        def round_description(name, round_number = nil)
+          # Keep displayed Draft Round name consistent with short ORs (0.1, 0.2, ...)
+          return "#{name} Round #{@turn}.#{@draft_num}" if name == 'Draft'
+
+          round_number ||= @round.round_num
+          description = "#{name} Round "
+
+          total = total_rounds(name)
+
+          description += @turn.to_s
+          description += '.' if total
+          description += "#{round_number} (of #{total})" if total
+
+          description.strip
+        end
+
         def setup
           # Place stock market markers for corporations that have their president shares drafted in initial auction
           stock_market.set_par(l, stock_market.share_price([2, 1]))
@@ -335,6 +357,9 @@ module Engine
           @bank.spend(saar.par_price.price * 2, saar)
           @bank.spend(hlb.par_price.price * 1, hlb)
 
+          # Draft Rounds and short ORs ("inside" Draft Round) are named 0.1, 0.2, ...
+          @turn = 0
+          @draft_num = 1
           @draft_finished = false
           @recently_floated = []
           @extra_tile_lay = true
