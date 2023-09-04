@@ -375,8 +375,8 @@ module Engine
         def setup_bidboxes
           # Set the owner to bank for the companies up for auction this stockround
           bidbox_refill!
-          bidbox.each do |minor|
-            minor.owner = @bank
+          bidbox.each do |company|
+            company.owner = @bank
           end
         end
 
