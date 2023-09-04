@@ -477,7 +477,7 @@ module Engine
               },
               {
                 type: 'base',
-                description: 'IPO: last cert is double',
+                description: 'IPO: 2nd and last cert are double',
               },
             ],
           },

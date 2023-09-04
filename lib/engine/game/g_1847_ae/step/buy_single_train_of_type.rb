@@ -22,7 +22,7 @@ module Engine
             lfk = @game.lfk
             return if @game.train_bought_this_round || !lfk.floated? || !from_depot
 
-            lfk_owner = lfk.presidents_share.owner
+            lfk_owner = lfk.owner
             if lfk_owner.player?
               lfk_revenue = action.train.price / 10
               @game.bank.spend(lfk_revenue, lfk_owner)
