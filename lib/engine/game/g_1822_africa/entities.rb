@@ -154,6 +154,7 @@ module Engine
                 special: true,
                 blocks: true,
                 free: true,
+                connect: false,
                 closed_when_used_up: true,
               },
             ],

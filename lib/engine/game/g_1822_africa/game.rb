@@ -64,8 +64,7 @@ module Engine
 
         COMPANY_10X_REVENUE = 'P16'
         COMPANY_REMOVE_TOWN = 'P9'
-        COMPANY_EXTRA_TILE_LAYS = 'P12'
-        COMPANY_GAME_RESERVE = 'P10'
+        COMPANY_EXTRA_TILE_LAYS = %w[P7 P12].freeze
 
         GAME_RESERVE_TILE = 'GR'
         GAME_RESERVE_MULTIPLIER = 5
@@ -431,7 +430,8 @@ module Engine
             Engine::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
-            G1822Africa::Step::SpecialTrack,
+            G1822Africa::Step::LayGameReserve,
+            G1822::Step::SpecialTrack,
             G1822::Step::SpecialToken,
             G1822::Step::Track,
             G1822::Step::DestinationToken,
@@ -678,11 +678,7 @@ module Engine
         end
 
         def company_ability_extra_track?(company)
-          company.id == self.class::COMPANY_EXTRA_TILE_LAYS
-        end
-
-        def company_game_reserve?(company)
-          company.id == self.class::COMPANY_GAME_RESERVE
+          self.class::COMPANY_EXTRA_TILE_LAYS.include?(company.id)
         end
 
         def tile_game_reserve?(tile)
@@ -696,15 +692,13 @@ module Engine
           super
         end
 
-        def pay_game_reserve_bonus!(action)
-          return unless company_game_reserve?(action.entity)
-
+        def pay_game_reserve_bonus!(entity)
           reserves = hexes.select { |h| h.tile.color == :purple }
           bonus = hex_crow_distance_not_inclusive(*reserves) * self.class::GAME_RESERVE_MULTIPLIER
 
           return if bonus.zero?
 
-          corporation = action.entity.owner
+          corporation = entity.owner
 
           @log << "#{corporation.id} receives a Game Reserve bonus of #{format_currency(bonus)} from the bank"
 
