@@ -159,7 +159,7 @@ module Engine
           def resolve_bids
             super
             entities.each(&:unpass!)
-            @round.goto_entity!(@auction_triggerer)
+            @round.goto_entity!(@auction_triggerer) if @auction_triggerer
           end
         end
       end
