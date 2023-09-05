@@ -14,6 +14,25 @@ module Engine
 
             super.select(&:from_depot?)
           end
+
+          def process_buy_train(action)
+            from_depot = action.train.from_depot?
+            super
+
+            lfk = @game.lfk
+            return if @game.train_bought_this_round || !lfk.floated? || !from_depot
+
+            lfk_owner = lfk.owner
+            if lfk_owner.player?
+              lfk_revenue = action.train.price / 10
+              @game.bank.spend(lfk_revenue, lfk_owner)
+              @log << "#{lfk.name} pays #{@game.format_currency(lfk_revenue)} to #{lfk_owner.name}"
+            end
+            old_lfk_price = lfk.share_price
+            @game.stock_market.move_right(lfk)
+            @game.log_share_price(lfk, old_lfk_price)
+            @game.train_bought_this_round = true
+          end
         end
       end
     end
