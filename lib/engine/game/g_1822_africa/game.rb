@@ -594,6 +594,8 @@ module Engine
           express_revenue = revenue_for_express(route, stops)
           express_revenue += destination_bonus_for(route) * self.class::EXPRESS_TRAIN_MULTIPLIER
 
+          return express_revenue if train_over_distance?(route)
+
           [revenue, express_revenue].max
         end
 
