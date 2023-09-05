@@ -23,6 +23,7 @@ module Engine
 
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
+        COMPANY_SALE_FEE = 0 # Fee for selling Guillaume-Luxembourg to the bank.
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
@@ -37,6 +38,15 @@ module Engine
           Engine::Round::Auction.new(self, [
             G18Ardennes::Step::HomeHexTile,
             G18Ardennes::Step::MinorAuction,
+          ])
+        end
+
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuySellParSharesCompanies,
           ])
         end
 
