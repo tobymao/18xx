@@ -1,7 +1,7 @@
 require: rubocop-performance
 
 AllCops:
-  TargetRubyVersion: 3.0.2
+  TargetRubyVersion: 3.0.2  # TODO: upgrade to 3.2, configure new cops
   NewCops: enable
   SuggestExtensions: false
 

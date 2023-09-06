@@ -34,7 +34,13 @@ module Lib
       end
 
       def to_query_string
-        @native&.toString() || ''
+        # TODO: after https://github.com/opal/opal/pull/2584 is included in a
+        # release, upgrade Opal to that release and revert this function to:
+        #
+        # @native&.toString() || ''
+
+        # https://github.com/opal/opal/issues/2583#issuecomment-1718381113
+        `Opal.truthy(self.native) ? self.native.native.toString() : nil` || ''
       end
     end
   end
