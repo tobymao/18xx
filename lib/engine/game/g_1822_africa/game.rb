@@ -70,6 +70,7 @@ module Engine
         COMPANY_EXTRA_TILE_LAYS = %w[P7 P12].freeze
         COMPANY_TOKEN_SWAP = 'P13'
         COMPANY_RECYCLED_TRAIN = 'P6'
+        COMPANY_SELL_SHARE = 'P17'
 
         GAME_RESERVE_TILE = 'GR'
         GAME_RESERVE_MULTIPLIER = 5
@@ -744,6 +745,8 @@ module Engine
             company_choices_chpr(company, time)
           when self.class::COMPANY_RECYCLED_TRAIN
             company_choices_recycled_train(company, time)
+          when self.class::COMPANY_SELL_SHARE
+            company_choices_sell_share(company, time)
           else
             {}
           end
@@ -765,12 +768,23 @@ module Engine
           choices
         end
 
+        def company_choices_sell_share(company, time)
+          return {} if !company.owner&.corporation? || !%i[token track buy_train issue acquire_minor].include?(time)
+          return {} if company.owner.num_treasury_shares.zero?
+
+          corp = company.owner
+
+          { sell: "Sell #{corp.name} treasury share for #{format_currency(corp.share_price.price)}" }
+        end
+
         def company_made_choice(company, choice, _time)
           case company.id
           when self.class::COMPANY_TOKEN_SWAP
             company_made_choice_chpr(company, choice)
           when self.class::COMPANY_RECYCLED_TRAIN
             company_made_choice_recycled_train(company, choice)
+          when self.class::COMPANY_SELL_SHARE
+            company_made_choice_sell_share(company, choice)
           end
         end
 
@@ -782,6 +796,13 @@ module Engine
 
           @log << "#{company.owner.name} buys a recycled #{train.name} train for #{format_currency(train.price)}"
           buy_train(company.owner, new_train)
+
+          @log << "#{company.name} closes"
+          company.close!
+        end
+
+        def company_made_choice_sell_share(company, _choice)
+          share_pool.sell_shares(ShareBundle.new(company.owner.treasury_shares.first))
 
           @log << "#{company.name} closes"
           company.close!
