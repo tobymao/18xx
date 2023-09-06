@@ -68,6 +68,7 @@ module Engine
         COMPANY_10X_REVENUE = 'P16'
         COMPANY_REMOVE_TOWN = 'P9'
         COMPANY_EXTRA_TILE_LAYS = %w[P7 P12].freeze
+        COMPANY_TOKEN_SWAP = 'P13'
 
         GAME_RESERVE_TILE = 'GR'
         GAME_RESERVE_MULTIPLIER = 5
@@ -89,7 +90,6 @@ module Engine
         COMPANY_LSR = nil
         COMPANY_OSTH = nil
         COMPANY_LUR = nil
-        COMPANY_CHPR = nil
         COMPANY_5X_REVENUE = nil
         COMPANY_HSBC = nil
         FRANCE_HEX = nil
@@ -325,7 +325,7 @@ module Engine
         @bidbox_cache = []
         @bidbox_companies_size = false
 
-        def init_companies(players)
+        def init_companies(_players)
           game_companies.map do |company|
             Company.new(**company)
           end.compact
@@ -734,6 +734,22 @@ module Engine
                 true
               end
             end
+          end
+        end
+
+        def company_choices(company, time)
+          case company.id
+          when self.class::COMPANY_TOKEN_SWAP
+            company_choices_chpr(company, time)
+          else
+            {}
+          end
+        end
+
+        def company_made_choice(company, choice, _time)
+          case company.id
+          when self.class::COMPANY_TOKEN_SWAP
+            company_made_choice_chpr(company, choice)
           end
         end
 
