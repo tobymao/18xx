@@ -13,6 +13,11 @@ module Engine
 
             super
           end
+
+          def process_lay_tile(action)
+            super
+            @game.after_lay_tile(action.hex, action.tile)
+          end
         end
       end
     end

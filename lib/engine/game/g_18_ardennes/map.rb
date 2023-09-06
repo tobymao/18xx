@@ -306,6 +306,15 @@ module Engine
 
           super
         end
+
+        def after_lay_tile(hex, tile)
+          # Move mine/port tokens from hex into city if possible.
+          return if hex.tokens.empty?
+          return unless (MINE_HEXES + PORT_HEXES).include?(hex.coordinates)
+
+          city = tile.cities.first
+          hex.tokens.first.move!(city) unless city.available_slots.zero?
+        end
       end
     end
   end
