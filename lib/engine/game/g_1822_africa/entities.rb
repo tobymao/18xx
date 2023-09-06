@@ -55,10 +55,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P6 (Recycled train) [N/A]',
+            name: 'P6 (Recycled train)',
             sym: 'P6',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 3. Close this company to buy a rusted train for full price '\
+            desc: 'MAJOR/MINOR, Phase 3. Close this company to buy a rusted train for full price '\
                   '(purchased train becomes permanent and is not a special train)',
             value: 0,
             revenue: 10,
