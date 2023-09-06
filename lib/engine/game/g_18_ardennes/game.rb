@@ -53,7 +53,7 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Track,
+            G18Ardennes::Step::Track,
             G18Ardennes::Step::CollectForts,
             G18Ardennes::Step::Token,
             Engine::Step::Route,

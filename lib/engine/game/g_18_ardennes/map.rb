@@ -299,6 +299,13 @@ module Engine
             .intersection(fort_destination_hexes)
             .size
         end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          # Special case for the Ruhr green tile, which loses a town.
+          return to.name == 'X11' if from.name == 'B16'
+
+          super
+        end
       end
     end
   end
