@@ -43,7 +43,7 @@ module Engine
           # mine token that can be replaced.
           def can_replace_dummy_token?(entity)
             token_graph(entity).connected_nodes(entity).any? do |node, _|
-              node.city? && node.tokens.any? { |token| dummy_token?(token) }
+              node.city? && node.tokens.compact.any? { |token| dummy_token?(token) }
             end
           end
 
