@@ -123,7 +123,9 @@ module View
           children << h(:circle, attrs: dot_attrs)
           children << render_boom if @town.boom
 
-          children << render_revenue if @show_revenue
+          if @show_revenue && (rendered = render_revenue)
+            children << rendered
+          end
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, { key: "#{@town.id}-d" }, children)
         end
