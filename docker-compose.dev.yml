@@ -6,6 +6,7 @@ x-rack: &rack
     DATABASE_URL: postgres://root:password@db:5432/18xx_development
     RACK_ENV: development
     RUBYOPTS: --yjit
+    OPAL_PREFORK_DISABLE: "true"
   build:
     args:
       RACK_ENV: development
