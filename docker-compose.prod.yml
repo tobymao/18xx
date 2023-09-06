@@ -12,6 +12,7 @@ x-rack: &rack
     SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
     RUBYOPTS: --yjit
     PORT: 9292
+    OPAL_PREFORK_DISABLE: "true"
   restart: always
   build:
     args:
