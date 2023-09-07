@@ -189,7 +189,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 from: %w[reserved],
-              }
+              },
             ],
           },
           {
@@ -209,7 +209,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 from: %w[reserved],
-              }
+              },
             ],
           },
           {
@@ -229,7 +229,7 @@ module Engine
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
                 from: %w[reserved],
-              }
+              },
             ],
           },
         ].freeze

@@ -279,7 +279,7 @@ module Engine
               reorder_players
               new_operating_round(@draft_num)
             when G1847AE::Round::Operating
-              @draft_num = @draft_num + 1
+              @draft_num += 1
               new_draft_round
             end
         end
@@ -472,7 +472,7 @@ module Engine
           return [] unless corporation.ipoed
 
           shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
-  
+
           bundles = (1..shares.size).flat_map do |n|
             shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
           end
@@ -482,7 +482,7 @@ module Engine
              b.presidents_share ? 1 : 0,
              b.shares.find(&:double_cert) ? 1 : 0]
           end
-  
+
           bundles.sort_by(&:percent)
         end
 
