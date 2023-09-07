@@ -14,6 +14,23 @@ module Engine
 
             !potentially_mergeable(entity).empty?
           end
+
+          def potentially_mergeable(entity)
+            # Mergable ignoring connections
+            minors = @game.corporations.select do |minor|
+              minor.type == :minor && minor.floated? && !pay_choices(entity, minor).empty?
+            end
+
+            if @game.phase.status.include?('can_acquire_minor_bidbox')
+              bidbox_minors = @game.bidbox.select { |c| @game.minor?(c) }
+              available_minors = bidbox_minors.map { |c| @game.find_corporation(c) }.reject do |minor|
+                pay_choices(entity, minor).empty?
+              end
+              minors.concat(available_minors) if available_minors
+            end
+
+            minors
+          end
         end
       end
     end

@@ -81,6 +81,13 @@ module Engine
 
           @game.maybe_discard_pullman(destination)
         end
+
+        def can_gain?(entity, bundle, exchange: false)
+          return if !bundle || !entity
+          return true if exchange
+
+          super
+        end
       end
     end
   end

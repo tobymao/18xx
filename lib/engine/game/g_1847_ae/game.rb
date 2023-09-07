@@ -30,8 +30,8 @@ module Engine
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 9 }.freeze
         STARTING_CASH = { 3 => 500, 4 => 390, 5 => 320 }.freeze
 
-        COMPANIES_PURCHASABLE_BY_CORPORATIONS = %w[R K W H].freeze
         INVESTOR_COMPANIES = %w[MNR SCR VIW].freeze
+        COMPANIES_PURCHASABLE_BY_PLAYERS = %w[R K W H MNR SCR VIW].freeze
 
         LAST_TRANCH_CORPORATIONS = %w[NDB M N RNB].freeze
 
@@ -265,15 +265,21 @@ module Engine
             log_share_price(lfk, old_lfk_price)
           end
 
-          return super if @draft_finished
+          # Draft is Turn 0
+          if @draft_finished
+            @turn = 1
+
+            return super
+          end
 
           clear_programmed_actions
           @round =
             case @round
             when G1847AE::Round::Draft
               reorder_players
-              new_operating_round
+              new_operating_round(@draft_num)
             when G1847AE::Round::Operating
+              @draft_num += 1
               new_draft_round
             end
         end
@@ -319,6 +325,22 @@ module Engine
           end
         end
 
+        def round_description(name, round_number = nil)
+          # Keep displayed Draft Round name consistent with short ORs (0.1, 0.2, ...)
+          return "#{name} Round #{@turn}.#{@draft_num}" if name == 'Draft'
+
+          round_number ||= @round.round_num
+          description = "#{name} Round "
+
+          total = total_rounds(name)
+
+          description += @turn.to_s
+          description += '.' if total
+          description += "#{round_number} (of #{total})" if total
+
+          description.strip
+        end
+
         def setup
           # Place stock market markers for corporations that have their president shares drafted in initial auction
           stock_market.set_par(l, stock_market.share_price([2, 1]))
@@ -335,6 +357,9 @@ module Engine
           @bank.spend(saar.par_price.price * 2, saar)
           @bank.spend(hlb.par_price.price * 1, hlb)
 
+          # Draft Rounds and short ORs ("inside" Draft Round) are named 0.1, 0.2, ...
+          @turn = 0
+          @draft_num = 1
           @draft_finished = false
           @recently_floated = []
           @extra_tile_lay = true
@@ -443,6 +468,24 @@ module Engine
           !corporation.ipoed
         end
 
+        def bundles_for_corporation(share_holder, corporation, shares: nil)
+          return [] unless corporation.ipoed
+
+          shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
+
+          bundles = (1..shares.size).flat_map do |n|
+            shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
+          end
+
+          bundles = bundles.uniq do |b|
+            [b.shares.count { |s| s.percent == 10 },
+             b.presidents_share ? 1 : 0,
+             b.shares.find(&:double_cert) ? 1 : 0]
+          end
+
+          bundles.sort_by(&:percent)
+        end
+
         # Cannot build in E9 before Phase 5
         def can_build_in_e9?
           ['5', '5+5', '6E', '6+6'].include?(@phase.current[:name])
@@ -461,11 +504,10 @@ module Engine
         end
 
         def purchasable_companies(entity = nil)
-          return super unless entity&.corporation?
+          return super unless entity&.player?
 
           @companies.select do |company|
-            company.owner&.player? && entity != company.owner && !abilities(company, :no_buy) &&
-            COMPANIES_PURCHASABLE_BY_CORPORATIONS.include?(company.id)
+            company.owner&.player? && entity != company.owner && COMPANIES_PURCHASABLE_BY_PLAYERS.include?(company.id)
           end
         end
 

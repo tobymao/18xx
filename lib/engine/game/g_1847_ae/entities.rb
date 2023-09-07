@@ -181,13 +181,16 @@ module Engine
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
                   'May not be sold to a corporation.',
             sym: 'MNR',
-            abilities: [{
-              type: 'exchange',
-              corporations: ['HLB'],
-              owner_type: 'player',
-              when: 'owning_player_sr_turn',
-              from: %w[reserved],
-            }],
+            abilities: [
+              { type: 'no_buy' },
+              {
+                type: 'exchange',
+                corporations: ['HLB'],
+                owner_type: 'player',
+                when: 'owning_player_sr_turn',
+                from: %w[reserved],
+              },
+            ],
           },
           {
             name: 'Saarland Coal Mines',
@@ -198,13 +201,16 @@ module Engine
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
                   'May not be sold to a corporation. ',
             sym: 'SCR',
-            abilities: [{
-              type: 'exchange',
-              corporations: ['Saar'],
-              owner_type: 'player',
-              when: 'owning_player_sr_turn',
-              from: %w[reserved],
-            }],
+            abilities: [
+              { type: 'no_buy' },
+              {
+                type: 'exchange',
+                corporations: ['Saar'],
+                owner_type: 'player',
+                when: 'owning_player_sr_turn',
+                from: %w[reserved],
+              },
+            ],
           },
           {
             name: 'Völklinger Iron Works',
@@ -215,13 +221,16 @@ module Engine
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
                   'May not be sold to a corporation. ',
             sym: 'VIW',
-            abilities: [{
-              type: 'exchange',
-              corporations: ['Saar'],
-              owner_type: 'player',
-              when: 'owning_player_sr_turn',
-              from: %w[reserved],
-            }],
+            abilities: [
+              { type: 'no_buy' },
+              {
+                type: 'exchange',
+                corporations: ['Saar'],
+                owner_type: 'player',
+                when: 'owning_player_sr_turn',
+                from: %w[reserved],
+              },
+            ],
           },
         ].freeze
 

@@ -1204,9 +1204,8 @@ module Engine
         return unless from != to
 
         jumps = ''
-        if steps
-          steps = share_jumps(steps)
-          jumps = " (#{steps} step#{steps == 1 ? '' : 's'})" if (steps > 1) || log_steps
+        if steps && ((steps > 1) || log_steps)
+          jumps = " (#{steps} step#{steps == 1 ? '' : 's'})"
         end
 
         r1, c1 = from.coordinates
@@ -1220,16 +1219,6 @@ module Engine
 
         @log << "#{entity.name}'s share price moves #{dir_str} from #{format_currency(from_price)} "\
                 "to #{format_currency(to_price)}#{jumps}"
-      end
-
-      def share_jumps(steps)
-        return steps unless @stock_market.zigzag
-
-        if steps > 1
-          steps / 2
-        else
-          steps
-        end
       end
 
       # A hook to allow a game to request a consent check for a share exchange
@@ -2242,7 +2231,7 @@ module Engine
         cash = self.class::BANK_CASH
         cash = cash[players.size] if cash.is_a?(Hash)
 
-        Bank.new(cash, log: @log)
+        Bank.new(cash, log: @log, check: game_end_check_values.include?(:bank))
       end
 
       def init_cert_limit
