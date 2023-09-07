@@ -31,15 +31,10 @@ module Engine
             name: 'Locomotive Firm Krauss & Co.',
             value: 130,
             revenue: 0,
-            desc: 'Every OR, first time a train is purchased from supply, this pays revenue '\
-                  'equal to 10% of the train\'s cost and the stock price marker is moved right. '\
-                  'If no train is purchased from supply in OR, no revenue is paid and the stock '\
-                  'price marker is moved left. '\
-                  'May not be sold to a corporation. '\
-                  'May be sold to or purchased from the market. '\
-                  'Never closes.',
+            desc: 'Comes with the President\'s certificate of Locomotive Firm Krauss & Co. (LFK). '\
+                  'LFK is in fact the private company but it is represented by a corporation for the implementation sake.',
             sym: 'LFKC',
-            abilities: [{ type: 'no_buy' }],
+            abilities: [{ type: 'shares', shares: 'LFK_0' }],
           },
           {
             name: 'Rammelsbach',
@@ -184,7 +179,7 @@ module Engine
             desc: 'May be exchanged for an Investor share of the Hessische Ludwigsbahn (HLB), '\
                   'instead of buying a share, during a stock round in Phase 3+3 or later. '\
                   'Automatically exchanged at the beginning of the first stock round in Phase 5+5. '\
-                  'May not be sold to a corporation. ',
+                  'May not be sold to a corporation.',
             sym: 'MNR',
             abilities: [{
               type: 'exchange',
@@ -231,6 +226,38 @@ module Engine
         ].freeze
 
         CORPORATIONS = [
+          # This corporation is in fact the Locomotive Firm Krauss & Co. private company
+          {
+            sym: 'LFK',
+            name: 'Locomotive Firm Krauss & Co.',
+            logo: '1847_ae/LFK',
+            simple_logo: '1847_ae/LFK',
+            tokens: [],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            required_par_price: 100,
+            shares: [100],
+            forced_share_percent: 100,
+            second_share_double: false,
+            last_share_double: false,
+            text_color: 'black',
+            color: 'white',
+            has_ipo_description_ability: false,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Click to see details',
+                desc_detail: 'This is the Locomotive Firm Krauss & Co. private company. '\
+                             'Every OR, first time a train is purchased from supply, this corporation pays revenue '\
+                             'equal to 10% of the train\'s cost to its president and the stock price marker is moved right. '\
+                             'If no train is purchased from supply in OR, no revenue is paid and the stock '\
+                             'price marker is moved left. '\
+                             'May not be sold to a corporation. '\
+                             'May be sold to or purchased from the market. '\
+                             'Never closes.',
+              },
+            ],
+          },
           {
             sym: 'L',
             name: 'Pfälzische Ludwigsbahn',
@@ -246,6 +273,7 @@ module Engine
             second_share_double: false,
             last_share_double: false,
             color: '#4682b4',
+            has_ipo_description_ability: false,
             abilities: [
               {
                 type: 'base',
@@ -270,11 +298,16 @@ module Engine
             last_share_double: true,
             float_includes_reserved: true,
             color: '#ff4040',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
                 description: 'Builds in pink hexes in yellow phase',
                 remove: '4',
+              },
+              {
+                type: 'base',
+                description: 'IPO: last cert is double',
               },
             ],
           },
@@ -294,6 +327,7 @@ module Engine
             last_share_double: true,
             float_includes_reserved: true,
             color: '#dda0dd',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -307,6 +341,10 @@ module Engine
               {
                 type: 'base',
                 description: 'Two home stations (D18 and C21)',
+              },
+              {
+                type: 'base',
+                description: 'IPO: last cert is double',
               },
             ],
             text_color: 'black',
@@ -327,6 +365,7 @@ module Engine
             required_par_price: 74,
             hex_color: 'blue',
             color: '#61b229',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -336,6 +375,10 @@ module Engine
               {
                 type: 'base',
                 description: 'May not be started until HLB floats',
+              },
+              {
+                type: 'base',
+                description: 'IPO: 2nd and last cert are double',
               },
             ],
           },
@@ -355,6 +398,7 @@ module Engine
             last_share_double: true,
             color: '#fafa37',
             text_color: 'black',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -364,6 +408,10 @@ module Engine
               {
                 type: 'base',
                 description: 'May not be started until HLB floats',
+              },
+              {
+                type: 'base',
+                description: 'IPO: last cert is double',
               },
             ],
           },
@@ -383,6 +431,7 @@ module Engine
             required_par_price: 66,
             hex_color: 'blue',
             color: '#ff9966',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -392,6 +441,10 @@ module Engine
               {
                 type: 'base',
                 description: 'May not be started until HLB floats',
+              },
+              {
+                type: 'base',
+                description: 'IPO: 2nd and last cert are double',
               },
             ],
           },
@@ -411,6 +464,7 @@ module Engine
             required_par_price: 66,
             hex_color: 'pink',
             color: '#ffc0cb',
+            has_ipo_description_ability: true,
             abilities: [
               {
                 type: 'base',
@@ -420,6 +474,10 @@ module Engine
               {
                 type: 'base',
                 description: 'May not be started until HLB floats',
+              },
+              {
+                type: 'base',
+                description: 'IPO: 2nd and last cert are double',
               },
             ],
           },

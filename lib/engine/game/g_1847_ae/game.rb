@@ -15,7 +15,7 @@ module Engine
         include Map
         include Entities
 
-        attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies
+        attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies, :train_bought_this_round
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
@@ -46,7 +46,7 @@ module Engine
         MARKET = [
           ['', '', '', '', '130', '150', '170', '190', '210', '230', '255', '285', '315', '350', '385', '420'],
           ['', '', '98', '108', '120', '135', '150', '170', '190', '210', '235', '260', '285', '315', '350', '385'],
-          %w[82 86p 92 100 110 125 140 155 170 190 210 235 260 290 320],
+          %w[82 86p 92 100p 110 125 140 155 170 190 210 235 260 290 320],
           %w[78 84p 88 94 104 112 125 140 155 170 190 215],
           %w[72 80p 86 90 96 104 115 125 140],
           %w[62 74p 82 88 92 98 105],
@@ -214,6 +214,12 @@ module Engine
 
         LAYOUT = :pointy
 
+        def init_stock_market
+          market = G1847AE::StockMarket.new(self.class::MARKET, [])
+          market.game = self
+          market
+        end
+
         def init_round
           G1847AE::Round::Draft.new(self,
                                     [G1847AE::Step::Draft],
@@ -234,7 +240,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1847AE::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -252,6 +258,13 @@ module Engine
         end
 
         def next_round!
+          if @round.is_a?(Round::Operating) && lfk.floated? && !@train_bought_this_round
+            @log << 'No train purchased from supply this round'
+            old_lfk_price = lfk.share_price
+            @stock_market.move_left(lfk)
+            log_share_price(lfk, old_lfk_price)
+          end
+
           return super if @draft_finished
 
           clear_programmed_actions
@@ -260,7 +273,7 @@ module Engine
             when G1847AE::Round::Draft
               reorder_players
               new_operating_round
-            when Engine::Round::Operating
+            when G1847AE::Round::Operating
               new_draft_round
             end
         end
@@ -275,6 +288,10 @@ module Engine
 
         def hlb
           corporation_by_id('HLB')
+        end
+
+        def lfk
+          corporation_by_id('LFK')
         end
 
         def r
@@ -303,9 +320,10 @@ module Engine
         end
 
         def setup
-          # Place stock market markers for two corporations that have their president shares drafted in initial auction
+          # Place stock market markers for corporations that have their president shares drafted in initial auction
           stock_market.set_par(l, stock_market.share_price([2, 1]))
           stock_market.set_par(saar, stock_market.share_price([3, 1]))
+          stock_market.set_par(lfk, stock_market.share_price([2, 3]))
 
           # Place L's home station in case there is a "short OR" during draft
           hex = hex_by_id(l.coordinates)
@@ -330,6 +348,11 @@ module Engine
           super
         end
 
+        def operating_order
+          # LFK is not really a corporation and does not operate
+          super.reject { |c| c == lfk }
+        end
+
         def tile_lays(entity)
           return TWO_YELLOW_OR_YELLOW_AND_UPGRADE if @recently_floated.include?(entity)
 
@@ -343,13 +366,16 @@ module Engine
         def after_buy_company(player, company, _price)
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
+              corporation = share.corporation
+              corporation.forced_share_percent = 100 if corporation == lfk
               share_pool.buy_shares(player, share, exchange: :free)
-              @bank.spend(share.corporation.par_price.price * share.percent / 10, share.corporation)
+              @bank.spend(corporation.par_price.price * share.percent / 10, corporation) unless corporation == lfk
             end
           end
 
           # PLP company is only a temporary holder for the L presidency
-          company.close! if company.id == 'PLP'
+          # LFKC company is only a temporary holder for the LFK corporation
+          company.close! if %w[PLP LFKC].include?(company.id)
         end
 
         def can_corporation_have_investor_shares_exchanged?(corporation)
@@ -406,7 +432,7 @@ module Engine
             tile.cities.first.place_token(hlb, hlb.next_token)
           end
           hlb.coordinates = [hlb.coordinates.first]
-          ability = hlb.all_abilities.find { |a| a.description.include?('Two home stations') }
+          ability = hlb.all_abilities.find { |a| a.description&.include?('Two home stations') }
           hlb.remove_ability(ability)
         end
 
@@ -446,10 +472,24 @@ module Engine
         def action_processed(action)
           super
 
-          return if r.revenue == 50 || !action.is_a?(Action::LayTile) || action.hex.id != 'E9'
+          case action
+          when Action::BuyShares
+            corporation = action.bundle.corporation
+            return unless corporation.has_ipo_description_ability
 
-          r.revenue = 50
-          @log << "Tile laid in E9 - #{r.name}'s revenue increased to 50M"
+            ipo_shares = corporation.num_ipo_shares - corporation.num_ipo_reserved_shares
+            return unless ipo_shares.zero?
+
+            # Remove IPO description ability that is no longer relevant
+            ability = corporation.all_abilities.find { |a| a.description&.include?('IPO:') }
+            corporation.remove_ability(ability)
+            corporation.has_ipo_description_ability = false
+          when Action::LayTile
+            return if action.hex.id != 'E9' || r.revenue == 50
+
+            r.revenue = 50
+            @log << "Tile laid in E9 - #{r.name}'s revenue increased to 50M"
+          end
         end
 
         def revenue_for(route, stops)

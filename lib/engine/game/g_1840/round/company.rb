@@ -23,7 +23,7 @@ module Engine
           end
 
           def select_entities
-            entites = @game.operating_order
+            entites = @game.sorted_corporations
             majors = entites.select { |item| item.type == :major }
 
             return majors if @no_city
