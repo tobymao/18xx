@@ -30,8 +30,8 @@ module Engine
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 9 }.freeze
         STARTING_CASH = { 3 => 500, 4 => 390, 5 => 320 }.freeze
 
-        COMPANIES_PURCHASABLE_BY_CORPORATIONS = %w[R K W H].freeze
         INVESTOR_COMPANIES = %w[MNR SCR VIW].freeze
+        COMPANIES_PURCHASABLE_BY_PLAYERS = %w[R K W H MNR SCR VIW].freeze
 
         LAST_TRANCH_CORPORATIONS = %w[NDB M N RNB].freeze
 
@@ -504,11 +504,10 @@ module Engine
         end
 
         def purchasable_companies(entity = nil)
-          return super unless entity&.corporation?
+          return super unless entity&.player?
 
           @companies.select do |company|
-            company.owner&.player? && entity != company.owner && !abilities(company, :no_buy) &&
-            COMPANIES_PURCHASABLE_BY_CORPORATIONS.include?(company.id)
+            company.owner&.player? && entity != company.owner && COMPANIES_PURCHASABLE_BY_PLAYERS.include?(company.id)
           end
         end
 
