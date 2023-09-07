@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  OPAL_PREFORK_DISABLE: "true"
-
 jobs:
   build:
 
