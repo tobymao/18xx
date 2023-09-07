@@ -108,7 +108,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'CPR',
@@ -120,7 +119,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#ef4223',
-            reservation_color: nil,
           },
           {
             sym: 'C&O',
@@ -132,7 +130,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#0189d1',
-            reservation_color: nil,
           },
           {
             sym: 'GTR',
@@ -144,7 +141,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#d75500',
-            reservation_color: nil,
           },
           {
             sym: 'GWR',
@@ -156,7 +152,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: :darkBlue,
-            reservation_color: nil,
           },
           {
             sym: 'ICR',
@@ -168,7 +163,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#7b352a',
-            reservation_color: nil,
           },
           {
             sym: 'NTR',
@@ -180,7 +174,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#3c7b5c',
-            reservation_color: nil,
           },
           {
             sym: 'NYC',
@@ -192,7 +185,6 @@ module Engine
             tokens: [0, 20, 40],
             type: 'major',
             color: '#772282',
-            reservation_color: nil,
           },
           {
             sym: 'BBG',
@@ -205,7 +197,6 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             color: '#7c7b8c',
-            reservation_color: nil,
           },
           {
             sym: 'BO',
@@ -218,7 +209,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#009595',
-            reservation_color: nil,
           },
           {
             sym: 'CS',
@@ -231,7 +221,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#4cb5d2',
-            reservation_color: nil,
           },
           {
             sym: 'CV',
@@ -244,7 +233,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#0097df',
-            reservation_color: nil,
           },
           {
             sym: 'KP',
@@ -257,7 +245,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#0097df',
-            reservation_color: nil,
           },
           {
             sym: 'LPS',
@@ -270,7 +257,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#7c7b8c',
-            reservation_color: nil,
           },
           {
             sym: 'OP',
@@ -283,7 +269,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#d30869',
-            reservation_color: nil,
           },
           {
             sym: 'SLA',
@@ -296,7 +281,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#7c7b8c',
-            reservation_color: nil,
           },
           {
             sym: 'TGB',
@@ -309,7 +293,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: :darkBlue,
-            reservation_color: nil,
           },
           {
             sym: 'TN',
@@ -322,7 +305,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#7b352a',
-            reservation_color: nil,
           },
           {
             sym: 'AE',
@@ -335,7 +317,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#d75500',
-            reservation_color: nil,
           },
           {
             sym: 'CA',
@@ -348,7 +329,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#772282',
-            reservation_color: nil,
           },
           {
             sym: 'NO',
@@ -361,7 +341,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#d75500',
-            reservation_color: nil,
           },
           {
             sym: 'PM',
@@ -374,7 +353,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#4cb5d2',
-            reservation_color: nil,
           },
           {
             sym: 'QLS',
@@ -387,7 +365,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#0189d1',
-            reservation_color: nil,
           },
           {
             sym: 'THB',
@@ -400,7 +377,6 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             color: '#d75500',
-            reservation_color: nil,
           },
           {
             sym: 'CN',
@@ -411,7 +387,6 @@ module Engine
             hide_shares: true,
             type: 'national',
             color: '#ef4223',
-            reservation_color: nil,
           },
         ].freeze
       end

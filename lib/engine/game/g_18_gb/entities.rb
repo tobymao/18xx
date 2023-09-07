@@ -312,7 +312,6 @@ module Engine
             tokens: [0, 0],
             coordinates: 'G4',
             color: '#0a70b3',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -334,7 +333,6 @@ module Engine
             tokens: [0, 50],
             coordinates: 'J25',
             color: '#37b2e2',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -368,7 +366,6 @@ module Engine
             tokens: [0, 50],
             coordinates: 'F5',
             color: '#ec767c',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -401,7 +398,6 @@ module Engine
             tokens: [0, 50],
             coordinates: 'D23',
             color: '#008f4f',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -424,7 +420,6 @@ module Engine
             coordinates: 'F21',
             color: '#0a0a0a',
             text_color: '#ffffff',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -447,7 +442,6 @@ module Engine
             coordinates: 'D25',
             color: '#fcea18',
             text_color: '#000000',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -470,7 +464,6 @@ module Engine
             coordinates: 'H15',
             color: '#baa4cb',
             text_color: '#000000',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -492,7 +485,6 @@ module Engine
             tokens: [0, 50],
             coordinates: 'H19',
             color: '#dd0030',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -525,7 +517,6 @@ module Engine
             tokens: [0],
             coordinates: 'H17',
             color: '#881a1e',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -547,7 +538,6 @@ module Engine
             tokens: [0, 50],
             coordinates: 'I6',
             color: '#eb6f0e',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -569,7 +559,6 @@ module Engine
             tokens: [0, 50],
             coordinates: 'J13',
             color: '#7bb137',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [
@@ -603,7 +592,6 @@ module Engine
             coordinates: 'A20',
             color: '#9a9a9d',
             text_color: '#000000',
-            reservation_color: nil,
             always_market_price: true,
             max_ownership_percent: 100,
             abilities: [

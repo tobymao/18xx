@@ -47,11 +47,14 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
+        SOLD_OUT_INCREASE = false
 
         GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           custom: 'Cannot refill bid boxes'
         )
+
+        PRIVATES_IN_GAME = 12
 
         EXTRA_TRAINS = %w[2P P+ LP].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
@@ -64,7 +67,11 @@ module Engine
 
         COMPANY_10X_REVENUE = 'P16'
         COMPANY_REMOVE_TOWN = 'P9'
-        COMPANY_EXTRA_TILE_LAYS = 'P12'
+        COMPANY_EXTRA_TILE_LAYS = %w[P7 P12].freeze
+        COMPANY_TOKEN_SWAP = 'P13'
+
+        GAME_RESERVE_TILE = 'GR'
+        GAME_RESERVE_MULTIPLIER = 5
 
         MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
@@ -73,6 +80,7 @@ module Engine
         STOCK_ROUND_COUNT = 2
 
         # Disable 1822-specific rules
+        MINOR_14_ID = nil
         COMPANY_LCDR = nil
         COMPANY_EGR = nil
         COMPANY_DOUBLE_CASH = nil
@@ -82,11 +90,13 @@ module Engine
         COMPANY_LSR = nil
         COMPANY_OSTH = nil
         COMPANY_LUR = nil
-        COMPANY_CHPR = nil
         COMPANY_5X_REVENUE = nil
         COMPANY_HSBC = nil
         FRANCE_HEX = nil
+        CARDIFF_HEX = nil
         ENGLISH_CHANNEL_HEX = nil
+        MERTHYR_TYDFIL_PONTYPOOL_HEX = nil
+        UPGRADABLE_S_HEX_NAME = nil
         BIDDING_BOX_START_PRIVATE = nil
         BIDDING_BOX_START_MINOR = nil
         DOUBLE_HEX = [].freeze
@@ -315,15 +325,24 @@ module Engine
         @bidbox_cache = []
         @bidbox_companies_size = false
 
+        def init_companies(_players)
+          game_companies.map do |company|
+            Company.new(**company)
+          end.compact
+        end
+
         def setup_companies
           minors = @companies.select { |c| minor?(c) }
           concessions = @companies.select { |c| concession?(c) }
-          privates = @companies.select { |c| private?(c) }
+          privates = @companies.select { |c| private?(c) }.sort_by! { rand }
 
           @companies.clear
           @companies.concat(minors)
           @companies.concat(concessions)
-          @companies.concat(privates.sort_by! { rand }.take(10))
+          @companies.concat(privates.take(self.class::PRIVATES_IN_GAME))
+
+          unused_privates = privates.drop(self.class::PRIVATES_IN_GAME)
+          @log << "Private companies not in this game: #{unused_privates.map(&:name).join(', ')}"
 
           # Randomize from preset seed to get same order
           @companies.sort_by! { rand }
@@ -367,8 +386,8 @@ module Engine
         def setup_bidboxes
           # Set the owner to bank for the companies up for auction this stockround
           bidbox_refill!
-          bidbox.each do |minor|
-            minor.owner = @bank
+          bidbox.each do |company|
+            company.owner = @bank
           end
         end
 
@@ -423,6 +442,7 @@ module Engine
             Engine::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
+            G1822Africa::Step::LayGameReserve,
             G1822::Step::SpecialTrack,
             G1822::Step::SpecialToken,
             G1822::Step::Track,
@@ -500,9 +520,9 @@ module Engine
           company.id[0] == self.class::COMPANY_PRIVATE_PREFIX
         end
 
-        def compute_game_end
-          return %i[custom full_or] if bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
+        def game_end_check
           return %i[stock_market current_or] if @stock_market.max_reached?
+          return %i[custom full_or] if bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
         end
 
         def reset_sold_in_sr!
@@ -584,6 +604,8 @@ module Engine
 
           express_revenue = revenue_for_express(route, stops)
           express_revenue += destination_bonus_for(route) * self.class::EXPRESS_TRAIN_MULTIPLIER
+
+          return express_revenue if train_over_distance?(route)
 
           [revenue, express_revenue].max
         end
@@ -670,7 +692,37 @@ module Engine
         end
 
         def company_ability_extra_track?(company)
-          company.id == self.class::COMPANY_EXTRA_TILE_LAYS
+          self.class::COMPANY_EXTRA_TILE_LAYS.include?(company.id)
+        end
+
+        def tile_game_reserve?(tile)
+          tile.name == self.class::GAME_RESERVE_TILE
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          # Special case for Game Reserve
+          return true if special && tile_game_reserve?(to)
+
+          super
+        end
+
+        def pay_game_reserve_bonus!(entity)
+          reserves = hexes.select { |h| h.tile.color == :purple }
+          bonus = hex_crow_distance_not_inclusive(*reserves) * self.class::GAME_RESERVE_MULTIPLIER
+
+          return if bonus.zero?
+
+          corporation = entity.owner
+
+          @log << "#{corporation.id} receives a Game Reserve bonus of #{format_currency(bonus)} from the bank"
+
+          @bank.spend(bonus, corporation)
+        end
+
+        def hex_crow_distance_not_inclusive(start, finish)
+          dx = (start.x - finish.x).abs - 1
+          dy = (start.y - finish.y).abs - 1
+          dx + [0, (dy - dx) / 2].max
         end
 
         # This game has two back-to-back SRs so we need to manually disable auto-pass on round end
@@ -682,6 +734,22 @@ module Engine
                 true
               end
             end
+          end
+        end
+
+        def company_choices(company, time)
+          case company.id
+          when self.class::COMPANY_TOKEN_SWAP
+            company_choices_chpr(company, time)
+          else
+            {}
+          end
+        end
+
+        def company_made_choice(company, choice, _time)
+          case company.id
+          when self.class::COMPANY_TOKEN_SWAP
+            company_made_choice_chpr(company, choice)
           end
         end
 

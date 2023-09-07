@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 # rubocop:disable all
 
+require 'json'
 require_relative 'models'
 
 Dir['./models/**/*.rb'].sort.each { |file| require file }
@@ -8,6 +9,44 @@ Sequel.extension :pg_json_ops
 require './lib/engine'
 load 'migrate_game.rb'
 
+# class to facilitate interacting with the results of validate_all() in an irb
+# console
+class Validate
+  attr_reader :filename
+
+  def initialize(filename)
+    @filename = filename
+  end
+
+  def write(filename)
+    @filename = filename
+    File.write(filename, JSON.pretty_generate(data))
+  end
+
+  def data
+    @data ||= JSON.parse(File.read(filename))
+  end
+
+  def ids
+    @ids ||= data.keys.map(&:to_i)
+  end
+
+  def titles
+    @titles ||= data.map { |_id, g| g['title'] }.uniq.sort
+  end
+
+  def errors
+    @errors ||= data.select { |_id, g| g['exception'] }
+  end
+
+  def error_ids
+    @error_ids ||= errors.keys.map(&:to_i)
+  end
+
+  def error_titles
+    @error_titles ||= errors.map { |_id, g| g['title'] }.uniq.sort
+  end
+end
 
 $count = 0
 $total = 0
@@ -73,7 +112,10 @@ def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finish
   end
   puts "#{$count}/#{$total} avg #{$total_time / $total}"
   data['summary']={'failed':$count, 'total':$total, 'total_time':$total_time, 'avg_time':$total_time / $total}
-  File.write("validate.json", JSON.pretty_generate(data))
+
+  filename = "validate.json"
+  File.write(filename, JSON.pretty_generate(data))
+  Validate.new(filename)
 end
 
 def validate_one(id)

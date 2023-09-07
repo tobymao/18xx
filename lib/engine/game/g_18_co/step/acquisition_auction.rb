@@ -14,7 +14,7 @@ module Engine
 
           def actions(entity)
             return [] unless @auctioning
-            return [] unless can_bid?(entity)
+            return [] unless can_bid_any?(entity)
 
             ACTIONS
           end
@@ -64,7 +64,7 @@ module Engine
             entity.owner == @auctioning.owner
           end
 
-          def can_bid?(entity)
+          def can_bid_any?(entity)
             return unless entity.corporation?
             return if same_president(entity)
             return if @bids[@auctioning].any? { |b| b.entity == entity }
@@ -139,7 +139,7 @@ module Engine
             entities.each do |participant|
               next if participant.passed?
 
-              unless can_bid?(participant)
+              unless can_bid_any?(participant)
                 log_skip(participant)
                 participant.pass!
               end

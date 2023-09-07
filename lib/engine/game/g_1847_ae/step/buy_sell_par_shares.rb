@@ -58,6 +58,8 @@ module Engine
           end
 
           def can_nationalize?(player, corporation)
+            return false if corporation == @game.lfk
+
             player.num_shares_of(corporation) >= 7
           end
 
@@ -88,6 +90,19 @@ module Engine
                                              price: price)
 
             track_action(action, corporation)
+          end
+
+          def can_sell?(entity, bundle)
+            # LFK corporation represents a sellable private company
+            return true if bundle.corporation == @game.lfk && !bought?
+
+            super
+          end
+
+          def process_sell_shares(action)
+            super
+
+            @game.lfk.owner = @game.share_pool if action.bundle.corporation == @game.lfk
           end
         end
       end

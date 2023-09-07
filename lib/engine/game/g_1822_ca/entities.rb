@@ -1100,7 +1100,6 @@ module Engine
             coordinates: 'AP4',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '2',
@@ -1116,7 +1115,6 @@ module Engine
             coordinates: 'AN6',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '3',
@@ -1132,7 +1130,6 @@ module Engine
             coordinates: 'AK3',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '4',
@@ -1148,7 +1145,6 @@ module Engine
             coordinates: 'AH12',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '5',
@@ -1165,7 +1161,6 @@ module Engine
             coordinates: 'AH8',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '6',
@@ -1181,7 +1176,6 @@ module Engine
             coordinates: 'AG13',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '7',
@@ -1198,7 +1192,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '8',
@@ -1215,7 +1208,6 @@ module Engine
             city: 1,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '9',
@@ -1232,7 +1224,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '10',
@@ -1248,7 +1239,6 @@ module Engine
             coordinates: 'AD20',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '11',
@@ -1264,7 +1254,6 @@ module Engine
             coordinates: 'AC23',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '12',
@@ -1281,7 +1270,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '13',
@@ -1296,7 +1284,6 @@ module Engine
             max_ownership_percent: 100,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '14',
@@ -1312,7 +1299,6 @@ module Engine
             coordinates: 'AA25',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '15',
@@ -1328,7 +1314,6 @@ module Engine
             coordinates: 'AA15',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '16',
@@ -1344,7 +1329,6 @@ module Engine
             coordinates: 'Z28',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '17',
@@ -1360,7 +1344,6 @@ module Engine
             coordinates: 'Y15',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '18',
@@ -1376,7 +1359,6 @@ module Engine
             coordinates: 'X12',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '19',
@@ -1392,7 +1374,6 @@ module Engine
             coordinates: 'V18',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '20',
@@ -1408,7 +1389,6 @@ module Engine
             coordinates: 'P18',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '21',
@@ -1425,7 +1405,6 @@ module Engine
             city: 2,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '22',
@@ -1441,7 +1420,6 @@ module Engine
             coordinates: 'N6',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '23',
@@ -1457,7 +1435,6 @@ module Engine
             coordinates: 'K15',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '24',
@@ -1473,7 +1450,6 @@ module Engine
             coordinates: 'J12',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '25',
@@ -1489,7 +1465,6 @@ module Engine
             coordinates: 'G17',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '26',
@@ -1505,7 +1480,6 @@ module Engine
             coordinates: 'G15',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '27',
@@ -1521,7 +1495,6 @@ module Engine
             coordinates: 'G11',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '28',
@@ -1537,7 +1510,6 @@ module Engine
             coordinates: 'D14',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '29',
@@ -1553,7 +1525,6 @@ module Engine
             coordinates: 'D10',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '30',
@@ -1569,7 +1540,6 @@ module Engine
             coordinates: 'A7',
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'CNoR',
@@ -1583,7 +1553,6 @@ module Engine
             city: 0,
             color: '#9fce63',
             text_color: 'black',
-            reservation_color: nil,
             destination_coordinates: 'C15',
             destination_icon: '1822_ca/CNoR_DEST',
           },
@@ -1599,7 +1568,6 @@ module Engine
             coordinates: 'AF12',
             city: 1,
             color: '#ed242a',
-            reservation_color: nil,
             destination_coordinates: 'C15',
             destination_icon: '1822_ca/CPR_DEST',
           },
@@ -1614,8 +1582,8 @@ module Engine
             coordinates: 'R16',
             color: '#8dd8f8',
             text_color: 'black',
-            reservation_color: nil,
             destination_coordinates: 'N16',
+            destination_exits: [3],
             destination_icon: '1822_ca/GNWR_DEST',
           },
           {
@@ -1629,8 +1597,8 @@ module Engine
             coordinates: 'AC21',
             city: 1,
             color: '#000000',
-            reservation_color: nil,
             destination_coordinates: 'AF12',
+            destination_exits: [0],
             destination_icon: '1822_ca/GT_DEST',
           },
           {
@@ -1644,7 +1612,6 @@ module Engine
             coordinates: 'N16',
             city: 0,
             color: '#f47d20',
-            reservation_color: nil,
             destination_coordinates: 'A7',
             destination_icon: '1822_ca/GTP_DEST',
           },
@@ -1658,7 +1625,6 @@ module Engine
             always_market_price: true,
             coordinates: 'AB24',
             color: '#395aa8',
-            reservation_color: nil,
             destination_coordinates: 'Z28',
             destination_icon: '1822_ca/GWR_DEST',
           },
@@ -1673,8 +1639,8 @@ module Engine
             coordinates: 'AP4',
             color: '#eee91e',
             text_color: 'black',
-            reservation_color: nil,
             destination_coordinates: 'AH8',
+            destination_exits: [0, 1, 2, 3, 4, 5],
             destination_icon: '1822_ca/ICR_DEST',
           },
           {
@@ -1687,8 +1653,8 @@ module Engine
             always_market_price: true,
             coordinates: 'AO3',
             color: '#9a6733',
-            reservation_color: nil,
             destination_coordinates: 'N16',
+            destination_exits: [5],
             destination_icon: '1822_ca/NTR_DEST',
           },
           {
@@ -1701,7 +1667,6 @@ module Engine
             always_market_price: true,
             coordinates: 'C15',
             color: '#199d4a',
-            reservation_color: nil,
             destination_coordinates: 'D10',
             destination_icon: '1822_ca/PGE_DEST',
           },
@@ -1715,7 +1680,6 @@ module Engine
             always_market_price: true,
             coordinates: 'AH8',
             color: '#7f3881',
-            reservation_color: nil,
             destination_coordinates: 'AA15',
             destination_icon: '1822_ca/QMOO_DEST',
           },

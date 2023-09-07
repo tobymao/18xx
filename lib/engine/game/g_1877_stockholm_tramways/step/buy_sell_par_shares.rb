@@ -47,7 +47,7 @@ module Engine
             @round.goto_entity!(winner.entity)
           end
 
-          def can_bid?(entity)
+          def can_bid_any?(entity)
             max_bid(entity) >= MIN_BID && !bought? &&
             @game.ipoable_corporations.any? do |c|
               @game.can_par?(c, entity)

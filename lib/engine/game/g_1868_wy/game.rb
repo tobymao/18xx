@@ -1159,7 +1159,7 @@ module Engine
           minors = @coal_companies.select { |c| c.floated? && !c.closed? }.sort_by { |m| @players.index(m.owner) }
           oil = @oil_companies.select { |c| c.floated? && !c.closed? }.sort_by { |m| @players.index(m.owner) }
           minors.concat(oil)
-          minors.sort_by! { |m| @players.index(m.owner) } if @optional_rules.include?(:async)
+          minors.sort_by! { |m| @players.index(m.owner) } if @optional_rules.include?(:async_friendly)
           minors
         end
 

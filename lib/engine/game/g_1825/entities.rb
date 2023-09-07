@@ -103,7 +103,6 @@ module Engine
             city: 0,
             color: '#000000',
             text_color: '#ffffff',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['U17'] }],
           },
           {
@@ -118,7 +117,6 @@ module Engine
             city: 0,
             color: '#004225',
             text_color: '#ffffff',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['V18'] }],
           },
           {
@@ -133,7 +131,6 @@ module Engine
             city: 4,
             color: '#191970',
             text_color: '#ffffff',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['U23'] }],
           },
           {
@@ -148,7 +145,6 @@ module Engine
             city: 0,
             color: '#d0f0c0',
             text_color: '#000000',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['W19'] }],
           },
           {
@@ -163,7 +159,6 @@ module Engine
             city: 0,
             color: '#ffef00',
             text_color: '#000000',
-            reservation_color: nil,
             abilities: [],
           },
           {
@@ -178,7 +173,6 @@ module Engine
             city: 0,
             color: '#ffa500',
             text_color: 'black',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['X20'] }],
           },
         ].freeze
@@ -196,7 +190,6 @@ module Engine
             city: 0,
             color: '#000000',
             text_color: '#ffffff',
-            reservation_color: nil,
           },
           {
             sym: 'MR',
@@ -210,7 +203,6 @@ module Engine
             city: 0,
             color: '#ff0000',
             text_color: '#ffffff',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['Q15'] }],
           },
           {
@@ -225,7 +217,6 @@ module Engine
             city: 0,
             color: '#00ff00',
             text_color: '#000000',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['L14'] }],
           },
           {
@@ -240,7 +231,6 @@ module Engine
             city: 0,
             color: '#89cff0',
             text_color: '#000000',
-            reservation_color: nil,
           },
           {
             sym: 'GNR',
@@ -254,7 +244,6 @@ module Engine
             city: 1,
             color: '#228c22',
             text_color: '#ffffff',
-            reservation_color: nil,
           },
           {
             sym: 'L&Y',
@@ -268,7 +257,6 @@ module Engine
             city: 1,
             color: '#6c0ba9',
             text_color: '#ffffff',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['N10'] }],
           },
         ].freeze
@@ -286,7 +274,6 @@ module Engine
             city: 2,
             color: '#0047ab',
             text_color: '#ffffff',
-            reservation_color: nil,
           },
           {
             sym: 'NBR',
@@ -300,7 +287,6 @@ module Engine
             city: 1,
             color: '#7c4700',
             text_color: '#ffffff',
-            reservation_color: nil,
           },
           {
             sym: 'GSWR',
@@ -314,7 +300,6 @@ module Engine
             city: 0,
             color: '#001800',
             text_color: '#ffff00',
-            reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['H4'] }],
           },
           {

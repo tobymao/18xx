@@ -141,7 +141,6 @@ module Engine
             coordinates: 'C12',
             color: '#ff0000',
             always_market_price: true,
-            reservation_color: nil,
           },
           'PER' => {
             float_percent: 20,
@@ -154,7 +153,6 @@ module Engine
             color: '#ff6a00',
             text_color: 'black',
             always_market_price: true,
-            reservation_color: nil,
           },
           'SF' => {
             float_percent: 20,
@@ -177,7 +175,6 @@ module Engine
             color: '#ff7fed',
             text_color: 'black',
             always_market_price: true,
-            reservation_color: nil,
           },
           'SP' => {
             float_percent: 20,
@@ -200,7 +197,6 @@ module Engine
             coordinates: 'C2',
             color: '#0026ff',
             always_market_price: true,
-            reservation_color: nil,
           },
         }.freeze
       end

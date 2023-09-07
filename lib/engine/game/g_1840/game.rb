@@ -412,6 +412,7 @@ module Engine
           @round_counter += 1
           @intern_cr_phase_counter = 1
           @cr_counter += 1
+          @sorted_corporations_for_company_round = operating_order
           remove_obsolete_trains
           @log << "-- #{round_description('Company', nil)} --"
           new_company_operating_route_round
@@ -924,6 +925,10 @@ module Engine
 
         def train_actions_always_use_operating_round_view?
           true
+        end
+
+        def sorted_corporations
+          @sorted_corporations_for_company_round || operating_order
         end
       end
     end

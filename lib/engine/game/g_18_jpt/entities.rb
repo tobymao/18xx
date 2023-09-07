@@ -88,7 +88,6 @@ module Engine
             tokens: [0, 0, 40, 100, 100],
             coordinates: 'A77',
             color: :grey,
-            reservation_color: nil,
             abilities: [
               {
                 type: 'assign_hexes',
@@ -111,7 +110,6 @@ module Engine
             city: 0,
             color: :yellow,
             text_color: 'black',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'hex_bonus',
@@ -136,7 +134,6 @@ module Engine
             coordinates: 'F86',
             city: 0,
             color: :darkgreen,
-            reservation_color: nil,
             abilities: [
               {
                 type: 'hex_bonus',
@@ -156,7 +153,6 @@ module Engine
             coordinates: 'F86',
             city: 0,
             color: :purple,
-            reservation_color: nil,
             abilities: [
               {
                 type: 'hex_bonus',
@@ -177,7 +173,6 @@ module Engine
             city: 0,
             color: :lightBlue,
             text_color: 'black',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'description',
@@ -205,7 +200,6 @@ module Engine
             coordinates: 'G89',
             city: 1,
             color: :red,
-            reservation_color: nil,
             abilities: [
               {
                 type: 'hex_bonus',
@@ -227,7 +221,6 @@ module Engine
             city: 1,
             color: :pink,
             text_color: 'black',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'hex_bonus',
@@ -247,7 +240,6 @@ module Engine
             coordinates: 'G87',
             city: 0,
             color: :brown,
-            reservation_color: nil,
             abilities: [
               {
                 type: 'tile_discount',
@@ -269,7 +261,6 @@ module Engine
             city: 0,
             color: :lightGreen,
             text_color: 'black',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'hex_bonus',
@@ -289,7 +280,6 @@ module Engine
             coordinates: 'J78',
             color: :orange,
             text_color: 'black',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'hex_bonus',
@@ -308,7 +298,6 @@ module Engine
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'I83',
             color: :darkBlue,
-            reservation_color: nil,
             abilities: [
               {
                 type: 'hex_bonus',

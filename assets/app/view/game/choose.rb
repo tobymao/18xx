@@ -10,14 +10,15 @@ module View
       needs :entity, default: nil
 
       def render
-        choices = if @game.round.active_step.respond_to?(:entity_choices)
-                    @game.round.active_step.entity_choices(@entity)
+        step = @game.round.active_step
+        choices = if step.respond_to?(:entity_choices)
+                    step.entity_choices(@entity)
                   else
-                    @game.round.active_step.choices
+                    step.choices
                   end
 
-        choice_is_amount = if @game.round.active_step.respond_to?(:choice_is_amount?)
-                             @game.round.active_step.choice_is_amount?
+        choice_is_amount = if step.respond_to?(:choice_is_amount?)
+                             step.choice_is_amount?
                            else
                              false
                            end
@@ -50,11 +51,11 @@ module View
           h('button', props, label)
         end
 
+        children = []
         div_class = choice_buttons.size < 5 ? '.inline' : ''
-        h(:div, [
-          h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "#{@game.round.active_step.choice_name}: "),
-          h(:div, choice_buttons),
-        ])
+        children << h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "#{step.choice_name}: ") if step.choice_name
+        children << h(:div, choice_buttons)
+        h(:div, children)
       end
 
       def render_choice_amount(amounts)

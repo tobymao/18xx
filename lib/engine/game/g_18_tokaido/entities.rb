@@ -105,7 +105,6 @@ module Engine
             coordinates: 'I9',
             color: '#ef2f2f',
             text_color: 'white',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -117,7 +116,6 @@ module Engine
             coordinates: 'B12',
             color: '#ef8f2f',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -130,7 +128,6 @@ module Engine
             city: 1,
             color: '#2f7f2f',
             text_color: 'white',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -142,7 +139,6 @@ module Engine
             coordinates: 'F8',
             color: '#2f2f9f',
             text_color: 'white',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -155,7 +151,6 @@ module Engine
             city: 1,
             color: 'black',
             text_color: 'white',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -167,7 +162,6 @@ module Engine
             coordinates: 'J2',
             color: '#efef4f',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             float_percent: 60,
@@ -179,7 +173,6 @@ module Engine
             coordinates: 'F4',
             color: '#7f9f9f',
             text_color: 'white',
-            reservation_color: nil,
           },
         ].freeze
       end

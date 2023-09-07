@@ -284,7 +284,6 @@ module Engine
             coordinates: 'F20',
             color: :'#FF0000',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -296,7 +295,6 @@ module Engine
             coordinates: 'D20',
             color: '#110a0c',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -325,7 +323,6 @@ module Engine
             coordinates: 'G19',
             color: '#025aaa',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -338,7 +335,6 @@ module Engine
             color: :'#ADD8E6',
             text_color: 'black',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -368,7 +364,6 @@ module Engine
             color: :'#FFF500',
             text_color: 'black',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -380,7 +375,6 @@ module Engine
             coordinates: 'B16',
             color: '#f58121',
             always_market_price: true,
-            reservation_color: nil,
           },
           {
             float_percent: 20,
@@ -426,7 +420,6 @@ module Engine
             coordinates: 'K3',
             color: '#32763f',
             always_market_price: true,
-            reservation_color: nil,
           },
         ].freeze
 

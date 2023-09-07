@@ -575,7 +575,6 @@ module Engine
             coordinates: 'E27',
             color: '#7b352a',
             abilities: [{ type: 'description', description: 'Par Group - C' }],
-            reservation_color: nil,
           },
           {
             sym: 'CM',
@@ -590,7 +589,6 @@ module Engine
             color: '#a2dced',
             text_color: 'black',
             abilities: [{ type: 'description', description: 'Par Group - C' }],
-            reservation_color: nil,
           },
           {
             sym: 'CS',
@@ -604,7 +602,6 @@ module Engine
             coordinates: 'K17',
             color: :'#232b2b',
             abilities: [{ type: 'description', description: 'Par Group - C' }],
-            reservation_color: nil,
           },
           {
             sym: 'DPAC',
@@ -619,7 +616,6 @@ module Engine
             coordinates: 'E15',
             color: :'#82009c',
             abilities: [{ type: 'description', description: 'Par Group - C' }],
-            reservation_color: nil,
           },
           {
             sym: 'DSL',
@@ -634,7 +630,6 @@ module Engine
             coordinates: 'E15',
             color: '#237333',
             abilities: [{ type: 'description', description: 'Par Group - C' }],
-            reservation_color: nil,
           },
           {
             sym: 'DRG',
@@ -650,7 +645,6 @@ module Engine
             color: :gold,
             text_color: 'black',
             abilities: [{ type: 'description', description: 'Par Group - B' }],
-            reservation_color: nil,
           },
           {
             sym: 'ATSF',
@@ -664,7 +658,6 @@ module Engine
             coordinates: 'J26',
             color: :'#000e4b',
             abilities: [{ type: 'description', description: 'Par Group - B' }],
-            reservation_color: nil,
           },
           {
             sym: 'CBQ',
@@ -679,7 +672,6 @@ module Engine
             color: '#f48221',
             text_color: 'black',
             abilities: [{ type: 'description', description: 'Par Group - A' }],
-            reservation_color: nil,
           },
           {
             sym: 'ROCK',
@@ -693,7 +685,6 @@ module Engine
             coordinates: 'G27',
             color: '#d81e3e',
             abilities: [{ type: 'description', description: 'Par Group - A' }],
-            reservation_color: nil,
           },
           {
             sym: 'UP',
@@ -708,7 +699,6 @@ module Engine
             color: :'#ffffeb',
             text_color: 'black',
             abilities: [{ type: 'description', description: 'Par Group - A' }],
-            reservation_color: nil,
           },
           {
             sym: 'DSNG',
@@ -732,7 +722,6 @@ module Engine
                 description: 'Shares: 2P/2/2/1/1/1/1',
               },
             ],
-            reservation_color: nil,
           },
         ].freeze
 

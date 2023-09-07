@@ -719,7 +719,6 @@ module Engine
             city: 0,
             color: '#EF1D24',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'description',
@@ -742,7 +741,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '3',
@@ -759,7 +757,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '4',
@@ -776,7 +773,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '5',
@@ -793,7 +789,6 @@ module Engine
             city: 0,
             color: '#6BCFF7',
             text_color: '#white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'description',
@@ -816,7 +811,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '7',
@@ -833,7 +827,6 @@ module Engine
             city: 0,
             color: '#F69B1D',
             text_color: '#white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'description',
@@ -856,7 +849,6 @@ module Engine
             city: 0,
             color: '#238541',
             text_color: '#black',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'description',
@@ -879,7 +871,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '10',
@@ -896,7 +887,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '11',
@@ -913,7 +903,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '12',
@@ -930,7 +919,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '13',
@@ -947,7 +935,6 @@ module Engine
             city: 1,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '14',
@@ -964,7 +951,6 @@ module Engine
             city: 1,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '15',
@@ -981,7 +967,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '16',
@@ -998,7 +983,6 @@ module Engine
             city: 2,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '17',
@@ -1015,7 +999,6 @@ module Engine
             city: 0, ## Todo - Check
             color: '#8D061B',
             text_color: '#white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'description',
@@ -1038,7 +1021,6 @@ module Engine
             city: 1, ## Todo - Check
             color: '#3078C1',
             text_color: '#white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'description',
@@ -1061,7 +1043,6 @@ module Engine
             city: 1,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: '20',
@@ -1078,7 +1059,6 @@ module Engine
             city: 0,
             color: '#221E20',
             text_color: 'white',
-            reservation_color: nil,
             abilities: [
               {
                 type: 'description',
@@ -1101,7 +1081,6 @@ module Engine
             city: 0,
             color: '#ffffff',
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'A',
@@ -1118,7 +1097,6 @@ module Engine
             city: 0,
             color: '#808080',
             text_color: 'white',
-            reservation_color: nil,
           },
           {
             sym: 'B',
@@ -1135,7 +1113,6 @@ module Engine
             city: 0,
             color: '#808080',
             text_color: 'white',
-            reservation_color: nil,
           },
           {
             sym: 'C',
@@ -1152,7 +1129,6 @@ module Engine
             city: 0,
             color: '#808080',
             text_color: 'white',
-            reservation_color: nil,
           },
           {
             sym: 'NP',
@@ -1165,7 +1141,6 @@ module Engine
             coordinates: 'O20',
             city: 4,
             color: '#221E20',
-            reservation_color: nil,
             destination_coordinates: 'I12',
             destination_icon: '1822_pnw/NP_DEST',
           },
@@ -1180,7 +1155,6 @@ module Engine
             coordinates: 'A8',
             city: 2,
             color: '#EF1D24',
-            reservation_color: nil,
             destination_coordinates: 'A22',
             destination_icon: '1822_pnw/CPR_DEST',
           },
@@ -1195,7 +1169,6 @@ module Engine
             coordinates: 'D23',
             color: '#6BCFF7',
             text_color: 'black',
-            reservation_color: nil,
             destination_coordinates: 'D11',
             destination_icon: '1822_pnw/GNR_DEST',
           },
@@ -1210,7 +1183,6 @@ module Engine
             coordinates: 'O8',
             city: 3,
             color: '#3078C1',
-            reservation_color: nil,
             destination_coordinates: 'O20',
             destination_icon: '1822_pnw/ORNC_DEST',
           },
@@ -1224,7 +1196,6 @@ module Engine
             always_market_price: true,
             coordinates: 'O8',
             color: '#8D061B',
-            reservation_color: nil,
             destination_coordinates: 'F23',
             destination_icon: '1822_pnw/SPS_DEST',
           },
@@ -1238,7 +1209,6 @@ module Engine
             always_market_price: true,
             coordinates: 'F23',
             color: '#F69B1D',
-            reservation_color: nil,
             destination_coordinates: 'H11',
             destination_icon: '1822_pnw/CMPS_DEST',
           },
@@ -1253,7 +1223,6 @@ module Engine
             coordinates: 'H11',
             city: 5,
             color: '#238541',
-            reservation_color: nil,
             destination_coordinates: 'O22',
             destination_icon: '1822_pnw/SWW_DEST',
           },
