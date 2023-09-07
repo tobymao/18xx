@@ -651,7 +651,7 @@ module View
       end
 
       def render_player_loans
-        return unless @game.respond_to?(:player_loans)
+        return '' unless @game.respond_to?(:player_loans)
 
         h(:tr, tr_default_props, [
           h('th.left', 'Loans'),
