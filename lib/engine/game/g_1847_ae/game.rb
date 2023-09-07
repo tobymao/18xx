@@ -277,9 +277,9 @@ module Engine
             case @round
             when G1847AE::Round::Draft
               reorder_players
-              new_operating_round(@draft_num)
+              new_operating_round(@draft_round_num)
             when G1847AE::Round::Operating
-              @draft_num += 1
+              @draft_round_num += 1
               new_draft_round
             end
         end
@@ -327,7 +327,7 @@ module Engine
 
         def round_description(name, round_number = nil)
           # Keep displayed Draft Round name consistent with short ORs (0.1, 0.2, ...)
-          return "#{name} Round #{@turn}.#{@draft_num}" if name == 'Draft'
+          return "#{name} Round #{@turn}.#{@draft_round_num}" if name == 'Draft'
 
           round_number ||= @round.round_num
           description = "#{name} Round "
@@ -359,7 +359,7 @@ module Engine
 
           # Draft Rounds and short ORs ("inside" Draft Round) are named 0.1, 0.2, ...
           @turn = 0
-          @draft_num = 1
+          @draft_round_num = 1
           @draft_finished = false
           @recently_floated = []
           @extra_tile_lay = true
