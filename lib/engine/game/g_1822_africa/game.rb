@@ -54,6 +54,8 @@ module Engine
           custom: 'Cannot refill bid boxes'
         )
 
+        PRIVATES_IN_GAME = 12
+
         EXTRA_TRAINS = %w[2P P+ LP].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
         EXPRESS_TRAIN_MULTIPLIER = 2
@@ -66,6 +68,7 @@ module Engine
         COMPANY_10X_REVENUE = 'P16'
         COMPANY_REMOVE_TOWN = 'P9'
         COMPANY_EXTRA_TILE_LAYS = %w[P7 P12].freeze
+        COMPANY_TOKEN_SWAP = 'P13'
 
         GAME_RESERVE_TILE = 'GR'
         GAME_RESERVE_MULTIPLIER = 5
@@ -87,7 +90,6 @@ module Engine
         COMPANY_LSR = nil
         COMPANY_OSTH = nil
         COMPANY_LUR = nil
-        COMPANY_CHPR = nil
         COMPANY_5X_REVENUE = nil
         COMPANY_HSBC = nil
         FRANCE_HEX = nil
@@ -323,15 +325,24 @@ module Engine
         @bidbox_cache = []
         @bidbox_companies_size = false
 
+        def init_companies(_players)
+          game_companies.map do |company|
+            Company.new(**company)
+          end.compact
+        end
+
         def setup_companies
           minors = @companies.select { |c| minor?(c) }
           concessions = @companies.select { |c| concession?(c) }
-          privates = @companies.select { |c| private?(c) }
+          privates = @companies.select { |c| private?(c) }.sort_by! { rand }
 
           @companies.clear
           @companies.concat(minors)
           @companies.concat(concessions)
-          @companies.concat(privates.sort_by! { rand }.take(12))
+          @companies.concat(privates.take(self.class::PRIVATES_IN_GAME))
+
+          unused_privates = privates.drop(self.class::PRIVATES_IN_GAME)
+          @log << "Private companies not in this game: #{unused_privates.map(&:name).join(', ')}"
 
           # Randomize from preset seed to get same order
           @companies.sort_by! { rand }
@@ -723,6 +734,22 @@ module Engine
                 true
               end
             end
+          end
+        end
+
+        def company_choices(company, time)
+          case company.id
+          when self.class::COMPANY_TOKEN_SWAP
+            company_choices_chpr(company, time)
+          else
+            {}
+          end
+        end
+
+        def company_made_choice(company, choice, _time)
+          case company.id
+          when self.class::COMPANY_TOKEN_SWAP
+            company_made_choice_chpr(company, choice)
           end
         end
 
