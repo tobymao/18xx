@@ -179,11 +179,11 @@ module Engine
 
         LOCATION_NAMES = {
           'A4' => 'Great Britain',
+          'A8' => 'Boulogne-sur-Mer',
           'A10' => 'London',
           'A12' => 'London shipping',
           'B3' => 'Le Havre',
           'B9' => 'Calais',
-          'B5' => 'Dieppe',
           'B11' => 'Dunkerque',
           'B15' => 'Oostendee',
           'C14' => 'Brugge',
@@ -249,9 +249,9 @@ module Engine
             ['I10'] => 'city=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           gray: {
-            ['A2'] => 'path=a:5,b:0;path=a:0,b:4;',
-            ['A8'] => 'path=a:0,b:4;path=a:0,b:5;path=a:5,b:4;',
-            ['B5'] => 'town=revenue:20;path=a:1,b:_0;path=a:5,b:_0;path=a:1,b:0;path=a:5,b:0',
+            ['A2'] => 'path=a:5,b:0;path=a:0,b:4',
+            ['A8'] => 'town=revenue:20;path=a:0,b:_0;path=a:_0,b:4;path=a:0,b:5;path=a:5,b:4',
+            ['B5'] => 'path=a:1,b:5;path=a:1,b:0;path=a:5,b:0',
             ['B15'] => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0',
             ['C16'] => 'path=a:0,b:1;path=a:4,b:5;path=a:5,b:0',
             ['D1'] => 'town=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
