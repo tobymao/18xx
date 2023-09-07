@@ -154,6 +154,7 @@ module Engine
                 special: true,
                 blocks: true,
                 free: true,
+                connect: false,
                 closed_when_used_up: true,
               },
             ],
@@ -217,10 +218,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P13 (Station Swap) [N/A]',
+            name: 'P13 (Station Swap)',
             sym: 'P13',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR, Phase 5. Station Marker Swap. Allows the owning company to move a token from the exchange '\
+            desc: 'MAJOR, Phase 5. Station Marker Swap. Allows the owning company to move a token from the exchange '\
                   'token area of its charter to the available token area, or vice versa. '\
                   'This company closes when its power is exercised.',
             value: 0,

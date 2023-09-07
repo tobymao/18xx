@@ -22,7 +22,7 @@ module Engine
           end
 
           def select_entities
-            @game.operating_order.select { |item| item.type == :major && @game.corporate_card_minors(item).size < 3 }
+            @game.sorted_corporations.select { |item| item.type == :major && @game.corporate_card_minors(item).size < 3 }
           end
         end
       end
