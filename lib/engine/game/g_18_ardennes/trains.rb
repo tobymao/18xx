@@ -155,10 +155,10 @@ module Engine
         end
 
         def tee_bonus(route, stops)
-          north_south = stops.intersect?(north_cities) &&
-                        stops.intersect?(south_cities)
-          east_west = stops.intersect?(east_cities) &&
-                      stops.intersect?(west_cities)
+          north_south = stops.intersect?(north_nodes) &&
+                        stops.intersect?(south_nodes)
+          east_west = stops.intersect?(east_nodes) &&
+                      stops.intersect?(west_nodes)
           return 0 if !north_south && !east_west
 
           tokens = route.train.owner.placed_tokens

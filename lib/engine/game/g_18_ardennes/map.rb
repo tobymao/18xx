@@ -283,20 +283,20 @@ module Engine
           @tee_hexes[direction]
         end
 
-        def north_cities
+        def north_nodes
           tee_hexes(:north).map(&:tile).flat_map(&:cities)
         end
 
-        def south_cities
+        def south_nodes
           tee_hexes(:south).map(&:tile).flat_map(&:cities)
         end
 
-        def east_cities
+        def east_nodes
           tee_hexes(:east).map(&:tile).flat_map(&:cities)
         end
 
-        def west_cities
-          tee_hexes(:west).map(&:tile).flat_map(&:cities)
+        def west_nodes
+          tee_hexes(:west).map(&:tile).flat_map(&:offboards)
         end
 
         # The number of fort tokens a corporation has collected.
