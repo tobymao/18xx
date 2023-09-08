@@ -242,17 +242,25 @@ module Engine
             color: nil,
           },
           {
-            name: 'P15 (Coffee Plantation) [N/A]',
+            name: 'P15 (Coffee Plantation)',
             sym: 'P15',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 1. Owning company may close this private company to place the coffee '\
+            desc: 'MAJOR/MINOR, Phase 1. Owning company may close this private company to place the coffee '\
                   'plantation token on any hex with mountainous terrain and no tile. '\
                   'The company immediately receives into its treasury A30. When a tile is placed in that hex, '\
                   'the coffee plantation token is placed on it and prevents upgrading this tile. '\
                   'All routes that use this tile earn an extra A20.',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[G11 G15 H10 H14],
+                count: 1,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+              },
+            ],
             color: nil,
           },
           {
