@@ -267,7 +267,7 @@ module Engine
 
           # Draft is Turn 0
           if @draft_finished
-            @turn = 1
+            @turn = 1 if @turn.zero?
 
             return super
           end
