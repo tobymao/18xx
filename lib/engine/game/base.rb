@@ -1292,6 +1292,13 @@ module Engine
         routes.sum(&:revenue)
       end
 
+      # Revenue earned during an Action::RunRoutes, in addition to the train
+      # revenue calculated in #routes_revenue. This value is stored in the game
+      # JSON, this method is not called again whilst a game is being loaded.
+      def extra_revenue(_entity, _routes)
+        0
+      end
+
       def compute_other_paths(routes, route)
         routes.reject { |r| r == route }.flat_map(&:paths)
       end
