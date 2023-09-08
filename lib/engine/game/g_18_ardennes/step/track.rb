@@ -13,16 +13,14 @@ module Engine
 
             # Special case for the green Dunkerque tile. This must connect to
             # the second port exit (to hex F2).
-            if hex.name == 'G3' && tile.color == :green
-              return super && tile.exits.include?(2)
-            end
+            return super && tile.exits.include?(2) if hex.name == 'G3' && tile.color == :green
 
             super
           end
 
           def process_lay_tile(action)
             super
-            @game.after_lay_tile(action.hex, action.tile)
+            @game.after_lay_tile(action.hex, action.tile, action.entity)
           end
         end
       end
