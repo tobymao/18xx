@@ -229,16 +229,29 @@ module Engine
             color: nil,
           },
           {
-            name: 'P14 (Gold Mine) [N/A]',
+            name: 'P14 (Gold Mine)',
             sym: 'P14',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR, Phase 3. Owning company close this company to place the +20 gold mine token in any city '\
+            desc: 'MAJOR, Phase 3. Owning company close this company to place the +20 gold mine token in any city '\
                   'with an open city slot. This token adds 20 to the value of that city for all corporations. '\
                   'The gold mine token occupies a city slot and blocks routes through that city '\
                   'if the city is otherwise full.',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'token',
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                hexes: %w[A7 B2 B10 C9 D2 E1 E9 E11 E13 F18 G3 G7 G17 H8 H10 H12 I7],
+                price: 0,
+                teleport_price: 0,
+                count: 1,
+                extra_action: true,
+                special_only: true,
+                closed_when_used_up: true,
+                check_tokenable: false,
+              },
+            ],
             color: nil,
           },
           {

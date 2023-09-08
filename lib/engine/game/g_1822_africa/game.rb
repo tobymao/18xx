@@ -13,6 +13,8 @@ module Engine
         include G1822Africa::Entities
         include G1822Africa::Map
 
+        attr_accessor :gold_mine_token
+
         CERT_LIMIT = { 2 => 99, 3 => 99, 4 => 99 }.freeze
 
         BIDDING_TOKENS = {
@@ -77,6 +79,9 @@ module Engine
         COMPANY_COFFEE_PLANTATION = 'P15'
         COFFEE_PLANTATION_PLACEMENT_BONUS = 30
         COFFEE_PLANTATION_ROUTE_BONUS = 20
+
+        COMPANY_GOLD_MINE = 'P14'
+        GOLD_MINE_BONUS = 20
 
         GAME_RESERVE_TILE = 'GR'
         GAME_RESERVE_MULTIPLIER = 5
@@ -452,7 +457,7 @@ module Engine
             G1822::Step::SpecialChoose,
             G1822Africa::Step::LayGameReserve,
             G1822::Step::SpecialTrack,
-            G1822::Step::SpecialToken,
+            G1822Africa::Step::SpecialToken,
             G1822Africa::Step::Assign,
             G1822::Step::Track,
             G1822::Step::DestinationToken,
@@ -607,6 +612,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           revenue += plantation_bonus(route)
+          revenue += gold_mine_bonus(route, stops)
           revenue += destination_bonus_for(route)
 
           return revenue unless can_be_express?(route.train)
@@ -622,6 +628,21 @@ module Engine
 
         def plantation_bonus(route)
           route.all_hexes.any? { |hex| plantation_assigned?(hex) } ? self.class::COFFEE_PLANTATION_ROUTE_BONUS : 0
+        end
+
+        def gold_mine_corp
+          @gold_mine_corp ||= Corporation.new(
+            sym: 'MINE',
+            name: 'Gold Mine',
+            logo: '1822_africa/gold_mine',
+            tokens: [0],
+          )
+        end
+
+        def gold_mine_bonus(_route, stops)
+          return 0 unless stops&.find { |s| s.hex == @gold_mine_token.hex }
+
+          self.class::GOLD_MINE_BONUS
         end
 
         def destination_bonus_for(route)
@@ -663,6 +684,7 @@ module Engine
           str = super
           str += ' [Express]' if runs_as_express?(route)
           str += ' +20 (Coffee Plantation) ' if plantation_bonus(route).positive?
+          str += ' +20 (Gold Mine)' if gold_mine_bonus(route, route.stops).positive?
           str
         end
 
