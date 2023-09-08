@@ -218,7 +218,7 @@ module Engine
         MINE_HEXES = %w[H10 H10 I21 I21].freeze
         PORT_HEXES = %w[E5 F4 F4 G3 G3].freeze
         FORT_HEXES = %w[J18 J18 K19 L22 M23].freeze
-        FORT_DESTINATIONS = %w[M27 J4].freeze
+        FORT_DESTINATIONS = %w[M27 J24].freeze
 
         ASSIGNMENT_TOKENS = {
           'J18' => '/logos/18_ardennes/fort.svg',

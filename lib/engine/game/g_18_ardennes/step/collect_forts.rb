@@ -75,6 +75,8 @@ module Engine
             # Never check this hex again for forts if there are no tokens left.
             @game.fort_hexes.delete(hex) if hex.tokens.empty?
           end
+
+          def log_skip(entity); end
         end
       end
     end

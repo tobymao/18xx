@@ -54,8 +54,8 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G18Ardennes::Step::Track,
-            G18Ardennes::Step::CollectForts,
             G18Ardennes::Step::Token,
+            G18Ardennes::Step::CollectForts,
             G18Ardennes::Step::Route,
             G18Ardennes::Step::Dividend,
             Engine::Step::DiscardTrain,
