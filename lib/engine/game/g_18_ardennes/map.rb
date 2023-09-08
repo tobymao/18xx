@@ -217,14 +217,21 @@ module Engine
         WEST_HEXES = %w[E3 F2 G1].freeze
         MINE_HEXES = %w[H10 H10 I21 I21].freeze
         PORT_HEXES = %w[E5 F4 F4 G3 G3].freeze
-        FORT_HEXES = %w[J18 J18 K19 L22 M23].freeze
+        FORT_HEXES = {
+          'Ft1' => 'J18',
+          'Ft2' => 'J18',
+          'Ft3' => 'K19',
+          'Ft4' => 'L22',
+          'Ft5' => 'M23',
+        }.freeze
         FORT_DESTINATIONS = %w[M27 J24].freeze
 
         ASSIGNMENT_TOKENS = {
-          'J18' => '/logos/18_ardennes/fort.svg',
-          'K19' => '/logos/18_ardennes/fort.svg',
-          'L22' => '/logos/18_ardennes/fort.svg',
-          'M23' => '/logos/18_ardennes/fort.svg',
+          'Ft1' => '/logos/18_ardennes/fort.svg',
+          'Ft2' => '/logos/18_ardennes/fort.svg',
+          'Ft3' => '/logos/18_ardennes/fort.svg',
+          'Ft4' => '/logos/18_ardennes/fort.svg',
+          'Ft5' => '/logos/18_ardennes/fort.svg',
           'H10' => '/logos/18_ardennes/mine.svg',
           'I21' => '/logos/18_ardennes/mine.svg',
           'E4' => '/logos/18_ardennes/port.svg',
@@ -233,12 +240,12 @@ module Engine
         }.freeze
 
         def setup_tokens
-          @fort_corp = dummy_corp('Forts', '18_ardennes/fort', FORT_HEXES, true)
-          @mine_corp = dummy_corp('Mines', '18_ardennes/mine', MINE_HEXES, false)
-          @port_corp = dummy_corp('Ports', '18_ardennes/port', PORT_HEXES, false)
+          @mine_corp = dummy_corp('Mines', '18_ardennes/mine', MINE_HEXES)
+          @port_corp = dummy_corp('Ports', '18_ardennes/port', PORT_HEXES)
+          FORT_HEXES.each { |fort, coord| hex_by_id(coord).assign!(fort) }
         end
 
-        def dummy_corp(sym, logo, coords, hex_tokens)
+        def dummy_corp(sym, logo, coords)
           corp = Corporation.new(
             sym: sym,
             name: sym,
@@ -253,10 +260,10 @@ module Engine
             hex = hex_by_id(coord)
             city = hex.tile.cities.first
             token = corp.next_token
-            if hex_tokens || !city.tokenable?(corp)
-              hex.place_token(token)
-            else
+            if city.tokenable?(corp)
               city.place_token(corp, token)
+            else
+              hex.place_token(token)
             end
           end
         end
@@ -266,7 +273,7 @@ module Engine
         end
 
         def fort_hexes
-          @fort_hexes ||= hexes_by_id(FORT_HEXES)
+          @fort_hexes ||= hexes_by_id(FORT_HEXES.values)
         end
 
         def fort_destination_hexes
@@ -301,7 +308,7 @@ module Engine
 
         # The number of fort tokens a corporation has collected.
         def fort_tokens(corporation)
-          corporation.assignments.keys.intersection(FORT_HEXES).size
+          corporation.assignments.keys.intersection(FORT_HEXES.keys).size
         end
 
         # Returns 2 if a corporation has routes to both Paris and Strasbourg,
@@ -324,7 +331,6 @@ module Engine
         def after_lay_tile(hex, tile, entity)
           # Move mine/port tokens from hex into city if possible.
           return if hex.tokens.empty?
-          return unless (MINE_HEXES + PORT_HEXES).include?(hex.coordinates)
 
           city = tile.cities.first
           return if city.available_slots.zero?

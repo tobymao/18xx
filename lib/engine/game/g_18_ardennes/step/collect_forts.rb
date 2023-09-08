@@ -40,10 +40,9 @@ module Engine
 
           def choices
             reachable_forts(current_entity)
-              .flat_map(&:tokens)
-              .map(&:hex)
-              .map(&:coordinates)
-              .to_h { |coord| [coord, "Collect fort token on hex #{coord}"] }
+              .map(&:assignments)
+              .flat_map(&:keys)
+              .to_h { |f| [f, "Collect fort token on hex #{Map::FORT_HEXES[f]}"] }
           end
 
           # Checks whether there are any fort hexes with track. This does not
@@ -64,16 +63,18 @@ module Engine
           end
 
           def process_choose(action)
-            collect_fort(@game.hex_by_id(action.choice), action.entity)
+            fort = action.choice
+            hex = @game.hex_by_id(Map::FORT_HEXES[fort])
+            collect_fort(hex, fort, action.entity)
           end
 
-          def collect_fort(hex, corporation)
+          def collect_fort(hex, fort, corporation)
             @game.log << "#{corporation.id} collects a fort token from hex " \
                          "#{hex.coordinates} (#{hex.location_name})"
-            hex.tokens.first.remove!
-            corporation.assign!(hex.coordinates)
+            hex.remove_assignment!(fort)
+            corporation.assign!(fort)
             # Never check this hex again for forts if there are no tokens left.
-            @game.fort_hexes.delete(hex) if hex.tokens.empty?
+            @game.fort_hexes.delete(hex) if hex.assignments.empty?
           end
 
           def log_skip(entity); end
