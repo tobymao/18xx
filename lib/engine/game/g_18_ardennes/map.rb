@@ -95,9 +95,16 @@ module Engine
                     'stub=edge:4;',
 
             # City hexes
-            %w[B12 E15 H26 I21 J18 K5] =>
+            %w[B12 E15 I21 J18 K5] =>
                     'city=revenue:0;',
-            %w[D18 E9 G25 H6 J24] =>
+            %w[H26] =>
+                    'city=revenue:0;' \
+                    'icon=image:18_ardennes/east,sticky:1;',
+            %w[D18 G25] =>
+                    'city=revenue:0;' \
+                    'label=Y;' \
+                    'icon=image:18_ardennes/east,sticky:1;',
+            %w[E9 H6 J24] =>
                     'city=revenue:0;' \
                     'label=Y;',
             %w[F4 G3] =>
@@ -115,12 +122,14 @@ module Engine
           yellow: {
             %w[B8] =>
                     'label=A;' \
+                    'icon=image:18_ardennes/north,sticky:1,loc:2.5;' \
                     'city=revenue:30;' \
                     'city=revenue:30;' \
                     'path=a:1,b:_0;' \
                     'path=a:4,b:_1;',
             %w[B16] =>
                     'label=R;' \
+                    'icon=image:18_ardennes/north,sticky:1,loc:2.5;' \
                     'city=revenue:30;' \
                     'town=revenue:10;' \
                     'path=a:0,b:_0;' \
@@ -133,6 +142,7 @@ module Engine
                     'path=a:2,b:_1;',
             %w[E25] =>
                     'label=T;' \
+                    'icon=image:18_ardennes/east,sticky:1;' \
                     'city=revenue:30;' \
                     'city=revenue:30;' \
                     'path=a:0,b:_0;' \
@@ -140,6 +150,7 @@ module Engine
                     'path=a:1,b:_1;',
             %w[M7] =>
                     'label=P;' \
+                    'icon=image:18_ardennes/south,sticky:1;' \
                     'city=revenue:40;' \
                     'city=revenue:40;' \
                     'path=a:1,b:_0;' \
@@ -148,6 +159,7 @@ module Engine
                     'path=a:4,b:_1;',
             %w[M27] =>
                     'label=T;' \
+                    'icon=image:18_ardennes/south,sticky:1;' \
                     'city=revenue:30;' \
                     'city=revenue:30;' \
                     'path=a:1,b:_0;' \
@@ -169,10 +181,12 @@ module Engine
                     'path=a:1,b:3;',
             %w[F2] =>
                     'offboard=revenue:0;' \
+                    'icon=image:18_ardennes/west,sticky:1;' \
                     'path=a:4,b:_0;' \
                     'path=a:5,b:_0;',
             %w[E3 G1] =>
                     'offboard=revenue:0;' \
+                    'icon=image:18_ardennes/west,sticky:1;' \
                     'path=a:4,b:_0;',
             %w[I1] =>
                     'town=revenue:20;' \
