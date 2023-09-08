@@ -56,7 +56,7 @@ module Engine
             G18Ardennes::Step::Track,
             G18Ardennes::Step::CollectForts,
             G18Ardennes::Step::Token,
-            Engine::Step::Route,
+            G18Ardennes::Step::Route,
             G18Ardennes::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
