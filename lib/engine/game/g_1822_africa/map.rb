@@ -111,9 +111,8 @@ module Engine
           blue: {
             ['A3'] => 'junction;path=a:4,b:_0,terminal:1',
             ['A11'] => 'junction;path=a:4,b:_0,terminal:1',
-            ['E19'] => 'junction;path=a:4,b:_0,terminal:1',
             ['G1'] => 'junction;path=a:0,b:_0,terminal:1',
-            ['J8'] => 'junction;path=a:2,b:_0,terminal:1',
+            %w[G19 J8] =>  'junction;path=a:2,b:_0,terminal:1',
           },
         }.freeze
       end
