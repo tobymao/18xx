@@ -22,21 +22,20 @@ module Engine
             return false unless super
 
             bundle = bundle.to_bundle
-            double_cert = bundle.shares.find(&:double_cert)
+            # double_cert = bundle.shares.find(&:double_cert)
             corporation = bundle.corporation
+            cert = bundle.shares.first
 
             # 2nd and last IPO shares may be double; they must be bought in order
-            if double_cert&.owner == corporation.ipo_owner
+            if cert.owner == corporation.ipo_owner
               # Filter out investor shares
               ipo_shares = corporation.ipo_shares.select(&:buyable)
 
-              if double_cert && corporation.second_share_double && corporation.last_share_double
-                return ipo_shares.size == 6 || ipo_shares.size == 1
-              end
+              return cert.double_cert if corporation.second_share_double && ipo_shares.size == 6
 
-              return ipo_shares.size == 1 if double_cert && corporation.last_share_double
+              return cert.double_cert if corporation.last_share_double && ipo_shares.size == 1
 
-              return false if corporation.second_share_double && (ipo_shares.size == 6)
+              return false if cert.double_cert
             end
 
             true
