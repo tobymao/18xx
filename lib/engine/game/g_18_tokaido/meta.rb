@@ -8,11 +8,11 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         PROTOTYPE = true
         DEPENDS_ON = '18 Los Angeles'
 
-        GAME_TITLE = '18 Tokaido'
+        GAME_TITLE = '18Tokaido'
         GAME_ISSUE_LABEL = '18Tokaido'
         GAME_DESIGNER = 'Douglas Triggs'
         GAME_LOCATION = 'Central Japan'
@@ -38,6 +38,11 @@ module Engine
             sym: :limited_express,
             short_name: 'Limited Express',
             desc: 'removes one of the 6 trains from the game',
+          },
+          {
+            sym: :waterfall_auction,
+            short_name: 'Waterfall Auction',
+            desc: 'standard waterfall auction instead of snake draft',
           },
         ].freeze
       end
