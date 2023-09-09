@@ -33,26 +33,21 @@ module Engine
             remove_minor = nil
             concession_to_remove = nil
 
-            minors, companies = @game.bidbox.partition { |c| @game.minor?(c) }
-
-            companies.each_with_index do |company, index|
-              if (bid = highest_bid(company))
+            @game.bidbox.each_with_index do |company, index|
+              if @game.minor?(company)
+                if (bid = highest_bid(company))
+                  float_minors << [bid, index]
+                else
+                  remove_l_count += 1
+                  remove_minor = company if index.zero?
+                end
+                minor_count += 1
+              elsif (bid = highest_bid(company))
                 buy_company(bid)
               else
                 company.owner = nil
-                concession_to_remove = company if index.zero? && @game.concession?(company)
+                concession_to_remove = company if @game.concession?(company) && index.zero?
               end
-            end
-
-            minors.each_with_index do |minor, index|
-              if (bid = highest_bid(minor))
-                float_minors << [bid, index]
-              else
-                minor.owner = nil
-                remove_l_count += 1
-                remove_minor = minor if index.zero?
-              end
-              minor_count += 1
             end
 
             # Sort the minors first according to bid price, highest first. If a tie, lowest index first
@@ -72,7 +67,7 @@ module Engine
             if @game.nothing_sold_in_sr?
               clear_bidboxes(current_bidbox_items)
             elsif concession_to_remove
-              @game.log << "No bids on concession #{concession_to_remove.id}, it will be removed from the game"
+              @game.log << "No bids on #{concession_to_remove.name}, it is removed from the game"
               close_company(concession_to_remove)
             end
 
