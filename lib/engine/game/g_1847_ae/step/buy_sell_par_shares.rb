@@ -22,7 +22,6 @@ module Engine
             return false unless super
 
             bundle = bundle.to_bundle
-            # double_cert = bundle.shares.find(&:double_cert)
             corporation = bundle.corporation
             cert = bundle.shares.first
 
