@@ -40,7 +40,6 @@ module View
             company = @selected_company
             target = @corporation
             store(:selected_corporation, nil, skip: true)
-            store(:selected_company, nil, skip: true)
             process_action(Engine::Action::Assign.new(company, target: target))
           end
         end
