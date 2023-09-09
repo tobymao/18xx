@@ -42,7 +42,7 @@ module Engine
         BANK_CASH = 99_999
 
         MARKET = [
-          %w[40 50p 60xp 70xp 80xp 90m 100 110 120 135 150 165e],
+          %w[40 50p 60xp 70xp 80xp 95m 115 140 170 205 250 300 350e 400e],
         ].freeze
 
         MUST_SELL_IN_BLOCKS = true
