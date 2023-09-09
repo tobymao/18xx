@@ -69,6 +69,8 @@ module Engine
         COMPANY_REMOVE_TOWN = 'P9'
         COMPANY_EXTRA_TILE_LAYS = %w[P7 P12].freeze
         COMPANY_TOKEN_SWAP = 'P13'
+        COMPANY_RECYCLED_TRAIN = 'P6'
+        COMPANY_SELL_SHARE = 'P17'
 
         GAME_RESERVE_TILE = 'GR'
         GAME_RESERVE_MULTIPLIER = 5
@@ -450,7 +452,7 @@ module Engine
             G1822::Step::Token,
             G1822::Step::Route,
             G1822::Step::Dividend,
-            G1822::Step::BuyTrain,
+            G1822Africa::Step::BuyTrain,
             G1822Africa::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             G1822::Step::DiscardTrain,
@@ -741,16 +743,73 @@ module Engine
           case company.id
           when self.class::COMPANY_TOKEN_SWAP
             company_choices_chpr(company, time)
+          when self.class::COMPANY_RECYCLED_TRAIN
+            company_choices_recycled_train(company, time)
+          when self.class::COMPANY_SELL_SHARE
+            company_choices_sell_share(company, time)
           else
             {}
           end
+        end
+
+        def company_choices_recycled_train(company, time)
+          return {} if time != :buy_train || !company.owner&.corporation?
+          return {} unless room?(company.owner)
+
+          choices = {}
+
+          @depot.trains.group_by(&:name).each do |name, trains|
+            train = trains.first
+            next unless train.rusted
+
+            choices[name] = "Buy #{name} for #{format_currency(train.price)}"
+          end
+
+          choices
+        end
+
+        def company_choices_sell_share(company, time)
+          return {} if !company.owner&.corporation? || !%i[token track buy_train issue acquire_minor].include?(time)
+          return {} if company.owner.num_treasury_shares.zero?
+
+          corp = company.owner
+
+          { sell: "Sell #{corp.name} treasury share for #{format_currency(corp.share_price.price)}" }
         end
 
         def company_made_choice(company, choice, _time)
           case company.id
           when self.class::COMPANY_TOKEN_SWAP
             company_made_choice_chpr(company, choice)
+          when self.class::COMPANY_RECYCLED_TRAIN
+            company_made_choice_recycled_train(company, choice)
+          when self.class::COMPANY_SELL_SHARE
+            company_made_choice_sell_share(company, choice)
           end
+        end
+
+        def company_made_choice_recycled_train(company, choice)
+          train = @depot.trains.find { |t| t.name == choice }
+          new_train = Engine::Train.new(name: "#{train.name}R", distance: train.distance, price: train.price)
+          new_train.owner = @depot
+          @depot.trains << train
+
+          @log << "#{company.owner.name} buys a recycled #{train.name} train for #{format_currency(train.price)}"
+          buy_train(company.owner, new_train)
+
+          @log << "#{company.name} closes"
+          company.close!
+        end
+
+        def company_made_choice_sell_share(company, _choice)
+          share_pool.sell_shares(ShareBundle.new(company.owner.treasury_shares.first))
+
+          @log << "#{company.name} closes"
+          company.close!
+        end
+
+        def room?(entity)
+          entity.trains.count { |t| !extra_train?(t) } < train_limit(entity)
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does

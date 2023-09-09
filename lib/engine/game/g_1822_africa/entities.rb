@@ -55,10 +55,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P6 (Recycled train) [N/A]',
+            name: 'P6 (Recycled train)',
             sym: 'P6',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 3. Close this company to buy a rusted train for full price '\
+            desc: 'MAJOR/MINOR, Phase 3. Close this company to buy a rusted train for full price '\
                   '(purchased train becomes permanent and is not a special train)',
             value: 0,
             revenue: 10,
@@ -270,10 +269,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P17 (Bank Share Buy) [N/A]',
+            name: 'P17 (Bank Share Buy)',
             sym: 'P17',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR, Phase 2. Owning company may close this private company for the bank to purchase a share '\
+            desc: 'MAJOR, Phase 2. Owning company may close this private company for the bank to purchase a share '\
                   'it owns for the current market value. The share is moved to the bank pool. This does not count '\
                   'as a share issuance and does not affect the stock price.',
             value: 0,
