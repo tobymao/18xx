@@ -133,7 +133,7 @@ module View
 
           if n_id == o_id + 1
             game_data['actions'] << data
-            store(:selected_company, nil, skip: true)
+            store(:selected_company, nil, skip: true) unless data['type'] == 'message'
             store(:game_data, game_data, skip: true)
             store(:game, game.process_action(data))
           else
