@@ -2216,6 +2216,14 @@ module Engine
         def event_setup_company_price_up_to_face!
           setup_company_price_up_to_face
         end
+
+        def check_connected(route, corporation)
+          route.hexes.each do |hex|
+            raise GameError, 'Route is not connected' if hex.tile.color == :purple && hex.id != corporation.coordinates
+          end
+
+          super
+        end
       end
     end
   end
