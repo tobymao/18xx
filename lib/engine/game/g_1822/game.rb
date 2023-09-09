@@ -2115,6 +2115,26 @@ module Engine
         def port_tile?(hex)
           hex.tile.color == :blue && !hex.tile.cities.empty?
         end
+
+        def pullman_route_distance_str(route)
+          towns = route.visited_stops.count(&:town?)
+          cities = route_distance(route) - towns
+          towns.positive? ? "#{cities}+#{towns}" : cities.to_s
+        end
+
+        def e_route_distance_str(route)
+          corp = route.train.owner
+          total_laid_tokens = corp.tokens.count(&:used)
+          paying_stops = route.visited_stops.count { |stop| stop.tokened_by?(corp) }
+          "#{paying_stops}/#{total_laid_tokens}"
+        end
+
+        def route_distance_str(route)
+          return pullman_route_distance_str(route) if route.train.name[-1] == '+'
+          return e_route_distance_str(route) if route.train.name == 'E'
+
+          super(route)
+        end
       end
     end
   end

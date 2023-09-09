@@ -55,10 +55,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P6 (Recycled train) [N/A]',
+            name: 'P6 (Recycled train)',
             sym: 'P6',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 3. Close this company to buy a rusted train for full price '\
+            desc: 'MAJOR/MINOR, Phase 3. Close this company to buy a rusted train for full price '\
                   '(purchased train becomes permanent and is not a special train)',
             value: 0,
             revenue: 10,
@@ -229,30 +228,51 @@ module Engine
             color: nil,
           },
           {
-            name: 'P14 (Gold Mine) [N/A]',
+            name: 'P14 (Gold Mine)',
             sym: 'P14',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR, Phase 3. Owning company close this company to place the +20 gold mine token in any city '\
+            desc: 'MAJOR, Phase 3. Owning company close this company to place the +20 gold mine token in any city '\
                   'with an open city slot. This token adds 20 to the value of that city for all corporations. '\
                   'The gold mine token occupies a city slot and blocks routes through that city '\
                   'if the city is otherwise full.',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'token',
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                hexes: %w[A7 B2 B10 C9 D2 E1 E9 E11 E13 F18 G3 G7 G17 H8 H10 H12 I7],
+                price: 0,
+                teleport_price: 0,
+                count: 1,
+                extra_action: true,
+                special_only: true,
+                closed_when_used_up: true,
+                check_tokenable: false,
+              },
+            ],
             color: nil,
           },
           {
-            name: 'P15 (Coffee Plantation) [N/A]',
+            name: 'P15 (Coffee Plantation)',
             sym: 'P15',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 1. Owning company may close this private company to place the coffee '\
+            desc: 'MAJOR/MINOR, Phase 1. Owning company may close this private company to place the coffee '\
                   'plantation token on any hex with mountainous terrain and no tile. '\
                   'The company immediately receives into its treasury A30. When a tile is placed in that hex, '\
                   'the coffee plantation token is placed on it and prevents upgrading this tile. '\
                   'All routes that use this tile earn an extra A20.',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[G11 G15 H10 H14],
+                count: 1,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+              },
+            ],
             color: nil,
           },
           {
@@ -270,10 +290,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P17 (Bank Share Buy) [N/A]',
+            name: 'P17 (Bank Share Buy)',
             sym: 'P17',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR, Phase 2. Owning company may close this private company for the bank to purchase a share '\
+            desc: 'MAJOR, Phase 2. Owning company may close this private company for the bank to purchase a share '\
                   'it owns for the current market value. The share is moved to the bank pool. This does not count '\
                   'as a share issuance and does not affect the stock price.',
             value: 0,
