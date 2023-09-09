@@ -24,16 +24,20 @@ module Engine
             bundle = bundle.to_bundle
             double_cert = bundle.shares.find(&:double_cert)
             corporation = bundle.corporation
-            # Filter out investor shares
-            ipo_shares = corporation.ipo_shares.select(&:buyable)
 
-            if double_cert && corporation.second_share_double && corporation.last_share_double
-              return ipo_shares.size == 6 || ipo_shares.size == 1
+            # 2nd and last IPO shares may be double; they must be bought in order
+            if double_cert&.owner == corporation.ipo_owner
+              # Filter out investor shares
+              ipo_shares = corporation.ipo_shares.select(&:buyable)
+
+              if double_cert && corporation.second_share_double && corporation.last_share_double
+                return ipo_shares.size == 6 || ipo_shares.size == 1
+              end
+
+              return ipo_shares.size == 1 if double_cert && corporation.last_share_double
+
+              return false if corporation.second_share_double && (ipo_shares.size == 6)
             end
-
-            return ipo_shares.size == 1 if double_cert && corporation.last_share_double
-
-            return false if corporation.second_share_double && (ipo_shares.size == 6)
 
             true
           end
