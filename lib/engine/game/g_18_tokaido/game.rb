@@ -147,7 +147,13 @@ module Engine
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
 
         def setup
-          @reverse = true
+          if waterfall_auction
+            @companies.each do |c|
+              c.value -= (c.value - 20) / 4
+            end
+          else
+            @reverse = true
+          end
           @e_train_exported = false
           setup_company_price_up_to_face
         end
@@ -189,11 +195,18 @@ module Engine
         end
 
         def init_round
-          Engine::Round::Draft.new(
-            self,
-            [G18Tokaido::Step::DraftDistribution],
-            snake_order: true
-          )
+          if waterfall_auction
+            Engine::Round::Auction.new(self, [
+              Engine::Step::CompanyPendingPar,
+              Engine::Step::WaterfallAuction,
+            ])
+          else
+            Engine::Round::Draft.new(
+              self,
+              [G18Tokaido::Step::DraftDistribution],
+              snake_order: true
+            )
+          end
         end
 
         def init_round_finished
@@ -258,6 +271,8 @@ module Engine
             when Engine::Round::Draft
               init_round_finished
               reorder_players
+              new_stock_round
+            when Engine::Round::Auction
               new_stock_round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
@@ -351,6 +366,10 @@ module Engine
         end
 
         def draft_finished?; end
+
+        def waterfall_auction
+          @optional_rules&.include?(:waterfall_auction)
+        end
       end
     end
   end
