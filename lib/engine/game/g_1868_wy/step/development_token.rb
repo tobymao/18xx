@@ -42,7 +42,7 @@ module Engine
             if current_entity.find_token_by_type(:development)
               'You may place the BZ Oil Development Token for free.'
             else
-              'You may move the BZ Oil Development Token for free.'
+              'You may remove and then place the BZ Oil Development Token for free.'
             end
           end
 
@@ -74,7 +74,10 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            @game.available_development_hex?(entity, hex)
+            return true if actions(entity).include?('hex_token') && @game.available_development_hex?(entity, hex)
+            return true if actions(entity).include?('remove_hex_token') && entity.tokens.any? { |t| t.hex == hex }
+
+            false
           end
 
           def available_tokens(entity)
@@ -103,7 +106,7 @@ module Engine
           def can_remove_token?(entity)
             entity.type == :oil &&
               @net_tokens_placed.zero? &&
-              @game.placed_oil_dt_count[entity].positive?
+              (@game.placed_oil_dt_count[entity].positive? || entity == @game.bonanza)
           end
 
           def process_hex_token(action)
