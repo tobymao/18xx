@@ -49,7 +49,7 @@ module Engine
           '619' => 4,
           '901' => {
             'count' => 1,
-            'color': 'green',
+            'color' => 'green',
             'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;'\
                       'path=a:3,b:_1;label=L',
           },
@@ -231,7 +231,6 @@ module Engine
             ['G4'] => 'border=edge:4,type:impassable;border=edge:5,type:impassable',
             ['G6'] => 'border=edge:1,type:impassable;border=edge:2,type:impassable',
             ['G18'] => 'city=revenue:0;border=edge:3,type:impassable',
-            ['H5'] => 'upgrade=cost:30,terrain:mountain;border=edge:2,type:impassable;border=edge:5,type:impassable',
             ['H5'] => 'upgrade=cost:30,terrain:mountain;border=edge:2,type:impassable;border=edge:5,type:impassable',
             ['I10'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:5,type:impassable',
             ['J11'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:2,type:impassable',

@@ -132,10 +132,10 @@ module Engine
         ].freeze
 
         TRAINS = [
-          { 
+          {
             name: '2',
-            num: 13, 
-            distance: 2, 
+            num: 13,
+            distance: 2,
             price: 90,
             rusts_on: '4',
             variants: [
@@ -143,12 +143,12 @@ module Engine
                 name: '2H',
                 distance: 2,
                 price: 70,
-              }
+              },
             ],
           },
-          { 
+          {
             name: '3',
-            num: 9, 
+            num: 9,
             distance: 3,
             price: 180,
             rusts_on: '6',
@@ -157,12 +157,12 @@ module Engine
                 name: '3H',
                 distance: 3,
                 price: 150,
-              }
+              },
             ],
           },
-          { 
+          {
             name: '4',
-            num: 6, 
+            num: 6,
             distance: 4,
             price: 300,
             rusts_on: '7',
@@ -171,12 +171,12 @@ module Engine
                 name: '4H',
                 distance: 4,
                 price: 260,
-              }
+              },
             ],
           },
-          { 
+          {
             name: '5',
-            num: 4, 
+            num: 4,
             distance: 5,
             price: 450,
             events: [{ 'type' => 'close_companies' }, { 'type' => 'sbb_formation' }],
@@ -185,12 +185,12 @@ module Engine
                 name: '5H',
                 distance: 5,
                 price: 400,
-              }
+              },
             ],
           },
-          { 
+          {
             name: '6',
-            num: 4, 
+            num: 4,
             distance: 6,
             price: 630,
             events: [{ 'type' => 'full_capitalization' }],
@@ -199,12 +199,12 @@ module Engine
                 name: '6H',
                 distance: 6,
                 price: 550,
-              }
+              },
             ],
           },
-          { 
+          {
             name: '8E',
-            num: 20, 
+            num: 20,
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 99 }],
             price: 960,
             variants: [
@@ -212,7 +212,7 @@ module Engine
                 name: '8H',
                 distance: 8,
                 price: 700,
-              }
+              },
             ],
           },
         ].freeze
@@ -221,6 +221,13 @@ module Engine
           'sbb_formation' => ['SBB Forms', 'SBB forms at end of OR'],
           'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization']
         ).freeze
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            Engine::Step::SelectionAuction,
+          ])
+        end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
