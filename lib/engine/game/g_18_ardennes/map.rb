@@ -224,7 +224,7 @@ module Engine
           'Ft4' => 'L22',
           'Ft5' => 'M23',
         }.freeze
-        FORT_DESTINATIONS = %w[M27 J24].freeze
+        FORT_DESTINATIONS = %w[M7 J24].freeze
 
         ASSIGNMENT_TOKENS = {
           'Ft1' => '/logos/18_ardennes/fort.svg',
