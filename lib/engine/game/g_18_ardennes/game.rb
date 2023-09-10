@@ -28,6 +28,8 @@ module Engine
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
 
+        MUST_BUY_TRAIN = :always # Just for majors, minors are handled in #must_buy_train?
+
         def setup
           super
 

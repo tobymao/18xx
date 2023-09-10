@@ -179,6 +179,14 @@ module Engine
 
           10 * forts * fort_destinations(corporation)
         end
+
+        def must_buy_train?(entity)
+          return super unless entity.type == :minor
+
+          # Minors are not obliged to buy a train, and cannot enter emergency
+          # fund raising.
+          false
+        end
       end
     end
   end
