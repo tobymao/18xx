@@ -434,7 +434,8 @@ module Engine
 
         def exchange_all_investor_companies!
           INVESTOR_COMPANIES.map { |id| company_by_id(id) }.reject(&:closed?).each do |company|
-            corporation = corporation_by_id(company.abilities.first.corporations.first)
+            ability = company.abilities.find { |a| a.type == :exchange }
+            corporation = corporation_by_id(ability.corporations.first)
             share = corporation.reserved_shares.first
             share_pool.buy_shares(company.owner,
                                   share.to_bundle,
