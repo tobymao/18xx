@@ -361,7 +361,8 @@ module Engine
           @log << "-- Setting game up for #{@players.size} players --"
 
           @ferry_marker_ability =
-            Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
+            Engine::Ability::Description.new(type: 'description', description: 'Ferry marker',
+                                             desc_detail: 'May access London (A10)')
           block_london
 
           paris_tiles = @all_tiles.select { |t| PARIS_TILES.include?(t.name) }
@@ -488,8 +489,10 @@ module Engine
           when Action::PlaceToken
             # Mark the corporation that has London bonus
             if action.city.hex.id == LONDON_BONUS_FERRY_SUPPLY_HEX
-              action.entity.add_ability(
-                Engine::Ability::Description.new(type: 'description', description: 'London shipping')
+              action.entity.owner.add_ability(
+                Engine::Ability::Description.new(type: 'description', description: 'London bonus',
+                                                 desc_detail: 'The alue of London (A10) is increased, for this corporation only,'\
+                                                              ' by the largest non-London, non-Luxembourg revenue on the route.')
               )
               return
             end
@@ -559,7 +562,7 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          max_bundle_size = @round.round_num == 1 ? 2 : 1 
+          max_bundle_size = @round.round_num == 1 ? 2 : 1
 
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| bundle.shares.size > max_bundle_size || entity.cash < bundle.price }
@@ -670,7 +673,7 @@ module Engine
           get_route_max_value(corporation, stops)
         end
 
-        def get_route_max_value(corporation, stops, ignore_london: false)
+        def get_route_max_value(_corporation, stops, ignore_london: false)
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
 
           if ignore_london
@@ -728,7 +731,7 @@ module Engine
         end
 
         def add_ferry_marker_to_common_supply
-          @log << "Reserved ferry marker returned to the common supply"
+          @log << 'Reserved ferry marker returned to the common supply'
           hex_by_id(LONDON_BONUS_FERRY_SUPPLY_HEX).tile.icons << Part::Icon.new('1894/ferry')
         end
 
