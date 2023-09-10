@@ -5,6 +5,7 @@ require_relative '../company_price_up_to_face'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'tiles'
 require_relative 'step/buy_company'
 require_relative 'step/draft_distribution'
 
@@ -15,6 +16,7 @@ module Engine
         include_meta(G18Tokaido::Meta)
         include Entities
         include Map
+        include Tiles
         include CompanyPriceUpToFace
 
         register_colors(green: '#237333',
@@ -145,6 +147,14 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
 
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
+
+        def game_tiles
+          if @optional_rules&.include?(:limited_tileset)
+            G18Tokaido::Tiles.limited_tiles(G18Tokaido::Tiles::TILES)
+          else
+            G18Tokaido::Tiles::TILES
+          end
+        end
 
         def setup
           if waterfall_auction
