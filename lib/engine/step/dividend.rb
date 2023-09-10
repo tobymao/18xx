@@ -58,6 +58,7 @@ module Engine
         rust_obsolete_trains!(entity)
 
         @round.routes = []
+        @round.extra_revenue = 0
 
         log_run_payout(entity, kind, revenue, action, payout)
 
