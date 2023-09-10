@@ -5,6 +5,7 @@ require_relative '../company_price_up_to_face'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'stock_market'
 require_relative 'tiles'
 require_relative 'step/buy_company'
 require_relative 'step/draft_distribution'
@@ -17,6 +18,7 @@ module Engine
         include Entities
         include Map
         include Tiles
+        include StockMarket
         include CompanyPriceUpToFace
 
         register_colors(green: '#237333',
@@ -34,17 +36,6 @@ module Engine
         STARTING_CASH = { 2 => 820, 3 => 550, 4 => 480 }.freeze
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
-
-        MARKET = [
-          %w[75 80 85 95 105 115 130 145 160 180 200 225 250 275 300],
-          %w[70 75 80 85 95p 105 115 130 145 160 180 200 225 250 275],
-          %w[65 70 75 80p 85 95 105 115 130 145 160],
-          %w[60 65 70p 75 80 85 95 105],
-          %w[55 60 65 70 75 80],
-          %w[50 55 60 65],
-          %w[45 50 55],
-          %w[40 45],
-        ].freeze
 
         PHASES = [
           {
@@ -153,6 +144,19 @@ module Engine
             G18Tokaido::Tiles.limited_tiles(G18Tokaido::Tiles::TILES)
           else
             G18Tokaido::Tiles::TILES
+          end
+        end
+
+        def game_market
+          if @optional_rules&.include?(:alternate_stock_market)
+            market = G18Tokaido::AlternateMarket::MARKET.dup
+            market.map do |row|
+              row.map { |p| p.include?('y') ? p.chop : p }
+            end
+          elsif @optional_rules&.include?(:yellow_zone)
+            G18Tokaido::AlternateMarket::MARKET
+          else
+            G18Tokaido::StockMarket::MARKET
           end
         end
 
