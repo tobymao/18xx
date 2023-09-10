@@ -55,13 +55,9 @@ module Engine
           # The `remove_token` action is used to replace a port or mine token
           # with a corporation's token.
           def process_remove_token(action)
-            corp = action.entity
-            city = action.city
-            check_connected(corp, city, city.hex)
-
-            city.tokens[action.slot].remove!
-            place_token(corp, city, available_tokens(corp).first)
-            corp.assign!(city.hex.coordinates)
+            check_connected(action.entity, action.city, action.city.hex)
+            @game.replace_dummy_token(action.city.tokens[action.slot],
+                                      action.entity)
             pass!
           end
         end

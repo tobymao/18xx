@@ -69,8 +69,7 @@ module Engine
             hex = action.hex
             return if hex.tokens.empty?
 
-            action.entity.assign!(hex.coordinates)
-            hex.tokens.first.remove!
+            @game.replace_dummy_token(action.entity, hex.tokens.first)
           end
         end
       end
