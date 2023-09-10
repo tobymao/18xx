@@ -328,9 +328,9 @@ module Engine
           corporations.reject { |corp| corp.type == :minor }.sort
         end
 
-        def can_par?(_corporation, _parrer)
+        def can_par?(corporation, _parrer)
           # TODO: major corporation concessions
-          false
+          corporation.type == :minor
         end
       end
     end
