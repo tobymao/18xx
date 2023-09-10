@@ -6,7 +6,7 @@ module Engine
   module Game
     module G18Tokaido
       module Meta
-        include Game::Meta
+        include Engine::Game::Meta
 
         DEV_STAGE = :beta
         PROTOTYPE = true
@@ -44,6 +44,25 @@ module Engine
             short_name: 'Waterfall Auction',
             desc: 'standard waterfall auction instead of snake draft',
           },
+          {
+            sym: :limited_tileset,
+            short_name: '[Project Kyuroku] Limited Tileset',
+            desc: 'smaller, more limited tileset',
+          },
+          {
+            sym: :alternate_stock_market,
+            short_name: '[Project Kyuroku] Alternate Stock Market',
+            desc: 'alternate stock market',
+          },
+          {
+            sym: :yellow_zone,
+            short_name: '[Project Kyuroku] Alternate Stock Market with Yellow Zone',
+            desc: 'enables yellow zone on the alternate stock market',
+          },
+        ].freeze
+
+        MUTEX_RULES = [
+          %i[alternate_stock_market yellow_zone],
         ].freeze
       end
     end
