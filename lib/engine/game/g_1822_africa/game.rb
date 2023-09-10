@@ -642,7 +642,7 @@ module Engine
         end
 
         def gold_mine_bonus(_route, stops)
-          return 0 unless stops&.find { |s| s.hex == @gold_mine_token.hex }
+          return 0 if !@gold_mine_token || stops&.none? { |s| s.hex == @gold_mine_token.hex }
 
           self.class::GOLD_MINE_BONUS
         end
