@@ -9,6 +9,24 @@ module Engine
     module G1822Africa
       module Step
         class MinorAcquisition < Engine::Game::G1822::Step::MinorAcquisition
+          def actions(entity)
+            actions = super
+
+            actions << 'choose_ability' if !choices_ability(entity).empty? && !actions.include?('choose_ability')
+
+            actions
+          end
+
+          def choices_ability(entity)
+            return {} unless entity.company?
+
+            @game.company_choices(entity, :acquire_minor)
+          end
+
+          def process_choose_ability(action)
+            @game.company_made_choice(action.entity, action.choice, :acquire_minor)
+          end
+
           def can_acquire?(entity)
             return false if !entity.corporation? || (entity.corporation? && entity.type != :major)
 
