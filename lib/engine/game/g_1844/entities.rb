@@ -84,8 +84,8 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'The company closes when the first 5 or 5H train is bought and the player receives the 5H train "EVA".' \
-                  'They may assign it immediately or later to any corporation they are the director of. Train limits must '\
-                  'be kept.',
+                  ' They may assign it immediately or later to any corporation they are the director of. Train limits must'\
+                  ' be kept.',
             abilities: [
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
