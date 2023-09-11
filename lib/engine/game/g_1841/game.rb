@@ -753,8 +753,8 @@ module Engine
           end
         end
 
-        def auction_companies
-          companies.dup
+        def initial_auction_companies
+          companies
         end
 
         # reorder players by least cash.

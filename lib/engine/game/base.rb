@@ -2229,6 +2229,10 @@ module Engine
         []
       end
 
+      def initial_auction_companies
+        @companies
+      end
+
       private
 
       def init_graph

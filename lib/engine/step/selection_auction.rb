@@ -82,7 +82,7 @@ module Engine
 
       def setup
         setup_auction
-        @companies = @game.companies.sort_by(&:value)
+        @companies = @game.initial_auction_companies.sort_by(&:value)
         @cheapest = @companies.first
         auction_entity(@companies.first)
         @auction_triggerer = current_entity
