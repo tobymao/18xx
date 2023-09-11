@@ -139,11 +139,8 @@ module Engine
       end
 
       def forced_win(player, company)
-        assign_company(company, player)
-
-        @companies.delete(company)
-        @log << "#{player.name} wins the auction for #{company.name} "\
-                "for #{@game.format_currency(0)}"
+        @active_bidders = [player]
+        process_bid(Engine::Action::Bid.new(player, price: 0, company: company))
       end
 
       def assign_company(company, player)
@@ -173,6 +170,14 @@ module Engine
         end
 
         entities.each(&:unpass!)
+      end
+
+      def post_win_bid(_winner, _company)
+        @round.goto_entity!(@auction_triggerer)
+        entities.each(&:unpass!)
+        next_entity!
+        @auction_triggerer = current_entity
+        auction_entity(@companies.first) unless @companies.empty?
       end
     end
   end
