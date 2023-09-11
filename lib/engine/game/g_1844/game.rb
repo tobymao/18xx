@@ -222,6 +222,10 @@ module Engine
           'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization']
         ).freeze
 
+        def fnm
+          @fnm ||= corporation_by_id('FNM')
+        end
+
         def initial_auction_companies
           @companies.select { |c| c.sym[0] == 'P' }
         end
@@ -249,6 +253,15 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def after_par(corporation)
+          super
+          return unless corporation == fnm
+
+          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation).take(3)), @share_pool)
+          @log << "3 #{corporation.name} shares moved to the market"
+          float_corporation(corporation)
         end
       end
     end
