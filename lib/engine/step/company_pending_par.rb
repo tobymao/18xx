@@ -43,6 +43,12 @@ module Engine
           .stock_market
           .par_prices
       end
+
+      def round_state
+        {
+          companies_pending_par: [],
+        }
+      end
     end
   end
 end
