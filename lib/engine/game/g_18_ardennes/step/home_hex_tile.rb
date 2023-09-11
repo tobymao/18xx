@@ -69,8 +69,12 @@ module Engine
             hex = action.hex
             return if hex.tokens.empty?
 
-            action.entity.assign!(hex.coordinates)
+            corporation = action.entity
+            corporation.assign!(hex.coordinates)
+            token_type = @game.dummy_token_type(hex.tokens.first)
             hex.tokens.first.remove!
+            @game.log << "#{corporation.id} collects a #{token_type} token " \
+                         "from hex #{hex.coordinates} (#{hex.location_name})"
           end
         end
       end

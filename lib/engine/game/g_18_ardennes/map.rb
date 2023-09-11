@@ -266,6 +266,16 @@ module Engine
               hex.place_token(token)
             end
           end
+
+          corp
+        end
+
+        def dummy_token_type(token)
+          case token.corporation
+          when @mine_corp then :mine
+          when @port_corp then :port
+          else raise GameError, 'Not a dummy token'
+          end
         end
 
         def hexes_by_id(coordinates)

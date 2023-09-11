@@ -57,11 +57,16 @@ module Engine
           def process_remove_token(action)
             corp = action.entity
             city = action.city
-            check_connected(corp, city, city.hex)
+            hex = city.hex
+            check_connected(corp, city, hex)
 
-            city.tokens[action.slot].remove!
+            old_token = city.tokens[action.slot]
+            token_type = @game.dummy_token_type(old_token)
+            old_token.remove!
             place_token(corp, city, available_tokens(corp).first)
             corp.assign!(city.hex.coordinates)
+            @game.log << "#{corp.id} collects a #{token_type} token from " \
+                         "hex #{hex.coordinates} (#{hex.location_name})"
             pass!
           end
         end
