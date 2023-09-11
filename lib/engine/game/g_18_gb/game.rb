@@ -611,9 +611,10 @@ module Engine
         end
 
         def convert_to_ten_share(corporation, price_drops = 0, blame_president = false)
-          # Check if the corporation is floated. Conversion does not affect this status so store the result
+          # Check if the corporation is floated.
+          # Conversion should never affect this status so store the result rather than re-checking later.
           floated = corporation.floated?
-          
+
           # update corporation type and report conversion
           corporation.type = :'10-share'
           @log << (if blame_president
