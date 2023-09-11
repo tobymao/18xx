@@ -230,6 +230,18 @@ module Engine
           @companies.select { |c| c.sym[0] == 'P' }
         end
 
+        def next_round!
+          @round =
+            case @round
+            when init_round.class
+              init_round_finished
+              reorder_players(:least_cash, log_player_order: true)
+              new_stock_round
+            else
+              super
+            end
+        end
+
         def new_auction_round
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
