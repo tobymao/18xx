@@ -266,8 +266,6 @@ module Engine
               hex.place_token(token)
             end
           end
-
-          corp
         end
 
         def hexes_by_id(coordinates)
@@ -344,33 +342,6 @@ module Engine
                            free: true,
                            same_hex_allowed: true)
           clear_graph_for_entity(entity)
-        end
-
-        def dummy_token_type(token)
-          case
-          when token.corporation == @mine_corp then :mine
-          when token.corporation == @port_corp then :port
-          else raise GameError, "Not a dummy token"
-          end
-        end
-
-        # Replaces a fort or mine token with a corporation's token.
-        # @param [Corporation] corporation The corporation placing the new token.
-        # @param [Token] token The port or mine token being removed.
-        def replace_dummy_token(corporation, dummy_token, new_token)
-          city = dummy_token.city || dummy_token.hex.tile.cities.first
-          hex = dummy_token.hex
-          token_type = dummy_token_type(dummy_token).to_s
-          dummy_token.remove!
-          # M7's starting token will have already been placed prior to calling
-          # this method.
-          unless city.tokened_by?(corporation)
-            new_token = available_tokens(action.entity).first
-            place_token(corporation, city, new_token)
-          end
-          corporation.assign!(hex.coordinates)
-          log << "#{corporation.id} collects a #{token_type} token from hex " \
-                 "#{hex.coordinates} (#{hex.location_name})"
         end
       end
     end
