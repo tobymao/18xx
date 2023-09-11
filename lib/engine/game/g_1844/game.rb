@@ -222,6 +222,10 @@ module Engine
           'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization']
         ).freeze
 
+        def initial_auction_companies
+          @companies.select { |c| c.sym[0] == 'P' }
+        end
+
         def new_auction_round
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
