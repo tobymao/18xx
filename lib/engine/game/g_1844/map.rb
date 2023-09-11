@@ -49,7 +49,7 @@ module Engine
           '619' => 4,
           '901' => {
             'count' => 1,
-            'color' => 'green',
+            color: 'green',
             'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;'\
                       'path=a:3,b:_1;label=L',
           },
@@ -241,14 +241,14 @@ module Engine
             ['I4'] => 'city=revenue:20,loc:1.5;city=revenue:20,loc:4;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_1;label=L',
           },
           brown: {
-            ['F19'] => 'offboard=revenue:yellow_0|green_0|brown_0|gray_0;path=a:2,b:_0;path=a:4,b:_0;'\
+            ['F19'] => 'offboard=revenue:nil;path=a:2,b:_0;path=a:4,b:_0;'\
                        'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:3,type:impassable',
-            ['G14'] => 'offboard=revenue:yellow_0|green_0|brown_0|gray_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+            ['G14'] => 'offboard=revenue:nil;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                        'path=a:4,b:_0;path=a:5,b:_0',
-            ['H7'] => 'offboard=revenue:yellow_0|green_0|brown_0|gray_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+            ['H7'] => 'offboard=revenue:nil;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                       'path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
-            ['I14'] => 'offboard=revenue:yellow_0|green_0|brown_0|gray_0;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0',
-            %w[L13 L23] => 'offboard=revenue:yellow_0|green_0|brown_0|gray_0;path=a:1,b:_0;path=a:2,b:_0',
+            ['I14'] => 'offboard=revenue:nil;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+            %w[L13 L23] => 'offboard=revenue:nil;path=a:1,b:_0;path=a:2,b:_0',
           },
           purple: {
             # Gotthard tunnel
