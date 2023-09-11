@@ -17,8 +17,9 @@ module Engine
         include_meta(G18Tokaido::Meta)
         include Entities
         include Map
-        include Tiles
         include StockMarket
+        include Tiles
+
         include CompanyPriceUpToFace
 
         register_colors(green: '#237333',
@@ -140,21 +141,21 @@ module Engine
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
 
         def game_tiles
-          if @optional_rules&.include?(:limited_tileset)
-            G18Tokaido::Tiles.limited_tiles(G18Tokaido::Tiles::TILES)
+          if @optional_rules&.include?(:expanded_tileset)
+            tiles = G18Tokaido::Tiles::TILES.dup
+            %w[204 207 208 619 622].each { |t| tiles[t] += 1 }
+            tiles
           else
             G18Tokaido::Tiles::TILES
           end
         end
 
         def game_market
-          if @optional_rules&.include?(:alternate_stock_market)
-            market = G18Tokaido::AlternateMarket::MARKET.dup
+          if @optional_rules&.include?(:no_yellow_zone)
+            market = G18Tokaido::StockMarket::MARKET.dup
             market.map do |row|
               row.map { |p| p.include?('y') ? p.chop : p }
             end
-          elsif @optional_rules&.include?(:yellow_zone)
-            G18Tokaido::AlternateMarket::MARKET
           else
             G18Tokaido::StockMarket::MARKET
           end
@@ -163,13 +164,16 @@ module Engine
         def setup
           if waterfall_auction
             @companies.each do |c|
-              c.value -= (c.value - 20) / 4
+              new_value = c.value - ((c.value - 20) / 4)
+              c.value = new_value
+              c.min_price = (new_value / 2).to_i
+              c.max_price = new_value * 2
             end
           else
             @reverse = true
+            setup_company_price_up_to_face
           end
           @e_train_exported = false
-          setup_company_price_up_to_face
         end
 
         def after_bid; end
@@ -364,11 +368,12 @@ module Engine
         end
 
         def timeline
-          @timeline = [
-            'First stock round is in reverse order of draft order',
+          timeline = [
             'At the end of each set of ORs the next available train will be exported (removed, triggering ' \
             'phase change as if purchased)',
           ]
+          timeline.unshift('First stock round is in reverse order of draft order') unless waterfall_auction
+          @timeline = timeline
         end
 
         def fish_market

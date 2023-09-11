@@ -37,32 +37,23 @@ module Engine
           {
             sym: :limited_express,
             short_name: 'Limited Express',
-            desc: 'removes one of the 6 trains from the game',
+            desc: 'removes one of the 6 trains from the game for faster (rather brutal) train rush',
           },
           {
             sym: :waterfall_auction,
             short_name: 'Waterfall Auction',
-            desc: 'standard waterfall auction instead of snake draft',
+            desc: 'standard waterfall auction instead of snake draft (has some secondary effects)',
           },
           {
-            sym: :limited_tileset,
-            short_name: '[Project Kyuroku] Limited Tileset',
-            desc: 'smaller, more limited tileset',
+            sym: :expanded_tileset,
+            short_name: 'Expanded Tileset',
+            desc: 'slightly expanded, newbie-friendly tileset',
           },
           {
-            sym: :alternate_stock_market,
-            short_name: '[Project Kyuroku] Alternate Stock Market',
-            desc: 'alternate stock market',
+            sym: :no_yellow_zone,
+            short_name: 'No Yellow Zone',
+            desc: 'removes yellow zone from stock market for slightly more newbie-friendly game',
           },
-          {
-            sym: :yellow_zone,
-            short_name: '[Project Kyuroku] Alternate Stock Market with Yellow Zone',
-            desc: 'enables yellow zone on the alternate stock market',
-          },
-        ].freeze
-
-        MUTEX_RULES = [
-          %i[alternate_stock_market yellow_zone],
         ].freeze
       end
     end

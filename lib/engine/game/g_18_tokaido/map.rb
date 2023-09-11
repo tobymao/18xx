@@ -54,7 +54,7 @@ module Engine
           yellow: {
             ['C11'] => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_1;label=O',
             ['F4'] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0',
-            ['J8'] => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=T',
+            ['J8'] => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO',
             ['J2'] => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=Y',
           },
           gray: {
