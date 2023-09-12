@@ -230,6 +230,25 @@ module Engine
           @sbb ||= corporation_by_id('SBB')
         end
 
+        def setup
+          setup_destinations
+        end
+
+        def setup_destinations
+          @corporations.each do |c|
+            next unless c.destination_coordinates
+
+            dest_hex = hex_by_id(c.destination_coordinates)
+            ability = Ability::Base.new(
+              type: 'base',
+              description: "Destination: #{dest_hex.location_name} (#{dest_hex.name})",
+            )
+            c.add_ability(ability)
+
+            dest_hex.assign!(c)
+          end
+        end
+
         def initial_auction_companies
           @companies.select { |c| c.sym[0] == 'P' }
         end
