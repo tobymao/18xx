@@ -88,14 +88,14 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { major: 4 },
+            train_limit: { 'pre-sbb': 2, regional: 2, historical: 4 },
             tiles: [:yellow],
             operating_rounds: 1,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { major: 4 },
+            train_limit: { 'pre-sbb': 2, regional: 2, historical: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
             status: %w[can_buy_companies],
@@ -103,7 +103,7 @@ module Engine
           {
             name: '4',
             on: '4',
-            train_limit: { major: 3 },
+            train_limit: { 'pre-sbb': 2, regional: 2, historical: 3 },
             tiles: %i[yellow green],
             operating_rounds: 2,
             status: %w[can_buy_companies],
@@ -111,21 +111,21 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { major: 2 },
+            train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
           {
             name: '6',
             on: '6',
-            train_limit: { major: 2 },
+            train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
           {
             name: '7',
             on: '8E',
-            train_limit: { major: 2 },
+            train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },
