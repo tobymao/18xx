@@ -31,8 +31,8 @@ module Engine
 
         attr_reader :drafted_companies
 
-        TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%s'
+        # Technically not used; recalculated depending on the variant
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
         STARTING_CASH = { 2 => 820, 3 => 550, 4 => 480 }.freeze
         CAPITALIZATION = :full
