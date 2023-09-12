@@ -222,6 +222,18 @@ module Engine
           'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization']
         ).freeze
 
+        def privates
+          @privates ||= @companies.select { |c| c.sym[0] == 'P' }
+        end
+
+        def mountain_railways
+          @mountain_railways ||= @companies.select { |c| c.sym[0] == 'B' }
+        end
+
+        def tunnel_companies
+          @tunnel_companies ||= @companies.select { |c| c.sym[0] == 'T' }
+        end
+
         def fnm
           @fnm ||= corporation_by_id('FNM')
         end
@@ -232,6 +244,8 @@ module Engine
 
         def setup
           setup_destinations
+          mountain_railways.each { |mr| mr.owner = @bank }
+          tunnel_companies.each { |tc| tc.owner = @bank }
         end
 
         def setup_destinations
@@ -250,7 +264,7 @@ module Engine
         end
 
         def initial_auction_companies
-          @companies.select { |c| c.sym[0] == 'P' }
+          privates
         end
 
         def next_round!
