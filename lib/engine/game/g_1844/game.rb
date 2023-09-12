@@ -267,8 +267,16 @@ module Engine
           ], round_num: round_num)
         end
 
+        HISTORICAL_CORP_TOKENS_BY_PAR_PRICE = { 60 => 1, 70 => 2, 80 => 3, 90 => 4, 100 => 5 }.freeze
+
         def after_par(corporation)
           super
+          return unless corporation.type == :historical
+
+          num_tokens = HISTORICAL_CORP_TOKENS_BY_PAR_PRICE[corporation.share_price.price]
+          corporation.tokens.slice!(num_tokens..-1)
+          @log << "#{corporation.name} receives #{num_tokens} token#{num_tokens > 1 ? 's' : ''}"
+
           return unless corporation == fnm
 
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation).take(3)), @share_pool)
