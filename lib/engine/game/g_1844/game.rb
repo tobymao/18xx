@@ -27,6 +27,7 @@ module Engine
         BANK_CASH = 12_000
 
         CERT_LIMIT = { 3 => 24, 4 => 18, 5 => 15, 6 => 13, 7 => 11 }.freeze
+        CERT_LIMIT_INCLUDES_PRIVATES = false
 
         STARTING_CASH = { 3 => 800, 4 => 620, 5 => 510, 6 => 440, 7 => 400 }.freeze
 
@@ -35,7 +36,6 @@ module Engine
         NEXT_SR_PLAYER_ORDER = :most_cash
         EBUY_PRES_SWAP = false
         MUST_BUY_TRAIN = :always
-        CERT_LIMIT_INCLUDES_PRIVATES = false
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :always
