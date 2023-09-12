@@ -226,6 +226,10 @@ module Engine
           @fnm ||= corporation_by_id('FNM')
         end
 
+        def sbb
+          @sbb ||= corporation_by_id('SBB')
+        end
+
         def initial_auction_companies
           @companies.select { |c| c.sym[0] == 'P' }
         end
@@ -267,13 +271,19 @@ module Engine
           ], round_num: round_num)
         end
 
-        HISTORICAL_CORP_TOKENS_BY_PAR_PRICE = { 60 => 1, 70 => 2, 80 => 3, 90 => 4, 100 => 5 }.freeze
-
         def after_par(corporation)
           super
           return unless corporation.type == :historical
 
-          num_tokens = HISTORICAL_CORP_TOKENS_BY_PAR_PRICE[corporation.share_price.price]
+          num_tokens =
+            case corporation.share_price.price
+            when 100 then 5
+            when 90 then 4
+            when 80 then 3
+            when 70 then 2
+            when 60 then 1
+            else 0
+            end
           corporation.tokens.slice!(num_tokens..-1)
           @log << "#{corporation.name} receives #{num_tokens} token#{num_tokens > 1 ? 's' : ''}"
 
@@ -282,6 +292,15 @@ module Engine
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation).take(3)), @share_pool)
           @log << "3 #{corporation.name} shares moved to the market"
           float_corporation(corporation)
+        end
+
+        def float_corporation(corporation)
+          return if corporation == sbb
+
+          @log << "#{corporation.name} floats"
+          multiplier = corporation.type == :'pre-sbb' ? 2 : 5
+          @bank.spend(corporation.par_price.price * multiplier, corporation)
+          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
         end
       end
     end
