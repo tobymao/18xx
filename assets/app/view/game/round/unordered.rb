@@ -29,7 +29,7 @@ module View
         end
 
         def render_offers
-          return nil if (offers = @step.offers).empty?
+          return '' if (offers = @step.offers).empty?
 
           section_props = {
             style: {

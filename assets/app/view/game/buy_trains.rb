@@ -371,7 +371,7 @@ module View
 
       def render_warranty(depot_trains)
         @warranty_input = nil
-        return if depot_trains.empty? || !@step.respond_to?(:warranty_max)
+        return [] if depot_trains.empty? || !@step.respond_to?(:warranty_max)
 
         @warranty_input =
           h(

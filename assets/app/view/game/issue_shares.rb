@@ -53,7 +53,7 @@ module View
           end
         end
 
-        return nil if shares.empty?
+        return '' if shares.empty?
 
         h(:div, [
           h('div.inline-block.margined', description),

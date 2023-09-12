@@ -44,7 +44,7 @@ module View
       needs :highlight, default: false
 
       def render
-        return nil if @hex.empty
+        return '' if @hex.empty
 
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
         @tile =

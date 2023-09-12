@@ -18,7 +18,7 @@ module View
         @depot = @game.depot
         @dimmed_font_style = { style: { color: convert_hex_to_rgba(color_for(:font), 0.7) } }
 
-        return if @layout && @depot.trains.empty?
+        return '' if @layout && @depot.trains.empty?
 
         case @layout
         when :discarded_trains
