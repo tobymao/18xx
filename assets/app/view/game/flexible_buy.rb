@@ -56,7 +56,7 @@ module View
             price = input.JS['elm'].JS['value'].to_i
             price_percent = bundle.corporation.type == :major ? 10 : 20
             share_price = (price * price_percent / bundle.percent).to_i
-            return unless @step.flexible_can_buy_shares?(@current_entity, bundle.shares, price)
+            return '' unless @step.flexible_can_buy_shares?(@current_entity, bundle.shares, price)
 
             buy_shares = lambda do
               process_action(

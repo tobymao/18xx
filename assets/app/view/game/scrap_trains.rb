@@ -13,7 +13,7 @@ module View
         @step = @game.round.step_for(@corporation, 'scrap_train')
 
         scrappable_trains = @step.scrappable_trains(@corporation)
-        return nil if scrappable_trains.empty?
+        return '' if scrappable_trains.empty?
 
         if @step.respond_to?(:scrap_trains_button_only?) && @step.scrap_trains_button_only?
           render_buttons(scrappable_trains)

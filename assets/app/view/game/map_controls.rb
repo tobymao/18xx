@@ -68,14 +68,14 @@ module View
       end
 
       def route_controls
-        return unless @game
+        return '' unless @game
 
         step = @game.round.active_step
         actions = step&.actions(step&.current_entity) || []
         # Route controls are disabled during dividend and run routes step
         if (%w[run_routes dividend] & actions).any?
           store(:historical_routes, []) if @historical_routes.any?
-          return
+          return ''
         end
 
         all_operators = @game.operated_operators
