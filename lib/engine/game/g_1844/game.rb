@@ -286,6 +286,12 @@ module Engine
           ])
         end
 
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            G1844::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,

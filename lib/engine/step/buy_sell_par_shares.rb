@@ -298,7 +298,7 @@ module Engine
       end
 
       def buyable_bank_owned_companies(entity)
-        return [] unless entity.player?
+        return [] if !entity.player? || bought?
 
         @game.buyable_bank_owned_companies.select { |c| can_buy_company?(entity, c) }
       end
