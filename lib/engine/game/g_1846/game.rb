@@ -983,6 +983,12 @@ module Engine
 
           false
         end
+
+        def purchasable_companies(entity = nil)
+          return [] if entity&.minor?
+
+          super
+        end
       end
     end
   end
