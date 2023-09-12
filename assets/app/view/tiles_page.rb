@@ -142,6 +142,7 @@ module View
         scale: scale,
         rotations: rotations,
         hex_coordinates: hex_coordinates,
+        game: game,
         **kwargs,
       )
     end
@@ -186,6 +187,7 @@ module View
           tile: tile,
           location_name: tile.location_name,
           hex_coordinates: tile.name,
+          game: game,
         )
       end
 
@@ -200,6 +202,7 @@ module View
               num: tiles_.size,
               rotations: @rotations,
               location_name: @location_name,
+              game: game,
             )
           end
         else
@@ -213,6 +216,7 @@ module View
                 num: all_tiles[name].size,
                 rotations: @rotations,
                 location_name: @location_name,
+                game: game,
               )
             else
               name_a, name_b = group
@@ -224,7 +228,8 @@ module View
                 layout: game.layout,
                 tile_a: tile_a,
                 tile_b: tile_b,
-                num: all_tiles[name_a].size
+                num: all_tiles[name_a].size,
+                game: game,
               )
             end
           end
