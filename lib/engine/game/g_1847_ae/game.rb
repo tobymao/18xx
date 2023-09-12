@@ -6,6 +6,7 @@ require_relative 'map'
 require_relative 'entities'
 require_relative 'corporation'
 require_relative 'share_pool'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
@@ -14,6 +15,7 @@ module Engine
         include_meta(G1847AE::Meta)
         include Map
         include Entities
+        include CitiesPlusTownsRouteDistanceStr
 
         attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies, :train_bought_this_round
 
