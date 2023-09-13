@@ -45,7 +45,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_block
         SOLD_OUT_INCREASE = true
-        POOL_SHARE_DROP = :one
+        POOL_SHARE_DROP = :down_block
         IMPASSABLE_HEX_COLORS = %i[purple orange].freeze
         TRACK_RESTRICTION = :city_permissive
 
@@ -584,7 +584,7 @@ module Engine
               price_drops =
                 if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
                   0
-                elsif pool_share_drop == :one
+                elsif pool_share_drop == :down_block
                   1
                 else
                   shares_in_pool

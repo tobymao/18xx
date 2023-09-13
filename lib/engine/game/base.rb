@@ -190,7 +190,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy_or_buy_sell
 
       # do shares in the pool drop the price?
-      # none, one, each
+      # none, down_block, left_block, down_share
       POOL_SHARE_DROP = :none
 
       # do sold out shares increase the price?

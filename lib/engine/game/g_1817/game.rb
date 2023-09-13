@@ -185,7 +185,7 @@ module Engine
         MUST_BUY_TRAIN = :never
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
         CERT_LIMIT_INCLUDES_PRIVATES = false
-        POOL_SHARE_DROP = :each
+        POOL_SHARE_DROP = :down_share
         SELL_MOVEMENT = :none
         ALL_COMPANIES_ASSIGNABLE = true
         SELL_AFTER = :after_ipo
