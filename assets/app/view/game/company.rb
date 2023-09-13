@@ -18,6 +18,7 @@ module View
       needs :tile_selector, default: nil, store: true
       needs :display, default: 'inline-block'
       needs :layout, default: nil
+      needs :interactive, default: true
 
       def selected?
         @company == @selected_company
@@ -178,6 +179,12 @@ module View
               color: color_for(:font2),
             }
             children << h(:div, { style: status_style }, @game.company_status_str(@company))
+          end
+
+          unless @interactive
+            factor = color_for(:bg2).to_s[1].to_i(16) > 7 ? 0.3 : 0.6
+            props[:style][:backgroundColor] = convert_hex_to_rgba(color_for(:bg2), factor)
+            props[:style][:border] = '1px dashed'
           end
 
           h('div.company.card', props, children)
