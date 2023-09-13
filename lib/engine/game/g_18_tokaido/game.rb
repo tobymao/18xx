@@ -8,6 +8,7 @@ require_relative 'meta'
 require_relative 'stock_market'
 require_relative 'tiles'
 require_relative 'step/buy_company'
+require_relative 'step/buy_sell_par_shares'
 require_relative 'step/draft_distribution'
 
 module Engine
@@ -76,8 +77,8 @@ module Engine
             operating_rounds: 3,
           },
           {
-            name: 'E',
-            on: 'E',
+            name: 'D',
+            on: 'D',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
@@ -101,7 +102,7 @@ module Engine
             name: '4',
             distance: 4,
             price: 300,
-            rusts_on: 'E',
+            rusts_on: 'D',
           },
           {
             name: '5',
@@ -115,7 +116,7 @@ module Engine
             price: 630,
           },
           {
-            name: 'E',
+            name: 'D',
             distance: 999,
             price: 900,
             available_on: '6',
@@ -127,8 +128,8 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'signal_end_game' => [
             'Triggers End Game',
-            'Game ends after next set of ORs when E train purchased or exported, ' \
-            'purchasing a E train triggers a stock round immediately after current OR',
+            'Game ends after next set of ORs when D train purchased or exported, ' \
+            'purchasing a D train triggers a stock round immediately after current OR',
           ]
         )
 
@@ -199,7 +200,7 @@ module Engine
             3
           when '6'
             @optional_rules&.include?(:limited_express) ? 2 : 3
-          when 'E'
+          when 'D'
             20
           end
         end
@@ -319,7 +320,7 @@ module Engine
           @need_last_stock_round = true
           game_end_check
           @operating_rounds = @round.round_num if round.class.short_name != 'SR'
-          @log << 'First E train bought/exported, end game triggered'
+          @log << 'First D train bought/exported, end game triggered'
         end
 
         def game_ending_description
@@ -339,7 +340,7 @@ module Engine
         def or_set_finished
           return if @e_train_exported
 
-          @e_train_exported = true if depot.upcoming.first.name == 'E'
+          @e_train_exported = true if depot.upcoming.first.name == 'D'
           depot.export!
         end
 
