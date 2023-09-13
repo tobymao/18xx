@@ -33,6 +33,7 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
+        POOL_SHARE_DROP = :left_block
         NEXT_SR_PLAYER_ORDER = :most_cash
         EBUY_PRES_SWAP = false
         MUST_BUY_TRAIN = :always
@@ -340,6 +341,20 @@ module Engine
           multiplier = corporation.type == :'pre-sbb' ? 2 : 5
           @bank.spend(corporation.par_price.price * multiplier, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+        end
+
+        def can_hold_above_corp_limit?(_entity)
+          true
+        end
+
+        def sellable_bundles(player, corporation)
+          bundles = super
+          return bundles if bundles.empty? || corporation.operated?
+
+          bundles.each do |bundle|
+            bundle.share_price = @stock_market.find_share_price(corporation, Array.new(bundle.num_shares) { :down }).price
+          end
+          bundles
         end
       end
     end
