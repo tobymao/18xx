@@ -394,10 +394,6 @@ module Engine
 
         def draft_finished?; end
 
-        def ysl_reserved_share
-          @ysl_reserved_share = corporation_by_id('YSL').shares.last
-        end
-
         def waterfall_auction
           @optional_rules&.include?(:waterfall_auction)
         end
