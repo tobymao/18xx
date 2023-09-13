@@ -17,6 +17,8 @@ module Engine
             'Corporate Sell then Buy Shares'
           end
 
+          def auto_actions; end
+
           def log_pass(entity)
             return @log << "#{entity.name} passes corporate sell/buy" if @round.current_actions.empty?
             return if bought? && sold?
@@ -34,7 +36,7 @@ module Engine
           end
 
           def can_sell_any?(entity)
-            entity.corporate_shares.select { |share| can_sell?(entity, share.to_bundle) }.any? ||
+            @game.corporations.any? { |corp| can_sell_any_of_corporation?(entity, corp) } ||
               entity.ipo_shares.select { |share| can_sell?(entity, share.to_bundle) }.any?
           end
 
