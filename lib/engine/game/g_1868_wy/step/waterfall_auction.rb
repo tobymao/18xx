@@ -145,6 +145,11 @@ module Engine
             super
             maybe_all_passed!
           end
+
+          # if @choosing, the company is already paid for
+          def min_bid(company)
+            @choosing && @company_choices.include?(company) ? 0 : super
+          end
         end
       end
     end
