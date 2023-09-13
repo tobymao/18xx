@@ -611,6 +611,10 @@ module Engine
         end
 
         def convert_to_ten_share(corporation, price_drops = 0, blame_president = false)
+          # Check if the corporation is floated.
+          # Conversion should never affect this status so store the result rather than re-checking later.
+          floated = corporation.floated?
+
           # update corporation type and report conversion
           corporation.type = :'10-share'
           @log << (if blame_president
@@ -627,7 +631,7 @@ module Engine
           original_shares.each { |s| corporation.share_holders[s.owner] += s.percent }
 
           # create new shares
-          owner = corporation.floated? ? @share_pool : corporation
+          owner = floated ? @share_pool : corporation
           shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4, owner: owner) }
           shares.each do |share|
             add_new_share(share)
@@ -649,7 +653,7 @@ module Engine
           end
 
           # add new capital
-          return unless corporation.floated?
+          return unless floated
 
           capital = corporation.share_price.price * 5
           @bank.spend(capital, corporation)
