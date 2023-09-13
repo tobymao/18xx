@@ -1011,6 +1011,13 @@ module Engine
             end
           end
         end
+        abilities(company, :acquire_company) do |ability|
+          acquired_company = company_by_id(ability.company)
+          acquired_company.owner = player
+          player.companies << acquired_company
+          @log << "#{player.name} receives #{acquired_company.name}"
+          after_buy_company(player, acquired_company, 0)
+        end
       end
 
       def after_sell_company(_buyer, _company, _price, _seller); end
