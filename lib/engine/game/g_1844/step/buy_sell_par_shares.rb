@@ -15,6 +15,13 @@ module Engine
             )
           end
 
+          def can_gain?(entity, bundle, exchange: false)
+            # Can buy above the share limit if from the share pool
+            return true if bundle.owner == @game.share_pool && @game.num_certs(entity) < @game.cert_limit
+
+            super
+          end
+
           def can_buy_company?(player, company)
             return false unless super
 
