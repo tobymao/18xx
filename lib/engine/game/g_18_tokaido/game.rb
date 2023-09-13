@@ -32,7 +32,7 @@ module Engine
         attr_reader :drafted_companies
 
         CURRENCY_FORMAT_STR = '¥%s'
-        # Technically not used; recalculated depending on the variant
+        # Technically not used; recalculated depending on optional rules
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
         STARTING_CASH = { 2 => 820, 3 => 550, 4 => 480 }.freeze
         CAPITALIZATION = :full
@@ -169,9 +169,12 @@ module Engine
               c.min_price = (new_value / 2).to_i
               c.max_price = new_value * 2
             end
-          else
+          elsif @optional_rules&.include?(:snake_draft)
             @reverse = true
             setup_company_price_up_to_face
+          else
+            setup_company_price_up_to_face
+            @companies.each { |c| c.owner = @bank }
           end
           @e_train_exported = false
         end
@@ -218,12 +221,16 @@ module Engine
               Engine::Step::CompanyPendingPar,
               Engine::Step::WaterfallAuction,
             ])
-          else
+          elsif @optional_rules&.include?(:snake_draft)
             Engine::Round::Draft.new(
               self,
               [G18Tokaido::Step::DraftDistribution],
               snake_order: true
             )
+          else
+            Engine::Round::Stock.new(self, [
+              G18Tokaido::Step::BuySellParShares,
+            ])
           end
         end
 
@@ -264,7 +271,7 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::BuySellParShares,
+            G18Tokaido::Step::BuySellParShares,
           ])
         end
 
