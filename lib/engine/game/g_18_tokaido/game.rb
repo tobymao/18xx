@@ -171,8 +171,8 @@ module Engine
               c.max_price = new_value * 2
             end
           elsif @optional_rules&.include?(:snake_draft)
-            @reverse = true
             setup_company_price_up_to_face
+            @reverse = true
           else
             setup_company_price_up_to_face
             @companies.each { |c| c.owner = @bank }
@@ -393,6 +393,10 @@ module Engine
         end
 
         def draft_finished?; end
+
+        def ysl_reserved_share
+          @ysl_reserved_share = corporation_by_id('YSL').shares.last
+        end
 
         def waterfall_auction
           @optional_rules&.include?(:waterfall_auction)
