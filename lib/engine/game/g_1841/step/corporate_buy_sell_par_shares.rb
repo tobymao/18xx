@@ -17,7 +17,7 @@ module Engine
             'Corporate Sell then Buy Shares'
           end
 
-          def auto_actions; end
+          def auto_actions(_entity); end
 
           def log_pass(entity)
             return @log << "#{entity.name} passes corporate sell/buy" if @round.current_actions.empty?
