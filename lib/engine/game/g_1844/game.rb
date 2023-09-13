@@ -356,6 +356,14 @@ module Engine
           end
           bundles
         end
+
+        def after_buy_company(player, company, _price)
+          super
+          return if !mountain_railways.include?(company) && !tunnel_companies.include?(company)
+
+          company.revenue = 0
+          company.value = 0
+        end
       end
     end
   end

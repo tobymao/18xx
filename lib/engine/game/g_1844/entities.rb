@@ -38,8 +38,7 @@ module Engine
             value: 80,
             revenue: 15,
             desc: 'Comes with a Tunnel company',
-            # TODO: Make new ability to gain a company.
-            abilities: [],
+            abilities: [{ type: 'acquire_company', company: 'T1' }],
           },
           {
             name: 'P4 - Furka-Oberalpbahn',
