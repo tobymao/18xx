@@ -37,12 +37,12 @@ module Engine
           {
             sym: :limited_express,
             short_name: 'Limited Express',
-            desc: '👹 removes one of the 6 trains from the game (for a faster train rush)',
+            desc: 'removes one of the 6 trains from the game (for a faster train rush)',
           },
           {
             sym: :snake_draft,
             short_name: 'Snake Draft',
-            desc: '🔰 snake draft for privates',
+            desc: 'snake draft for privates',
           },
           {
             sym: :waterfall_auction,
@@ -52,12 +52,12 @@ module Engine
           {
             sym: :expanded_tileset,
             short_name: 'Expanded Tileset',
-            desc: '🔰 slightly expanded (newbie-friendly) tileset',
+            desc: 'slightly expanded (newbie-friendly) tileset',
           },
           {
             sym: :no_yellow_zone,
             short_name: 'No Yellow Zone',
-            desc: '🔰 removes yellow zone from stock market (for slightly more newbie-friendly game)',
+            desc: 'removes yellow zone from stock market (for slightly more newbie-friendly game)',
           },
         ].freeze
       end
