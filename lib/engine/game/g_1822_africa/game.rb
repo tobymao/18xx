@@ -333,6 +333,35 @@ module Engine
             num: 2,
             price: 0,
           },
+          {
+            name: 'LR',
+            distance: [
+              {
+                'nodes' => ['city'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+            ],
+            num: 1,
+            price: 50,
+          },
+          {
+            name: '2R',
+            distance: 2,
+            num: 1,
+            price: 100,
+          },
+          {
+            name: '3R',
+            distance: 3,
+            num: 1,
+            price: 160,
+          },
         ].freeze
 
         UPGRADE_COST_L_TO_2 = 70
@@ -384,6 +413,12 @@ module Engine
           @company_trains['P3'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P5'] = find_and_remove_train_by_id('P+-1', buyable: false)
+
+          @recycled_trains = [
+            find_and_remove_train_by_id('LR-0', buyable: false),
+            find_and_remove_train_by_id('2R-0', buyable: false),
+            find_and_remove_train_by_id('3R-0', buyable: false),
+          ].freeze
         end
 
         def reorder_on_concession(companies)
@@ -828,16 +863,12 @@ module Engine
         end
 
         def company_made_choice_recycled_train(company, choice)
-          train = @depot.trains.find { |t| t.name == choice }
-          new_train = Engine::Train.new(name: "#{train.name}R", distance: train.distance, price: train.price)
-          new_train.owner = @depot
-          @depot.trains << train
-
+          train = @recycled_trains.find { |t| t.name.start_with?(choice) }
+          buy_train(company.owner, train)
           @log << "#{company.owner.name} buys a recycled #{train.name} train for #{format_currency(train.price)}"
-          buy_train(company.owner, new_train)
 
-          @log << "#{company.name} closes"
           company.close!
+          @log << "#{company.name} closes"
         end
 
         def company_made_choice_sell_share(company, _choice)
