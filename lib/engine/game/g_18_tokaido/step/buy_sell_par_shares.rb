@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def buyable_bank_owned_companies(entity)
-            return [] unless entity.player? && !bought?
+            return [] if !entity.player? || bought?
 
             @game.buyable_bank_owned_companies.select { |c| can_buy_company?(entity, c) }
           end
