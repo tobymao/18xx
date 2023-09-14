@@ -10,6 +10,7 @@ module View
         needs :tile
         needs :region_use
         needs :loc, default: nil
+        needs :formatter, default: nil
 
         def render
           @tile.upgrades.map do |upgrade|
@@ -21,6 +22,7 @@ module View
               tile: @tile,
               size: upgrade.size,
               loc: @loc,
+              formatter: @formatter,
             )
           end
         end

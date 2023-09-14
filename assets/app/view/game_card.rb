@@ -165,7 +165,7 @@ module View
 
     def render_optional_rules
       selected_rules = @gdata.dig('settings', 'optional_rules') || []
-      return if selected_rules.empty?
+      return '' if selected_rules.empty?
 
       rendered_rules = Engine.meta_by_title(@gdata['title'])::OPTIONAL_RULES
         .select { |r| selected_rules.include?(r[:sym]) }

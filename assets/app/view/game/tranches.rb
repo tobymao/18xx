@@ -10,7 +10,7 @@ module View
       needs :game
 
       def render
-        return nil unless @game.respond_to?(:tranches)
+        return '' unless @game.respond_to?(:tranches)
 
         title_props = {
           style: {
@@ -71,7 +71,7 @@ module View
           trs << h(:tr, slots)
         end
 
-        return if trs.empty?
+        return '' if trs.empty?
 
         h('div#tranches.card', [
           h('div.title', title_props, 'Tranches'),

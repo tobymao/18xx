@@ -110,6 +110,7 @@ module Engine
       BANK_CASH = 12_000
 
       CURRENCY_FORMAT_STR = '$%s'
+      FORMAT_UPGRADES_ON_HEXES = false
 
       STARTING_CASH = {}.freeze
 
@@ -2653,7 +2654,11 @@ module Engine
                            " : Game Ends at conclusion of this round (#{turn})"
                          end
                        when :current_or
-                         " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of the next OR (#{turn}.#{@round.round_num})"
+                         end
                        when :full_or
                          if @round.is_a?(Round::Operating)
                            " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
