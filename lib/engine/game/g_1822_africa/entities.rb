@@ -93,10 +93,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P8 (Reserve Three Tiles) [N/A]',
+            name: 'P8 (Reserve Three Tiles)',
             sym: 'P8',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 1. Upon acquisition, owning company must reserve three tiles from the stock '\
+            desc: 'MAJOR/MINOR, Phase 1. Upon acquisition, owning company must reserve three tiles from the stock '\
                   'of unplayed tiles for future placement. No other company may use these tiles held in reserve. '\
                   'The revenue of this private company changes to A5x the number of tiles it holds. '\
                   'Once the owning company reserves tiles, it may not place any other tiles '\
