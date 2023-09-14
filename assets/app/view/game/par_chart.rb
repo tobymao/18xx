@@ -29,7 +29,7 @@ module View
       end
 
       def par_choices
-        return unless @corporation_to_par
+        return '' unless @corporation_to_par
 
         props = {
           style: {

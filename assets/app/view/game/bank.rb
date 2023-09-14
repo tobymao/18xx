@@ -105,7 +105,7 @@ module View
           ])
         end
 
-        return if trs.empty?
+        return '' if trs.empty?
 
         h('div#bank.card', [
           h('div.title', title_props, 'The Bank'),

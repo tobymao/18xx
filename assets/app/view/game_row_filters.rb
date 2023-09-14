@@ -9,7 +9,7 @@ module View
 
     def render
       url_search_params = Lib::Params::URLSearchParams.new
-      return if url_search_params.unsupported
+      return '' if url_search_params.unsupported
 
       h('div#game_filters.game_row', { key: @header }, [
         h(:h2, 'Filters'),

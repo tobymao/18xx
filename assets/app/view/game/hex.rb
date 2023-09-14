@@ -44,7 +44,7 @@ module View
       needs :highlight, default: false
 
       def render
-        return nil if @hex.empty
+        return '' if @hex.empty
 
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
         @tile =
@@ -189,7 +189,10 @@ module View
 
         case @role
         when :map
-          return process_action(Engine::Action::Assign.new(@entity, target: @hex)) if @actions.include?('assign')
+          if @actions.include?('assign')
+            process_action(Engine::Action::Assign.new(@entity, target: @hex))
+            return store(:selected_company, nil, skip: true)
+          end
 
           step = @game.round.active_step
           if @actions.include?('remove_hex_token') && @hex.tokens.find { |t| t.corporation == @entity }

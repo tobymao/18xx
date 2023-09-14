@@ -12,6 +12,7 @@ module View
         needs :cost
         needs :terrains, default: []
         needs :size, default: nil
+        needs :formatter, default: nil
 
         P_CENTER = {
           region_weights: CENTER,
@@ -93,7 +94,7 @@ module View
         end
 
         def render_part
-          cost = h('text.number', { attrs: { fill: 'black' } }, @cost)
+          cost = h('text.number', { attrs: { fill: 'black' } }, @formatter ? @formatter.call(@cost) : @cost)
 
           delta_x = -(size / 2)
 
