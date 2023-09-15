@@ -300,10 +300,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P18 (Safari Bonus) [N/A]',
+            name: 'P18 (Safari Bonus)',
             sym: 'P18',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the company. '\
+            desc: 'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the company. '\
                   'It converts the train into a safari train that counts an extra 20 to the earnings for reaching '\
                   'each of the game reserves. Does not count against train limit and does not count as a train '\
                   'for the purposes of train ownership. Can’t be sold to another company.',
