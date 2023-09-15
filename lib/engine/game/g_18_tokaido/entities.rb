@@ -82,16 +82,6 @@ module Engine
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
             color: nil,
           },
-          {
-            name: 'Inoue Masaru',
-            value: 100,
-            revenue: 0,
-            desc: 'Purchasing player immediately takes a 10% share of the YSL. This does not close the private ' \
-                  'company. This private company has no other special ability.',
-            sym: 'IM',
-            abilities: [{ type: 'shares', shares: 'YSL_1' }],
-            color: nil,
-          },
         ].freeze
 
         CORPORATIONS = [
