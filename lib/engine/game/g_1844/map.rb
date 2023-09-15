@@ -107,6 +107,24 @@ module Engine
             'color' => 'gray',
             'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
+          'XM1' => {
+            'count' => 2,
+            'hidden' => true,
+            'color' => 'brown',
+            'code' => 'offboard=revenue:yellow_10|green_20|brown_50|gray_80',
+          },
+          'XM2' => {
+            'count' => 2,
+            'hidden' => true,
+            'color' => 'brown',
+            'code' => 'offboard=revenue:yellow_10|green_40|brown_50|gray_60',
+          },
+          'XM3' => {
+            'count' => 2,
+            'hidden' => true,
+            'color' => 'brown',
+            'code' => 'offboard=revenue:yellow_10|green_50|brown_80|gray_10',
+          },
         }.freeze
 
         LOCATION_NAMES = {

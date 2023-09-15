@@ -4,6 +4,9 @@ module Engine
   module Game
     module G1844
       module Entities
+        MOUNTAIN_HEXES = %w[H7 L13 I14 G14 F19 L23].freeze
+        MOUNTAIN_TILES = %w[XM1 XM2 XM3].freeze
+
         COMPANIES = [
           {
             name: 'P1 - Brienzer-Rothorn-Bahn',
@@ -104,9 +107,15 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'assign_hexes', owner_type: 'player', hexes: [] },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
+              {
+                type: 'tile_lay',
+                blocks: true,
+                count: 1,
+                tiles: MOUNTAIN_TILES,
+                hexes: MOUNTAIN_HEXES,
+              },
             ],
           },
           {
@@ -122,9 +131,15 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'assign_hexes', owner_type: 'player', hexes: [] },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
+              {
+                type: 'tile_lay',
+                blocks: true,
+                count: 1,
+                tiles: %w[XM1 XM2 XM3],
+                hexes: %w[H7 L13 I14 G14 F19 L23],
+              },
             ],
           },
           {
@@ -140,9 +155,15 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'assign_hexes', owner_type: 'player', hexes: [] },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
+              {
+                type: 'tile_lay',
+                blocks: true,
+                count: 1,
+                tiles: %w[XM1 XM2 XM3],
+                hexes: %w[H7 L13 I14 G14 F19 L23],
+              },
             ],
           },
           {
@@ -158,9 +179,15 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'assign_hexes', owner_type: 'player', hexes: [] },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
+              {
+                type: 'tile_lay',
+                blocks: true,
+                count: 1,
+                tiles: %w[XM1 XM2 XM3],
+                hexes: %w[H7 L13 I14 G14 F19 L23],
+              },
             ],
           },
           {
@@ -176,9 +203,15 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'assign_hexes', owner_type: 'player', hexes: [] },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
+              {
+                type: 'tile_lay',
+                blocks: true,
+                count: 1,
+                tiles: %w[XM1 XM2 XM3],
+                hexes: %w[H7 L13 I14 G14 F19 L23],
+              },
             ],
           },
           {

@@ -41,6 +41,14 @@ module Engine
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :always
 
+        ASSIGNMENT_TOKENS = {
+          'B1' => '/icons/1844/B1.svg',
+          'B2' => '/icons/1844/B2.svg',
+          'B3' => '/icons/1844/B3.svg',
+          'B4' => '/icons/1844/B4.svg',
+          'B5' => '/icons/1844/B5.svg',
+        }.freeze
+
         MARKET = [
         ['',
          '',
@@ -289,6 +297,7 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
+            G1844::Step::MountainRailwayTrack,
             G1844::Step::BuySellParShares,
           ])
         end
@@ -363,6 +372,14 @@ module Engine
 
           company.revenue = 0
           company.value = 0
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          if self.class::MOUNTAIN_HEXES.include?(tile.hex.id)
+            return @all_tiles.select { |t| self.class::MOUNTAIN_TILES.include?(t.name) }.uniq(&:name)
+          end
+
+          super
         end
       end
     end
