@@ -9,11 +9,12 @@ module Engine
       module Step
         class HomeHexTile < Engine::Step::Base
           include Engine::Step::Tracker
+          ACTIONS = %w[lay_tile].freeze
 
           def actions(entity)
             return [] unless entity == pending_entity
 
-            %w[lay_tile]
+            ACTIONS
           end
 
           def round_state
@@ -63,6 +64,17 @@ module Engine
           def process_lay_tile(action)
             lay_tile_action(action)
             @round.minor_floated = nil
+
+            # M7 gets a mine token from its home hex
+            hex = action.hex
+            return if hex.tokens.empty?
+
+            corporation = action.entity
+            corporation.assign!(hex.coordinates)
+            token_type = @game.dummy_token_type(hex.tokens.first)
+            hex.tokens.first.remove!
+            @game.log << "#{corporation.id} collects a #{token_type} token " \
+                         "from hex #{hex.coordinates} (#{hex.location_name})"
           end
         end
       end

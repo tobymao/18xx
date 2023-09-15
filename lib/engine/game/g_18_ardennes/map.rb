@@ -95,9 +95,16 @@ module Engine
                     'stub=edge:4;',
 
             # City hexes
-            %w[B12 E15 H26 I21 J18 K5] =>
+            %w[B12 E15 I21 J18 K5] =>
                     'city=revenue:0;',
-            %w[D18 E9 G25 H6 J24] =>
+            %w[H26] =>
+                    'city=revenue:0;' \
+                    'icon=image:18_ardennes/east,sticky:1;',
+            %w[D18 G25] =>
+                    'city=revenue:0;' \
+                    'label=Y;' \
+                    'icon=image:18_ardennes/east,sticky:1;',
+            %w[E9 H6 J24] =>
                     'city=revenue:0;' \
                     'label=Y;',
             %w[F4 G3] =>
@@ -115,41 +122,46 @@ module Engine
           yellow: {
             %w[B8] =>
                     'label=A;' \
-                    'city=revenue:30;' \
-                    'city=revenue:30;' \
+                    'icon=image:18_ardennes/north,sticky:1,loc:2.5;' \
+                    'city=revenue:30,groups:Amsterdam;' \
+                    'city=revenue:30,groups:Amsterdam;' \
                     'path=a:1,b:_0;' \
                     'path=a:4,b:_1;',
             %w[B16] =>
                     'label=R;' \
+                    'icon=image:18_ardennes/north,sticky:1,loc:2.5;' \
                     'city=revenue:30;' \
                     'town=revenue:10;' \
                     'path=a:0,b:_0;' \
                     'path=a:_0,b:_1;',
             %w[C7] =>
                     'label=Y;' \
-                    'city=revenue:30;' \
-                    'city=revenue:30;' \
+                    'city=revenue:30,groups:Rotterdam;' \
+                    'city=revenue:30,groups:Rotterdam;' \
                     'path=a:0,b:_0;' \
                     'path=a:2,b:_1;',
             %w[E25] =>
                     'label=T;' \
-                    'city=revenue:30;' \
-                    'city=revenue:30;' \
+                    'icon=image:18_ardennes/east,sticky:1;' \
+                    'city=revenue:30,groups:Frankfurt;' \
+                    'city=revenue:30,groups:Frankfurt;' \
                     'path=a:0,b:_0;' \
                     'path=a:5,b:_0;' \
                     'path=a:1,b:_1;',
             %w[M7] =>
                     'label=P;' \
-                    'city=revenue:40;' \
-                    'city=revenue:40;' \
+                    'icon=image:18_ardennes/south,sticky:1;' \
+                    'city=revenue:40,groups:Paris;' \
+                    'city=revenue:40,groups:Paris;' \
                     'path=a:1,b:_0;' \
                     'path=a:2,b:_0;' \
                     'path=a:3,b:_1;' \
                     'path=a:4,b:_1;',
             %w[M27] =>
                     'label=T;' \
-                    'city=revenue:30;' \
-                    'city=revenue:30;' \
+                    'icon=image:18_ardennes/south,sticky:1;' \
+                    'city=revenue:30,groups:Basel;' \
+                    'city=revenue:30,groups:Basel;' \
                     'path=a:1,b:_0;' \
                     'path=a:2,b:_0;' \
                     'path=a:3,b:_1;',
@@ -163,18 +175,18 @@ module Engine
                     'path=a:3,b:4;',
             %w[E5] =>
                     'city=revenue:20;' \
-                    'icon=image:port;' \
+                    'path=a:1,b:_0;' \
                     'path=a:4,b:_0;',
             %w[E7] =>
                     'path=a:1,b:3;',
             %w[F2] =>
                     'offboard=revenue:0;' \
-                    'icon=image:port;' \
+                    'icon=image:18_ardennes/west,sticky:1;' \
                     'path=a:4,b:_0;' \
                     'path=a:5,b:_0;',
-            %w[G1] =>
+            %w[E3 G1] =>
                     'offboard=revenue:0;' \
-                    'icon=image:port;' \
+                    'icon=image:18_ardennes/west,sticky:1;' \
                     'path=a:4,b:_0;',
             %w[I1] =>
                     'town=revenue:20;' \
@@ -198,6 +210,149 @@ module Engine
                     'path=a:4,b:_0;',
           },
         }.freeze
+
+        NORTH_HEXES = %w[B8 B16].freeze
+        SOUTH_HEXES = %w[M7 M27].freeze
+        EAST_HEXES = %w[D18 E25 G25 H26].freeze
+        WEST_HEXES = %w[E3 F2 G1].freeze
+        MINE_HEXES = %w[H10 H10 I21 I21].freeze
+        PORT_HEXES = %w[E5 F4 F4 G3 G3].freeze
+        FORT_HEXES = {
+          'Ft1' => 'J18',
+          'Ft2' => 'J18',
+          'Ft3' => 'K19',
+          'Ft4' => 'L22',
+          'Ft5' => 'M23',
+        }.freeze
+        FORT_DESTINATIONS = %w[M7 J24].freeze
+
+        ASSIGNMENT_TOKENS = {
+          'Ft1' => '/logos/18_ardennes/fort.svg',
+          'Ft2' => '/logos/18_ardennes/fort.svg',
+          'Ft3' => '/logos/18_ardennes/fort.svg',
+          'Ft4' => '/logos/18_ardennes/fort.svg',
+          'Ft5' => '/logos/18_ardennes/fort.svg',
+          'H10' => '/logos/18_ardennes/mine.svg',
+          'I21' => '/logos/18_ardennes/mine.svg',
+          'E4' => '/logos/18_ardennes/port.svg',
+          'F4' => '/logos/18_ardennes/port.svg',
+          'G3' => '/logos/18_ardennes/port.svg',
+        }.freeze
+
+        def setup_tokens
+          @mine_corp = dummy_corp('Mines', '18_ardennes/mine', MINE_HEXES)
+          @port_corp = dummy_corp('Ports', '18_ardennes/port', PORT_HEXES)
+          FORT_HEXES.each { |fort, coord| hex_by_id(coord).assign!(fort) }
+        end
+
+        def dummy_corp(sym, logo, coords)
+          corp = Corporation.new(
+            sym: sym,
+            name: sym,
+            logo: logo,
+            simple_logo: logo,
+            tokens: Array.new(coords.size, 0),
+            type: :dummy
+          )
+          corp.owner = @bank
+
+          coords.each do |coord|
+            hex = hex_by_id(coord)
+            city = hex.tile.cities.first
+            token = corp.next_token
+            if city.tokenable?(corp)
+              city.place_token(corp, token)
+            else
+              hex.place_token(token)
+            end
+          end
+
+          corp
+        end
+
+        def dummy_token_type(token)
+          case token.corporation
+          when @mine_corp then :mine
+          when @port_corp then :port
+          else raise GameError, 'Not a dummy token'
+          end
+        end
+
+        def hexes_by_id(coordinates)
+          coordinates.map { |coord| hex_by_id(coord) }
+        end
+
+        def fort_hexes
+          @fort_hexes ||= hexes_by_id(FORT_HEXES.values)
+        end
+
+        def fort_destination_hexes
+          @fort_destination_hexes ||= hexes_by_id(FORT_DESTINATIONS)
+        end
+
+        def tee_hexes(direction)
+          @tee_hexes ||= {
+            north: hexes_by_id(NORTH_HEXES),
+            south: hexes_by_id(SOUTH_HEXES),
+            east: hexes_by_id(EAST_HEXES),
+            west: hexes_by_id(WEST_HEXES),
+          }
+          @tee_hexes[direction]
+        end
+
+        def north_nodes
+          tee_hexes(:north).map(&:tile).flat_map(&:cities)
+        end
+
+        def south_nodes
+          tee_hexes(:south).map(&:tile).flat_map(&:cities)
+        end
+
+        def east_nodes
+          tee_hexes(:east).map(&:tile).flat_map(&:cities)
+        end
+
+        def west_nodes
+          tee_hexes(:west).map(&:tile).flat_map(&:offboards)
+        end
+
+        # The number of fort tokens a corporation has collected.
+        def fort_tokens(corporation)
+          corporation.assignments.keys.intersection(FORT_HEXES.keys).size
+        end
+
+        # Returns 2 if a corporation has routes to both Paris and Strasbourg,
+        # 1 if connected to just one of these, or zero if neither.
+        def fort_destinations(corporation)
+          graph_for_entity(corporation)
+            .connected_hexes(corporation)
+            .keys
+            .intersection(fort_destination_hexes)
+            .size
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          # Special case for the Ruhr green tile, which loses a town.
+          return to.name == 'X11' if from.name == 'B16'
+
+          super
+        end
+
+        def after_lay_tile(hex, tile, entity)
+          # Move mine/port tokens from hex into city if possible.
+          return if hex.tokens.empty?
+
+          city = tile.cities.first
+          return if city.available_slots.zero?
+
+          token = hex.tokens.first
+          token.remove!
+          city.place_token(token.corporation,
+                           token,
+                           free: true,
+                           same_hex_allowed: true)
+          clear_graph_for_entity(entity)
+        end
       end
     end
   end

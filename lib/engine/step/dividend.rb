@@ -10,9 +10,17 @@ module Engine
       ACTIONS = %w[dividend].freeze
 
       def actions(entity)
-        return [] if entity.company? || @game.routes_revenue(routes).zero?
+        return [] if entity.company? || total_revenue.zero?
 
         ACTIONS
+      end
+
+      def round_state
+        super.merge(
+          {
+            extra_revenue: 0,
+          }
+        )
       end
 
       DIVIDEND_TYPES = %i[payout withhold].freeze
@@ -32,7 +40,7 @@ module Engine
       end
 
       def dividend_options(entity)
-        revenue = @game.routes_revenue(routes)
+        revenue = total_revenue
         dividend_types.to_h do |type|
           payout = send(type, entity, revenue)
           payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
@@ -42,7 +50,7 @@ module Engine
 
       def process_dividend(action)
         entity = action.entity
-        revenue = @game.routes_revenue(routes)
+        revenue = total_revenue
         kind = action.kind.to_sym
         payout = dividend_options(entity)[kind]
 
@@ -58,6 +66,7 @@ module Engine
         rust_obsolete_trains!(entity)
 
         @round.routes = []
+        @round.extra_revenue = 0
 
         log_run_payout(entity, kind, revenue, action, payout)
 
@@ -181,6 +190,14 @@ module Engine
 
       def routes
         @round.routes
+      end
+
+      def extra_revenue
+        @round.extra_revenue || 0
+      end
+
+      def total_revenue
+        @game.routes_revenue(routes) + extra_revenue
       end
 
       def rust_obsolete_trains!(entity, log: true)
