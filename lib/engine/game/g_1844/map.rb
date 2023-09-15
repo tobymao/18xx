@@ -4,6 +4,8 @@ module Engine
   module Game
     module G1844
       module Map
+        OFFBOARD_NO_REVENUE = 'yellow_0|green_0|brown_0|gray_0'.freeze
+
         TILES = {
           '3' => 3,
           '4' => 6,
@@ -49,7 +51,7 @@ module Engine
           '619' => 4,
           '901' => {
             'count' => 1,
-            color: 'green',
+            'color' => 'green',
             'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;'\
                       'path=a:3,b:_1;label=L',
           },
@@ -201,22 +203,22 @@ module Engine
           red: {
             ['A18'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart;path=a:5,b:_0;border=edge:0;'\
                        'border=edge:4',
-            ['A20'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart;path=a:0,b:_0;path=a:5,b:_0;'\
-                       'border=edge:1;',
+            ['A20'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart,hide:1;path=a:0,b:_0;'\
+                       'path=a:5,b:_0;border=edge:1;',
             ['B11'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:0,b:_0;path=a:5,b:_0;',
-            ['B17'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart;path=a:4,b:_0;border=edge:3',
+            ['B17'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart,hide:1;path=a:4,b:_0;border=edge:3',
             ['C8'] => 'offboard=revenue:yellow_10|green_30|brown_50|gray_70;path=a:0,b:_0;path=a:4,b:_0;',
             ['C26'] => 'offboard=revenue:yellow_10|green_30|brown_50|gray_70;path=a:0,b:_0;path=a:1,b:_0;',
             ['F3'] => 'offboard=revenue:yellow_10|green_30|brown_50|gray_70;path=a:4,b:_0;path=a:5,b:_0;',
-            ['G30'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck;path=a:1,b:_0;border=edge:0',
+            ['G30'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck,hide:1;path=a:1,b:_0;border=edge:0',
             ['H29'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck;path=a:0,b:_0;path=a:1,b:_0;'\
-                       'path=a:2,b:_0;border=edge:0',
-            ['I30'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck;path=a:1,b:_0;border=edge:0',
+                       'path=a:2,b:_0;border=edge:3;border=edge:5',
+            ['I30'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck,hide:1;path=a:1,b:_0;border=edge:2',
             ['L1'] => 'offboard=revenue:yellow_30|green_50|brown_70|gray_90;path=a:3,b:_0',
             ['L15'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano;path=a:2,b:_0',
             ['M8'] => 'offboard=revenue:yellow_0|green_30|brown_50|gray_70;path=a:2,b:_0;path=a:3,b:_0',
             ['M20'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano;path=a:3,b:_0;border=edge:4',
-            ['M22'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano;path=a:2,b:_0;border=edge:1',
+            ['M22'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano,hide:1;path=a:2,b:_0;border=edge:1',
           },
           gray: {
             ['E26'] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:2,b:_0;path=a:5,b:_0',
@@ -229,29 +231,35 @@ module Engine
             %w[B21 C10 C18 E14 E16 E24 F27 G12 I2] => 'blank',
             %w[C16 E12 E22] => 'upgrade=cost:20,terrain:river',
             %w[C22 D7 D9 D11 D23 E6 F15 H15 I8 J7] => 'upgrade=cost:30,terrain:mountain',
-            %w[F23 G10 G24 H9 H11 I22 I24 I26 J15 J19 J21 J23 J27 K6 K12 L7 L9] => 'upgrade=cost:60,terrain:mountain',
-            %w[G22 I18 I20] => 'upgrade=cost:90,terrain:mountain',
+            %w[F23 G10 G24 H9 H11 I22 I24 I26 J19 J21 J23 J27 K6 K12 L7 L9] => 'upgrade=cost:60,terrain:mountain',
+            %w[G22 I20] => 'upgrade=cost:90,terrain:mountain',
             %w[B23 C14 D17 G16] => 'town=revenue:0',
             %w[E10 F25 J1 K8] => 'town=revenue:0;upgrade=cost:20,terrain:water',
             %w[F13 H3 H25 L11] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
             %w[C24 D25] => 'city=revenue:0',
-            %w[B19 C12 D13 E18 H13 I6 K10 K20 K22] => 'city=revenue:0;upgrade=cost:20,terrain:river',
+            %w[B19 C12 D13 E18 H13 K10 K20 K22] => 'city=revenue:0;upgrade=cost:20,terrain:river',
             %w[F21 G28 I28] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
-            %w[F7 F17] => 'city=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:river',
             %w[G26 L21] => 'city=revenue:10;path=a:0,b:_0;upgrade=cost:20,terrain:river',
             ['D19'] => 'city=revenue:0;upgrade=cost:20,terrain:river;border=edge:5,type:impassable;label=Z',
             ['D21'] => 'town=revenue:0;border=edge:0,type:impassable',
             ['E8'] => 'town=revenue:0;border=edge:5,type:impassable',
-            ['E20'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
+            ['E20'] => 'border=edge:0,type:impassable;border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['F5'] => 'border=edge:5,type:impassable',
+            ['F7'] => 'city=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:river',
             ['F9'] => 'upgrade=cost:20,terrain:river;border=edge:2,type:impassable',
             ['F11'] => 'city=revenue:10;path=a:5,b:_0;label=B',
+            ['F17'] => 'city=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:river;border=edge:4,type:impassable',
             ['G4'] => 'border=edge:4,type:impassable;border=edge:5,type:impassable',
             ['G6'] => 'border=edge:1,type:impassable;border=edge:2,type:impassable',
             ['G18'] => 'city=revenue:0;border=edge:3,type:impassable',
             ['H5'] => 'upgrade=cost:30,terrain:mountain;border=edge:2,type:impassable;border=edge:5,type:impassable',
-            ['I10'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:5,type:impassable',
-            ['J11'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:2,type:impassable',
+            ['I6'] => 'city=revenue:0;upgrade=cost:20,terrain:river;border=edge:2,type:impassable',
+            ['I10'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain' \
+                       ';border=edge:4,type:impassable;border=edge:5,type:impassable',
+            ['I18'] => 'upgrade=cost:90,terrain:mountain;border=edge:1,type:impassable;border=edge:3,type:impassable',
+            ['J11'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain' \
+                       ';border=edge:2,type:impassable;border=edge:3,type:impassable',
+            ['J15'] => 'upgrade=cost:60,terrain:mountain;border=edge:0,type:impassable',
           },
           yellow: {
             %w[C20 G8] => 'city=revenue:0;city=revenue:0',
@@ -259,18 +267,20 @@ module Engine
             ['I4'] => 'city=revenue:20,loc:1.5;city=revenue:20,loc:4;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_1;label=L',
           },
           brown: {
-            ['F19'] => 'offboard=revenue:nil;path=a:2,b:_0;path=a:4,b:_0;'\
+            ['F19'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:2,b:_0;path=a:4,b:_0;"\
                        'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:3,type:impassable',
-            ['G14'] => 'offboard=revenue:nil;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+            ['G14'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;"\
                        'path=a:4,b:_0;path=a:5,b:_0',
-            ['H7'] => 'offboard=revenue:nil;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+            ['H7'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;"\
                       'path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
-            ['I14'] => 'offboard=revenue:nil;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0',
-            %w[L13 L23] => 'offboard=revenue:nil;path=a:1,b:_0;path=a:2,b:_0',
+            ['I14'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0"\
+                       ';border=edge:1,type:impassable;border=edge:4,type:impassable',
+            ['L13'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:impassable",
+            ['L23'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0",
           },
           purple: {
             # Gotthard tunnel
-            ['H17'] => 'town=revenue:0;path=track:future,a:0,b:_0;path=track:future,a:4,b:_0;upgrade=cost:100',
+            ['H17'] => 'town=revenue:0,loc:4;path=track:future,a:0,b:_0;path=track:future,a:4,b:_0;upgrade=cost:100',
             ['H19'] => 'path=track:future,a:1,b:4;upgrade=cost:100;border=edge:0,type:impassable',
             ['H21'] => 'path=track:future,a:1,b:4;upgrade=cost:100',
             ['H23'] => 'path=track:future,a:1,b:4;upgrade=cost:100',

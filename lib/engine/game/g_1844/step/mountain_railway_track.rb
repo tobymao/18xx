@@ -26,7 +26,8 @@ module Engine
           end
 
           def available_hex(_entity, hex)
-            abilities(current_entity).hexes.include?(hex.id) && hex.tile.offboards.first.revenue_to_render.zero?
+            abilities(current_entity).hexes.include?(hex.id) &&
+              hex.tile.offboards.first.revenue == @game.class::OFFBOARD_NO_REVENUE
           end
 
           def upgradeable_tiles(entity, _hex)
