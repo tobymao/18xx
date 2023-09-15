@@ -73,7 +73,7 @@ module Engine
 
         COMPANY_10X_REVENUE = 'P16'
         COMPANY_REMOVE_TOWN = 'P9'
-        COMPANY_EXTRA_TILE_LAYS = %w[P7 P12].freeze
+        COMPANY_EXTRA_TILE_LAYS = %w[P7 P8 P12].freeze
         COMPANY_TOKEN_SWAP = 'P13'
         COMPANY_RECYCLED_TRAIN = 'P6'
         COMPANY_SELL_SHARE = 'P17'
@@ -84,6 +84,8 @@ module Engine
 
         COMPANY_GOLD_MINE = 'P14'
         GOLD_MINE_BONUS = 20
+
+        COMPANY_RESERVE_THREE_TILES = 'P8'
 
         GAME_RESERVE_TILE = 'GR'
         GAME_RESERVE_MULTIPLIER = 5
@@ -779,7 +781,17 @@ module Engine
           return true if special && tile_game_reserve?(to)
           return false if from.color == :yellow && plantation_assigned?(from.hex)
 
-          super
+          result = super
+
+          return result unless reserve_tiles_owner_active?
+
+          result && @reserved_tiles.any? { |t| t.name == to.name }
+        end
+
+        def reserve_tiles_owner_active?
+          return false if !@tile_reservations_done || @reserved_tiles.none?
+
+          current_entity == company_reserve_tiles&.owner
         end
 
         def pay_game_reserve_bonus!(entity)
@@ -821,6 +833,8 @@ module Engine
             company_choices_recycled_train(company, time)
           when self.class::COMPANY_SELL_SHARE
             company_choices_sell_share(company, time)
+          when self.class::COMPANY_RESERVE_THREE_TILES
+            company_choices_reserve_three_tiles(company, time)
           else
             {}
           end
@@ -851,6 +865,20 @@ module Engine
           { sell: "Sell #{corp.name} treasury share for #{format_currency(corp.share_price.price)}" }
         end
 
+        def company_choices_reserve_three_tiles(company, _time)
+          return {} if !company.owner&.corporation? || @tile_reservations_done
+
+          choices = {}
+
+          available_tiles = tiles.reject { |t| t.color == :purple }.group_by(&:name)
+
+          available_tiles.each do |name, tiles|
+            choices[name] = "##{name} × #{tiles.size}"
+          end
+
+          choices
+        end
+
         def company_made_choice(company, choice, _time)
           case company.id
           when self.class::COMPANY_TOKEN_SWAP
@@ -859,6 +887,8 @@ module Engine
             company_made_choice_recycled_train(company, choice)
           when self.class::COMPANY_SELL_SHARE
             company_made_choice_sell_share(company, choice)
+          when self.class::COMPANY_RESERVE_THREE_TILES
+            company_made_choice_reserve_three_tiles(company, choice)
           end
         end
 
@@ -878,8 +908,66 @@ module Engine
           company.close!
         end
 
+        def company_made_choice_reserve_three_tiles(company, choice)
+          return if @tile_reservations_done
+
+          tile = @tiles.find { |t| t.name == choice }
+
+          @reserved_tiles ||= []
+          @reserved_tiles << tile
+
+          @tiles.delete(tile)
+
+          @log << "#{company.owner.name} reserves tile ##{tile.name}"
+
+          finish_tile_reservations(company) if @reserved_tiles.size == 3
+        end
+
+        def finish_tile_reservations(company)
+          @tile_reservations_done = true
+          update_tile_reservations!
+          @log << "#{company.owner.name} can only lay reserved tiles until all of them are placed"
+        end
+
+        def update_tile_reservations!
+          company_reserve_tiles.revenue = 5 * @reserved_tiles.size
+
+          return if @reserved_tiles.any?
+
+          @log << "#{company_reserve_tiles.name} closes"
+          company_reserve_tiles.close!
+        end
+
+        def update_tile_lists(tile, old_tile)
+          if reserve_tiles_owner_active? && @reserved_tiles&.include?(tile)
+            @tiles << tile
+            @reserved_tiles.delete(tile)
+            update_tile_reservations!
+          end
+
+          super
+        end
+
+        def company_reserve_tiles
+          @company_reserve_tiles ||= company_by_id(self.class::COMPANY_RESERVE_THREE_TILES)
+        end
+
+        def tiles
+          return @tiles unless reserve_tiles_owner_active?
+
+          @reserved_tiles + @tiles
+        end
+
         def room?(entity)
           entity.trains.count { |t| !extra_train?(t) } < train_limit(entity)
+        end
+
+        def company_status_str(company)
+          if company == company_reserve_tiles && @reserved_tiles&.any?
+            return "[#{@reserved_tiles.map { |t| "##{t.name}" }.join(', ')}]"
+          end
+
+          super
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does
