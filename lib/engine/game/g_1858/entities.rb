@@ -116,7 +116,7 @@ module Engine
           {
             sym: 'H&G',
             name: 'Havana and Güines Railway',
-            desc: 'P1. Revenue 30. ' \
+            desc: 'P1. Revenue 10, face value 30. ' \
                   'Cannot be used to start a public company or exchanged for a share.',
             value: 30,
             discount: 0,
