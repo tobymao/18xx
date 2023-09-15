@@ -2563,7 +2563,7 @@ module Engine
           return false if bundle.partial? && !can_sell_partial?(owner, corp)
           return true if can_dump?(owner, corp, active)
 
-          corp_minimum_to_retain(owner, corp, active) <= bundle.percent &&
+          corp_minimum_to_retain(owner, corp, active) <= (owner.percent_of(corp) - bundle.percent) &&
             !bundle.presidents_share
         end
 
