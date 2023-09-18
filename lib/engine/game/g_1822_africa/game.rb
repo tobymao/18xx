@@ -64,11 +64,11 @@ module Engine
 
         PRIVATES_IN_GAME = 12
 
-        EXTRA_TRAINS = %w[2P P+ LP].freeze
+        EXTRA_TRAINS = %w[2P P+ LP S].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
         EXPRESS_TRAIN_MULTIPLIER = 2
 
-        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5].freeze
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P18].freeze
         PRIVATE_MAIL_CONTRACTS = [].freeze # Stub
         PRIVATE_PHASE_REVENUE = %w[P16].freeze
         PRIVATE_REMOVE_REVENUE = %w[P13].freeze
@@ -91,6 +91,8 @@ module Engine
 
         GAME_RESERVE_TILE = 'GR'
         GAME_RESERVE_MULTIPLIER = 5
+
+        SAFARI_TRAIN_BONUS = 20
 
         MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
@@ -366,6 +368,12 @@ module Engine
             num: 1,
             price: 160,
           },
+          {
+            name: 'S',
+            distance: 2,
+            num: 1,
+            price: 0,
+          },
         ].freeze
 
         UPGRADE_COST_L_TO_2 = 70
@@ -417,6 +425,7 @@ module Engine
           @company_trains['P3'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P5'] = find_and_remove_train_by_id('P+-1', buyable: false)
+          @company_trains['P18'] = find_and_remove_train_by_id('S-0', buyable: false)
 
           @recycled_trains = [
             find_and_remove_train_by_id('LR-0', buyable: false),
@@ -503,7 +512,7 @@ module Engine
             G1822::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
-            G1822::Step::Route,
+            G1822Africa::Step::Route,
             G1822::Step::Dividend,
             G1822Africa::Step::BuyTrain,
             G1822Africa::Step::MinorAcquisition,
@@ -655,6 +664,7 @@ module Engine
           revenue += plantation_bonus(route)
           revenue += gold_mine_bonus(route, stops)
           revenue += destination_bonus_for(route)
+          revenue += safari_train_bonus(route)
 
           return revenue unless can_be_express?(route.train)
           return revenue unless includes_two_tokens?(route)
@@ -684,6 +694,12 @@ module Engine
           return 0 if !@gold_mine_token || stops&.none? { |s| s.hex == @gold_mine_token.hex }
 
           self.class::GOLD_MINE_BONUS
+        end
+
+        def safari_train_bonus(route)
+          return 0 unless safari_train_attached?(route.train)
+
+          self.class::SAFARI_TRAIN_BONUS * find_game_reserves(route.all_hexes).count
         end
 
         def destination_bonus_for(route)
@@ -723,9 +739,14 @@ module Engine
 
         def revenue_str(route)
           str = super
+
           str += ' [Express]' if runs_as_express?(route)
           str += ' +20 (Coffee Plantation) ' if plantation_bonus(route).positive?
           str += ' +20 (Gold Mine)' if gold_mine_bonus(route, route.stops).positive?
+
+          safari_bonus = safari_train_bonus(route)
+          str += " + #{safari_bonus} (Safari)" if safari_bonus.positive?
+
           str
         end
 
@@ -763,6 +784,18 @@ module Engine
           :normal
         end
 
+        def route_trains(entity)
+          entity.runnable_trains.reject { |t| pullman_train?(t) || safari_train?(t) }
+        end
+
+        def safari_train?(t)
+          t.name == 'S'
+        end
+
+        def safari_train_attached?(t)
+          t.name.end_with?('S')
+        end
+
         def can_be_express?(train)
           train.name[-1] == 'E'
         end
@@ -796,8 +829,12 @@ module Engine
           current_entity == company_reserve_tiles&.owner
         end
 
+        def find_game_reserves(hexes)
+          hexes.select { |h| h.tile.color == :purple }
+        end
+
         def pay_game_reserve_bonus!(entity)
-          reserves = hexes.select { |h| h.tile.color == :purple }
+          reserves = find_game_reserves(hexes)
           bonus = hex_crow_distance_not_inclusive(*reserves) * self.class::GAME_RESERVE_MULTIPLIER
 
           return if bonus.zero?
