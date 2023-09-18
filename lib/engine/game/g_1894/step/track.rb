@@ -59,11 +59,11 @@ module Engine
           end
 
           def update_token!(action, entity, tile, old_tile)
-            cities = tile.cities
-            tokens = cities.flat_map(&:tokens).compact
             saved_tokens = @game.saved_tokens
 
             if old_tile.name == @game.class::PARIS_HEX && old_tile.paths.empty?
+              cities = tile.cities
+              tokens = cities.flat_map(&:tokens).compact
               plm_token = tokens.find { |t| t.corporation.id == 'PLM' }
 
               return unless plm_token
