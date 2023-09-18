@@ -1068,7 +1068,7 @@ module Engine
                              else
                                @players.reject(&:bankrupt)
                              end
-          possible_corps = corporations.select(&:floated?).reject(&:closed?).sort
+          possible_corps = corporations.reject(&:closed?).sort
 
           possible = possible_players + possible_corps
           possible.reject! { |p| p == previous }
