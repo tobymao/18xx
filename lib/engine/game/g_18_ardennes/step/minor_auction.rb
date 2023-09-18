@@ -28,7 +28,7 @@ module Engine
 
           def setup
             setup_auction
-            @minors = @game.companies +
+            @minors = @game.companies.select { |c| c.type == :minor } +
                       @game.corporations.select { |corp| corp.type == :minor }
           end
 

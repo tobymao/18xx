@@ -8,12 +8,115 @@ module Engine
           {
             sym: 'GL',
             name: 'Guillaume-Luxembourg',
+            type: :minor,
             value: 100,
             discount: 0,
             revenue: 25,
             color: :yellow,
             text_color: :black,
             abilities: [{ type: 'no_buy' }],
+          },
+          {
+            sym: 'BY',
+            name: 'Königlich Bayerische Staats-Eisenbahn',
+            type: :concession,
+            value: 0,
+            discount: 0,
+            color: :lightblue,
+            text_color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['BY'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
+          },
+          {
+            sym: 'N',
+            name: 'Compagnie des chemins de fer du Nord',
+            type: :concession,
+            value: 0,
+            discount: 0,
+            color: :saddlebrown,
+            text_color: :white,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['N'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
+          },
+          {
+            sym: 'E',
+            name: 'Compagnie des chemins de fer de l\'Est',
+            type: :concession,
+            value: 0,
+            discount: 0,
+            color: :orange,
+            text_color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['E'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
+          },
+          {
+            sym: 'NL',
+            name: 'Maatschappij tot Exploitatie van Staatsspoorwegen',
+            type: :concession,
+            value: 0,
+            discount: 0,
+            color: :yellow,
+            text_color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['NL'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
+          },
+          {
+            sym: 'BE',
+            name: 'État Belge',
+            type: :concession,
+            value: 0,
+            discount: 0,
+            color: :darkgreen,
+            text_color: :white,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['BE'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
+          },
+          {
+            sym: 'P',
+            name: 'Preußische Staatsiesenbahnen',
+            type: :concession,
+            value: 0,
+            discount: 0,
+            color: :darkblue,
+            text_color: :white,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: ['P'],
+                owner_type: 'player',
+                from: 'par',
+              },
+            ],
           },
         ].freeze
 
@@ -245,6 +348,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
+            coordinates: %w[E25 G25 H26 I21 J24],
           },
           {
             sym: 'N',
@@ -258,6 +362,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
+            coordinates: %w[G3 H6 K5 M7],
           },
           {
             sym: 'E',
@@ -271,6 +376,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
+            coordinates: %w[I21 J18 J24 K11 M7],
           },
           {
             sym: 'NL',
@@ -284,6 +390,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
+            coordinates: %w[B8 B12 C7 E5 E9 E15],
           },
           {
             sym: 'BE',
@@ -297,6 +404,7 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
+            coordinates: %w[E9 E15 F4 F10 H6 H10],
           },
           {
             sym: 'P',
@@ -310,14 +418,23 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
+            coordinates: %w[B16 D18 E15 E25],
           },
         ].freeze
 
-        def game_companies
-          # The Guillaume-Luxembourg is only used in four-player games.
-          return [] unless @players.size == 4
+        def company_header(company)
+          case company.type
+          when :minor then 'MINOR COMPANY'
+          when :concession then 'PUBLIC COMPANY'
+          else raise GameError, 'Unknown type of private company'
+          end
+        end
 
-          super
+        def game_companies
+          companies = super
+          # The Guillaume-Luxembourg is only used in four-player games.
+          companies.reject! { |c| c[:type] == :minor } unless @players.size == 4
+          companies
         end
 
         def reservation_corporations

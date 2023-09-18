@@ -36,10 +36,46 @@ module Engine
           setup_tokens
         end
 
-        def new_auction_round
+        def next_round!
+          @round =
+            case @round
+            when Round::Auction
+              if @turn == 1
+                init_round_finished
+                reorder_players
+              end
+              new_stock_round
+            when Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                major_auction_round
+              end
+            end
+        end
+
+        def init_round
+          minor_auction_round
+        end
+
+        def minor_auction_round
           Engine::Round::Auction.new(self, [
             G18Ardennes::Step::HomeHexTile,
             G18Ardennes::Step::MinorAuction,
+          ])
+        end
+
+        def major_auction_round
+          Engine::Round::Auction.new(self, [
+            G18Ardennes::Step::MajorAuction,
           ])
         end
 
