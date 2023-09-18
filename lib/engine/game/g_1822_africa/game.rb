@@ -60,6 +60,8 @@ module Engine
           P15: '/icons/1822_africa/coffee.svg',
         }.freeze
 
+        TOKEN_PRICE = 100
+
         PRIVATES_IN_GAME = 12
 
         EXTRA_TRAINS = %w[2P P+ LP].freeze
