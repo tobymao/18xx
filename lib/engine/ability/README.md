@@ -256,7 +256,7 @@ remains open but the discount can no longer be used. Default false.
   connect to each other. Default true.
 - `blocks`: If true and `when` is `sold`, then the step
   `TrackLayWhenCompanySold` will require a tile lay. Default false.
-- `reachable`: If true, when tile layed, a check is done if one of the
+- `reachable`: If true, when tile laid, a check is done if one of the
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
 - `must_lay_together`: If true and `count` is greater than 1, all the tile lays
