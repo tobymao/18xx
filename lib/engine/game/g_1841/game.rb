@@ -1068,7 +1068,7 @@ module Engine
                              else
                                @players.reject(&:bankrupt)
                              end
-          possible_corps = corporations.select(&:floated?).reject(&:closed?).sort
+          possible_corps = corporations.reject(&:closed?).sort
 
           possible = possible_players + possible_corps
           possible.reject! { |p| p == previous }
@@ -2563,7 +2563,7 @@ module Engine
           return false if bundle.partial? && !can_sell_partial?(owner, corp)
           return true if can_dump?(owner, corp, active)
 
-          corp_minimum_to_retain(owner, corp, active) <= bundle.percent &&
+          corp_minimum_to_retain(owner, corp, active) <= (owner.percent_of(corp) - bundle.percent) &&
             !bundle.presidents_share
         end
 

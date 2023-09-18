@@ -8,6 +8,7 @@ require_relative 'meta'
 require_relative 'stock_market'
 require_relative 'tiles'
 require_relative 'step/buy_company'
+require_relative 'step/buy_sell_par_shares'
 require_relative 'step/draft_distribution'
 
 module Engine
@@ -32,7 +33,7 @@ module Engine
         attr_reader :drafted_companies
 
         CURRENCY_FORMAT_STR = '¥%s'
-        # Technically not used; recalculated depending on the variant
+        # Technically not used; recalculated depending on optional rules
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
         STARTING_CASH = { 2 => 820, 3 => 550, 4 => 480 }.freeze
         CAPITALIZATION = :full
@@ -76,8 +77,8 @@ module Engine
             operating_rounds: 3,
           },
           {
-            name: 'E',
-            on: 'E',
+            name: 'D',
+            on: 'D',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
@@ -101,7 +102,7 @@ module Engine
             name: '4',
             distance: 4,
             price: 300,
-            rusts_on: 'E',
+            rusts_on: 'D',
           },
           {
             name: '5',
@@ -115,7 +116,7 @@ module Engine
             price: 630,
           },
           {
-            name: 'E',
+            name: 'D',
             distance: 999,
             price: 900,
             available_on: '6',
@@ -127,8 +128,8 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'signal_end_game' => [
             'Triggers End Game',
-            'Game ends after next set of ORs when E train purchased or exported, ' \
-            'purchasing a E train triggers a stock round immediately after current OR',
+            'Game ends after next set of ORs when D train purchased or exported, ' \
+            'purchasing a D train triggers a stock round immediately after current OR',
           ]
         )
 
@@ -169,9 +170,12 @@ module Engine
               c.min_price = (new_value / 2).to_i
               c.max_price = new_value * 2
             end
-          else
-            @reverse = true
+          elsif @optional_rules&.include?(:snake_draft)
             setup_company_price_up_to_face
+            @reverse = true
+          else
+            setup_company_price_up_to_face
+            @companies.each { |c| c.owner = @bank }
           end
           @e_train_exported = false
         end
@@ -196,7 +200,7 @@ module Engine
             3
           when '6'
             @optional_rules&.include?(:limited_express) ? 2 : 3
-          when 'E'
+          when 'D'
             20
           end
         end
@@ -218,12 +222,16 @@ module Engine
               Engine::Step::CompanyPendingPar,
               Engine::Step::WaterfallAuction,
             ])
-          else
+          elsif @optional_rules&.include?(:snake_draft)
             Engine::Round::Draft.new(
               self,
               [G18Tokaido::Step::DraftDistribution],
               snake_order: true
             )
+          else
+            Engine::Round::Stock.new(self, [
+              G18Tokaido::Step::BuySellParShares,
+            ])
           end
         end
 
@@ -264,7 +272,7 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::BuySellParShares,
+            G18Tokaido::Step::BuySellParShares,
           ])
         end
 
@@ -312,7 +320,7 @@ module Engine
           @need_last_stock_round = true
           game_end_check
           @operating_rounds = @round.round_num if round.class.short_name != 'SR'
-          @log << 'First E train bought/exported, end game triggered'
+          @log << 'First D train bought/exported, end game triggered'
         end
 
         def game_ending_description
@@ -332,7 +340,7 @@ module Engine
         def or_set_finished
           return if @e_train_exported
 
-          @e_train_exported = true if depot.upcoming.first.name == 'E'
+          @e_train_exported = true if depot.upcoming.first.name == 'D'
           depot.export!
         end
 

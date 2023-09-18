@@ -13,7 +13,7 @@ module Engine
           '7' => 'unlimited',
           '8' => 'unlimited',
           '9' => 'unlimited',
-          '57' => 4,
+          '57' => 2,
           '58' => 3,
           '201' => 1,
           '202' => 1,

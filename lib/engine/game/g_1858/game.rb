@@ -184,6 +184,7 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             G1858::Step::Exchange,
+            G1858::Step::ExchangeApproval,
             G1858::Step::HomeToken,
             G1858::Step::BuySellParShares,
           ])
@@ -209,6 +210,7 @@ module Engine
 
         def closure_round(round_num)
           G1858::Round::Closure.new(self, [
+            G1858::Step::ExchangeApproval,
             G1858::Step::HomeToken,
             G1858::Step::PrivateClosure,
           ], round_num: round_num)
@@ -316,30 +318,6 @@ module Engine
         # Returns true if the hex is this private railway's home hex.
         def home_hex?(operator, hex)
           operator.coordinates.include?(hex.coordinates)
-        end
-
-        # Constent for a share purchase is only needed in one circumstance:
-        # - A private railway company is being exchanged for a share.
-        # - The share is from the corporation's treasury (not the market).
-        # - The private railway and corporation are controlled by different players.
-        def consenter_for_buy_shares(entity, bundle)
-          return unless entity.minor?
-          return unless bundle.share_price.nil?
-          return if entity.owner == bundle.corporation.owner
-          return unless bundle.shares.first.owner.corporation?
-
-          bundle.corporation.owner
-        end
-
-        # Consent for a share exchange in the private closure round is needed
-        # if the corporation whose share is being taken is not run by the same
-        # player as the private railway company being exchanged, and the share
-        # is from the corporation's treasury.
-        def consenter_for_choice(minor, choice, _label)
-          return if choice['from'] == 'market'
-
-          corporation = @corporations.find { |c| c.id == choice['corporation'] }
-          corporation.owner unless corporation.owner == minor.owner
         end
 
         def tile_lays(entity)

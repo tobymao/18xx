@@ -29,31 +29,34 @@ module Engine
                                'for a single share of a public company.'
             end
 
-            acquire_private(corporation, minor)
             if bundle.percent == 40
               exchange_for_presidency(bundle, corporation, minor, player)
               @round.current_actions << action
-            else
-              exchange_for_share(bundle, corporation, minor, player)
-              claim_token(corporation, minor)
+            elsif corporation.owner == minor.owner
+              exchange_for_share(bundle, corporation, minor, player, true)
               # Need to add an action to the action log, but this can't be a
               # buy shares action as that would end the current player's turn.
               @round.current_actions << Engine::Action::Base.new(minor)
+            else
+              log_request(corporation, minor)
+              @round.pending_approval = corporation
+              @round.minor = minor
             end
           end
 
-          def exchange_for_presidency(bundle, corporation, company, player)
+          def exchange_for_presidency(bundle, corporation, minor, player)
             raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, player)
 
-            share_price = @game.par_price(company)
+            acquire_private(corporation, minor)
+            share_price = @game.par_price(minor)
             @game.stock_market.set_par(corporation, share_price)
             @round.players_bought[player][corporation] += bundle.percent
-            @log << "#{player.name} exchanges #{company.name} and " \
+            @log << "#{player.name} exchanges #{minor.name} and " \
                     "#{@game.format_currency(share_price.price)} for a " \
                     "#{bundle.percent}% share of #{corporation.id}"
             buy_shares(player,
                        bundle,
-                       exchange: company,
+                       exchange: minor,
                        exchange_price: share_price.price,
                        silent: true)
             @game.after_par(corporation)

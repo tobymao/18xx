@@ -325,8 +325,12 @@ module Engine
         end
 
         def sorted_corporations
-          minors, majors = corporations.partition { |corp| corp.type == :minor }
-          minors.sort + majors.sort
+          corporations.reject { |corp| corp.type == :minor }.sort
+        end
+
+        def can_par?(corporation, _parrer)
+          # TODO: major corporation concessions
+          corporation.type == :minor
         end
       end
     end
