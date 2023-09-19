@@ -307,8 +307,7 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
-            Engine::Step::BuyCompany,
+            G1844::Step::BuyCompany,
             Engine::Step::HomeToken,
             Engine::Step::Track,
             Engine::Step::Token,
@@ -316,7 +315,7 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G1844::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
