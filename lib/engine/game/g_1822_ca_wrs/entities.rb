@@ -16,13 +16,15 @@ module Engine
                                    CNoR CPR GNWR GTP NTR PGE].freeze
 
         STARTING_COMPANIES_OVERRIDE = {
-          'M16' => { desc: 'A 50% director’s certificate in the associated minor company. Starting location is C17.' },
+          'M16' => { desc: 'A 50% director’s certificate in the associated minor company. Starting location is C17 (Seattle).' },
 
-          'M17' => { desc: 'A 50% director’s certificate in the associated minor company. Starting location is K15.' },
+          'M17' => { desc: 'A 50% director’s certificate in the associated minor company. Starting location is K15 (Regina).' },
 
-          'M18' => { desc: 'A 50% director’s certificate in the associated minor company. Starting location is R16.' },
+          'M18' => {
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is R16 (Thunder Bay).',
+          },
 
-          'M19' => { desc: 'A 50% director’s certificate in the associated minor company. Starting location is T12.' },
+          'M19' => { desc: 'A 50% director’s certificate in the associated minor company. Starting location is T12 (Moncton).' },
         }.freeze
 
         STARTING_CORPORATIONS_OVERRIDE = {
