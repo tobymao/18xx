@@ -406,6 +406,24 @@ module Engine
         def must_buy_train?(entity)
           super && entity.type != :'pre-sbb'
         end
+
+        def hex_train?(train)
+          train.name[-1] == 'H'
+        end
+
+        def route_distance(route)
+          hex_train?(route.train) ? route.hexes.size : super
+        end
+
+        def route_distance_str(route)
+          hex_train?(route.train) ? "#{route_distance(route)}H" : super
+        end
+
+        def check_other(route)
+          return unless hex_train?(route.train)
+
+          raise GameError, 'Cannot visit offboard hexes' if route.stops.any? { |stop| stop.tile.color == :red }
+        end
       end
     end
   end
