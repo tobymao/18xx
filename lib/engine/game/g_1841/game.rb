@@ -60,7 +60,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_share
         SOLD_OUT_INCREASE = true
-        POOL_SHARE_DROP = :one
+        POOL_SHARE_DROP = :down_block
         TRACK_RESTRICTION = :semi_restrictive
         MIN_BID_INCREMENT = 5
 
@@ -753,8 +753,8 @@ module Engine
           end
         end
 
-        def auction_companies
-          companies.dup
+        def initial_auction_companies
+          companies
         end
 
         # reorder players by least cash.

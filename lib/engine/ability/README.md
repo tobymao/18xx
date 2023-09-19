@@ -56,6 +56,12 @@ These attributes may be set for all ability types
     - `has_train`: when the owning corporation owns at least one train
     - `operated`: when the owning corporation has finished the dividend step on their first turn
 
+## acquire_company
+
+This company comes with a company when acquired.
+
+- `company`: The sym of the additional company to be acquired
+
 ## additional_token
 
 Adds 'count' additional tokens to a purchasing company (1817)

@@ -46,9 +46,9 @@ module Engine
       @fraction_shares = if opts.key?(:fraction_shares)
                            opts[:fraction_shares]
                          else
-                           corp_shares.find do |s|
-                             (s.percent % 10).positive?
-                           end
+                           whole_percents = corp_shares[0..1].map(&:percent) # president and regular percents
+                           corp_shares.size > 1 &&
+                             corp_shares.group_by(&:percent).keys.any? { |percent| !whole_percents.include?(percent) }
                          end
 
       @presidents_share = corp_shares.first

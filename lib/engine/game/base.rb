@@ -190,7 +190,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy_or_buy_sell
 
       # do shares in the pool drop the price?
-      # none, one, each
+      # none, down_block, left_block, down_share
       POOL_SHARE_DROP = :none
 
       # do sold out shares increase the price?
@@ -1010,6 +1010,13 @@ module Engine
               share_pool.buy_shares(player, share, exchange: :free)
             end
           end
+        end
+        abilities(company, :acquire_company) do |ability|
+          acquired_company = company_by_id(ability.company)
+          acquired_company.owner = player
+          player.companies << acquired_company
+          @log << "#{player.name} receives #{acquired_company.name}"
+          after_buy_company(player, acquired_company, 0)
         end
       end
 
@@ -2227,6 +2234,10 @@ module Engine
 
       def bankruptcy_options(_entity)
         []
+      end
+
+      def initial_auction_companies
+        @companies
       end
 
       private
