@@ -3017,6 +3017,8 @@ module Engine
             @round.operating? && !@round.current_operator_acted
           when 'or_start'
             ability_time_is_or_start?
+          when 'stock_round'
+            @round.stock?
           else
             default
           end
