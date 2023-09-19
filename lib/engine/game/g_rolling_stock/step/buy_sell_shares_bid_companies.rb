@@ -194,6 +194,7 @@ module Engine
 
           def can_bid_company?(entity, company)
             return unless company
+            return if @auctioning && @auctioning != company
 
             @game.biddable_companies.include?(company) && max_bid(entity) >= company.value
           end
