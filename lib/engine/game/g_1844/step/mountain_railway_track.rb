@@ -12,22 +12,20 @@ module Engine
           end
 
           def active_entities
-            @game.mountain_railways.select { |c| c.owner&.player? && abilities(c) }
+            Array(@game.mountain_railways.find { |c| c.owner&.player? && c.abilities.find { |a| a.type == :tile_lay } })
           end
 
           def abilities(entity, **kwargs, &block)
-            return if !@game.mountain_railways.include?(entity) || !entity.owner&.player?
-
-            @game.abilities(entity, :tile_lay, **kwargs, &block)
+            @game.abilities(entity, :tile_lay, time: 'stock_round', **kwargs, &block)
           end
 
           def blocks?
-            !active_entities.empty?
+            true
           end
 
           def available_hex(_entity, hex)
             abilities(current_entity).hexes.include?(hex.id) &&
-              hex.tile.offboards.first.revenue == @game.class::OFFBOARD_NO_REVENUE
+              hex.tile.offboards.first.max_revenue.zero?
           end
 
           def upgradeable_tiles(entity, _hex)

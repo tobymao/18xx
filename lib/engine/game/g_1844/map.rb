@@ -268,16 +268,16 @@ module Engine
             ['I4'] => 'city=revenue:20,loc:1.5;city=revenue:20,loc:4;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_1;label=L',
           },
           brown: {
-            ['F19'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:2,b:_0;path=a:4,b:_0;"\
+            ['F19'] => 'offboard=revenue:0;path=a:2,b:_0;path=a:4,b:_0;'\
                        'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:3,type:impassable',
-            ['G14'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;"\
+            ['G14'] => 'offboard=revenue:0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                        'path=a:4,b:_0;path=a:5,b:_0',
-            ['H7'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;"\
+            ['H7'] => 'offboard=revenue:0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                       'path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
-            ['I14'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0"\
+            ['I14'] => 'offboard=revenue:0;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0'\
                        ';border=edge:1,type:impassable;border=edge:4,type:impassable',
-            ['L13'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:impassable",
-            ['L23'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0",
+            ['L13'] => 'offboard=revenue:0;path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:impassable',
+            ['L23'] => 'offboard=revenue:0;path=a:1,b:_0;path=a:2,b:_0',
           },
           purple: {
             # Gotthard tunnel

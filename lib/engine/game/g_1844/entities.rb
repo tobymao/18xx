@@ -55,7 +55,7 @@ module Engine
             abilities: [
               {
                 type: 'choose_ability',
-                when: %w[owning_player_or_turn owning_corp_or_turn],
+                when: %w[track ownign_player_track],
                 choices: 'Place', # TODO: add special_choose step
               },
             ],
@@ -91,7 +91,7 @@ module Engine
             abilities: [
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
-              { type: 'assign_corporation', when: 'owning_player_or_turn', count: 1, closed_when_used_up: true },
+              # { type: 'assign_corporation', when: 'owning_player_or_turn', count: 1, closed_when_used_up: true },
             ],
           },
           {
@@ -111,6 +111,8 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
+                owner: 'player',
                 blocks: true,
                 count: 1,
                 tiles: MOUNTAIN_TILES,
@@ -135,6 +137,7 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
                 blocks: true,
                 count: 1,
                 tiles: %w[XM1 XM2 XM3],
@@ -159,6 +162,7 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
                 blocks: true,
                 count: 1,
                 tiles: %w[XM1 XM2 XM3],
@@ -183,6 +187,7 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
                 blocks: true,
                 count: 1,
                 tiles: %w[XM1 XM2 XM3],
@@ -207,6 +212,7 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
                 blocks: true,
                 count: 1,
                 tiles: %w[XM1 XM2 XM3],
