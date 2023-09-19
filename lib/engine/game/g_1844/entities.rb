@@ -26,11 +26,11 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                when: 'track',
+                when: %w[track owning_player_track],
                 count: 1,
                 reachable: true,
                 special: false,
-                tiles: %w[7 8 9],
+                tiles: %w[3 4 5 6 7 8 9 57 58],
                 hexes: [],
               },
             ],

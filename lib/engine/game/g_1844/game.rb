@@ -309,7 +309,7 @@ module Engine
             Engine::Step::SpecialTrack,
             G1844::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G1844::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
