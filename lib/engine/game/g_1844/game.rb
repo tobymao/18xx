@@ -380,6 +380,10 @@ module Engine
 
           super
         end
+
+        def must_buy_train?(entity)
+          super && entity.type != :'pre-sbb'
+        end
       end
     end
   end
