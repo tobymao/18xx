@@ -55,7 +55,7 @@ module Engine
             abilities: [
               {
                 type: 'choose_ability',
-                when: %w[track ownign_player_track],
+                when: %w[track owning_player_track],
                 choices: 'Place', # TODO: add special_choose step
               },
             ],
