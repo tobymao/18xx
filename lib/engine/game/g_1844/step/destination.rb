@@ -9,7 +9,9 @@ module Engine
         class Destination < Engine::Step::Base
           ACTIONS = %w[destination_connection].freeze
 
-          def actions(_entity)
+          def actions(entity)
+            return [] unless entity == current_entity
+
             ACTIONS
           end
 
