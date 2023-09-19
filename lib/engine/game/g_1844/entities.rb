@@ -420,7 +420,7 @@ module Engine
             color: 'yellow',
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'JN',
             name: 'Jura Neuchatelois (R1)',
             logo: '1844/JN.alt',
@@ -432,7 +432,7 @@ module Engine
             color: 'green',
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'ChA',
             name: 'Chur-Arosa (R2)',
             logo: '1844/ChA.alt',
@@ -444,7 +444,7 @@ module Engine
             color: 'red',
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'VZ',
             name: 'Visp-Zermatt (R3)',
             logo: '1844/VZ.alt',
