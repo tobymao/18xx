@@ -7,14 +7,13 @@ module Engine
     module G18NL
       module Step
         class SpecialToken < Engine::Step::SpecialToken
-          def process_place_token(action)
-            entity = action.entity
-            city = action.city
-            raise GameError, 'Cannot place station on hex with existing track' unless city.tile.paths.empty?
+          def available_hex(entity, hex)
+            # P2 cannot be used to token any hex with track on it
+            return false unless hex.tile.paths.empty?
+            # P2 cannot be used to token any hex currently blocked by a private company
+            return false if hex.tile.blockers.any? { |c| !c.closed? && !c.owned_by_corporation? }
 
             super
-            @game.log << "#{entity.name} closes"
-            entity.close!
           end
         end
       end
