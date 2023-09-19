@@ -289,7 +289,7 @@ module Engine
         end
 
         def new_auction_round
-          Round::Auction.new(self, [
+          Engine::Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
             Engine::Step::SelectionAuction,
           ])
@@ -303,10 +303,11 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G1844::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
+            G1844::Step::Destination,
             G1844::Step::BuyCompany,
             Engine::Step::HomeToken,
             G1844::Step::Track,
@@ -379,6 +380,27 @@ module Engine
           end
 
           super
+        end
+
+        def destinated?(entity)
+          home_node = entity.tokens.first&.city
+          destination_hex = hex_by_id(entity.destination_coordinates)
+          return false if !home_node || !destination_hex
+          return false unless destination_hex.assigned?(entity)
+
+          home_node.walk(corporation: entity) do |path, _|
+            return true if destination_hex == path.hex
+          end
+
+          false
+        end
+
+        def destinated!(corporation)
+          hex_by_id(corporation.destination_coordinates).remove_assignment!(corporation)
+          multiplier = corporation.type == :historical ? 5 : 2
+          amount = corporation.par_price.price * multiplier
+          @bank.spend(amount, corporation)
+          @log << "#{corporation.name} has reached its destination and receives #{format_currency(amount)}"
         end
 
         def must_buy_train?(entity)
