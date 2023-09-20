@@ -407,6 +407,10 @@ module Engine
           super && entity.type != :'pre-sbb'
         end
 
+        def can_buy_train_from_others?
+          @phase.name.to_i >= 3
+        end
+
         def hex_train?(train)
           hex_train_name?(train.name)
         end
