@@ -178,17 +178,17 @@ module Engine
       def buyable_train_variants(train, entity)
         return [] unless buyable_trains(entity).any? { |bt| bt.variants[bt.name] }
 
-        train_vatiant_helper(train, entity)
+        train_variant_helper(train, entity)
       end
 
       def exchangeable_train_variants(train, entity)
         discount_info = @game.discountable_trains_for(entity)
         return [] unless discount_info.any? { |_, discount_train, _, _| discount_train.variants[discount_train.name] }
 
-        train_vatiant_helper(train, entity)
+        train_variant_helper(train, entity)
       end
 
-      def train_vatiant_helper(train, entity)
+      def train_variant_helper(train, entity)
         variants = train.variants.values
         return variants if train.owned_by_corporation?
 
