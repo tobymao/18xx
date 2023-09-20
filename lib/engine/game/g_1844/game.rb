@@ -315,7 +315,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1844::Step::BuyTrain,
             [G1844::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -408,7 +408,11 @@ module Engine
         end
 
         def hex_train?(train)
-          train.name[-1] == 'H'
+          hex_train_name?(train.name)
+        end
+
+        def hex_train_name?(name)
+          name[-1] == 'H'
         end
 
         def route_distance(route)
