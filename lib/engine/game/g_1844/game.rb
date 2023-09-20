@@ -313,7 +313,7 @@ module Engine
             G1844::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1844::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1844::Step::BuyTrain,
             [G1844::Step::BuyCompany, { blocks: true }],
