@@ -112,7 +112,7 @@ module Engine
               {
                 type: 'tile_lay',
                 when: 'stock_round',
-                owner: 'player',
+                owner_type: 'player',
                 blocks: true,
                 count: 1,
                 tiles: MOUNTAIN_TILES,
