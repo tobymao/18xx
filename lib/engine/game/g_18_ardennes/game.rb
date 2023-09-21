@@ -21,6 +21,12 @@ module Engine
         include Tiles
         include Trains
 
+        # Minors that have been pledged in bids to start public companies.
+        # Used by {Step::MajorAuction} to pass this information to
+        # {Step::BuySellParSharesCompanies}. This is a hash whose keys are
+        # the major corporations and the values are the minor corporations.
+        attr_accessor :pledged_minors
+
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
         COMPANY_SALE_FEE = 0 # Fee for selling Guillaume-Luxembourg to the bank.
@@ -34,6 +40,7 @@ module Engine
           super
 
           setup_tokens
+          @pledged_minors = major_corporations.to_h { |corp| [corp, nil] }
         end
 
         def next_round!

@@ -33,9 +33,6 @@ module Engine
             # The public companies are the has keys, each value is an array of
             # minor companies.
             @eligible_minors = {}
-            # Array of minor companies that are currently commited in a bid on
-            # a major company.
-            @pledged_minors = []
           end
 
           def auctioning
@@ -70,7 +67,7 @@ module Engine
 
           def bid_choices(concession)
             eligible_minors(concession)
-              .difference(@pledged_minors)
+              .difference(@game.pledged_minors.values)
               .select { |minor| minor.owner == current_entity }
               .to_h { |minor| [minor, "Bid with M#{minor.id}"] }
           end
@@ -188,19 +185,7 @@ module Engine
           # Associates a minor corporation to the concession for a major.
           # Any existing minor <-> concession associations are removed.
           def link_concession_minor(concession, minor)
-            # This is a bit of a hack. The `corporations` array for an exchange
-            # ability is supposed to be a list of shares the company can be
-            # swapped for.  This initially contains the associated major
-            # corporation, here we stick the minor onto the end of the array,
-            # where it can be found in the next stock round. As the minor
-            # corporations never have any buyable shares this won't affect
-            # anything else.
-            ability = concession.abilities.first
-            # remove any existing minors
-            old_bid = ability.corporations.slice(1..-1)
-            @pledged_minors.delete(old_bid)
-            ability.corporations << minor
-            @pledged_minors << minor
+            @game.pledged_minors[concession_corporation(concession)] = minor
           end
         end
       end
