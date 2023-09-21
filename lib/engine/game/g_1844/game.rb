@@ -310,7 +310,7 @@ module Engine
             G1844::Step::Destination,
             G1844::Step::BuyCompany,
             Engine::Step::HomeToken,
-            G1844::Step::Track,
+            Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1844::Step::Dividend,
