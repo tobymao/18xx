@@ -103,7 +103,7 @@ module Engine
           },
           {
             sym: 'P',
-            name: 'Preußische Staatsiesenbahnen',
+            name: 'Preußische Staatseisenbahnen',
             type: :concession,
             value: 0,
             discount: 0,
@@ -408,7 +408,7 @@ module Engine
           },
           {
             sym: 'P',
-            name: 'Preußische Staatsiesenbahnen',
+            name: 'Preußische Staatseisenbahnen',
             color: :darkblue,
             text_color: :white,
             logo: '18_ardennes/P',
