@@ -1450,7 +1450,7 @@ module Engine
               cost = pres_upgrade_cost(tp, @merger_target)
               share_list.each { |s| simple_transfer_share(s, s.corporation) }
               @log << "#{entity.name} upgrades to a president share for #{format_currency(cost)}"
-              entity.spend(cost, @bank)
+              entity.spend(cost, @merger_target)
               @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
             else
               # exchange pairs until only a single share left
@@ -1502,20 +1502,20 @@ module Engine
 
               cost = pres_upgrade_cost(tp, @merger_target)
               @log << "#{entity.name} upgrades to a president share for #{format_currency(cost)}"
-              entity.spend(cost, @bank)
+              entity.spend(cost, @merger_target)
               @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
             elsif answer == :full
               # upgrade to a full share
 
               @log << "#{entity.name} upgrades to full share for #{format_currency(cost)}"
               if new_share
-                entity.spend(cost, @bank)
+                entity.spend(cost, @merger_target)
                 @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
               else
                 raise GameError, 'No shares to transfer' unless pres_share
 
                 ten_share = entity.shares_of(@merger_target).first
-                entity.spend(cost, @bank)
+                entity.spend(cost, @merger_target)
                 @share_pool.transfer_shares(ten_share.to_bundle, @merger_target, allow_president_change: true)
                 @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
               end
