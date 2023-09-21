@@ -437,12 +437,28 @@ module Engine
           companies
         end
 
+        def concession_companies
+          companies.select { |company| company.type == :concession }
+        end
+
+        def minor_companies
+          companies.select { |company| company.type == :minor }
+        end
+
+        def major_corporations
+          corporations.reject { |corporations| corporations.type == :minor }
+        end
+
+        def minor_corporations
+          corporations.select { |corporations| corporations.type == :minor }
+        end
+
         def reservation_corporations
-          corporations.select { |c| c.type == :minor }
+          minor_corporations
         end
 
         def sorted_corporations
-          corporations.reject { |corp| corp.type == :minor }.sort
+          major_corporations.sort
         end
 
         def can_par?(corporation, _parrer)
