@@ -8,11 +8,8 @@ module Engine
       module Step
         class WaterfallAuction < Engine::Step::WaterfallAuction
           def setup
-            setup_auction
-            @companies = @game.companies.sort_by(&:value)
-            @cheapest = @companies[0]
+            super
             @second_cheapest = @companies[1]
-            @bidders = Hash.new { |h, k| h[k] = [] }
           end
 
           def all_passed!

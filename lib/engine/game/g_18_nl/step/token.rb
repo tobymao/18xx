@@ -10,7 +10,11 @@ module Engine
           def actions(entity)
             actions = super
             # P2's tokening ability gets skipped without a connection to a token. This gives a blocking step for the owning corp.
-            return actions if !actions.empty? || @game.p2_company.closed? || @game.p2_company.owner != entity
+            return actions if
+              !actions.empty? ||
+              @game.p2_company.owner != entity ||
+              # checks to see if the token ability still exists on P2. The game removes the ability after its use.
+              @game.p2_company.abilities.none? { |ability| ability.type == 'token' }
 
             %w[pass]
           end
