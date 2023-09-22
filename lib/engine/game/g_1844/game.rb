@@ -288,6 +288,10 @@ module Engine
             end
         end
 
+        def or_set_finished
+          @depot.export! if @phase.name.to_i >= 2
+        end
+
         def new_auction_round
           Engine::Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
