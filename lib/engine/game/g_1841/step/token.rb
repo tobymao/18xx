@@ -11,6 +11,10 @@ module Engine
             raise GameError, 'That location is reserved for SFMA' unless @game.check_token_hex(action.entity, action.city.hex)
 
             super
+
+            # tokening a pass can remove the only legal route for a corp, so...
+            # ...use the nuclear option
+            @game.graph.clear_graph_for_all if action.city.pass?
           end
 
           def tokener_available_hex(entity, hex)
