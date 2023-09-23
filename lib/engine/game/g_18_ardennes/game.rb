@@ -31,6 +31,9 @@ module Engine
         MUST_BID_INCREMENT_MULTIPLE = true
         COMPANY_SALE_FEE = 0 # Fee for selling Guillaume-Luxembourg to the bank.
 
+        SELL_BUY_ORDER = :sell_buy
+        SELL_AFTER = :operate
+
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
 
@@ -91,7 +94,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParSharesCompanies,
+            G18Ardennes::Step::BuySellParSharesCompanies,
           ])
         end
 
@@ -106,6 +109,11 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def operating_order
+          minor_corporations.select(&:ipoed).sort +
+          major_corporations.select(&:ipoed).sort
         end
       end
     end

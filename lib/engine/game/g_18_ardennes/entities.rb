@@ -437,6 +437,18 @@ module Engine
           companies
         end
 
+        def init_company_abilities
+          super
+
+          # Link concessions to corporations.
+          @companies.each do |company|
+            next unless (ability = abilities(company, :exchange))
+            next unless ability.from.include?(:par)
+
+            exchange_corporations(ability).first.par_via_exchange = company
+          end
+        end
+
         def concession_companies
           companies.select { |company| company.type == :concession }
         end
@@ -461,9 +473,13 @@ module Engine
           major_corporations.sort
         end
 
-        def can_par?(corporation, _parrer)
-          # TODO: major corporation concessions
-          corporation.type == :minor
+        # 18Ardennes doesn't have multiple layers of private companies.
+        def check_new_layer; end
+
+        def can_par?(corporation, parrer)
+          return true if corporation.type == :minor
+
+          super
         end
       end
     end
