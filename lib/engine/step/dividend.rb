@@ -61,6 +61,7 @@ module Engine
           @round.laid_hexes
         )
 
+        @game.close_companies_on_event!(entity, 'ran_train') unless @round.routes.empty?
         entity.trains.each { |train| train.operated = true }
 
         rust_obsolete_trains!(entity)

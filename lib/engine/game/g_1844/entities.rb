@@ -26,11 +26,11 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                when: 'track',
+                when: %w[track owning_player_track],
                 count: 1,
                 reachable: true,
                 special: false,
-                tiles: %w[7 8 9],
+                tiles: %w[3 4 5 6 7 8 9 57 58],
                 hexes: [],
               },
             ],
@@ -55,7 +55,7 @@ module Engine
             abilities: [
               {
                 type: 'choose_ability',
-                when: %w[owning_player_or_turn owning_corp_or_turn],
+                when: %w[track owning_player_track],
                 choices: 'Place', # TODO: add special_choose step
               },
             ],
@@ -91,7 +91,7 @@ module Engine
             abilities: [
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
-              { type: 'assign_corporation', when: 'owning_player_or_turn', count: 1, closed_when_used_up: true },
+              # { type: 'assign_corporation', when: 'owning_player_or_turn', count: 1, closed_when_used_up: true },
             ],
           },
           {
@@ -111,6 +111,8 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
+                owner_type: 'player',
                 blocks: true,
                 count: 1,
                 tiles: MOUNTAIN_TILES,
@@ -135,6 +137,7 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
                 blocks: true,
                 count: 1,
                 tiles: %w[XM1 XM2 XM3],
@@ -159,6 +162,7 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
                 blocks: true,
                 count: 1,
                 tiles: %w[XM1 XM2 XM3],
@@ -183,6 +187,7 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
                 blocks: true,
                 count: 1,
                 tiles: %w[XM1 XM2 XM3],
@@ -207,6 +212,7 @@ module Engine
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
+                when: 'stock_round',
                 blocks: true,
                 count: 1,
                 tiles: %w[XM1 XM2 XM3],
@@ -420,7 +426,7 @@ module Engine
             color: 'yellow',
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'JN',
             name: 'Jura Neuchatelois (R1)',
             logo: '1844/JN.alt',
@@ -432,7 +438,7 @@ module Engine
             color: 'green',
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'ChA',
             name: 'Chur-Arosa (R2)',
             logo: '1844/ChA.alt',
@@ -444,7 +450,7 @@ module Engine
             color: 'red',
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             sym: 'VZ',
             name: 'Visp-Zermatt (R3)',
             logo: '1844/VZ.alt',

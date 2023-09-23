@@ -240,7 +240,8 @@ module Engine
             %w[B19 C12 D13 E18 H13 K10 K20 K22] => 'city=revenue:0;upgrade=cost:20,terrain:river',
             %w[F21 G28 I28] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             %w[G26 L21] => 'city=revenue:10;path=a:0,b:_0;upgrade=cost:20,terrain:river',
-            ['D19'] => 'city=revenue:0;upgrade=cost:20,terrain:river;border=edge:5,type:impassable;label=Z',
+            ['D19'] => 'city=revenue:0;upgrade=cost:20,terrain:river;border=edge:5,type:impassable;' \
+                       'future_label=label:Z,color:green',
             ['D21'] => 'town=revenue:0;border=edge:0,type:impassable',
             ['E8'] => 'town=revenue:0;border=edge:5,type:impassable',
             ['E20'] => 'border=edge:0,type:impassable;border=edge:2,type:impassable;border=edge:3,type:impassable',
@@ -267,16 +268,16 @@ module Engine
             ['I4'] => 'city=revenue:20,loc:1.5;city=revenue:20,loc:4;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_1;label=L',
           },
           brown: {
-            ['F19'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:2,b:_0;path=a:4,b:_0;"\
+            ['F19'] => 'offboard=revenue:0;path=a:2,b:_0;path=a:4,b:_0;'\
                        'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:3,type:impassable',
-            ['G14'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;"\
+            ['G14'] => 'offboard=revenue:0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                        'path=a:4,b:_0;path=a:5,b:_0',
-            ['H7'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;"\
+            ['H7'] => 'offboard=revenue:0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                       'path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
-            ['I14'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0"\
+            ['I14'] => 'offboard=revenue:0;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0'\
                        ';border=edge:1,type:impassable;border=edge:4,type:impassable',
-            ['L13'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:impassable",
-            ['L23'] => "offboard=revenue:#{OFFBOARD_NO_REVENUE};path=a:1,b:_0;path=a:2,b:_0",
+            ['L13'] => 'offboard=revenue:0;path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:impassable',
+            ['L23'] => 'offboard=revenue:0;path=a:1,b:_0;path=a:2,b:_0',
           },
           purple: {
             # Gotthard tunnel

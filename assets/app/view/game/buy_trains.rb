@@ -89,7 +89,7 @@ module View
                  "contribute towards #{@corporation.name} buying a train "\
                  'from the Depot. '
 
-          if @game.class::ALLOW_TRAIN_BUY_FROM_OTHERS
+          if @game.can_buy_train_from_others?
             text += "#{@corporation.name} must buy a "\
                     'train from another corporation, or '
           end

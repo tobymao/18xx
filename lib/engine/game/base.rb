@@ -1252,6 +1252,10 @@ module Engine
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
 
+      def can_buy_train_from_others?
+        self.class::ALLOW_TRAIN_BUY_FROM_OTHERS
+      end
+
       def discard_discount(train, price)
         return price unless self.class::DISCARDED_TRAIN_DISCOUNT
         return price unless @depot.discarded.include?(train)
@@ -3017,6 +3021,8 @@ module Engine
             @round.operating? && !@round.current_operator_acted
           when 'or_start'
             ability_time_is_or_start?
+          when 'stock_round'
+            @round.stock?
           else
             default
           end

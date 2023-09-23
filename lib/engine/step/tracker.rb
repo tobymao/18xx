@@ -80,7 +80,10 @@ module Engine
       end
 
       def tile_lay_abilities_should_block?(entity)
-        Array(abilities(entity, time: type, passive_ok: false)).any? { |a| !a.consume_tile_lay }
+        abilities = [type, 'owning_player_track'].flat_map do |time|
+          Array(abilities(entity, time: time, passive_ok: false))
+        end
+        abilities.any? { |a| !a.consume_tile_lay }
       end
 
       def abilities(entity, **kwargs, &block)
