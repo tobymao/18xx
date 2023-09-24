@@ -431,10 +431,10 @@ module Engine
         end
 
         def game_companies
-          companies = super
+          return super if @players.size == 4
+
           # The Guillaume-Luxembourg is only used in four-player games.
-          companies.reject! { |c| c[:type] == :minor } unless @players.size == 4
-          companies
+          super.reject { |c| c[:type] == :minor }
         end
 
         def init_company_abilities
