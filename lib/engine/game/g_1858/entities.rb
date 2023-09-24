@@ -151,7 +151,7 @@ module Engine
           {
             sym: 'M&A',
             name: 'Madrid and Aranjuez Railway',
-            desc: 'P3. Revenue 25/38, face value 125. Home hexes are H9 and H11. ' \
+            desc: 'P3. Revenue 25/38, face value 125. Home hexes are H11 and H13. ' \
                   'Can be used to start a public company in Madrid.',
             value: 125,
             discount: 25,
@@ -198,7 +198,7 @@ module Engine
           {
             sym: 'V&J',
             name: 'Valencia and Jativa Railway',
-            desc: 'P5. Revenue 20/30, face value 100. Home hex is L11. ' \
+            desc: 'P5. Revenue 20/30, face value 100. Home hex is L13. ' \
                   'Can be used to start a public company in Valencia.',
             value: 100,
             discount: 20,
@@ -425,7 +425,7 @@ module Engine
           {
             sym: 'M&C',
             name: 'Murcia and Cartagena Railway',
-            desc: 'P15. Revenue 14/21, face value 70. Home hex is K18. ' \
+            desc: 'P15. Revenue 14/21, face value 70. Home hexes are K18 and L19. ' \
                   'Can be used to start a public company in Murcia.',
             value: 70,
             discount: 15,
