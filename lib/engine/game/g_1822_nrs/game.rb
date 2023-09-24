@@ -47,6 +47,8 @@ module Engine
           %w[5y 10y 15y 20y 25y],
         ].freeze
 
+        PHASES = G1822::Scenario::PHASES
+
         TRAINS = [
           {
             name: 'L',

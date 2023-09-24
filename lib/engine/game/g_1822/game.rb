@@ -324,6 +324,8 @@ module Engine
           'minor_float_phase3on' => ['Minors receive winning bid as capital',
                                      'Minors receive entire winning bid as capital '\
                                      'and float at between 50 to 100 stock value based on bid'],
+          'l_upgrade' => ['£70 L-train upgrades',
+                          'The cost to upgrade an L-train to a 2-train is reduced from £80 to £70.'],
         ).freeze
 
         BIDDING_BOX_MINOR_COUNT = 4

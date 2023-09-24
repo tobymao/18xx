@@ -218,9 +218,14 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        EVENTS_TEXT = G1822::Game::EVENTS_TEXT.merge(
           'open_detroit_duluth' => ['Open Detroit-Duluth',
                                     'Phase 3: the connection between Detroit (Y29) and Duluth (P18) opens'],
+        )
+
+        STATUS_TEXT = G1822::Game::STATUS_TEXT.merge(
+          'l_upgrade' => ['$70 L-train upgrades',
+                          'The cost to upgrade an L-train to a 2-train is reduced from $80 to $70.']
         )
 
         attr_accessor :sawmill_hex, :sawmill_owner, :train_with_grain, :train_with_pullman
