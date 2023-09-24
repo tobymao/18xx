@@ -10,6 +10,16 @@ module Engine
         class BuySellParSharesCompanies < Engine::Step::BuySellParSharesCompanies
           include MinorExchange
 
+          def actions(entity)
+            return super unless under_obligation?(entity)
+
+            if can_sell_any?(entity)
+              %w[sell_shares par]
+            else
+              %w[par]
+            end
+          end
+
           def sellable_companies(entity)
             # Only the GL is sellable. Make sure concessions aren't visible.
             super.select { |company| company.type == :minor }
@@ -33,9 +43,10 @@ module Engine
           # get an extra share when floating a public company, part paid for by
           # exchanging the pledged minor, so pretend that the player has extra
           # cash to pay for this extra share.
-          def available_par_cash(player, corporation, _share_price: nil)
-            available_cash(player) +
-              (@game.pledged_minors[corporation].share_price.price * 2)
+          def available_par_cash(player, corporation, share_price: nil)
+            minor = @game.pledged_minors[corporation]
+            extra_cash = [share_price.price, minor.share_price.price * 2].min
+            available_cash(player) + extra_cash
           end
 
           def process_par(action)
@@ -47,6 +58,18 @@ module Engine
 
             concession.close!
             exchange_minor(minor, major)
+          end
+
+          private
+
+          # Has the player won any auctions for public companies in the
+          # preceding auction round? If they have then they must start these
+          # majors before they can buy any other shares or pass.
+          def under_obligation?(player)
+            return false unless player == current_entity
+            return false if bought? # Already started a corporation this turn.
+
+            player.companies.any? { |company| company.type == :concession }
           end
         end
       end
