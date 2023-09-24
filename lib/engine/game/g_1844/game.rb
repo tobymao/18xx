@@ -47,6 +47,11 @@ module Engine
           'B3' => '/icons/1844/B3.svg',
           'B4' => '/icons/1844/B4.svg',
           'B5' => '/icons/1844/B5.svg',
+          'T1' => '/icons/1844/T1.svg',
+          'T2' => '/icons/1844/T2.svg',
+          'T3' => '/icons/1844/T3.svg',
+          'T4' => '/icons/1844/T4.svg',
+          'T5' => '/icons/1844/T5.svg',
         }.freeze
 
         MARKET = [

@@ -17,7 +17,7 @@ module Engine
             super
             return unless @game.tunnel_companies.include?(action.entity)
 
-            hex.assign!(action.entity.id)
+            action.tile.hex.assign!(action.entity.id)
           end
 
           def potential_tile_colors(entity, _hex)
