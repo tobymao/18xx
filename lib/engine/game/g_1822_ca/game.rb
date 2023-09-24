@@ -299,7 +299,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            G1822::Step::PendingToken,
+            G1822CA::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
             G1822CA::Step::DiscardTrain,
@@ -315,7 +315,7 @@ module Engine
             G1822::Step::BuyTrain,
             G1822CA::Step::MinorAcquisition,
             G1822CA::Step::AcquisitionTrack,
-            G1822::Step::PendingToken,
+            G1822CA::Step::PendingToken,
             G1822CA::Step::DiscardTrain,
             G1822CA::Step::IssueShares,
           ], round_num: round_num)
