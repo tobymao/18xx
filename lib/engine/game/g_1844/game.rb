@@ -255,6 +255,11 @@ module Engine
           setup_destinations
           mountain_railways.each { |mr| mr.owner = @bank }
           tunnel_companies.each { |tc| tc.owner = @bank }
+
+          @all_tiles.each { |t| t.ignore_gauge_walk = true }
+          @_tiles.values.each { |t| t.ignore_gauge_walk = true }
+          @hexes.each { |h| h.tile.ignore_gauge_walk = true }
+          @graph.clear_graph_for_all
         end
 
         def setup_destinations
@@ -310,7 +315,7 @@ module Engine
           G1844::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
+            G1844::Step::SpecialTrack,
             G1844::Step::Destination,
             G1844::Step::BuyCompany,
             Engine::Step::HomeToken,
@@ -435,6 +440,12 @@ module Engine
           return unless hex_train?(route.train)
 
           raise GameError, 'Cannot visit offboard hexes' if route.stops.any? { |stop| stop.tile.color == :red }
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return to.color == :purple && from.paths.none? { |p| p.track == :narrow } if from.color == :purple
+
+          super
         end
       end
     end

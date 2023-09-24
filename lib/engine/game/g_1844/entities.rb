@@ -7,6 +7,9 @@ module Engine
         MOUNTAIN_HEXES = %w[H7 L13 I14 G14 F19 L23].freeze
         MOUNTAIN_TILES = %w[XM1 XM2 XM3].freeze
 
+        TUNNEL_HEXES = %w[J9 I12 K14 I16 H17 H19 H21 H23 H27].freeze
+        TUNNEL_TILES = %w[X78 X79].freeze
+
         COMPANIES = [
           {
             name: 'P1 - Brienzer-Rothorn-Bahn',
@@ -234,13 +237,12 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                when: 'track',
-                owner_type: 'player',
+                when: 'owning_player_track',
                 count: 1,
+                cost: 100,
                 reachable: true,
-                special: false,
-                tiles: %w[7 8 9],
-                hexes: [],
+                tiles: TUNNEL_TILES,
+                hexes: TUNNEL_HEXES,
               },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
@@ -260,13 +262,12 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                when: 'track',
-                owner_type: 'player',
+                when: 'owning_player_track',
                 count: 1,
+                cost: 100,
                 reachable: true,
-                special: false,
-                tiles: %w[7 8 9],
-                hexes: [],
+                tiles: TUNNEL_TILES,
+                hexes: TUNNEL_HEXES,
               },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
@@ -286,13 +287,12 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                when: 'track',
-                owner_type: 'player',
+                when: 'owning_player_track',
                 count: 1,
+                cost: 100,
                 reachable: true,
-                special: false,
-                tiles: %w[7 8 9],
-                hexes: [],
+                tiles: TUNNEL_TILES,
+                hexes: TUNNEL_HEXES,
               },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
@@ -312,13 +312,12 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                when: 'track',
-                owner_type: 'player',
+                when: 'owning_player_track',
                 count: 1,
+                cost: 100,
                 reachable: true,
-                special: false,
-                tiles: %w[7 8 9],
-                hexes: [],
+                tiles: TUNNEL_TILES,
+                hexes: TUNNEL_HEXES,
               },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },
@@ -338,13 +337,12 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                when: 'track',
-                owner_type: 'player',
+                when: 'owning_player_track',
                 count: 1,
+                cost: 100,
                 reachable: true,
-                special: false,
-                tiles: %w[7 8 9],
-                hexes: [],
+                tiles: TUNNEL_TILES,
+                hexes: TUNNEL_HEXES,
               },
               { type: 'close', when: 'never' },
               { type: 'no_buy' },

@@ -127,6 +127,16 @@ module Engine
             'color' => 'brown',
             'code' => 'offboard=revenue:yellow_10|green_50|brown_80|gray_10',
           },
+          'X78' => {
+            'count' => 5,
+            'color' => 'purple',
+            'code' => 'path=a:0,b:2,track:narrow',
+          },
+          'X79' => {
+            'count' => 5,
+            'color' => 'purple',
+            'code' => 'path=a:0,b:3,track:narrow',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -281,16 +291,16 @@ module Engine
           },
           purple: {
             # Gotthard tunnel
-            ['H17'] => 'town=revenue:0,loc:4;path=track:future,a:0,b:_0;path=track:future,a:4,b:_0;upgrade=cost:100',
-            ['H19'] => 'path=track:future,a:1,b:4;upgrade=cost:100;border=edge:0,type:impassable',
-            ['H21'] => 'path=track:future,a:1,b:4;upgrade=cost:100',
-            ['H23'] => 'path=track:future,a:1,b:4;upgrade=cost:100',
-            ['I16'] => 'path=track:future,a:5,b:3;upgrade=cost:100;border=edge:1,type:impassable;border=edge:4,type:impassable',
+            ['H17'] => 'town=revenue:0,loc:4;path=track:future,a:0,b:_0;path=track:future,a:4,b:_0',
+            ['H19'] => 'path=track:future,a:1,b:4;border=edge:0,type:impassable',
+            ['H21'] => 'path=track:future,a:1,b:4',
+            ['H23'] => 'path=track:future,a:1,b:4',
+            ['I16'] => 'path=track:future,a:5,b:3;border=edge:1,type:impassable;border=edge:4,type:impassable',
             # other tunnels
-            %w[H27 J9] => 'upgrade=cost:100',
-            ['I12'] => 'upgrade=cost:100;border=edge:0,type:impassable;border=edge:1,type:impassable;'\
+            %w[H27 J9] => '',
+            ['I12'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;'\
                        'border=edge:4,type:impassable',
-            ['K14'] => 'upgrade=cost:100;border=edge:0,type:impassable;border=edge:3,type:impassable',
+            ['K14'] => 'border=edge:0,type:impassable;border=edge:3,type:impassable',
           },
         }.freeze
 
