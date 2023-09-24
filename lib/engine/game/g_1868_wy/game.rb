@@ -1772,10 +1772,12 @@ module Engine
               town = Part::Town.new(revenue, **opts)
               town.tile = hex.tile
               hex.tile.towns << town
+              hex.tile.city_towns << town
             else
               city = Part::City.new(revenue, **opts)
               city.tile = hex.tile
               hex.tile.cities << city
+              hex.tile.city_towns << city
             end
           else
             tile_name = PURE_OIL_CAMP_TILES[hex.tile.name]
