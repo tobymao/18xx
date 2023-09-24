@@ -11,9 +11,15 @@ module Engine
             # P2 cannot be used to token any hex with track on it
             return false unless hex.tile.paths.empty?
             # P2 cannot be used to token any hex currently blocked by a private company
-            return false if hex.tile.blockers.any? { |c| !c.closed? && !c.owned_by_corporation? }
+            return false if hex.tile.blockers.any?(&:owned_by_player?)
 
             super
+          end
+
+          def process_place_token(action)
+            super
+
+            @round.tokened = true
           end
         end
       end

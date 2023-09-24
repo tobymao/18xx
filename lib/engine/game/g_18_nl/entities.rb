@@ -20,10 +20,8 @@ module Engine
                           hexes: 'F5',
                           tiles: %w[7 8 9],
                           special: false,
-                          reachable: true,
                           count: 1,
                         }],
-            color: nil,
           },
           {
             name: 'P2 - Geldersch-Overijsselsche Lokaalspoorweg-Maatschappij',
@@ -43,7 +41,6 @@ module Engine
                           from_owner: true,
                           hexes: %w[E4 F9 F15 F19 H13 I4 I10 J5 K10],
                         }],
-            color: nil,
           },
           {
             name: 'P3 - De Veluwe',
@@ -62,7 +59,6 @@ module Engine
                           when: 'any',
                           from: %w[ipo market],
                         }],
-            color: nil,
           },
           {
             name: 'P4 - De Twentsche Electrische Tramweg-Maatschappij',
@@ -75,7 +71,6 @@ module Engine
                   ' Blocks F19 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F19'] },
                         { type: 'shares', shares: 'NCS_1' }],
-            color: nil,
           },
           {
             name: 'P5 - Hollandsche Ijzeren Spoorweg-Maatschappij',
@@ -91,7 +86,6 @@ module Engine
                         { type: 'close', when: 'bought_train', corporation: 'HIS' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'HIS_0' }],
-            color: nil,
           },
           {
             name: 'P6 - Spoorweg-Maatschappij Zuid Beveland',
@@ -107,7 +101,6 @@ module Engine
                         { type: 'close', when: 'bought_train', corporation: 'NFL' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'NFL_0' }],
-            color: nil,
           },
         ].freeze
 
