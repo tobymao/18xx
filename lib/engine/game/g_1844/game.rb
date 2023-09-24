@@ -429,11 +429,25 @@ module Engine
         end
 
         def route_distance(route)
-          hex_train?(route.train) ? route.hexes.size : super
+          hex_train?(route.train) ? route_hex_distance(route) : super
+        end
+
+        def route_hex_distance(route)
+          edges = route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+          route.chains.empty? ? 0 : edges + 1
         end
 
         def route_distance_str(route)
-          hex_train?(route.train) ? "#{route_distance(route)}H" : super
+          hex_train?(route.train) ? "#{route_hex_distance(route)}H" : super
+        end
+
+        def check_distance(route, visits)
+          hex_train?(route.train) ? check_hex_distance(route, visits) : super
+        end
+
+        def check_hex_distance(route, _visits)
+          distance = route_hex_distance(route)
+          raise GameError, "#{distance} is too many hexes for #{route.train.name} train" if distance > route.train.distance
         end
 
         def check_other(route)
