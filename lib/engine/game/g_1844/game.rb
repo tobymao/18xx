@@ -37,6 +37,7 @@ module Engine
         NEXT_SR_PLAYER_ORDER = :most_cash
         EBUY_PRES_SWAP = false
         MUST_BUY_TRAIN = :always
+        DISCARDED_TRAINS = :remove
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :always
