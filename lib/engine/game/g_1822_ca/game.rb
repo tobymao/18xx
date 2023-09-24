@@ -568,14 +568,14 @@ module Engine
         def destination_city(hex, entity)
           return hex.tile.cities[0] unless (exits = entity.destination_exits)
 
-          cities = exits.each_with_object([]) do |exit, cities_|
+          dest_cities = exits.each_with_object([]) do |exit, cities|
             hex.paths[exit].each do |path|
               next unless (city = path.city)
 
-              cities_ << city unless cities.include?(city)
+              cities << city unless cities.include?(city)
             end
           end
-          cities.one? ? cities[0] : cities
+          dest_cities.one? ? dest_cities[0] : dest_cities
         end
 
         def destination_description(corporation)
