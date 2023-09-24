@@ -286,7 +286,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in blue hexes in yellow phase',
+                description: 'Builds in blue (B) hexes in yellow phase',
                 remove: '4',
               },
             ],
@@ -311,7 +311,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in pink hexes in yellow phase',
+                description: 'Builds in pink (P) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -340,7 +340,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in green hexes in yellow phase',
+                description: 'Builds in green (G) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -378,7 +378,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in blue hexes in yellow phase',
+                description: 'Builds in blue (B) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -411,7 +411,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in blue hexes in yellow phase',
+                description: 'Builds in blue (B) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -445,7 +445,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in blue hexes in yellow phase',
+                description: 'Builds in blue (B) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -479,7 +479,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in pink hexes in yellow phase',
+                description: 'Builds in pink (P) hexes in yellow phase',
                 remove: '4',
               },
               {

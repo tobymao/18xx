@@ -186,7 +186,7 @@ module Engine
                     distance: [{ 'nodes' => ['town'], 'pay' => 6, 'visit' => 6 },
                                { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
                     price: 700,
-                    num: 5,
+                    num: 9,
                   }].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
