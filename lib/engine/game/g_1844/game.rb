@@ -259,8 +259,16 @@ module Engine
           @mountain_railways ||= @companies.select { |c| c.sym[0] == 'B' }
         end
 
+        def unactivated_mountain_railways
+          mountain_railways.select { |mr| mr.owner&.player? && mr.value.zero? }
+        end
+
         def tunnel_companies
           @tunnel_companies ||= @companies.select { |c| c.sym[0] == 'T' }
+        end
+
+        def unactivated_tunnel_companies
+          tunnel_companies.select { |tc| tc.owner&.player? && tc.value.zero? }
         end
 
         def fnm
@@ -324,6 +332,10 @@ module Engine
                   " (#{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
         end
 
+        def player_value(player)
+          super - (player.companies & privates).sum(&:value)
+        end
+
         def initial_auction_companies
           privates
         end
@@ -368,7 +380,7 @@ module Engine
             Engine::Step::HomeToken,
             Engine::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G1844::Step::Route,
             G1844::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1844::Step::BuyTrain,
@@ -501,6 +513,30 @@ module Engine
           return unless hex_train?(route.train)
 
           raise GameError, 'Cannot visit offboard hexes' if route.stops.any? { |stop| stop.tile.color == :red }
+        end
+
+        def check_for_mountain_or_tunnel_activation(routes)
+          routes.each do |route|
+            route.hexes.select { |hex| self.class::MOUNTAIN_HEXES.include?(hex.id) }.each do |hex|
+              (unactivated_mountain_railways.map(&:id) & hex.assignments.keys).each do |id|
+                mountain_railway = company_by_id(id)
+                mountain_railway.value = 150
+                mountain_railway.revenue = 40
+                hex.remove_assignment!(id)
+                @log << "#{mountain_railway.name} has been activated"
+              end
+            end
+
+            route.paths.select { |path| path.track == :narrow }.each do |path|
+              (unactivated_tunnel_companies.map(&:id) & path.hex.assignments.keys).each do |id|
+                tunnel_company = company_by_id(id)
+                tunnel_company.value = 50
+                tunnel_company.revenue = 10
+                path.hex.remove_assignment!(id)
+                @log << "#{tunnel_company.name} has been activated"
+              end
+            end
+          end
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)

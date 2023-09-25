@@ -69,7 +69,7 @@ module Engine
           '904' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
           },
           '905' => {
             'count' => 1,
