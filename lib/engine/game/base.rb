@@ -2141,7 +2141,7 @@ module Engine
           @log << "-- Event: obsolete #{removed_obsolete_trains.uniq.join(', ')} trains are removed from The Depot --"
         end
 
-        return unless rusted_trains.any?
+        return if rusted_trains.empty?
 
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
                 "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
