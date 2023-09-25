@@ -102,7 +102,14 @@ module Engine
 
         PHASES = [
           {
+            name: '1',
+            train_limit: { 'pre-sbb': 2, regional: 2, historical: 4 },
+            tiles: [:yellow],
+            operating_rounds: 1,
+          },
+          {
             name: '2',
+            on: '2',
             train_limit: { 'pre-sbb': 2, regional: 2, historical: 4 },
             tiles: [:yellow],
             operating_rounds: 1,
@@ -174,6 +181,7 @@ module Engine
                 price: 150,
               },
             ],
+            events: [{ 'type' => '2t_downgrade' }],
           },
           {
             name: '4',
@@ -188,13 +196,13 @@ module Engine
                 price: 260,
               },
             ],
+            events: [{ 'type' => '3t_downgrade' }],
           },
           {
             name: '5',
             num: 4,
             distance: 5,
             price: 450,
-            events: [{ 'type' => 'close_companies' }, { 'type' => 'sbb_formation' }],
             variants: [
               {
                 name: '5H',
@@ -202,13 +210,13 @@ module Engine
                 price: 400,
               },
             ],
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'sbb_formation' }],
           },
           {
             name: '6',
             num: 4,
             distance: 6,
             price: 630,
-            events: [{ 'type' => 'full_capitalization' }],
             variants: [
               {
                 name: '6H',
@@ -216,6 +224,7 @@ module Engine
                 price: 550,
               },
             ],
+            events: [{ 'type' => '4t_downgrade' }, { 'type' => 'full_capitalization' }],
           },
           {
             name: '8E',
@@ -229,10 +238,15 @@ module Engine
                 price: 700,
               },
             ],
+            events: [{ 'type' => '5t_downgrade' }],
           },
         ].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          '2t_downgrade' => ['2 -> 2H', '2 trains downgraded to 2H trains'],
+          '3t_downgrade' => ['3 -> 3H', '3 trains downgraded to 3H trains'],
+          '4t_downgrade' => ['4 -> 4H', '4 trains downgraded to 4H trains'],
+          '5t_downgrade' => ['5 -> 5H', '5 trains downgraded to 5H trains'],
           'sbb_formation' => ['SBB Forms', 'SBB forms at end of OR'],
           'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization']
         ).freeze
@@ -281,6 +295,33 @@ module Engine
 
             dest_hex.assign!(c)
           end
+        end
+
+        def event_2t_downgrade!
+          downgrade_train_type!('2', '2H')
+        end
+
+        def event_3t_downgrade!
+          downgrade_train_type!('3', '3H')
+        end
+
+        def event_4t_downgrade!
+          downgrade_train_type!('4', '4H')
+        end
+
+        def event_5t_downgrade!
+          downgrade_train_type!('5', '5H')
+        end
+
+        def downgrade_train_type!(name, downgrade_name)
+          owners = Hash.new(0)
+          trains.select { |t| t.name == name }.each do |t|
+            t.variant = downgrade_name
+            owners[t.owner.name] += 1 if t.owner && t.owner != @depot
+          end
+
+          @log << "-- Event: #{name} trains downgrade to #{downgrade_name} trains" \
+                  " (#{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
         end
 
         def initial_auction_companies
