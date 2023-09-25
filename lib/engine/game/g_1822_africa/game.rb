@@ -510,7 +510,7 @@ module Engine
             G1822Africa::Step::Assign,
             G1822::Step::Track,
             G1822::Step::DestinationToken,
-            G1822::Step::Token,
+            G1822Africa::Step::Token,
             G1822Africa::Step::Route,
             G1822::Step::Dividend,
             G1822Africa::Step::BuyTrain,
