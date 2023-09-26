@@ -273,7 +273,7 @@ module Engine
             ['J15'] => 'upgrade=cost:60,terrain:mountain;border=edge:0,type:impassable',
           },
           yellow: {
-            %w[C20 G8] => 'city=revenue:0;city=revenue:0',
+            %w[C20 G8] => 'city=revenue:0;city=revenue:0;label=OO',
             ['D15'] => 'city=revenue:10,loc:2;city=revenue:10,loc:4;path=a:2,b:_0;path=a:4,b:_1;upgrade=cost:20,terrain:river',
             ['I4'] => 'city=revenue:20,loc:1.5;city=revenue:20,loc:4;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_1;label=L',
           },

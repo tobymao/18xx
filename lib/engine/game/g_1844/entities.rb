@@ -509,6 +509,7 @@ module Engine
             tokens: [0, 40, 100, 100, 100],
             type: 'historical',
             coordinates: 'D15',
+            city: 0,
             destination_coordinates: 'H13',
             color: '#d1232a',
           },
@@ -547,6 +548,7 @@ module Engine
             shares: [10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
             tokens: [],
             type: 'historical',
+            floatable: false,
             color: 'red',
             abilities: [
               {

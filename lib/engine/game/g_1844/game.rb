@@ -388,6 +388,12 @@ module Engine
           ], round_num: round_num)
         end
 
+        def can_par?(corporation, _parrer)
+          return false if corporation == sbb
+
+          super
+        end
+
         def after_par(corporation)
           super
           return unless corporation.type == :historical
@@ -515,6 +521,12 @@ module Engine
           raise GameError, 'Cannot visit offboard hexes' if route.stops.any? { |stop| stop.tile.color == :red }
         end
 
+        def revenue_for(route, stops)
+          revenue = super
+          revenue += 10 * stops.size if route.paths.any? { |path| path.track == :narrow }
+          revenue
+        end
+
         def check_for_mountain_or_tunnel_activation(routes)
           routes.each do |route|
             route.hexes.select { |hex| self.class::MOUNTAIN_HEXES.include?(hex.id) }.each do |hex|
@@ -541,6 +553,7 @@ module Engine
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return to.color == :purple && from.paths.none? { |p| p.track == :narrow } if from.color == :purple
+          return %w[14 15 619].include?(to.name) if from.hex.id == 'D15' && from.color == :yellow
 
           super
         end
