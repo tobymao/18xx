@@ -200,7 +200,7 @@ module Engine
           },
           {
             name: '5',
-            num: 4,
+            num: 6,
             distance: 5,
             price: 450,
             variants: [
@@ -287,6 +287,17 @@ module Engine
           setup_destinations
           mountain_railways.each { |mr| mr.owner = @bank }
           tunnel_companies.each { |tc| tc.owner = @bank }
+
+          @eva = @depot.trains.find { |t| t.name == '5' }
+          @depot.forget_train(@eva)
+          @eva.variant = '5H'
+
+          sbb_train = @depot.trains.find { |t| t.name == '5' }
+          @depot.forget_train(sbb_train)
+          sbb_train.variant = '5H'
+          sbb_train.buyable = false
+          sbb_train.owner = sbb
+          sbb.trains << sbb_train
 
           @all_tiles.each { |t| t.ignore_gauge_walk = true }
           @_tiles.values.each { |t| t.ignore_gauge_walk = true }
