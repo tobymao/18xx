@@ -68,12 +68,12 @@ module Engine
          '170',
          '185',
          '200',
-         '220',
-         '240',
-         '260',
-         '290',
-         '320',
-         '350'],
+         '220t',
+         '240t',
+         '260t',
+         '290t',
+         '320t',
+         '350t'],
         ['',
          '70',
          '80',
@@ -86,19 +86,23 @@ module Engine
          '160',
          '175',
          '190',
-         '210',
-         '230',
-         '250',
-         '280',
-         '310',
-         '340'],
-        %w[55 60 70 80 90p 100 110 120 135 150 165 180 200 220 240 270 300 330],
-        %w[50 56 60 70 80p 90 100 110 125 140 155 170 190 210 230],
+         '210t',
+         '230t',
+         '250t',
+         '280t',
+         '310t',
+         '340t'],
+        %w[55 60 70 80 90p 100 110 120 135 150 165 180 200t 220t 240t 270t 300t 330t],
+        %w[50 56 60 70 80p 90 100 110 125 140 155 170 190t 210t 230t],
         %w[45 52 57 60 70p 80 90 100 115 130 145 160],
-        %w[40 50 54 58 60p 70 80 90 100 120],
+        %w[40 50 54 58 60p 70 80 90 100x 120],
         %w[35 45 52 56 59 64 70 80],
         %w[30 40 48 54 58 60],
         ].freeze
+
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'SBB starting price', type_limited: 'Regionals cannot enter').freeze
+
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :blue, type_limited: :peach).freeze
 
         PHASES = [
           {
@@ -349,6 +353,11 @@ module Engine
 
         def player_value(player)
           super - (player.companies & privates).sum(&:value)
+        end
+
+        def init_stock_market
+          G1844::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def initial_auction_companies
