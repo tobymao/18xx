@@ -279,6 +279,10 @@ module Engine
           @sbb ||= corporation_by_id('SBB')
         end
 
+        def gb
+          @gb ||= corporation_by_id('GB')
+        end
+
         def setup
           setup_destinations
           mountain_railways.each { |mr| mr.owner = @bank }
@@ -461,6 +465,7 @@ module Engine
           destination_hex = hex_by_id(entity.destination_coordinates)
           return false if !home_node || !destination_hex
           return false unless destination_hex.assigned?(entity)
+          return hex_by_id('H19').tile.paths.any? { |path| path.track == :narrow } if entity == gb
 
           home_node.walk(corporation: entity) do |path, _|
             return true if destination_hex == path.hex
