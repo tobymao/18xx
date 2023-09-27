@@ -32,7 +32,7 @@ module Engine
           raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
           raise GameError, 'Cannot lay a city tile now' if tile.cities.any? && @round.num_laid_track.positive?
           if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
-            raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
+            raise GameError, "#{action.hex.id} cannot be laid as this hex was already laid on this turn"
           end
 
           @saved_revenues = revenues(action.hex.tile, action.entity)
