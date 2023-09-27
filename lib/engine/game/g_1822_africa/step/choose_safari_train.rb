@@ -49,8 +49,14 @@ module Engine
           @safari_train.name += 'S'
         end
 
+        def process_run_routes(action)
+          super
+
+          detach_safari_train if @safari_train
+        end
+
         def detach_safari_train
-          @safari_train.name = @safari_original_train.name
+          @safari_train.name = @safari_original_train.name unless @safari_original_train.nil?
 
           @safari_original_train = nil
           @safari_train = nil
