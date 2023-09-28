@@ -232,10 +232,10 @@ module Engine
 
           trains = transfer(:trains, corporation, @national).map(&:name)
           receiving << "trains (#{trains})" unless trains.empty?
-          receiving << 'and' unless receiving.empty?
-          receiving << format_currency(corporation.cash).to_s
+          conjunction = receiving.empty? ? '' : 'and '
+          receiving << (conjunction + format_currency(corporation.cash))
           corporation.spend(corporation.cash, @national) if corporation.cash.positive?
-          @log << "#{@national.id} received #{receiving} from #{corporation.id}"
+          @log << "#{@national.id} received #{receiving.join(', ')} from #{corporation.id}"
         end
 
         def maximum_loans(entity)
