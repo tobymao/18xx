@@ -23,6 +23,10 @@ module Engine
             true
           end
 
+          def help
+            "Select mountain hex and revenue marker for #{current_entity.name}."
+          end
+
           def available_hex(_entity, hex)
             abilities(current_entity).hexes.include?(hex.id) &&
               hex.tile.offboards.first.max_revenue.zero?

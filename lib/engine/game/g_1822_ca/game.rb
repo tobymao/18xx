@@ -218,9 +218,14 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        EVENTS_TEXT = G1822::Game::EVENTS_TEXT.merge(
           'open_detroit_duluth' => ['Open Detroit-Duluth',
                                     'Phase 3: the connection between Detroit (Y29) and Duluth (P18) opens'],
+        )
+
+        STATUS_TEXT = G1822::Game::STATUS_TEXT.merge(
+          'l_upgrade' => ['$70 L-train upgrades',
+                          'The cost to upgrade an L-train to a 2-train is reduced from $80 to $70.']
         )
 
         attr_accessor :sawmill_hex, :sawmill_owner, :train_with_grain, :train_with_pullman
@@ -299,7 +304,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            G1822::Step::PendingToken,
+            G1822CA::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
             G1822CA::Step::DiscardTrain,
@@ -315,7 +320,7 @@ module Engine
             G1822::Step::BuyTrain,
             G1822CA::Step::MinorAcquisition,
             G1822CA::Step::AcquisitionTrack,
-            G1822::Step::PendingToken,
+            G1822CA::Step::PendingToken,
             G1822CA::Step::DiscardTrain,
             G1822CA::Step::IssueShares,
           ], round_num: round_num)
@@ -568,14 +573,14 @@ module Engine
         def destination_city(hex, entity)
           return hex.tile.cities[0] unless (exits = entity.destination_exits)
 
-          cities = exits.each_with_object([]) do |exit, cities_|
+          dest_cities = exits.each_with_object([]) do |exit, cities|
             hex.paths[exit].each do |path|
               next unless (city = path.city)
 
-              cities_ << city unless cities.include?(city)
+              cities << city unless cities.include?(city)
             end
           end
-          cities.one? ? cities[0] : cities
+          dest_cities.one? ? dest_cities[0] : dest_cities
         end
 
         def destination_description(corporation)

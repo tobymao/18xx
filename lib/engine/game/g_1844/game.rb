@@ -37,6 +37,7 @@ module Engine
         NEXT_SR_PLAYER_ORDER = :most_cash
         EBUY_PRES_SWAP = false
         MUST_BUY_TRAIN = :always
+        DISCARDED_TRAINS = :remove
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :always
@@ -47,6 +48,11 @@ module Engine
           'B3' => '/icons/1844/B3.svg',
           'B4' => '/icons/1844/B4.svg',
           'B5' => '/icons/1844/B5.svg',
+          'T1' => '/icons/1844/T1.svg',
+          'T2' => '/icons/1844/T2.svg',
+          'T3' => '/icons/1844/T3.svg',
+          'T4' => '/icons/1844/T4.svg',
+          'T5' => '/icons/1844/T5.svg',
         }.freeze
 
         MARKET = [
@@ -96,7 +102,14 @@ module Engine
 
         PHASES = [
           {
+            name: '1',
+            train_limit: { 'pre-sbb': 2, regional: 2, historical: 4 },
+            tiles: [:yellow],
+            operating_rounds: 1,
+          },
+          {
             name: '2',
+            on: '2',
             train_limit: { 'pre-sbb': 2, regional: 2, historical: 4 },
             tiles: [:yellow],
             operating_rounds: 1,
@@ -168,6 +181,7 @@ module Engine
                 price: 150,
               },
             ],
+            events: [{ 'type' => '2t_downgrade' }],
           },
           {
             name: '4',
@@ -182,13 +196,13 @@ module Engine
                 price: 260,
               },
             ],
+            events: [{ 'type' => '3t_downgrade' }],
           },
           {
             name: '5',
             num: 4,
             distance: 5,
             price: 450,
-            events: [{ 'type' => 'close_companies' }, { 'type' => 'sbb_formation' }],
             variants: [
               {
                 name: '5H',
@@ -196,13 +210,13 @@ module Engine
                 price: 400,
               },
             ],
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'sbb_formation' }],
           },
           {
             name: '6',
             num: 4,
             distance: 6,
             price: 630,
-            events: [{ 'type' => 'full_capitalization' }],
             variants: [
               {
                 name: '6H',
@@ -210,6 +224,7 @@ module Engine
                 price: 550,
               },
             ],
+            events: [{ 'type' => '4t_downgrade' }, { 'type' => 'full_capitalization' }],
           },
           {
             name: '8E',
@@ -223,10 +238,15 @@ module Engine
                 price: 700,
               },
             ],
+            events: [{ 'type' => '5t_downgrade' }],
           },
         ].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          '2t_downgrade' => ['2 -> 2H', '2 trains downgraded to 2H trains'],
+          '3t_downgrade' => ['3 -> 3H', '3 trains downgraded to 3H trains'],
+          '4t_downgrade' => ['4 -> 4H', '4 trains downgraded to 4H trains'],
+          '5t_downgrade' => ['5 -> 5H', '5 trains downgraded to 5H trains'],
           'sbb_formation' => ['SBB Forms', 'SBB forms at end of OR'],
           'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization']
         ).freeze
@@ -239,8 +259,16 @@ module Engine
           @mountain_railways ||= @companies.select { |c| c.sym[0] == 'B' }
         end
 
+        def unactivated_mountain_railways
+          mountain_railways.select { |mr| mr.owner&.player? && mr.value.zero? }
+        end
+
         def tunnel_companies
           @tunnel_companies ||= @companies.select { |c| c.sym[0] == 'T' }
+        end
+
+        def unactivated_tunnel_companies
+          tunnel_companies.select { |tc| tc.owner&.player? && tc.value.zero? }
         end
 
         def fnm
@@ -255,6 +283,11 @@ module Engine
           setup_destinations
           mountain_railways.each { |mr| mr.owner = @bank }
           tunnel_companies.each { |tc| tc.owner = @bank }
+
+          @all_tiles.each { |t| t.ignore_gauge_walk = true }
+          @_tiles.values.each { |t| t.ignore_gauge_walk = true }
+          @hexes.each { |h| h.tile.ignore_gauge_walk = true }
+          @graph.clear_graph_for_all
         end
 
         def setup_destinations
@@ -272,6 +305,37 @@ module Engine
           end
         end
 
+        def event_2t_downgrade!
+          downgrade_train_type!('2', '2H')
+        end
+
+        def event_3t_downgrade!
+          downgrade_train_type!('3', '3H')
+        end
+
+        def event_4t_downgrade!
+          downgrade_train_type!('4', '4H')
+        end
+
+        def event_5t_downgrade!
+          downgrade_train_type!('5', '5H')
+        end
+
+        def downgrade_train_type!(name, downgrade_name)
+          owners = Hash.new(0)
+          trains.select { |t| t.name == name }.each do |t|
+            t.variant = downgrade_name
+            owners[t.owner.name] += 1 if t.owner && t.owner != @depot
+          end
+
+          @log << "-- Event: #{name} trains downgrade to #{downgrade_name} trains" \
+                  " (#{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+        end
+
+        def player_value(player)
+          super - (player.companies & privates).sum(&:value)
+        end
+
         def initial_auction_companies
           privates
         end
@@ -286,6 +350,10 @@ module Engine
             else
               super
             end
+        end
+
+        def or_set_finished
+          @depot.export! if @phase.name.to_i >= 2
         end
 
         def new_auction_round
@@ -306,13 +374,13 @@ module Engine
           G1844::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
+            G1844::Step::SpecialTrack,
             G1844::Step::Destination,
             G1844::Step::BuyCompany,
             Engine::Step::HomeToken,
             Engine::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G1844::Step::Route,
             G1844::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1844::Step::BuyTrain,
@@ -420,17 +488,61 @@ module Engine
         end
 
         def route_distance(route)
-          hex_train?(route.train) ? route.hexes.size : super
+          hex_train?(route.train) ? route_hex_distance(route) : super
+        end
+
+        def route_hex_distance(route)
+          edges = route.chains.sum { |conn| conn[:paths].each_cons(2).sum { |a, b| a.hex == b.hex ? 0 : 1 } }
+          route.chains.empty? ? 0 : edges + 1
         end
 
         def route_distance_str(route)
-          hex_train?(route.train) ? "#{route_distance(route)}H" : super
+          hex_train?(route.train) ? "#{route_hex_distance(route)}H" : super
+        end
+
+        def check_distance(route, visits)
+          hex_train?(route.train) ? check_hex_distance(route, visits) : super
+        end
+
+        def check_hex_distance(route, _visits)
+          distance = route_hex_distance(route)
+          raise GameError, "#{distance} is too many hexes for #{route.train.name} train" if distance > route.train.distance
         end
 
         def check_other(route)
           return unless hex_train?(route.train)
 
           raise GameError, 'Cannot visit offboard hexes' if route.stops.any? { |stop| stop.tile.color == :red }
+        end
+
+        def check_for_mountain_or_tunnel_activation(routes)
+          routes.each do |route|
+            route.hexes.select { |hex| self.class::MOUNTAIN_HEXES.include?(hex.id) }.each do |hex|
+              (unactivated_mountain_railways.map(&:id) & hex.assignments.keys).each do |id|
+                mountain_railway = company_by_id(id)
+                mountain_railway.value = 150
+                mountain_railway.revenue = 40
+                hex.remove_assignment!(id)
+                @log << "#{mountain_railway.name} has been activated"
+              end
+            end
+
+            route.paths.select { |path| path.track == :narrow }.each do |path|
+              (unactivated_tunnel_companies.map(&:id) & path.hex.assignments.keys).each do |id|
+                tunnel_company = company_by_id(id)
+                tunnel_company.value = 50
+                tunnel_company.revenue = 10
+                path.hex.remove_assignment!(id)
+                @log << "#{tunnel_company.name} has been activated"
+              end
+            end
+          end
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return to.color == :purple && from.paths.none? { |p| p.track == :narrow } if from.color == :purple
+
+          super
         end
       end
     end

@@ -17,9 +17,6 @@ module Engine
             token.logo = @game.gold_mine_corp.logo
             token.simple_logo = token.logo
             @game.gold_mine_token = token
-
-            @log << "#{action.entity.name} closes"
-            action.entity.close!
           end
         end
       end

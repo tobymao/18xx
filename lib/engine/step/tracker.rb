@@ -61,7 +61,7 @@ module Engine
                                                                        action.hex) && !(tile_lay && tile_lay[:upgrade])
         raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && !(tile_lay && tile_lay[:lay])
         if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
-          raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
+          raise GameError, "#{action.hex.id} cannot be laid as this hex was already laid on this turn"
         end
 
         extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
