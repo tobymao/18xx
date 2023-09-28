@@ -23,6 +23,25 @@ def switch_actions(actions, first, second)
   return [first, second]
 end
 
+# Switches the position of two blocks of actions.
+# If an array of actions `[abcdeFGHIjklMNopq]` is passed with ranges `6..9` and
+# `13..14` then this will return an array of actions `[MNjklFGHI]`.
+# @param actions [Array] Array of actions.
+# @param first_block [Range] ID range of the first block of actions.
+# @param second_block [Range] ID range of the second block of actions.
+# @return [Array] The section of the actions array affected by the reordering.
+def switch_action_blocks(actions, first_block, second_block)
+  raise RangeError if second_block.first <= first_block.last
+  raise RangeError if first_block.size.zero? || second_block.size.zero?
+
+  middle_block = (first_block.last + 1)..(second_block.first - 1)
+  start_idx = actions[first_block.first]['id']
+  reordered = actions[second_block] + actions[middle_block] + actions[first_block]
+  reordered.each_with_index { |action, i | action['id'] = start_idx + i }
+  actions[first_block.first..second_block.last] = reordered
+  reordered
+end
+
 # If inserting/deleting actions, modify the given `actions` and return `nil`
 #
 # If editing existing actions, modify them on `actions` in place, and return an
@@ -56,6 +75,18 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
   if pry_db
     require 'pry-byebug'
     binding.pry
+  end
+
+  # 1861/1867 reverse ShareBuying and ReduceToken steps (issue #9655).
+  if game.active_step.is_a?(Engine::Game::G1867::Step::ReduceTokens) &&
+      %w[buy_shares pass].include?(broken_action['type'])
+    reduce_action = next_actions.find { |action| action['type'] == 'remove_token' }
+    raise Exception, 'Could not find remove_token_action' unless reduce_action
+    next_step_action = next_actions.rotate(next_actions.index(reduce_action))
+                         .find { |action| action['type'] != 'remove_token' }
+    share_actions = original_actions.index(broken_action)..(original_actions.index(reduce_action) - 1)
+    token_actions = original_actions.index(reduce_action)..(original_actions.index(next_step_action) - 1)
+    return switch_action_blocks(original_actions, share_actions, token_actions)
   end
 
   # Generic handling for when a change just needs pass actions to be
