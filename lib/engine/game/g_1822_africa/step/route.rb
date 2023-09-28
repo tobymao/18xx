@@ -97,7 +97,7 @@ module Engine
           end
 
           def detach_pullman
-            return super unless @pullman_train == true
+            return super unless @pullman_original_train.nil?
 
             @pullman_train = nil
           end

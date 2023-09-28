@@ -47,10 +47,18 @@ module Engine
           @express_train.multiplier = 2
         end
 
+        def process_run_routes(action)
+          super
+
+          detach_express_train if @express_train
+        end
+
         def detach_express_train
-          @express_train.name = @express_original_train.name
-          @express_train.distance = @express_original_train.distance
-          @express_train.multiplier = @express_original_train.multiplier
+          unless @express_original_train.nil?
+            @express_train.name = @express_original_train.name
+            @express_train.distance = @express_original_train.distance
+            @express_train.multiplier = @express_original_train.multiplier
+          end
 
           @express_original_train = nil
           @express_train = nil
