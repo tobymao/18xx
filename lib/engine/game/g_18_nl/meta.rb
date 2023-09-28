@@ -12,7 +12,7 @@ module Engine
 
         GAME_DESIGNER = 'Helmut Ohley'
         GAME_LOCATION = 'The Netherlands'
-        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/47246/corrected-english-manual-v2'
+        GAME_RULES_URL = 'http://ohley.de/18nl/1830NLSummaryofrules.pdf'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18NL'
 
         PLAYER_RANGE = [3, 6].freeze
