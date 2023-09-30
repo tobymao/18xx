@@ -563,7 +563,7 @@ module Engine
           unipoed = (@corporations + @future_corporations).reject(&:ipoed)
           minor = unipoed.select { |c| c.type == :minor }
           major = unipoed.select { |c| c.type == :major }
-          ["#{minor.size} minor, #{major.size} major", [@national]]
+          ["#{minor.size} minor, #{major.size} major", [@national] + minor + major]
         end
 
         def show_value_of_companies?(_owner)
