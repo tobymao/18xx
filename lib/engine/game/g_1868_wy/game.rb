@@ -646,6 +646,7 @@ module Engine
           @log << "Company #{pure_oil.name} closes"
           pure_oil.close!
           @pure_oil_hex&.remove_assignment!(pure_oil.id)
+          @pure_oil_hex&.remove_token(@pure_oil_hex_token) if @pure_oil_hex_token
           to_ghost_town!(@pure_oil_hex)
         end
 
@@ -1312,8 +1313,7 @@ module Engine
 
           return unless hex.assigned?(pure_oil.id)
 
-          token = hex.tokens.first
-          hex.remove_token(token)
+          hex.remove_token(@pure_oil_hex_token) if @pure_oil_hex_token
           hex.tile.add_reservation!(pure_oil.owner, 0, 0)
           @graph.clear
         end
@@ -1559,17 +1559,17 @@ module Engine
             boom_bust_autoreplace_tile!(tile, hex.tile)
           end
 
-          return unless hex.assigned?(pure_oil.id)
+          return if pure_oil.closed? || !hex.assigned?(pure_oil.id)
 
           corp = pure_oil.corporation
-          token = Token.new(
+          @pure_oil_hex_token = Token.new(
             corp,
             price: 0,
             logo: corp.logo,
             simple_logo: corp.simple_logo,
             type: :boomcity_reservation,
           )
-          hex.place_token(token, logo: token.simple_logo, preprinted: false)
+          hex.place_token(@pure_oil_hex_token, logo: @pure_oil_hex_token.simple_logo, preprinted: false)
         end
 
         def final_or_in_set?(round)
@@ -1772,10 +1772,12 @@ module Engine
               town = Part::Town.new(revenue, **opts)
               town.tile = hex.tile
               hex.tile.towns << town
+              hex.tile.city_towns << town
             else
               city = Part::City.new(revenue, **opts)
               city.tile = hex.tile
               hex.tile.cities << city
+              hex.tile.city_towns << city
             end
           else
             tile_name = PURE_OIL_CAMP_TILES[hex.tile.name]
@@ -1792,14 +1794,14 @@ module Engine
             case type
             when :boomtown
               corp = pure_oil.corporation
-              token = Token.new(
+              @pure_oil_hex_token = Token.new(
                 corp,
                 price: 0,
                 logo: corp.logo,
                 simple_logo: corp.simple_logo,
                 type: :boomcity_reservation,
               )
-              hex.place_token(token, logo: token.simple_logo, preprinted: false)
+              hex.place_token(@pure_oil_hex_token, logo: @pure_oil_hex_token.simple_logo, preprinted: false)
 
             when :boomcity
               tile.add_reservation!(pure_oil.owner, 0, 0)

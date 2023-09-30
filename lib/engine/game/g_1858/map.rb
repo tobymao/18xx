@@ -598,6 +598,7 @@ module Engine
                     'border=type:province,edge:5',
             %w[F1] =>
                     'city=revenue:40,slots:2;' \
+                    'icon=image:1858/LG,sticky:1;' \
                     'path=a:5,b:_0,track:dual;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;',
             %w[F21] =>
                     'path=a:2,b:3;path=a:3,b:4',
@@ -608,7 +609,8 @@ module Engine
             %w[L17] =>
                     'town=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:0',
             %w[L19] =>
-                    'town=revenue:10;path=a:2,b:_0;border=edge:1;',
+                    'town=revenue:10;path=a:2,b:_0;border=edge:1;' \
+                    'icon=image:1858/MC,sticky:1;',
           },
         }.freeze
       end

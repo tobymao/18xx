@@ -56,6 +56,12 @@ These attributes may be set for all ability types
     - `has_train`: when the owning corporation owns at least one train
     - `operated`: when the owning corporation has finished the dividend step on their first turn
 
+## acquire_company
+
+This company comes with a company when acquired.
+
+- `company`: The sym of the additional company to be acquired
+
 ## additional_token
 
 Adds 'count' additional tokens to a purchasing company (1817)
@@ -256,7 +262,7 @@ remains open but the discount can no longer be used. Default false.
   connect to each other. Default true.
 - `blocks`: If true and `when` is `sold`, then the step
   `TrackLayWhenCompanySold` will require a tile lay. Default false.
-- `reachable`: If true, when tile layed, a check is done if one of the
+- `reachable`: If true, when tile laid, a check is done if one of the
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
 - `must_lay_together`: If true and `count` is greater than 1, all the tile lays

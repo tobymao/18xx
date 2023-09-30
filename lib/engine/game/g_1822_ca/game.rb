@@ -54,8 +54,9 @@ module Engine
         TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[unlabeled_cities].freeze
         TRACK_RESTRICTION = :permissive
 
-        EXTRA_TRAINS = (G1822::Game::EXTRA_TRAINS + %w[G]).freeze
         EXTRA_TRAIN_GRAIN = 'G'
+        EXTRA_TRAINS = %w[2P P LP G].freeze
+        EXTRA_TRAIN_PULLMAN = 'P'
 
         GRAIN_ELEVATORS = %w[G13 H16 I11 I15 I17 J16 K13 K17 L16 M17].freeze
         GRAIN_ELEVATOR_TYPE = 'grain_elevator'.freeze
@@ -67,35 +68,35 @@ module Engine
 
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1 (5-Train)',
-          'P2' => 'P2 (Perm. L Train)',
-          'P3' => 'P3 (Permanent 2T)',
-          'P4' => 'P4 (Permanent 2T)',
+          'P2' => 'P2 (Permanent L-Train)',
+          'P3' => 'P3 (Permanent 2-Train)',
+          'P4' => 'P4 (Permanent 2-Train)',
           'P5' => 'P5 (Pullman)',
           'P6' => 'P6 (Pullman)',
-          'P7' => 'P7 (Double Cash)',
-          'P8' => 'P8 ($10x Phase)',
-          'P9' => 'P9 ($5x Phase)',
-          'P10' => 'P10 (Winnipeg Token)',
+          'P7' => 'P7 (Declare 2× Cash Holding)',
+          'P8' => 'P8 ($10× Phase)',
+          'P9' => 'P9 ($5× Phase)',
+          'P10' => 'P10 (Winnipeg Station)',
           'P11' => 'P11 (Tax Haven)',
-          'P12' => 'P12 (Adv. Tile Lay)',
-          'P13' => 'P13 (Sawmill)',
-          'P14' => 'P14 (Toronto Upgrade)',
-          'P15' => 'P15 (Ottawa Upgrade)',
-          'P16' => 'P16 (Montreal Upgrade)',
-          'P17' => 'P17 (Quebec Upgrade)',
-          'P18' => 'P18 (Winnipeg Upgrade)',
-          'P19' => 'P19 (Crowsnest Pass)',
-          'P20' => 'P20 (Yellowhead Pass)',
-          'P21' => 'P21 (National Dream)',
+          'P12' => 'P12 (Advanced Tile Lay)',
+          'P13' => 'P13 (Sawmill Bonus)',
+          'P14' => 'P14 (Free Toronto Upgrades)',
+          'P15' => 'P15 (Free Ottawa Upgrades)',
+          'P16' => 'P16 (Free Montreal Upgrades)',
+          'P17' => 'P17 (Free Quebec Upgrades)',
+          'P18' => 'P18 (Free Winnipeg Upgrades)',
+          'P19' => 'P19 (Crowsnest Pass Tile)',
+          'P20' => 'P20 (Yellowhead Pass Tile)',
+          'P21' => 'P21 (3-Tile Grant)',
           'P22' => 'P22 (Large Mail Contract)',
           'P23' => 'P23 (Large Mail Contract)',
           'P24' => 'P24 (Small Mail Contract)',
           'P25' => 'P25 (Small Mail Contract)',
           'P26' => 'P26 (Grain Train)',
           'P27' => 'P27 (Grain Train)',
-          'P28' => 'P28 (Station Swap)',
-          'P29' => 'P29 (Remove Town)',
-          'P30' => 'P30 (Remove Town)',
+          'P28' => 'P28 (Station Token Swap)',
+          'P29' => 'P29 (Remove Single Town)',
+          'P30' => 'P30 (Remove Single Town)',
           'C1' => 'CNoR',
           'C2' => 'CPR',
           'C3' => 'GNWR',
@@ -182,52 +183,28 @@ module Engine
           'P7' => { acquire: %i[major], phase: 3 },
           'P8' => { acquire: %i[major minor], phase: 2 },
           'P9' => { acquire: %i[major minor], phase: 2 },
-          'P10' => { acquire: %i[major minor], phase: 1 },
-          'P11' => { acquire: %i[major minor], phase: 1 },
+          'P10' => { acquire: %i[major minor], phase: 3 },
+          'P11' => { acquire: [], phase: 8 },
           'P12' => { acquire: %i[major minor], phase: 1 },
-          'P13' => { acquire: %i[major minor], phase: 1 },
+          'P13' => { acquire: %i[major minor], phase: 3 },
           'P14' => { acquire: %i[major minor], phase: 1 },
           'P15' => { acquire: %i[major minor], phase: 1 },
           'P16' => { acquire: %i[major minor], phase: 1 },
           'P17' => { acquire: %i[major minor], phase: 1 },
           'P18' => { acquire: %i[major minor], phase: 1 },
-          'P19' => { acquire: %i[major minor], phase: 1 },
-          'P20' => { acquire: %i[major minor], phase: 1 },
-          'P21' => { acquire: %i[major minor], phase: 1 },
-          'P22' => { acquire: %i[major minor], phase: 1 },
-          'P23' => { acquire: %i[major minor], phase: 1 },
-          'P24' => { acquire: %i[major minor], phase: 1 },
-          'P25' => { acquire: %i[major minor], phase: 1 },
-          'P26' => { acquire: %i[major minor], phase: 1 },
-          'P27' => { acquire: %i[major minor], phase: 1 },
-          'P28' => { acquire: %i[major minor], phase: 1 },
+          'P19' => { acquire: %i[major minor], phase: 3 },
+          'P20' => { acquire: %i[major minor], phase: 3 },
+          'P21' => { acquire: %i[major minor], phase: 3 },
+          'P22' => { acquire: %i[major minor], phase: 3 },
+          'P23' => { acquire: %i[major minor], phase: 3 },
+          'P24' => { acquire: %i[major minor], phase: 3 },
+          'P25' => { acquire: %i[major minor], phase: 3 },
+          'P26' => { acquire: %i[major minor], phase: 3 },
+          'P27' => { acquire: %i[major minor], phase: 3 },
+          'P28' => { acquire: %i[major minor], phase: 3 },
           'P29' => { acquire: %i[major minor], phase: 1 },
           'P30' => { acquire: %i[major minor], phase: 1 },
         }.freeze
-
-        #        PRIVATE_COMPANIES_ACQUISITION = {
-        #          'P10' => { acquire: %i[major], phase: 3 },
-        #          'P11' => { acquire: %i[none], phase: 0 },
-        #          'P12' => { acquire: %i[major minor], phase: 1 },
-        #          'P13' => { acquire: %i[major], phase: 3 },
-        #          'P14' => { acquire: %i[major minor], phase: 1 },
-        #          'P15' => { acquire: %i[major minor], phase: 1 },
-        #          'P16' => { acquire: %i[major minor], phase: 1 },
-        #          'P17' => { acquire: %i[major minor], phase: 1 },
-        #          'P18' => { acquire: %i[major minor], phase: 1 },
-        #          'P19' => { acquire: %i[major], phase: 3 },
-        #          'P20' => { acquire: %i[major], phase: 3 },
-        #          'P21' => { acquire: %i[major], phase: 3 },
-        #          'P22' => { acquire: %i[major], phase: 3 },
-        #          'P23' => { acquire: %i[major], phase: 3 },
-        #          'P24' => { acquire: %i[major], phase: 3 },
-        #          'P25' => { acquire: %i[major], phase: 3 },
-        #          'P26' => { acquire: %i[major], phase: 3 },
-        #          'P27' => { acquire: %i[major], phase: 3 },
-        #          'P28' => { acquire: %i[major minor], phase: 3 },
-        #          'P29' => { acquire: %i[major minor], phase: 1 },
-        #          'P30' => { acquire: %i[major minor], phase: 1 },
-        #        }.freeze
 
         STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18 P19 P20 P21 P22 P23
                                 P24 P25 P26 P27 P28 P29 P30 C1 C2 C3 C4 C5 C6 C7 C8 C9 C10
@@ -241,10 +218,29 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        EVENTS_TEXT = G1822::Game::EVENTS_TEXT.merge(
           'open_detroit_duluth' => ['Open Detroit-Duluth',
                                     'Phase 3: the connection between Detroit (Y29) and Duluth (P18) opens'],
         )
+
+        STATUS_TEXT = G1822::Game::STATUS_TEXT.merge(
+          'l_upgrade' => ['$70 L-train upgrades',
+                          'The cost to upgrade an L-train to a 2-train is reduced from $80 to $70.']
+        )
+
+        # the big city tiles have complex arrangements of multiple cities and
+        # multiple possible upgrade paths, the implemented upgrade logic can't
+        # handle all of them so some restrictions are hardcoded here instead of
+        # writing logic that wouldn't be very common
+        BIG_CITY_ILLEGAL_TILE_UPGRADES = {
+          'M2' => 'M6',
+          'M3' => 'M4',
+          'O2' => 'O3',
+          'O4' => 'O5',
+          'Q4' => 'Q5',
+          'T5' => 'T6',
+          'W5' => 'W6',
+        }.freeze
 
         attr_accessor :sawmill_hex, :sawmill_owner, :train_with_grain, :train_with_pullman
         attr_writer :sawmill_bonus
@@ -313,8 +309,8 @@ module Engine
           @company_trains['P4'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
           @company_trains['P1'].name = '5'
-          @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
-          @company_trains['P6'] = find_and_remove_train_by_id('P+-1', buyable: false)
+          @company_trains['P5'] = find_and_remove_train_by_id('P-0', buyable: false)
+          @company_trains['P6'] = find_and_remove_train_by_id('P-1', buyable: false)
           @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
           @company_trains['P26'] = find_and_remove_train_by_id('G-0', buyable: false)
           @company_trains['P27'] = find_and_remove_train_by_id('G-1', buyable: false)
@@ -322,7 +318,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            G1822::Step::PendingToken,
+            G1822CA::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
             G1822CA::Step::DiscardTrain,
@@ -338,7 +334,7 @@ module Engine
             G1822::Step::BuyTrain,
             G1822CA::Step::MinorAcquisition,
             G1822CA::Step::AcquisitionTrack,
-            G1822::Step::PendingToken,
+            G1822CA::Step::PendingToken,
             G1822CA::Step::DiscardTrain,
             G1822CA::Step::IssueShares,
           ], round_num: round_num)
@@ -350,6 +346,7 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return %w[5 6 57].include?(to.name) if from.name == 'AG13' && from.color == :white
+          return false if self.class::BIG_CITY_ILLEGAL_TILE_UPGRADES[from.name] == to.name
 
           super
         end
@@ -367,7 +364,7 @@ module Engine
         end
 
         def upgrades_to_correct_label?(from, to)
-          super || (MOUNTAIN_PASS_HEXES.include?(from.hex.id) && MOUNTAIN_PASS_TILES.include?(to.name))
+          super || (MOUNTAIN_PASS_HEXES.include?(from.hex&.id) && MOUNTAIN_PASS_TILES.include?(to.name))
         end
 
         def small_mail_contract_subsidy(routes)
@@ -591,14 +588,14 @@ module Engine
         def destination_city(hex, entity)
           return hex.tile.cities[0] unless (exits = entity.destination_exits)
 
-          cities = exits.each_with_object([]) do |exit, cities_|
+          dest_cities = exits.each_with_object([]) do |exit, cities|
             hex.paths[exit].each do |path|
               next unless (city = path.city)
 
-              cities_ << city unless cities.include?(city)
+              cities << city unless cities.include?(city)
             end
           end
-          cities.one? ? cities[0] : cities
+          dest_cities.one? ? dest_cities[0] : dest_cities
         end
 
         def destination_description(corporation)
@@ -614,6 +611,23 @@ module Engine
               ''
             end
           "Destination: #{which}#{dest_hex.location_name} (#{dest_hex.name})"
+        end
+
+        def price_movement_chart
+          non_director_sales =
+            (['One or more shares sold (if sold by non-director)', '1 ←'] if sell_movement == :left_per_10_if_pres_else_left_one)
+
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price, < 2x share price ', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Minor company dividend > 0', '1 →'],
+            ['Each share sold (if sold by director)', '1 ←'],
+            non_director_sales,
+            ['Corporation sold out at end of SR', '1 →'],
+          ].compact
         end
       end
     end

@@ -4,7 +4,7 @@ module Engine
   module Game
     module G18Ardennes
       module Market
-        CURRENCY_FORMAT_STR = '%d F'
+        CURRENCY_FORMAT_STR = '%d F'
         BANK_CASH = 12_000
         CERT_LIMIT = { 3 => 11, 4 => 8, 5 => 6 }.freeze
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 420 }.freeze

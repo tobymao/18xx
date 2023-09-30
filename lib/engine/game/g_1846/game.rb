@@ -134,7 +134,7 @@ module Engine
           },
         ].freeze
 
-        POOL_SHARE_DROP = :one
+        POOL_SHARE_DROP = :down_block
         SELL_AFTER = :p_any_operate
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :left_block_pres

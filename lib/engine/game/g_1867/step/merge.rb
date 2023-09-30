@@ -111,7 +111,7 @@ module Engine
             @round.converted = target
             @round.converts << target
             @round.merge_type = :convert
-            # All players are eligable to buy shares unlike merger
+            # All players are eligible to buy shares unlike merger
             @round.share_dealing_players = @game.players.rotate(@game.players.index(target.owner))
             @round.share_dealing_multiple = [corp_owner]
           end
@@ -157,20 +157,18 @@ module Engine
 
           def finish_merge_to_major(action)
             target = action.corporation
-            initiator = action.entity.owner
             # PAR price is average of lowest and highest priced
             # rounded down between 100-200 in either convert or par_3 areas
-            min = @merging.map { |c| c.share_price.price }.min
-            max = @merging.map { |c| c.share_price.price }.max
+            min, max = @merging.map { |c| c.share_price.price }.minmax
             new_price = [200, [100, (max + min)].max].min
             merged_par = @game.stock_market.share_prices_with_types(%i[par par_2]).find do |sp|
               sp.price <= new_price
             end
 
-            # Players who owned shares are eligable to buy shares unlike merger
-            owners = @merging.map(&:owner)
+            # Players who owned shares are eligible to buy shares unlike merger
+            owners = @merging.sort.map(&:owner)
             players = @game.players.select { |p| owners.include?(p) }
-            players = players.rotate(players.index(initiator))
+            players = players.rotate(players.index(owners.first))
 
             if players.none? { |player| player.cash >= merged_par.price || owners.count(player) >= 2 }
               raise GameError, 'Merge impossible, no player can become president'
@@ -185,8 +183,8 @@ module Engine
             # Set that this has been ipoed so presidentless corps can have shares be bought
             target.ipoed = true
 
-            # Transfer assets starting with the initiator
-            @merging.sort_by { |m| players.index(m.owner) }.each do |corporation|
+            # Transfer assets and shares in operating order
+            @merging.sort.each do |corporation|
               owner = corporation.owner
 
               share = target.shares.last

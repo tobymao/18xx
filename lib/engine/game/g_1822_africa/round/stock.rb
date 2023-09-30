@@ -15,8 +15,8 @@ module Engine
           def update_stored_winning_bids(entity)
             winning_bids = []
             check_winning = lambda { |bid_target|
-              return unless (bid = highest_bid(bid_target))
-              return unless bid.entity == entity
+              next unless (bid = highest_bid(bid_target))
+              next unless bid.entity == entity
 
               winning_bids << bid_target
             }

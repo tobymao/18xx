@@ -54,6 +54,52 @@ EXPECTED_TILE_UPGRADES = {
     '492' => %w[],
     '611' => %w[],
   },
+  '1822CA' => {
+    'A1' => %w[A2],
+    'A2' => %w[A3],
+    'A3' => %w[],
+    'B1' => %w[B2],
+    'B2' => %w[B3],
+    'B3' => %w[],
+    'M1' => %w[M2 M3],
+    'M2' => %w[M4 M5],
+    'M3' => %w[M5 M6],
+    'M4' => %w[M7 M8],
+    'M5' => %w[M8],
+    'M6' => %w[M8],
+    'M7' => %w[],
+    'M8' => %w[],
+    'O1' => %w[O3 O4],
+    'O2' => %w[O4],
+    'O3' => %w[O5 O6],
+    'O4' => %w[O6],
+    'O5' => %w[O7 O8],
+    'O6' => %w[O8],
+    'O7' => %w[],
+    'O8' => %w[],
+    'Q1' => %w[Q3 Q4],
+    'Q2' => %w[Q3 Q4],
+    'Q3' => %w[Q5 Q6],
+    'Q4' => %w[Q6],
+    'Q5' => %w[Q7 Q8],
+    'Q6' => %w[Q8],
+    'Q7' => %w[],
+    'Q8' => %w[],
+    'T1' => %w[T2 T3],
+    'T2' => %w[T4 T5],
+    'T3' => %w[T4 T5],
+    'T4' => %w[T6 T7],
+    'T5' => %w[T7],
+    'T6' => %w[],
+    'T7' => %w[],
+    'W1' => %w[W2 W3],
+    'W2' => %w[W4 W5],
+    'W3' => %w[W5],
+    'W4' => %w[W6 W7],
+    'W5' => %w[W7],
+    'W6' => %w[],
+    'W7' => %w[],
+  },
 }.freeze
 
 module Engine
@@ -102,10 +148,10 @@ module Engine
 
           aggregate_failures 'tile upgrades' do
             upgrades.keys.each do |t|
-              tile = game.hex_by_id(t)&.tile || game.tile_by_id("#{t}-0") || Tile.for(t)
+              tile = game.tile_by_id("#{t}-0") || game.hex_by_id(t)&.tile || Tile.for(t)
 
               upgrades.keys.each do |u|
-                upgrade = game.hex_by_id(u)&.tile || game.tile_by_id("#{u}-0") || Tile.for(u)
+                upgrade = game.tile_by_id("#{u}-0") || game.hex_by_id(u)&.tile || Tile.for(u)
 
                 expected_included = upgrades[t].include?(u)
                 expected_string = "#{t} #{expected_included ? '<' : '!<'} #{u}"

@@ -324,6 +324,8 @@ module Engine
           'minor_float_phase3on' => ['Minors receive winning bid as capital',
                                      'Minors receive entire winning bid as capital '\
                                      'and float at between 50 to 100 stock value based on bid'],
+          'l_upgrade' => ['£70 L-train upgrades',
+                          'The cost to upgrade an L-train to a 2-train is reduced from £80 to £70.'],
         ).freeze
 
         BIDDING_BOX_MINOR_COUNT = 4
@@ -1234,7 +1236,7 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # This is needed because the S tile upgrade removes the town in yellow
-          if self.class::UPGRADABLE_S_HEX_NAME == from.hex.name && from.color == :white
+          if self.class::UPGRADABLE_S_HEX_NAME == from.hex&.name && from.color == :white
             return self.class::UPGRADABLE_S_YELLOW_CITY_TILE == to.name
           end
 

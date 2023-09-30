@@ -21,6 +21,10 @@ module Engine
             'Do not place station token'
           end
 
+          def active_entities
+            [pending_entity.owner]
+          end
+
           def process_place_token(action)
             if action.entity.companies.empty? && action.entity.placed_tokens.empty?
               # This is a public company floated directly after the start of phase 5.

@@ -17,8 +17,9 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p><a href="https://boardgamegeek.com/thread/3131296/1822africa-design-diaryfeedback" target="_blank">1822Africa</a> is now in beta.</p>
         <p>1840 is now (finally) in production.</p>
-        <p>1847 AE and 1868 Wyoming are now in alpha.</p>
+        <p>18NL, 1858, 1847 AE, and 1868 Wyoming are now in alpha.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. Join the

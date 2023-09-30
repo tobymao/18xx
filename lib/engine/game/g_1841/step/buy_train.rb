@@ -59,7 +59,7 @@ module Engine
             [@game.depot.min_depot_train]
           end
 
-          def train_vatiant_helper(train, _entity)
+          def train_variant_helper(train, _entity)
             variants = train.variants.values
             return variants if train.owned_by_corporation?
 

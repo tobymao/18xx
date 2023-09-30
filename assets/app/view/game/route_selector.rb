@@ -232,7 +232,12 @@ module View
         current_entity = @game.round.current_entity
 
         submit = lambda do
-          process_action(Engine::Action::RunRoutes.new(@game.current_entity, routes: active_routes))
+          routes = active_routes
+          process_action(Engine::Action::RunRoutes.new(
+            @game.current_entity,
+            routes: routes,
+            extra_revenue: @game.extra_revenue(@game.current_entity, routes)
+          ))
           cleanup
         end
 

@@ -244,7 +244,7 @@ module Engine
             reduce_price
             entities.each(&:unpass!)
             next_entity!
-            force_purchase(@auction_triggerer, @auctioning) if min_bid(@auctioning).zero?
+            force_purchase(@auction_triggerer, @auctioning) if @auctioning && min_bid(@auctioning).zero?
           end
 
           def resolve_bids
