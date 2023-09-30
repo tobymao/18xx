@@ -406,7 +406,7 @@ module Engine
         end
 
         def can_corporation_have_investor_shares_exchanged?(corporation)
-          return false unless ['3+3', '4', '4+4'].include?(@phase.current[:name])
+          return false unless ['3+3', '4', '4+4', '5'].include?(@phase.current[:name])
 
           corporation.floated
         end
@@ -430,7 +430,7 @@ module Engine
           end
 
           @log << '-- From now on, corporations may lay yellow tracks in any hexes they can reach, not'\
-                  ' only in hexes of a given color Investor companies for the associated Investor shares --'
+                  ' only in hexes of a given color --'
           @yellow_tracks_restricted = false
         end
 
