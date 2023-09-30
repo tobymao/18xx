@@ -92,7 +92,7 @@ module Engine
                   ' They may assign it immediately or later to any corporation they are the director of. Train limits must'\
                   ' be kept.',
             abilities: [
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
               # { type: 'assign_corporation', when: 'owning_player_or_turn', count: 1, closed_when_used_up: true },
             ],
@@ -110,7 +110,7 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
@@ -136,7 +136,7 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
@@ -161,7 +161,7 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
@@ -186,7 +186,7 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
@@ -211,7 +211,7 @@ module Engine
                   ' certificate limit.',
             color: 'brown',
             abilities: [
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
               {
                 type: 'tile_lay',
@@ -244,7 +244,7 @@ module Engine
                 tiles: TUNNEL_TILES,
                 hexes: TUNNEL_HEXES,
               },
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
             ],
           },
@@ -269,7 +269,7 @@ module Engine
                 tiles: TUNNEL_TILES,
                 hexes: TUNNEL_HEXES,
               },
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
             ],
           },
@@ -294,7 +294,7 @@ module Engine
                 tiles: TUNNEL_TILES,
                 hexes: TUNNEL_HEXES,
               },
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
             ],
           },
@@ -319,7 +319,7 @@ module Engine
                 tiles: TUNNEL_TILES,
                 hexes: TUNNEL_HEXES,
               },
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
             ],
           },
@@ -344,7 +344,7 @@ module Engine
                 tiles: TUNNEL_TILES,
                 hexes: TUNNEL_HEXES,
               },
-              { type: 'close', when: 'never' },
+              { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
             ],
           },
@@ -405,6 +405,7 @@ module Engine
             tokens: [0, 40],
             max_ownership_percent: 75,
             coordinates: 'I4',
+            # city: 0,
             destination_coordinates: 'F7',
             color: '#c0c0c0',
             text_color: '#165800',

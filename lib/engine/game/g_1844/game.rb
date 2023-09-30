@@ -34,7 +34,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
         POOL_SHARE_DROP = :left_block
-        NEXT_SR_PLAYER_ORDER = :most_cash
+        NEXT_SR_PLAYER_ORDER = :most_cash # TODO: not officially supported. Add to common code.
         EBUY_PRES_SWAP = false
         MUST_BUY_TRAIN = :always
         DISCARDED_TRAINS = :remove
@@ -171,6 +171,7 @@ module Engine
                 price: 70,
               },
             ],
+            events: [{ 'type' => 'train_exports' }],
           },
           {
             name: '3',
@@ -185,7 +186,7 @@ module Engine
                 price: 150,
               },
             ],
-            events: [{ 'type' => '2t_downgrade' }],
+            events: [{ 'type' => '2t_downgrade' }, { 'type' => 'company_abilities' }, { 'type' => 'buy_across' }],
           },
           {
             name: '4',
@@ -247,7 +248,10 @@ module Engine
         ].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'train_exports' => ['Train Exports', 'Next train exported at the end of each OR set'],
           '2t_downgrade' => ['2 -> 2H', '2 trains downgraded to 2H trains'],
+          'company_abilities' => ['Company Abilities Useable', 'Company special abilities can be used'],
+          'buy_across' => ['Buy Across', 'Trains can be bought between corporations'],
           '3t_downgrade' => ['3 -> 3H', '3 trains downgraded to 3H trains'],
           '4t_downgrade' => ['4 -> 4H', '4 trains downgraded to 4H trains'],
           '5t_downgrade' => ['5 -> 5H', '5 trains downgraded to 5H trains'],
@@ -275,6 +279,11 @@ module Engine
           tunnel_companies.select { |tc| tc.owner&.player? && tc.value.zero? }
         end
 
+        def pre_sbb_corporations
+          # Priority ordered list of pre-sbb corporations
+          @pre_sbb_corps ||= %w[NOB SCB VSB JS GB].map { |id| corporation_by_id(id) }
+        end
+
         def fnm
           @fnm ||= corporation_by_id('FNM')
         end
@@ -292,16 +301,14 @@ module Engine
           mountain_railways.each { |mr| mr.owner = @bank }
           tunnel_companies.each { |tc| tc.owner = @bank }
 
-          @eva = @depot.trains.find { |t| t.name == '5' }
+          @eva = @depot.trains.find { |t| t.name == '5' && t.events.empty? }
           @depot.forget_train(@eva)
           @eva.variant = '5H'
 
-          sbb_train = @depot.trains.find { |t| t.name == '5' }
-          @depot.forget_train(sbb_train)
-          sbb_train.variant = '5H'
-          sbb_train.buyable = false
-          sbb_train.owner = sbb
-          sbb.trains << sbb_train
+          @sbb_train = @depot.trains.find { |t| t.name == '5' && t.events.empty? }
+          @depot.forget_train(@sbb_train)
+          @sbb_train.variant = '5H'
+          @sbb_train.buyable = false
 
           @all_tiles.each { |t| t.ignore_gauge_walk = true }
           @_tiles.values.each { |t| t.ignore_gauge_walk = true }
@@ -324,6 +331,18 @@ module Engine
           end
         end
 
+        def event_train_exports!
+          @log << "-- Event: #{EVENTS_TEXT['train_exports'][1]} --"
+        end
+
+        def event_company_abilities!
+          @log << "-- Event: #{EVENTS_TEXT['company_abilities'][1]} --"
+        end
+
+        def event_buy_across!
+          @log << "-- Event: #{EVENTS_TEXT['buy_across'][1]} --"
+        end
+
         def event_2t_downgrade!
           downgrade_train_type!('2', '2H')
         end
@@ -340,6 +359,13 @@ module Engine
           downgrade_train_type!('5', '5H')
         end
 
+        def event_sbb_formation!
+          @log << '-- Event: SBB forms at end of the Operating Round --'
+          @sbb_formation_triggered = true
+          # TODO: separate round, so remove_token step can be added
+          form_sbb!
+        end
+
         def downgrade_train_type!(name, downgrade_name)
           owners = Hash.new(0)
           trains.select { |t| t.name == name }.each do |t|
@@ -349,6 +375,129 @@ module Engine
 
           @log << "-- Event: #{name} trains downgrade to #{downgrade_name} trains" \
                   " (#{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+        end
+
+        def form_sbb!
+          @log << '-- Event: SBB forms --'
+
+          @stock_market.set_par(sbb, @stock_market.share_prices_with_types(%i[par_1]).first)
+          sbb.floatable = true
+          sbb.ipoed = true
+          sbb.floated = true
+
+          @bank.spend(400, sbb)
+          @sbb_train.owner = sbb
+          sbb.trains << @sbb_train
+          @log << "#{sbb.name} starts with #{format_currency(400)} and a #{@sbb_train.name} train"
+
+          previous_owners = []
+          pre_sbb_corporations.each do |corp|
+            @log << "#{corp.name} merging into #{sbb.name}"
+            previous_owners << corp.owner
+
+            @log << "#{sbb.name} receives #{format_currency(corp.cash)}"
+            corp.spend(corp.cash, sbb) if corp.cash.positive?
+
+            place_sbb_tokens!(corp)
+
+            num_trains = corp.trains.size
+            if num_trains.positive?
+              @log << "#{sbb.name} receives #{num_trains} train#{num_trains == 1 ? '' : 's'}:" \
+                      " #{corp.trains.map(&:name).join(', ')}"
+            end
+            corp.trains.each do |train|
+              train.owner = sbb
+              sbb.trains << train
+            end
+
+            sbb_share_exchange!(corp)
+
+            close_corporation(corp, quiet: true)
+          end
+
+          sbb.tokens.sort_by! { |t| t.used ? 0 : 1 }
+
+          determine_sbb_president!(previous_owners.uniq)
+        end
+
+        def place_sbb_tokens!(corp)
+          locations = corp.tokens.map { |token| token.used ? token.hex.full_name : 'Unused' }.join(', ')
+          @log << "#{sbb.name} receives #{corp.tokens.size} tokens: #{locations}"
+          corp.tokens.each do |token|
+            sbb.tokens << Token.new(sbb, price: 100)
+            next unless token.used
+
+            if token.city.tokened_by?(sbb)
+              @log << "#{sbb.name} already has a token on #{token.hex.full_name}, placing token on charter instead"
+              token.remove!
+            else
+              token.swap!(sbb.tokens.last)
+            end
+          end
+        end
+
+        def sbb_share_exchange!(corp)
+          cash_per_share = corp.share_price.price - sbb.share_price.price
+          corp.share_holders.keys.each do |share_holder|
+            shares = share_holder.shares_of(corp).map do |corp_share|
+              percent = corp_share.president ? 10 : 5
+              sbb.shares_of(sbb).find { |sbb_share| sbb_share.percent == percent }
+            end
+            next if shares.empty?
+
+            share_holder = @share_pool if share_holder.corporation?
+            bundle = ShareBundle.new(shares)
+            @share_pool.transfer_shares(bundle, share_holder, allow_president_change: false)
+
+            msg = share_holder.name.to_s
+
+            cash = cash_per_share * bundle.percent / 5
+            if cash.zero? || share_holder == @share_pool
+              msg += ' receives'
+            elsif cash.positive?
+              msg += " receives #{format_currency(cash)} and"
+              @bank.spend(cash, share_holder)
+            else
+              msg += " pays #{format_currency(cash.abs)} and receives"
+              share_holder.spend(cash.abs, @bank)
+            end
+
+            msg += " #{bundle.percent}% of #{sbb.name}"
+            @log << msg
+          end
+        end
+
+        def determine_sbb_president!(president_priority_order)
+          player_share_percent = sbb.player_share_holders
+          max_percent = player_share_percent.values.max || 0
+          return if max_percent < 10
+
+          # Determine president
+          candidates = player_share_percent.select { |_, percent| percent == max_percent }.keys
+          if candidates.size > 1
+            candidates.sort_by! { |player| president_priority_order.index(player) || president_priority_order.size }
+          end
+          president = candidates.first
+
+          # Make sure president has a 10% cert
+          if (president_shares = president.shares_of(sbb)).none? { |share| share.percent == 10 }
+            ten_percent_share = @share_pool.shares_of(sbb).find { |share| share.percent == 10 } ||
+                                  president_priority_order[-1].shares_of(sbb).find { |share| share.percent == 10 }
+            @share_pool.transfer_shares(ShareBundle.new([ten_percent_share]), president, allow_president_change: false)
+            @share_pool.transfer_shares(ShareBundle.new(president_shares.take(2)), share.owner, allow_president_change: false)
+          end
+
+          # Make sure president has the presidents cert
+          if (presidents_share_owner = sbb.presidents_share.owner) != president
+            @share_pool.transfer_shares(ShareBundle.new([sbb.presidents_share]), president)
+            @share_pool.transfer_shares(
+              ShareBundle.new([president_shares.find { |share| !share.president && share.percent == 10 }]),
+              presidents_share_owner
+            )
+          end
+
+          sbb.owner = president
+          @log << "#{president.name} becomes the president of #{sbb.name}"
         end
 
         def player_value(player)
@@ -371,6 +520,7 @@ module Engine
               init_round_finished
               reorder_players(:least_cash, log_player_order: true)
               new_stock_round
+              # TODO: add sbb formation
             else
               super
             end
@@ -433,7 +583,6 @@ module Engine
             end
           corporation.tokens.slice!(num_tokens..-1)
           @log << "#{corporation.name} receives #{num_tokens} token#{num_tokens > 1 ? 's' : ''}"
-
           return unless corporation == fnm
 
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation).take(3)), @share_pool)
