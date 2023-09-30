@@ -362,6 +362,7 @@ module Engine
           # Draft Rounds and short ORs ("inside" Draft Round) are named 0.1, 0.2, ...
           @turn = 0
           @draft_round_num = 1
+
           @draft_finished = false
           @recently_floated = []
           @extra_tile_lay = true
@@ -378,6 +379,13 @@ module Engine
         def operating_order
           # LFK is not really a corporation and does not operate
           super.reject { |c| c == lfk }
+        end
+
+        def liquidity(player, emergency: false)
+          value = super
+          value += lfk.share_price.price if lfk.owner == player
+
+          value
         end
 
         def tile_lays(entity)
