@@ -228,6 +228,20 @@ module Engine
                           'The cost to upgrade an L-train to a 2-train is reduced from $80 to $70.']
         )
 
+        # the big city tiles have complex arrangements of multiple cities and
+        # multiple possible upgrade paths, the implemented upgrade logic can't
+        # handle all of them so some restrictions are hardcoded here instead of
+        # writing logic that wouldn't be very common
+        BIG_CITY_ILLEGAL_TILE_UPGRADES = {
+          'M2' => 'M6',
+          'M3' => 'M4',
+          'O2' => 'O3',
+          'O4' => 'O5',
+          'Q4' => 'Q5',
+          'T5' => 'T6',
+          'W5' => 'W6',
+        }.freeze
+
         attr_accessor :sawmill_hex, :sawmill_owner, :train_with_grain, :train_with_pullman
         attr_writer :sawmill_bonus
 
@@ -332,6 +346,7 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return %w[5 6 57].include?(to.name) if from.name == 'AG13' && from.color == :white
+          return false if self.class::BIG_CITY_ILLEGAL_TILE_UPGRADES[from.name] == to.name
 
           super
         end
@@ -349,7 +364,7 @@ module Engine
         end
 
         def upgrades_to_correct_label?(from, to)
-          super || (MOUNTAIN_PASS_HEXES.include?(from.hex.id) && MOUNTAIN_PASS_TILES.include?(to.name))
+          super || (MOUNTAIN_PASS_HEXES.include?(from.hex&.id) && MOUNTAIN_PASS_TILES.include?(to.name))
         end
 
         def small_mail_contract_subsidy(routes)
