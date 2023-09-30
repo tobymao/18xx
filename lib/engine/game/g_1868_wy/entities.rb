@@ -428,7 +428,6 @@ module Engine
             value: 120,
             revenue: 20,
             abilities: [
-              { type: 'close', on_phase: '7' },
               { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] },
               {
                 type: 'assign_hexes',
