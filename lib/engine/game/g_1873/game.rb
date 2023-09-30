@@ -442,7 +442,7 @@ module Engine
           mine_comps + corp_comps
         end
 
-        def auction_companies
+        def initial_auction_companies
           corp_ids = @corporations.select do |corp|
             next if corp == @mhe
 

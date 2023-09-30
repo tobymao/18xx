@@ -274,9 +274,13 @@ def migrate_db_actions(data, pin=nil, dry_run=false, debug=false, pry_db: false,
         puts "    Archiving #{data.id}"
         data.archive!
       else
-        puts "    Would pin #{data.id} to #{pin}"
-        data.settings['pin']=pin
-        data.save
+        if pin
+          puts "    Pinning #{data.id} to #{pin}"
+          data.settings['pin'] = pin
+          data.save
+        else
+          puts "    Skipping pin (none given)"
+        end
       end
     else
       puts "    Needs pinning #{data.id} to #{pin}"

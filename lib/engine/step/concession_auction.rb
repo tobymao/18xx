@@ -73,7 +73,7 @@ module Engine
 
       def setup
         setup_auction
-        @companies = @game.auction_companies
+        @companies = @game.initial_auction_companies.dup
       end
 
       def min_bid(company)

@@ -61,7 +61,7 @@ module Engine
                                                                        action.hex) && !(tile_lay && tile_lay[:upgrade])
         raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && !(tile_lay && tile_lay[:lay])
         if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
-          raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
+          raise GameError, "#{action.hex.id} cannot be laid as this hex was already laid on this turn"
         end
 
         extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
@@ -80,7 +80,10 @@ module Engine
       end
 
       def tile_lay_abilities_should_block?(entity)
-        Array(abilities(entity, time: type, passive_ok: false)).any? { |a| !a.consume_tile_lay }
+        abilities = [type, 'owning_player_track'].flat_map do |time|
+          Array(abilities(entity, time: time, passive_ok: false))
+        end
+        abilities.any? { |a| !a.consume_tile_lay }
       end
 
       def abilities(entity, **kwargs, &block)

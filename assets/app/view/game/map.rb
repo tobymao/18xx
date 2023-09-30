@@ -105,18 +105,20 @@ module View
               # Add tiles that aren't part of all_upgrades (Mitsubishi ferry)
               select_tiles.append(*tiles.map { |t| [t, nil] })
 
-              return h(:div) if select_tiles.empty?
+              if select_tiles.empty?
+                h(:div)
+              else
+                distance = TileSelector::DISTANCE * map_zoom
+                width, height = map_size
+                ts_ds = [TileSelector::DROP_SHADOW_SIZE - 5, 0].max # ignore up to 5px of ds (< 2vmin padding of #app)
+                left_col = left < distance
+                right_col = width - left < distance + ts_ds
+                top_row = top < distance
+                bottom_row = height - top < distance + ts_ds
 
-              distance = TileSelector::DISTANCE * map_zoom
-              width, height = map_size
-              ts_ds = [TileSelector::DROP_SHADOW_SIZE - 5, 0].max # ignore up to 5px of ds (< 2vmin padding of #app)
-              left_col = left < distance
-              right_col = width - left < distance + ts_ds
-              top_row = top < distance
-              bottom_row = height - top < distance + ts_ds
-
-              h(TileSelector, layout: @layout, tiles: select_tiles, actions: actions, zoom: map_zoom, top_row: top_row,
-                              left_col: left_col, right_col: right_col, bottom_row: bottom_row)
+                h(TileSelector, layout: @layout, tiles: select_tiles, actions: actions, zoom: map_zoom,
+                                top_row: top_row, left_col: left_col, right_col: right_col, bottom_row: bottom_row)
+              end
             end
 
           # Move the position to the middle of the hex

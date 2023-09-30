@@ -24,7 +24,7 @@ module Engine
 
             buy_train(entity, @depot.min_depot_train) if must_buy_train?(entity)
 
-            buy_train(entity, @depot.upcoming.first) while entity.cash > @depot.upcoming.first.price
+            buy_train(entity, @depot.upcoming.first) while entity.cash >= @depot.upcoming.first.price
           end
 
           def buyable_trains(entity)

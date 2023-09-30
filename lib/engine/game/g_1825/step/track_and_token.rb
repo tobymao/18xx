@@ -77,7 +77,7 @@ module Engine
             raise GameError, 'Cannot upgrade now' if upgrade && !(tile_lay && tile_lay[:upgrade])
             raise GameError, 'Cannot lay a tile now' if !upgrade && !(tile_lay && tile_lay[:lay])
             if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
-              raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
+              raise GameError, "#{action.hex.id} cannot be laid as this hex was already laid on this turn"
             end
 
             raise GameError, 'Only the NS can place tiles 887/888 on Q13' if protect_ns?(tile, action.hex, entity)

@@ -190,7 +190,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy_or_buy_sell
 
       # do shares in the pool drop the price?
-      # none, one, each
+      # none, down_block, left_block, down_share
       POOL_SHARE_DROP = :none
 
       # do sold out shares increase the price?
@@ -1011,6 +1011,13 @@ module Engine
             end
           end
         end
+        abilities(company, :acquire_company) do |ability|
+          acquired_company = company_by_id(ability.company)
+          acquired_company.owner = player
+          player.companies << acquired_company
+          @log << "#{player.name} receives #{acquired_company.name}"
+          after_buy_company(player, acquired_company, 0)
+        end
       end
 
       def after_sell_company(_buyer, _company, _price, _seller); end
@@ -1243,6 +1250,10 @@ module Engine
           !depot.depot_trains.empty? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
+      end
+
+      def can_buy_train_from_others?
+        self.class::ALLOW_TRAIN_BUY_FROM_OTHERS
       end
 
       def discard_discount(train, price)
@@ -2130,7 +2141,7 @@ module Engine
           @log << "-- Event: obsolete #{removed_obsolete_trains.uniq.join(', ')} trains are removed from The Depot --"
         end
 
-        return unless rusted_trains.any?
+        return if rusted_trains.empty?
 
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
                 "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
@@ -2227,6 +2238,10 @@ module Engine
 
       def bankruptcy_options(_entity)
         []
+      end
+
+      def initial_auction_companies
+        @companies
       end
 
       private
@@ -3006,6 +3021,8 @@ module Engine
             @round.operating? && !@round.current_operator_acted
           when 'or_start'
             ability_time_is_or_start?
+          when 'stock_round'
+            @round.stock?
           else
             default
           end

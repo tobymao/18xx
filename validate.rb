@@ -79,7 +79,7 @@ def run_game(game, actions = nil, strict: false)
   data
 end
 
-def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finished])
+def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json')
   $count = 0
   $total = 0
   $total_time = 0
@@ -113,7 +113,6 @@ def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finish
   puts "#{$count}/#{$total} avg #{$total_time / $total}"
   data['summary']={'failed':$count, 'total':$total, 'total_time':$total_time, 'avg_time':$total_time / $total}
 
-  filename = "validate.json"
   File.write(filename, JSON.pretty_generate(data))
   Validate.new(filename)
 end
