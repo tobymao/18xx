@@ -11,6 +11,10 @@ module Engine
             'Lay/Upgrade Track (Acquisition Bonus)'
           end
 
+          def help
+            "#{@round.acquiring_major.name} receives a bonus track action for acquiring a Minor."
+          end
+
           def actions(entity)
             return [] unless entity == current_entity
             return [] unless entity == @round.acquiring_major
