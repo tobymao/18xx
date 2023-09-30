@@ -259,7 +259,7 @@ module Engine
           '3t_downgrade' => ['3 -> 3H', '3 trains downgraded to 3H trains'],
           '4t_downgrade' => ['4 -> 4H', '4 trains downgraded to 4H trains'],
           '5t_downgrade' => ['5 -> 5H', '5 trains downgraded to 5H trains'],
-          'sbb_formation' => ['SBB Forms', 'SBB forms at end of OR'],
+          'sbb_formation' => ['SBB Forms', 'SBB forms after OR'],
           'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization']
         ).freeze
 
@@ -364,10 +364,8 @@ module Engine
         end
 
         def event_sbb_formation!
-          @log << '-- Event: SBB forms at end of the Operating Round --'
-          @sbb_formation_triggered = true
-          # TODO: separate round, so remove_token step can be added
-          form_sbb!
+          @log << '-- Event: SBB forms after the Operating Round --'
+          @ready_to_form_sbb = true
         end
 
         def downgrade_train_type!(name, downgrade_name)
@@ -534,9 +532,32 @@ module Engine
               init_round_finished
               reorder_players(:least_cash, log_player_order: true)
               new_stock_round
-              # TODO: add sbb formation
-            else
-              super
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when G1844::Round::Operating
+              next_round =
+                if @round.round_num < @operating_rounds
+                  or_round_finished
+                  -> { new_operating_round(@round.round_num + 1) }
+                else
+                  @turn += 1
+                  or_round_finished
+                  or_set_finished
+                  -> { new_stock_round }
+                end
+              if @ready_to_form_sbb
+                @post_sbb_formation_round = next_round
+                new_sbb_formation_round
+              else
+                next_round.call
+              end
+            when G1844::Round::SBBFormation
+              next_round = @post_sbb_formation_round
+              @ready_to_form_sbb = false
+              @post_sbb_formation_round = nil
+              next_round.call
             end
         end
 
@@ -574,6 +595,13 @@ module Engine
             G1844::Step::BuyTrain,
             [G1844::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def new_sbb_formation_round
+          @log << '-- SBB Formation Round --'
+          G1844::Round::SBBFormation.new(self, [
+            G1844::Step::RemoveSBBTokens,
+          ])
         end
 
         def can_par?(corporation, _parrer)
