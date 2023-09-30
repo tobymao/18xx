@@ -38,6 +38,8 @@ module Engine
             # LFK is always sellable
             return super unless bundle.corporation == @game.lfk
 
+            return false if entity != bundle.owner
+
             selling_minimum_shares?(bundle)
           end
         end
