@@ -3,6 +3,8 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'player'
+require_relative 'stock_market'
 require_relative '../base'
 
 module Engine
@@ -21,6 +23,8 @@ module Engine
                         yellow: '#ffe600',
                         green: '#32763f',
                         brightGreen: '#6ec037')
+
+        PLAYER_CLASS = G1844::Player
 
         CURRENCY_FORMAT_STR = '%s SFR'
 
@@ -459,11 +463,17 @@ module Engine
               @bank.spend(cash, share_holder)
             else
               msg += " pays #{format_currency(cash.abs)} and receives"
-              share_holder.spend(cash.abs, @bank)
+              share_holder.spend(cash.abs, @bank, check_cash: false)
             end
 
             msg += " #{bundle.percent}% of #{sbb.name}"
             @log << msg
+            next if !share_holder.player? || !share_holder.cash.negative?
+
+            debt = share_holder.cash.abs
+            @log << "#{share_holder.name} takes #{format_currency(debt)} of debt to complete payment"
+            share_holder.debt = debt
+            @bank.spend(debt, share_holder)
           end
         end
 
@@ -502,6 +512,10 @@ module Engine
 
         def player_value(player)
           super - (player.companies & privates).sum(&:value)
+        end
+
+        def player_debt(player)
+          player.debt
         end
 
         def init_stock_market
@@ -730,6 +744,10 @@ module Engine
           return %w[14 15 619].include?(to.name) if from.hex.id == 'D15' && from.color == :yellow
 
           super
+        end
+
+        def interest_for_debt(debt)
+          (debt * 0.5).ceil
         end
       end
     end
