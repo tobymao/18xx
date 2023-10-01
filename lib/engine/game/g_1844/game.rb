@@ -259,9 +259,11 @@ module Engine
           '3t_downgrade' => ['3 -> 3H', '3 trains downgraded to 3H trains'],
           '4t_downgrade' => ['4 -> 4H', '4 trains downgraded to 4H trains'],
           '5t_downgrade' => ['5 -> 5H', '5 trains downgraded to 5H trains'],
-          'sbb_formation' => ['SBB Forms', 'SBB forms after OR'],
+          'sbb_formation' => ['SBB Forms', 'SBB forms after the Operating Round'],
           'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization']
         ).freeze
+
+        P4_TILE_LAYS = { 'H17' => 'OP3', 'H19' => 'OP2', 'H21' => 'OP2', 'H23' => 'OP2', 'I16' => 'OP1' }.freeze
 
         def privates
           @privates ||= @companies.select { |c| c.sym[0] == 'P' }
@@ -355,17 +357,22 @@ module Engine
           downgrade_train_type!('3', '3H')
         end
 
+        def event_close_companies!
+          lay_p4_overpass!
+          super
+        end
+
+        def event_sbb_formation!
+          @log << "-- Event: #{EVENTS_TEXT['sbb_formation'][1]} --"
+          @ready_to_form_sbb = true
+        end
+
         def event_4t_downgrade!
           downgrade_train_type!('4', '4H')
         end
 
         def event_5t_downgrade!
           downgrade_train_type!('5', '5H')
-        end
-
-        def event_sbb_formation!
-          @log << '-- Event: SBB forms after the Operating Round --'
-          @ready_to_form_sbb = true
         end
 
         def downgrade_train_type!(name, downgrade_name)
@@ -583,6 +590,7 @@ module Engine
           G1844::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
+            G1844::Step::SpecialChoose,
             G1844::Step::SpecialTrack,
             G1844::Step::Destination,
             G1844::Step::BuyCompany,
@@ -661,6 +669,35 @@ module Engine
 
           company.revenue = 0
           company.value = 0
+        end
+
+        def lay_p4_overpass!
+          company = company_by_id('P4')
+          return if company.abilities.empty?
+
+          owner = company.owner
+          compensation = 80
+
+          @log << "#{owner.name} must use #{company.name}" if @phase.name.to_i >= 5
+          @log << "#{owner.name} (#{company.name}) lays Furka-Oberalp special tile"
+          @log << "#{owner.name} receives #{format_currency(compensation)}"
+
+          @bank.spend(compensation, owner)
+
+          P4_TILE_LAYS.each do |hex_id, tile_name|
+            hex = hex_by_id(hex_id)
+            tile = @tiles.find { |t| t.name == tile_name }
+            if (tunnel_path = hex.tile.paths.find { |path| path.track == :narrow })
+              tile = replace_tile_code(tile, extend_tile_code(tile, narrow_track_code_for(tunnel_path.exits)))
+              @_tiles[tile.id] = tile
+            end
+
+            update_tile_lists(tile, hex.tile)
+            hex.lay(tile)
+          end
+
+          @log << "#{company.name} closes"
+          company.close!
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
@@ -772,6 +809,35 @@ module Engine
           return %w[14 15 619].include?(to.name) if from.hex.id == 'D15' && from.color == :yellow
 
           super
+        end
+
+        def create_tunnel_tile(hex, tile)
+          replace_tile_code(tile, extend_tile_code(hex.tile, narrow_track_code_for(tile.exits)))
+        end
+
+        def narrow_track_code_for(exits)
+          "path=a:#{exits[0]},b:#{exits[1]},track:narrow"
+        end
+
+        def extend_tile_code(tile, additional_code)
+          code = tile.code + ';' + additional_code
+          code = code[1..-1] if code[0] == ';'
+          code
+        end
+
+        def replace_tile_code(tile, new_code)
+          tile = Engine::Tile.new(
+            tile.name,
+            code: new_code,
+            color: tile.color,
+            parts: Engine::Tile.decode(new_code),
+            index: tile.index,
+            hidden: true,
+            ignore_gauge_walk: true,
+          )
+          tile.ignore_gauge_walk = true
+          # @_tiles[tile.id] = tile
+          tile
         end
 
         def interest_for_debt(debt)

@@ -137,6 +137,24 @@ module Engine
             'color' => 'purple',
             'code' => 'path=a:0,b:3,track:narrow',
           },
+          'OP1' => {
+            'count' => 1,
+            'hidden' => true,
+            'color' => 'purple',
+            'code' => 'path=a:3,b:5',
+          },
+          'OP2' => {
+            'count' => 3,
+            'hidden' => true,
+            'color' => 'purple',
+            'code' => 'path=a:1,b:4',
+          },
+          'OP3' => {
+            'count' => 1,
+            'hidden' => true,
+            'color' => 'purple',
+            'code' => 'town=revenue:10,loc:4;path=a:0,b:_0;path=a:4,b:_0',
+          },
         }.freeze
 
         LOCATION_NAMES = {

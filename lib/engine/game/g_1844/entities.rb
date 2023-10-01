@@ -59,7 +59,7 @@ module Engine
               {
                 type: 'choose_ability',
                 when: %w[track owning_player_track],
-                choices: 'Place', # TODO: add special_choose step
+                choices: ['Place tile'],
               },
             ],
           },
