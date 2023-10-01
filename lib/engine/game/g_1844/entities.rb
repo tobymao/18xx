@@ -4,7 +4,7 @@ module Engine
   module Game
     module G1844
       module Entities
-        MOUNTAIN_HEXES = %w[H7 L13 I14 G14 F19 L23].freeze
+        MOUNTAIN_HEXES = %w[H7 L13 I14 G14 F19 J29 L23].freeze
         MOUNTAIN_TILES = %w[XM1 XM2 XM3].freeze
 
         TUNNEL_HEXES = %w[J9 I12 K14 I16 H17 H19 H21 H23 H27].freeze

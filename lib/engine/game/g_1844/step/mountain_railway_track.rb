@@ -38,7 +38,7 @@ module Engine
           end
 
           def potential_tile_colors(_entity, _hex)
-            [:brown]
+            [:gray]
           end
 
           def process_lay_tile(action)
